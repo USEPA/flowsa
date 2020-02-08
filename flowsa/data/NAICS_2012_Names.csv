@@ -1,0 +1,2214 @@
+NAICS_2012_Name,NAICS_2012_Code
+"Agriculture, Forestry, Fishing and Hunting",11
+Crop Production,111
+Oilseed and Grain Farming,1111
+Soybean Farming,11111
+Soybean Farming,111110
+Oilseed (except Soybean) Farming,11112
+Oilseed (except Soybean) Farming,111120
+Dry Pea and Bean Farming,11113
+Dry Pea and Bean Farming,111130
+Wheat Farming,11114
+Wheat Farming,111140
+Corn Farming,11115
+Corn Farming,111150
+Rice Farming,11116
+Rice Farming,111160
+Other Grain Farming,11119
+Oilseed and Grain Combination Farming,111191
+All Other Grain Farming,111199
+Vegetable and Melon Farming,1112
+Vegetable and Melon Farming,11121
+Potato Farming,111211
+Other Vegetable (except Potato) and Melon Farming,111219
+Fruit and Tree Nut Farming,1113
+Orange Groves,11131
+Orange Groves,111310
+Citrus (except Orange) Groves,11132
+Citrus (except Orange) Groves,111320
+Noncitrus Fruit and Tree Nut Farming,11133
+Apple Orchards,111331
+Grape Vineyards,111332
+Strawberry Farming,111333
+Berry (except Strawberry) Farming,111334
+Tree Nut Farming,111335
+Fruit and Tree Nut Combination Farming,111336
+Other Noncitrus Fruit Farming,111339
+"Greenhouse, Nursery, and Floriculture Production",1114
+Food Crops Grown Under Cover,11141
+Mushroom Production,111411
+Other Food Crops Grown Under Cover,111419
+Nursery and Floriculture Production,11142
+Nursery and Tree Production,111421
+Floriculture Production,111422
+Other Crop Farming,1119
+Tobacco Farming,11191
+Tobacco Farming,111910
+Cotton Farming,11192
+Cotton Farming,111920
+Sugarcane Farming,11193
+Sugarcane Farming,111930
+Hay Farming,11194
+Hay Farming,111940
+All Other Crop Farming,11199
+Sugar Beet Farming,111991
+Peanut Farming,111992
+All Other Miscellaneous Crop Farming,111998
+Animal Production and Aquaculture,112
+Cattle Ranching and Farming,1121
+"Beef Cattle Ranching and Farming, including Feedlots",11211
+Beef Cattle Ranching and Farming,112111
+Cattle Feedlots,112112
+Dairy Cattle and Milk Production,11212
+Dairy Cattle and Milk Production,112120
+Dual-Purpose Cattle Ranching and Farming,11213
+Dual-Purpose Cattle Ranching and Farming,112130
+Hog and Pig Farming,1122
+Hog and Pig Farming,11221
+Hog and Pig Farming,112210
+Poultry and Egg Production,1123
+Chicken Egg Production,11231
+Chicken Egg Production,112310
+Broilers and Other Meat Type Chicken Production,11232
+Broilers and Other Meat Type Chicken Production,112320
+Turkey Production,11233
+Turkey Production,112330
+Poultry Hatcheries,11234
+Poultry Hatcheries,112340
+Other Poultry Production,11239
+Other Poultry Production,112390
+Sheep and Goat Farming,1124
+Sheep Farming,11241
+Sheep Farming,112410
+Goat Farming,11242
+Goat Farming,112420
+Aquaculture,1125
+Aquaculture,11251
+Finfish Farming and Fish Hatcheries,112511
+Shellfish Farming,112512
+Other Aquaculture,112519
+Other Animal Production,1129
+Apiculture,11291
+Apiculture,112910
+Horses and Other Equine Production,11292
+Horses and Other Equine Production,112920
+Fur-Bearing Animal and Rabbit Production,11293
+Fur-Bearing Animal and Rabbit Production,112930
+All Other Animal Production,11299
+All Other Animal Production,112990
+Forestry and Logging,113
+Timber Tract Operations,1131
+Timber Tract Operations,11311
+Timber Tract Operations,113110
+Forest Nurseries and Gathering of Forest Products,1132
+Forest Nurseries and Gathering of Forest Products,11321
+Forest Nurseries and Gathering of Forest Products,113210
+Logging,1133
+Logging,11331
+Logging,113310
+"Fishing, Hunting and Trapping",114
+Fishing,1141
+Fishing,11411
+Finfish Fishing,114111
+Shellfish Fishing,114112
+Other Marine Fishing,114119
+Hunting and Trapping,1142
+Hunting and Trapping,11421
+Hunting and Trapping,114210
+Support Activities for Agriculture and Forestry,115
+Support Activities for Crop Production,1151
+Support Activities for Crop Production,11511
+Cotton Ginning,115111
+"Soil Preparation, Planting, and Cultivating",115112
+"Crop Harvesting, Primarily by Machine",115113
+Postharvest Crop Activities (except Cotton Ginning),115114
+Farm Labor Contractors and Crew Leaders,115115
+Farm Management Services,115116
+Support Activities for Animal Production,1152
+Support Activities for Animal Production,11521
+Support Activities for Animal Production,115210
+Support Activities for Forestry,1153
+Support Activities for Forestry,11531
+Support Activities for Forestry,115310
+"Mining, Quarrying, and Oil and Gas Extraction",21
+Oil and Gas Extraction,211
+Oil and Gas Extraction,2111
+Oil and Gas Extraction,21111
+Crude Petroleum and Natural Gas Extraction,211111
+Natural Gas Liquid Extraction,211112
+Mining (except Oil and Gas),212
+Coal Mining,2121
+Coal Mining,21211
+Bituminous Coal and Lignite Surface Mining,212111
+Bituminous Coal Underground Mining,212112
+Anthracite Mining,212113
+Metal Ore Mining,2122
+Iron Ore Mining,21221
+Iron Ore Mining,212210
+Gold Ore and Silver Ore Mining,21222
+Gold Ore Mining,212221
+Silver Ore Mining,212222
+"Copper, Nickel, Lead, and Zinc Mining",21223
+Lead Ore and Zinc Ore Mining,212231
+Copper Ore and Nickel Ore Mining,212234
+Other Metal Ore Mining,21229
+Uranium-Radium-Vanadium Ore Mining,212291
+All Other Metal Ore Mining,212299
+Nonmetallic Mineral Mining and Quarrying,2123
+Stone Mining and Quarrying,21231
+Dimension Stone Mining and Quarrying,212311
+Crushed and Broken Limestone Mining and Quarrying,212312
+Crushed and Broken Granite Mining and Quarrying,212313
+Other Crushed and Broken Stone Mining and Quarrying,212319
+"Sand, Gravel, Clay, and Ceramic and Refractory Minerals Mining and Quarrying",21232
+Construction Sand and Gravel Mining,212321
+Industrial Sand Mining,212322
+Kaolin and Ball Clay Mining,212324
+Clay and Ceramic and Refractory Minerals Mining,212325
+Other Nonmetallic Mineral Mining and Quarrying,21239
+"Potash, Soda, and Borate Mineral Mining",212391
+Phosphate Rock Mining,212392
+Other Chemical and Fertilizer Mineral Mining,212393
+All Other Nonmetallic Mineral Mining,212399
+Support Activities for Mining,213
+Support Activities for Mining,2131
+Support Activities for Mining,21311
+Drilling Oil and Gas Wells,213111
+Support Activities for Oil and Gas Operations,213112
+Support Activities for Coal Mining,213113
+Support Activities for Metal Mining,213114
+Support Activities for Nonmetallic Minerals (except Fuels) Mining,213115
+Utilities,22
+Utilities,221
+"Electric Power Generation, Transmission and Distribution",2211
+Electric Power Generation,22111
+Hydroelectric Power Generation,221111
+Fossil Fuel Electric Power Generation,221112
+Nuclear Electric Power Generation,221113
+Solar Electric Power Generation,221114
+Wind Electric Power Generation,221115
+Geothermal Electric Power Generation,221116
+Biomass Electric Power Generation,221117
+Other Electric Power Generation,221118
+"Electric Power Transmission, Control, and Distribution",22112
+Electric Bulk Power Transmission and Control,221121
+Electric Power Distribution,221122
+Natural Gas Distribution,2212
+Natural Gas Distribution,22121
+Natural Gas Distribution,221210
+"Water, Sewage and Other Systems",2213
+Water Supply and Irrigation Systems,22131
+Water Supply and Irrigation Systems,221310
+Sewage Treatment Facilities,22132
+Sewage Treatment Facilities,221320
+Steam and Air-Conditioning Supply,22133
+Steam and Air-Conditioning Supply,221330
+Construction,23
+Construction of Buildings,236
+Residential Building Construction,2361
+Residential Building Construction,23611
+New Single-Family Housing Construction (except For-Sale Builders),236115
+New Multifamily Housing Construction (except For-Sale Builders),236116
+New Housing For-Sale Builders,236117
+Residential Remodelers,236118
+Nonresidential Building Construction,2362
+Industrial Building Construction,23621
+Industrial Building Construction,236210
+Commercial and Institutional Building Construction,23622
+Commercial and Institutional Building Construction,236220
+Heavy and Civil Engineering Construction,237
+Utility System Construction,2371
+Water and Sewer Line and Related Structures Construction,23711
+Water and Sewer Line and Related Structures Construction,237110
+Oil and Gas Pipeline and Related Structures Construction,23712
+Oil and Gas Pipeline and Related Structures Construction,237120
+Power and Communication Line and Related Structures Construction,23713
+Power and Communication Line and Related Structures Construction,237130
+Land Subdivision,2372
+Land Subdivision,23721
+Land Subdivision,237210
+"Highway, Street, and Bridge Construction",2373
+"Highway, Street, and Bridge Construction",23731
+"Highway, Street, and Bridge Construction",237310
+Other Heavy and Civil Engineering Construction,2379
+Other Heavy and Civil Engineering Construction,23799
+Other Heavy and Civil Engineering Construction,237990
+Specialty Trade Contractors,238
+"Foundation, Structure, and Building Exterior Contractors",2381
+Poured Concrete Foundation and Structure Contractors,23811
+Poured Concrete Foundation and Structure Contractors,238110
+Structural Steel and Precast Concrete Contractors,23812
+Structural Steel and Precast Concrete Contractors,238120
+Framing Contractors,23813
+Framing Contractors,238130
+Masonry Contractors,23814
+Masonry Contractors,238140
+Glass and Glazing Contractors,23815
+Glass and Glazing Contractors,238150
+Roofing Contractors,23816
+Roofing Contractors,238160
+Siding Contractors,23817
+Siding Contractors,238170
+"Other Foundation, Structure, and Building Exterior Contractors",23819
+"Other Foundation, Structure, and Building Exterior Contractors",238190
+Building Equipment Contractors,2382
+Electrical Contractors and Other Wiring Installation Contractors,23821
+Electrical Contractors and Other Wiring Installation Contractors,238210
+"Plumbing, Heating, and Air-Conditioning Contractors",23822
+"Plumbing, Heating, and Air-Conditioning Contractors",238220
+Other Building Equipment Contractors,23829
+Other Building Equipment Contractors,238290
+Building Finishing Contractors,2383
+Drywall and Insulation Contractors,23831
+Drywall and Insulation Contractors,238310
+Painting and Wall Covering Contractors,23832
+Painting and Wall Covering Contractors,238320
+Flooring Contractors,23833
+Flooring Contractors,238330
+Tile and Terrazzo Contractors,23834
+Tile and Terrazzo Contractors,238340
+Finish Carpentry Contractors,23835
+Finish Carpentry Contractors,238350
+Other Building Finishing Contractors,23839
+Other Building Finishing Contractors,238390
+Other Specialty Trade Contractors,2389
+Site Preparation Contractors,23891
+Site Preparation Contractors,238910
+All Other Specialty Trade Contractors,23899
+All Other Specialty Trade Contractors,238990
+Manufacturing,31
+Food Manufacturing,311
+Animal Food Manufacturing,3111
+Animal Food Manufacturing,31111
+Dog and Cat Food Manufacturing,311111
+Other Animal Food Manufacturing,311119
+Grain and Oilseed Milling,3112
+Flour Milling and Malt Manufacturing,31121
+Flour Milling,311211
+Rice Milling,311212
+Malt Manufacturing,311213
+Starch and Vegetable Fats and Oils Manufacturing,31122
+Wet Corn Milling,311221
+Soybean and Other Oilseed Processing,311224
+Fats and Oils Refining and Blending,311225
+Breakfast Cereal Manufacturing,31123
+Breakfast Cereal Manufacturing,311230
+Sugar and Confectionery Product Manufacturing,3113
+Sugar Manufacturing,31131
+Beet Sugar Manufacturing,311313
+Cane Sugar Manufacturing,311314
+Nonchocolate Confectionery Manufacturing,31134
+Nonchocolate Confectionery Manufacturing,311340
+Chocolate and Confectionery Manufacturing,31135
+Chocolate and Confectionery Manufacturing from Cacao Beans,311351
+Confectionery Manufacturing from Purchased Chocolate,311352
+Fruit and Vegetable Preserving and Specialty Food Manufacturing,3114
+Frozen Food Manufacturing,31141
+"Frozen Fruit, Juice, and Vegetable Manufacturing",311411
+Frozen Specialty Food Manufacturing,311412
+"Fruit and Vegetable Canning, Pickling, and Drying",31142
+Fruit and Vegetable Canning,311421
+Specialty Canning,311422
+Dried and Dehydrated Food Manufacturing,311423
+Dairy Product Manufacturing,3115
+Dairy Product (except Frozen) Manufacturing,31151
+Fluid Milk Manufacturing,311511
+Creamery Butter Manufacturing,311512
+Cheese Manufacturing,311513
+"Dry, Condensed, and Evaporated Dairy Product Manufacturing",311514
+Ice Cream and Frozen Dessert Manufacturing,31152
+Ice Cream and Frozen Dessert Manufacturing,311520
+Animal Slaughtering and Processing,3116
+Animal Slaughtering and Processing,31161
+Animal (except Poultry) Slaughtering,311611
+Meat Processed from Carcasses,311612
+Rendering and Meat Byproduct Processing,311613
+Poultry Processing,311615
+Seafood Product Preparation and Packaging,3117
+Seafood Product Preparation and Packaging,31171
+Seafood Product Preparation and Packaging,311710
+Bakeries and Tortilla Manufacturing,3118
+Bread and Bakery Product Manufacturing,31181
+Retail Bakeries,311811
+Commercial Bakeries,311812
+"Frozen Cakes, Pies, and Other Pastries Manufacturing",311813
+"Cookie, Cracker, and Pasta Manufacturing",31182
+Cookie and Cracker Manufacturing,311821
+"Dry Pasta, Dough, and Flour Mixes Manufacturing from Purchased Flour",311824
+Tortilla Manufacturing,31183
+Tortilla Manufacturing,311830
+Other Food Manufacturing,3119
+Snack Food Manufacturing,31191
+Roasted Nuts and Peanut Butter Manufacturing,311911
+Other Snack Food Manufacturing,311919
+Coffee and Tea Manufacturing,31192
+Coffee and Tea Manufacturing,311920
+Flavoring Syrup and Concentrate Manufacturing,31193
+Flavoring Syrup and Concentrate Manufacturing,311930
+Seasoning and Dressing Manufacturing,31194
+"Mayonnaise, Dressing, and Other Prepared Sauce Manufacturing",311941
+Spice and Extract Manufacturing,311942
+All Other Food Manufacturing,31199
+Perishable Prepared Food Manufacturing,311991
+All Other Miscellaneous Food Manufacturing,311999
+Beverage and Tobacco Product Manufacturing,312
+Beverage Manufacturing,3121
+Soft Drink and Ice Manufacturing,31211
+Soft Drink Manufacturing,312111
+Bottled Water Manufacturing,312112
+Ice Manufacturing,312113
+Breweries,31212
+Breweries,312120
+Wineries,31213
+Wineries,312130
+Distilleries,31214
+Distilleries,312140
+Tobacco Manufacturing,3122
+Tobacco Manufacturing,31223
+Tobacco Manufacturing,312230
+Textile Mills,313
+"Fiber, Yarn, and Thread Mills",3131
+"Fiber, Yarn, and Thread Mills",31311
+"Fiber, Yarn, and Thread Mills",313110
+Fabric Mills,3132
+Broadwoven Fabric Mills,31321
+Broadwoven Fabric Mills,313210
+Narrow Fabric Mills and Schiffli Machine Embroidery,31322
+Narrow Fabric Mills and Schiffli Machine Embroidery,313220
+Nonwoven Fabric Mills,31323
+Nonwoven Fabric Mills,313230
+Knit Fabric Mills,31324
+Knit Fabric Mills,313240
+Textile and Fabric Finishing and Fabric Coating Mills,3133
+Textile and Fabric Finishing Mills,31331
+Textile and Fabric Finishing Mills,313310
+Fabric Coating Mills,31332
+Fabric Coating Mills,313320
+Textile Product Mills,314
+Textile Furnishings Mills,3141
+Carpet and Rug Mills,31411
+Carpet and Rug Mills,314110
+Curtain and Linen Mills,31412
+Curtain and Linen Mills,314120
+Other Textile Product Mills,3149
+Textile Bag and Canvas Mills,31491
+Textile Bag and Canvas Mills,314910
+All Other Textile Product Mills,31499
+"Rope, Cordage, Twine, Tire Cord, and Tire Fabric Mills",314994
+All Other Miscellaneous Textile Product Mills,314999
+Apparel Manufacturing,315
+Apparel Knitting Mills,3151
+Hosiery and Sock Mills,31511
+Hosiery and Sock Mills,315110
+Other Apparel Knitting Mills,31519
+Other Apparel Knitting Mills,315190
+Cut and Sew Apparel Manufacturing,3152
+Cut and Sew Apparel Contractors,31521
+Cut and Sew Apparel Contractors,315210
+Men’s and Boys’ Cut and Sew Apparel Manufacturing,31522
+Men’s and Boys’ Cut and Sew Apparel Manufacturing,315220
+"Women’s, Girls’, and Infants’ Cut and Sew Apparel Manufacturing",31524
+"Women’s, Girls’, and Infants’ Cut and Sew Apparel Manufacturing",315240
+Other Cut and Sew Apparel Manufacturing,31528
+Other Cut and Sew Apparel Manufacturing,315280
+Apparel Accessories and Other Apparel Manufacturing,3159
+Apparel Accessories and Other Apparel Manufacturing,31599
+Apparel Accessories and Other Apparel Manufacturing,315990
+Leather and Allied Product Manufacturing,316
+Leather and Hide Tanning and Finishing,3161
+Leather and Hide Tanning and Finishing,31611
+Leather and Hide Tanning and Finishing,316110
+Footwear Manufacturing,3162
+Footwear Manufacturing,31621
+Footwear Manufacturing,316210
+Other Leather and Allied Product Manufacturing,3169
+Other Leather and Allied Product Manufacturing,31699
+Women's Handbag and Purse Manufacturing,316992
+All Other Leather Good and Allied Product Manufacturing,316998
+Wood Product Manufacturing,321
+Sawmills and Wood Preservation,3211
+Sawmills and Wood Preservation,32111
+Sawmills,321113
+Wood Preservation,321114
+"Veneer, Plywood, and Engineered Wood Product Manufacturing",3212
+"Veneer, Plywood, and Engineered Wood Product Manufacturing",32121
+Hardwood Veneer and Plywood Manufacturing,321211
+Softwood Veneer and Plywood Manufacturing,321212
+Engineered Wood Member (except Truss) Manufacturing,321213
+Truss Manufacturing,321214
+Reconstituted Wood Product Manufacturing,321219
+Other Wood Product Manufacturing,3219
+Millwork,32191
+Wood Window and Door Manufacturing,321911
+"Cut Stock, Resawing Lumber, and Planing",321912
+Other Millwork (including Flooring),321918
+Wood Container and Pallet Manufacturing,32192
+Wood Container and Pallet Manufacturing,321920
+All Other Wood Product Manufacturing,32199
+Manufactured Home (Mobile Home) Manufacturing,321991
+Prefabricated Wood Building Manufacturing,321992
+All Other Miscellaneous Wood Product Manufacturing,321999
+Paper Manufacturing,322
+"Pulp, Paper, and Paperboard Mills",3221
+Pulp Mills,32211
+Pulp Mills,322110
+Paper Mills,32212
+Paper (except Newsprint) Mills,322121
+Newsprint Mills,322122
+Paperboard Mills,32213
+Paperboard Mills,322130
+Converted Paper Product Manufacturing,3222
+Paperboard Container Manufacturing,32221
+Corrugated and Solid Fiber Box Manufacturing,322211
+Folding Paperboard Box Manufacturing,322212
+Other Paperboard Container Manufacturing,322219
+Paper Bag and Coated and Treated Paper Manufacturing,32222
+Paper Bag and Coated and Treated Paper Manufacturing,322220
+Stationery Product Manufacturing,32223
+Stationery Product Manufacturing,322230
+Other Converted Paper Product Manufacturing,32229
+Sanitary Paper Product Manufacturing,322291
+All Other Converted Paper Product Manufacturing,322299
+Printing and Related Support Activities,323
+Printing and Related Support Activities,3231
+Printing,32311
+Commercial Printing (except Screen and Books),323111
+Commercial Screen Printing,323113
+Books Printing,323117
+Support Activities for Printing,32312
+Support Activities for Printing,323120
+Petroleum and Coal Products Manufacturing,324
+Petroleum and Coal Products Manufacturing,3241
+Petroleum Refineries,32411
+Petroleum Refineries,324110
+"Asphalt Paving, Roofing, and Saturated Materials Manufacturing",32412
+Asphalt Paving Mixture and Block Manufacturing,324121
+Asphalt Shingle and Coating Materials Manufacturing,324122
+Other Petroleum and Coal Products Manufacturing,32419
+Petroleum Lubricating Oil and Grease Manufacturing,324191
+All Other Petroleum and Coal Products Manufacturing,324199
+Chemical Manufacturing,325
+Basic Chemical Manufacturing,3251
+Petrochemical Manufacturing,32511
+Petrochemical Manufacturing,325110
+Industrial Gas Manufacturing,32512
+Industrial Gas Manufacturing,325120
+Synthetic Dye and Pigment Manufacturing,32513
+Synthetic Dye and Pigment Manufacturing,325130
+Other Basic Inorganic Chemical Manufacturing,32518
+Other Basic Inorganic Chemical Manufacturing,325180
+Other Basic Organic Chemical Manufacturing,32519
+Ethyl Alcohol Manufacturing,325193
+"Cyclic Crude, Intermediate, and Gum and Wood Chemical Manufacturing",325194
+All Other Basic Organic Chemical Manufacturing,325199
+"Resin, Synthetic Rubber, and Artificial Synthetic Fibers and Filaments Manufacturing",3252
+Resin and Synthetic Rubber Manufacturing,32521
+Plastics Material and Resin Manufacturing,325211
+Synthetic Rubber Manufacturing,325212
+Artificial and Synthetic Fibers and Filaments Manufacturing,32522
+Artificial and Synthetic Fibers and Filaments Manufacturing,325220
+"Pesticide, Fertilizer, and Other Agricultural Chemical Manufacturing",3253
+Fertilizer Manufacturing,32531
+Nitrogenous Fertilizer Manufacturing,325311
+Phosphatic Fertilizer Manufacturing,325312
+Fertilizer (Mixing Only) Manufacturing,325314
+Pesticide and Other Agricultural Chemical Manufacturing,32532
+Pesticide and Other Agricultural Chemical Manufacturing,325320
+Pharmaceutical and Medicine Manufacturing,3254
+Pharmaceutical and Medicine Manufacturing,32541
+Medicinal and Botanical Manufacturing,325411
+Pharmaceutical Preparation Manufacturing,325412
+In-Vitro Diagnostic Substance Manufacturing,325413
+Biological Product (except Diagnostic) Manufacturing,325414
+"Paint, Coating, and Adhesive Manufacturing",3255
+Paint and Coating Manufacturing,32551
+Paint and Coating Manufacturing,325510
+Adhesive Manufacturing,32552
+Adhesive Manufacturing,325520
+"Soap, Cleaning Compound, and Toilet Preparation Manufacturing",3256
+Soap and Cleaning Compound Manufacturing,32561
+Soap and Other Detergent Manufacturing,325611
+Polish and Other Sanitation Good Manufacturing,325612
+Surface Active Agent Manufacturing,325613
+Toilet Preparation Manufacturing,32562
+Toilet Preparation Manufacturing,325620
+Other Chemical Product and Preparation Manufacturing,3259
+Printing Ink Manufacturing,32591
+Printing Ink Manufacturing,325910
+Explosives Manufacturing,32592
+Explosives Manufacturing,325920
+All Other Chemical Product and Preparation Manufacturing,32599
+Custom Compounding of Purchased Resins,325991
+"Photographic Film, Paper, Plate, and Chemical Manufacturing",325992
+All Other Miscellaneous Chemical Product and Preparation Manufacturing,325998
+Plastics and Rubber Products Manufacturing,326
+Plastics Product Manufacturing,3261
+Plastics Packaging Materials and Unlaminated Film and Sheet Manufacturing,32611
+Plastics Bag and Pouch Manufacturing,326111
+Plastics Packaging Film and Sheet (including Laminated) Manufacturing,326112
+Unlaminated Plastics Film and Sheet (except Packaging) Manufacturing,326113
+"Plastics Pipe, Pipe Fitting, and Unlaminated Profile Shape Manufacturing",32612
+Unlaminated Plastics Profile Shape Manufacturing,326121
+Plastics Pipe and Pipe Fitting Manufacturing,326122
+"Laminated Plastics Plate, Sheet (except Packaging), and Shape Manufacturing",32613
+"Laminated Plastics Plate, Sheet (except Packaging), and Shape Manufacturing",326130
+Polystyrene Foam Product Manufacturing,32614
+Polystyrene Foam Product Manufacturing,326140
+Urethane and Other Foam Product (except Polystyrene) Manufacturing,32615
+Urethane and Other Foam Product (except Polystyrene) Manufacturing,326150
+Plastics Bottle Manufacturing,32616
+Plastics Bottle Manufacturing,326160
+Other Plastics Product Manufacturing,32619
+Plastics Plumbing Fixture Manufacturing,326191
+All Other Plastics Product Manufacturing,326199
+Rubber Product Manufacturing,3262
+Tire Manufacturing,32621
+Tire Manufacturing (except Retreading),326211
+Tire Retreading,326212
+Rubber and Plastics Hoses and Belting Manufacturing,32622
+Rubber and Plastics Hoses and Belting Manufacturing,326220
+Other Rubber Product Manufacturing,32629
+Rubber Product Manufacturing for Mechanical Use,326291
+All Other Rubber Product Manufacturing,326299
+Nonmetallic Mineral Product Manufacturing,327
+Clay Product and Refractory Manufacturing,3271
+"Pottery, Ceramics, and Plumbing Fixture Manufacturing",32711
+"Pottery, Ceramics, and Plumbing Fixture Manufacturing",327110
+Clay Building Material and Refractories Manufacturing,32712
+Clay Building Material and Refractories Manufacturing,327120
+Glass and Glass Product Manufacturing,3272
+Glass and Glass Product Manufacturing,32721
+Flat Glass Manufacturing,327211
+Other Pressed and Blown Glass and Glassware Manufacturing,327212
+Glass Container Manufacturing,327213
+Glass Product Manufacturing Made of Purchased Glass,327215
+Cement and Concrete Product Manufacturing,3273
+Cement Manufacturing,32731
+Cement Manufacturing,327310
+Ready-Mix Concrete Manufacturing,32732
+Ready-Mix Concrete Manufacturing,327320
+"Concrete Pipe, Brick, and Block Manufacturing",32733
+Concrete Block and Brick Manufacturing,327331
+Concrete Pipe Manufacturing,327332
+Other Concrete Product Manufacturing,32739
+Other Concrete Product Manufacturing,327390
+Lime and Gypsum Product Manufacturing,3274
+Lime Manufacturing,32741
+Lime Manufacturing,327410
+Gypsum Product Manufacturing,32742
+Gypsum Product Manufacturing,327420
+Other Nonmetallic Mineral Product Manufacturing,3279
+Abrasive Product Manufacturing,32791
+Abrasive Product Manufacturing,327910
+All Other Nonmetallic Mineral Product Manufacturing,32799
+Cut Stone and Stone Product Manufacturing,327991
+Ground or Treated Mineral and Earth Manufacturing,327992
+Mineral Wool Manufacturing,327993
+All Other Miscellaneous Nonmetallic Mineral Product Manufacturing,327999
+Primary Metal Manufacturing,331
+Iron and Steel Mills and Ferroalloy Manufacturing,3311
+Iron and Steel Mills and Ferroalloy Manufacturing,33111
+Iron and Steel Mills and Ferroalloy Manufacturing,331110
+Steel Product Manufacturing from Purchased Steel,3312
+Iron and Steel Pipe and Tube Manufacturing from Purchased Steel,33121
+Iron and Steel Pipe and Tube Manufacturing from Purchased Steel,331210
+Rolling and Drawing of Purchased Steel,33122
+Rolled Steel Shape Manufacturing,331221
+Steel Wire Drawing,331222
+Alumina and Aluminum Production and Processing,3313
+Alumina and Aluminum Production and Processing,33131
+Alumina Refining and Primary Aluminum Production,331313
+Secondary Smelting and Alloying of Aluminum,331314
+"Aluminum Sheet, Plate, and Foil Manufacturing",331315
+"Other Aluminum Rolling, Drawing, and Extruding",331318
+Nonferrous Metal (except Aluminum) Production and Processing,3314
+Nonferrous Metal (except Aluminum) Smelting and Refining,33141
+Nonferrous Metal (except Aluminum) Smelting and Refining,331410
+"Copper Rolling, Drawing, Extruding, and Alloying",33142
+"Copper Rolling, Drawing, Extruding, and Alloying",331420
+"Nonferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding, and Alloying",33149
+"Nonferrous Metal (except Copper and Aluminum) Rolling, Drawing, and Extruding",331491
+"Secondary Smelting, Refining, and Alloying of Nonferrous Metal (except Copper and Aluminum)",331492
+Foundries,3315
+Ferrous Metal Foundries,33151
+Iron Foundries,331511
+Steel Investment Foundries,331512
+Steel Foundries (except Investment),331513
+Nonferrous Metal Foundries,33152
+Nonferrous Metal Die-Casting Foundries,331523
+Aluminum Foundries (except Die-Casting),331524
+Other Nonferrous Metal Foundries (except Die-Casting),331529
+Fabricated Metal Product Manufacturing,332
+Forging and Stamping,3321
+Forging and Stamping,33211
+Iron and Steel Forging,332111
+Nonferrous Forging,332112
+Custom Roll Forming,332114
+Powder Metallurgy Part Manufacturing,332117
+"Metal Crown, Closure, and Other Metal Stamping (except Automotive)",332119
+Cutlery and Handtool Manufacturing,3322
+Cutlery and Handtool Manufacturing,33221
+"Metal Kitchen Cookware, Utensil, Cutlery, and Flatware (except Precious) Manufacturing",332215
+Saw Blade and Handtool Manufacturing,332216
+Architectural and Structural Metals Manufacturing,3323
+Plate Work and Fabricated Structural Product Manufacturing,33231
+Prefabricated Metal Building and Component Manufacturing,332311
+Fabricated Structural Metal Manufacturing,332312
+Plate Work Manufacturing,332313
+Ornamental and Architectural Metal Products Manufacturing,33232
+Metal Window and Door Manufacturing,332321
+Sheet Metal Work Manufacturing,332322
+Ornamental and Architectural Metal Work Manufacturing,332323
+"Boiler, Tank, and Shipping Container Manufacturing",3324
+Power Boiler and Heat Exchanger Manufacturing,33241
+Power Boiler and Heat Exchanger Manufacturing,332410
+Metal Tank (Heavy Gauge) Manufacturing,33242
+Metal Tank (Heavy Gauge) Manufacturing,332420
+"Metal Can, Box, and Other Metal Container (Light Gauge) Manufacturing",33243
+Metal Can Manufacturing,332431
+Other Metal Container Manufacturing,332439
+Hardware Manufacturing,3325
+Hardware Manufacturing,33251
+Hardware Manufacturing,332510
+Spring and Wire Product Manufacturing,3326
+Spring and Wire Product Manufacturing,33261
+Spring Manufacturing,332613
+Other Fabricated Wire Product Manufacturing,332618
+"Machine Shops; Turned Product; and Screw, Nut, and Bolt Manufacturing",3327
+Machine Shops,33271
+Machine Shops,332710
+"Turned Product and Screw, Nut, and Bolt Manufacturing",33272
+Precision Turned Product Manufacturing,332721
+"Bolt, Nut, Screw, Rivet, and Washer Manufacturing",332722
+"Coating, Engraving, Heat Treating, and Allied Activities",3328
+"Coating, Engraving, Heat Treating, and Allied Activities",33281
+Metal Heat Treating,332811
+"Metal Coating, Engraving (except Jewelry and Silverware), and Allied Services to Manufacturers",332812
+"Electroplating, Plating, Polishing, Anodizing, and Coloring",332813
+Other Fabricated Metal Product Manufacturing,3329
+Metal Valve Manufacturing,33291
+Industrial Valve Manufacturing,332911
+Fluid Power Valve and Hose Fitting Manufacturing,332912
+Plumbing Fixture Fitting and Trim Manufacturing,332913
+Other Metal Valve and Pipe Fitting Manufacturing,332919
+All Other Fabricated Metal Product Manufacturing,33299
+Ball and Roller Bearing Manufacturing,332991
+Small Arms Ammunition Manufacturing,332992
+Ammunition (except Small Arms) Manufacturing,332993
+"Small Arms, Ordnance, and Ordnance Accessories Manufacturing",332994
+Fabricated Pipe and Pipe Fitting Manufacturing,332996
+All Other Miscellaneous Fabricated Metal Product Manufacturing,332999
+Machinery Manufacturing,333
+"Agriculture, Construction, and Mining Machinery Manufacturing",3331
+Agricultural Implement Manufacturing,33311
+Farm Machinery and Equipment Manufacturing,333111
+Lawn and Garden Tractor and Home Lawn and Garden Equipment Manufacturing,333112
+Construction Machinery Manufacturing,33312
+Construction Machinery Manufacturing,333120
+Mining and Oil and Gas Field Machinery Manufacturing,33313
+Mining Machinery and Equipment Manufacturing,333131
+Oil and Gas Field Machinery and Equipment Manufacturing,333132
+Industrial Machinery Manufacturing,3332
+Industrial Machinery Manufacturing,33324
+Food Product Machinery Manufacturing,333241
+Semiconductor Machinery Manufacturing,333242
+"Sawmill, Woodworking, and Paper Machinery Manufacturing",333243
+Printing Machinery and Equipment Manufacturing,333244
+Other Industrial Machinery Manufacturing,333249
+Commercial and Service Industry Machinery Manufacturing,3333
+Commercial and Service Industry Machinery Manufacturing,33331
+Optical Instrument and Lens Manufacturing,333314
+Photographic and Photocopying Equipment Manufacturing,333316
+Other Commercial and Service Industry Machinery Manufacturing,333318
+"Ventilation, Heating, Air-Conditioning, and Commercial Refrigeration Equipment Manufacturing",3334
+"Ventilation, Heating, Air-Conditioning, and Commercial Refrigeration Equipment Manufacturing",33341
+Industrial and Commercial Fan and Blower and Air Purification Equipment Manufacturing,333413
+Heating Equipment (except Warm Air Furnaces) Manufacturing,333414
+Air-Conditioning and Warm Air Heating Equipment and Commercial and Industrial Refrigeration Equipment Manufacturing,333415
+Metalworking Machinery Manufacturing,3335
+Metalworking Machinery Manufacturing,33351
+Industrial Mold Manufacturing,333511
+"Special Die and Tool, Die Set, Jig, and Fixture Manufacturing",333514
+Cutting Tool and Machine Tool Accessory Manufacturing,333515
+Machine Tool Manufacturing,333517
+Rolling Mill and Other Metalworking Machinery Manufacturing,333519
+"Engine, Turbine, and Power Transmission Equipment Manufacturing",3336
+"Engine, Turbine, and Power Transmission Equipment Manufacturing",33361
+Turbine and Turbine Generator Set Units Manufacturing,333611
+"Speed Changer, Industrial High-Speed Drive, and Gear Manufacturing",333612
+Mechanical Power Transmission Equipment Manufacturing,333613
+Other Engine Equipment Manufacturing,333618
+Other General Purpose Machinery Manufacturing,3339
+Pump and Compressor Manufacturing,33391
+Pump and Pumping Equipment Manufacturing,333911
+Air and Gas Compressor Manufacturing,333912
+Measuring and Dispensing Pump Manufacturing,333913
+Material Handling Equipment Manufacturing,33392
+Elevator and Moving Stairway Manufacturing,333921
+Conveyor and Conveying Equipment Manufacturing,333922
+"Overhead Traveling Crane, Hoist, and Monorail System Manufacturing",333923
+"Industrial Truck, Tractor, Trailer, and Stacker Machinery Manufacturing",333924
+All Other General Purpose Machinery Manufacturing,33399
+Power-Driven Handtool Manufacturing,333991
+Welding and Soldering Equipment Manufacturing,333992
+Packaging Machinery Manufacturing,333993
+Industrial Process Furnace and Oven Manufacturing,333994
+Fluid Power Cylinder and Actuator Manufacturing,333995
+Fluid Power Pump and Motor Manufacturing,333996
+Scale and Balance Manufacturing,333997
+All Other Miscellaneous General Purpose Machinery Manufacturing,333999
+Computer and Electronic Product Manufacturing,334
+Computer and Peripheral Equipment Manufacturing,3341
+Computer and Peripheral Equipment Manufacturing,33411
+Electronic Computer Manufacturing,334111
+Computer Storage Device Manufacturing,334112
+Computer Terminal and Other Computer Peripheral Equipment Manufacturing,334118
+Communications Equipment Manufacturing,3342
+Telephone Apparatus Manufacturing,33421
+Telephone Apparatus Manufacturing,334210
+Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing,33422
+Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing,334220
+Other Communications Equipment Manufacturing,33429
+Other Communications Equipment Manufacturing,334290
+Audio and Video Equipment Manufacturing,3343
+Audio and Video Equipment Manufacturing,33431
+Audio and Video Equipment Manufacturing,334310
+Semiconductor and Other Electronic Component Manufacturing,3344
+Semiconductor and Other Electronic Component Manufacturing,33441
+Bare Printed Circuit Board Manufacturing,334412
+Semiconductor and Related Device Manufacturing,334413
+"Capacitor, Resistor, Coil, Transformer, and Other Inductor Manufacturing",334416
+Electronic Connector Manufacturing,334417
+Printed Circuit Assembly (Electronic Assembly) Manufacturing,334418
+Other Electronic Component Manufacturing,334419
+"Navigational, Measuring, Electromedical, and Control Instruments Manufacturing",3345
+"Navigational, Measuring, Electromedical, and Control Instruments Manufacturing",33451
+Electromedical and Electrotherapeutic Apparatus Manufacturing,334510
+"Search, Detection, Navigation, Guidance, Aeronautical, and Nautical System and Instrument Manufacturing",334511
+"Automatic Environmental Control Manufacturing for Residential, Commercial, and Appliance Use",334512
+"Instruments and Related Products Manufacturing for Measuring, Displaying, and Controlling Industrial Process Variables",334513
+Totalizing Fluid Meter and Counting Device Manufacturing,334514
+Instrument Manufacturing for Measuring and Testing Electricity and Electrical Signals,334515
+Analytical Laboratory Instrument Manufacturing,334516
+Irradiation Apparatus Manufacturing,334517
+Other Measuring and Controlling Device Manufacturing,334519
+Manufacturing and Reproducing Magnetic and Optical Media,3346
+Manufacturing and Reproducing Magnetic and Optical Media,33461
+Blank Magnetic and Optical Recording Media Manufacturing,334613
+"Software and Other Prerecorded Compact Disc, Tape, and Record Reproducing",334614
+"Electrical Equipment, Appliance, and Component Manufacturing",335
+Electric Lighting Equipment Manufacturing,3351
+Electric Lamp Bulb and Part Manufacturing,33511
+Electric Lamp Bulb and Part Manufacturing,335110
+Lighting Fixture Manufacturing,33512
+Residential Electric Lighting Fixture Manufacturing,335121
+"Commercial, Industrial, and Institutional Electric Lighting Fixture Manufacturing",335122
+Other Lighting Equipment Manufacturing,335129
+Household Appliance Manufacturing,3352
+Small Electrical Appliance Manufacturing,33521
+Small Electrical Appliance Manufacturing,335210
+Major Appliance Manufacturing,33522
+Household Cooking Appliance Manufacturing,335221
+Household Refrigerator and Home Freezer Manufacturing,335222
+Household Laundry Equipment Manufacturing,335224
+Other Major Household Appliance Manufacturing,335228
+Electrical Equipment Manufacturing,3353
+Electrical Equipment Manufacturing,33531
+"Power, Distribution, and Specialty Transformer Manufacturing",335311
+Motor and Generator Manufacturing,335312
+Switchgear and Switchboard Apparatus Manufacturing,335313
+Relay and Industrial Control Manufacturing,335314
+Other Electrical Equipment and Component Manufacturing,3359
+Battery Manufacturing,33591
+Storage Battery Manufacturing,335911
+Primary Battery Manufacturing,335912
+Communication and Energy Wire and Cable Manufacturing,33592
+Fiber Optic Cable Manufacturing,335921
+Other Communication and Energy Wire Manufacturing,335929
+Wiring Device Manufacturing,33593
+Current-Carrying Wiring Device Manufacturing,335931
+Noncurrent-Carrying Wiring Device Manufacturing,335932
+All Other Electrical Equipment and Component Manufacturing,33599
+Carbon and Graphite Product Manufacturing,335991
+All Other Miscellaneous Electrical Equipment and Component Manufacturing,335999
+Transportation Equipment Manufacturing,336
+Motor Vehicle Manufacturing,3361
+Automobile and Light Duty Motor Vehicle Manufacturing,33611
+Automobile Manufacturing,336111
+Light Truck and Utility Vehicle Manufacturing,336112
+Heavy Duty Truck Manufacturing,33612
+Heavy Duty Truck Manufacturing,336120
+Motor Vehicle Body and Trailer Manufacturing,3362
+Motor Vehicle Body and Trailer Manufacturing,33621
+Motor Vehicle Body Manufacturing,336211
+Truck Trailer Manufacturing,336212
+Motor Home Manufacturing,336213
+Travel Trailer and Camper Manufacturing,336214
+Motor Vehicle Parts Manufacturing,3363
+Motor Vehicle Gasoline Engine and Engine Parts Manufacturing,33631
+Motor Vehicle Gasoline Engine and Engine Parts Manufacturing,336310
+Motor Vehicle Electrical and Electronic Equipment Manufacturing,33632
+Motor Vehicle Electrical and Electronic Equipment Manufacturing,336320
+Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing,33633
+Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing,336330
+Motor Vehicle Brake System Manufacturing,33634
+Motor Vehicle Brake System Manufacturing,336340
+Motor Vehicle Transmission and Power Train Parts Manufacturing,33635
+Motor Vehicle Transmission and Power Train Parts Manufacturing,336350
+Motor Vehicle Seating and Interior Trim Manufacturing,33636
+Motor Vehicle Seating and Interior Trim Manufacturing,336360
+Motor Vehicle Metal Stamping,33637
+Motor Vehicle Metal Stamping,336370
+Other Motor Vehicle Parts Manufacturing,33639
+Other Motor Vehicle Parts Manufacturing,336390
+Aerospace Product and Parts Manufacturing,3364
+Aerospace Product and Parts Manufacturing,33641
+Aircraft Manufacturing,336411
+Aircraft Engine and Engine Parts Manufacturing,336412
+Other Aircraft Parts and Auxiliary Equipment Manufacturing,336413
+Guided Missile and Space Vehicle Manufacturing,336414
+Guided Missile and Space Vehicle Propulsion Unit and Propulsion Unit Parts Manufacturing,336415
+Other Guided Missile and Space Vehicle Parts and Auxiliary Equipment Manufacturing,336419
+Railroad Rolling Stock Manufacturing,3365
+Railroad Rolling Stock Manufacturing,33651
+Railroad Rolling Stock Manufacturing,336510
+Ship and Boat Building,3366
+Ship and Boat Building,33661
+Ship Building and Repairing,336611
+Boat Building,336612
+Other Transportation Equipment Manufacturing,3369
+Other Transportation Equipment Manufacturing,33699
+"Motorcycle, Bicycle, and Parts Manufacturing",336991
+"Military Armored Vehicle, Tank, and Tank Component Manufacturing",336992
+All Other Transportation Equipment Manufacturing,336999
+Furniture and Related Product Manufacturing,337
+Household and Institutional Furniture and Kitchen Cabinet Manufacturing,3371
+Wood Kitchen Cabinet and Countertop Manufacturing,33711
+Wood Kitchen Cabinet and Countertop Manufacturing,337110
+Household and Institutional Furniture Manufacturing,33712
+Upholstered Household Furniture Manufacturing,337121
+Nonupholstered Wood Household Furniture Manufacturing,337122
+Metal Household Furniture Manufacturing,337124
+Household Furniture (except Wood and Metal) Manufacturing,337125
+Institutional Furniture Manufacturing,337127
+Office Furniture (including Fixtures) Manufacturing,3372
+Office Furniture (including Fixtures) Manufacturing,33721
+Wood Office Furniture Manufacturing,337211
+Custom Architectural Woodwork and Millwork Manufacturing,337212
+Office Furniture (except Wood) Manufacturing,337214
+"Showcase, Partition, Shelving, and Locker Manufacturing",337215
+Other Furniture Related Product Manufacturing,3379
+Mattress Manufacturing,33791
+Mattress Manufacturing,337910
+Blind and Shade Manufacturing,33792
+Blind and Shade Manufacturing,337920
+Miscellaneous Manufacturing,339
+Medical Equipment and Supplies Manufacturing,3391
+Medical Equipment and Supplies Manufacturing,33911
+Surgical and Medical Instrument Manufacturing,339112
+Surgical Appliance and Supplies Manufacturing,339113
+Dental Equipment and Supplies Manufacturing,339114
+Ophthalmic Goods Manufacturing,339115
+Dental Laboratories,339116
+Other Miscellaneous Manufacturing,3399
+Jewelry and Silverware Manufacturing,33991
+Jewelry and Silverware Manufacturing,339910
+Sporting and Athletic Goods Manufacturing,33992
+Sporting and Athletic Goods Manufacturing,339920
+"Doll, Toy, and Game Manufacturing",33993
+"Doll, Toy, and Game Manufacturing",339930
+Office Supplies (except Paper) Manufacturing,33994
+Office Supplies (except Paper) Manufacturing,339940
+Sign Manufacturing,33995
+Sign Manufacturing,339950
+All Other Miscellaneous Manufacturing,33999
+"Gasket, Packing, and Sealing Device Manufacturing",339991
+Musical Instrument Manufacturing,339992
+"Fastener, Button, Needle, and Pin Manufacturing",339993
+"Broom, Brush, and Mop Manufacturing",339994
+Burial Casket Manufacturing,339995
+All Other Miscellaneous Manufacturing,339999
+Wholesale Trade,42
+"Merchant Wholesalers, Durable Goods",423
+Motor Vehicle and Motor Vehicle Parts and Supplies Merchant Wholesalers,4231
+Automobile and Other Motor Vehicle Merchant Wholesalers,42311
+Automobile and Other Motor Vehicle Merchant Wholesalers,423110
+Motor Vehicle Supplies and New Parts Merchant Wholesalers,42312
+Motor Vehicle Supplies and New Parts Merchant Wholesalers,423120
+Tire and Tube Merchant Wholesalers,42313
+Tire and Tube Merchant Wholesalers,423130
+Motor Vehicle Parts (Used) Merchant Wholesalers,42314
+Motor Vehicle Parts (Used) Merchant Wholesalers,423140
+Furniture and Home Furnishing Merchant Wholesalers,4232
+Furniture Merchant Wholesalers,42321
+Furniture Merchant Wholesalers,423210
+Home Furnishing Merchant Wholesalers,42322
+Home Furnishing Merchant Wholesalers,423220
+Lumber and Other Construction Materials Merchant Wholesalers,4233
+"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers",42331
+"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers",423310
+"Brick, Stone, and Related Construction Material Merchant Wholesalers",42332
+"Brick, Stone, and Related Construction Material Merchant Wholesalers",423320
+"Roofing, Siding, and Insulation Material Merchant Wholesalers",42333
+"Roofing, Siding, and Insulation Material Merchant Wholesalers",423330
+Other Construction Material Merchant Wholesalers,42339
+Other Construction Material Merchant Wholesalers,423390
+Professional and Commercial Equipment and Supplies Merchant Wholesalers,4234
+Photographic Equipment and Supplies Merchant Wholesalers,42341
+Photographic Equipment and Supplies Merchant Wholesalers,423410
+Office Equipment Merchant Wholesalers,42342
+Office Equipment Merchant Wholesalers,423420
+Computer and Computer Peripheral Equipment and Software Merchant Wholesalers,42343
+Computer and Computer Peripheral Equipment and Software Merchant Wholesalers,423430
+Other Commercial Equipment Merchant Wholesalers,42344
+Other Commercial Equipment Merchant Wholesalers,423440
+"Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",42345
+"Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",423450
+Ophthalmic Goods Merchant Wholesalers,42346
+Ophthalmic Goods Merchant Wholesalers,423460
+Other Professional Equipment and Supplies Merchant Wholesalers,42349
+Other Professional Equipment and Supplies Merchant Wholesalers,423490
+Metal and Mineral (except Petroleum) Merchant Wholesalers,4235
+Metal Service Centers and Other Metal Merchant Wholesalers,42351
+Metal Service Centers and Other Metal Merchant Wholesalers,423510
+Coal and Other Mineral and Ore Merchant Wholesalers,42352
+Coal and Other Mineral and Ore Merchant Wholesalers,423520
+Household Appliances and Electrical and Electronic Goods Merchant Wholesalers,4236
+"Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers",42361
+"Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers",423610
+"Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers",42362
+"Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers",423620
+Other Electronic Parts and Equipment Merchant Wholesalers,42369
+Other Electronic Parts and Equipment Merchant Wholesalers,423690
+"Hardware, and Plumbing and Heating Equipment and Supplies Merchant Wholesalers",4237
+Hardware Merchant Wholesalers,42371
+Hardware Merchant Wholesalers,423710
+Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers,42372
+Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers,423720
+Warm Air Heating and Air-Conditioning Equipment and Supplies Merchant Wholesalers,42373
+Warm Air Heating and Air-Conditioning Equipment and Supplies Merchant Wholesalers,423730
+Refrigeration Equipment and Supplies Merchant Wholesalers,42374
+Refrigeration Equipment and Supplies Merchant Wholesalers,423740
+"Machinery, Equipment, and Supplies Merchant Wholesalers",4238
+Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers,42381
+Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers,423810
+Farm and Garden Machinery and Equipment Merchant Wholesalers,42382
+Farm and Garden Machinery and Equipment Merchant Wholesalers,423820
+Industrial Machinery and Equipment Merchant Wholesalers,42383
+Industrial Machinery and Equipment Merchant Wholesalers,423830
+Industrial Supplies Merchant Wholesalers,42384
+Industrial Supplies Merchant Wholesalers,423840
+Service Establishment Equipment and Supplies Merchant Wholesalers,42385
+Service Establishment Equipment and Supplies Merchant Wholesalers,423850
+Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers,42386
+Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers,423860
+Miscellaneous Durable Goods Merchant Wholesalers,4239
+Sporting and Recreational Goods and Supplies Merchant Wholesalers,42391
+Sporting and Recreational Goods and Supplies Merchant Wholesalers,423910
+Toy and Hobby Goods and Supplies Merchant Wholesalers,42392
+Toy and Hobby Goods and Supplies Merchant Wholesalers,423920
+Recyclable Material Merchant Wholesalers,42393
+Recyclable Material Merchant Wholesalers,423930
+"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers",42394
+"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers",423940
+Other Miscellaneous Durable Goods Merchant Wholesalers,42399
+Other Miscellaneous Durable Goods Merchant Wholesalers,423990
+"Merchant Wholesalers, Nondurable Goods",424
+Paper and Paper Product Merchant Wholesalers,4241
+Printing and Writing Paper Merchant Wholesalers,42411
+Printing and Writing Paper Merchant Wholesalers,424110
+Stationery and Office Supplies Merchant Wholesalers,42412
+Stationery and Office Supplies Merchant Wholesalers,424120
+Industrial and Personal Service Paper Merchant Wholesalers,42413
+Industrial and Personal Service Paper Merchant Wholesalers,424130
+Drugs and Druggists' Sundries Merchant Wholesalers,4242
+Drugs and Druggists' Sundries Merchant Wholesalers,42421
+Drugs and Druggists' Sundries Merchant Wholesalers,424210
+"Apparel, Piece Goods, and Notions Merchant Wholesalers",4243
+"Piece Goods, Notions, and Other Dry Goods Merchant Wholesalers",42431
+"Piece Goods, Notions, and Other Dry Goods Merchant Wholesalers",424310
+Men's and Boys' Clothing and Furnishings Merchant Wholesalers,42432
+Men's and Boys' Clothing and Furnishings Merchant Wholesalers,424320
+"Women's, Children's, and Infants' Clothing and Accessories Merchant Wholesalers",42433
+"Women's, Children's, and Infants' Clothing and Accessories Merchant Wholesalers",424330
+Footwear Merchant Wholesalers,42434
+Footwear Merchant Wholesalers,424340
+Grocery and Related Product Merchant Wholesalers,4244
+General Line Grocery Merchant Wholesalers,42441
+General Line Grocery Merchant Wholesalers,424410
+Packaged Frozen Food Merchant Wholesalers,42442
+Packaged Frozen Food Merchant Wholesalers,424420
+Dairy Product (except Dried or Canned) Merchant Wholesalers,42443
+Dairy Product (except Dried or Canned) Merchant Wholesalers,424430
+Poultry and Poultry Product Merchant Wholesalers,42444
+Poultry and Poultry Product Merchant Wholesalers,424440
+Confectionery Merchant Wholesalers,42445
+Confectionery Merchant Wholesalers,424450
+Fish and Seafood Merchant Wholesalers,42446
+Fish and Seafood Merchant Wholesalers,424460
+Meat and Meat Product Merchant Wholesalers,42447
+Meat and Meat Product Merchant Wholesalers,424470
+Fresh Fruit and Vegetable Merchant Wholesalers,42448
+Fresh Fruit and Vegetable Merchant Wholesalers,424480
+Other Grocery and Related Products Merchant Wholesalers,42449
+Other Grocery and Related Products Merchant Wholesalers,424490
+Farm Product Raw Material Merchant Wholesalers,4245
+Grain and Field Bean Merchant Wholesalers,42451
+Grain and Field Bean Merchant Wholesalers,424510
+Livestock Merchant Wholesalers,42452
+Livestock Merchant Wholesalers,424520
+Other Farm Product Raw Material Merchant Wholesalers,42459
+Other Farm Product Raw Material Merchant Wholesalers,424590
+Chemical and Allied Products Merchant Wholesalers,4246
+Plastics Materials and Basic Forms and Shapes Merchant Wholesalers,42461
+Plastics Materials and Basic Forms and Shapes Merchant Wholesalers,424610
+Other Chemical and Allied Products Merchant Wholesalers,42469
+Other Chemical and Allied Products Merchant Wholesalers,424690
+Petroleum and Petroleum Products Merchant Wholesalers,4247
+Petroleum Bulk Stations and Terminals,42471
+Petroleum Bulk Stations and Terminals,424710
+Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals),42472
+Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals),424720
+"Beer, Wine, and Distilled Alcoholic Beverage Merchant Wholesalers",4248
+Beer and Ale Merchant Wholesalers,42481
+Beer and Ale Merchant Wholesalers,424810
+Wine and Distilled Alcoholic Beverage Merchant Wholesalers,42482
+Wine and Distilled Alcoholic Beverage Merchant Wholesalers,424820
+Miscellaneous Nondurable Goods Merchant Wholesalers,4249
+Farm Supplies Merchant Wholesalers,42491
+Farm Supplies Merchant Wholesalers,424910
+"Book, Periodical, and Newspaper Merchant Wholesalers",42492
+"Book, Periodical, and Newspaper Merchant Wholesalers",424920
+"Flower, Nursery Stock, and Florists' Supplies Merchant Wholesalers",42493
+"Flower, Nursery Stock, and Florists' Supplies Merchant Wholesalers",424930
+Tobacco and Tobacco Product Merchant Wholesalers,42494
+Tobacco and Tobacco Product Merchant Wholesalers,424940
+"Paint, Varnish, and Supplies Merchant Wholesalers",42495
+"Paint, Varnish, and Supplies Merchant Wholesalers",424950
+Other Miscellaneous Nondurable Goods Merchant Wholesalers,42499
+Other Miscellaneous Nondurable Goods Merchant Wholesalers,424990
+Wholesale Electronic Markets and Agents and Brokers,425
+Wholesale Electronic Markets and Agents and Brokers,4251
+Business to Business Electronic Markets,42511
+Business to Business Electronic Markets,425110
+Wholesale Trade Agents and Brokers,42512
+Wholesale Trade Agents and Brokers,425120
+Retail Trade,44
+Motor Vehicle and Parts Dealers,441
+Automobile Dealers,4411
+New Car Dealers,44111
+New Car Dealers,441110
+Used Car Dealers,44112
+Used Car Dealers,441120
+Other Motor Vehicle Dealers,4412
+Recreational Vehicle Dealers,44121
+Recreational Vehicle Dealers,441210
+"Motorcycle, Boat, and Other Motor Vehicle Dealers",44122
+Boat Dealers,441222
+"Motorcycle, ATV, and All Other Motor Vehicle Dealers",441228
+"Automotive Parts, Accessories, and Tire Stores",4413
+Automotive Parts and Accessories Stores,44131
+Automotive Parts and Accessories Stores,441310
+Tire Dealers,44132
+Tire Dealers,441320
+Furniture and Home Furnishings Stores,442
+Furniture Stores,4421
+Furniture Stores,44211
+Furniture Stores,442110
+Home Furnishings Stores,4422
+Floor Covering Stores,44221
+Floor Covering Stores,442210
+Other Home Furnishings Stores,44229
+Window Treatment Stores,442291
+All Other Home Furnishings Stores,442299
+Electronics and Appliance Stores,443
+Electronics and Appliance Stores,4431
+Electronics and Appliance Stores,44314
+Household Appliance Stores,443141
+Electronics Stores,443142
+Building Material and Garden Equipment and Supplies Dealers,444
+Building Material and Supplies Dealers,4441
+Home Centers,44411
+Home Centers,444110
+Paint and Wallpaper Stores,44412
+Paint and Wallpaper Stores,444120
+Hardware Stores,44413
+Hardware Stores,444130
+Other Building Material Dealers,44419
+Other Building Material Dealers,444190
+Lawn and Garden Equipment and Supplies Stores,4442
+Outdoor Power Equipment Stores,44421
+Outdoor Power Equipment Stores,444210
+"Nursery, Garden Center, and Farm Supply Stores",44422
+"Nursery, Garden Center, and Farm Supply Stores",444220
+Food and Beverage Stores,445
+Grocery Stores,4451
+Supermarkets and Other Grocery (except Convenience) Stores,44511
+Supermarkets and Other Grocery (except Convenience) Stores,445110
+Convenience Stores,44512
+Convenience Stores,445120
+Specialty Food Stores,4452
+Meat Markets,44521
+Meat Markets,445210
+Fish and Seafood Markets,44522
+Fish and Seafood Markets,445220
+Fruit and Vegetable Markets,44523
+Fruit and Vegetable Markets,445230
+Other Specialty Food Stores,44529
+Baked Goods Stores,445291
+Confectionery and Nut Stores,445292
+All Other Specialty Food Stores,445299
+"Beer, Wine, and Liquor Stores",4453
+"Beer, Wine, and Liquor Stores",44531
+"Beer, Wine, and Liquor Stores",445310
+Health and Personal Care Stores,446
+Health and Personal Care Stores,4461
+Pharmacies and Drug Stores,44611
+Pharmacies and Drug Stores,446110
+"Cosmetics, Beauty Supplies, and Perfume Stores",44612
+"Cosmetics, Beauty Supplies, and Perfume Stores",446120
+Optical Goods Stores,44613
+Optical Goods Stores,446130
+Other Health and Personal Care Stores,44619
+Food (Health) Supplement Stores,446191
+All Other Health and Personal Care Stores,446199
+Gasoline Stations,447
+Gasoline Stations,4471
+Gasoline Stations with Convenience Stores,44711
+Gasoline Stations with Convenience Stores,447110
+Other Gasoline Stations,44719
+Other Gasoline Stations,447190
+Clothing and Clothing Accessories Stores,448
+Clothing Stores,4481
+Men's Clothing Stores,44811
+Men's Clothing Stores,448110
+Women's Clothing Stores,44812
+Women's Clothing Stores,448120
+Children's and Infants' Clothing Stores,44813
+Children's and Infants' Clothing Stores,448130
+Family Clothing Stores,44814
+Family Clothing Stores,448140
+Clothing Accessories Stores,44815
+Clothing Accessories Stores,448150
+Other Clothing Stores,44819
+Other Clothing Stores,448190
+Shoe Stores,4482
+Shoe Stores,44821
+Shoe Stores,448210
+"Jewelry, Luggage, and Leather Goods Stores",4483
+Jewelry Stores,44831
+Jewelry Stores,448310
+Luggage and Leather Goods Stores,44832
+Luggage and Leather Goods Stores,448320
+"Sporting Goods, Hobby, Musical Instrument, and Book Stores",451
+"Sporting Goods, Hobby, and Musical Instrument Stores",4511
+Sporting Goods Stores,45111
+Sporting Goods Stores,451110
+"Hobby, Toy, and Game Stores",45112
+"Hobby, Toy, and Game Stores",451120
+"Sewing, Needlework, and Piece Goods Stores",45113
+"Sewing, Needlework, and Piece Goods Stores",451130
+Musical Instrument and Supplies Stores,45114
+Musical Instrument and Supplies Stores,451140
+Book Stores and News Dealers,4512
+Book Stores and News Dealers,45121
+Book Stores,451211
+News Dealers and Newsstands,451212
+General Merchandise Stores,452
+Department Stores,4521
+Department Stores,45211
+Department Stores (except Discount Department Stores),452111
+Discount Department Stores,452112
+Other General Merchandise Stores,4529
+Warehouse Clubs and Supercenters,45291
+Warehouse Clubs and Supercenters,452910
+All Other General Merchandise Stores,45299
+All Other General Merchandise Stores,452990
+Miscellaneous Store Retailers,453
+Florists,4531
+Florists,45311
+Florists,453110
+"Office Supplies, Stationery, and Gift Stores",4532
+Office Supplies and Stationery Stores,45321
+Office Supplies and Stationery Stores,453210
+"Gift, Novelty, and Souvenir Stores",45322
+"Gift, Novelty, and Souvenir Stores",453220
+Used Merchandise Stores,4533
+Used Merchandise Stores,45331
+Used Merchandise Stores,453310
+Other Miscellaneous Store Retailers,4539
+Pet and Pet Supplies Stores,45391
+Pet and Pet Supplies Stores,453910
+Art Dealers,45392
+Art Dealers,453920
+Manufactured (Mobile) Home Dealers,45393
+Manufactured (Mobile) Home Dealers,453930
+All Other Miscellaneous Store Retailers,45399
+Tobacco Stores,453991
+All Other Miscellaneous Store Retailers (except Tobacco Stores),453998
+Nonstore Retailers,454
+Electronic Shopping and Mail-Order Houses,4541
+Electronic Shopping and Mail-Order Houses,45411
+Electronic Shopping,454111
+Electronic Auctions,454112
+Mail-Order Houses,454113
+Vending Machine Operators,4542
+Vending Machine Operators,45421
+Vending Machine Operators,454210
+Direct Selling Establishments,4543
+Fuel Dealers,45431
+Fuel Dealers,454310
+Other Direct Selling Establishments,45439
+Other Direct Selling Establishments,454390
+Transportation and Warehousing,48
+Air Transportation,481
+Scheduled Air Transportation,4811
+Scheduled Air Transportation,48111
+Scheduled Passenger Air Transportation,481111
+Scheduled Freight Air Transportation,481112
+Nonscheduled Air Transportation,4812
+Nonscheduled Air Transportation,48121
+Nonscheduled Chartered Passenger Air Transportation,481211
+Nonscheduled Chartered Freight Air Transportation,481212
+Other Nonscheduled Air Transportation,481219
+Rail Transportation,482
+Rail Transportation,4821
+Rail Transportation,48211
+Line-Haul Railroads,482111
+Short Line Railroads,482112
+Water Transportation,483
+"Deep Sea, Coastal, and Great Lakes Water Transportation",4831
+"Deep Sea, Coastal, and Great Lakes Water Transportation",48311
+Deep Sea Freight Transportation,483111
+Deep Sea Passenger Transportation,483112
+Coastal and Great Lakes Freight Transportation,483113
+Coastal and Great Lakes Passenger Transportation,483114
+Inland Water Transportation,4832
+Inland Water Transportation,48321
+Inland Water Freight Transportation,483211
+Inland Water Passenger Transportation,483212
+Truck Transportation,484
+General Freight Trucking,4841
+"General Freight Trucking, Local",48411
+"General Freight Trucking, Local",484110
+"General Freight Trucking, Long-Distance",48412
+"General Freight Trucking, Long-Distance, Truckload",484121
+"General Freight Trucking, Long-Distance, Less Than Truckload",484122
+Specialized Freight Trucking,4842
+Used Household and Office Goods Moving,48421
+Used Household and Office Goods Moving,484210
+"Specialized Freight (except Used Goods) Trucking, Local",48422
+"Specialized Freight (except Used Goods) Trucking, Local",484220
+"Specialized Freight (except Used Goods) Trucking, Long-Distance",48423
+"Specialized Freight (except Used Goods) Trucking, Long-Distance",484230
+Transit and Ground Passenger Transportation,485
+Urban Transit Systems,4851
+Urban Transit Systems,48511
+Mixed Mode Transit Systems,485111
+Commuter Rail Systems,485112
+Bus and Other Motor Vehicle Transit Systems,485113
+Other Urban Transit Systems,485119
+Interurban and Rural Bus Transportation,4852
+Interurban and Rural Bus Transportation,48521
+Interurban and Rural Bus Transportation,485210
+Taxi and Limousine Service,4853
+Taxi Service,48531
+Taxi Service,485310
+Limousine Service,48532
+Limousine Service,485320
+School and Employee Bus Transportation,4854
+School and Employee Bus Transportation,48541
+School and Employee Bus Transportation,485410
+Charter Bus Industry,4855
+Charter Bus Industry,48551
+Charter Bus Industry,485510
+Other Transit and Ground Passenger Transportation,4859
+Other Transit and Ground Passenger Transportation,48599
+Special Needs Transportation,485991
+All Other Transit and Ground Passenger Transportation,485999
+Pipeline Transportation,486
+Pipeline Transportation of Crude Oil,4861
+Pipeline Transportation of Crude Oil,48611
+Pipeline Transportation of Crude Oil,486110
+Pipeline Transportation of Natural Gas,4862
+Pipeline Transportation of Natural Gas,48621
+Pipeline Transportation of Natural Gas,486210
+Other Pipeline Transportation,4869
+Pipeline Transportation of Refined Petroleum Products,48691
+Pipeline Transportation of Refined Petroleum Products,486910
+All Other Pipeline Transportation,48699
+All Other Pipeline Transportation,486990
+Scenic and Sightseeing Transportation,487
+"Scenic and Sightseeing Transportation, Land",4871
+"Scenic and Sightseeing Transportation, Land",48711
+"Scenic and Sightseeing Transportation, Land",487110
+"Scenic and Sightseeing Transportation, Water",4872
+"Scenic and Sightseeing Transportation, Water",48721
+"Scenic and Sightseeing Transportation, Water",487210
+"Scenic and Sightseeing Transportation, Other",4879
+"Scenic and Sightseeing Transportation, Other",48799
+"Scenic and Sightseeing Transportation, Other",487990
+Support Activities for Transportation,488
+Support Activities for Air Transportation,4881
+Airport Operations,48811
+Air Traffic Control,488111
+Other Airport Operations,488119
+Other Support Activities for Air Transportation,48819
+Other Support Activities for Air Transportation,488190
+Support Activities for Rail Transportation,4882
+Support Activities for Rail Transportation,48821
+Support Activities for Rail Transportation,488210
+Support Activities for Water Transportation,4883
+Port and Harbor Operations,48831
+Port and Harbor Operations,488310
+Marine Cargo Handling,48832
+Marine Cargo Handling,488320
+Navigational Services to Shipping,48833
+Navigational Services to Shipping,488330
+Other Support Activities for Water Transportation,48839
+Other Support Activities for Water Transportation,488390
+Support Activities for Road Transportation,4884
+Motor Vehicle Towing,48841
+Motor Vehicle Towing,488410
+Other Support Activities for Road Transportation,48849
+Other Support Activities for Road Transportation,488490
+Freight Transportation Arrangement,4885
+Freight Transportation Arrangement,48851
+Freight Transportation Arrangement,488510
+Other Support Activities for Transportation,4889
+Other Support Activities for Transportation,48899
+Packing and Crating,488991
+All Other Support Activities for Transportation,488999
+Postal Service,491
+Postal Service,4911
+Postal Service,49111
+Postal Service,491110
+Couriers and Messengers,492
+Couriers and Express Delivery Services,4921
+Couriers and Express Delivery Services,49211
+Couriers and Express Delivery Services,492110
+Local Messengers and Local Delivery,4922
+Local Messengers and Local Delivery,49221
+Local Messengers and Local Delivery,492210
+Warehousing and Storage,493
+Warehousing and Storage,4931
+General Warehousing and Storage,49311
+General Warehousing and Storage,493110
+Refrigerated Warehousing and Storage,49312
+Refrigerated Warehousing and Storage,493120
+Farm Product Warehousing and Storage,49313
+Farm Product Warehousing and Storage,493130
+Other Warehousing and Storage,49319
+Other Warehousing and Storage,493190
+Information,51
+Publishing Industries (except Internet),511
+"Newspaper, Periodical, Book, and Directory Publishers",5111
+Newspaper Publishers,51111
+Newspaper Publishers,511110
+Periodical Publishers,51112
+Periodical Publishers,511120
+Book Publishers,51113
+Book Publishers,511130
+Directory and Mailing List Publishers,51114
+Directory and Mailing List Publishers,511140
+Other Publishers,51119
+Greeting Card Publishers,511191
+All Other Publishers,511199
+Software Publishers,5112
+Software Publishers,51121
+Software Publishers,511210
+Motion Picture and Sound Recording Industries,512
+Motion Picture and Video Industries,5121
+Motion Picture and Video Production,51211
+Motion Picture and Video Production,512110
+Motion Picture and Video Distribution,51212
+Motion Picture and Video Distribution,512120
+Motion Picture and Video Exhibition,51213
+Motion Picture Theaters (except Drive-Ins),512131
+Drive-In Motion Picture Theaters,512132
+Postproduction Services and Other Motion Picture and Video Industries,51219
+Teleproduction and Other Postproduction Services,512191
+Other Motion Picture and Video Industries,512199
+Sound Recording Industries,5122
+Record Production,51221
+Record Production,512210
+Integrated Record Production/Distribution,51222
+Integrated Record Production/Distribution,512220
+Music Publishers,51223
+Music Publishers,512230
+Sound Recording Studios,51224
+Sound Recording Studios,512240
+Other Sound Recording Industries,51229
+Other Sound Recording Industries,512290
+Broadcasting (except Internet),515
+Radio and Television Broadcasting,5151
+Radio Broadcasting,51511
+Radio Networks,515111
+Radio Stations,515112
+Television Broadcasting,51512
+Television Broadcasting,515120
+Cable and Other Subscription Programming,5152
+Cable and Other Subscription Programming,51521
+Cable and Other Subscription Programming,515210
+Telecommunications,517
+Wired Telecommunications Carriers,5171
+Wired Telecommunications Carriers,51711
+Wired Telecommunications Carriers,517110
+Wireless Telecommunications Carriers (except Satellite),5172
+Wireless Telecommunications Carriers (except Satellite),51721
+Wireless Telecommunications Carriers (except Satellite),517210
+Satellite Telecommunications,5174
+Satellite Telecommunications,51741
+Satellite Telecommunications,517410
+Other Telecommunications,5179
+Other Telecommunications,51791
+Telecommunications Resellers,517911
+All Other Telecommunications,517919
+"Data Processing, Hosting, and Related Services",518
+"Data Processing, Hosting, and Related Services",5182
+"Data Processing, Hosting, and Related Services",51821
+"Data Processing, Hosting, and Related Services",518210
+Other Information Services,519
+Other Information Services,5191
+News Syndicates,51911
+News Syndicates,519110
+Libraries and Archives,51912
+Libraries and Archives,519120
+Internet Publishing and Broadcasting and Web Search Portals,51913
+Internet Publishing and Broadcasting and Web Search Portals,519130
+All Other Information Services,51919
+All Other Information Services,519190
+Finance and Insurance,52
+Monetary Authorities-Central Bank,521
+Monetary Authorities-Central Bank,5211
+Monetary Authorities-Central Bank,52111
+Monetary Authorities-Central Bank,521110
+Credit Intermediation and Related Activities,522
+Depository Credit Intermediation,5221
+Commercial Banking,52211
+Commercial Banking,522110
+Savings Institutions,52212
+Savings Institutions,522120
+Credit Unions,52213
+Credit Unions,522130
+Other Depository Credit Intermediation,52219
+Other Depository Credit Intermediation,522190
+Nondepository Credit Intermediation,5222
+Credit Card Issuing,52221
+Credit Card Issuing,522210
+Sales Financing,52222
+Sales Financing,522220
+Other Nondepository Credit Intermediation,52229
+Consumer Lending,522291
+Real Estate Credit,522292
+International Trade Financing,522293
+Secondary Market Financing,522294
+All Other Nondepository Credit Intermediation,522298
+Activities Related to Credit Intermediation,5223
+Mortgage and Nonmortgage Loan Brokers,52231
+Mortgage and Nonmortgage Loan Brokers,522310
+"Financial Transactions Processing, Reserve, and Clearinghouse Activities",52232
+"Financial Transactions Processing, Reserve, and Clearinghouse Activities",522320
+Other Activities Related to Credit Intermediation,52239
+Other Activities Related to Credit Intermediation,522390
+"Securities, Commodity Contracts, and Other Financial Investments and Related Activities",523
+Securities and Commodity Contracts Intermediation and Brokerage,5231
+Investment Banking and Securities Dealing,52311
+Investment Banking and Securities Dealing,523110
+Securities Brokerage,52312
+Securities Brokerage,523120
+Commodity Contracts Dealing,52313
+Commodity Contracts Dealing,523130
+Commodity Contracts Brokerage,52314
+Commodity Contracts Brokerage,523140
+Securities and Commodity Exchanges,5232
+Securities and Commodity Exchanges,52321
+Securities and Commodity Exchanges,523210
+Other Financial Investment Activities,5239
+Miscellaneous Intermediation,52391
+Miscellaneous Intermediation,523910
+Portfolio Management,52392
+Portfolio Management,523920
+Investment Advice,52393
+Investment Advice,523930
+All Other Financial Investment Activities,52399
+"Trust, Fiduciary, and Custody Activities",523991
+Miscellaneous Financial Investment Activities,523999
+Insurance Carriers and Related Activities,524
+Insurance Carriers,5241
+"Direct Life, Health, and Medical Insurance Carriers",52411
+Direct Life Insurance Carriers,524113
+Direct Health and Medical Insurance Carriers,524114
+"Direct Insurance (except Life, Health, and Medical) Carriers",52412
+Direct Property and Casualty Insurance Carriers,524126
+Direct Title Insurance Carriers,524127
+"Other Direct Insurance (except Life, Health, and Medical) Carriers",524128
+Reinsurance Carriers,52413
+Reinsurance Carriers,524130
+"Agencies, Brokerages, and Other Insurance Related Activities",5242
+Insurance Agencies and Brokerages,52421
+Insurance Agencies and Brokerages,524210
+Other Insurance Related Activities,52429
+Claims Adjusting,524291
+Third Party Administration of Insurance and Pension Funds,524292
+All Other Insurance Related Activities,524298
+"Funds, Trusts, and Other Financial Vehicles",525
+Insurance and Employee Benefit Funds,5251
+Pension Funds,52511
+Pension Funds,525110
+Health and Welfare Funds,52512
+Health and Welfare Funds,525120
+Other Insurance Funds,52519
+Other Insurance Funds,525190
+Other Investment Pools and Funds,5259
+Open-End Investment Funds,52591
+Open-End Investment Funds,525910
+"Trusts, Estates, and Agency Accounts",52592
+"Trusts, Estates, and Agency Accounts",525920
+Other Financial Vehicles,52599
+Other Financial Vehicles,525990
+Real Estate and Rental and Leasing,53
+Real Estate,531
+Lessors of Real Estate,5311
+Lessors of Residential Buildings and Dwellings,53111
+Lessors of Residential Buildings and Dwellings,531110
+Lessors of Nonresidential Buildings (except Miniwarehouses),53112
+Lessors of Nonresidential Buildings (except Miniwarehouses),531120
+Lessors of Miniwarehouses and Self-Storage Units,53113
+Lessors of Miniwarehouses and Self-Storage Units,531130
+Lessors of Other Real Estate Property,53119
+Lessors of Other Real Estate Property,531190
+Offices of Real Estate Agents and Brokers,5312
+Offices of Real Estate Agents and Brokers,53121
+Offices of Real Estate Agents and Brokers,531210
+Activities Related to Real Estate,5313
+Real Estate Property Managers,53131
+Residential Property Managers,531311
+Nonresidential Property Managers,531312
+Offices of Real Estate Appraisers,53132
+Offices of Real Estate Appraisers,531320
+Other Activities Related to Real Estate,53139
+Other Activities Related to Real Estate,531390
+Rental and Leasing Services,532
+Automotive Equipment Rental and Leasing,5321
+Passenger Car Rental and Leasing,53211
+Passenger Car Rental,532111
+Passenger Car Leasing,532112
+"Truck, Utility Trailer, and RV (Recreational Vehicle) Rental and Leasing",53212
+"Truck, Utility Trailer, and RV (Recreational Vehicle) Rental and Leasing",532120
+Consumer Goods Rental,5322
+Consumer Electronics and Appliances Rental,53221
+Consumer Electronics and Appliances Rental,532210
+Formal Wear and Costume Rental,53222
+Formal Wear and Costume Rental,532220
+Video Tape and Disc Rental,53223
+Video Tape and Disc Rental,532230
+Other Consumer Goods Rental,53229
+Home Health Equipment Rental,532291
+Recreational Goods Rental,532292
+All Other Consumer Goods Rental,532299
+General Rental Centers,5323
+General Rental Centers,53231
+General Rental Centers,532310
+Commercial and Industrial Machinery and Equipment Rental and Leasing,5324
+"Construction, Transportation, Mining, and Forestry Machinery and Equipment Rental and Leasing",53241
+"Commercial Air, Rail, and Water Transportation Equipment Rental and Leasing",532411
+"Construction, Mining, and Forestry Machinery and Equipment Rental and Leasing",532412
+Office Machinery and Equipment Rental and Leasing,53242
+Office Machinery and Equipment Rental and Leasing,532420
+Other Commercial and Industrial Machinery and Equipment Rental and Leasing,53249
+Other Commercial and Industrial Machinery and Equipment Rental and Leasing,532490
+Lessors of Nonfinancial Intangible Assets (except Copyrighted Works),533
+Lessors of Nonfinancial Intangible Assets (except Copyrighted Works),5331
+Lessors of Nonfinancial Intangible Assets (except Copyrighted Works),53311
+Lessors of Nonfinancial Intangible Assets (except Copyrighted Works),533110
+"Professional, Scientific, and Technical Services",54
+"Professional, Scientific, and Technical Services",541
+Legal Services,5411
+Offices of Lawyers,54111
+Offices of Lawyers,541110
+Offices of Notaries,54112
+Offices of Notaries,541120
+Other Legal Services,54119
+Title Abstract and Settlement Offices,541191
+All Other Legal Services,541199
+"Accounting, Tax Preparation, Bookkeeping, and Payroll Services",5412
+"Accounting, Tax Preparation, Bookkeeping, and Payroll Services",54121
+Offices of Certified Public Accountants,541211
+Tax Preparation Services,541213
+Payroll Services,541214
+Other Accounting Services,541219
+"Architectural, Engineering, and Related Services",5413
+Architectural Services,54131
+Architectural Services,541310
+Landscape Architectural Services,54132
+Landscape Architectural Services,541320
+Engineering Services,54133
+Engineering Services,541330
+Drafting Services,54134
+Drafting Services,541340
+Building Inspection Services,54135
+Building Inspection Services,541350
+Geophysical Surveying and Mapping Services,54136
+Geophysical Surveying and Mapping Services,541360
+Surveying and Mapping (except Geophysical) Services,54137
+Surveying and Mapping (except Geophysical) Services,541370
+Testing Laboratories,54138
+Testing Laboratories,541380
+Specialized Design Services,5414
+Interior Design Services,54141
+Interior Design Services,541410
+Industrial Design Services,54142
+Industrial Design Services,541420
+Graphic Design Services,54143
+Graphic Design Services,541430
+Other Specialized Design Services,54149
+Other Specialized Design Services,541490
+Computer Systems Design and Related Services,5415
+Computer Systems Design and Related Services,54151
+Custom Computer Programming Services,541511
+Computer Systems Design Services,541512
+Computer Facilities Management Services,541513
+Other Computer Related Services,541519
+"Management, Scientific, and Technical Consulting Services",5416
+Management Consulting Services,54161
+Administrative Management and General Management Consulting Services,541611
+Human Resources Consulting Services,541612
+Marketing Consulting Services,541613
+"Process, Physical Distribution, and Logistics Consulting Services",541614
+Other Management Consulting Services,541618
+Environmental Consulting Services,54162
+Environmental Consulting Services,541620
+Other Scientific and Technical Consulting Services,54169
+Other Scientific and Technical Consulting Services,541690
+Scientific Research and Development Services,5417
+"Research and Development in the Physical, Engineering, and Life Sciences",54171
+Research and Development in Biotechnology,541711
+"Research and Development in the Physical, Engineering, and Life Sciences (except Biotechnology)",541712
+Research and Development in the Social Sciences and Humanities,54172
+Research and Development in the Social Sciences and Humanities,541720
+"Advertising, Public Relations, and Related Services",5418
+Advertising Agencies,54181
+Advertising Agencies,541810
+Public Relations Agencies,54182
+Public Relations Agencies,541820
+Media Buying Agencies,54183
+Media Buying Agencies,541830
+Media Representatives,54184
+Media Representatives,541840
+Outdoor Advertising,54185
+Outdoor Advertising,541850
+Direct Mail Advertising,54186
+Direct Mail Advertising,541860
+Advertising Material Distribution Services,54187
+Advertising Material Distribution Services,541870
+Other Services Related to Advertising,54189
+Other Services Related to Advertising,541890
+"Other Professional, Scientific, and Technical Services",5419
+Marketing Research and Public Opinion Polling,54191
+Marketing Research and Public Opinion Polling,541910
+Photographic Services,54192
+"Photography Studios, Portrait",541921
+Commercial Photography,541922
+Translation and Interpretation Services,54193
+Translation and Interpretation Services,541930
+Veterinary Services,54194
+Veterinary Services,541940
+"All Other Professional, Scientific, and Technical Services",54199
+"All Other Professional, Scientific, and Technical Services",541990
+Management of Companies and Enterprises,55
+Management of Companies and Enterprises,551
+Management of Companies and Enterprises,5511
+Management of Companies and Enterprises,55111
+Offices of Bank Holding Companies,551111
+Offices of Other Holding Companies,551112
+"Corporate, Subsidiary, and Regional Managing Offices",551114
+Administrative and Support and Waste Management and Remediation Services,56
+Administrative and Support Services,561
+Office Administrative Services,5611
+Office Administrative Services,56111
+Office Administrative Services,561110
+Facilities Support Services,5612
+Facilities Support Services,56121
+Facilities Support Services,561210
+Employment Services,5613
+Employment Placement Agencies and Executive Search Services,56131
+Employment Placement Agencies,561311
+Executive Search Services,561312
+Temporary Help Services,56132
+Temporary Help Services,561320
+Professional Employer Organizations,56133
+Professional Employer Organizations,561330
+Business Support Services,5614
+Document Preparation Services,56141
+Document Preparation Services,561410
+Telephone Call Centers,56142
+Telephone Answering Services,561421
+Telemarketing Bureaus and Other Contact Centers,561422
+Business Service Centers,56143
+Private Mail Centers,561431
+Other Business Service Centers (including Copy Shops),561439
+Collection Agencies,56144
+Collection Agencies,561440
+Credit Bureaus,56145
+Credit Bureaus,561450
+Other Business Support Services,56149
+Repossession Services,561491
+Court Reporting and Stenotype Services,561492
+All Other Business Support Services,561499
+Travel Arrangement and Reservation Services,5615
+Travel Agencies,56151
+Travel Agencies,561510
+Tour Operators,56152
+Tour Operators,561520
+Other Travel Arrangement and Reservation Services,56159
+Convention and Visitors Bureaus,561591
+All Other Travel Arrangement and Reservation Services,561599
+Investigation and Security Services,5616
+"Investigation, Guard, and Armored Car Services",56161
+Investigation Services,561611
+Security Guards and Patrol Services,561612
+Armored Car Services,561613
+Security Systems Services,56162
+Security Systems Services (except Locksmiths),561621
+Locksmiths,561622
+Services to Buildings and Dwellings,5617
+Exterminating and Pest Control Services,56171
+Exterminating and Pest Control Services,561710
+Janitorial Services,56172
+Janitorial Services,561720
+Landscaping Services,56173
+Landscaping Services,561730
+Carpet and Upholstery Cleaning Services,56174
+Carpet and Upholstery Cleaning Services,561740
+Other Services to Buildings and Dwellings,56179
+Other Services to Buildings and Dwellings,561790
+Other Support Services,5619
+Packaging and Labeling Services,56191
+Packaging and Labeling Services,561910
+Convention and Trade Show Organizers,56192
+Convention and Trade Show Organizers,561920
+All Other Support Services,56199
+All Other Support Services,561990
+Waste Management and Remediation Services,562
+Waste Collection,5621
+Waste Collection,56211
+Solid Waste Collection,562111
+Hazardous Waste Collection,562112
+Other Waste Collection,562119
+Waste Treatment and Disposal,5622
+Waste Treatment and Disposal,56221
+Hazardous Waste Treatment and Disposal,562211
+Solid Waste Landfill,562212
+Solid Waste Combustors and Incinerators,562213
+Other Nonhazardous Waste Treatment and Disposal,562219
+Remediation and Other Waste Management Services,5629
+Remediation Services,56291
+Remediation Services,562910
+Materials Recovery Facilities,56292
+Materials Recovery Facilities,562920
+All Other Waste Management Services,56299
+Septic Tank and Related Services,562991
+All Other Miscellaneous Waste Management Services,562998
+Educational Services,61
+Educational Services,611
+Elementary and Secondary Schools,6111
+Elementary and Secondary Schools,61111
+Elementary and Secondary Schools,611110
+Junior Colleges,6112
+Junior Colleges,61121
+Junior Colleges,611210
+"Colleges, Universities, and Professional Schools",6113
+"Colleges, Universities, and Professional Schools",61131
+"Colleges, Universities, and Professional Schools",611310
+Business Schools and Computer and Management Training,6114
+Business and Secretarial Schools,61141
+Business and Secretarial Schools,611410
+Computer Training,61142
+Computer Training,611420
+Professional and Management Development Training,61143
+Professional and Management Development Training,611430
+Technical and Trade Schools,6115
+Technical and Trade Schools,61151
+Cosmetology and Barber Schools,611511
+Flight Training,611512
+Apprenticeship Training,611513
+Other Technical and Trade Schools,611519
+Other Schools and Instruction,6116
+Fine Arts Schools,61161
+Fine Arts Schools,611610
+Sports and Recreation Instruction,61162
+Sports and Recreation Instruction,611620
+Language Schools,61163
+Language Schools,611630
+All Other Schools and Instruction,61169
+Exam Preparation and Tutoring,611691
+Automobile Driving Schools,611692
+All Other Miscellaneous Schools and Instruction,611699
+Educational Support Services,6117
+Educational Support Services,61171
+Educational Support Services,611710
+Health Care and Social Assistance,62
+Ambulatory Health Care Services,621
+Offices of Physicians,6211
+Offices of Physicians,62111
+Offices of Physicians (except Mental Health Specialists),621111
+"Offices of Physicians, Mental Health Specialists",621112
+Offices of Dentists,6212
+Offices of Dentists,62121
+Offices of Dentists,621210
+Offices of Other Health Practitioners,6213
+Offices of Chiropractors,62131
+Offices of Chiropractors,621310
+Offices of Optometrists,62132
+Offices of Optometrists,621320
+Offices of Mental Health Practitioners (except Physicians),62133
+Offices of Mental Health Practitioners (except Physicians),621330
+"Offices of Physical, Occupational and Speech Therapists, and Audiologists",62134
+"Offices of Physical, Occupational and Speech Therapists, and Audiologists",621340
+Offices of All Other Health Practitioners,62139
+Offices of Podiatrists,621391
+Offices of All Other Miscellaneous Health Practitioners,621399
+Outpatient Care Centers,6214
+Family Planning Centers,62141
+Family Planning Centers,621410
+Outpatient Mental Health and Substance Abuse Centers,62142
+Outpatient Mental Health and Substance Abuse Centers,621420
+Other Outpatient Care Centers,62149
+HMO Medical Centers,621491
+Kidney Dialysis Centers,621492
+Freestanding Ambulatory Surgical and Emergency Centers,621493
+All Other Outpatient Care Centers,621498
+Medical and Diagnostic Laboratories,6215
+Medical and Diagnostic Laboratories,62151
+Medical Laboratories,621511
+Diagnostic Imaging Centers,621512
+Home Health Care Services,6216
+Home Health Care Services,62161
+Home Health Care Services,621610
+Other Ambulatory Health Care Services,6219
+Ambulance Services,62191
+Ambulance Services,621910
+All Other Ambulatory Health Care Services,62199
+Blood and Organ Banks,621991
+All Other Miscellaneous Ambulatory Health Care Services,621999
+Hospitals,622
+General Medical and Surgical Hospitals,6221
+General Medical and Surgical Hospitals,62211
+General Medical and Surgical Hospitals,622110
+Psychiatric and Substance Abuse Hospitals,6222
+Psychiatric and Substance Abuse Hospitals,62221
+Psychiatric and Substance Abuse Hospitals,622210
+Specialty (except Psychiatric and Substance Abuse) Hospitals,6223
+Specialty (except Psychiatric and Substance Abuse) Hospitals,62231
+Specialty (except Psychiatric and Substance Abuse) Hospitals,622310
+Nursing and Residential Care Facilities,623
+Nursing Care Facilities (Skilled Nursing Facilities),6231
+Nursing Care Facilities (Skilled Nursing Facilities),62311
+Nursing Care Facilities (Skilled Nursing Facilities),623110
+"Residential Intellectual and Developmental Disability, Mental Health, and Substance Abuse Facilities",6232
+Residential Intellectual and Developmental Disability Facilities,62321
+Residential Intellectual and Developmental Disability Facilities,623210
+Residential Mental Health and Substance Abuse Facilities,62322
+Residential Mental Health and Substance Abuse Facilities,623220
+Continuing Care Retirement Communities and Assisted Living Facilities for the Elderly,6233
+Continuing Care Retirement Communities and Assisted Living Facilities for the Elderly,62331
+Continuing Care Retirement Communities,623311
+Assisted Living Facilities for the Elderly,623312
+Other Residential Care Facilities,6239
+Other Residential Care Facilities,62399
+Other Residential Care Facilities,623990
+Social Assistance,624
+Individual and Family Services,6241
+Child and Youth Services,62411
+Child and Youth Services,624110
+Services for the Elderly and Persons with Disabilities,62412
+Services for the Elderly and Persons with Disabilities,624120
+Other Individual and Family Services,62419
+Other Individual and Family Services,624190
+"Community Food and Housing, and Emergency and Other Relief Services",6242
+Community Food Services,62421
+Community Food Services,624210
+Community Housing Services,62422
+Temporary Shelters,624221
+Other Community Housing Services,624229
+Emergency and Other Relief Services,62423
+Emergency and Other Relief Services,624230
+Vocational Rehabilitation Services,6243
+Vocational Rehabilitation Services,62431
+Vocational Rehabilitation Services,624310
+Child Day Care Services,6244
+Child Day Care Services,62441
+Child Day Care Services,624410
+"Arts, Entertainment, and Recreation",71
+"Performing Arts, Spectator Sports, and Related Industries",711
+Performing Arts Companies,7111
+Theater Companies and Dinner Theaters,71111
+Theater Companies and Dinner Theaters,711110
+Dance Companies,71112
+Dance Companies,711120
+Musical Groups and Artists,71113
+Musical Groups and Artists,711130
+Other Performing Arts Companies,71119
+Other Performing Arts Companies,711190
+Spectator Sports,7112
+Spectator Sports,71121
+Sports Teams and Clubs,711211
+Racetracks,711212
+Other Spectator Sports,711219
+"Promoters of Performing Arts, Sports, and Similar Events",7113
+"Promoters of Performing Arts, Sports, and Similar Events with Facilities",71131
+"Promoters of Performing Arts, Sports, and Similar Events with Facilities",711310
+"Promoters of Performing Arts, Sports, and Similar Events without Facilities",71132
+"Promoters of Performing Arts, Sports, and Similar Events without Facilities",711320
+"Agents and Managers for Artists, Athletes, Entertainers, and Other Public Figures",7114
+"Agents and Managers for Artists, Athletes, Entertainers, and Other Public Figures",71141
+"Agents and Managers for Artists, Athletes, Entertainers, and Other Public Figures",711410
+"Independent Artists, Writers, and Performers",7115
+"Independent Artists, Writers, and Performers",71151
+"Independent Artists, Writers, and Performers",711510
+"Museums, Historical Sites, and Similar Institutions",712
+"Museums, Historical Sites, and Similar Institutions",7121
+Museums,71211
+Museums,712110
+Historical Sites,71212
+Historical Sites,712120
+Zoos and Botanical Gardens,71213
+Zoos and Botanical Gardens,712130
+Nature Parks and Other Similar Institutions,71219
+Nature Parks and Other Similar Institutions,712190
+"Amusement, Gambling, and Recreation Industries",713
+Amusement Parks and Arcades,7131
+Amusement and Theme Parks,71311
+Amusement and Theme Parks,713110
+Amusement Arcades,71312
+Amusement Arcades,713120
+Gambling Industries,7132
+Casinos (except Casino Hotels),71321
+Casinos (except Casino Hotels),713210
+Other Gambling Industries,71329
+Other Gambling Industries,713290
+Other Amusement and Recreation Industries,7139
+Golf Courses and Country Clubs,71391
+Golf Courses and Country Clubs,713910
+Skiing Facilities,71392
+Skiing Facilities,713920
+Marinas,71393
+Marinas,713930
+Fitness and Recreational Sports Centers,71394
+Fitness and Recreational Sports Centers,713940
+Bowling Centers,71395
+Bowling Centers,713950
+All Other Amusement and Recreation Industries,71399
+All Other Amusement and Recreation Industries,713990
+Accommodation and Food Services,72
+Accommodation,721
+Traveler Accommodation,7211
+Hotels (except Casino Hotels) and Motels,72111
+Hotels (except Casino Hotels) and Motels,721110
+Casino Hotels,72112
+Casino Hotels,721120
+Other Traveler Accommodation,72119
+Bed-and-Breakfast Inns,721191
+All Other Traveler Accommodation,721199
+RV (Recreational Vehicle) Parks and Recreational Camps,7212
+RV (Recreational Vehicle) Parks and Recreational Camps,72121
+RV (Recreational Vehicle) Parks and Campgrounds,721211
+Recreational and Vacation Camps (except Campgrounds),721214
+Rooming and Boarding Houses,7213
+Rooming and Boarding Houses,72131
+Rooming and Boarding Houses,721310
+Food Services and Drinking Places,722
+Special Food Services,7223
+Food Service Contractors,72231
+Food Service Contractors,722310
+Caterers,72232
+Caterers,722320
+Mobile Food Services,72233
+Mobile Food Services,722330
+Drinking Places (Alcoholic Beverages),7224
+Drinking Places (Alcoholic Beverages),72241
+Drinking Places (Alcoholic Beverages),722410
+Restaurants and Other Eating Places,7225
+Restaurants and Other Eating Places,72251
+Full-Service Restaurants,722511
+Limited-Service Restaurants,722513
+"Cafeterias, Grill Buffets, and Buffets",722514
+Snack and Nonalcoholic Beverage Bars,722515
+Other Services (except Public Administration),81
+Repair and Maintenance,811
+Automotive Repair and Maintenance,8111
+Automotive Mechanical and Electrical Repair and Maintenance,81111
+General Automotive Repair,811111
+Automotive Exhaust System Repair,811112
+Automotive Transmission Repair,811113
+Other Automotive Mechanical and Electrical Repair and Maintenance,811118
+"Automotive Body, Paint, Interior, and Glass Repair",81112
+"Automotive Body, Paint, and Interior Repair and Maintenance",811121
+Automotive Glass Replacement Shops,811122
+Other Automotive Repair and Maintenance,81119
+Automotive Oil Change and Lubrication Shops,811191
+Car Washes,811192
+All Other Automotive Repair and Maintenance,811198
+Electronic and Precision Equipment Repair and Maintenance,8112
+Electronic and Precision Equipment Repair and Maintenance,81121
+Consumer Electronics Repair and Maintenance,811211
+Computer and Office Machine Repair and Maintenance,811212
+Communication Equipment Repair and Maintenance,811213
+Other Electronic and Precision Equipment Repair and Maintenance,811219
+Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance,8113
+Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance,81131
+Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance,811310
+Personal and Household Goods Repair and Maintenance,8114
+Home and Garden Equipment and Appliance Repair and Maintenance,81141
+Home and Garden Equipment Repair and Maintenance,811411
+Appliance Repair and Maintenance,811412
+Reupholstery and Furniture Repair,81142
+Reupholstery and Furniture Repair,811420
+Footwear and Leather Goods Repair,81143
+Footwear and Leather Goods Repair,811430
+Other Personal and Household Goods Repair and Maintenance,81149
+Other Personal and Household Goods Repair and Maintenance,811490
+Personal and Laundry Services,812
+Personal Care Services,8121
+"Hair, Nail, and Skin Care Services",81211
+Barber Shops,812111
+Beauty Salons,812112
+Nail Salons,812113
+Other Personal Care Services,81219
+Diet and Weight Reducing Centers,812191
+Other Personal Care Services,812199
+Death Care Services,8122
+Funeral Homes and Funeral Services,81221
+Funeral Homes and Funeral Services,812210
+Cemeteries and Crematories,81222
+Cemeteries and Crematories,812220
+Drycleaning and Laundry Services,8123
+Coin-Operated Laundries and Drycleaners,81231
+Coin-Operated Laundries and Drycleaners,812310
+Drycleaning and Laundry Services (except Coin-Operated),81232
+Drycleaning and Laundry Services (except Coin-Operated),812320
+Linen and Uniform Supply,81233
+Linen Supply,812331
+Industrial Launderers,812332
+Other Personal Services,8129
+Pet Care (except Veterinary) Services,81291
+Pet Care (except Veterinary) Services,812910
+Photofinishing,81292
+Photofinishing Laboratories (except One-Hour),812921
+One-Hour Photofinishing,812922
+Parking Lots and Garages,81293
+Parking Lots and Garages,812930
+All Other Personal Services,81299
+All Other Personal Services,812990
+"Religious, Grantmaking, Civic, Professional, and Similar Organizations",813
+Religious Organizations,8131
+Religious Organizations,81311
+Religious Organizations,813110
+Grantmaking and Giving Services,8132
+Grantmaking and Giving Services,81321
+Grantmaking Foundations,813211
+Voluntary Health Organizations,813212
+Other Grantmaking and Giving Services,813219
+Social Advocacy Organizations,8133
+Social Advocacy Organizations,81331
+Human Rights Organizations,813311
+"Environment, Conservation and Wildlife Organizations",813312
+Other Social Advocacy Organizations,813319
+Civic and Social Organizations,8134
+Civic and Social Organizations,81341
+Civic and Social Organizations,813410
+"Business, Professional, Labor, Political, and Similar Organizations",8139
+Business Associations,81391
+Business Associations,813910
+Professional Organizations,81392
+Professional Organizations,813920
+Labor Unions and Similar Labor Organizations,81393
+Labor Unions and Similar Labor Organizations,813930
+Political Organizations,81394
+Political Organizations,813940
+"Other Similar Organizations (except Business, Professional, Labor, and Political Organizations)",81399
+"Other Similar Organizations (except Business, Professional, Labor, and Political Organizations)",813990
+Private Households,814
+Private Households,8141
+Private Households,81411
+Private Households,814110
+Public Administration,92
+"Executive, Legislative, and Other General Government Support",921
+"Executive, Legislative, and Other General Government Support",9211
+Executive Offices,92111
+Executive Offices,921110
+Legislative Bodies,92112
+Legislative Bodies,921120
+Public Finance Activities,92113
+Public Finance Activities,921130
+"Executive and Legislative Offices, Combined",92114
+"Executive and Legislative Offices, Combined",921140
+American Indian and Alaska Native Tribal Governments,92115
+American Indian and Alaska Native Tribal Governments,921150
+Other General Government Support,92119
+Other General Government Support,921190
+"Justice, Public Order, and Safety Activities",922
+"Justice, Public Order, and Safety Activities",9221
+Courts,92211
+Courts,922110
+Police Protection,92212
+Police Protection,922120
+Legal Counsel and Prosecution,92213
+Legal Counsel and Prosecution,922130
+Correctional Institutions,92214
+Correctional Institutions,922140
+Parole Offices and Probation Offices,92215
+Parole Offices and Probation Offices,922150
+Fire Protection,92216
+Fire Protection,922160
+"Other Justice, Public Order, and Safety Activities",92219
+"Other Justice, Public Order, and Safety Activities",922190
+Administration of Human Resource Programs,923
+Administration of Human Resource Programs,9231
+Administration of Education Programs,92311
+Administration of Education Programs,923110
+Administration of Public Health Programs,92312
+Administration of Public Health Programs,923120
+"Administration of Human Resource Programs (except Education, Public Health, and Veterans' Affairs Programs)",92313
+"Administration of Human Resource Programs (except Education, Public Health, and Veterans' Affairs Programs)",923130
+Administration of Veterans' Affairs,92314
+Administration of Veterans' Affairs,923140
+Administration of Environmental Quality Programs,924
+Administration of Environmental Quality Programs,9241
+Administration of Air and Water Resource and Solid Waste Management Programs,92411
+Administration of Air and Water Resource and Solid Waste Management Programs,924110
+Administration of Conservation Programs,92412
+Administration of Conservation Programs,924120
+"Administration of Housing Programs, Urban Planning, and Community Development",925
+"Administration of Housing Programs, Urban Planning, and Community Development",9251
+Administration of Housing Programs,92511
+Administration of Housing Programs,925110
+Administration of Urban Planning and Community and Rural Development,92512
+Administration of Urban Planning and Community and Rural Development,925120
+Administration of Economic Programs,926
+Administration of Economic Programs,9261
+Administration of General Economic Programs,92611
+Administration of General Economic Programs,926110
+Regulation and Administration of Transportation Programs,92612
+Regulation and Administration of Transportation Programs,926120
+"Regulation and Administration of Communications, Electric, Gas, and Other Utilities",92613
+"Regulation and Administration of Communications, Electric, Gas, and Other Utilities",926130
+Regulation of Agricultural Marketing and Commodities,92614
+Regulation of Agricultural Marketing and Commodities,926140
+"Regulation, Licensing, and Inspection of Miscellaneous Commercial Sectors",92615
+"Regulation, Licensing, and Inspection of Miscellaneous Commercial Sectors",926150
+Space Research and Technology,927
+Space Research and Technology,9271
+Space Research and Technology,92711
+Space Research and Technology,927110
+National Security and International Affairs,928
+National Security and International Affairs,9281
+National Security,92811
+National Security,928110
+International Affairs,92812
+International Affairs,928120
+Manufacturing,32
+Retail Trade,45
+Transportation and Warehousing,49
+Manufacturing,33
