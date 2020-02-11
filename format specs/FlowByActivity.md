@@ -2,6 +2,7 @@
 
 +Field | Type | Required? | Description
 ----- | ---- | --------  | -----------
+SourceName | String | Y | ID or name of flow in its native source
 FlowName | String | Y | ID or name of flow in its native source
 FlowAmount | Numeric | Y | The amount of a given flow released to a given environment compartment or waste generated in a reference unit. Uses metric reference units. 'kg' is the reference unit for mass; 'MJ' is the unit for energy. 
 Unit | String | Y | SI unit acronym. `kg` for mass flows; `MJ` for energy flows
