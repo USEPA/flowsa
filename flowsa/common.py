@@ -12,7 +12,7 @@ except NameError:
 
 datapath = modulepath + 'data/'
 
-US_FIPS = "000000"
+US_FIPS = "00000"
 
 def getFIPS(state=None,county=None):
     """
@@ -33,8 +33,7 @@ def getFIPS(state=None,county=None):
         else:
             state = clean_str_and_capitalize(state)
             county = clean_str_and_capitalize(county)
-            county = county + " County"
-            code = FIPS_df.loc[(FIPS_df["State"]==state) & (FIPS_df["County"]==county),"FIPS"].values[0]
+            code = FIPS_df.loc[(FIPS_df["State"]==state) & (FIPS_df["County"]==county),"FIPS"]
     if code.empty:
         log.info("No FIPS code found")
     else:
