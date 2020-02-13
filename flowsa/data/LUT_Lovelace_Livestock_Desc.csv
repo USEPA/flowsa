@@ -1,10 +1,10 @@
-ActivitySourceName,Activity,ActivityDesc
-Lovelace_2009,L1,beef and other cattle including calves
-Lovelace_2009,L2,broilers and other chickens
-Lovelace_2009,L3,dairy cows
-Lovelace_2009,L4,goats 
-Lovelace_2009,L5,hogs and pigs
-Lovelace_2009,L6,horses (including ponies mules burros and donkeys)
-Lovelace_2009,L7,laying hens
-Lovelace_2009,L8,sheep and lambs
-Lovelace_2009,L9,turkeys
+ActivitySourceName,Activity,ActivityCode
+Lovelace_2009,beef and other cattle including calves,L1
+Lovelace_2009,broilers and other chickens,L2
+Lovelace_2009,dairy cows,L3
+Lovelace_2009,goats ,L4
+Lovelace_2009,hogs and pigs,L5
+Lovelace_2009,horses (including ponies mules burros and donkeys),L6
+Lovelace_2009,laying hens,L7
+Lovelace_2009,sheep and lambs,L8
+Lovelace_2009,turkeys,L9
