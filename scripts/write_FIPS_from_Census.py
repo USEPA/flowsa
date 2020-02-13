@@ -4,11 +4,21 @@ Shapes the set to include State and County names for all records
 Writes reshaped file to datapath as csv
 """
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.common import datapath,clean_str_and_capitalize
 
 #2017 State, County, Minor Civil Division, and Incorporated Place FIPS Codes
 url = "https://www2.census.gov/programs-surveys/popest/geographies/2017/all-geocodes-v2017.xlsx"
 
+def stripcounty(s):
+    """
+    Removes " County" from county name
+    :param s: a string ending with " County"
+    :return:
+    """
+    if s.__class__==str:
+        if s.endswith(" County"):
+            s = s[0:len(s)-7]
+    return s
 
 if __name__ == '__main__':
     #Read directly into a pandas df,
@@ -66,6 +76,12 @@ if __name__ == '__main__':
 
     fields_to_keep = ["State","County","FIPS"]
     FIPS_df = FIPS_df[fields_to_keep]
+
+    #Clean the county field - remove the " County"
+    #FIPS_df["County"] = FIPS_df["County"].apply(lambda x:stripcounty(x))
+    FIPS_df["County"] = FIPS_df["County"].apply(stripcounty)
+    FIPS_df["County"] = FIPS_df["County"].apply(clean_str_and_capitalize)
+    FIPS_df["State"] = FIPS_df["State"].apply(clean_str_and_capitalize)
 
     FIPS_df.to_csv(datapath+"FIPS.csv",index=False)
 
