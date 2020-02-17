@@ -11,5 +11,5 @@ Compartment | String | Y | Name of compartment to which release goes, e.g. "air"
 FIPS | String | Y | FIPS code for location 
 FlowType | String | Y | `ELEMENTARY_FLOW`, `TECHNOSPHERE_FLOW`, or `WASTE_FLOW`. See http://greendelta.github.io/olca-schema/html/FlowType.html
 Year | Int | Y | Year of data, e.g. `2010`
-DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](./DataQualityPedigreeMatrix.md)
-DataCollection | Numeric | Y | A score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](./DataQualityPedigreeMatrix.md)
+DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md)
+DataCollection | Numeric | Y | A score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md)
