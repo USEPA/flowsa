@@ -1,17 +1,22 @@
 # data_pull.py (usgs_water_consume)
 # !/usr/bin/env python3
 # coding=utf-8
+# ingwersen.wesley@epa.gov
+
 import os
 import requests
 import pandas as pd
 from pandas import ExcelWriter
 from pandas import ExcelFile
+
+
 """
 Classes and methods for pulling data from a USGS web service.
 
 Available functions:
 -
 """
+
 def get_download_path():
     """Returns the default downloads path for linux or windows"""
     if os.name == 'nt':
