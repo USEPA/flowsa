@@ -13,16 +13,14 @@ useeior = importr('useeior')
 model_with_detail_2012_tables = 'USEEIOv2.0-GHG'
 model = useeior.buildEEIOModel(model_with_detail_2012_tables)
 
-#Get the UseTransactions object embedded within the BEA data
+# Get the UseTransactions object embedded within the BEA data
 UseIndustryTransactions = model.rx2("BEA").rx2("UseTransactions")
-#Convert to a pandas dataframe
+# Convert to a pandas dataframe
 UseIndustryTransactions = pandas2ri.ri2py_dataframe(UseIndustryTransactions)
 
-#Get the vector of model industries
+# Get the vector of model industries
 Industries = model.rx2("BEA").rx2("Industries")
-#Apply it to the df index
+# Apply it to the df index
 UseIndustryTransactions.index = Industries
-#Write out to csv
+# Write out to csv
 UseIndustryTransactions.to_csv(datapath + "BEA_2012_Detail_Use_Industry_Transactions.csv")
-
-
