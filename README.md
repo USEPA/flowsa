@@ -14,6 +14,12 @@ tables, these can be either _industries_ or _commodities_.
 
 _attribution_: The sectors through which activity uses, produces or receives the flows (input or output).
 
+## Flow Classes
+
+Class | Description
+---|---|
+Water | Water use and release data. Also may contain wastewater. Includes all [FlowTypes](./formatspecs/FlowBySector.md)|
+
 ## Disclaimer
 
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis
