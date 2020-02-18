@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import logging as log
 
+"""Add docstring in public module."""
+
 log.basicConfig(level=log.INFO, format='%(levelname)s %(message)s',
                 stream=sys.stdout)
 try:
@@ -43,6 +45,7 @@ def getFIPS(state=None, county=None):
 
 
 def clean_str_and_capitalize(s):
+    """Add docstring in public function."""
     if s.__class__ == str:
         s = s.strip()
         s = s.lower()
