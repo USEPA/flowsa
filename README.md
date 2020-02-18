@@ -4,6 +4,7 @@ flowsa attributes resource use, waste, emissions, and loss to economic sectors. 
 sector attribution data using pandas dataframes.
 
 ## Terms
+
 _flows_: represent the physical movement of material or energy as input or output to or between activities.
 In LCA terms these are more strictly elementary flows or waste flows, although these LCA uses will not limit the scope of FLOWSA models.
 
@@ -14,6 +15,7 @@ tables, these can be either _industries_ or _commodities_.
 _attribution_: The sectors through which activity uses, produces or receives the flows (input or output).
 
 ## Disclaimer
+
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis
 and the user assumes responsibility for its use.  EPA has relinquished control of the information and no longer
 has responsibility to protect the integrity , confidentiality, or availability of the information.  Any
