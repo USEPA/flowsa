@@ -1,7 +1,12 @@
-import unittest
-from flowsa.common import getFIPS
+# test_FIPS.py (tests)
+# !/usr/bin/env python3
+# coding=utf-8
+# ingwersen.wesley@epa.gov
 
 """Add docstring in public module."""
+
+import unittest
+from flowsa.common import getFIPS
 
 class TestFIPS(unittest.TestCase):
     """Add docstring in public class."""

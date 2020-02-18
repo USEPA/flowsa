@@ -1,9 +1,15 @@
+# common.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
+# ingwersen.wesley@epa.gov
+
+"""Add docstring in public module."""
+
 import sys
 import os
 import pandas as pd
 import logging as log
 
-"""Add docstring in public module."""
 
 log.basicConfig(level=log.INFO, format='%(levelname)s %(message)s',
                 stream=sys.stdout)
