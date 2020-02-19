@@ -5,10 +5,12 @@
 
 
 """
-Grabs FIPS 2017 codes from a static URL
-Shapes the set to include State and County names for all records
-Writes reshaped file to datapath as csv
+Grabs FIPS 2017 codes from a static URL.
+
+- Shapes the set to include State and County names for all records.
+- Writes reshaped file to datapath as csv.
 """
+
 import pandas as pd
 from flowsa.common import datapath, clean_str_and_capitalize
 

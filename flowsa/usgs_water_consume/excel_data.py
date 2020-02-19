@@ -17,6 +17,7 @@ Available functions:
 -
 """
 
+
 def get_download_path():
     """Returns the default downloads path for linux or windows"""
     if os.name == 'nt':
@@ -29,6 +30,7 @@ def get_download_path():
     else:
         return os.path.join(os.path.expanduser('~'), 'downloads')
 
+
 def check_and_delete_file(file_string):
     """Checks to see if specifed file exist if it does it deletes it"""
     if os.path.exists(file_string):
@@ -40,15 +42,15 @@ def check_and_delete_file(file_string):
 print('Begining File Download with requests')
 url = 'https://www.sciencebase.gov/catalog/file/get/5af3311be4b0da30c1b245d8?f=__disk__29%2Fc0%2F51%2F29c051a5166ae254b942322f77b02edcda0822ac'
 
-#r = requests.get(url)
+# r = requests.get(url)
 path = get_download_path()
 file = path + '\\usco2015v2.0.xlsx'
-#check_and_delete_file(file)
-#open(file, 'wb' ).write(r.content)
+# check_and_delete_file(file)
+# open(file, 'wb' ).write(r.content)
 
-df =  pd.read_excel(file)
+df = pd.read_excel(file)
 headers = df.iloc[0]
-new_df  = pd.DataFrame(df.values[1:], columns=headers)
+new_df = pd.DataFrame(df.values[1:], columns=headers)
 print("Column Names")
 print(new_df.columns)
 
@@ -63,5 +65,4 @@ for i in range(df_length):
     print(listFIPS[i])
 
 print('End File Download with requests')
-#check_and_delete_file(file)
-
+# check_and_delete_file(file)

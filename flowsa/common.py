@@ -3,7 +3,7 @@
 # coding=utf-8
 # ingwersen.wesley@epa.gov
 
-"""Add docstring in public module."""
+"""Add docstring in public module."""  # TODO add docstring.
 
 import sys
 import os
@@ -25,7 +25,8 @@ US_FIPS = "00000"
 
 def getFIPS(state=None, county=None):
     """
-    Pass a state or state and county name to get the FIPS
+    Pass a state or state and county name to get the FIPS.
+
     :param state: str. A US State Name or Puerto Rico, any case accepted
     :param county: str.
     :return: str. A five digit 2017 FIPS code
@@ -51,7 +52,7 @@ def getFIPS(state=None, county=None):
 
 
 def clean_str_and_capitalize(s):
-    """Add docstring in public function."""
+    """Add docstring in public function."""  # TODO add docstring.
     if s.__class__ == str:
         s = s.strip()
         s = s.lower()

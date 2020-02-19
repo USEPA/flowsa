@@ -4,8 +4,10 @@
 # ingwersen.wesley@epa.gov
 
 """
-A script to get Use table transactions from a useeior EEIOmodel and store them as .csv
-Depends on rpy2 and tzlocal as well as having R installed and useeior installed
+A script to get Use table transactions from a useeior EEIOmodel.
+
+- Store them as .csv
+- Depends on rpy2 and tzlocal as well as having R installed and useeior installed.
 """
 
 from flowsa.common import datapath
