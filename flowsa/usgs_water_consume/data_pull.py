@@ -4,170 +4,41 @@
 import os
 import io
 import requests
+import yaml
 import pandas as pd
 from pandas import ExcelWriter
 from pandas import ExcelFile
+from data_reshape import parse_header
 """
 Classes and methods for pulling data from a USGS web service.
 
 Available functions:
+generate_urls
+get_header_general_and_data
+call_urls
 -
 """
-def generate_urls():
+def generate_urls(state_abre, year, usgs_url_p1, usgs_url_p2, usgs_url_p3):
     """This method generates the urls that will be called
     This includes all states and DC and over 2 years 2010 and 2015"""
-    state_abrevation = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
-    year = [2010, 2015]
     url_list = []
     for y in year:
-        for s in state_abrevation:
-            url = " https://waterdata.usgs.gov/" + s + "/nwis/water_use?format=rdb&rdb_compression=value&wu_area=County&wu_year=" + str(y) + "&wu_county=ALL&wu_category=ALL"
+        for s in state_abre:
+            url = usgs_url_p1 + s + usgs_url_p2 + str(y) + usgs_url_p3
             url_list.append(url)
     return url_list
 
-def process_data(headers_water_only, unit_list, index_list, source_name_list, flow_name_list,general_list, data):
-     """This method adds in the data be used for the Flow by activity."""
-     year_index = general_list.index("year")
-     state_cd_index = general_list.index("state_cd")
-     county_cd_index = general_list.index("county_cd")
-     for d in data:
-        data_list = d.split("\t")    
-        year = data_list[year_index]
-        fips = str(data_list[state_cd_index]) + str(data_list[county_cd_index])
-        for i in range(len(source_name_list)):
-            source_name = source_name_list[i]
-            flow_name = flow_name_list[i]
-            flow_amount = data_list[index_list[i]]
-            unit = unit_list[i]
-            activity = "null"
-            reliablity_score = "null"
-            data_collection = "null"
-            compartment = "null"
-            flow_type = "null"
-            description = headers_water_only[i]
-            print(description, source_name, flow_name, flow_amount, unit, activity, reliablity_score, data_collection, compartment, fips, flow_type, year)
-
-def split_name(name):
-    space_split = name.split(" ")
-    source_name = ""
-    flow_name = ""
-    for s in space_split:
-        first_letter = s[0]
-        if first_letter.isupper():
-            source_name = source_name.strip() + " " + s
-        else:
-            flow_name = flow_name.strip() + " " + s
-    return(source_name, flow_name)
-
-def activity_flow_type_compartment(name):
-    compartment = "water"
-    activity = "Not Here"
-    activity_list = ["Total population","Public supply","Domestic","Industrial","Total Thermoelectric Power","Fossil-fuel thermoelectric power","Geothermal thermoelectric power","Nuclear thermoelectric power","Thermoelectric power (once-through cooling)","Thermoelectric power (closed-loop cooling)","Mining","Livestock","Livestock (stock)","Livestock (animal specialties)","Aquaculture","Irrigation, total","Irrigation, crop","Irrigation, golf courses","Hydroelectric power","Wastewater treatment"]
-    for a in activity_list:
-        at = a.lower()
-        if at in name.lower():
-            if "groundwater" in name:
-                if "fresh" in name:
-                 activity =  a + " groundwater fresh"
-                elif "saline" in name:
-                 activity =  a + " groundwater saline"
-                else:
-                 activity =  a + " groundwater"
-            elif "surface" in name:
-                if "fresh" in name:
-                 activity =  a + " surface fresh"
-                elif "saline" in name:
-                 activity =  a + " surface saline"
-                else:
-                 activity =  a + " surface"
-            else:
-                if "fresh" in name:
-                 activity =  a + " fresh"
-                elif "saline" in name:
-                 activity =  a + " saline"
-                else:
-                 activity =  a
-    print (activity)
-
-def parse_header(headers, data):
-    """This method will create a header_list and an index_list and a general list.
-    The header list will contain the headers that deal with water headers.
-    Water headers are currently defined as a header with m/g as a unit.
-    The index list will contain the indexes that corospond to the selected headers. This will be used for parsing the data.
-    The general list will contain the headers that deal with the headers that will be needed for each other parts of the flow by activtivity list such as year"""
-    headers_list = headers.split("\t")
-    headers_water_only = []
-    general_list = []
-    comma_count = []
-    names_list = []
-    index_list = []
-    source_name_list = []
-    flow_name_list = []
-    unit_list = []
-    active_list = []
-    flow_type_list = []
-    compartment_list = []
-    index = 0
-    for h in headers_list:
-        comma_split = h.split(",")
-        comma_count.append(len(comma_split))
-        if "Mgal"in h:
-            index_list.append(index)
-            headers_water_only.append(h)
-            unit_split = h.split("in ")
-            unit = unit_split[1]
-            name = unit_split[0].strip()
-            unit_list.append(unit)
-            if(len(comma_split) == 1):
-                names_split = split_name(name)
-                activity_flow_type_compartment(name)
-                source_name_list.append(names_split[0].strip())
-                flow_name_list.append(names_split[1].strip())
-            elif(len(comma_split) == 2):
-                name = comma_split[0]
-                if ")" in name:
-                    paren_split = name.split(")")
-                    source_name = paren_split[0].strip() + ")"
-                    flow_name = paren_split[1].strip()
-                    source_name_list.append(source_name)
-                    flow_name_list.append(flow_name)
-                    activity_flow_type_compartment(name)
-                else:
-                    names_split = split_name(name)
-                    source_name_list.append(names_split[0].strip())
-                    flow_name_list.append(names_split[1].strip())
-                    activity_flow_type_compartment(name)
-            elif(len(comma_split) == 3):
-                name = comma_split[0]
-                names_split = split_name(name)
-                source_name_list.append(names_split[0].strip())
-                flow_name_list.append(names_split[1].strip())
-                activity_flow_type_compartment(name)
-            elif(len(comma_split) == 4):
-                name = comma_split[0] + comma_split[1]
-                names_split = split_name(name)
-                source_name_list.append(names_split[0].strip())
-                flow_name_list.append(names_split[1].strip())
-                activity_flow_type_compartment(name)
-        else:
-            if " in" not in h:
-                if "num" not in h:
-                   general_list.append(h)
-        index += 1
-    
-   # process_data(headers_water_only, unit_list, index_list, source_name_list, flow_name_list,general_list, data)
-    
 
 def get_header_general_and_data(text):
     """This method takes the file data line by line and seperates it into 3 catigories
         Metadata - these are the comments at the begining of the file. 
         Header data - the headers for the data.
         Data - the actuall data for each of the headers. 
-        This method also eliminats the table metadata. The table metadata declares how long each string in the table can be."""
+        This method also eliminates the table metadata. The table metadata declares how long each string in the table can be."""
     flag = True
-    header = ""
+    header = "" 
     column_size = ""
-    data = []
+    data =[]
     metadata = []
     with io.StringIO(text) as fp:
         for line in fp:
@@ -182,17 +53,53 @@ def get_header_general_and_data(text):
                          data.append(line)
             else:
                 metadata.append(line)
-    parse_header(header, data)
+    return (header, data)
+    
+def print_file(data_frames_list):
+    result = pd.concat(data_frames_list)
+    result.to_parquet('FlowByActivity.parquet')
 
-def call_urls(urls_list):
+
+def call_urls(urls_list, activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array ):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data"""
-    # for url in urls_list:
-    #     r = requests.get(url)
+    request_list = []
+    data_frames_list = []
+    for url in urls_list:
+        r = requests.get(urls_list[1])
+        usgs_split = get_header_general_and_data(r.text)
+        parse_header(usgs_split[0], usgs_split[1], activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array)
+       # data_frames_list.append(df)
+
+    print_file(data_frames_list)
         # print(r.text)
-    r = requests.get(urls_list[1], stream = True)
-    get_header_general_and_data(r.text)
+   # r = requests.get(urls_list[1], stream = True)
 
+with open(r'C://Git//projects//epa//flowsa_testbed//usgs_water_consume//datasource_config.yaml') as file:
+    documents = yaml.full_load(file)
 
-generated_urls_list = generate_urls()
-call_urls(generated_urls_list)
+    for item, doc in documents.items():
+        if item == "state_abrevation":
+            state_abre = doc
+        elif item == "year":
+            year = doc
+        elif item == "usgs_url_part_1":
+            usgs_url_p1 = doc
+        elif item == "usgs_url_part_2":
+            usgs_url_p2 = doc
+        elif item == "usgs_url_part_3":
+            usgs_url_p3 = doc
+        elif item == "activity_array":
+            activity_array = doc
+        elif item == "surface_array":
+            surface_array = doc
+        elif item == "water_type_array":
+            water_type_array = doc
+        elif item == "technosphere_flow_array":
+            technosphere_flow_array = doc
+        elif item == "waste_flow_array":
+            waste_flow_array = doc
+
+generated_urls_list = generate_urls(state_abre, year, usgs_url_p1, usgs_url_p2, usgs_url_p3)
+usgs_split = call_urls(generated_urls_list, activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array)
+
