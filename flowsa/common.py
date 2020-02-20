@@ -19,7 +19,7 @@ except NameError:
     modulepath = 'flowsa/'
 
 datapath = modulepath + 'data/'
-
+outputpath = modulepath + 'output/'
 US_FIPS = "00000"
 
 
