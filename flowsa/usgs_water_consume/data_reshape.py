@@ -85,13 +85,13 @@ def compartment(name):
     compartment = "water"
     return compartment
 
-def activity(name,  activity_array, surface_array, water_type_array):
+def activity(name, activity_array, compartment_array, water_type_array):
     """Sets the activity based on the name"""
     for a in activity_array:
         at = a.lower()
         if at in name.lower():
             activity = a
-            for s in surface_array:
+            for s in compartment_array:
                 if s in name.lower():
                     activity = activity + " " + s
             for w in water_type_array:
@@ -112,7 +112,7 @@ def flow_type(name, technosphere_flow_array, waste_flow_array):
              flow_type = "WASTE_FLOW"
     return flow_type
 
-def parse_header(headers, data, activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array):
+def parse_header(headers, data, activity_array, compartment_array, water_type_array, technosphere_flow_array, waste_flow_array):
     """This method takes the header data and parses it so that it works with the flow by activity format. 
     This method creates lists for each object to go along with the Flow-By-Activity """
     headers_list = headers.split("\t")
@@ -139,7 +139,7 @@ def parse_header(headers, data, activity_array, surface_array, water_type_array,
                 unit_split = h.split("in ")
                 unit = unit_split[1]
                 name = unit_split[0].strip()
-                activity_list.append(activity(name, activity_array, surface_array, water_type_array))
+                activity_list.append(activity(name, activity_array, compartment_array, water_type_array))
                 flow_type_list.append(flow_type(name, technosphere_flow_array, waste_flow_array))
                 compartment_list.append(compartment(name))
                 unit_list.append(unit)

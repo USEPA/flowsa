@@ -1,6 +1,6 @@
 ---
 activity_array : ["Total population","Public supply","Domestic","Industrial","Total Thermoelectric Power","Fossil-fuel thermoelectric power","Geothermal thermoelectric power","Nuclear thermoelectric power","Thermoelectric power (once-through cooling)","Thermoelectric power (closed-loop cooling)","Mining","Livestock","Livestock (stock)","Livestock (animal specialties)","Aquaculture","Irrigation, total","Irrigation, crop","Irrigation, golf courses","Hydroelectric power","Wastewater treatment"]
-surface_array : ["groundwater","surface", "total"]
+compartment_array: ["groundwater","surface", "total"]
 water_type_array : ["fresh", "saline"]
 technosphere_flow_array : ["consumptive"]
 waste_flow_array : ["wastewater", "loss"]
