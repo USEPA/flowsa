@@ -5,6 +5,7 @@ import os
 import io
 import requests
 import yaml
+import fastparquet
 import pandas as pd
 from pandas import ExcelWriter
 from pandas import ExcelFile
@@ -13,18 +14,20 @@ from data_reshape import parse_header
 Classes and methods for pulling data from a USGS web service.
 
 Available functions:
-generate_urls
-get_header_general_and_data
-call_urls
+generate_urls - generates the URL for the USGS water use data. 
+get_header_general_and_data - takes usgs data file and parces the Header, Meta Data and Data out of the file. 
+print_file - Joins all the data frames 1 from each file and concatinates the data frames into 1 data frame. This method  then prints the parquet file
+call_urls - calls the url and gets the usgs data file. 
+                This method calls the get_header_general_and_data method and the parse_header method in the data_reshape class. 
 -
 """
-def generate_urls(state_abre, year, usgs_url_p1, usgs_url_p2, usgs_url_p3):
+def generate_urls(state_abrevation, year_value, base_url, nwis, url_params1, url_params2):
     """This method generates the urls that will be called
     This includes all states and DC and over 2 years 2010 and 2015"""
     url_list = []
-    for y in year:
-        for s in state_abre:
-            url = usgs_url_p1 + s + usgs_url_p2 + str(y) + usgs_url_p3
+    for y in year_value:
+        for s in state_abrevation:
+            url = base_url + s + nwis  + url_params1 + str(y) + url_params2
             url_list.append(url)
     return url_list
 
@@ -56,8 +59,10 @@ def get_header_general_and_data(text):
     return (header, data)
     
 def print_file(data_frames_list):
+    """Concatenates all the data frames from the data frames list. 
+        The data frame is then printed into a parquet file."""
     result = pd.concat(data_frames_list)
-    result.to_parquet('FlowByActivity.parquet')
+    result.to_parquet('./output/FlowByActivity.parquet', 'fastparquet', 'UNCOMPRESSED')
 
 
 def call_urls(urls_list, activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array ):
@@ -66,40 +71,53 @@ def call_urls(urls_list, activity_array, surface_array, water_type_array, techno
     request_list = []
     data_frames_list = []
     for url in urls_list:
-        r = requests.get(urls_list[1])
+        r = requests.get(url)
         usgs_split = get_header_general_and_data(r.text)
-        parse_header(usgs_split[0], usgs_split[1], activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array)
-       # data_frames_list.append(df)
+        df = parse_header(usgs_split[0], usgs_split[1], activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array)
+        data_frames_list.append(df)
 
     print_file(data_frames_list)
-        # print(r.text)
-   # r = requests.get(urls_list[1], stream = True)
 
-with open(r'C://Git//projects//epa//flowsa_testbed//usgs_water_consume//datasource_config.yaml') as file:
-    documents = yaml.full_load(file)
+file = open('./datasource_config.yaml', 'r')
+documents = yaml.full_load(file)
+base_url = ""
+state_abrevation = []
+nwis = ""
+url_params1 = ""
+url_params2 = ""
+year_value = []
+for key, value in documents.items():
+    if key == "usgs_url":
+        usgs_url_value = value 
+        base_url = usgs_url_value["base_url"]
+        state_abrevation = usgs_url_value["state_abrevation"]
+        nwis = usgs_url_value["nwis"]
+        params =  usgs_url_value["params"]
+        formats = params["format"]
+        format_value = params["format_value"]
+        compression = params["compression"]
+        compression_value = params["compression_value"]
+        area = params["area"]
+        area_value = params["area_value"]
+        year = params["year"]
+        year_value = params["year_value"]
+        county = params["county"]
+        county_value = params["county_value"]
+        category = params["category"]
+        category_value = params["category_value"]
+        url_params1 = "{0}{1}{2}{3}{4}{5}{6}".format(formats, format_value, compression, compression_value, area, area_value, year)
+        url_params2 = "{0}{1}{2}{3}".format(county, county_value, category, category_value)
 
-    for item, doc in documents.items():
-        if item == "state_abrevation":
-            state_abre = doc
-        elif item == "year":
-            year = doc
-        elif item == "usgs_url_part_1":
-            usgs_url_p1 = doc
-        elif item == "usgs_url_part_2":
-            usgs_url_p2 = doc
-        elif item == "usgs_url_part_3":
-            usgs_url_p3 = doc
-        elif item == "activity_array":
-            activity_array = doc
-        elif item == "surface_array":
-            surface_array = doc
-        elif item == "water_type_array":
-            water_type_array = doc
-        elif item == "technosphere_flow_array":
-            technosphere_flow_array = doc
-        elif item == "waste_flow_array":
-            waste_flow_array = doc
+    elif key == "activity_array":
+        activity_array = value
+    elif key == "surface_array":
+        surface_array = value
+    elif key == "water_type_array":
+        water_type_array = value
+    elif key == "technosphere_flow_array":
+        technosphere_flow_array = value
+    elif key == "waste_flow_array":
+        waste_flow_array = value
 
-generated_urls_list = generate_urls(state_abre, year, usgs_url_p1, usgs_url_p2, usgs_url_p3)
+generated_urls_list = generate_urls(state_abrevation, year_value, base_url, nwis, url_params1, url_params2)
 usgs_split = call_urls(generated_urls_list, activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array)
-
