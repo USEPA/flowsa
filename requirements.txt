@@ -1,6 +1,6 @@
 pandas>=0.22                   # Powerful data structures for data analysis, time series, and statistics.
 pip>=9                         # The PyPA recommended tool for installing Python packages.
 setuptools>=41                 # Fully-featured library designed to facilitate packaging Python projects.
-pyyaml>=5.3                 #Yaml for python
-fastparquet >=0.3.3
-requests >=2.22.0
+pyyaml>=5.3                    # Yaml for python
+pyarrow >= 0.14                # Compression for parquet files
+requests >=2.22.0              # Web service calls

@@ -1,15 +1,12 @@
 # data_pull.py (usgs_water_consume)
 # !/usr/bin/env python3
 # coding=utf-8
-import os
 import io
 import requests
 import yaml
-import fastparquet
 import pandas as pd
-from pandas import ExcelWriter
-from pandas import ExcelFile
-from data_reshape import parse_header
+from flowsa.usgs_water_consume.data_reshape import parse_header
+from flowsa.common import modulepath, outputpath
 """
 Classes and methods for pulling data from a USGS web service.
 
@@ -62,23 +59,23 @@ def print_file(data_frames_list):
     """Concatenates all the data frames from the data frames list. 
         The data frame is then printed into a parquet file."""
     result = pd.concat(data_frames_list)
-    result.to_parquet('./output/FlowByActivity.parquet', 'fastparquet', 'UNCOMPRESSED')
+    result.to_parquet(outputpath+'usgs_water_consume.parquet')
 
 
-def call_urls(urls_list, activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array ):
+def call_urls(urls_list, activity_array, compartment_array, water_type_array, technosphere_flow_array, waste_flow_array):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data"""
-    request_list = []
     data_frames_list = []
     for url in urls_list:
         r = requests.get(url)
         usgs_split = get_header_general_and_data(r.text)
-        df = parse_header(usgs_split[0], usgs_split[1], activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array)
+        df = parse_header(usgs_split[0], usgs_split[1], activity_array, compartment_array, water_type_array, technosphere_flow_array, waste_flow_array)
         data_frames_list.append(df)
 
     print_file(data_frames_list)
 
-file = open('./datasource_config.yaml', 'r')
+usgs_water_path = modulepath + 'usgs_water_consume/'
+file = open(usgs_water_path+'datasource_config.yaml', 'r')
 documents = yaml.full_load(file)
 base_url = ""
 state_abrevation = []
@@ -110,8 +107,8 @@ for key, value in documents.items():
 
     elif key == "activity_array":
         activity_array = value
-    elif key == "surface_array":
-        surface_array = value
+    elif key == "compartment_array":
+        compartment_array = value
     elif key == "water_type_array":
         water_type_array = value
     elif key == "technosphere_flow_array":
@@ -120,4 +117,4 @@ for key, value in documents.items():
         waste_flow_array = value
 
 generated_urls_list = generate_urls(state_abrevation, year_value, base_url, nwis, url_params1, url_params2)
-usgs_split = call_urls(generated_urls_list, activity_array, surface_array, water_type_array, technosphere_flow_array, waste_flow_array)
+usgs_split = call_urls(generated_urls_list, activity_array, compartment_array, water_type_array, technosphere_flow_array, waste_flow_array)
