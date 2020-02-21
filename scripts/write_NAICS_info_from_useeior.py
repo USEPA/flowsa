@@ -19,7 +19,7 @@ useeior = importr('useeior')
 
 NAICS_crosswalk = useeior.getNAICSCrosswalk(2012)
 NAICS_crosswalk = pandas2ri.ri2py_dataframe(NAICS_crosswalk)
-NAICS_crosswalk.to_csv(datapath+"NAICS_2012_2to10_Crosswalk.csv", index=False)
+NAICS_crosswalk.to_csv(datapath+"NAICS_2012_Crosswalk.csv", index=False)
 
 NAICS_names = useeior.getNAICSCodeName(2012)
 NAICS_names = pandas2ri.ri2py_dataframe(NAICS_names)
