@@ -22,6 +22,19 @@ datapath = modulepath + 'data/'
 outputpath = modulepath + 'output/'
 US_FIPS = "00000"
 
+flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
+                    'SourceName': [{'dtype': 'str'}, {'required': True}],
+                    'FlowName': [{'dtype': 'str'}, {'required': True}],
+                    'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+                    'Unit': [{'dtype': 'str'}, {'required': True}],
+                    'Activity': [{'dtype': 'str'}, {'required': True}],
+                    'Compartment': [{'dtype': 'str'}, {'required': True}],
+                    'FIPS': [{'dtype': 'str'}, {'required': True}],
+                    'FlowType': [{'dtype': 'str'}, {'required': True}],
+                    'Year': [{'dtype': 'int'}, {'required': True}],
+                    'DataReliability': [{'dtype': 'float'}, {'required': True}],
+                    'DataCollection': [{'dtype': 'float'}, {'required': True}]
+                    }
 
 def getFIPS(state=None, county=None):
     """
