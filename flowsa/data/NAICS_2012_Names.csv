@@ -10469,3 +10469,263 @@ NAICS_2012_Code,NAICS_2012_Name
 339999K111,"Christmas tree ornaments and decorations, excluding glass and electric"
 339999K121,"Potpourri, including potpourri made from dried and chemically preserved flowers, foliage, fruits, and vines"
 339999K151,"All other miscellaneous fabricated products, including products made from a combination of materials"
+11100000,crop production
+11110000,oilseed and grain farming
+11111000,soybean farming
+11112000,oilseed (except soybean) farming
+1111200A,canola
+1111200B,flaxseed
+1111200C,mustard
+1111200D,rapeseed
+1111200E,safflower
+1111200F,sesame
+1111200G,sunflower
+11113000,dry pea and bean farming
+1111300A,austrian winter peas
+1111300B,dry edible (excl lima) beans
+1111300C,dry edible lima beans
+1111300D,dry edible peas
+1111300E,dry southern (cowpeas) peas
+1111300F,lentils
+1111300G,mung beans
+11114000,wheat farming
+11115000,corn farming
+1111500A,corn for grain
+1111500B,corn for silage
+1111500C,popcorn
+11116000,rice farming
+11119000,other grain farming
+1111900A,barley
+1111900B,buckwheat
+1111900C,millet
+1111900D,oats
+1111900E,rye
+1111900F,sorghum for grain
+1111900G,sorghum for silage
+1111900H,sorghum for syrup
+1111900J,sweet rice
+1111900K,triticale
+1111900L,wild rice
+11121000,vegetable and melon farming
+11121100,potato farming
+11121900,other vegetable (except potato) and melon farming
+1112190A,camelina
+1112190B,ginseng
+1112190C,lotus root
+1112190D,sweet potatoes
+1112190E,taro
+11130000,fruit and tree nut farming
+1113340A,berry totals
+11133900,other noncitrus fruit farming
+1113390A,pineapples
+11140000,greenhouse nursery and floriculture production
+1114210A,cut christmas trees
+1114210B,short term woody crops
+11143000,horticulture totals (excl cut trees)
+11190000,other crop farming
+11191000,tobacco farming
+11192000,cotton
+11193000,sugarcane farming
+1119300A,sugarcane for seed
+1119300B,sugarcane for sugar
+11194000,hay farming
+1119400A,hay and haylage
+1119400B,haylage
+11199000,all other crop farming
+1119900A,dill for oil
+1119900B,ginger root
+1119900C,grasses & legumes totals
+1119900D,guar
+1119900E,herbs dry
+1119900F,hops
+1119900G,jojoba
+1119900H,legumes
+1119900J,mint for all utilization practices
+1119900K,peanuts
+1119900L,sugarbeets for all utilization practices
+1119900M,sugarbeets for seed
+1119900N,sweet corn for seed
+11200000,animal production
+11210000,cattle ranching and farming
+11211000,beef cattle ranching and farming including feedlots 
+1121100A,bison 
+1121100B,cattle incl calves 
+11211100,beef cattle ranching and farming
+11211200,cattle feedlots
+11212000,dairy cattle and milk production
+1121200A,cattle cows milk 
+11220000,hog and pig farming
+1122000A,hogs 
+11230000,poultry and egg production
+11231000,chicken egg production
+1123100A,chickens layers 
+11232000,broilers and other meat-type chicken production
+1123200A,chickens broilers 
+1123200B,chickens pullets replacement 
+1123200C,chickens roosters 
+11233000,turkey production
+1123300A,turkeys 
+11234000,poultry hatcheries
+11239000,other poultry production
+1123900A,chukars 
+1123900B,ducks 
+1123900C,emus 
+1123900D,geese 
+1123900E,guineas 
+1123900F,ostriches 
+1123900G,partridges hungarian 
+1123900H,peafowl hens & cocks 
+1123900J,pheasants 
+1123900K,pigeons & squab 
+1123900L,poultry other 
+1123900M,quail 
+1123900N,rheas 
+11240000,sheep and goat farming
+11241000,sheep farming
+1124100A,sheep incl lambs 
+11242000,goat farming
+1124200A,goats 
+11250000,animal aquaculture
+11290000,other animal production
+11291000,apiculture
+11292000,horse and other equine production
+1129200A,equine horses & ponies 
+1129200B,equine mules & burros & donkeys 
+11293000,fur-bearing animal and rabbit production
+1129300A,mink live 
+1129300B,rabbits live 
+11299000,all other animal production
+1129900A,alpacas 
+1129900B,deer 
+1129900C,elk 
+1129900D,llamas 
+1110000000,crop production
+1111000000,oilseed and grain farming
+1111100000,soybean farming
+1111200000,oilseed (except soybean) farming
+1111200A00,canola
+1111200B00,flaxseed
+1111200C00,mustard
+1111200D00,rapeseed
+1111200E00,safflower
+1111200F00,sesame
+1111200G00,sunflower
+1111300000,dry pea and bean farming
+1111300A00,austrian winter peas
+1111300B00,dry edible (excl lima) beans
+1111300C00,dry edible lima beans
+1111300D00,dry edible peas
+1111300E00,dry southern (cowpeas) peas
+1111300F00,lentils
+1111300G00,mung beans
+1111400000,wheat farming
+1111500000,corn farming
+1111500A00,corn for grain
+1111500B00,corn for silage
+1111500C00,popcorn
+1111600000,rice farming
+1111900000,other grain farming
+1111900A00,barley
+1111900B00,buckwheat
+1111900C00,millet
+1111900D00,oats
+1111900E00,rye
+1111900F00,sorghum for grain
+1111900G00,sorghum for silage
+1111900H00,sorghum for syrup
+1111900J00,sweet rice
+1111900K00,triticale
+1111900L00,wild rice
+1112100000,vegetable and melon farming
+1112110000,potato farming
+1112190000,other vegetable (except potato) and melon farming
+1112190A00,camelina
+1112190B00,ginseng
+1112190C00,lotus root
+1112190D00,sweet potatoes
+1112190E00,taro
+1113000000,fruit and tree nut farming
+1113340A00,berry totals
+1113390000,other noncitrus fruit farming
+1113390A00,pineapples
+1114000000,greenhouse nursery and floriculture production
+1114210A00,cut christmas trees
+1114210B00,short term woody crops
+1114300000,horticulture totals (excl cut trees)
+1119000000,other crop farming
+1119100000,tobacco farming
+1119200000,cotton
+1119300000,sugarcane farming
+1119300A00,sugarcane for seed
+1119300B00,sugarcane for sugar
+1119400000,hay farming
+1119400A00,hay and haylage
+1119400B00,haylage
+1119900000,all other crop farming
+1119900A00,dill for oil
+1119900B00,ginger root
+1119900C00,grasses & legumes totals
+1119900D00,guar
+1119900E00,herbs dry
+1119900F00,hops
+1119900G00,jojoba
+1119900H00,legumes
+1119900J00,mint for all utilization practices
+1119900K00,peanuts
+1119900L00,sugarbeets for all utilization practices
+1119900M00,sugarbeets for seed
+1119900N00,sweet corn for seed
+1120000000,animal production
+1121000000,cattle ranching and farming
+1121100000,beef cattle ranching and farming including feedlots 
+1121100A00,bison 
+1121100B00,cattle incl calves 
+1121110000,beef cattle ranching and farming
+1121120000,cattle feedlots
+1121200000,dairy cattle and milk production
+1121200A00,cattle cows milk 
+1122000000,hog and pig farming
+1122000A00,hogs 
+1123000000,poultry and egg production
+1123100000,chicken egg production
+1123100A00,chickens layers 
+1123200000,broilers and other meat-type chicken production
+1123200A00,chickens broilers 
+1123200B00,chickens pullets replacement 
+1123200C00,chickens roosters 
+1123300000,turkey production
+1123300A00,turkeys 
+1123400000,poultry hatcheries
+1123900000,other poultry production
+1123900A00,chukars 
+1123900B00,ducks 
+1123900C00,emus 
+1123900D00,geese 
+1123900E00,guineas 
+1123900F00,ostriches 
+1123900G00,partridges hungarian 
+1123900H00,peafowl hens & cocks 
+1123900J00,pheasants 
+1123900K00,pigeons & squab 
+1123900L00,poultry other 
+1123900M00,quail 
+1123900N00,rheas 
+1124000000,sheep and goat farming
+1124100000,sheep farming
+1124100A00,sheep incl lambs 
+1124200000,goat farming
+1124200A00,goats 
+1125000000,animal aquaculture
+1129000000,other animal production
+1129100000,apiculture
+1129200000,horse and other equine production
+1129200A00,equine horses & ponies 
+1129200B00,equine mules & burros & donkeys 
+1129300000,fur-bearing animal and rabbit production
+1129300A00,mink live 
+1129300B00,rabbits live 
+1129900000,all other animal production
+1129900A00,alpacas 
+1129900B00,deer 
+1129900C00,elk 
+1129900D00,llamas 
