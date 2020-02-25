@@ -1,4 +1,4 @@
-# usgs_water_consume.py (flowsa)
+# USGS_Water_Use.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 import io
@@ -6,7 +6,7 @@ import pandas as pd
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
 from flowsa.common import log
 
-source = 'usgs_water_consume'
+source = 'USGS_Water_Use'
 
 # activity_array =  ["Total population","Public supply","Domestic","Industrial","Total Thermoelectric Power","Fossil-fuel thermoelectric power","Geothermal thermoelectric power","Nuclear thermoelectric power","Thermoelectric power (once-through cooling)","Thermoelectric power (closed-loop cooling)","Mining","Livestock","Livestock (stock)","Livestock (animal specialties)","Aquaculture","Irrigation, total","Irrigation, crop","Irrigation, golf courses","Hydroelectric power","Wastewater treatment"]
 # surface_array =  ["groundwater","surface", "total"]
@@ -111,7 +111,7 @@ def process_data(headers_water_only, unit_list, index_list,  flow_name_list,gene
                 data_value = None
             year_value = data_list[year_index]
             final_class_list.append( "water")
-            final_source_name_list.append("usgs_water_consume")
+            final_source_name_list.append(source)
             final_flow_name_list.append(flow_name_list[i])
             final_flow_amount_list.append(data_value)
             final_unit_list.append(unit_list[i])
@@ -229,7 +229,7 @@ def extract_flow_name(name):
 def determine_flow_type(name, technosphere_flow_array, waste_flow_array):
     """Takes the header and assigns one of three flow types.
     Everything starts as elementry but if there are keywords for technosphere and waste flow.
-    The keywords are set in in the usgs_water_consume.yaml """
+    The keywords are set in in the USGS_Water_Use.yaml """
     flow_type = "ELEMENTARY_FLOW"
     for t in technosphere_flow_array:
         if t in name:

@@ -1,0 +1,50 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,TechnologicalCorrelation,SectorType
+USGS_Water_Use,Aquaculture,NAICS_2012_Code,1125,NA,I
+USGS_Water_Use,Hydroelectric,NAICS_2012_Code,221111,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,1133,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,23,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,31,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,32,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,33,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,5111,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,51222,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,51223,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,54171,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,56291,NA,I
+USGS_Water_Use,Industrial,NAICS_2012_Code,81149,NA,I
+USGS_Water_Use,Irrigation Crop,NAICS_2012_Code,111,NA,I
+USGS_Water_Use,Irrigation Golf,NAICS_2012_Code,71391,NA,I
+USGS_Water_Use,Irrigation Total,NAICS_2012_Code,111,NA,I
+USGS_Water_Use,Irrigation Total,NAICS_2012_Code,71391,NA,I
+USGS_Water_Use,Livestock,NAICS_2012_Code,1121,NA,I
+USGS_Water_Use,Livestock,NAICS_2012_Code,1122,NA,I
+USGS_Water_Use,Livestock,NAICS_2012_Code,1123,NA,I
+USGS_Water_Use,Livestock,NAICS_2012_Code,1124,NA,I
+USGS_Water_Use,Livestock,NAICS_2012_Code,1129,NA,I
+USGS_Water_Use,Mining,NAICS_2012_Code,21,NA,I
+USGS_Water_Use,Mining,NAICS_2012_Code,54136,NA,I
+USGS_Water_Use,Public Supply,NAICS_2012_Code,221310,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221112,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221113,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221114,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221116,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221117,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221118,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221121,NA,I
+USGS_Water_Use,Thermoelectric Closed Loop,NAICS_2012_Code,221122,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221112,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221113,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221114,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221116,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221117,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221118,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221121,NA,I
+USGS_Water_Use,Thermoelectric Once Through,NAICS_2012_Code,221122,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221112,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221113,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221114,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221116,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221117,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221118,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221121,NA,I
+USGS_Water_Use,Thermoelectric Total,NAICS_2012_Code,221122,NA,I
