@@ -11,7 +11,7 @@ source = 'usgs_water_consume'
 # activity_array =  ["Total population","Public supply","Domestic","Industrial","Total Thermoelectric Power","Fossil-fuel thermoelectric power","Geothermal thermoelectric power","Nuclear thermoelectric power","Thermoelectric power (once-through cooling)","Thermoelectric power (closed-loop cooling)","Mining","Livestock","Livestock (stock)","Livestock (animal specialties)","Aquaculture","Irrigation, total","Irrigation, crop","Irrigation, golf courses","Hydroelectric power","Wastewater treatment"]
 # surface_array =  ["groundwater","surface", "total"]
 # water_type_array = ["fresh", "saline"]
-technosphere_flow_array = ["consumptive"]
+technosphere_flow_array = ["consumptive", "Public Supply"]
 waste_flow_array = ["wastewater", "loss"]
 
 
@@ -108,7 +108,7 @@ def process_data(headers_water_only, unit_list, index_list,  flow_name_list,gene
             data_index = index_list[i]
             data_value = data_list[data_index]
             if data_value == "-":
-                data_value == None
+                data_value = None
             year_value = data_list[year_index]
             final_class_list.append( "water")
             final_source_name_list.append("usgs_water_consume")
