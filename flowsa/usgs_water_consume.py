@@ -242,8 +242,8 @@ def determine_flow_type(name, technosphere_flow_array, waste_flow_array):
 if __name__ == '__main__':
     config = load_sourceconfig(source)
     url_list = build_usgs_water_url_list(config)
-    df_list = call_usgs_water_urls(url_list[0:1])
+    df_list = call_usgs_water_urls(url_list[0:25])
     #Need to check each df before concatenating
     df = pd.concat(df_list)
     log.info("Retrieved data for "+source)
-    store_flowbyactivity(df)
+    store_flowbyactivity(df,source)
