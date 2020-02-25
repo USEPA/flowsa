@@ -1,222 +1,54 @@
-ActivitySourceName,Activity,SectorSourceName,Sector,TechnologicalCorrelation,SectorType
-USGS_WU,Aquaculture,NAICS_2012_Code,1125,NA,NA
-USGS_WU,Domestic,NAICS_2012_Code,,NA,NA
-USGS_WU,Hydroelectric,NAICS_2012_Code,221111,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,1133,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,236,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,2371,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,2373,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,2379,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,2381,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,2382,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,2383,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3111,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3112,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3113,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3114,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3115,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3116,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3117,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3118,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3119,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3121,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3122,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3131,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3132,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3133,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3141,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3149,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3151,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3152,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3159,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3161,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3162,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3169,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3211,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3212,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3219,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3221,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3222,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3231,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3241,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3251,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3252,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3253,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3254,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3255,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3256,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3259,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3261,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3262,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3271,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3272,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3273,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3274,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3279,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3311,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3312,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3313,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3314,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3315,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3321,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3322,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3323,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3324,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3325,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3326,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3327,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3328,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3329,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3331,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3332,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3333,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3334,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3335,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3336,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3339,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3341,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3342,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3343,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3344,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3345,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3346,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3351,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3352,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3353,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3359,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3361,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3362,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3363,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3364,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3365,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3366,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3369,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3371,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3372,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3379,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3391,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,3399,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,5111,NA,NA
-USGS_WU,Industrial,NAICS_2012_Code,8114,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111110,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111120,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111130,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111140,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111150,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111160,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111191,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111199,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111211,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111219,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111310,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111320,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111331,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111332,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111333,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111334,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111335,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111336,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111339,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111411,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111419,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111421,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111422,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111910,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111920,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111930,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111940,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111991,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111992,NA,NA
-USGS_WU,Irrigation_Crop,NAICS_2012_Code,111998,NA,NA
-USGS_WU,Irrigation_Golf,NAICS_2012_Code,713910,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111110,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111120,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111130,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111140,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111150,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111160,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111191,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111199,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111211,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111219,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111310,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111320,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111331,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111332,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111333,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111334,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111335,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111336,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111339,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111411,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111419,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111421,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111422,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111910,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111920,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111930,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111940,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111991,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111992,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,111998,NA,NA
-USGS_WU,Irrigation_Total,NAICS_2012_Code,713910,NA,NA
-USGS_WU,Livestock,NAICS_2012_Code,1121,NA,NA
-USGS_WU,Livestock,NAICS_2012_Code,1122,NA,NA
-USGS_WU,Livestock,NAICS_2012_Code,1123,NA,NA
-USGS_WU,Livestock,NAICS_2012_Code,1124,NA,NA
-USGS_WU,Livestock,NAICS_2012_Code,1129,NA,NA
-USGS_WU,Mining,NAICS_2012_Code,21,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,220000,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,221000,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,221300,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,221310,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,531110,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,531190,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,611110,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,611210,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,611310,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,622210,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623000,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623100,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623110,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623200,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623210,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623220,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623310,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623311,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623312,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,623900,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,721200,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,721300,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,813990,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,921150,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,921190,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,924110,NA,NA
-USGS_WU,Public_Supply,NAICS_2012_Code,928110,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221112,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221113,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221115,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221114,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221117,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221118,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221116,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221121,NA,NA
-USGS_WU,Thermoelectric_Closed_Loop,NAICS_2012_Code,221122,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221112,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221113,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221115,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221114,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221117,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221118,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221116,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221121,NA,NA
-USGS_WU,Thermoelectric_Once_Through,NAICS_2012_Code,221122,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221112,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221113,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221115,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221114,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221117,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221118,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221116,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221121,NA,NA
-USGS_WU,Thermoelectric_Total,NAICS_2012_Code,221122,NA,NA
+"ActivitySourceName","Activity","SectorSourceName","Sector","TechnologicalCorrelation","SectorType"
+"usgs_water_consume","Aquaculture","NAICS_2012_Code","1125",NA,"I"
+"usgs_water_consume","Domestic","NAICS_2012_Code",NA,NA,"I"
+"usgs_water_consume","Hydroelectric","NAICS_2012_Code","221111",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","1133",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","23",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","31",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","32",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","33",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","5111",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","51222",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","51223",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","54171",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","56291",NA,"I"
+"usgs_water_consume","Industrial","NAICS_2012_Code","81149",NA,"I"
+"usgs_water_consume","Irrigation Crop","NAICS_2012_Code","111",NA,"I"
+"usgs_water_consume","Irrigation Golf","NAICS_2012_Code","71391",NA,"I"
+"usgs_water_consume","Irrigation Total","NAICS_2012_Code","111",NA,"I"
+"usgs_water_consume","Irrigation Total","NAICS_2012_Code","71391",NA,"I"
+"usgs_water_consume","Livestock","NAICS_2012_Code","1121",NA,"I"
+"usgs_water_consume","Livestock","NAICS_2012_Code","1122",NA,"I"
+"usgs_water_consume","Livestock","NAICS_2012_Code","1123",NA,"I"
+"usgs_water_consume","Livestock","NAICS_2012_Code","1124",NA,"I"
+"usgs_water_consume","Livestock","NAICS_2012_Code","1129",NA,"I"
+"usgs_water_consume","Mining","NAICS_2012_Code","21",NA,"I"
+"usgs_water_consume","Mining","NAICS_2012_Code","54136",NA,"I"
+"usgs_water_consume","Public Supply","NAICS_2012_Code","221310",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221112",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221113",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221114",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221118",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221115",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221116",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221117",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221121",NA,"I"
+"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221122",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221112",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221113",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221114",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221118",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221115",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221116",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221117",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221121",NA,"I"
+"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221122",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221112",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221113",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221114",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221118",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221115",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221116",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221117",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221121",NA,"I"
+"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221122",NA,"I"
