@@ -19,8 +19,12 @@ except NameError:
     modulepath = 'flowsa/'
 
 datapath = modulepath + 'data/'
+sourceconfigpath = datapath + 'sourceconfig/'
 outputpath = modulepath + 'output/'
+
 US_FIPS = "00000"
+
+flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                     'SourceName': [{'dtype': 'str'}, {'required': True}],
