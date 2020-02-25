@@ -26,6 +26,9 @@ US_FIPS = "00000"
 
 flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
 
+#Sets default Sector Source Name
+sector_source_name = 'NAICS_2012_Code'
+
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                     'SourceName': [{'dtype': 'str'}, {'required': True}],
                     'FlowName': [{'dtype': 'str'}, {'required': True}],
