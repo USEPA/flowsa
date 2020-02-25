@@ -1,31 +1,34 @@
-# data_pull.py (usgs_water_consume)
+# datapull.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-import os
-import io
+"""
+Methods for pulling data from http sources
+"""
 import yaml
-import pyarrow 
-import pandas as pd
-from pandas import ExcelWriter
-from pandas import ExcelFile
+import requests
+from flowsa.common import outputpath, sourceconfigpath, log
 
-"""
-Classes and methods for pulling data from a USGS web service.
-
-Available functions:
-generate_urls - generates the URL for the USGS water use data. 
-get_header_general_and_data - takes usgs data file and parces the Header, Meta Data and Data out of the file. 
-print_file - Joins all the data frames 1 from each file and concatinates the data frames into 1 data frame. This method  then prints the parquet file
-call_urls - calls the url and gets the usgs data file. 
-                This method calls the get_header_general_and_data method and the parse_header method in the data_reshape class. 
--
-"""
-def print_file(result):
+def store_flowbyactivity(result, source):
     """Prints the data frame into a parquet file."""
-    result.to_parquet('FlowByActivity.parquet', 'pyarrow')
-    print_file(result)
+    try:
+        result.to_parquet(outputpath + source +'.parquet', 'pyarrow')
+    except:
+        log.error('Failed to save '+source+' file.')
 
-def get_yaml():
-    file = open('./flowsa/usgs_water_consume/datasource_config.yaml', 'r')
-    document = yaml.full_load(file)
-    return document
+def make_http_request(url):
+    try:
+        r = requests.get(url)
+    except requests.exceptions.ConnectionError:
+        log.error("URL Connection Error for " + url)
+    try:
+        r.raise_for_status()
+    except requests.exceptions.HTTPError:
+        log.error('Error in URL request!')
+    return r
+
+def load_sourceconfig(source):
+    sfile = sourceconfigpath+source+'.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
