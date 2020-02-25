@@ -1,54 +1,50 @@
-"ActivitySourceName","Activity","SectorSourceName","Sector","TechnologicalCorrelation","SectorType"
-"usgs_water_consume","Aquaculture","NAICS_2012_Code","1125",NA,"I"
-"usgs_water_consume","Domestic","NAICS_2012_Code",NA,NA,"I"
-"usgs_water_consume","Hydroelectric","NAICS_2012_Code","221111",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","1133",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","23",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","31",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","32",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","33",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","5111",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","51222",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","51223",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","54171",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","56291",NA,"I"
-"usgs_water_consume","Industrial","NAICS_2012_Code","81149",NA,"I"
-"usgs_water_consume","Irrigation Crop","NAICS_2012_Code","111",NA,"I"
-"usgs_water_consume","Irrigation Golf","NAICS_2012_Code","71391",NA,"I"
-"usgs_water_consume","Irrigation Total","NAICS_2012_Code","111",NA,"I"
-"usgs_water_consume","Irrigation Total","NAICS_2012_Code","71391",NA,"I"
-"usgs_water_consume","Livestock","NAICS_2012_Code","1121",NA,"I"
-"usgs_water_consume","Livestock","NAICS_2012_Code","1122",NA,"I"
-"usgs_water_consume","Livestock","NAICS_2012_Code","1123",NA,"I"
-"usgs_water_consume","Livestock","NAICS_2012_Code","1124",NA,"I"
-"usgs_water_consume","Livestock","NAICS_2012_Code","1129",NA,"I"
-"usgs_water_consume","Mining","NAICS_2012_Code","21",NA,"I"
-"usgs_water_consume","Mining","NAICS_2012_Code","54136",NA,"I"
-"usgs_water_consume","Public Supply","NAICS_2012_Code","221310",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221112",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221113",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221114",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221118",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221115",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221116",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221117",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221121",NA,"I"
-"usgs_water_consume","Thermoelectric Closed Loop","NAICS_2012_Code","221122",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221112",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221113",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221114",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221118",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221115",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221116",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221117",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221121",NA,"I"
-"usgs_water_consume","Thermoelectric Once Through","NAICS_2012_Code","221122",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221112",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221113",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221114",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221118",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221115",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221116",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221117",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221121",NA,"I"
-"usgs_water_consume","Thermoelectric Total","NAICS_2012_Code","221122",NA,"I"
+ActivitySourceName,Activity,SectorSourceName,Sector,TechnologicalCorrelation,SectorType
+usgs_water_consume,Aquaculture,NAICS_2012_Code,1125,NA,I
+usgs_water_consume,Hydroelectric,NAICS_2012_Code,221111,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,1133,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,23,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,31,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,32,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,33,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,5111,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,51222,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,51223,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,54171,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,56291,NA,I
+usgs_water_consume,Industrial,NAICS_2012_Code,81149,NA,I
+usgs_water_consume,Irrigation Crop,NAICS_2012_Code,111,NA,I
+usgs_water_consume,Irrigation Golf,NAICS_2012_Code,71391,NA,I
+usgs_water_consume,Irrigation Total,NAICS_2012_Code,111,NA,I
+usgs_water_consume,Irrigation Total,NAICS_2012_Code,71391,NA,I
+usgs_water_consume,Livestock,NAICS_2012_Code,1121,NA,I
+usgs_water_consume,Livestock,NAICS_2012_Code,1122,NA,I
+usgs_water_consume,Livestock,NAICS_2012_Code,1123,NA,I
+usgs_water_consume,Livestock,NAICS_2012_Code,1124,NA,I
+usgs_water_consume,Livestock,NAICS_2012_Code,1129,NA,I
+usgs_water_consume,Mining,NAICS_2012_Code,21,NA,I
+usgs_water_consume,Mining,NAICS_2012_Code,54136,NA,I
+usgs_water_consume,Public Supply,NAICS_2012_Code,221310,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221112,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221113,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221114,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221116,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221117,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221118,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221121,NA,I
+usgs_water_consume,Thermoelectric Closed Loop,NAICS_2012_Code,221122,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221112,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221113,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221114,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221116,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221117,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221118,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221121,NA,I
+usgs_water_consume,Thermoelectric Once Through,NAICS_2012_Code,221122,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221112,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221113,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221114,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221116,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221117,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221118,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221121,NA,I
+usgs_water_consume,Thermoelectric Total,NAICS_2012_Code,221122,NA,I
