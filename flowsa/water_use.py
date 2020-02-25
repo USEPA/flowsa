@@ -1,13 +1,13 @@
-# usgs_water_consume.py (flowsa)
+# water_use.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Produces one or more FlowBySector files for the Water class
+Produces one or more FlowBySector files for the Water Use class
 """
 import flowsa
 from flowsa.mapping import map_activities_to_sector
 
-wat_flowbyactivity = flowsa.getFlowByActivity('Water')
+wat_flowbyactivity = flowsa.getFlowByActivity(flowclass='Water')
 
 # Removing records that we don't need
 
@@ -17,7 +17,7 @@ wat_flowbyactivity = flowsa.getFlowByActivity('Water')
 
 
 ##Map to FlowBySector
-#map_activities_to_sector(wat_flowbyactivity)
+wat_flowbysector = map_activities_to_sector(wat_flowbyactivity)
 
 
 
