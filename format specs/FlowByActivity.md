@@ -14,5 +14,6 @@ FIPS | String | Y | FIPS code for location
 Year | Int | Y | Year of data, e.g. `2010`
 DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md)
 DataCollection | Numeric | Y | A score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md)
+Description | String | Y | Original description of the flow
 
 *At minimum, either ActivityProducedBy or ActivityConsumedBy must be present. If there is a transfer between activities, both must be present.
