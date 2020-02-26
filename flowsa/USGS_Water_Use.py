@@ -6,8 +6,9 @@ import pandas as pd
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
 from flowsa.common import log
 
-source = 'USGS_Water_Use'
 
+source = 'USGS_Water_Use'
+class_value = 'water'
 technosphere_flow_array = ["consumptive", "Public Supply"]
 waste_flow_array = ["wastewater", "loss"]
 
@@ -75,7 +76,7 @@ def get_usgs_water_header_and_data(text):
     return (header, data)
 
 
-def process_data(headers_water_only, unit_list, index_list,  flow_name_list,general_list,  activity_list, compartment_list, flow_type_list,data):
+def process_data(description_list, unit_list, index_list,  flow_name_list,general_list, ActivityProducedBy_list, ActivityConsumedBy_list, compartment_list, flow_type_list,data):
      """This method adds in the data be used for the Flow by activity.
      This method creates a dictionary from the parced headers and the parsed data.
      This dictionary is then turned into a panda data frame and returned."""
@@ -84,7 +85,8 @@ def process_data(headers_water_only, unit_list, index_list,  flow_name_list,gene
      final_flow_name_list = []
      final_flow_amount_list = []
      final_unit_list = []
-     final_activity_list = []
+     final_activity_produced_list = []
+     final_activity_consumed_list = []
      final_compartment_list = []
      final_fips_list = []
      final_flow_type_list = []
@@ -102,39 +104,59 @@ def process_data(headers_water_only, unit_list, index_list,  flow_name_list,gene
         year = data_list[year_index]
         fips = str(data_list[state_cd_index]) + str(data_list[county_cd_index])
 
-        for i in range(len(activity_list)):
+        for i in range(len(final_activity_produced_list)):
             data_index = index_list[i]
             data_value = data_list[data_index]
-            if data_value == "-":
-                data_value = None
-            year_value = data_list[year_index]
-            final_class_list.append( "water")
-            final_source_name_list.append(source)
-            final_flow_name_list.append(flow_name_list[i])
-            final_flow_amount_list.append(data_value)
-            final_unit_list.append(unit_list[i])
-            final_activity_list.append(activity_list[i])
-            final_compartment_list.append(compartment_list[i])
-            final_fips_list.append(fips)
-            final_flow_type_list.append(flow_type_list[i])
-            final_year_list.append(year_value)
-            final_data_reliability_list.append("null")
-            final_data_collection_list.append("null")
-            final_description_list.append(headers_water_only[i])
+            if data_value != "-":
+                year_value = data_list[year_index]
+                final_class_list.append(class_value)
+                final_source_name_list.append(source)
+                final_flow_name_list.append(flow_name_list[i])
+                final_flow_amount_list.append(data_value)
+                final_unit_list.append(unit_list[i])
+                final_activity_produced_list.append(ActivityProducedBy_list[i])
+                final_activity_consumed_list.append(ActivityConsumedBy_list[i])
+                final_compartment_list.append(compartment_list[i])
+                final_fips_list.append(fips)
+                final_flow_type_list.append(flow_type_list[i])
+                final_year_list.append(year_value)
+                final_data_reliability_list.append("null")
+                final_data_collection_list.append("null")
+                final_description_list.append(description_list[i])
     
      flow_by_activity = [] 
      d = flow_by_activity_fields.keys()
      for key in flow_by_activity_fields.keys(): 
         flow_by_activity.append(key) 
-     dict = {flow_by_activity[0]: final_class_list, flow_by_activity[1]: final_source_name_list, flow_by_activity[2]: final_flow_name_list, flow_by_activity[3]: final_flow_amount_list, flow_by_activity[4]: final_unit_list, flow_by_activity[5]: final_activity_list, flow_by_activity[6]: final_compartment_list, flow_by_activity[7]: final_fips_list, flow_by_activity[8]: final_flow_type_list, flow_by_activity[9]: final_year_list, flow_by_activity[10]: final_data_reliability_list, flow_by_activity[11]: final_data_collection_list}
+     dict = {flow_by_activity[0]: final_class_list, flow_by_activity[1]: final_source_name_list, flow_by_activity[2]: final_flow_name_list, flow_by_activity[3]: final_flow_amount_list, flow_by_activity[4]: final_unit_list, flow_by_activity[5]: final_activity_produced_list, flow_by_activity[6]: final_activity_consumed_list, flow_by_activity[7]: final_compartment_list, flow_by_activity[8]: final_fips_list, flow_by_activity[9]: final_year_list, flow_by_activity[9]: final_data_reliability_list, flow_by_activity[10]: final_data_collection_list, flow_by_activity[11]: final_description_list }
      df = pd.DataFrame(dict)
      return df
+
+def activity(name):
+    name_split = name.split(",")
+    if "Irrigation" in name :
+        n = name_split[0] + "," + name_split[1]
+    else:
+        n = name_split[0]
+    if "to" in n:
+        activity = n.split("to")
+        produced = activity[0]
+        consumed = activity[1]
+    elif "from" in n:
+        activity = n.split("from")
+        produced = activity[1]
+        consumed = activity[0]
+    else:
+        produced = n
+        consumed = None
+
+    return(produced, consumed)
 
 def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
     """This method takes the header data and parses it so that it works with the flow by activity format.
     This method creates lists for each object to go along with the Flow-By-Activity """
     headers_list = headers.split("\t")
-    headers_water_only = []
+    description_list = []
     general_list = []
     comma_count = []
     index_list = []
@@ -144,6 +166,8 @@ def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
     flow_type_list = []
     compartment_list = []
     data_frame_list = []
+    ActivityProducedBy_list = []
+    ActivityConsumedBy_list = []
     index = 0
     for h in headers_list:
         comma_split = h.split(",")
@@ -151,15 +175,20 @@ def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
         if "Commercial" not in h:
             if "Mgal"in h:
                 index_list.append(index)
-                headers_water_only.append(h)
+                description_list.append(h)
                 unit_split = h.split("in ")
                 unit = unit_split[1]
                 name = unit_split[0].strip()
                 flow_type_list.append(determine_flow_type(name, technosphere_flow_array, waste_flow_array))
                 compartment_list.append(extract_compartment(name))
                 unit_list.append(unit)
+                activities = activity(h)
+                ActivityProducedBy_list.append(activities[0])
+                ActivityConsumedBy_list.append(activities[1])
+
                 if(len(comma_split) == 1):
                     names_split = split_name(name)
+                    
                     activity_list.append(names_split[0].strip())
                     flow_name_list.append(extract_flow_name(h))
                 elif(len(comma_split) == 2):
@@ -168,20 +197,24 @@ def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
                         paren_split = name.split(")")
                         activity_name = paren_split[0].strip() + ")"
                         flow_name = paren_split[1].strip()
+                        
                         activity_list.append(activity_name)
                         flow_name_list.append(extract_flow_name(h))
                     else:
                         names_split = split_name(name)
+                        
                         activity_list.append(names_split[0].strip())
                         flow_name_list.append(extract_flow_name(h))
                 elif(len(comma_split) == 3):
                     name = comma_split[0]
                     names_split = split_name(name)
+                    
                     activity_list.append(names_split[0].strip())
                     flow_name_list.append(extract_flow_name(h))
                 elif(len(comma_split) == 4):
                     name = comma_split[0] + comma_split[1]
                     names_split = split_name(name)
+                    
                     activity_list.append(names_split[0].strip())
                     flow_name_list.append(extract_flow_name(h))
             else:
@@ -189,7 +222,7 @@ def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
                     if "num" not in h:
                         general_list.append(h)
         index += 1
-    data_frame = process_data(headers_water_only, unit_list, index_list, flow_name_list, general_list,  activity_list, compartment_list, flow_type_list, data)
+    data_frame = process_data(description_list, unit_list, index_list, flow_name_list, general_list,  ActivityProducedBy_list, ActivityConsumedBy_list, compartment_list, flow_type_list, data)
     return data_frame
 
 def split_name(name):
@@ -217,7 +250,6 @@ def extract_compartment(name):
 
 def extract_flow_name(name):
     """Sets the flow name based on it's name"""
-    print(name)
     if"fresh" in name.lower():
         flow_name = "fresh"
     elif "saline" in name.lower():
