@@ -6,11 +6,9 @@ import pandas as pd
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
 from flowsa.common import log
 
+
 source = 'usgs_water_consume'
 
-# activity_array =  ["Total population","Public supply","Domestic","Industrial","Total Thermoelectric Power","Fossil-fuel thermoelectric power","Geothermal thermoelectric power","Nuclear thermoelectric power","Thermoelectric power (once-through cooling)","Thermoelectric power (closed-loop cooling)","Mining","Livestock","Livestock (stock)","Livestock (animal specialties)","Aquaculture","Irrigation, total","Irrigation, crop","Irrigation, golf courses","Hydroelectric power","Wastewater treatment"]
-# surface_array =  ["groundwater","surface", "total"]
-# water_type_array = ["fresh", "saline"]
 technosphere_flow_array = ["consumptive", "Public Supply"]
 waste_flow_array = ["wastewater", "loss"]
 
@@ -95,6 +93,7 @@ def process_data(headers_water_only, unit_list, index_list,  flow_name_list,gene
      final_data_reliability_list = []
      final_data_collection_list = []
      final_description_list = []
+     all_lists =[]
 
      year_index = general_list.index("year")
      state_cd_index = general_list.index("state_cd")
@@ -123,10 +122,12 @@ def process_data(headers_water_only, unit_list, index_list,  flow_name_list,gene
             final_data_reliability_list.append("null")
             final_data_collection_list.append("null")
             final_description_list.append(headers_water_only[i])
-     #flow_by_activity_fields(final_class_list, final_source_name_list, final_flow_name_list, final_flow_amount_list, final_unit_list, final_activity_list, final_compartment_list, final_fips_list, final_flow_type_list, final_year_list, final_data_reliability_list, final_data_collection_list)
-     dict = {'Class': final_class_list, 'Source Name': final_source_name_list, 'Flow Name': final_flow_name_list, 'Flow Amount': final_flow_amount_list,
-      'Unit': final_unit_list, 'Activity': final_activity_list, 'Compartment': final_compartment_list, 'FIPS': final_fips_list, 'Flow Type': final_flow_type_list,
-      'Year': final_year_list, 'Reliability Score': final_data_reliability_list, 'Data Collection': final_data_collection_list, 'Description':final_description_list}
+    
+     flow_by_activity = [] 
+     d = flow_by_activity_fields.keys()
+     for key in flow_by_activity_fields.keys(): 
+        flow_by_activity.append(key) 
+     dict = {flow_by_activity[0]: final_class_list, flow_by_activity[1]: final_source_name_list, flow_by_activity[2]: final_flow_name_list, flow_by_activity[3]: final_flow_amount_list, flow_by_activity[4]: final_unit_list, flow_by_activity[5]: final_activity_list, flow_by_activity[6]: final_compartment_list, flow_by_activity[7]: final_fips_list, flow_by_activity[8]: final_flow_type_list, flow_by_activity[9]: final_year_list, flow_by_activity[10]: final_data_reliability_list, flow_by_activity[11]: final_data_collection_list}
      df = pd.DataFrame(dict)
      return df
 
@@ -161,7 +162,7 @@ def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
                 if(len(comma_split) == 1):
                     names_split = split_name(name)
                     activity_list.append(names_split[0].strip())
-                    flow_name_list.append(extract_flow_name(name))
+                    flow_name_list.append(extract_flow_name(h))
                 elif(len(comma_split) == 2):
                     name = comma_split[0]
                     if ")" in name:
@@ -169,28 +170,27 @@ def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
                         activity_name = paren_split[0].strip() + ")"
                         flow_name = paren_split[1].strip()
                         activity_list.append(activity_name)
-                        flow_name_list.append(extract_flow_name(name))
+                        flow_name_list.append(extract_flow_name(h))
                     else:
                         names_split = split_name(name)
                         activity_list.append(names_split[0].strip())
-                        flow_name_list.append(extract_flow_name(name))
+                        flow_name_list.append(extract_flow_name(h))
                 elif(len(comma_split) == 3):
                     name = comma_split[0]
                     names_split = split_name(name)
                     activity_list.append(names_split[0].strip())
-                    flow_name_list.append(extract_flow_name(name))
+                    flow_name_list.append(extract_flow_name(h))
                 elif(len(comma_split) == 4):
                     name = comma_split[0] + comma_split[1]
                     names_split = split_name(name)
                     activity_list.append(names_split[0].strip())
-                    flow_name_list.append(extract_flow_name(name))
+                    flow_name_list.append(extract_flow_name(h))
             else:
                 if " in" not in h:
                     if "num" not in h:
                         general_list.append(h)
         index += 1
-
-    data_frame = process_data(headers_water_only, unit_list, index_list, flow_name_list,general_list,  activity_list, compartment_list, flow_type_list, data)
+    data_frame = process_data(headers_water_only, unit_list, index_list, flow_name_list, general_list,  activity_list, compartment_list, flow_type_list, data)
     return data_frame
 
 def split_name(name):
@@ -218,6 +218,7 @@ def extract_compartment(name):
 
 def extract_flow_name(name):
     """Sets the flow name based on it's name"""
+    print(name)
     if"fresh" in name.lower():
         flow_name = "fresh"
     elif "saline" in name.lower():
@@ -246,4 +247,4 @@ if __name__ == '__main__':
     #Need to check each df before concatenating
     df = pd.concat(df_list)
     log.info("Retrieved data for "+source)
-    store_flowbyactivity(df)
+    store_flowbyactivity(df, source)
