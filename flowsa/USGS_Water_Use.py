@@ -3,9 +3,18 @@
 # coding=utf-8
 import io
 import pandas as pd
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
-from flowsa.common import log
+# from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
+# from flowsa.common import log
 
+
+
+import sys, os, inspect
+currentdir =  os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
+from common import flow_by_activity_fields
+from datapull import *
+from flowbyactivity import *
 
 source = 'USGS_Water_Use'
 class_value = 'water'
@@ -75,7 +84,6 @@ def get_usgs_water_header_and_data(text):
                 metadata.append(line)
     return (header, data)
 
-
 def process_data(description_list, unit_list, index_list,  flow_name_list,general_list, ActivityProducedBy_list, ActivityConsumedBy_list, compartment_list, flow_type_list,data):
      """This method adds in the data be used for the Flow by activity.
      This method creates a dictionary from the parced headers and the parsed data.
@@ -138,18 +146,30 @@ def activity(name):
         n = name_split[0] + "," + name_split[1]
     else:
         n = name_split[0]
-    if "to" in n:
-        activity = n.split("to")
+    if " to " in n:
+        activity = n.split(" to ")
         produced = activity[0]
         consumed = activity[1]
-    elif "from" in n:
-        activity = n.split("from")
+    elif " from " in n:
+        activity = n.split(" from ")
         produced = activity[1]
         consumed = activity[0]
-    else:
-        produced = n
+    elif "consumptive" in n:
+        split_case = split_name(n)
         consumed = None
-
+        produced = split_case[0]
+    elif ")" in n:
+        produced = None
+        paren_split = n.split(")")
+        consumed = paren_split[0].strip() + ")"
+    elif "total deliveries" in n:
+        split_case = split_name(n)
+        consumed = None
+        produced = split_case[0]
+    else:
+        split_case = split_name(n)
+        produced = None
+        consumed = split_case[0]
     return(produced, consumed)
 
 def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
@@ -228,15 +248,15 @@ def parse_header(headers, data,  technosphere_flow_array, waste_flow_array):
 def split_name(name):
     """This method splits the header name into a source name and a flow name"""
     space_split = name.split(" ")
-    source_name = ""
-    flow_name = ""
+    upper_case = ""
+    lower_case = ""
     for s in space_split:
         first_letter = s[0]
         if first_letter.isupper():
-            source_name = source_name.strip() + " " + s
+            upper_case = upper_case.strip() + " " + s
         else:
-            flow_name = flow_name.strip() + " " + s
-    return(source_name, flow_name)
+            lower_case = lower_case.strip() + " " + s
+    return(upper_case, lower_case)
 
 def extract_compartment(name):
     """Sets the extract_compartment based on it's name"""
@@ -244,6 +264,8 @@ def extract_compartment(name):
         compartment = "surface"
     elif "ground" in name.lower():
         compartment = "ground"
+    elif "total" in name:
+        compartment = "total"
     else:
         compartment = "blank"
     return compartment
