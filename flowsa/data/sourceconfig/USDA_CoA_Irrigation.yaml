@@ -1,0 +1,10 @@
+---
+url_usda_crops:
+   base_url: "https://quickstats.nass.usda.gov/api/api_GET/?"
+   url_key: "72FA0856-DE21-3A65-9DE6-64E459A5BE2F"
+   state_alpha: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+   source_desc: "CENSUS"
+   sector_desc: "CROPS" 
+   group_desc: "HORTICULTURE"
+   agg_level_desc: ["NATIONAL","STATE", "COUNTY"] 
+   year: ["2012", "2017"]

@@ -23,6 +23,7 @@ sourceconfigpath = datapath + 'sourceconfig/'
 outputpath = modulepath + 'output/'
 
 US_FIPS = "00000"
+withdrawn_keyword = "W"
 
 flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
 
