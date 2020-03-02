@@ -3,7 +3,7 @@
 # coding=utf-8
 # ingwersen.wesley@epa.gov
 
-"""Add docstring in public module."""  # TODO add docstring.
+"""Common variables and functions used across flowsa"""
 
 import sys
 import os
@@ -30,19 +30,19 @@ flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
 sector_source_name = 'NAICS_2012_Code'
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
-                    'SourceName': [{'dtype': 'str'}, {'required': True}],
-                    'FlowName': [{'dtype': 'str'}, {'required': True}],
-                    'FlowAmount': [{'dtype': 'float'}, {'required': True}],
-                    'Unit': [{'dtype': 'str'}, {'required': True}],
-                    'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
-                    'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
-                    'Compartment': [{'dtype': 'str'}, {'required': True}],
-                    'FIPS': [{'dtype': 'str'}, {'required': True}],
-                    'Year': [{'dtype': 'int'}, {'required': True}],
-                    'DataReliability': [{'dtype': 'float'}, {'required': True}],
-                    'DataCollection': [{'dtype': 'float'}, {'required': True}], 
-                    'Description': [{'dtype': 'float'}, {'required': True}]
-                    }
+                           'SourceName': [{'dtype': 'str'}, {'required': True}],
+                           'FlowName': [{'dtype': 'str'}, {'required': True}],
+                           'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+                           'Unit': [{'dtype': 'str'}, {'required': True}],
+                           'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+                           'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+                           'Compartment': [{'dtype': 'str'}, {'required': True}],
+                           'FIPS': [{'dtype': 'str'}, {'required': True}],
+                           'Year': [{'dtype': 'int'}, {'required': True}],
+                           'DataReliability': [{'dtype': 'float'}, {'required': True}],
+                           'DataCollection': [{'dtype': 'float'}, {'required': True}],
+                           'Description': [{'dtype': 'float'}, {'required': True}]
+                           }
 
 def getFIPS(state=None, county=None):
     """
