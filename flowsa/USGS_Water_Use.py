@@ -3,8 +3,15 @@
 # coding=utf-8
 import io
 import pandas as pd
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
-from flowsa.common import log, flow_by_activity_fields
+# from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
+# from flowsa.common import log, flow_by_activity_fields
+import sys, os, inspect
+currentdir =  os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
+from common import flow_by_activity_fields
+from datapull import *
+from flowbyactivity import *
 
 source = 'USGS_Water_Use'
 class_value = 'Water'
@@ -107,7 +114,7 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
         year = data_list[year_index]
         fips = str(data_list[state_cd_index]) + str(data_list[county_cd_index])
 
-        for i in range(len(final_activity_produced_list)):
+        for i in range(len(flow_name_list)):
             data_index = index_list[i]
             data_value = data_list[data_index]
             if data_value != "-":
