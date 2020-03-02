@@ -1,9 +1,8 @@
 import io
-import json
 import pandas as pd
+import json
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
-from flowsa.common import log, flow_by_activity_fields
-
+from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword
 
 source = 'USDA_CoA_Irrigation'
 def build_usda_crop_url_list(config):
@@ -84,13 +83,13 @@ def parse_data(text):
                     flow_amount_list.append(d["Value"])
                 unit_list.append(d["unit_desc"])
                 activity_produced_list.append(None)
-                activity_consumed_list.append(d["commodity_desc"])
+                activity_consumed_list.append( "the crop, " + str(d["commodity_desc"]))
                 compartment_list.append(None)
                 if d["county_code"] == "":
                     fips_list.append(d["state_fips_code"]+"000")
                 else:
                     fips_list.append(str(d["state_fips_code"])+str(d["county_code"]))
-                year_list = [d["year"]]
+                year_list.append(d["year"])
                 data_reliability_list.append(None)
                 data_collection_list.append(None)
                 description_list.append(d["short_desc"])
@@ -104,9 +103,9 @@ def parse_data(text):
             flow_by_activity[5]: activity_produced_list,
             flow_by_activity[6]: activity_consumed_list,
             flow_by_activity[7]: compartment_list, flow_by_activity[8]: fips_list,
-            flow_by_activity[9]: year_list, flow_by_activity[9]: data_reliability_list,
-            flow_by_activity[10]: data_collection_list,
-            flow_by_activity[11]: description_list}
+            flow_by_activity[9]: year_list, flow_by_activity[10]: data_reliability_list,
+            flow_by_activity[11]: data_collection_list,
+            flow_by_activity[12]: description_list}
     df = pd.DataFrame(dict)
     return df
 if __name__ == '__main__':
