@@ -3,15 +3,9 @@
 # coding=utf-8
 import io
 import pandas as pd
-# from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
-# from flowsa.common import log, flow_by_activity_fields
-import sys, os, inspect
-currentdir =  os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir)
-from common import flow_by_activity_fields
-from datapull import *
-from flowbyactivity import *
+from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
+from flowsa.common import log, flow_by_activity_fields
+
 
 source = 'USGS_Water_Use'
 class_value = 'Water'
