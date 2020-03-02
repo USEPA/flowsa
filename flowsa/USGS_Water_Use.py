@@ -11,7 +11,6 @@ class_value = 'Water'
 technosphere_flow_array = ["consumptive", "Public Supply"]
 waste_flow_array = ["wastewater", "loss"]
 
-
 def build_usgs_water_url_list(config):
     """
     
