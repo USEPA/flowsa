@@ -124,8 +124,8 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
                 final_fips_list.append(fips)
                 final_flow_type_list.append(flow_type_list[i])
                 final_year_list.append(year_value)
-                final_data_reliability_list.append("null")
-                final_data_collection_list.append("null")
+                final_data_reliability_list.append(None)
+                final_data_collection_list.append(None)
                 final_description_list.append(description_list[i])
 
     flow_by_activity = []
@@ -278,7 +278,7 @@ def extract_compartment(name):
     elif "total" in name:
         compartment = "total"
     else:
-        compartment = "blank"
+        compartment = None
     return compartment
 
 
