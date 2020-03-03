@@ -13,7 +13,7 @@ def get_activitytosector_mapping(source):
     :param source: The data source name
     :return: a pandas df for a standard ActivitytoSector mapping
     """
-    mapping = pd.read_csv(datapath+source+'Crosswalk_'+source+'toNAICS.csv')
+    mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
     return mapping
 
 def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name):
@@ -34,12 +34,19 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
         mappings.append(mapping)
     mappings_df = pd.concat(mappings)
     #Merge in with flowbyactivity by
-    for i in range(0,len(activity_fields["flowbyactivity"])):
-        flowbyactivity_field = activity_fields["flowbyactivity"][i]
-        flowbysector_field = activity_fields["flowbysector"][i]
-        flowbyactivity_wsector_df = pd.merge(flowbyactivity_df,mappings_df,
-                                   left_on=flowbyactivity_field,
-                                   right_on=flowbysector_field)
+    flowbyactivity_wsector_df = flowbyactivity_df
+    for k,v in activity_fields.items():
+            sector_direction = k
+            flowbyactivity_field = v[0]["flowbyactivity"]
+            flowbysector_field = v[1]["flowbysector"]
+            sector_type_field = sector_direction+'SectorType'
+            mappings_df_tmp = mappings_df.rename(columns={'Activity':flowbyactivity_field,
+                                                          'Sector':flowbysector_field,
+                                                          'SectorType':sector_type_field})
+            mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'])
+            #Merge them in. Critical this is a left merge to preserve all unmapped rows
+            flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left')
+
     return flowbyactivity_wsector_df
 
 

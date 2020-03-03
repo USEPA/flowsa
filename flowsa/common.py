@@ -51,8 +51,10 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            }
 
 #A list of activity fields in each flow data format
-activity_fields = {'flowbyactivity': ['ActivityProducedBy','ActivityConsumedBy'],
-                   'flowbysector': ['SectorProducedBy','SectorConsumedBy']
+activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
+                                  {'flowbysector': 'SectorProducedBy'}],
+                   'ConsumedBy': [{'flowbyactivity':'ActivityConsumedBy'},
+                                  {'flowbysector': 'SectorConsumedBy'}]
                    }
 
 
