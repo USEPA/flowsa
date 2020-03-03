@@ -5,7 +5,7 @@
 Contains mapping functions
 """
 import pandas as pd
-from flowsa.common import datapath, sector_source_name
+from flowsa.common import datapath, sector_source_name, activity_fields
 
 def get_activitytosector_mapping(source):
     """
@@ -16,9 +16,9 @@ def get_activitytosector_mapping(source):
     mapping = pd.read_csv(datapath+source+'Crosswalk_'+source+'toNAICS.csv')
     return mapping
 
-def map_activities_to_sector(flowbyactivity_df, sectorsourcename=sector_source_name):
+def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name):
     """
-    Take the Activity fields and mapped them to Sector from the crosswalk.
+    Add Sectors from the Activity fields and mapped them to Sector from the crosswalk.
     No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
     :param sectorsourcename: A sector source name, using package default
@@ -33,8 +33,13 @@ def map_activities_to_sector(flowbyactivity_df, sectorsourcename=sector_source_n
         mapping = mapping.drop(columns=['SectorSourceName'])
         mappings.append(mapping)
     mappings_df = pd.concat(mappings)
-    #Merge in with flowbyactivity
-    flowbysector_df = pd.merge(flowbyactivity_df,mappings_df)
-    return flowbysector_df
+    #Merge in with flowbyactivity by
+    for i in range(0,len(activity_fields["flowbyactivity"])):
+        flowbyactivity_field = activity_fields["flowbyactivity"][i]
+        flowbysector_field = activity_fields["flowbysector"][i]
+        flowbyactivity_wsector_df = pd.merge(flowbyactivity_df,mappings_df,
+                                   left_on=flowbyactivity_field,
+                                   right_on=flowbysector_field)
+    return flowbyactivity_wsector_df
 
 
