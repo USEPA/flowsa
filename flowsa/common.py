@@ -50,6 +50,12 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'Description': [{'dtype': 'float'}, {'required': True}]
                            }
 
+#A list of activity fields in each flow data format
+activity_fields = {'flowbyactivity': ['ActivityProducedBy','ActivityConsumedBy'],
+                   'flowbysector': ['SectorProducedBy','SectorConsumedBy']
+                   }
+
+
 def getFIPS(state=None, county=None):
     """
     Pass a state or state and county name to get the FIPS.
