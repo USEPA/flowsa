@@ -6,7 +6,6 @@ import pandas as pd
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
 from flowsa.common import log, flow_by_activity_fields
 
-
 source = 'USGS_Water_Use'
 class_value = 'Water'
 technosphere_flow_array = ["consumptive", "Public Supply"]
@@ -98,6 +97,11 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
     final_data_reliability_list = []
     final_data_collection_list = []
     final_description_list = []
+    final_measure_of_spread_list = []
+    final_spread_list = []
+    final_distribution_type_list = []
+    final_min_list = []
+    final_max_list = []
     all_lists = []
 
     year_index = general_list.index("year")
@@ -124,6 +128,11 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
                 final_fips_list.append(fips)
                 final_flow_type_list.append(flow_type_list[i])
                 final_year_list.append(year_value)
+                final_measure_of_spread_list.append(None)
+                final_spread_list.append(None)
+                final_distribution_type_list.append(None)
+                final_min_list.append(None)
+                final_max_list.append(None)
                 final_data_reliability_list.append(None)
                 final_data_collection_list.append(None)
                 final_description_list.append(description_list[i])
@@ -131,15 +140,26 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
     flow_by_activity = []
     for key in flow_by_activity_fields.keys():
         flow_by_activity.append(key)
-    dict = {flow_by_activity[0]: final_class_list, flow_by_activity[1]: final_source_name_list,
-            flow_by_activity[2]: final_flow_name_list, flow_by_activity[3]: final_flow_amount_list,
-            flow_by_activity[4]: final_unit_list,
-            flow_by_activity[5]: final_activity_produced_list,
-            flow_by_activity[6]: final_activity_consumed_list,
-            flow_by_activity[7]: final_compartment_list, flow_by_activity[8]: final_fips_list,
-            flow_by_activity[9]: final_year_list, flow_by_activity[9]: final_data_reliability_list,
-            flow_by_activity[10]: final_data_collection_list,
-            flow_by_activity[11]: final_description_list}
+    dict = {flow_by_activity[0]: final_class_list, 
+        flow_by_activity[1]: final_source_name_list, 
+        flow_by_activity[2]: final_flow_name_list, 
+        flow_by_activity[3]: final_flow_amount_list,
+        flow_by_activity[4]: final_unit_list,
+        flow_by_activity[5]: final_activity_produced_list,
+        flow_by_activity[6]: final_activity_consumed_list,
+        flow_by_activity[7]: final_compartment_list, 
+        flow_by_activity[8]: final_fips_list,
+        flow_by_activity[9]: final_year_list, 
+        flow_by_activity[10]: final_measure_of_spread_list,
+        flow_by_activity[11]: final_spread_list,
+        flow_by_activity[12]: final_distribution_type_list,
+        flow_by_activity[13]: final_min_list,
+        flow_by_activity[14]: final_max_list,
+        flow_by_activity[15]: final_data_reliability_list,
+        flow_by_activity[16]: final_data_collection_list,
+        flow_by_activity[17]: final_description_list}
+    
+
     df = pd.DataFrame(dict)
     return df
 
