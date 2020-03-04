@@ -1,2 +1,3 @@
 flowbyactivity:
   Water: ["USGS_Water_Use"]
+  Employment: ["BLS_QCEW"]
