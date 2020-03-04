@@ -6,7 +6,8 @@ Methods for pulling data from http sources
 """
 import yaml
 import requests
-from flowsa.common import outputpath, sourceconfigpath, log
+import pandas as pd
+from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path
 
 def store_flowbyactivity(result, source):
     """Prints the data frame into a parquet file."""
@@ -31,4 +32,24 @@ def load_sourceconfig(source):
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
+
+def load_api_key(api_source):
+    """
+    Loads a txt file from the appdirs user directory with a set name
+    in the form of the host name and '_API_KEY.txt' like 'BEA_API_KEY.txt'
+    containing the users personal API key. The user must register with this
+    API and get the key and save it to a .txt file in the user directory specified
+    by local_storage_path (see common.py for definition)
+    :param api_source: str, name of source, like 'BEA' or 'Census'
+    :return: the users API key as a string
+    """
+    keyfile = local_storage_path+'/'+source+'_API_KEY.txt'
+    try:
+        with open(keyfile,mode='r') as keyfilecontents:
+            key = keyfilecontents.read()
+    except IOError:
+        log.error("Key file not found.")
+    return key
+
+
 

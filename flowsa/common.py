@@ -9,7 +9,7 @@ import sys
 import os
 import pandas as pd
 import logging as log
-
+import appdirs
 
 log.basicConfig(level=log.INFO, format='%(levelname)s %(message)s',
                 stream=sys.stdout)
@@ -21,6 +21,8 @@ except NameError:
 datapath = modulepath + 'data/'
 sourceconfigpath = datapath + 'sourceconfig/'
 outputpath = modulepath + 'output/'
+
+local_storage_path = appdirs.user_data_dir()
 
 US_FIPS = "00000"
 withdrawn_keyword = "W"
