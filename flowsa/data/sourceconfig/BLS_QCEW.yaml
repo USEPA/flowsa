@@ -1,0 +1,13 @@
+---
+url:
+   url_order: [base_url, url_path, url_params]
+   base_url: "http://data.bls.gov/cew/data/api/"
+   states: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+   url_path: "/nwis/water_use?"
+   url_params:
+      format: "rdb&rdb"
+      _compression: "value"
+      area: "County"
+      year: "2010,2015"
+      county: "ALL"
+      category: "ALL"
