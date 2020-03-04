@@ -6,7 +6,7 @@ Methods for pulling data from http sources
 """
 import yaml
 import requests
-import pandas as pd
+import json
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path
 
 def store_flowbyactivity(result, source):
@@ -43,7 +43,7 @@ def load_api_key(api_source):
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
-    keyfile = local_storage_path+'/'+source+'_API_KEY.txt'
+    keyfile = local_storage_path+'/'+ api_source + '_API_KEY.txt'
     try:
         with open(keyfile,mode='r') as keyfilecontents:
             key = keyfilecontents.read()
@@ -51,5 +51,7 @@ def load_api_key(api_source):
         log.error("Key file not found.")
     return key
 
-
+def load_json_from_requests_response(response_w_json):
+    response_json = json.loads(response_w_json.text)
+    return response_json
 
