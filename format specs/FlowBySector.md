@@ -4,6 +4,7 @@ Field | Type | Required? | Description
 ----- | ---- | --------  | -----------
 Flowable | String | Y | Name of the flow. See 'Flowable' in fedelemflowlist [FlowList](https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List/blob/master/format%20specs/FlowList.md)
 Class | String | Y | Class of flow
+FlowAmount | Numeric | Y | The amount of a flow. Uses metric [reference units](./README.md#). 
 SectorProducedBy | String | N* | A valid code from the SectorSourceName system (e.g. '31' for 'NAICS_2012_Code') 
 SectorConsumedBy | String | N* | A valid code from the SectorSourceName system
 SectorSourceName | String | Y | By default, `NAICS_2012_Code`. Must be the same for SectorProducedBy and SectorConsumedBy.

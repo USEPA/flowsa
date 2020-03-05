@@ -5,7 +5,7 @@ Field | Type | Required? | Description
 Class | String | Y | Class of the flow. See [Flow Classes](./README.md#FlowClasses).   
 SourceName | String | Y | ID or name of flow in its native source
 FlowName | String | Y | ID or name of flow in its native source
-FlowAmount | Numeric | Y | The amount of a given flow released to a given environment compartment or waste generated in a reference unit. Uses metric reference units. 'kg' is the reference unit for mass; 'MJ' is the unit for energy.
+FlowAmount | Numeric | Y | The amount of a given flow in its native unit
 Unit | String | Y | SI unit acronym. `kg` for mass flows; `MJ` for energy flows
 ActivityProducedBy | String | N* | An activity defined by the source producing a flow.
 ActivityConsumedBy | String | N* | An activity defined by the source receiving/consuming a flow.
