@@ -23,6 +23,7 @@ Energy | Energy consumption, transfer as electricity or waste heat  | MJ | All t
 Land | Land area occupied | m2 per year | Modeled as ELEMENTARY_FLOWS consumed by sectors |
 Money | Purchases | USDyear* | Modeled as TECHNOSPHERE_FLOWS with producing and consuming sectors | 
 Water | Water use and release data, including wastewater | m3 | All types |
+Other | Misc flows used for supporting data | _varies_ | All types |
 
 *USD unit value varies by year and is reported like 'USD2012'
 
@@ -32,9 +33,10 @@ Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
 USGS_Water_Use | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | x | NA | NA | NA| NA| x |NA |NA |NA |NA |
 USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) Horticultural Crop Area | Land | County | Crop area by farm size and irrigation status | NA | NA | X | NA| NA | NA | NA | x |NA |NA |
-BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment | County | Number of employees | X | X | X | X | X | X | X | X | X | X |
-Census_CBP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment | County | Number of employees |  |  | X | X | X | X | X | NA | NA | NA |
-
+BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment | County | Number of employees per industry | X | X | X | X | X | X | X | X | X | X |
+Census_CBP_EMP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment | County | Number of employees per industry |  |  | X | X | X | X | X | NA | NA | NA |
+Census_CBP_PAYANN | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Money | County | Annual payroll per industry |  |  | X | X | X | X | X | NA | NA | NA |
+Census_CBP_ESTAB | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Other | County | Number of establishments per industry |  |  | X | X | X | X | X | NA | NA | NA |
 
 ## Disclaimer
 
