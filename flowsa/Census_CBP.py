@@ -6,7 +6,9 @@ Pulls County Business Patterns data in NAICS from the Census Bureau
 Writes out to various FlowBySector class files for these data items
 EMP = Number of employees, Class = Employment
 PAYANN = Annual payroll ($1,000), Class = Money
-ESTAB = Number of establishments, Class = Entities?
+ESTAB = Number of establishments, Class = Other
+This script is designed to run with a configuration parameter
+--year = 'year' e.g. 2015
 """
 
 import pandas as pd
@@ -31,10 +33,10 @@ def build_url_for_api_query(urlinfo):
     return url
 
 def assemble_urls_for_api_query():
-    url = build_url_for_api_query(config['url'])
     urls = []
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
     for c in FIPS_2:
+        url = build_url_for_api_query(config['url'])
         url = url + c
         # add key to url
         url = url + '&key=' + load_api_key("Census")
@@ -46,6 +48,7 @@ def call_cbp_urls(url_list):
     It then calls the processing method to begin processing the returned data"""
     data_frames_list = []
     for url in url_list:
+        log.INFO("Calling "+url)
         r = make_http_request(url)
         cbp_json = load_json_from_requests_response(r)
         # Convert response
@@ -103,7 +106,8 @@ if __name__ == '__main__':
             flow_df[k2]=v2
         flow_df = add_missing_flow_by_activity_fields(flow_df)
         dfs[k] = flow_df
-        store_flowbyactivity(flow_df, cbp_flow_specific_metadata[k]["SourceName"])
+        parquet_name = cbp_flow_specific_metadata[k]["SourceName"]+'_'+args['year']
+        store_flowbyactivity(flow_df, parquet_name)
      ##TO DO
     #Check for spread data
     #Score data quality
