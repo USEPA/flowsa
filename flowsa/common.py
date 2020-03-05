@@ -52,13 +52,36 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'Description': [{'dtype': 'float'}, {'required': True}]
                            }
 
+flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
+                         'Class': [{'dtype': 'str'}, {'required': True}],
+                         'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
+                         'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
+                         'Context': [{'dtype': 'str'}, {'required': True}],
+                         'FIPS': [{'dtype': 'str'}, {'required': True}],
+                         'Unit': [{'dtype': 'str'}, {'required': True}],
+                         'FlowType': [{'dtype': 'str'}, {'required': True}],
+                         'Year': [{'dtype': 'int'}, {'required': True}],
+                         'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+                         'Spread': [{'dtype': 'float'}, {'required': False}],
+                         'DistributionType': [{'dtype': 'str'}, {'required': False}],
+                         'Min': [{'dtype': 'float'}, {'required': False}],
+                         'Max': [{'dtype': 'float'}, {'required': False}],
+                         'DataReliability': [{'dtype': 'float'}, {'required': True}],
+                         'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
+                         'GeographicCorrelation': [{'dtype': 'float'}, {'required': True}],
+                         'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
+                         'DataCollection': [{'dtype': 'float'}, {'required': True}]
+                         }
+
 #A list of activity fields in each flow data format
 activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
                                   {'flowbysector': 'SectorProducedBy'}],
                    'ConsumedBy': [{'flowbyactivity':'ActivityConsumedBy'},
                                   {'flowbysector': 'SectorConsumedBy'}]
                    }
-
+def read_stored_FIPS():
+    FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
+    return FIPS_df
 
 def getFIPS(state=None, county=None):
     """
@@ -68,7 +91,7 @@ def getFIPS(state=None, county=None):
     :param county: str.
     :return: str. A five digit 2017 FIPS code
     """
-    FIPS_df = pd.read_csv(datapath+"FIPS.csv", header=0, dtype={"FIPS": str})
+    FIPS_df = read_stored_FIPS()
 
     if county is None:
         if state is not None:
@@ -95,3 +118,17 @@ def clean_str_and_capitalize(s):
         s = s.lower()
         s = s.capitalize()
     return s
+
+
+def get_all_state_FIPS_2():
+    """
+    Gets a subset of all FIPS 2 digit codes for states
+    :return: df with 'State' and 'FIPS_2' cols
+    """
+    fips = read_stored_FIPS()
+    fips = fips.drop_duplicates(subset='State')
+    fips = fips[fips['State'].notnull()]
+    state_fips = fips
+    state_fips['FIPS_2'] = fips['FIPS'].apply(lambda x: x[0:2])
+    state_fips = state_fips[['State','FIPS_2']]
+    return state_fips
