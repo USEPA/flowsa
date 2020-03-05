@@ -7,7 +7,8 @@ Methods for pulling data from http sources
 import yaml
 import requests
 import json
-from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path
+from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,\
+    flow_by_activity_fields
 
 def store_flowbyactivity(result, source):
     """Prints the data frame into a parquet file."""
@@ -54,4 +55,19 @@ def load_api_key(api_source):
 def load_json_from_requests_response(response_w_json):
     response_json = json.loads(response_w_json.text)
     return response_json
+
+def add_missing_flow_by_activity_fields(flowbyactivity_partial_df):
+    """
+    Add in missing fields to have a complete and ordered
+    :param flowbyactivity_partial_df:
+    :return:
+    """
+    for k in flow_by_activity_fields.keys():
+        if k not in flowbyactivity_partial_df.columns:
+            flowbyactivity_partial_df[k]=None
+    #Resort it so order is correct
+    flowbyactivity_partial_df = flowbyactivity_partial_df[flow_by_activity_fields.keys()]
+    return flowbyactivity_partial_df
+
+
 
