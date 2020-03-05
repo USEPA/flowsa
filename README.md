@@ -16,9 +16,24 @@ _attribution_: The sectors through which activity uses, produces or receives the
 
 ## Flow Classes
 
-Class | Description
----|---|
-Water | Water use and release data. Also may contain wastewater. Includes all [FlowTypes](./formatspecs/FlowBySector.md)|
+Class | Description | [Flow Types](./formatspecs/FlowBySector.md) |
+--- | --- | --- |
+Employment | Jobs | Modeled as ELEMENTARY_FLOWS produced by sectors |
+Energy | Energy consumption, transfer as electricity or waste heat  | All types |
+Land | Land area occupied | Modeled as ELEMENTARY_FLOWS consumed by sectors |
+Money | Purchases | Modeled as TECHNOSPHERE_FLOWS with producing and consuming sectors | 
+Water | Water use and release data, including wastewater | All types |
+
+
+## FlowByActivity Datasets
+ 
+Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 |
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
+USGS_Water_Use | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | x | NA | NA | NA| NA| x |NA |NA |NA |NA |
+USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) Horticultural Crop Area | Land | County | Crop area by farm size and irrigation status | NA | NA | X | NA| NA | NA | NA | x |NA |NA |
+BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment | County | Number of employees | X | X | X | X | X | X | X | X | X | X |
+Census_CBP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment | County | Number of employees |  |  | X | X | X | X | X | NA | NA | NA |
+
 
 ## Disclaimer
 
