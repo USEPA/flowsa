@@ -9,6 +9,7 @@ import requests
 import json
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path
 
+
 def store_flowbyactivity(result, source):
     """Prints the data frame into a parquet file."""
     try:
