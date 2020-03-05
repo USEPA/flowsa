@@ -1,0 +1,9 @@
+---
+url:
+   url_order: [base_url, url_path, url_params]
+   base_url: "http://api.census.gov/data/"
+   url_path:
+   url_params:
+      get: "NAICS2012,ESTAB,EMP,PAYANN"
+      for: "county:*"
+      in: "state:"
