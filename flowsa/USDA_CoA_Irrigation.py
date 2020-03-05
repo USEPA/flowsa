@@ -1,7 +1,10 @@
+# USDA_CoA_Irrigation.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
 import io
 import pandas as pd
 import json
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
+from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USDA_CoA_Irrigation'
@@ -12,12 +15,13 @@ def build_usda_crop_url_list(config):
     :return: list of urls
     """
     for k,v in config.items():
-        url_key = load_api_key(source)
+        key = load_api_key(source)
         if (k == "url_usda_crops"):
             url_list = []
             years = v["year"]
             agg_level_descs = v["agg_level_desc"]
             base_url = v["base_url"]
+            url_key = "key=" + str(key)
             param_source_desc = "&source_desc=" + str(v["source_desc"])
             param_sector_desc = "&sector_desc=" + str(v["sector_desc"])
             param_group_desc = "&group_desc=" + str(v["group_desc"])
@@ -51,7 +55,11 @@ def call_usda_crop_urls(url_list):
         data_frames_list.append(df)
     return data_frames_list
 
-
+def check_value(value):
+    if "(D)" in value:
+        value = withdrawn_keyword
+    return value
+        
 def parse_data(text):
     json1_data = json.loads(text)
     data = json1_data["data"]
@@ -80,17 +88,11 @@ def parse_data(text):
                 class_list.append("water")
                 source_name_list.append(source)
                 flow_name_list.append("Irrigated -" + d["prodn_practice_desc"])
-                if "(D)" in d["Value"]:
-                    flow_amount_list.append(withdrawn_keyword)
-                else:
-                    flow_amount_list.append(d["Value"])
+                flow_amount_list.append(check_value(d["Value"]))
                 unit_list.append(d["unit_desc"])
                 activity_produced_list.append(None)
                 activity_consumed_list.append( "the crop, " + str(d["commodity_desc"]))
-                if "(D)" in d["CV (%)"]:
-                    measure_of_spread_list.append(withdrawn_keyword)
-                else:
-                    measure_of_spread_list.append(d["CV (%)"])
+                measure_of_spread_list.append(check_value(d["CV (%)"]))
                 spread_list.append(None)
                 distribution_type_list.append(None)
                 min_list.append(None)
@@ -112,9 +114,6 @@ def parse_data(text):
                     description_list.append(str(d["short_desc"]) + str(d["domain_desc"]) + domaincat_desc)
                 else:
                     description_list.append(str(d["short_desc"]) + str(d["domain_desc"]) + str(d["domaincat_desc"]))
-
-                
-
     flow_by_activity = []
     for key in flow_by_activity_fields.keys():
         flow_by_activity.append(key)
@@ -128,11 +127,11 @@ def parse_data(text):
             flow_by_activity[7]: compartment_list, 
             flow_by_activity[8]: fips_list,
             flow_by_activity[9]: year_list, 
-            flow_by_activity[10]:measure_of_spread_list,
-            flow_by_activity[11]:spread_list,
-            flow_by_activity[12]:distribution_type_list,
-            flow_by_activity[13]:min_list,
-            flow_by_activity[14]:max_list,
+            flow_by_activity[10]: measure_of_spread_list,
+            flow_by_activity[11]: spread_list,
+            flow_by_activity[12]: distribution_type_list,
+            flow_by_activity[13]: min_list,
+            flow_by_activity[14]: max_list,
             flow_by_activity[15]: data_reliability_list,
             flow_by_activity[16]: data_collection_list,
             flow_by_activity[17]: description_list}

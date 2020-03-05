@@ -4,7 +4,7 @@
 import io
 import pandas as pd
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
-from flowsa.common import log, flow_by_activity_fields
+from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USGS_Water_Use'
 class_value = 'Water'
@@ -163,6 +163,12 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
     df = pd.DataFrame(dict)
     return df
 
+def capitalize_first_letter(string):
+    return_string = ""
+    split_array = string.split(" ")
+    for s in split_array:
+        return_string = return_string + " " + s.capitalize() 
+    return return_string.strip()
 
 def activity(name):
     name_split = name.split(",")
@@ -170,30 +176,33 @@ def activity(name):
         n = name_split[0] + "," + name_split[1]
     else:
         n = name_split[0]
+
     if " to " in n:
         activity = n.split(" to ")
-        produced = activity[0]
-        consumed = activity[1]
+        produced = capitalize_first_letter(activity[0])
+        consumed = capitalize_first_letter(activity[1])
     elif " from " in n:
         activity = n.split(" from ")
-        produced = activity[1]
-        consumed = activity[0]
+        produced = capitalize_first_letter(activity[1])
+        consumed = capitalize_first_letter(activity[0])
     elif "consumptive" in n:
         split_case = split_name(n)
         consumed = None
-        produced = split_case[0]
+        produced = capitalize_first_letter(split_case[0])
     elif ")" in n:
         produced = None
-        paren_split = n.split(")")
-        consumed = paren_split[0].strip() + ")"
+        open_paren_split = n.split("(")
+        capitalized_string = capitalize_first_letter(open_paren_split[0])
+        close_paren_split = open_paren_split[1].split(")")
+        consumed = capitalized_string.strip() + " " + close_paren_split[0].strip()
     elif "total deliveries" in n:
         split_case = split_name(n)
         consumed = None
-        produced = split_case[0]
+        produced = capitalize_first_letter(split_case[0])
     else:
         split_case = split_name(n)
         produced = None
-        consumed = split_case[0]
+        consumed = capitalize_first_letter(split_case[0])
     return (produced, consumed)
 
 
