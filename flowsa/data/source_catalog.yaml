@@ -1,3 +1,7 @@
 flowbyactivity:
   Water: ["USGS_Water_Use"]
-  Employment: ["BLS_QCEW"]
+  Employment: ["BLS_QCEW","Census_CBP_EMP"]
+  Land: ["USDA_CoA_Cropland"]
+  Money: ["Census_CBP_PAYANN"]
+  Other: ["Census_CBP_ESTAB"]
+
