@@ -16,14 +16,15 @@ _attribution_: The sectors through which activity uses, produces or receives the
 
 ## Flow Classes
 
-Class | Description | [Flow Types](./formatspecs/FlowBySector.md) |
---- | --- | --- |
-Employment | Jobs | Modeled as ELEMENTARY_FLOWS produced by sectors |
-Energy | Energy consumption, transfer as electricity or waste heat  | All types |
-Land | Land area occupied | Modeled as ELEMENTARY_FLOWS consumed by sectors |
-Money | Purchases | Modeled as TECHNOSPHERE_FLOWS with producing and consuming sectors | 
-Water | Water use and release data, including wastewater | All types |
+Class | Description | FlowBySector Reference Unit | [Flow Types](./formatspecs/FlowBySector.md) |
+--- | --- | --- | --- |
+Employment | Jobs | p | Modeled as ELEMENTARY_FLOWS produced by sectors |
+Energy | Energy consumption, transfer as electricity or waste heat  | MJ | All types |
+Land | Land area occupied | m2 per year | Modeled as ELEMENTARY_FLOWS consumed by sectors |
+Money | Purchases | USDyear* | Modeled as TECHNOSPHERE_FLOWS with producing and consuming sectors | 
+Water | Water use and release data, including wastewater | m3 | All types |
 
+*USD unit value varies by year and is reported like 'USD2012'
 
 ## FlowByActivity Datasets
  
