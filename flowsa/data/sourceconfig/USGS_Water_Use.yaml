@@ -6,6 +6,6 @@ url:
    format: "rdb&rdb"
    _compression: "value"
    wu_area: "County"
-   wu_year: "2010,2015"
+   wu_year: ["2010","2015"]
    wu_county: "ALL"
    wu_category: "ALL"

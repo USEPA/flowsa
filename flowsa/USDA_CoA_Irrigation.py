@@ -4,7 +4,7 @@
 import io
 import pandas as pd
 import json
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key
+from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USDA_CoA_Irrigation'
@@ -45,15 +45,20 @@ def build_usda_crop_url_list(config):
                         url_list.append(url)
     return url_list
 
+
 def call_usda_crop_urls(url_list):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data"""
-    data_frames_list = []
+    data_frame_dictionary = {}
     for url in url_list:
+        year = get_year_from_url(url)
         r = make_http_request(url)
         df = parse_data(r.text)
-        data_frames_list.append(df)
-    return data_frames_list
+        if not data_frame_dictionary.get(year, None):
+            data_frame_dictionary[year] = []
+        data_frame_dictionary[year].append(df)
+
+    return data_frame_dictionary
 
 def check_value(value):
     if "(D)" in value:
@@ -85,13 +90,13 @@ def parse_data(text):
     for d in data:
         if "CROPS" in d["sector_desc"]:
             if "IRRIGATED - ACRES IN PRODUCTION" in d["short_desc"]:
-                class_list.append("water")
+                class_list.append("Land")
                 source_name_list.append(source)
-                flow_name_list.append("Irrigated -" + d["prodn_practice_desc"])
+                flow_name_list.append(str(d["statisticcat_desc"]))
                 flow_amount_list.append(check_value(d["Value"]))
                 unit_list.append(d["unit_desc"])
                 activity_produced_list.append(None)
-                activity_consumed_list.append( "the crop, " + str(d["commodity_desc"]))
+                activity_consumed_list.append(str(d["commodity_desc"]))
                 measure_of_spread_list.append(check_value(d["CV (%)"]))
                 spread_list.append(None)
                 distribution_type_list.append(None)
@@ -140,7 +145,9 @@ def parse_data(text):
 if __name__ == '__main__':
     config = load_sourceconfig(source)
     url_list = build_usda_crop_url_list(config)
-    df_list = call_usda_crop_urls(url_list)
-    df = pd.concat(df_list)
-    log.info("Retrieved data for " + source)
-    store_flowbyactivity(df, source)
+    df_lists = call_usda_crop_urls(url_list)
+    
+    for d in df_lists:
+        df = pd.concat(df_lists[d])
+        log.info("Retrieved data for " + source + " " + d)
+        store_flowbyactivity(df, source, d)

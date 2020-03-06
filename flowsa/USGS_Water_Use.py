@@ -3,7 +3,7 @@
 # coding=utf-8
 import io
 import pandas as pd
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request
+from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USGS_Water_Use'
@@ -21,33 +21,39 @@ def build_usgs_water_url_list(config):
         if (k == "url"):
             url_list = []
             states = v["states"]
+            years = v["wu_year"]
             base_url = v["base_url"]
             url_path = v["url_path"]
             param_format = "format=" + str(v["format"])
             param_compression = "_compression=" + str(v["_compression"])
             param_wu_area = "&wu_area=" + str(v["wu_area"])
-            param_wu_year = "&wu_year=" + str(v["wu_year"])
+            param_wu_year = "&wu_year="
             param_wu_county = "&wu_county=" + str(v["wu_county"])
             param_wu_category = "&wu_category=" + str(v["wu_category"])
             for s in states:
-                url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}".format(base_url, s, url_path, param_format,
-                                                           param_compression, param_wu_area,
-                                                           param_wu_year,
-                                                           param_wu_county, param_wu_category)
-                url_list.append(url)
+                for y in years:
+                    url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}".format(base_url, s, url_path, param_format,
+                                                            param_compression, param_wu_area,
+                                                            param_wu_year,y,
+                                                            param_wu_county, param_wu_category)
+                    url_list.append(url)
     return url_list
-
 
 def call_usgs_water_urls(url_list):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data"""
-    data_frames_list = []
+    data_frame_dictionary = {}
     for url in url_list:
+        year = get_year_from_url(url)
         r = make_http_request(url)
         usgs_split = get_usgs_water_header_and_data(r.text)
         df = parse_header(usgs_split[0], usgs_split[1], technosphere_flow_array, waste_flow_array)
-        data_frames_list.append(df)
-    return data_frames_list
+        
+        if not data_frame_dictionary.get(year, None):
+            data_frame_dictionary[year] = []
+
+        data_frame_dictionary[year].append(df)
+    return data_frame_dictionary
 
 
 def get_usgs_water_header_and_data(text):
@@ -92,7 +98,7 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
     final_activity_consumed_list = []
     final_compartment_list = []
     final_fips_list = []
-    final_flow_type_list = []
+    # final_flow_type_list = []
     final_year_list = []
     final_data_reliability_list = []
     final_data_collection_list = []
@@ -126,7 +132,7 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
                 final_activity_consumed_list.append(ActivityConsumedBy_list[i])
                 final_compartment_list.append(compartment_list[i])
                 final_fips_list.append(fips)
-                final_flow_type_list.append(flow_type_list[i])
+                # final_flow_type_list.append(flow_type_list[i])
                 final_year_list.append(year_value)
                 final_measure_of_spread_list.append(None)
                 final_spread_list.append(None)
@@ -234,8 +240,8 @@ def parse_header(headers, data, technosphere_flow_array, waste_flow_array):
                 unit_split = h.split("in ")
                 unit = unit_split[1]
                 name = unit_split[0].strip()
-                flow_type_list.append(
-                    determine_flow_type(name, technosphere_flow_array, waste_flow_array))
+                # flow_type_list.append(
+                #     determine_flow_type(name, technosphere_flow_array, waste_flow_array))
                 compartment_list.append(extract_compartment(name))
                 unit_list.append(unit)
                 activities = activity(h)
@@ -322,25 +328,16 @@ def extract_flow_name(name):
     return flow_name
 
 
-def determine_flow_type(name, technosphere_flow_array, waste_flow_array):
-    """Takes the header and assigns one of three flow types.
-    Everything starts as elementry but if there are keywords for technosphere and waste flow.
-    The keywords are set in in the USGS_Water_Use.yaml """
-    flow_type = "ELEMENTARY_FLOW"
-    for t in technosphere_flow_array:
-        if t in name:
-            flow_type = "TECHNOSPHERE_FLOW"
-    for w in waste_flow_array:
-        if w in name:
-            flow_type = "WASTE_FLOW"
-    return flow_type
-
-
 if __name__ == '__main__':
     config = load_sourceconfig(source)
     url_list = build_usgs_water_url_list(config)
-    df_list = call_usgs_water_urls(url_list[0:2])
+    df_lists = call_usgs_water_urls(url_list[0:4])
     # Need to check each df before concatenating
-    df = pd.concat(df_list)
-    log.info("Retrieved data for " + source)
-    store_flowbyactivity(df, source)
+    
+    
+    
+    for d in df_lists:
+        df = pd.concat(df_lists[d])
+        log.info("Retrieved data for " + source + " " + d)
+        store_flowbyactivity(df, source, d)
+

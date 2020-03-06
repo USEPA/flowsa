@@ -8,13 +8,12 @@ import yaml
 import requests
 import json
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,\
-    flow_by_activity_fields
+     flow_by_activity_fields
 
-
-def store_flowbyactivity(result, source):
+def store_flowbyactivity(result, source, year):
     """Prints the data frame into a parquet file."""
     try:
-        result.to_parquet(outputpath + source +'.parquet', 'pyarrow')
+        result.to_parquet(outputpath + source + "_" + str(year) + '.parquet', 'pyarrow')
     except:
         log.error('Failed to save '+source+' file.')
 
@@ -70,5 +69,11 @@ def add_missing_flow_by_activity_fields(flowbyactivity_partial_df):
     flowbyactivity_partial_df = flowbyactivity_partial_df[flow_by_activity_fields.keys()]
     return flowbyactivity_partial_df
 
-
+def get_year_from_url(url):
+    if "year=" in url:
+        year_split = url.split("year=")
+        year_only = year_split[1].split("&")
+        return year_only[0]
+    else: 
+        return None
 
