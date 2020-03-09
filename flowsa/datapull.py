@@ -10,10 +10,14 @@ import json
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,\
      flow_by_activity_fields
 
-def store_flowbyactivity(result, source, year):
+def store_flowbyactivity(result, source, year=None):
     """Prints the data frame into a parquet file."""
+    if year is not None:
+        f = outputpath + source + "_" + str(year) + '.parquet'
+    else:
+        f = outputpath + source + '.parquet'
     try:
-        result.to_parquet(outputpath + source + "_" + str(year) + '.parquet', 'pyarrow')
+        result.to_parquet(f,engine="pyarrow")
     except:
         log.error('Failed to save '+source+' file.')
 
