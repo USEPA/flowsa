@@ -1,4 +1,4 @@
-# USDA_CoA_Irrigation.py (flowsa)
+# USDA_CoA_Cropland.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 import io
@@ -7,15 +7,7 @@ import json
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
-source = 'USDA_CoA_Irrigation'
-
-def format_url_values(string):
-    if " " in string:
-        string = string.replace(" ", "%20")
-    if "&" in string:
-        string = string.replace("&", "%26")
-    return string
-
+source = 'USDA_CoA_Cropland'
 def build_usda_crop_url_list(config):
     """
     
@@ -23,7 +15,7 @@ def build_usda_crop_url_list(config):
     :return: list of urls
     """
     for k,v in config.items():
-        key = load_api_key(source)
+        key = load_api_key("USDA_Quickstats")
         if (k == "url_usda_crops"):
             url_list = []
             years = v["year"]
@@ -155,10 +147,11 @@ def parse_data(text):
             flow_by_activity[17]: description_list}
     df = pd.DataFrame(dict)
     return df
+
 if __name__ == '__main__':
     config = load_sourceconfig(source)
     url_list = build_usda_crop_url_list(config)
-    df_lists = call_usda_crop_urls(url_list)
+    df_lists = call_usda_crop_urls(url_list[0:52])
     
     for d in df_lists:
         df = pd.concat(df_lists[d])
