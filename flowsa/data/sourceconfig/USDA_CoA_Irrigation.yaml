@@ -4,6 +4,6 @@ url_usda_crops:
    state_alpha: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
    source_desc: "CENSUS"
    sector_desc: "CROPS" 
-   group_desc: "HORTICULTURE"
+   group_desc: ["CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"]
    agg_level_desc: ["NATIONAL","STATE", "COUNTY"] 
    year: ["2012", "2017"]

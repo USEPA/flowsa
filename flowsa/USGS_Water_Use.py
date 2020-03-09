@@ -185,12 +185,14 @@ def activity(name):
 
     if " to " in n:
         activity = n.split(" to ")
-        produced = capitalize_first_letter(activity[0])
+        name = split_name(activity[0])
+        produced = name[0]
         consumed = capitalize_first_letter(activity[1])
     elif " from " in n:
         activity = n.split(" from ")
+        name = split_name(activity[0])
         produced = capitalize_first_letter(activity[1])
-        consumed = capitalize_first_letter(activity[0])
+        consumed = name[0] 
     elif "consumptive" in n:
         split_case = split_name(n)
         consumed = None

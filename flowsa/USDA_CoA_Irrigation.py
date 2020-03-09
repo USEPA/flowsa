@@ -8,6 +8,14 @@ from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_r
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USDA_CoA_Irrigation'
+
+def format_url_values(string):
+    if " " in string:
+        string = string.replace(" ", "%20")
+    if "&" in string:
+        string = string.replace("&", "%26")
+    return string
+
 def build_usda_crop_url_list(config):
     """
     
@@ -19,12 +27,13 @@ def build_usda_crop_url_list(config):
         if (k == "url_usda_crops"):
             url_list = []
             years = v["year"]
+            groups = v["group_desc"]
             agg_level_descs = v["agg_level_desc"]
             base_url = v["base_url"]
             url_key = "key=" + str(key)
             param_source_desc = "&source_desc=" + str(v["source_desc"])
             param_sector_desc = "&sector_desc=" + str(v["sector_desc"])
-            param_group_desc = "&group_desc=" + str(v["group_desc"])
+            param_group_desc = "&group_desc="
             
 
             for a in agg_level_descs:
@@ -32,17 +41,21 @@ def build_usda_crop_url_list(config):
                 param_agg_level_desc = "&agg_level_desc=" + str(a)
                 param_year = "&year=" + str(y)
                 if a == "NATIONAL":
-                    url = "{0}{1}{2}{3}{4}{5}{6}".format(base_url, url_key, param_source_desc,
-                                                            param_sector_desc, param_group_desc,
-                                                            param_agg_level_desc,param_year)
-                    url_list.append(url)
+                    for g in groups: 
+                        g = format_url_values(g)
+                        url = "{0}{1}{2}{3}{4}{5}{6}{7}".format(base_url, url_key, param_source_desc,
+                                                                param_sector_desc, param_group_desc,g,
+                                                                param_agg_level_desc,param_year)
+                        url_list.append(url)
                 else:
                     for s in v["state_alpha"]:
                         param_state_alpha = "&state_alpha=" + str(s)
-                        url = "{0}{1}{2}{3}{4}{5}{6}{7}".format(base_url, url_key, param_source_desc,
-                                                            param_sector_desc, param_group_desc,
+                        for g in groups:
+                            g = format_url_values(g)
+                            url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}".format(base_url, url_key, param_source_desc,
+                                                            param_sector_desc, param_group_desc,g,
                                                             param_agg_level_desc, param_state_alpha, param_year) 
-                        url_list.append(url)
+                            url_list.append(url)
     return url_list
 
 
@@ -89,7 +102,7 @@ def parse_data(text):
 
     for d in data:
         if "CROPS" in d["sector_desc"]:
-            if "IRRIGATED - ACRES IN PRODUCTION" in d["short_desc"]:
+          #  if "IRRIGATED - ACRES IN PRODUCTION" in d["short_desc"]:
                 class_list.append("Land")
                 source_name_list.append(source)
                 flow_name_list.append(str(d["statisticcat_desc"]))
