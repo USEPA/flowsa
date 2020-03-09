@@ -9,8 +9,8 @@ import pandas as pd
 import io
 import argparse
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request,\
-    load_json_from_requests_response, load_api_key, add_missing_flow_by_activity_fields
-from flowsa.common import log, flow_by_activity_fields, read_stored_FIPS, get_all_state_FIPS_2
+    add_missing_flow_by_activity_fields
+from flowsa.common import log, get_all_state_FIPS_2
 
 #Make year a script parameter
 ap = argparse.ArgumentParser()
@@ -25,7 +25,6 @@ def build_url_for_api_query(urlinfo):
 
 def assemble_urls_for_api_query():
     urls = []
-    #FIPS = read_stored_FIPS()['FIPS'][1:]
     FIPS = get_all_state_FIPS_2()['FIPS_2']
     for c in FIPS:
         url = build_url_for_api_query(config['url'])
@@ -77,9 +76,6 @@ if __name__ == '__main__':
                             "year":"Year",
                             "annual_avg_estabs":"ESTAB",
                             "annual_avg_emplvl":"EMP"})
-    # adjust area_fips in QCEW
-    if len(str(df.FIPS[1])) == 4:
-        df.FIPS = str(0) + str(df.FIPS[1])
     #Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
