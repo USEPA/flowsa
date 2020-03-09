@@ -15,7 +15,7 @@ def build_usda_crop_url_list(config):
     :return: list of urls
     """
     for k,v in config.items():
-        key = load_api_key(source)
+        key = load_api_key("USDA_Quickstats")
         if (k == "url_usda_crops"):
             url_list = []
             years = v["year"]
@@ -142,10 +142,11 @@ def parse_data(text):
             flow_by_activity[17]: description_list}
     df = pd.DataFrame(dict)
     return df
+
 if __name__ == '__main__':
     config = load_sourceconfig(source)
     url_list = build_usda_crop_url_list(config)
-    df_lists = call_usda_crop_urls(url_list)
+    df_lists = call_usda_crop_urls(url_list[0:52])
     
     for d in df_lists:
         df = pd.concat(df_lists[d])
