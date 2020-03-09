@@ -1,4 +1,4 @@
-# USDA_CoA_Irrigation.py (flowsa)
+# USDA_CoA_Cropland.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 import io
@@ -7,7 +7,7 @@ import json
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
-source = 'USDA_CoA_Irrigation'
+source = 'USDA_CoA_Cropland'
 def build_usda_crop_url_list(config):
     """
     
