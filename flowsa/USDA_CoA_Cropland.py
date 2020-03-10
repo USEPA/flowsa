@@ -8,6 +8,14 @@ from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_r
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USDA_CoA_Cropland'
+
+def format_url_values(string):
+    if " " in string:
+        string = string.replace(" ", "%20")
+    if "&" in string:
+        string = string.replace("&", "%26")
+    return string
+
 def build_usda_crop_url_list(config):
     """
     
@@ -69,7 +77,7 @@ def check_value(value):
     if "(D)" in value:
         value = withdrawn_keyword
     return value
-        
+
 def parse_data(text):
     json1_data = json.loads(text)
     data = json1_data["data"]
@@ -94,36 +102,40 @@ def parse_data(text):
 
     for d in data:
         if "CROPS" in d["sector_desc"]:
-          #  if "IRRIGATED - ACRES IN PRODUCTION" in d["short_desc"]:
-                class_list.append("Land")
-                source_name_list.append(source)
-                flow_name_list.append(str(d["statisticcat_desc"]))
-                flow_amount_list.append(check_value(d["Value"]))
-                unit_list.append(d["unit_desc"])
-                activity_produced_list.append(None)
-                activity_consumed_list.append(str(d["commodity_desc"]))
-                measure_of_spread_list.append(check_value(d["CV (%)"]))
-                spread_list.append(None)
-                distribution_type_list.append(None)
-                min_list.append(None)
-                max_list.append(None)
-                compartment_list.append(None)
-                if d["agg_level_desc"] == "NATIONAL":
-                    fips_list.append(US_FIPS)
-                else:
-                    if d["county_code"] == "":
-                        fips_list.append(str(d["state_fips_code"])+str("000"))
+            flows_list = ["ACRES IN PRODUCTION", "OPERATIONS WITH AREA IN PRODUCTION", "ACRES HARVESTED", "OPERATIONS WITH AREA HARVESTED"]
+            des = str(d["short_desc"])
+            for fl in flows_list:
+                 if fl in des:
+                    class_list.append("Land")
+                    source_name_list.append(source)
+                    flow_name_list.append(str(d["statisticcat_desc"]))
+                    flow_amount_list.append(check_value(d["Value"]))
+                    unit_list.append(d["unit_desc"])
+                    activity_produced_list.append(None)
+                    activity_consumed_list.append(str(d["commodity_desc"]))
+                    measure_of_spread_list.append(check_value(d["CV (%)"]))
+                    spread_list.append(None)
+                    distribution_type_list.append(None)
+                    min_list.append(None)
+                    max_list.append(None)
+                    compartment_list.append(None)
+                    if d["agg_level_desc"] == "NATIONAL":
+                        fips_list.append(US_FIPS)
                     else:
-                        fips_list.append(str(d["state_fips_code"])+str(d["county_code"]))
-                year_list.append(d["year"])
-                data_reliability_list.append(None)
-                data_collection_list.append(None)
-                if "(" in d["domaincat_desc"]:
-                    domaincat_desc_split = d["domaincat_desc"].split("(")
-                    domaincat_desc = "(" + domaincat_desc_split[1]
-                    description_list.append(str(d["short_desc"]) + str(d["domain_desc"]) + domaincat_desc)
-                else:
-                    description_list.append(str(d["short_desc"]) + str(d["domain_desc"]) + str(d["domaincat_desc"]))
+                        if d["county_code"] == "":
+                            fips_list.append(str(d["state_fips_code"])+str("000"))
+                        else:
+                            fips_list.append(str(d["state_fips_code"])+str(d["county_code"]))
+                    year_list.append(d["year"])
+                    data_reliability_list.append(None)
+                    data_collection_list.append(None)
+                    if "(" in d["domaincat_desc"]:
+                        domaincat_desc_split = d["domaincat_desc"].split("(")
+                        domaincat_desc = "(" + domaincat_desc_split[1]
+                        description_list.append(str(d["short_desc"]) + str(d["domain_desc"]) + domaincat_desc)
+                    else:
+                        description_list.append(str(d["short_desc"]) + str(d["domain_desc"]) + str(d["domaincat_desc"]))
+
     flow_by_activity = []
     for key in flow_by_activity_fields.keys():
         flow_by_activity.append(key)
