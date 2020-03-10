@@ -2,13 +2,28 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Methods for pulling data from http sources
+Pulls data from data sources, reshapes them to flowbyactivity format, and saves to parquet
+Requires params for --year and --source
 """
+
+import argparse
 import yaml
 import requests
 import json
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,\
      flow_by_activity_fields
+from flowsa.USDA_CoA_Cropland import *
+from flowsa.USGS_Water_Use import *
+from flowsa.BLS_QCEW import *
+from flowsa.Census_CBP import *
+
+def parse_args():
+    #Make year a script parameter
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-y","--year", required=True, help="Year for data pull and save")
+    ap.add_argument("-s", "--source", required=True, help="Data source code to pull and save")
+    args = vars(ap.parse_args())
+    return args
 
 def store_flowbyactivity(result, source, year=None):
     """Prints the data frame into a parquet file."""
@@ -81,3 +96,13 @@ def get_year_from_url(url):
     else: 
         return None
 
+"""
+if __name__ == '__main__':
+    args = parse_args()
+    config = load_sourceconfig(args['source'])
+    url_list = build_url_list(config)
+    df_lists = call_urls(url_list)
+    df = pd.concat(df_lists[d])
+    log.info("Retrieved data for " + source + " " + d)
+    store_flowbyactivity(df, source, d)
+"""
