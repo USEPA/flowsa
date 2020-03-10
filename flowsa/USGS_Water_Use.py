@@ -6,6 +6,7 @@ import pandas as pd
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
+
 source = 'USGS_Water_Use'
 class_value = 'Water'
 technosphere_flow_array = ["consumptive", "Public Supply"]
@@ -121,7 +122,7 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
         for i in range(len(flow_name_list)):
             data_index = index_list[i]
             data_value = data_list[data_index]
-            if data_value != "-":
+            if data_value.strip() != "-":
                 year_value = data_list[year_index]
                 final_class_list.append(class_value)
                 final_source_name_list.append(source)
@@ -142,6 +143,7 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
                 final_data_reliability_list.append(None)
                 final_data_collection_list.append(None)
                 final_description_list.append(description_list[i])
+
 
     flow_by_activity = []
     for key in flow_by_activity_fields.keys():
