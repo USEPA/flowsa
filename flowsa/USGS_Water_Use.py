@@ -141,7 +141,7 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
                 final_min_list.append(None)
                 final_max_list.append(None)
                 final_data_reliability_list.append(None)
-                final_data_collection_list.append(None)
+                final_data_collection_list.append("5")  # placeholder DQ score
                 final_description_list.append(description_list[i])
 
 
@@ -337,11 +337,19 @@ if __name__ == '__main__':
     url_list = build_usgs_water_url_list(config)
     df_lists = call_usgs_water_urls(url_list[0:4])
     # Need to check each df before concatenating
-    
-    
-    
+
     for d in df_lists:
         df = pd.concat(df_lists[d])
+        # Assign data quality scores
+        df.loc[df['ActivityConsumedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
+        df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
+                                              'Thermoelectric Power Once-through cooling',
+                                              'Thermoelectric Power Closed-loop cooling',
+                                              'Wastewater Treatment']), 'DataReliability'] = '3'
+        df.loc[df['ActivityConsumedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
+                                              'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
+        # Modify Unit column
+        df.loc[df['Unit'] == 'Mgal/', 'Unit'] = 'Mgal/d'
         log.info("Retrieved data for " + source + " " + d)
         store_flowbyactivity(df, source, d)
 
