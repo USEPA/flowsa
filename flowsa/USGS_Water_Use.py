@@ -6,7 +6,6 @@ import pandas as pd
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
-
 source = 'USGS_Water_Use'
 class_value = 'Water'
 technosphere_flow_array = ["consumptive", "Public Supply"]
@@ -194,7 +193,7 @@ def activity(name):
         activity = n.split(" from ")
         name = split_name(activity[0])
         produced = capitalize_first_letter(activity[1])
-        consumed = name[0] 
+        consumed = name[0].strip() 
     elif "consumptive" in n:
         split_case = split_name(n)
         consumed = None
@@ -316,6 +315,8 @@ def extract_compartment(name):
         compartment = "ground"
     elif "total" in name:
         compartment = "total"
+    elif "consumptive" in name:
+        compartment = "air"
     else:
         compartment = None
     return compartment
