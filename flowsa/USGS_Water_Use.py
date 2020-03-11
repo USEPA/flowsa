@@ -349,8 +349,15 @@ if __name__ == '__main__':
                                               'Wastewater Treatment']), 'DataReliability'] = '3'
         df.loc[df['ActivityConsumedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
                                               'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
+        df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
+        df.loc[df['ActivityProducedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
+                                              'Thermoelectric Power Once-through cooling',
+                                              'Thermoelectric Power Closed-loop cooling',
+                                              'Wastewater Treatment']), 'DataReliability'] = '3'
+        df.loc[df['ActivityProducedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
+                                              'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
         # Modify Unit column
-        df.loc[df['Unit'] == 'Mgal/', 'Unit'] = 'Mgal/d'
+        df.loc[df['Unit'].isin(['Mgal/', 'Mgal']), 'Unit'] = 'Mgal/d'
         log.info("Retrieved data for " + source + " " + d)
         store_flowbyactivity(df, source, d)
 
