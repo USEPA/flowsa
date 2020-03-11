@@ -64,7 +64,6 @@ def get_usgs_water_header_and_data(text):
         This method also eliminates the table metadata. The table metadata declares how long each string in the table can be."""
     flag = True
     header = ""
-    column_size = ""
     data = []
     metadata = []
     with io.StringIO(text) as fp:
@@ -74,9 +73,7 @@ def get_usgs_water_header_and_data(text):
                     header = line
                     flag = False
                 else:
-                    if "16s" in line:
-                        column_size = line
-                    else:
+                    if "16s" not  in line:
                         data.append(line)
             else:
                 metadata.append(line)
@@ -98,7 +95,6 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
     final_activity_consumed_list = []
     final_compartment_list = []
     final_fips_list = []
-    # final_flow_type_list = []
     final_year_list = []
     final_data_reliability_list = []
     final_data_collection_list = []
@@ -108,14 +104,12 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
     final_distribution_type_list = []
     final_min_list = []
     final_max_list = []
-    all_lists = []
 
     year_index = general_list.index("year")
     state_cd_index = general_list.index("state_cd")
     county_cd_index = general_list.index("county_cd")
     for d in data:
         data_list = d.split("\t")
-        year = data_list[year_index]
         fips = str(data_list[state_cd_index]) + str(data_list[county_cd_index])
 
         for i in range(len(flow_name_list)):
@@ -195,9 +189,16 @@ def activity(name):
         produced = capitalize_first_letter(activity[1])
         consumed = name[0].strip() 
     elif "consumptive" in n:
-        split_case = split_name(n)
-        consumed = None
-        produced = capitalize_first_letter(split_case[0])
+        if ")" in n:
+            open_paren_split = n.split("(")
+            capitalized_string = capitalize_first_letter(open_paren_split[0])
+            close_paren_split = open_paren_split[1].split(")")
+            produced = capitalized_string.strip() + " " + close_paren_split[0].strip()
+            consumed = None
+        else:
+            split_case = split_name(n)
+            consumed = None
+            produced = capitalize_first_letter(split_case[0])
     elif ")" in n:
         produced = None
         open_paren_split = n.split("(")
@@ -229,7 +230,6 @@ def parse_header(headers, data, technosphere_flow_array, waste_flow_array):
     activity_list = []
     flow_type_list = []
     compartment_list = []
-    data_frame_list = []
     ActivityProducedBy_list = []
     ActivityConsumedBy_list = []
     index = 0
@@ -261,8 +261,6 @@ def parse_header(headers, data, technosphere_flow_array, waste_flow_array):
                     if ")" in name:
                         paren_split = name.split(")")
                         activity_name = paren_split[0].strip() + ")"
-                        flow_name = paren_split[1].strip()
-
                         activity_list.append(activity_name)
                         flow_name_list.append(extract_flow_name(h))
                     else:

@@ -101,12 +101,11 @@ def parse_data(text):
     max_list = []
 
     for d in data:
-            flows_list = ["ACRES IN PRODUCTION", "OPERATIONS WITH AREA IN PRODUCTION", "ACRES HARVESTED", "OPERATIONS WITH AREA HARVESTED"]
-            do_not_need = ["fresh market", "processing", "farm sales", "irrigated, entire crop", "irrigted, none of crop", "irrigated, part of crop", "economic class"]
-            des = str(d["short_desc"])
-            de = str(d["domaincat_desc"]).lower()
-            if any(fl in des for fl in flows_list):
-                if "fresh market" not  in de and "economic class" not  in de and "processing" not  in de and "farm sales" not  in de and "irrigated, entire crop" not  in de and "irrigted, none of crop" not  in de and "irrigated, part of crop" not  in de:
+            
+            stat_desc = ["AREA HARVESTED", "AREA IN PRODUCTION"]
+            do_desc = d["domain_desc"] 
+            if any(s in d["statisticcat_desc"] for s in stat_desc):
+                if (d["statisticcat_desc"] == "AREA HARVESTED" and (do_desc == "AREA HARVESTED" or do_desc == "TOTAL" or do_desc == "NAICS CLASSIFICATIONS")) or (d["statisticcat_desc"] == "AREA IN PRODUCTION" and (do_desc == "AREA IN PRODUCTION" or do_desc == "TOTAL")):
                     class_list.append("Land")
                     source_name_list.append(source)
                     flow_name_list.append(str(d["statisticcat_desc"]))
