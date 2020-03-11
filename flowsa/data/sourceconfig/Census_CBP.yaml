@@ -1,9 +1,26 @@
+#For calling County Business Patterns API to get establishments, employment, annual payroll for each county in
+#in a requested state. The API key must be requested and saved to the appdir local directory
+#in a Census_API_KEY.txt file
 ---
+api_name: Census
+api_key_required: true
+format: json
 url:
-   url_order: [base_url, url_path, url_params]
    base_url: "http://api.census.gov/data/"
-   url_path:
+   api_path: "__year__ /cbp?" # __year__ is used to trigger a replace function to substitute in year
    url_params:
       get: "NAICS2012,ESTAB,EMP,PAYANN"
-      for: "county:*"
-      in: "state:"
+      for: "county:*"  #retrieves every county
+      in: "state:__stateFIPS__" #requests a state 2-digit FIPS code that has to be supplied dynamically
+   year_param: #not used in query string but rather part of api path
+   key_param: key
+url_replace_fxn:
+years:
+   - 2010
+   - 2011
+   - 2012
+   - 2013
+   - 2014
+   - 2015
+   - 2016
+   - 2017
