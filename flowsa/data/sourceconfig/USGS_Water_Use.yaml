@@ -1,11 +1,19 @@
 ---
+api_name: USGS
+api_key_required: false
+format: txt
 url:
-   base_url: "https://waterdata.usgs.gov/"
-   states: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
-   url_path: "/nwis/water_use?"
-   format: "rdb&rdb"
-   _compression: "value"
-   wu_area: "County"
-   wu_year: ["2010","2015"]
-   wu_county: "ALL"
-   wu_category: "ALL"
+  api_path: /nwis/water_use?
+  base_url: "https://waterdata.usgs.gov/"
+  url_params:
+    _compression: value
+    format: rdb&rdb
+    wu_area: County
+    wu_category: ALL
+    wu_county: ALL
+  year_param: wu_year
+  key_param:
+url_replace_fxn:
+years:
+  - 2010
+  - 2015
