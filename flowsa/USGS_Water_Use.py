@@ -334,7 +334,7 @@ def extract_flow_name(name):
 if __name__ == '__main__':
     config = load_sourceconfig(source)
     url_list = build_usgs_water_url_list(config)
-    df_lists = call_usgs_water_urls(url_list[0:4])
+    df_lists = call_usgs_water_urls(url_list)  # add [0:4] if only want to pull data from first 4 urls
     # Need to check each df before concatenating
 
     for d in df_lists:
