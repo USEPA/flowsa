@@ -12,10 +12,10 @@ import requests
 import json
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,\
      flow_by_activity_fields
-from flowsa.USDA_CoA_Cropland import *
-from flowsa.USGS_Water_Use import *
-from flowsa.BLS_QCEW import *
-from flowsa.Census_CBP import *
+#from flowsa.USDA_CoA_Cropland import *
+#from flowsa.USGS_Water_Use import *
+#from flowsa.BLS_QCEW import *
+#from flowsa.Census_CBP import *
 
 def parse_args():
     #Make year a script parameter
@@ -96,13 +96,15 @@ def get_year_from_url(url):
     else: 
         return None
 
-"""
+
 if __name__ == '__main__':
     args = parse_args()
     config = load_sourceconfig(args['source'])
-    url_list = build_url_list(config)
-    df_lists = call_urls(url_list)
-    df = pd.concat(df_lists[d])
-    log.info("Retrieved data for " + source + " " + d)
-    store_flowbyactivity(df, source, d)
-"""
+
+#    url_list = build_url_list(config)
+#    df_lists = call_urls(url_list)
+#    df = pd.concat(df_lists[d])
+#    log.info("Retrieved data for " + source + " " + d)
+#    df = reshape_to_flowbyactivity(df)
+#    df = store_metadata(config)
+#    store_flowbyactivity(df, source, d)
