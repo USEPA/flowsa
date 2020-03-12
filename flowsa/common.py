@@ -21,6 +21,7 @@ except NameError:
 datapath = modulepath + 'data/'
 sourceconfigpath = datapath + 'sourceconfig/'
 outputpath = modulepath + 'output/'
+flowbyactivitymethodpath = datapath +  'flowbysectormethods/'
 
 local_storage_path = appdirs.user_data_dir()
 
