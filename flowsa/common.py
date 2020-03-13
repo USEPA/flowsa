@@ -120,17 +120,36 @@ def clean_str_and_capitalize(s):
         s = s.capitalize()
     return s
 
+def get_state_FIPS():
+    """
+    Filters FIPS df for state codes only
+    :return: FIPS df with only state level records
+    """
+    fips = read_stored_FIPS()
+    fips = fips.drop_duplicates(subset='State')
+    fips = fips[fips['State'].notnull()]
+    return fips
+
+def get_county_FIPS():
+    """
+    Filters FIPS df for county codes only
+    :return: FIPS df with only county level records
+    """
+    fips = read_stored_FIPS()
+    fips = fips.drop_duplicates(subset='County')
+    fips = fips[fips['County'].notnull()]
+    return fips
+
+
 
 def get_all_state_FIPS_2():
     """
     Gets a subset of all FIPS 2 digit codes for states
     :return: df with 'State' and 'FIPS_2' cols
     """
-    fips = read_stored_FIPS()
-    fips = fips.drop_duplicates(subset='State')
-    fips = fips[fips['State'].notnull()]
-    state_fips = fips
-    state_fips['FIPS_2'] = fips['FIPS'].apply(lambda x: x[0:2])
+
+    state_fips = get_state_FIPS()
+    state_fips['FIPS_2'] = state_fips['FIPS'].apply(lambda x: x[0:2])
     state_fips = state_fips[['State','FIPS_2']]
     return state_fips
 
