@@ -4,6 +4,7 @@ target_sector_source: NAICS_2012_Code
 target_geographic_scale: national
 flowbyactivity_sources:
       name: "USGS_Water_Use"
+      class: Water
       year: 2015
       activities:
           names:
