@@ -9,6 +9,7 @@ import flowsa
 import yaml
 from flowsa.common import log, flowbyactivitymethodpath
 from flowsa.mapping import add_sectors_to_flowbyactivity
+from flowsa.flowbyactivity import filter_by_geographic_scale
 
 
 def load_method(method_name):
@@ -26,19 +27,7 @@ def load_method(method_name):
     return method
 
 
-def get_source_flowbyactivity(flowclass,source_list):
-    flowbyactivities = []
-    for s in source_list:
-        flowbyactivity = flowsa.getFlowByActivity(flowclass, s)
-        flowbyactivities.append(flowbyactivity)
-    try:
-        flowbyactivity_df = pd.concat(flowbyactivities, ignore_index=True)
-    except:
-        log.error("Failed to merge flowbyactivity files.")
-    return flowbyactivity_df
 
-
-#df = get_source_flowbyactivity(flowclass,source_list)
 
 #Need to create sums by flowtype and unit to check against later
 
@@ -49,8 +38,23 @@ def get_source_flowbyactivity(flowclass,source_list):
 
 # Removing records that we don't need
 
+def main(method_name):
+    """
+    Creates a flowbysector dataset
+    :param method_name: Name of method corresponding to flowbysector method yaml name
+    :return: flowbysector
+    """
 
-# Unit conversion to m3
+    method = load_method(method_name)
+    fbas = [method['flowbyactivity_sources']]
+    for fba in fbas:
+        flows = flowsa.getFlowByActivity(flowclass=fba['class'],
+                                                    years=[fba['year']],
+                                                    datasource = fba['name'])
+        flows = filter_by_geographic_scale(flows,geoscale=method['target_geographic_scale'])
+        flows = add_sectors_to_flowbyactivity(flows,sectorsourcename=method['target_sector_source'])
+
+    return flows
 
 
 
