@@ -6,8 +6,24 @@ Produces a FlowBySector data frame based on a method file for the given class
 """
 import pandas as pd
 import flowsa
-from flowsa.common import log
+import yaml
+from flowsa.common import log, flowbyactivitymethodpath
 from flowsa.mapping import add_sectors_to_flowbyactivity
+
+
+def load_method(method_name):
+    """
+    Loads a flowbysector method from a YAML
+    :param method_name:
+    :return:
+    """
+    sfile = flowbyactivitymethodpath+method_name+'.yaml'
+    try:
+        with open(sfile, 'r') as f:
+            method = yaml.safe_load(f)
+    except IOError:
+        log.error("File not found.")
+    return method
 
 
 def get_source_flowbyactivity(flowclass,source_list):
@@ -21,14 +37,13 @@ def get_source_flowbyactivity(flowclass,source_list):
         log.error("Failed to merge flowbyactivity files.")
     return flowbyactivity_df
 
-flowclass = 'Water'
-source_list = ['USGS_Water_Use']
-df = get_source_flowbyactivity(flowclass,source_list)
+
+#df = get_source_flowbyactivity(flowclass,source_list)
 
 #Need to create sums by flowtype and unit to check against later
 
 #Add in Sector matches now to producing and consuming activities
-df = add_sectors_to_flowbyactivity(df)
+#df = add_sectors_to_flowbyactivity(df)
 #Very important to note that values have not been allocated but are repeated at this point
 
 
