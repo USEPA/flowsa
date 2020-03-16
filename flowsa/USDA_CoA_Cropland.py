@@ -4,8 +4,16 @@
 import io
 import pandas as pd
 import json
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
-from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
+#from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
+#from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
+
+import sys, os, inspect
+currentdir =  os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
+
+from datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
+from common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USDA_CoA_Cropland'
 
@@ -113,7 +121,7 @@ def parse_data(text):
                         flow_amount_list.append(check_value(d["Value"]))
                         unit_list.append(d["unit_desc"])
                         activity_produced_list.append(None)   
-                        if "-" in d["short_desc"]:
+                        if "-" in d["short_desc"] and "sunflower, non-oil type" not in d["short_desc"].lower():
                             description = d["short_desc"].split("-")
                             activity = description[0].strip()
                             if "IRRIGATED" in activity:
@@ -123,8 +131,12 @@ def parse_data(text):
                                 activity_consumed_list.append(activity)
                         else:
                             activity_consumed_list.append(str(d["commodity_desc"]))
-                        measure_of_spread_list.append(check_value(d["CV (%)"]))
-                        spread_list.append(None)
+                        spread = check_value(d["CV (%)"])
+                        spread_list.append(spread)
+                        if spread == "W":
+                            measure_of_spread_list.append(None)
+                        else:
+                            measure_of_spread_list.append("RSD")
                         distribution_type_list.append(None)
                         min_list.append(None)
                         max_list.append(None)
