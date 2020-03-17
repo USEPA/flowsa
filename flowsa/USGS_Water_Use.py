@@ -11,12 +11,13 @@ class_value = 'Water'
 technosphere_flow_array = ["consumptive", "Public Supply"]
 waste_flow_array = ["wastewater", "loss"]
 
-def build_usgs_water_url_list(config):
+def build_usgs_water_url_list_county(config):
     """
     
     :param config: 
     :return: 
     """
+    geographic_data = "county"
     for k, v in config.items():
         if (k == "url"):
             url_list = []
@@ -37,9 +38,62 @@ def build_usgs_water_url_list(config):
                                                             param_wu_year,y,
                                                             param_wu_county, param_wu_category)
                     url_list.append(url)
-    return url_list
+    return(url_list, geographic_data)
 
-def call_usgs_water_urls(url_list):
+def build_usgs_water_url_list_state(config):
+    """
+    
+    :param config: 
+    :return: 
+    """
+    geographic_data = "state"
+    for k, v in config.items():
+        if (k == "url"):
+            url_list = []
+            states = v["states"]
+            years = v["wu_year"]
+            base_url = v["base_url"]
+            url_path = v["url_path"]
+            param_format = "format=" + str(v["format"])
+            param_compression = "_compression=" + str(v["_compression"])
+            param_wu_year = "&wu_year="
+            param_wu_category = "&wu_category=" + str(v["wu_category"])
+            param_wu_area = "&wu_area=State+Total"
+            for s in states:
+                for y in years:
+                    url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}".format(base_url,s, url_path, param_format,
+                                                                param_compression, param_wu_area, param_wu_year,y,
+                                                                param_wu_category)
+                    url_list.append(url)
+    return(url_list, geographic_data)
+
+def build_usgs_water_url_list_national(config):
+    """
+    
+    :param config: 
+    :return: 
+    """
+    geographic_data = "national"
+    for k, v in config.items():
+        if (k == "url"):
+            url_list = []
+            
+            years = v["wu_year"]
+            base_url = v["base_url"]
+            url_path = v["url_path"]
+            param_format = "format=" + str(v["format"])
+            param_compression = "_compression=" + str(v["_compression"])
+            param_wu_year = "&wu_year="
+            param_wu_category = "&wu_category=" + str(v["wu_category"])
+            for y in years:
+                url = "{0}{1}{2}{3}{4}{5}{6}".format(base_url, url_path, param_format,
+                                                                param_compression, param_wu_year,y,
+                                                                param_wu_category)
+                url_list.append(url)
+    return(url_list, geographic_data)
+
+
+def call_usgs_water_urls(url_list, geographic_data):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data"""
     data_frame_dictionary = {}
@@ -47,12 +101,20 @@ def call_usgs_water_urls(url_list):
         year = get_year_from_url(url)
         r = make_http_request(url)
         usgs_split = get_usgs_water_header_and_data(r.text)
-        df = parse_header(usgs_split[0], usgs_split[1], technosphere_flow_array, waste_flow_array)
-        
-        if not data_frame_dictionary.get(year, None):
-            data_frame_dictionary[year] = []
+        if geographic_data == "national":
+            df = parse_header_national(usgs_split[0], usgs_split[1], technosphere_flow_array, waste_flow_array, geographic_data)
+            
+            if not data_frame_dictionary.get(year, None):
+                data_frame_dictionary[year] = []
 
-        data_frame_dictionary[year].append(df)
+            data_frame_dictionary[year].append(df)
+        else:
+            df = parse_header(usgs_split[0], usgs_split[1], technosphere_flow_array, waste_flow_array, geographic_data)
+            
+            if not data_frame_dictionary.get(year, None):
+                data_frame_dictionary[year] = []
+
+            data_frame_dictionary[year].append(df)
     return data_frame_dictionary
 
 
@@ -82,7 +144,7 @@ def get_usgs_water_header_and_data(text):
 
 def process_data(description_list, unit_list, index_list, flow_name_list, general_list,
                  ActivityProducedBy_list, ActivityConsumedBy_list, compartment_list, flow_type_list,
-                 data):
+                 data, geographic_data):
     """This method adds in the data be used for the Flow by activity.
     This method creates a dictionary from the parced headers and the parsed data.
     This dictionary is then turned into a panda data frame and returned."""
@@ -105,13 +167,21 @@ def process_data(description_list, unit_list, index_list, flow_name_list, genera
     final_min_list = []
     final_max_list = []
 
-    year_index = general_list.index("year")
+    
     state_cd_index = general_list.index("state_cd")
-    county_cd_index = general_list.index("county_cd")
-    for d in data:
-        data_list = d.split("\t")
-        fips = str(data_list[state_cd_index]) + str(data_list[county_cd_index])
+    county_cd_index = ""
+    year_index = general_list.index("year")
+    if geographic_data == "county":
+        county_cd_index = general_list.index("county_cd")
 
+    for d in data:
+
+        data_list = d.split("\t")
+        fips = ""
+        if geographic_data == "state":
+            fips = str(data_list[state_cd_index]) + str("000")
+        elif geographic_data == "county":
+            fips = str(data_list[state_cd_index]) + str(data_list[county_cd_index])
         for i in range(len(flow_name_list)):
             data_index = index_list[i]
             data_value = data_list[data_index]
@@ -215,8 +285,7 @@ def activity(name):
         consumed = capitalize_first_letter(split_case[0])
     return (produced, consumed)
 
-
-def parse_header(headers, data, technosphere_flow_array, waste_flow_array):
+def parse_header(headers, data, technosphere_flow_array, waste_flow_array, geographic_data):
     """This method takes the header data and parses it so that it works with the flow by
      activity format. This method creates lists for each object to go along with the
      Flow-By-Activity """
@@ -287,9 +356,95 @@ def parse_header(headers, data, technosphere_flow_array, waste_flow_array):
         index += 1
     data_frame = process_data(description_list, unit_list, index_list, flow_name_list, general_list,
                               ActivityProducedBy_list, ActivityConsumedBy_list, compartment_list,
-                              flow_type_list, data)
+                              flow_type_list, data, geographic_data)
     return data_frame
 
+def parse_header_national(headers, data, technosphere_flow_array, waste_flow_array, geographic_data):
+    """This method takes the header data and parses it so that it works with the flow by
+     activity format. This method creates lists for each object to go along with the
+     Flow-By-Activity """
+    headers_list = headers.split("\t")
+    year = headers_list[1]
+
+    class_list = []
+    source_name_list = []
+    flow_name_list = []
+    flow_amount_list = []
+    unit_list = []
+    activity_produced_by_list = []
+    activity_consumed_by_list = []
+    compartment_list = []
+    fips_list = []
+    year_list = []
+    data_reliability_list = []
+    data_collection_list = []
+    description_list = []
+    measure_of_spread_list = []
+    spread_list = []
+    distribution_type_list = []
+    min_list = []
+    max_list = []
+    
+    for d in data:
+        if "Commercial" not in d:
+            if "gal" in d:
+                class_list.append(class_value)
+                source_name_list.append(source)
+                flow_name_list.append(extract_flow_name(d))
+                data_list = d.split("\t")
+                if len(data_list) == 2:
+                    flow_amount_list.append(data_list[1])
+                elif len(data_list) == 3:
+                    flow_amount_list.append(data_list[2])
+                if "In " in d:
+                    u = data_list[0]
+                    unit = u.split("In ")
+                    unit_list.append(unit[1].strip())
+                elif "in " in d:
+                    u = data_list[0]
+                    unit = u.split("in ")
+                    unit_list.append(unit[1].strip())
+                description_list.append(d)
+                fips_list.append(US_FIPS)
+                year_list.append(year)
+                measure_of_spread_list.append(None)
+                spread_list.append(None)
+                distribution_type_list.append(None)
+                min_list.append(None)
+                max_list.append(None)
+                data_reliability_list.append(None)
+                data_collection_list.append("5")  # placeholder DQ score
+                activity_produced_by_list.append(None)
+                comma_split = d.split(",")
+                activity_consumed_by_list.append(comma_split[0])
+                compartment_list.append(extract_compartment(d))
+
+
+    flow_by_activity = []
+    for key in flow_by_activity_fields.keys():
+        flow_by_activity.append(key)
+    dict = {flow_by_activity[0]: class_list, 
+        flow_by_activity[1]: source_name_list, 
+        flow_by_activity[2]: flow_name_list, 
+        flow_by_activity[3]: flow_amount_list,
+        flow_by_activity[4]: unit_list,
+        flow_by_activity[5]: activity_produced_by_list,
+        flow_by_activity[6]: activity_consumed_by_list,
+        flow_by_activity[7]: compartment_list, 
+        flow_by_activity[8]: fips_list,
+        flow_by_activity[9]: year_list, 
+        flow_by_activity[10]: measure_of_spread_list,
+        flow_by_activity[11]: spread_list,
+        flow_by_activity[12]: distribution_type_list,
+        flow_by_activity[13]: min_list,
+        flow_by_activity[14]: max_list,
+        flow_by_activity[15]: data_reliability_list,
+        flow_by_activity[16]: data_collection_list,
+        flow_by_activity[17]: description_list}
+    
+
+    df = pd.DataFrame(dict)
+    return df
 
 def split_name(name):
     """This method splits the header name into a source name and a flow name"""
@@ -303,7 +458,6 @@ def split_name(name):
         else:
             lower_case = lower_case.strip() + " " + s
     return (upper_case, lower_case)
-
 
 def extract_compartment(name):
     """Sets the extract_compartment based on it's name"""
@@ -319,7 +473,6 @@ def extract_compartment(name):
         compartment = None
     return compartment
 
-
 def extract_flow_name(name):
     """Sets the flow name based on it's name"""
     if "fresh" in name.lower():
@@ -330,12 +483,27 @@ def extract_flow_name(name):
         flow_name = None
     return flow_name
 
-
 if __name__ == '__main__':
     config = load_sourceconfig(source)
-    url_list = build_usgs_water_url_list(config)
-    df_lists = call_usgs_water_urls(url_list)  # add [0:4] if only want to pull data from first 4 urls
+    url_list_county = build_usgs_water_url_list_county(config)
+    url_list_state_totals = build_usgs_water_url_list_state(config)
+    url_list_national = build_usgs_water_url_list_national(config)
+
+    df_lists = call_usgs_water_urls(url_list_county[0],url_list_county[1])  
+    df_lists_state_totals = call_usgs_water_urls(url_list_state_totals[0], url_list_state_totals[1])
+    df_lists_national_totals = call_usgs_water_urls(url_list_national[0], url_list_national[1])
+    # add [0:4] if only want to pull data from first 4 urls
     # Need to check each df before concatenating
+    
+
+    #Combines all the lists based on geography into one list so it can be exported
+    for t in df_lists_state_totals:
+        for d in df_lists_state_totals[t]:
+            df_lists[t].append(d)
+
+    for t in df_lists_national_totals:
+        for d in df_lists_national_totals[t]:
+            df_lists[t].append(d)
 
     for d in df_lists:
         df = pd.concat(df_lists[d])
