@@ -243,7 +243,7 @@ def capitalize_first_letter(string):
 
 def activity(name):
     name_split = name.split(",")
-    if "Irrigation" in name:
+    if "Irrigation" in name and "gal" not in name_split[1]: 
         n = name_split[0] + "," + name_split[1]
     else:
         n = name_split[0]
@@ -279,6 +279,10 @@ def activity(name):
         split_case = split_name(n)
         consumed = None
         produced = capitalize_first_letter(split_case[0])
+    elif "Self-supplied" in n:
+        split_case = split_name(n)
+        produced = None
+        consumed = capitalize_first_letter(split_case[1])
     else:
         split_case = split_name(n)
         produced = None
