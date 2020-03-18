@@ -393,9 +393,9 @@ def parse_header_national(headers, data, technosphere_flow_array, waste_flow_arr
                 flow_name_list.append(extract_flow_name(d))
                 data_list = d.split("\t")
                 if len(data_list) == 2:
-                    flow_amount_list.append(data_list[1])
+                    flow_amount_list.append(data_list[1].strip())
                 elif len(data_list) == 3:
-                    flow_amount_list.append(data_list[2])
+                    flow_amount_list.append(data_list[2].strip())
                 if "In " in d:
                     u = data_list[0]
                     unit = u.split("In ")
@@ -406,7 +406,7 @@ def parse_header_national(headers, data, technosphere_flow_array, waste_flow_arr
                     unit_list.append(unit[1].strip())
                 description_list.append(d)
                 fips_list.append(US_FIPS)
-                year_list.append(year)
+                year_list.append(year.strip())
                 measure_of_spread_list.append(None)
                 spread_list.append(None)
                 distribution_type_list.append(None)
@@ -414,9 +414,10 @@ def parse_header_national(headers, data, technosphere_flow_array, waste_flow_arr
                 max_list.append(None)
                 data_reliability_list.append(None)
                 data_collection_list.append("5")  # placeholder DQ score
-                activity_produced_by_list.append(None)
-                comma_split = d.split(",")
-                activity_consumed_by_list.append(comma_split[0])
+                
+                activities = activity(data_list[0])
+                activity_produced_by_list.append(activities[0])
+                activity_consumed_by_list.append(activities[1])
                 compartment_list.append(extract_compartment(d))
 
 
@@ -465,7 +466,7 @@ def extract_compartment(name):
         compartment = "surface"
     elif "ground" in name.lower():
         compartment = "ground"
-    elif "total" in name:
+    elif "total consumptive" in name or "total" in name:
         compartment = "total"
     elif "consumptive" in name:
         compartment = "air"
@@ -479,6 +480,8 @@ def extract_flow_name(name):
         flow_name = "fresh"
     elif "saline" in name.lower():
         flow_name = "saline"
+    elif "reclaimed wastewater" in name.lower():
+        flow_name = "wastewater" 
     else:
         flow_name = None
     return flow_name
