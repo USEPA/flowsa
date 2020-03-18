@@ -7,7 +7,6 @@ import json
 from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
-
 source = 'USDA_CoA_Cropland'
 
 def format_url_values(string):
@@ -77,6 +76,16 @@ def call_usda_crop_urls(url_list):
 def check_value(value):
     if "(D)" in value:
         value = withdrawn_keyword
+    elif "," in value:
+        if "." in value:
+            value = value 
+        comma_split = value.split(",")
+        value_str = ""
+        for c in comma_split:
+            value_str = value_str + c
+        value = value_str
+    elif "." in value:
+        value = value 
     return value
 
 def parse_data(text):
@@ -110,20 +119,37 @@ def parse_data(text):
                     if("fresh market" not in d["short_desc"].lower() and "processing" not in d["short_desc"].lower() and "irrigated, entire crop" not in d["short_desc"].lower() and "irrigated, none of crop" not in d["short_desc"].lower() and "irrigated, part of crop" not in d["short_desc"].lower()):
                         class_list.append("Land")
                         source_name_list.append(source)
-                        flow_name_list.append(str(d["statisticcat_desc"]))
+                        
                         flow_amount_list.append(check_value(d["Value"]))
-                        unit_list.append(d["unit_desc"])
-                        activity_produced_list.append(None)   
-                        if "-" in d["short_desc"] and "sunflower, non-oil type" not in d["short_desc"].lower():
-                            description = d["short_desc"].split("-")
-                            activity = description[0].strip()
-                            if "IRRIGATED" in activity:
-                                activities = activity.split(", IRRIGATED")
-                                activity_consumed_list.append(activities[0] + activities[1])
+                        if d["unit_desc"] == "OPERATIONS":
+                            unit_list.append("p")
+                            flow_name_list.append(str(d["unit_desc"]))
+                            activity_consumed_list.append(None)   
+                            if "-" in d["short_desc"] and "sunflower, non-oil type" not in d["short_desc"].lower():
+                                description = d["short_desc"].split("-")
+                                activity = description[0].strip()
+                                if "IRRIGATED" in activity:
+                                    activities = activity.split(", IRRIGATED")
+                                    activity_produced_list.append(activities[0] + activities[1])
+                                else:
+                                    activity_produced_list.append(activity)
                             else:
-                                activity_consumed_list.append(activity)
+                                activity_produced_list.append(str(d["commodity_desc"]))
                         else:
-                            activity_consumed_list.append(str(d["commodity_desc"]))
+                            unit_list.append(d["unit_desc"])
+                            flow_name_list.append(str(d["statisticcat_desc"]))
+                            activity_produced_list.append(None)   
+                            if "-" in d["short_desc"] and "sunflower, non-oil type" not in d["short_desc"].lower():
+                                description = d["short_desc"].split("-")
+                                activity = description[0].strip()
+                                if "IRRIGATED" in activity:
+                                    activities = activity.split(", IRRIGATED")
+                                    activity_consumed_list.append(activities[0] + activities[1])
+                                else:
+                                    activity_consumed_list.append(activity)
+                            else:
+                                activity_consumed_list.append(str(d["commodity_desc"]))
+                           
                         spread = check_value(d["CV (%)"])
                         spread_list.append(spread)
                         if spread == "W":
