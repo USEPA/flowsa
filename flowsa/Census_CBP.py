@@ -48,7 +48,7 @@ def call_cbp_urls(url_list):
     It then calls the processing method to begin processing the returned data"""
     data_frames_list = []
     for url in url_list:
-        log.INFO("Calling "+url)
+        log.info("Calling "+url)
         r = make_http_request(url)
         cbp_json = load_json_from_requests_response(r)
         # Convert response
