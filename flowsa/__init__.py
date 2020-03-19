@@ -30,7 +30,7 @@ def getFlowByActivity(flowclass, years, datasource=None):
     for s in sources:
         for y in years:
             try:
-                flowbyactivity = pd.read_parquet(outputpath + s + "_" + str(y) + ".parquet")
+                flowbyactivity = pd.read_parquet(outputpath + s + "_" + str(y) + ".parquet", engine="pyarrow")
                 class_flowbyactivity = pd.concat([class_flowbyactivity,flowbyactivity], sort=False)
             except FileNotFoundError:
                 log.error("No parquet file found for datasource "+ s + "and year " + str(y) + " in flowsa" )
