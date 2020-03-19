@@ -8,7 +8,8 @@ setup(
     package_data={'flowsa': [
         "data/*.*", "output/*.*"]},
     include_package_data=True,
-    install_requires=['pandas>=0.22'],
+    install_requires=['pandas>=0.22', 'pip>=9','setuptools>=41', 'pyyaml>=5.3',
+                      'pyarrow >= 0.14', 'requests >=2.22.0'],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',
     author='Wesley Ingwersen',
