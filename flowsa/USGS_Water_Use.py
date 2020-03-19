@@ -419,9 +419,13 @@ def parse_header_national(headers, data, technosphere_flow_array, waste_flow_arr
                 data_reliability_list.append(None)
                 data_collection_list.append("5")  # placeholder DQ score
                 
-                activities = activity(data_list[0])
-                activity_produced_by_list.append(activities[0])
-                activity_consumed_by_list.append(activities[1])
+                if "," in d:
+                    comma_split = d.split(",")
+                    activity_produced_by_list.append(None)
+                    activity_consumed_by_list.append(comma_split[0])
+                else:
+                    activity_produced_by_list.append(None)
+                    activity_consumed_by_list.append(data_list[0])
                 compartment_list.append(extract_compartment(d))
 
 
