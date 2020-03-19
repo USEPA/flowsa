@@ -519,13 +519,16 @@ if __name__ == '__main__':
     for d in df_lists:
         df = pd.concat(df_lists[d])
         # Assign data quality scores
-        df.loc[df['ActivityConsumedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
+        df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
         df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
-                                              'Thermoelectric Power Once-through cooling',
+                                              'Thermoelectric power', 'Thermoelectric Power Once-through cooling',
                                               'Thermoelectric Power Closed-loop cooling',
                                               'Wastewater Treatment']), 'DataReliability'] = '3'
-        df.loc[df['ActivityConsumedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
-                                              'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
+        df.loc[df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic', 'Industrial', 'Self-supplied industrial',
+                                              'Irrigation, Crop', 'Irrigation, Golf Courses', 'Irrigation, Total',
+                                              'Irrigation', 'Mining']), 'DataReliability'] = '4'
+        df.loc[df['ActivityConsumedBy'].isin(['Total withdrawals', 'Total Groundwater',
+                                              'Total Surface water']), 'DataReliability'] = '5'
         df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
         df.loc[df['ActivityProducedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                               'Thermoelectric Power Once-through cooling',
