@@ -9,7 +9,7 @@ import flowsa
 import yaml
 from flowsa.common import log, flowbyactivitymethodpath
 from flowsa.mapping import add_sectors_to_flowbyactivity
-from flowsa.flowbyactivity import filter_by_geographic_scale
+from flowsa.flowbyactivity import filter_by_geoscale, fba_activity_fields, agg_by_geoscale
 
 
 def load_method(method_name):
@@ -46,12 +46,26 @@ def main(method_name):
     """
 
     method = load_method(method_name)
-    fbas = [method['flowbyactivity_sources']]
-    for fba in fbas:
-        flows = flowsa.getFlowByActivity(flowclass=fba['class'],
-                                                    years=[fba['year']],
-                                                    datasource = fba['name'])
-        flows = filter_by_geographic_scale(flows,geoscale=method['target_geographic_scale'])
+    fbas = method['flowbyactivity_sources']
+    for k,v in fbas.items():
+        print(k)
+        flows = flowsa.getFlowByActivity(flowclass=v['class'],
+                                                    years=[v['year']],
+                                                    datasource = k)
+        activities = v['activity_sets']
+        for aset,attr in activities.items():
+            # subset by named activities
+            names = [attr['names']]
+            flows = flows[(flows[fba_activity_fields[0]].isin(names)) |
+                          (flows[fba_activity_fields[1]].isin(names))]
+
+            #aggregate geographically
+            from_scale = v['geoscale_to_use']
+            to_scale = method['target_geoscale']
+            flows = agg_by_geoscale(flows, from_scale, to_scale)
+
+
+        #flows = filter_by_geoscale(flows,geoscale=method['target_geographic_scale'])
         flows = add_sectors_to_flowbyactivity(flows,sectorsourcename=method['target_sector_source'])
 
     return flows
