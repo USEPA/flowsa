@@ -26,6 +26,10 @@ flowbyactivitymethodpath = datapath +  'flowbysectormethods/'
 local_storage_path = appdirs.user_data_dir()
 
 US_FIPS = "00000"
+fips_number_key = {"national": 0,
+                   "state": 2,
+                   "county":5}
+
 withdrawn_keyword = "W"
 
 flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
