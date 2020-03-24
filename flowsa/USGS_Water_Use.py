@@ -503,10 +503,10 @@ if __name__ == '__main__':
     for d in url_list:
         if "County" in d:
             county_list.append(d)
-            geographic_data = county
+            geographic_data = "county"
         elif "State+Total":
             state_list.append(d)
-            geographic_data = state
+            geographic_data = "state"
         else:
             national_list.append(d)
             geographic_data = "national"

@@ -8,7 +8,7 @@ import yaml
 import requests
 import json
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,\
-      flow_by_activity_fields
+       flow_by_activity_fields
 
 url_final_list = []
 
@@ -250,7 +250,7 @@ def build_url_list(config, source):
                             for p in url_order:
                                 create_url.append(geo[p])
                                 type_urls.append(check_url_type(geo[p]))
-                    elif g == "state":
+                elif g == "state":
                     geo = v[g]
                     for r in geo:
                         if r == "url_order":
@@ -260,8 +260,8 @@ def build_url_list(config, source):
                             for p in url_order:
                                 create_url.append(geo[p])
                                 type_urls.append(check_url_type(geo[p]))
-                    elif g == "national":
-                        geo = v[g]
+                elif g == "national":
+                    geo = v[g]
                     for r in geo:
                         if r == "url_order":
                             url_order = geo[r]
