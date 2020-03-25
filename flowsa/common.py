@@ -54,7 +54,7 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'Max': [{'dtype': 'float'}, {'required': False}],
                            'DataReliability': [{'dtype': 'float'}, {'required': True}],
                            'DataCollection': [{'dtype': 'float'}, {'required': True}],
-                           'Description': [{'dtype': 'float'}, {'required': True}]
+                           'Description': [{'dtype': 'str'}, {'required': True}]
                            }
 
 flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
