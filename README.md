@@ -5,8 +5,8 @@ sector attribution data using pandas dataframes.
 
 ## Terms
 
-_flows_: represent the physical movement of material or energy as input or output to or between activities.
-In LCA terms these are more strictly elementary flows or waste flows, although these LCA uses will not limit the scope of FLOWSA models.
+_flows_: represent the physical movement of material, energy, entities or money as input or output to or between activities.
+The terms __flows__ comes from life cycle assessment (ISO 14044).
 
 _sectors_: generally these are economic sectors generating economic activity, but are extended
 here to include households and institutional end users. Using the BEA definitions in input-output
@@ -33,10 +33,10 @@ Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
 USGS_Water_Use | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | x | NA | NA | NA| NA| x |NA |NA |NA |NA |
 USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) Horticultural Crop Area | Land | County | Crop area by farm size and irrigation status | NA | NA | X | NA| NA | NA | NA | x |NA |NA |
-BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment | County | Number of employees per industry | X | X | X | X | X | X | X | X | X | X |
-Census_CBP_EMP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment | County | Number of employees per industry |  |  | X | X | X | X | X | NA | NA | NA |
-Census_CBP_PAYANN | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Money | County | Annual payroll per industry |  |  | X | X | X | X | X | NA | NA | NA |
-Census_CBP_ESTAB | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Other | County | Number of establishments per industry |  |  | X | X | X | X | X | NA | NA | NA |
+BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment | County | Number of employees per industry |  |  |  |  | X | X |  |  |  |  |
+Census_CBP_EMP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment | County | Number of employees per industry |  |  |  |  | X |  |  | NA | NA | NA |
+Census_CBP_PAYANN | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Money | County | Annual payroll per industry |  |  |  |  | X |  |  | NA | NA | NA |
+Census_CBP_ESTAB | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Other | County | Number of establishments per industry |  |  |  |  | x |  |  | NA | NA | NA |
 
 ## Disclaimer
 

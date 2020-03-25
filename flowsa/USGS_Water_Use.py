@@ -106,7 +106,6 @@ def call_usgs_water_urls(url_list, geographic_data):
             
             if not data_frame_dictionary.get(year, None):
                 data_frame_dictionary[year] = []
-
             data_frame_dictionary[year].append(df)
         else:
             df = parse_header(usgs_split[0], usgs_split[1], technosphere_flow_array, waste_flow_array, geographic_data)
@@ -503,10 +502,10 @@ if __name__ == '__main__':
     for d in url_list:
         if "County" in d:
             county_list.append(d)
-            geographic_data = county
+            geographic_data = "county"
         elif "State+Total":
             state_list.append(d)
-            geographic_data = state
+            geographic_data = "state"
         else:
             national_list.append(d)
             geographic_data = "national"
@@ -518,6 +517,7 @@ if __name__ == '__main__':
     df_lists = call_usgs_water_urls(county_list,geographic_data)  
     df_lists_state_totals = call_usgs_water_urls(state_list, geographic_data)
     df_lists_national_totals = call_usgs_water_urls(national_list, geographic_data)
+
     # add [0:4] if only want to pull data from first 4 urls
     # Need to check each df before concatenating
     
@@ -534,13 +534,19 @@ if __name__ == '__main__':
     for d in df_lists:
         df = pd.concat(df_lists[d])
         # Assign data quality scores
-        df.loc[df['ActivityConsumedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
+
+        df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
         df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
-                                              'Thermoelectric Power Once-through cooling',
+                                              'Thermoelectric power', 'Thermoelectric Power Once-through cooling',
                                               'Thermoelectric Power Closed-loop cooling',
                                               'Wastewater Treatment']), 'DataReliability'] = '3'
-        df.loc[df['ActivityConsumedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
-                                              'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
+        df.loc[df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic', 'Industrial', 'Self-supplied industrial',
+                                              'Irrigation, Crop', 'Irrigation, Golf Courses', 'Irrigation, Total',
+                                              'Irrigation', 'Mining']), 'DataReliability'] = '4'
+        df.loc[df['ActivityConsumedBy'].isin(['Total withdrawals', 'Total Groundwater',
+                                              'Total Surface water']), 'DataReliability'] = '5'
+
+
         df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
         df.loc[df['ActivityProducedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                               'Thermoelectric Power Once-through cooling',

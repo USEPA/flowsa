@@ -26,6 +26,10 @@ flowbyactivitymethodpath = datapath +  'flowbysectormethods/'
 local_storage_path = appdirs.user_data_dir()
 
 US_FIPS = "00000"
+fips_number_key = {"national": 0,
+                   "state": 2,
+                   "county":5}
+
 withdrawn_keyword = "W"
 
 flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
@@ -40,7 +44,7 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'Unit': [{'dtype': 'str'}, {'required': True}],
                            'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
                            'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
-                           'Compartment': [{'dtype': 'str'}, {'required': True}],
+                           'Compartment': [{'dtype': 'str'}, {'required': False}],
                            'FIPS': [{'dtype': 'str'}, {'required': True}],
                            'Year': [{'dtype': 'int'}, {'required': True}],
                            'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
@@ -50,7 +54,7 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'Max': [{'dtype': 'float'}, {'required': False}],
                            'DataReliability': [{'dtype': 'float'}, {'required': True}],
                            'DataCollection': [{'dtype': 'float'}, {'required': True}],
-                           'Description': [{'dtype': 'float'}, {'required': True}]
+                           'Description': [{'dtype': 'str'}, {'required': True}]
                            }
 
 flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
@@ -120,17 +124,36 @@ def clean_str_and_capitalize(s):
         s = s.capitalize()
     return s
 
+def get_state_FIPS():
+    """
+    Filters FIPS df for state codes only
+    :return: FIPS df with only state level records
+    """
+    fips = read_stored_FIPS()
+    fips = fips.drop_duplicates(subset='State')
+    fips = fips[fips['State'].notnull()]
+    return fips
+
+def get_county_FIPS():
+    """
+    Filters FIPS df for county codes only
+    :return: FIPS df with only county level records
+    """
+    fips = read_stored_FIPS()
+    fips = fips.drop_duplicates(subset='County')
+    fips = fips[fips['County'].notnull()]
+    return fips
+
+
 
 def get_all_state_FIPS_2():
     """
     Gets a subset of all FIPS 2 digit codes for states
     :return: df with 'State' and 'FIPS_2' cols
     """
-    fips = read_stored_FIPS()
-    fips = fips.drop_duplicates(subset='State')
-    fips = fips[fips['State'].notnull()]
-    state_fips = fips
-    state_fips['FIPS_2'] = fips['FIPS'].apply(lambda x: x[0:2])
+
+    state_fips = get_state_FIPS()
+    state_fips['FIPS_2'] = state_fips['FIPS'].apply(lambda x: x[0:2])
     state_fips = state_fips[['State','FIPS_2']]
     return state_fips
 
