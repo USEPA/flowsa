@@ -4,11 +4,25 @@
 """
 Methods for pulling data from http sources
 """
+import argparse
 import yaml
 import requests
 import json
 
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path
+#from flowsa.USDA_CoA_Cropland import *
+#from flowsa.USGS_Water_Use import *
+#from flowsa.BLS_QCEW import *
+from flowsa.Census_CBP import *
+
+def parse_args():
+    #Make year a script parameter
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-y","--year", required=True, help="Year for data pull and save")
+    ap.add_argument("-s", "--source", required=True, help="Data source code to pull and save")
+    args = vars(ap.parse_args())
+    return args
+
 url_final_list = []
 
 def store_flowbyactivity(result, source, year=None):
@@ -260,3 +274,16 @@ def build_url_list(config, source):
             for i in range(len(url_order)):
                 url_list = generate_url(url_order[i], create_url[i], type_urls[i], api_source)
     return url_list
+
+if __name__ == '__main__':
+    args = parse_args()
+    config = load_sourceconfig(args['source'])
+    url_list = build_url_list(config, args['source'])
+
+    print(args)
+#    df_lists = call_urls(url_list)
+#    df = pd.concat(df_lists[d])
+#    log.info("Retrieved data for " + source + " " + d)
+#    df = reshape_to_flowbyactivity(df)
+#    df = store_metadata(config)
+#    store_flowbyactivity(df, source, d)
