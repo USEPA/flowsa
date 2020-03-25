@@ -14,7 +14,7 @@ url:
       in: "state:__stateFIPS__" #requests a state 2-digit FIPS code that has to be supplied dynamically
    year_param: #not used in query string but rather part of api path
    key_param: key
-url_replace_fxn:
+url_replace_fxn: Census_CBP_URL_helper
 years:
    - 2010
    - 2011
@@ -24,3 +24,4 @@ years:
    - 2015
    - 2016
    - 2017
+parse_response_fxn:
