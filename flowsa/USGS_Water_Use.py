@@ -11,86 +11,86 @@ class_value = 'Water'
 technosphere_flow_array = ["consumptive", "Public Supply"]
 waste_flow_array = ["wastewater", "loss"]
 
-def build_usgs_water_url_list_county(config):
-    """
+# def build_usgs_water_url_list_county(config):
+#     """
     
-    :param config: 
-    :return: 
-    """
-    geographic_data = "county"
-    for k, v in config.items():
-        if (k == "url"):
-            url_list = []
-            states = v["states"]
-            years = v["wu_year"]
-            base_url = v["base_url"]
-            url_path = v["url_path"]
-            param_format = "format=" + str(v["format"])
-            param_compression = "_compression=" + str(v["_compression"])
-            param_wu_area = "&wu_area=" + str(v["wu_area"])
-            param_wu_year = "&wu_year="
-            param_wu_county = "&wu_county=" + str(v["wu_county"])
-            param_wu_category = "&wu_category=" + str(v["wu_category"])
-            for s in states:
-                for y in years:
-                    url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}".format(base_url, s, url_path, param_format,
-                                                            param_compression, param_wu_area,
-                                                            param_wu_year,y,
-                                                            param_wu_county, param_wu_category)
-                    url_list.append(url)
-    return(url_list, geographic_data)
+#     :param config: 
+#     :return: 
+#     """
+#     geographic_data = "county"
+#     for k, v in config.items():
+#         if (k == "url"):
+#             url_list = []
+#             states = v["states"]
+#             years = v["wu_year"]
+#             base_url = v["base_url"]
+#             url_path = v["url_path"]
+#             param_format = "format=" + str(v["format"])
+#             param_compression = "_compression=" + str(v["_compression"])
+#             param_wu_area = "&wu_area=" + str(v["wu_area"])
+#             param_wu_year = "&wu_year="
+#             param_wu_county = "&wu_county=" + str(v["wu_county"])
+#             param_wu_category = "&wu_category=" + str(v["wu_category"])
+#             for s in states:
+#                 for y in years:
+#                     url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}".format(base_url, s, url_path, param_format,
+#                                                             param_compression, param_wu_area,
+#                                                             param_wu_year,y,
+#                                                             param_wu_county, param_wu_category)
+#                     url_list.append(url)
+#     return(url_list, geographic_data)
 
-def build_usgs_water_url_list_state(config):
-    """
+# def build_usgs_water_url_list_state(config):
+#     """
     
-    :param config: 
-    :return: 
-    """
-    geographic_data = "state"
-    for k, v in config.items():
-        if (k == "url"):
-            url_list = []
-            states = v["states"]
-            years = v["wu_year"]
-            base_url = v["base_url"]
-            url_path = v["url_path"]
-            param_format = "format=" + str(v["format"])
-            param_compression = "_compression=" + str(v["_compression"])
-            param_wu_year = "&wu_year="
-            param_wu_category = "&wu_category=" + str(v["wu_category"])
-            param_wu_area = "&wu_area=State+Total"
-            for s in states:
-                for y in years:
-                    url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}".format(base_url,s, url_path, param_format,
-                                                                param_compression, param_wu_area, param_wu_year,y,
-                                                                param_wu_category)
-                    url_list.append(url)
-    return(url_list, geographic_data)
+#     :param config: 
+#     :return: 
+#     """
+#     geographic_data = "state"
+#     for k, v in config.items():
+#         if (k == "url"):
+#             url_list = []
+#             states = v["states"]
+#             years = v["wu_year"]
+#             base_url = v["base_url"]
+#             url_path = v["url_path"]
+#             param_format = "format=" + str(v["format"])
+#             param_compression = "_compression=" + str(v["_compression"])
+#             param_wu_year = "&wu_year="
+#             param_wu_category = "&wu_category=" + str(v["wu_category"])
+#             param_wu_area = "&wu_area=State+Total"
+#             for s in states:
+#                 for y in years:
+#                     url = "{0}{1}{2}{3}{4}{5}{6}{7}{8}".format(base_url,s, url_path, param_format,
+#                                                                 param_compression, param_wu_area, param_wu_year,y,
+#                                                                 param_wu_category)
+#                     url_list.append(url)
+#     return(url_list, geographic_data)
 
-def build_usgs_water_url_list_national(config):
-    """
+# def build_usgs_water_url_list_national(config):
+#     """
     
-    :param config: 
-    :return: 
-    """
-    geographic_data = "national"
-    for k, v in config.items():
-        if (k == "url"):
-            url_list = []
+#     :param config: 
+#     :return: 
+#     """
+#     geographic_data = "national"
+#     for k, v in config.items():
+#         if (k == "url"):
+#             url_list = []
             
-            years = v["wu_year"]
-            base_url = v["base_url"]
-            url_path = v["url_path"]
-            param_format = "format=" + str(v["format"])
-            param_compression = "_compression=" + str(v["_compression"])
-            param_wu_year = "&wu_year="
-            param_wu_category = "&wu_category=" + str(v["wu_category"])
-            for y in years:
-                url = "{0}{1}{2}{3}{4}{5}{6}".format(base_url, url_path, param_format,
-                                                                param_compression, param_wu_year,y,
-                                                                param_wu_category)
-                url_list.append(url)
-    return(url_list, geographic_data)
+#             years = v["wu_year"]
+#             base_url = v["base_url"]
+#             url_path = v["url_path"]
+#             param_format = "format=" + str(v["format"])
+#             param_compression = "_compression=" + str(v["_compression"])
+#             param_wu_year = "&wu_year="
+#             param_wu_category = "&wu_category=" + str(v["wu_category"])
+#             for y in years:
+#                 url = "{0}{1}{2}{3}{4}{5}{6}".format(base_url, url_path, param_format,
+#                                                                 param_compression, param_wu_year,y,
+#                                                                 param_wu_category)
+#                 url_list.append(url)
+#     return(url_list, geographic_data)
 
 
 def call_usgs_water_urls(url_list, geographic_data):
@@ -106,7 +106,6 @@ def call_usgs_water_urls(url_list, geographic_data):
             
             if not data_frame_dictionary.get(year, None):
                 data_frame_dictionary[year] = []
-
             data_frame_dictionary[year].append(df)
         else:
             df = parse_header(usgs_split[0], usgs_split[1], technosphere_flow_array, waste_flow_array, geographic_data)
@@ -496,13 +495,29 @@ def extract_flow_name(name):
 
 if __name__ == '__main__':
     config = load_sourceconfig(source)
-    url_list_county = build_usgs_water_url_list_county(config)
-    url_list_state_totals = build_usgs_water_url_list_state(config)
-    url_list_national = build_usgs_water_url_list_national(config)
+    url_list = build_url_list(config, source)
+    county_list = []
+    state_list = []
+    national_list =[]
+    for d in url_list:
+        if "County" in d:
+            county_list.append(d)
+            geographic_data = "county"
+        elif "State+Total":
+            state_list.append(d)
+            geographic_data = "state"
+        else:
+            national_list.append(d)
+            geographic_data = "national"
 
-    df_lists = call_usgs_water_urls(url_list_county[0],url_list_county[1])  
-    df_lists_state_totals = call_usgs_water_urls(url_list_state_totals[0], url_list_state_totals[1])
-    df_lists_national_totals = call_usgs_water_urls(url_list_national[0], url_list_national[1])
+    # url_list_county = build_usgs_water_url_list_county(config)
+    # url_list_state_totals = build_usgs_water_url_list_state(config)
+    # url_list_national = build_usgs_water_url_list_national(config)
+
+    df_lists = call_usgs_water_urls(county_list,geographic_data)  
+    df_lists_state_totals = call_usgs_water_urls(state_list, geographic_data)
+    df_lists_national_totals = call_usgs_water_urls(national_list, geographic_data)
+
     # add [0:4] if only want to pull data from first 4 urls
     # Need to check each df before concatenating
     
@@ -519,6 +534,7 @@ if __name__ == '__main__':
     for d in df_lists:
         df = pd.concat(df_lists[d])
         # Assign data quality scores
+
         df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
         df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                               'Thermoelectric power', 'Thermoelectric Power Once-through cooling',
@@ -529,6 +545,8 @@ if __name__ == '__main__':
                                               'Irrigation', 'Mining']), 'DataReliability'] = '4'
         df.loc[df['ActivityConsumedBy'].isin(['Total withdrawals', 'Total Groundwater',
                                               'Total Surface water']), 'DataReliability'] = '5'
+
+
         df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
         df.loc[df['ActivityProducedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                               'Thermoelectric Power Once-through cooling',

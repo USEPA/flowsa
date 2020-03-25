@@ -16,6 +16,165 @@ def format_url_values(string):
         string = string.replace("&", "%26")
     return string
 
+def check_url_type(url_obj):
+    if type(url_obj) is list:
+        return "list"
+    elif type(url_obj) is str:
+        return "string"
+    elif type(url_obj) is dict:
+        return "dict"
+    else:
+        return "None of the above"
+
+def generate_url(url_order, create_url, type_urls):
+    if url_final_list == []:
+            if type(create_url) is str:
+                if url_order == "key":
+                    key_value = load_api_key(source)
+                    create_url = + create_url + "=" + key_value
+                url_final_list.append(format_url_values(create_url))
+            #YAMLS currently do not have a dictonary or list as the start of the URL. 
+            # Due to time conciderations this has not been tested.
+            # elif type(create_url) is list:
+            #     for u in create_url:
+            #         url_final_list.append(u)
+            # elif type(create_url) is dict:
+            #     dict_list = generateDict(create_url)
+            #     for d in dict_list:
+            #         url_final_list.append(d)
+    else:
+        if type(create_url) is list:
+            for i in range(len(url_final_list)):
+                url_previous = url_final_list[i]
+                for j in range(len(create_url)):
+                    url = url_previous + format_url_values(create_url[j]) + "/"
+                    if j == 0:
+                        url_final_list[i] = url
+                    else:
+                        url_final_list.append(url)
+        elif type(create_url) is str:
+            for i in range(len(url_final_list)):
+                if url_order == "key":
+                    key_value = load_api_key(source)
+                    create_url = create_url + "=" + key_value
+                url = url_final_list[i]
+                url = url + format_url_values(create_url)
+                url_final_list[i] = url
+        elif type(create_url) is dict:
+            dict_list = generate_dict(create_url, url_order)
+
+            for i in range(len(url_final_list)):
+                url_previous = url_final_list[i]
+                for j in range(len(dict_list)):
+                    if url_order == "url_params":
+                        url = url_previous + dict_list[j]
+                    else:
+                        url = url_previous + dict_list[j] + "/"
+                    
+                    if j == 0:
+                        url_final_list[i] = url
+                    else:
+                        url_final_list.append(url)
+    return url_final_list
+
+
+def generate_dict(dict_values, url_order):
+    dictonary_list = []
+    for k in dict_values:
+        if dictonary_list == []:
+            if type(dict_values[k]) is list:
+                if url_order == "url_params":
+                    for u in dict_values[k]:
+                        dictonary_list.append("&" + k + "=" + format_url_values(dict_values[k]))
+                else:
+                    for u in dict_values[k]:
+                        dictonary_list.append(format_url_values(dict_values[k]) + "/")
+            elif type(dict_values[k]) is str:
+                 if url_order == "url_params":
+                    dictonary_list.append("&" + k + "=" + format_url_values(dict_values[k]))
+                 else:
+                    dictonary_list.append(format_url_values(dict_values[k]) + "/")
+ 
+            #YAMLS currently do not have a dictonary of dictionaries but if we do it will involve recursion
+            #This is the start of this method. Due to time conciderations this has not been tested.
+            # elif type(d) is dict:
+            #     dict_list = generateDict(create_url)
+            #     for d in dict_list:
+            #         dictonary_list.append(d)
+        else:
+            if type(dict_values[k]) is list:
+                for i in range(len(dictonary_list)):
+                    previous_dictonary_list = dictonary_list[i]
+                    
+                    if url_order == "url_params":
+                        values_list = dict_values[k]
+                        for j in range(len(dict_values[k])):
+                            url = previous_dictonary_list + "&" + k + "=" + format_url_values(values_list[j])
+                            if j == 0:
+                                dictonary_list[i] = url
+                            else:
+                                dictonary_list.append(url)
+                    else:
+
+                        for j in range(len(dict_values[k])):
+                            url = previous_dictonary_list + format_url_values(values_list[j]) + "/"
+                            if j == 0:
+                                dictonary_list[i] = url
+                            else:
+                                dictonary_list.append(url)                        
+            elif type(dict_values[k]) is str:
+                for i in range(len(dictonary_list)):
+                    if url_order == "url_params":
+                        previous_dictonary_list = dictonary_list[i]
+                        dictonary_list[i] = previous_dictonary_list + "&" + k + "=" + dict_values[k]
+                    else:
+                        previous_dictonary_list = dictonary_list[i]
+                        dictonary_list[i] = previous_dictonary_list + dict_values[k] + "/"
+        #YAMLS currently do not have a dictonary of dictionaries but if we do it will involve recursion
+        #This is the start of this method. Due to time conciderations this has not been tested.
+            # elif type(d) is dict:
+            #     dict_list = generateDict(d)
+            #     for i in range(len(dictonary_list)):
+            #         url = dictonary_list[i]
+            #         for j in range(len(dict_list)):
+            #             url = url + dict_list[i]
+            #             if j == 0:
+            #                 dictonary_list[i] = url
+            #             else:
+            #                 dictonary_list.append(url)
+    return dictonary_list
+
+
+def build_url_list(config, source):
+    """
+    
+    :param config: 
+    :return: list of urls
+    """
+    for k,v in config.items():
+        if k == "url":
+            url_list = []
+            url_order = []
+            for g in v:
+                if g == "county":
+                    geo = v[g]
+                    for r in geo:
+                        if r == "url_order":
+                            url_order = geo[r]
+                            create_url = []
+                            type_urls =[]
+                            for p in url_order:
+                                create_url.append(geo[p])
+                                type_urls.append(check_url_type(geo[p]))
+                               
+            for i in range(len(url_order)):
+            #for d in url_order:
+                print(url_order[i], create_url[i], type_urls[i])
+                url_list = generate_url(url_order[i], create_url[i], type_urls[i])
+                for d in url_final_list:
+                    print(d)
+    return url_list
+
 def build_usda_crop_url_list(config):
     """
     
@@ -212,7 +371,7 @@ def parse_data(text):
 
 if __name__ == '__main__':
     config = load_sourceconfig(source)
-    url_list = build_usda_crop_url_list(config)
+    url_list = build_url_list(config, source)
     df_lists = call_usda_crop_urls(url_list[0:52])
     
     for d in df_lists:
