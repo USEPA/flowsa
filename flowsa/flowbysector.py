@@ -4,12 +4,11 @@
 """
 Produces a FlowBySector data frame based on a method file for the given class
 """
-import pandas as pd
 import flowsa
 import yaml
 from flowsa.common import log, flowbyactivitymethodpath
 from flowsa.mapping import add_sectors_to_flowbyactivity
-from flowsa.flowbyactivity import filter_by_geoscale, fba_activity_fields, agg_by_geoscale
+from flowsa.flowbyactivity import filter_by_geoscale, fba_activity_fields, agg_by_geoscale,create_fill_na_dict
 
 
 def load_method(method_name):
@@ -52,20 +51,25 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=v['class'],
                                                     years=[v['year']],
                                                     datasource = k)
+        #drop description field
+        flows = flows.drop(columns='Description')
+        #fill null values
+        fill_dict = create_fill_na_dict()
+        flows = flows.fillna(value=fill_dict)
         activities = v['activity_sets']
         for aset,attr in activities.items():
             # subset by named activities
             names = [attr['names']]
             flows = flows[(flows[fba_activity_fields[0]].isin(names)) |
                           (flows[fba_activity_fields[1]].isin(names))]
-
+            #Reset index values after subset
+            flows = flows.reset_index()
             #aggregate geographically
             from_scale = v['geoscale_to_use']
             to_scale = method['target_geoscale']
             flows = agg_by_geoscale(flows, from_scale, to_scale)
 
 
-        #flows = filter_by_geoscale(flows,geoscale=method['target_geographic_scale'])
         flows = add_sectors_to_flowbyactivity(flows,sectorsourcename=method['target_sector_source'])
 
     return flows
