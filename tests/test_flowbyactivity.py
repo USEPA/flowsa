@@ -12,8 +12,8 @@ class TestFlowByActivity(unittest.TestCase):
 
     def setUp(self):
         path = os.path.dirname(__file__) + './data/'
-        self.flows = pd.read_csv(path+"StarWars.csv")
-        print(self.flows.columns)
+        flows = pd.read_csv(path+"StarWars.csv")
+        self.flows = flows.fillna(value=fba_fill_na_dict)
 
     def test_aggregator(self):
         flows = self.flows
@@ -21,7 +21,6 @@ class TestFlowByActivity(unittest.TestCase):
         groupbycols = ['FlowName','Compartment']
         flows = aggregator(flows,groupbycols)
         amount = flows['FlowAmount'][0]
-        print("Amount of X-wings after aggregation is " + str(amount))
         self.assertEqual(320,amount)
 
     def test_agg_by_geoscale(self):
