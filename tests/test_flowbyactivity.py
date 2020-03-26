@@ -1,4 +1,4 @@
-# test_flowbyactivity.py (tests)
+# test_flowbyactivityfunctions.py (tests)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -8,7 +8,7 @@ import unittest
 import pandas as pd
 from flowsa.flowbyactivity import *
 
-class TestFlowByActivity(unittest.TestCase):
+class TestFlowByActivityFunctions(unittest.TestCase):
 
     def setUp(self):
         path = os.path.dirname(__file__) + './data/'
