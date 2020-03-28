@@ -11,7 +11,7 @@ import pandas as pd
 import logging as log
 import appdirs
 
-log.basicConfig(level=log.INFO, format='%(levelname)s %(message)s',
+log.basicConfig(level='DEBUG',format='%(levelname)s %(message)s',
                 stream=sys.stdout)
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
