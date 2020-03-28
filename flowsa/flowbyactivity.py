@@ -115,3 +115,16 @@ def add_missing_flow_by_activity_fields(flowbyactivity_partial_df):
     flowbyactivity_partial_df = flowbyactivity_partial_df[flow_by_activity_fields.keys()]
     return flowbyactivity_partial_df
 
+def check_fba_fields(flowbyactivity_df):
+    """
+    Add in missing fields to have a complete and ordered
+    :param flowbyactivity_partial_df:
+    :return:
+    """
+    for k,v in flow_by_activity_fields.items():
+        try:
+            log.debug("fba activity " + k + " data type is " + str(flowbyactivity_df[k].values.dtype))
+            log.debug("standard " + k + " data type is " + str(v[0]['dtype']))
+        except:
+            log.debug("Failed to find field ",k," in fba")
+
