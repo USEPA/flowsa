@@ -1,334 +1,334 @@
 State,County,FIPS
-,,00000
-Alabama,,01000
-Alabama,Autauga,01001
-Alabama,Baldwin,01003
-Alabama,Barbour,01005
-Alabama,Bibb,01007
-Alabama,Blount,01009
-Alabama,Bullock,01011
-Alabama,Butler,01013
-Alabama,Calhoun,01015
-Alabama,Chambers,01017
-Alabama,Cherokee,01019
-Alabama,Chilton,01021
-Alabama,Choctaw,01023
-Alabama,Clarke,01025
-Alabama,Clay,01027
-Alabama,Cleburne,01029
-Alabama,Coffee,01031
-Alabama,Colbert,01033
-Alabama,Conecuh,01035
-Alabama,Coosa,01037
-Alabama,Covington,01039
-Alabama,Crenshaw,01041
-Alabama,Cullman,01043
-Alabama,Dale,01045
-Alabama,Dallas,01047
-Alabama,Dekalb,01049
-Alabama,Elmore,01051
-Alabama,Escambia,01053
-Alabama,Etowah,01055
-Alabama,Fayette,01057
-Alabama,Franklin,01059
-Alabama,Geneva,01061
-Alabama,Greene,01063
-Alabama,Hale,01065
-Alabama,Henry,01067
-Alabama,Houston,01069
-Alabama,Jackson,01071
-Alabama,Jefferson,01073
-Alabama,Lamar,01075
-Alabama,Lauderdale,01077
-Alabama,Lawrence,01079
-Alabama,Lee,01081
-Alabama,Limestone,01083
-Alabama,Lowndes,01085
-Alabama,Macon,01087
-Alabama,Madison,01089
-Alabama,Marengo,01091
-Alabama,Marion,01093
-Alabama,Marshall,01095
-Alabama,Mobile,01097
-Alabama,Monroe,01099
-Alabama,Montgomery,01101
-Alabama,Morgan,01103
-Alabama,Perry,01105
-Alabama,Pickens,01107
-Alabama,Pike,01109
-Alabama,Randolph,01111
-Alabama,Russell,01113
-Alabama,St. clair,01115
-Alabama,Shelby,01117
-Alabama,Sumter,01119
-Alabama,Talladega,01121
-Alabama,Tallapoosa,01123
-Alabama,Tuscaloosa,01125
-Alabama,Walker,01127
-Alabama,Washington,01129
-Alabama,Wilcox,01131
-Alabama,Winston,01133
-Alaska,,02000
-Alaska,Aleutians east borough,02013
-Alaska,Aleutians west census area,02016
-Alaska,Anchorage municipality,02020
-Alaska,Bethel census area,02050
-Alaska,Bristol bay borough,02060
-Alaska,Denali borough,02068
-Alaska,Dillingham census area,02070
-Alaska,Fairbanks north star borough,02090
-Alaska,Haines borough,02100
-Alaska,Hoonah-angoon census area,02105
-Alaska,Juneau city and borough,02110
-Alaska,Kenai peninsula borough,02122
-Alaska,Ketchikan gateway borough,02130
-Alaska,Kodiak island borough,02150
-Alaska,Kusilvak census area,02158
-Alaska,Lake and peninsula borough,02164
-Alaska,Matanuska-susitna borough,02170
-Alaska,Nome census area,02180
-Alaska,North slope borough,02185
-Alaska,Northwest arctic borough,02188
-Alaska,Petersburg borough,02195
-Alaska,Prince of wales-hyder census area,02198
-Alaska,Sitka city and borough,02220
-Alaska,Skagway municipality,02230
-Alaska,Southeast fairbanks census area,02240
-Alaska,Valdez-cordova census area,02261
-Alaska,Wrangell city and borough,02275
-Alaska,Yakutat city and borough,02282
-Alaska,Yukon-koyukuk census area,02290
-Arizona,,04000
-Arizona,Apache,04001
-Arizona,Cochise,04003
-Arizona,Coconino,04005
-Arizona,Gila,04007
-Arizona,Graham,04009
-Arizona,Greenlee,04011
-Arizona,La paz,04012
-Arizona,Maricopa,04013
-Arizona,Mohave,04015
-Arizona,Navajo,04017
-Arizona,Pima,04019
-Arizona,Pinal,04021
-Arizona,Santa cruz,04023
-Arizona,Yavapai,04025
-Arizona,Yuma,04027
-Arkansas,,05000
-Arkansas,Arkansas,05001
-Arkansas,Ashley,05003
-Arkansas,Baxter,05005
-Arkansas,Benton,05007
-Arkansas,Boone,05009
-Arkansas,Bradley,05011
-Arkansas,Calhoun,05013
-Arkansas,Carroll,05015
-Arkansas,Chicot,05017
-Arkansas,Clark,05019
-Arkansas,Clay,05021
-Arkansas,Cleburne,05023
-Arkansas,Cleveland,05025
-Arkansas,Columbia,05027
-Arkansas,Conway,05029
-Arkansas,Craighead,05031
-Arkansas,Crawford,05033
-Arkansas,Crittenden,05035
-Arkansas,Cross,05037
-Arkansas,Dallas,05039
-Arkansas,Desha,05041
-Arkansas,Drew,05043
-Arkansas,Faulkner,05045
-Arkansas,Franklin,05047
-Arkansas,Fulton,05049
-Arkansas,Garland,05051
-Arkansas,Grant,05053
-Arkansas,Greene,05055
-Arkansas,Hempstead,05057
-Arkansas,Hot spring,05059
-Arkansas,Howard,05061
-Arkansas,Independence,05063
-Arkansas,Izard,05065
-Arkansas,Jackson,05067
-Arkansas,Jefferson,05069
-Arkansas,Johnson,05071
-Arkansas,Lafayette,05073
-Arkansas,Lawrence,05075
-Arkansas,Lee,05077
-Arkansas,Lincoln,05079
-Arkansas,Little river,05081
-Arkansas,Logan,05083
-Arkansas,Lonoke,05085
-Arkansas,Madison,05087
-Arkansas,Marion,05089
-Arkansas,Miller,05091
-Arkansas,Mississippi,05093
-Arkansas,Monroe,05095
-Arkansas,Montgomery,05097
-Arkansas,Nevada,05099
-Arkansas,Newton,05101
-Arkansas,Ouachita,05103
-Arkansas,Perry,05105
-Arkansas,Phillips,05107
-Arkansas,Pike,05109
-Arkansas,Poinsett,05111
-Arkansas,Polk,05113
-Arkansas,Pope,05115
-Arkansas,Prairie,05117
-Arkansas,Pulaski,05119
-Arkansas,Randolph,05121
-Arkansas,St. francis,05123
-Arkansas,Saline,05125
-Arkansas,Scott,05127
-Arkansas,Searcy,05129
-Arkansas,Sebastian,05131
-Arkansas,Sevier,05133
-Arkansas,Sharp,05135
-Arkansas,Stone,05137
-Arkansas,Union,05139
-Arkansas,Van buren,05141
-Arkansas,Washington,05143
-Arkansas,White,05145
-Arkansas,Woodruff,05147
-Arkansas,Yell,05149
-California,,06000
-California,Alameda,06001
-California,Alpine,06003
-California,Amador,06005
-California,Butte,06007
-California,Calaveras,06009
-California,Colusa,06011
-California,Contra costa,06013
-California,Del norte,06015
-California,El dorado,06017
-California,Fresno,06019
-California,Glenn,06021
-California,Humboldt,06023
-California,Imperial,06025
-California,Inyo,06027
-California,Kern,06029
-California,Kings,06031
-California,Lake,06033
-California,Lassen,06035
-California,Los angeles,06037
-California,Madera,06039
-California,Marin,06041
-California,Mariposa,06043
-California,Mendocino,06045
-California,Merced,06047
-California,Modoc,06049
-California,Mono,06051
-California,Monterey,06053
-California,Napa,06055
-California,Nevada,06057
-California,Orange,06059
-California,Placer,06061
-California,Plumas,06063
-California,Riverside,06065
-California,Sacramento,06067
-California,San benito,06069
-California,San bernardino,06071
-California,San diego,06073
-California,San francisco,06075
-California,San joaquin,06077
-California,San luis obispo,06079
-California,San mateo,06081
-California,Santa barbara,06083
-California,Santa clara,06085
-California,Santa cruz,06087
-California,Shasta,06089
-California,Sierra,06091
-California,Siskiyou,06093
-California,Solano,06095
-California,Sonoma,06097
-California,Stanislaus,06099
-California,Sutter,06101
-California,Tehama,06103
-California,Trinity,06105
-California,Tulare,06107
-California,Tuolumne,06109
-California,Ventura,06111
-California,Yolo,06113
-California,Yuba,06115
-Colorado,,08000
-Colorado,Adams,08001
-Colorado,Alamosa,08003
-Colorado,Arapahoe,08005
-Colorado,Archuleta,08007
-Colorado,Baca,08009
-Colorado,Bent,08011
-Colorado,Boulder,08013
-Colorado,Broomfield,08014
-Colorado,Chaffee,08015
-Colorado,Cheyenne,08017
-Colorado,Clear creek,08019
-Colorado,Conejos,08021
-Colorado,Costilla,08023
-Colorado,Crowley,08025
-Colorado,Custer,08027
-Colorado,Delta,08029
-Colorado,Denver,08031
-Colorado,Dolores,08033
-Colorado,Douglas,08035
-Colorado,Eagle,08037
-Colorado,Elbert,08039
-Colorado,El paso,08041
-Colorado,Fremont,08043
-Colorado,Garfield,08045
-Colorado,Gilpin,08047
-Colorado,Grand,08049
-Colorado,Gunnison,08051
-Colorado,Hinsdale,08053
-Colorado,Huerfano,08055
-Colorado,Jackson,08057
-Colorado,Jefferson,08059
-Colorado,Kiowa,08061
-Colorado,Kit carson,08063
-Colorado,Lake,08065
-Colorado,La plata,08067
-Colorado,Larimer,08069
-Colorado,Las animas,08071
-Colorado,Lincoln,08073
-Colorado,Logan,08075
-Colorado,Mesa,08077
-Colorado,Mineral,08079
-Colorado,Moffat,08081
-Colorado,Montezuma,08083
-Colorado,Montrose,08085
-Colorado,Morgan,08087
-Colorado,Otero,08089
-Colorado,Ouray,08091
-Colorado,Park,08093
-Colorado,Phillips,08095
-Colorado,Pitkin,08097
-Colorado,Prowers,08099
-Colorado,Pueblo,08101
-Colorado,Rio blanco,08103
-Colorado,Rio grande,08105
-Colorado,Routt,08107
-Colorado,Saguache,08109
-Colorado,San juan,08111
-Colorado,San miguel,08113
-Colorado,Sedgwick,08115
-Colorado,Summit,08117
-Colorado,Teller,08119
-Colorado,Washington,08121
-Colorado,Weld,08123
-Colorado,Yuma,08125
-Connecticut,,09000
-Connecticut,Fairfield,09001
-Connecticut,Hartford,09003
-Connecticut,Litchfield,09005
-Connecticut,Middlesex,09007
-Connecticut,New haven,09009
-Connecticut,New london,09011
-Connecticut,Tolland,09013
-Connecticut,Windham,09015
+,,0
+Alabama,,1000
+Alabama,Autauga,1001
+Alabama,Baldwin,1003
+Alabama,Barbour,1005
+Alabama,Bibb,1007
+Alabama,Blount,1009
+Alabama,Bullock,1011
+Alabama,Butler,1013
+Alabama,Calhoun,1015
+Alabama,Chambers,1017
+Alabama,Cherokee,1019
+Alabama,Chilton,1021
+Alabama,Choctaw,1023
+Alabama,Clarke,1025
+Alabama,Clay,1027
+Alabama,Cleburne,1029
+Alabama,Coffee,1031
+Alabama,Colbert,1033
+Alabama,Conecuh,1035
+Alabama,Coosa,1037
+Alabama,Covington,1039
+Alabama,Crenshaw,1041
+Alabama,Cullman,1043
+Alabama,Dale,1045
+Alabama,Dallas,1047
+Alabama,Dekalb,1049
+Alabama,Elmore,1051
+Alabama,Escambia,1053
+Alabama,Etowah,1055
+Alabama,Fayette,1057
+Alabama,Franklin,1059
+Alabama,Geneva,1061
+Alabama,Greene,1063
+Alabama,Hale,1065
+Alabama,Henry,1067
+Alabama,Houston,1069
+Alabama,Jackson,1071
+Alabama,Jefferson,1073
+Alabama,Lamar,1075
+Alabama,Lauderdale,1077
+Alabama,Lawrence,1079
+Alabama,Lee,1081
+Alabama,Limestone,1083
+Alabama,Lowndes,1085
+Alabama,Macon,1087
+Alabama,Madison,1089
+Alabama,Marengo,1091
+Alabama,Marion,1093
+Alabama,Marshall,1095
+Alabama,Mobile,1097
+Alabama,Monroe,1099
+Alabama,Montgomery,1101
+Alabama,Morgan,1103
+Alabama,Perry,1105
+Alabama,Pickens,1107
+Alabama,Pike,1109
+Alabama,Randolph,1111
+Alabama,Russell,1113
+Alabama,St. clair,1115
+Alabama,Shelby,1117
+Alabama,Sumter,1119
+Alabama,Talladega,1121
+Alabama,Tallapoosa,1123
+Alabama,Tuscaloosa,1125
+Alabama,Walker,1127
+Alabama,Washington,1129
+Alabama,Wilcox,1131
+Alabama,Winston,1133
+Alaska,,2000
+Alaska,Aleutians east borough,2013
+Alaska,Aleutians west census area,2016
+Alaska,Anchorage municipality,2020
+Alaska,Bethel census area,2050
+Alaska,Bristol bay borough,2060
+Alaska,Denali borough,2068
+Alaska,Dillingham census area,2070
+Alaska,Fairbanks north star borough,2090
+Alaska,Haines borough,2100
+Alaska,Hoonah-angoon census area,2105
+Alaska,Juneau city and borough,2110
+Alaska,Kenai peninsula borough,2122
+Alaska,Ketchikan gateway borough,2130
+Alaska,Kodiak island borough,2150
+Alaska,Kusilvak census area,2158
+Alaska,Lake and peninsula borough,2164
+Alaska,Matanuska-susitna borough,2170
+Alaska,Nome census area,2180
+Alaska,North slope borough,2185
+Alaska,Northwest arctic borough,2188
+Alaska,Petersburg borough,2195
+Alaska,Prince of wales-hyder census area,2198
+Alaska,Sitka city and borough,2220
+Alaska,Skagway municipality,2230
+Alaska,Southeast fairbanks census area,2240
+Alaska,Valdez-cordova census area,2261
+Alaska,Wrangell city and borough,2275
+Alaska,Yakutat city and borough,2282
+Alaska,Yukon-koyukuk census area,2290
+Arizona,,4000
+Arizona,Apache,4001
+Arizona,Cochise,4003
+Arizona,Coconino,4005
+Arizona,Gila,4007
+Arizona,Graham,4009
+Arizona,Greenlee,4011
+Arizona,La paz,4012
+Arizona,Maricopa,4013
+Arizona,Mohave,4015
+Arizona,Navajo,4017
+Arizona,Pima,4019
+Arizona,Pinal,4021
+Arizona,Santa cruz,4023
+Arizona,Yavapai,4025
+Arizona,Yuma,4027
+Arkansas,,5000
+Arkansas,Arkansas,5001
+Arkansas,Ashley,5003
+Arkansas,Baxter,5005
+Arkansas,Benton,5007
+Arkansas,Boone,5009
+Arkansas,Bradley,5011
+Arkansas,Calhoun,5013
+Arkansas,Carroll,5015
+Arkansas,Chicot,5017
+Arkansas,Clark,5019
+Arkansas,Clay,5021
+Arkansas,Cleburne,5023
+Arkansas,Cleveland,5025
+Arkansas,Columbia,5027
+Arkansas,Conway,5029
+Arkansas,Craighead,5031
+Arkansas,Crawford,5033
+Arkansas,Crittenden,5035
+Arkansas,Cross,5037
+Arkansas,Dallas,5039
+Arkansas,Desha,5041
+Arkansas,Drew,5043
+Arkansas,Faulkner,5045
+Arkansas,Franklin,5047
+Arkansas,Fulton,5049
+Arkansas,Garland,5051
+Arkansas,Grant,5053
+Arkansas,Greene,5055
+Arkansas,Hempstead,5057
+Arkansas,Hot spring,5059
+Arkansas,Howard,5061
+Arkansas,Independence,5063
+Arkansas,Izard,5065
+Arkansas,Jackson,5067
+Arkansas,Jefferson,5069
+Arkansas,Johnson,5071
+Arkansas,Lafayette,5073
+Arkansas,Lawrence,5075
+Arkansas,Lee,5077
+Arkansas,Lincoln,5079
+Arkansas,Little river,5081
+Arkansas,Logan,5083
+Arkansas,Lonoke,5085
+Arkansas,Madison,5087
+Arkansas,Marion,5089
+Arkansas,Miller,5091
+Arkansas,Mississippi,5093
+Arkansas,Monroe,5095
+Arkansas,Montgomery,5097
+Arkansas,Nevada,5099
+Arkansas,Newton,5101
+Arkansas,Ouachita,5103
+Arkansas,Perry,5105
+Arkansas,Phillips,5107
+Arkansas,Pike,5109
+Arkansas,Poinsett,5111
+Arkansas,Polk,5113
+Arkansas,Pope,5115
+Arkansas,Prairie,5117
+Arkansas,Pulaski,5119
+Arkansas,Randolph,5121
+Arkansas,St. francis,5123
+Arkansas,Saline,5125
+Arkansas,Scott,5127
+Arkansas,Searcy,5129
+Arkansas,Sebastian,5131
+Arkansas,Sevier,5133
+Arkansas,Sharp,5135
+Arkansas,Stone,5137
+Arkansas,Union,5139
+Arkansas,Van buren,5141
+Arkansas,Washington,5143
+Arkansas,White,5145
+Arkansas,Woodruff,5147
+Arkansas,Yell,5149
+California,,6000
+California,Alameda,6001
+California,Alpine,6003
+California,Amador,6005
+California,Butte,6007
+California,Calaveras,6009
+California,Colusa,6011
+California,Contra costa,6013
+California,Del norte,6015
+California,El dorado,6017
+California,Fresno,6019
+California,Glenn,6021
+California,Humboldt,6023
+California,Imperial,6025
+California,Inyo,6027
+California,Kern,6029
+California,Kings,6031
+California,Lake,6033
+California,Lassen,6035
+California,Los angeles,6037
+California,Madera,6039
+California,Marin,6041
+California,Mariposa,6043
+California,Mendocino,6045
+California,Merced,6047
+California,Modoc,6049
+California,Mono,6051
+California,Monterey,6053
+California,Napa,6055
+California,Nevada,6057
+California,Orange,6059
+California,Placer,6061
+California,Plumas,6063
+California,Riverside,6065
+California,Sacramento,6067
+California,San benito,6069
+California,San bernardino,6071
+California,San diego,6073
+California,San francisco,6075
+California,San joaquin,6077
+California,San luis obispo,6079
+California,San mateo,6081
+California,Santa barbara,6083
+California,Santa clara,6085
+California,Santa cruz,6087
+California,Shasta,6089
+California,Sierra,6091
+California,Siskiyou,6093
+California,Solano,6095
+California,Sonoma,6097
+California,Stanislaus,6099
+California,Sutter,6101
+California,Tehama,6103
+California,Trinity,6105
+California,Tulare,6107
+California,Tuolumne,6109
+California,Ventura,6111
+California,Yolo,6113
+California,Yuba,6115
+Colorado,,8000
+Colorado,Adams,8001
+Colorado,Alamosa,8003
+Colorado,Arapahoe,8005
+Colorado,Archuleta,8007
+Colorado,Baca,8009
+Colorado,Bent,8011
+Colorado,Boulder,8013
+Colorado,Broomfield,8014
+Colorado,Chaffee,8015
+Colorado,Cheyenne,8017
+Colorado,Clear creek,8019
+Colorado,Conejos,8021
+Colorado,Costilla,8023
+Colorado,Crowley,8025
+Colorado,Custer,8027
+Colorado,Delta,8029
+Colorado,Denver,8031
+Colorado,Dolores,8033
+Colorado,Douglas,8035
+Colorado,Eagle,8037
+Colorado,Elbert,8039
+Colorado,El paso,8041
+Colorado,Fremont,8043
+Colorado,Garfield,8045
+Colorado,Gilpin,8047
+Colorado,Grand,8049
+Colorado,Gunnison,8051
+Colorado,Hinsdale,8053
+Colorado,Huerfano,8055
+Colorado,Jackson,8057
+Colorado,Jefferson,8059
+Colorado,Kiowa,8061
+Colorado,Kit carson,8063
+Colorado,Lake,8065
+Colorado,La plata,8067
+Colorado,Larimer,8069
+Colorado,Las animas,8071
+Colorado,Lincoln,8073
+Colorado,Logan,8075
+Colorado,Mesa,8077
+Colorado,Mineral,8079
+Colorado,Moffat,8081
+Colorado,Montezuma,8083
+Colorado,Montrose,8085
+Colorado,Morgan,8087
+Colorado,Otero,8089
+Colorado,Ouray,8091
+Colorado,Park,8093
+Colorado,Phillips,8095
+Colorado,Pitkin,8097
+Colorado,Prowers,8099
+Colorado,Pueblo,8101
+Colorado,Rio blanco,8103
+Colorado,Rio grande,8105
+Colorado,Routt,8107
+Colorado,Saguache,8109
+Colorado,San juan,8111
+Colorado,San miguel,8113
+Colorado,Sedgwick,8115
+Colorado,Summit,8117
+Colorado,Teller,8119
+Colorado,Washington,8121
+Colorado,Weld,8123
+Colorado,Yuma,8125
+Connecticut,,9000
+Connecticut,Fairfield,9001
+Connecticut,Hartford,9003
+Connecticut,Litchfield,9005
+Connecticut,Middlesex,9007
+Connecticut,New haven,9009
+Connecticut,New london,9011
+Connecticut,Tolland,9013
+Connecticut,Windham,9015
 Delaware,,10000
 Delaware,Kent,10001
 Delaware,New castle,10003
 Delaware,Sussex,10005
-District of columbia,,11000
-District of columbia,District of columbia,11001
+District of Columbia,,11000
+District of Columbia,District of columbia,11001
 Florida,,12000
 Florida,Alachua,12001
 Florida,Baker,12003
@@ -1793,291 +1793,291 @@ Nevada,Storey,32029
 Nevada,Washoe,32031
 Nevada,White pine,32033
 Nevada,Carson city,32510
-New hampshire,,33000
-New hampshire,Belknap,33001
-New hampshire,Carroll,33003
-New hampshire,Cheshire,33005
-New hampshire,Coos,33007
-New hampshire,Grafton,33009
-New hampshire,Hillsborough,33011
-New hampshire,Merrimack,33013
-New hampshire,Rockingham,33015
-New hampshire,Strafford,33017
-New hampshire,Sullivan,33019
-New jersey,,34000
-New jersey,Atlantic,34001
-New jersey,Bergen,34003
-New jersey,Burlington,34005
-New jersey,Camden,34007
-New jersey,Cape may,34009
-New jersey,Cumberland,34011
-New jersey,Essex,34013
-New jersey,Gloucester,34015
-New jersey,Hudson,34017
-New jersey,Hunterdon,34019
-New jersey,Mercer,34021
-New jersey,Middlesex,34023
-New jersey,Monmouth,34025
-New jersey,Morris,34027
-New jersey,Ocean,34029
-New jersey,Passaic,34031
-New jersey,Salem,34033
-New jersey,Somerset,34035
-New jersey,Sussex,34037
-New jersey,Union,34039
-New jersey,Warren,34041
-New mexico,,35000
-New mexico,Bernalillo,35001
-New mexico,Catron,35003
-New mexico,Chaves,35005
-New mexico,Cibola,35006
-New mexico,Colfax,35007
-New mexico,Curry,35009
-New mexico,De baca,35011
-New mexico,Doña ana,35013
-New mexico,Eddy,35015
-New mexico,Grant,35017
-New mexico,Guadalupe,35019
-New mexico,Harding,35021
-New mexico,Hidalgo,35023
-New mexico,Lea,35025
-New mexico,Lincoln,35027
-New mexico,Los alamos,35028
-New mexico,Luna,35029
-New mexico,Mckinley,35031
-New mexico,Mora,35033
-New mexico,Otero,35035
-New mexico,Quay,35037
-New mexico,Rio arriba,35039
-New mexico,Roosevelt,35041
-New mexico,Sandoval,35043
-New mexico,San juan,35045
-New mexico,San miguel,35047
-New mexico,Santa fe,35049
-New mexico,Sierra,35051
-New mexico,Socorro,35053
-New mexico,Taos,35055
-New mexico,Torrance,35057
-New mexico,Union,35059
-New mexico,Valencia,35061
-New york,,36000
-New york,Albany,36001
-New york,Allegany,36003
-New york,Bronx,36005
-New york,Broome,36007
-New york,Cattaraugus,36009
-New york,Cayuga,36011
-New york,Chautauqua,36013
-New york,Chemung,36015
-New york,Chenango,36017
-New york,Clinton,36019
-New york,Columbia,36021
-New york,Cortland,36023
-New york,Delaware,36025
-New york,Dutchess,36027
-New york,Erie,36029
-New york,Essex,36031
-New york,Franklin,36033
-New york,Fulton,36035
-New york,Genesee,36037
-New york,Greene,36039
-New york,Hamilton,36041
-New york,Herkimer,36043
-New york,Jefferson,36045
-New york,Kings,36047
-New york,Lewis,36049
-New york,Livingston,36051
-New york,Madison,36053
-New york,Monroe,36055
-New york,Montgomery,36057
-New york,Nassau,36059
-New york,New york,36061
-New york,Niagara,36063
-New york,Oneida,36065
-New york,Onondaga,36067
-New york,Ontario,36069
-New york,Orange,36071
-New york,Orleans,36073
-New york,Oswego,36075
-New york,Otsego,36077
-New york,Putnam,36079
-New york,Queens,36081
-New york,Rensselaer,36083
-New york,Richmond,36085
-New york,Rockland,36087
-New york,St. lawrence,36089
-New york,Saratoga,36091
-New york,Schenectady,36093
-New york,Schoharie,36095
-New york,Schuyler,36097
-New york,Seneca,36099
-New york,Steuben,36101
-New york,Suffolk,36103
-New york,Sullivan,36105
-New york,Tioga,36107
-New york,Tompkins,36109
-New york,Ulster,36111
-New york,Warren,36113
-New york,Washington,36115
-New york,Wayne,36117
-New york,Westchester,36119
-New york,Wyoming,36121
-New york,Yates,36123
-North carolina,,37000
-North carolina,Alamance,37001
-North carolina,Alexander,37003
-North carolina,Alleghany,37005
-North carolina,Anson,37007
-North carolina,Ashe,37009
-North carolina,Avery,37011
-North carolina,Beaufort,37013
-North carolina,Bertie,37015
-North carolina,Bladen,37017
-North carolina,Brunswick,37019
-North carolina,Buncombe,37021
-North carolina,Burke,37023
-North carolina,Cabarrus,37025
-North carolina,Caldwell,37027
-North carolina,Camden,37029
-North carolina,Carteret,37031
-North carolina,Caswell,37033
-North carolina,Catawba,37035
-North carolina,Chatham,37037
-North carolina,Cherokee,37039
-North carolina,Chowan,37041
-North carolina,Clay,37043
-North carolina,Cleveland,37045
-North carolina,Columbus,37047
-North carolina,Craven,37049
-North carolina,Cumberland,37051
-North carolina,Currituck,37053
-North carolina,Dare,37055
-North carolina,Davidson,37057
-North carolina,Davie,37059
-North carolina,Duplin,37061
-North carolina,Durham,37063
-North carolina,Edgecombe,37065
-North carolina,Forsyth,37067
-North carolina,Franklin,37069
-North carolina,Gaston,37071
-North carolina,Gates,37073
-North carolina,Graham,37075
-North carolina,Granville,37077
-North carolina,Greene,37079
-North carolina,Guilford,37081
-North carolina,Halifax,37083
-North carolina,Harnett,37085
-North carolina,Haywood,37087
-North carolina,Henderson,37089
-North carolina,Hertford,37091
-North carolina,Hoke,37093
-North carolina,Hyde,37095
-North carolina,Iredell,37097
-North carolina,Jackson,37099
-North carolina,Johnston,37101
-North carolina,Jones,37103
-North carolina,Lee,37105
-North carolina,Lenoir,37107
-North carolina,Lincoln,37109
-North carolina,Mcdowell,37111
-North carolina,Macon,37113
-North carolina,Madison,37115
-North carolina,Martin,37117
-North carolina,Mecklenburg,37119
-North carolina,Mitchell,37121
-North carolina,Montgomery,37123
-North carolina,Moore,37125
-North carolina,Nash,37127
-North carolina,New hanover,37129
-North carolina,Northampton,37131
-North carolina,Onslow,37133
-North carolina,Orange,37135
-North carolina,Pamlico,37137
-North carolina,Pasquotank,37139
-North carolina,Pender,37141
-North carolina,Perquimans,37143
-North carolina,Person,37145
-North carolina,Pitt,37147
-North carolina,Polk,37149
-North carolina,Randolph,37151
-North carolina,Richmond,37153
-North carolina,Robeson,37155
-North carolina,Rockingham,37157
-North carolina,Rowan,37159
-North carolina,Rutherford,37161
-North carolina,Sampson,37163
-North carolina,Scotland,37165
-North carolina,Stanly,37167
-North carolina,Stokes,37169
-North carolina,Surry,37171
-North carolina,Swain,37173
-North carolina,Transylvania,37175
-North carolina,Tyrrell,37177
-North carolina,Union,37179
-North carolina,Vance,37181
-North carolina,Wake,37183
-North carolina,Warren,37185
-North carolina,Washington,37187
-North carolina,Watauga,37189
-North carolina,Wayne,37191
-North carolina,Wilkes,37193
-North carolina,Wilson,37195
-North carolina,Yadkin,37197
-North carolina,Yancey,37199
-North dakota,,38000
-North dakota,Adams,38001
-North dakota,Barnes,38003
-North dakota,Benson,38005
-North dakota,Billings,38007
-North dakota,Bottineau,38009
-North dakota,Bowman,38011
-North dakota,Burke,38013
-North dakota,Burleigh,38015
-North dakota,Cass,38017
-North dakota,Cavalier,38019
-North dakota,Dickey,38021
-North dakota,Divide,38023
-North dakota,Dunn,38025
-North dakota,Eddy,38027
-North dakota,Emmons,38029
-North dakota,Foster,38031
-North dakota,Golden valley,38033
-North dakota,Grand forks,38035
-North dakota,Grant,38037
-North dakota,Griggs,38039
-North dakota,Hettinger,38041
-North dakota,Kidder,38043
-North dakota,Lamoure,38045
-North dakota,Logan,38047
-North dakota,Mchenry,38049
-North dakota,Mcintosh,38051
-North dakota,Mckenzie,38053
-North dakota,Mclean,38055
-North dakota,Mercer,38057
-North dakota,Morton,38059
-North dakota,Mountrail,38061
-North dakota,Nelson,38063
-North dakota,Oliver,38065
-North dakota,Pembina,38067
-North dakota,Pierce,38069
-North dakota,Ramsey,38071
-North dakota,Ransom,38073
-North dakota,Renville,38075
-North dakota,Richland,38077
-North dakota,Rolette,38079
-North dakota,Sargent,38081
-North dakota,Sheridan,38083
-North dakota,Sioux,38085
-North dakota,Slope,38087
-North dakota,Stark,38089
-North dakota,Steele,38091
-North dakota,Stutsman,38093
-North dakota,Towner,38095
-North dakota,Traill,38097
-North dakota,Walsh,38099
-North dakota,Ward,38101
-North dakota,Wells,38103
-North dakota,Williams,38105
+New Hampshire,,33000
+New Hampshire,Belknap,33001
+New Hampshire,Carroll,33003
+New Hampshire,Cheshire,33005
+New Hampshire,Coos,33007
+New Hampshire,Grafton,33009
+New Hampshire,Hillsborough,33011
+New Hampshire,Merrimack,33013
+New Hampshire,Rockingham,33015
+New Hampshire,Strafford,33017
+New Hampshire,Sullivan,33019
+New Jersey,,34000
+New Jersey,Atlantic,34001
+New Jersey,Bergen,34003
+New Jersey,Burlington,34005
+New Jersey,Camden,34007
+New Jersey,Cape may,34009
+New Jersey,Cumberland,34011
+New Jersey,Essex,34013
+New Jersey,Gloucester,34015
+New Jersey,Hudson,34017
+New Jersey,Hunterdon,34019
+New Jersey,Mercer,34021
+New Jersey,Middlesex,34023
+New Jersey,Monmouth,34025
+New Jersey,Morris,34027
+New Jersey,Ocean,34029
+New Jersey,Passaic,34031
+New Jersey,Salem,34033
+New Jersey,Somerset,34035
+New Jersey,Sussex,34037
+New Jersey,Union,34039
+New Jersey,Warren,34041
+New Mexico,,35000
+New Mexico,Bernalillo,35001
+New Mexico,Catron,35003
+New Mexico,Chaves,35005
+New Mexico,Cibola,35006
+New Mexico,Colfax,35007
+New Mexico,Curry,35009
+New Mexico,De baca,35011
+New Mexico,Doña ana,35013
+New Mexico,Eddy,35015
+New Mexico,Grant,35017
+New Mexico,Guadalupe,35019
+New Mexico,Harding,35021
+New Mexico,Hidalgo,35023
+New Mexico,Lea,35025
+New Mexico,Lincoln,35027
+New Mexico,Los alamos,35028
+New Mexico,Luna,35029
+New Mexico,Mckinley,35031
+New Mexico,Mora,35033
+New Mexico,Otero,35035
+New Mexico,Quay,35037
+New Mexico,Rio arriba,35039
+New Mexico,Roosevelt,35041
+New Mexico,Sandoval,35043
+New Mexico,San juan,35045
+New Mexico,San miguel,35047
+New Mexico,Santa fe,35049
+New Mexico,Sierra,35051
+New Mexico,Socorro,35053
+New Mexico,Taos,35055
+New Mexico,Torrance,35057
+New Mexico,Union,35059
+New Mexico,Valencia,35061
+New York,,36000
+New York,Albany,36001
+New York,Allegany,36003
+New York,Bronx,36005
+New York,Broome,36007
+New York,Cattaraugus,36009
+New York,Cayuga,36011
+New York,Chautauqua,36013
+New York,Chemung,36015
+New York,Chenango,36017
+New York,Clinton,36019
+New York,Columbia,36021
+New York,Cortland,36023
+New York,Delaware,36025
+New York,Dutchess,36027
+New York,Erie,36029
+New York,Essex,36031
+New York,Franklin,36033
+New York,Fulton,36035
+New York,Genesee,36037
+New York,Greene,36039
+New York,Hamilton,36041
+New York,Herkimer,36043
+New York,Jefferson,36045
+New York,Kings,36047
+New York,Lewis,36049
+New York,Livingston,36051
+New York,Madison,36053
+New York,Monroe,36055
+New York,Montgomery,36057
+New York,Nassau,36059
+New York,New york,36061
+New York,Niagara,36063
+New York,Oneida,36065
+New York,Onondaga,36067
+New York,Ontario,36069
+New York,Orange,36071
+New York,Orleans,36073
+New York,Oswego,36075
+New York,Otsego,36077
+New York,Putnam,36079
+New York,Queens,36081
+New York,Rensselaer,36083
+New York,Richmond,36085
+New York,Rockland,36087
+New York,St. lawrence,36089
+New York,Saratoga,36091
+New York,Schenectady,36093
+New York,Schoharie,36095
+New York,Schuyler,36097
+New York,Seneca,36099
+New York,Steuben,36101
+New York,Suffolk,36103
+New York,Sullivan,36105
+New York,Tioga,36107
+New York,Tompkins,36109
+New York,Ulster,36111
+New York,Warren,36113
+New York,Washington,36115
+New York,Wayne,36117
+New York,Westchester,36119
+New York,Wyoming,36121
+New York,Yates,36123
+North Carolina,,37000
+North Carolina,Alamance,37001
+North Carolina,Alexander,37003
+North Carolina,Alleghany,37005
+North Carolina,Anson,37007
+North Carolina,Ashe,37009
+North Carolina,Avery,37011
+North Carolina,Beaufort,37013
+North Carolina,Bertie,37015
+North Carolina,Bladen,37017
+North Carolina,Brunswick,37019
+North Carolina,Buncombe,37021
+North Carolina,Burke,37023
+North Carolina,Cabarrus,37025
+North Carolina,Caldwell,37027
+North Carolina,Camden,37029
+North Carolina,Carteret,37031
+North Carolina,Caswell,37033
+North Carolina,Catawba,37035
+North Carolina,Chatham,37037
+North Carolina,Cherokee,37039
+North Carolina,Chowan,37041
+North Carolina,Clay,37043
+North Carolina,Cleveland,37045
+North Carolina,Columbus,37047
+North Carolina,Craven,37049
+North Carolina,Cumberland,37051
+North Carolina,Currituck,37053
+North Carolina,Dare,37055
+North Carolina,Davidson,37057
+North Carolina,Davie,37059
+North Carolina,Duplin,37061
+North Carolina,Durham,37063
+North Carolina,Edgecombe,37065
+North Carolina,Forsyth,37067
+North Carolina,Franklin,37069
+North Carolina,Gaston,37071
+North Carolina,Gates,37073
+North Carolina,Graham,37075
+North Carolina,Granville,37077
+North Carolina,Greene,37079
+North Carolina,Guilford,37081
+North Carolina,Halifax,37083
+North Carolina,Harnett,37085
+North Carolina,Haywood,37087
+North Carolina,Henderson,37089
+North Carolina,Hertford,37091
+North Carolina,Hoke,37093
+North Carolina,Hyde,37095
+North Carolina,Iredell,37097
+North Carolina,Jackson,37099
+North Carolina,Johnston,37101
+North Carolina,Jones,37103
+North Carolina,Lee,37105
+North Carolina,Lenoir,37107
+North Carolina,Lincoln,37109
+North Carolina,Mcdowell,37111
+North Carolina,Macon,37113
+North Carolina,Madison,37115
+North Carolina,Martin,37117
+North Carolina,Mecklenburg,37119
+North Carolina,Mitchell,37121
+North Carolina,Montgomery,37123
+North Carolina,Moore,37125
+North Carolina,Nash,37127
+North Carolina,New hanover,37129
+North Carolina,Northampton,37131
+North Carolina,Onslow,37133
+North Carolina,Orange,37135
+North Carolina,Pamlico,37137
+North Carolina,Pasquotank,37139
+North Carolina,Pender,37141
+North Carolina,Perquimans,37143
+North Carolina,Person,37145
+North Carolina,Pitt,37147
+North Carolina,Polk,37149
+North Carolina,Randolph,37151
+North Carolina,Richmond,37153
+North Carolina,Robeson,37155
+North Carolina,Rockingham,37157
+North Carolina,Rowan,37159
+North Carolina,Rutherford,37161
+North Carolina,Sampson,37163
+North Carolina,Scotland,37165
+North Carolina,Stanly,37167
+North Carolina,Stokes,37169
+North Carolina,Surry,37171
+North Carolina,Swain,37173
+North Carolina,Transylvania,37175
+North Carolina,Tyrrell,37177
+North Carolina,Union,37179
+North Carolina,Vance,37181
+North Carolina,Wake,37183
+North Carolina,Warren,37185
+North Carolina,Washington,37187
+North Carolina,Watauga,37189
+North Carolina,Wayne,37191
+North Carolina,Wilkes,37193
+North Carolina,Wilson,37195
+North Carolina,Yadkin,37197
+North Carolina,Yancey,37199
+North Dakota,,38000
+North Dakota,Adams,38001
+North Dakota,Barnes,38003
+North Dakota,Benson,38005
+North Dakota,Billings,38007
+North Dakota,Bottineau,38009
+North Dakota,Bowman,38011
+North Dakota,Burke,38013
+North Dakota,Burleigh,38015
+North Dakota,Cass,38017
+North Dakota,Cavalier,38019
+North Dakota,Dickey,38021
+North Dakota,Divide,38023
+North Dakota,Dunn,38025
+North Dakota,Eddy,38027
+North Dakota,Emmons,38029
+North Dakota,Foster,38031
+North Dakota,Golden valley,38033
+North Dakota,Grand forks,38035
+North Dakota,Grant,38037
+North Dakota,Griggs,38039
+North Dakota,Hettinger,38041
+North Dakota,Kidder,38043
+North Dakota,Lamoure,38045
+North Dakota,Logan,38047
+North Dakota,Mchenry,38049
+North Dakota,Mcintosh,38051
+North Dakota,Mckenzie,38053
+North Dakota,Mclean,38055
+North Dakota,Mercer,38057
+North Dakota,Morton,38059
+North Dakota,Mountrail,38061
+North Dakota,Nelson,38063
+North Dakota,Oliver,38065
+North Dakota,Pembina,38067
+North Dakota,Pierce,38069
+North Dakota,Ramsey,38071
+North Dakota,Ransom,38073
+North Dakota,Renville,38075
+North Dakota,Richland,38077
+North Dakota,Rolette,38079
+North Dakota,Sargent,38081
+North Dakota,Sheridan,38083
+North Dakota,Sioux,38085
+North Dakota,Slope,38087
+North Dakota,Stark,38089
+North Dakota,Steele,38091
+North Dakota,Stutsman,38093
+North Dakota,Towner,38095
+North Dakota,Traill,38097
+North Dakota,Walsh,38099
+North Dakota,Ward,38101
+North Dakota,Wells,38103
+North Dakota,Williams,38105
 Ohio,,39000
 Ohio,Adams,39001
 Ohio,Allen,39003
@@ -2350,126 +2350,126 @@ Pennsylvania,Wayne,42127
 Pennsylvania,Westmoreland,42129
 Pennsylvania,Wyoming,42131
 Pennsylvania,York,42133
-Rhode island,,44000
-Rhode island,Bristol,44001
-Rhode island,Kent,44003
-Rhode island,Newport,44005
-Rhode island,Providence,44007
-Rhode island,Washington,44009
-South carolina,,45000
-South carolina,Abbeville,45001
-South carolina,Aiken,45003
-South carolina,Allendale,45005
-South carolina,Anderson,45007
-South carolina,Bamberg,45009
-South carolina,Barnwell,45011
-South carolina,Beaufort,45013
-South carolina,Berkeley,45015
-South carolina,Calhoun,45017
-South carolina,Charleston,45019
-South carolina,Cherokee,45021
-South carolina,Chester,45023
-South carolina,Chesterfield,45025
-South carolina,Clarendon,45027
-South carolina,Colleton,45029
-South carolina,Darlington,45031
-South carolina,Dillon,45033
-South carolina,Dorchester,45035
-South carolina,Edgefield,45037
-South carolina,Fairfield,45039
-South carolina,Florence,45041
-South carolina,Georgetown,45043
-South carolina,Greenville,45045
-South carolina,Greenwood,45047
-South carolina,Hampton,45049
-South carolina,Horry,45051
-South carolina,Jasper,45053
-South carolina,Kershaw,45055
-South carolina,Lancaster,45057
-South carolina,Laurens,45059
-South carolina,Lee,45061
-South carolina,Lexington,45063
-South carolina,Mccormick,45065
-South carolina,Marion,45067
-South carolina,Marlboro,45069
-South carolina,Newberry,45071
-South carolina,Oconee,45073
-South carolina,Orangeburg,45075
-South carolina,Pickens,45077
-South carolina,Richland,45079
-South carolina,Saluda,45081
-South carolina,Spartanburg,45083
-South carolina,Sumter,45085
-South carolina,Union,45087
-South carolina,Williamsburg,45089
-South carolina,York,45091
-South dakota,,46000
-South dakota,Aurora,46003
-South dakota,Beadle,46005
-South dakota,Bennett,46007
-South dakota,Bon homme,46009
-South dakota,Brookings,46011
-South dakota,Brown,46013
-South dakota,Brule,46015
-South dakota,Buffalo,46017
-South dakota,Butte,46019
-South dakota,Campbell,46021
-South dakota,Charles mix,46023
-South dakota,Clark,46025
-South dakota,Clay,46027
-South dakota,Codington,46029
-South dakota,Corson,46031
-South dakota,Custer,46033
-South dakota,Davison,46035
-South dakota,Day,46037
-South dakota,Deuel,46039
-South dakota,Dewey,46041
-South dakota,Douglas,46043
-South dakota,Edmunds,46045
-South dakota,Fall river,46047
-South dakota,Faulk,46049
-South dakota,Grant,46051
-South dakota,Gregory,46053
-South dakota,Haakon,46055
-South dakota,Hamlin,46057
-South dakota,Hand,46059
-South dakota,Hanson,46061
-South dakota,Harding,46063
-South dakota,Hughes,46065
-South dakota,Hutchinson,46067
-South dakota,Hyde,46069
-South dakota,Jackson,46071
-South dakota,Jerauld,46073
-South dakota,Jones,46075
-South dakota,Kingsbury,46077
-South dakota,Lake,46079
-South dakota,Lawrence,46081
-South dakota,Lincoln,46083
-South dakota,Lyman,46085
-South dakota,Mccook,46087
-South dakota,Mcpherson,46089
-South dakota,Marshall,46091
-South dakota,Meade,46093
-South dakota,Mellette,46095
-South dakota,Miner,46097
-South dakota,Minnehaha,46099
-South dakota,Moody,46101
-South dakota,Oglala lakota,46102
-South dakota,Pennington,46103
-South dakota,Perkins,46105
-South dakota,Potter,46107
-South dakota,Roberts,46109
-South dakota,Sanborn,46111
-South dakota,Spink,46115
-South dakota,Stanley,46117
-South dakota,Sully,46119
-South dakota,Todd,46121
-South dakota,Tripp,46123
-South dakota,Turner,46125
-South dakota,Union,46127
-South dakota,Walworth,46129
-South dakota,Yankton,46135
-South dakota,Ziebach,46137
+Rhode Island,,44000
+Rhode Island,Bristol,44001
+Rhode Island,Kent,44003
+Rhode Island,Newport,44005
+Rhode Island,Providence,44007
+Rhode Island,Washington,44009
+South Carolina,,45000
+South Carolina,Abbeville,45001
+South Carolina,Aiken,45003
+South Carolina,Allendale,45005
+South Carolina,Anderson,45007
+South Carolina,Bamberg,45009
+South Carolina,Barnwell,45011
+South Carolina,Beaufort,45013
+South Carolina,Berkeley,45015
+South Carolina,Calhoun,45017
+South Carolina,Charleston,45019
+South Carolina,Cherokee,45021
+South Carolina,Chester,45023
+South Carolina,Chesterfield,45025
+South Carolina,Clarendon,45027
+South Carolina,Colleton,45029
+South Carolina,Darlington,45031
+South Carolina,Dillon,45033
+South Carolina,Dorchester,45035
+South Carolina,Edgefield,45037
+South Carolina,Fairfield,45039
+South Carolina,Florence,45041
+South Carolina,Georgetown,45043
+South Carolina,Greenville,45045
+South Carolina,Greenwood,45047
+South Carolina,Hampton,45049
+South Carolina,Horry,45051
+South Carolina,Jasper,45053
+South Carolina,Kershaw,45055
+South Carolina,Lancaster,45057
+South Carolina,Laurens,45059
+South Carolina,Lee,45061
+South Carolina,Lexington,45063
+South Carolina,Mccormick,45065
+South Carolina,Marion,45067
+South Carolina,Marlboro,45069
+South Carolina,Newberry,45071
+South Carolina,Oconee,45073
+South Carolina,Orangeburg,45075
+South Carolina,Pickens,45077
+South Carolina,Richland,45079
+South Carolina,Saluda,45081
+South Carolina,Spartanburg,45083
+South Carolina,Sumter,45085
+South Carolina,Union,45087
+South Carolina,Williamsburg,45089
+South Carolina,York,45091
+South Dakota,,46000
+South Dakota,Aurora,46003
+South Dakota,Beadle,46005
+South Dakota,Bennett,46007
+South Dakota,Bon homme,46009
+South Dakota,Brookings,46011
+South Dakota,Brown,46013
+South Dakota,Brule,46015
+South Dakota,Buffalo,46017
+South Dakota,Butte,46019
+South Dakota,Campbell,46021
+South Dakota,Charles mix,46023
+South Dakota,Clark,46025
+South Dakota,Clay,46027
+South Dakota,Codington,46029
+South Dakota,Corson,46031
+South Dakota,Custer,46033
+South Dakota,Davison,46035
+South Dakota,Day,46037
+South Dakota,Deuel,46039
+South Dakota,Dewey,46041
+South Dakota,Douglas,46043
+South Dakota,Edmunds,46045
+South Dakota,Fall river,46047
+South Dakota,Faulk,46049
+South Dakota,Grant,46051
+South Dakota,Gregory,46053
+South Dakota,Haakon,46055
+South Dakota,Hamlin,46057
+South Dakota,Hand,46059
+South Dakota,Hanson,46061
+South Dakota,Harding,46063
+South Dakota,Hughes,46065
+South Dakota,Hutchinson,46067
+South Dakota,Hyde,46069
+South Dakota,Jackson,46071
+South Dakota,Jerauld,46073
+South Dakota,Jones,46075
+South Dakota,Kingsbury,46077
+South Dakota,Lake,46079
+South Dakota,Lawrence,46081
+South Dakota,Lincoln,46083
+South Dakota,Lyman,46085
+South Dakota,Mccook,46087
+South Dakota,Mcpherson,46089
+South Dakota,Marshall,46091
+South Dakota,Meade,46093
+South Dakota,Mellette,46095
+South Dakota,Miner,46097
+South Dakota,Minnehaha,46099
+South Dakota,Moody,46101
+South Dakota,Oglala lakota,46102
+South Dakota,Pennington,46103
+South Dakota,Perkins,46105
+South Dakota,Potter,46107
+South Dakota,Roberts,46109
+South Dakota,Sanborn,46111
+South Dakota,Spink,46115
+South Dakota,Stanley,46117
+South Dakota,Sully,46119
+South Dakota,Todd,46121
+South Dakota,Tripp,46123
+South Dakota,Turner,46125
+South Dakota,Union,46127
+South Dakota,Walworth,46129
+South Dakota,Yankton,46135
+South Dakota,Ziebach,46137
 Tennessee,,47000
 Tennessee,Anderson,47001
 Tennessee,Bedford,47003
@@ -3040,62 +3040,62 @@ Washington,Walla walla,53071
 Washington,Whatcom,53073
 Washington,Whitman,53075
 Washington,Yakima,53077
-West virginia,,54000
-West virginia,Barbour,54001
-West virginia,Berkeley,54003
-West virginia,Boone,54005
-West virginia,Braxton,54007
-West virginia,Brooke,54009
-West virginia,Cabell,54011
-West virginia,Calhoun,54013
-West virginia,Clay,54015
-West virginia,Doddridge,54017
-West virginia,Fayette,54019
-West virginia,Gilmer,54021
-West virginia,Grant,54023
-West virginia,Greenbrier,54025
-West virginia,Hampshire,54027
-West virginia,Hancock,54029
-West virginia,Hardy,54031
-West virginia,Harrison,54033
-West virginia,Jackson,54035
-West virginia,Jefferson,54037
-West virginia,Kanawha,54039
-West virginia,Lewis,54041
-West virginia,Lincoln,54043
-West virginia,Logan,54045
-West virginia,Mcdowell,54047
-West virginia,Marion,54049
-West virginia,Marshall,54051
-West virginia,Mason,54053
-West virginia,Mercer,54055
-West virginia,Mineral,54057
-West virginia,Mingo,54059
-West virginia,Monongalia,54061
-West virginia,Monroe,54063
-West virginia,Morgan,54065
-West virginia,Nicholas,54067
-West virginia,Ohio,54069
-West virginia,Pendleton,54071
-West virginia,Pleasants,54073
-West virginia,Pocahontas,54075
-West virginia,Preston,54077
-West virginia,Putnam,54079
-West virginia,Raleigh,54081
-West virginia,Randolph,54083
-West virginia,Ritchie,54085
-West virginia,Roane,54087
-West virginia,Summers,54089
-West virginia,Taylor,54091
-West virginia,Tucker,54093
-West virginia,Tyler,54095
-West virginia,Upshur,54097
-West virginia,Wayne,54099
-West virginia,Webster,54101
-West virginia,Wetzel,54103
-West virginia,Wirt,54105
-West virginia,Wood,54107
-West virginia,Wyoming,54109
+West Virginia,,54000
+West Virginia,Barbour,54001
+West Virginia,Berkeley,54003
+West Virginia,Boone,54005
+West Virginia,Braxton,54007
+West Virginia,Brooke,54009
+West Virginia,Cabell,54011
+West Virginia,Calhoun,54013
+West Virginia,Clay,54015
+West Virginia,Doddridge,54017
+West Virginia,Fayette,54019
+West Virginia,Gilmer,54021
+West Virginia,Grant,54023
+West Virginia,Greenbrier,54025
+West Virginia,Hampshire,54027
+West Virginia,Hancock,54029
+West Virginia,Hardy,54031
+West Virginia,Harrison,54033
+West Virginia,Jackson,54035
+West Virginia,Jefferson,54037
+West Virginia,Kanawha,54039
+West Virginia,Lewis,54041
+West Virginia,Lincoln,54043
+West Virginia,Logan,54045
+West Virginia,Mcdowell,54047
+West Virginia,Marion,54049
+West Virginia,Marshall,54051
+West Virginia,Mason,54053
+West Virginia,Mercer,54055
+West Virginia,Mineral,54057
+West Virginia,Mingo,54059
+West Virginia,Monongalia,54061
+West Virginia,Monroe,54063
+West Virginia,Morgan,54065
+West Virginia,Nicholas,54067
+West Virginia,Ohio,54069
+West Virginia,Pendleton,54071
+West Virginia,Pleasants,54073
+West Virginia,Pocahontas,54075
+West Virginia,Preston,54077
+West Virginia,Putnam,54079
+West Virginia,Raleigh,54081
+West Virginia,Randolph,54083
+West Virginia,Ritchie,54085
+West Virginia,Roane,54087
+West Virginia,Summers,54089
+West Virginia,Taylor,54091
+West Virginia,Tucker,54093
+West Virginia,Tyler,54095
+West Virginia,Upshur,54097
+West Virginia,Wayne,54099
+West Virginia,Webster,54101
+West Virginia,Wetzel,54103
+West Virginia,Wirt,54105
+West Virginia,Wood,54107
+West Virginia,Wyoming,54109
 Wisconsin,,55000
 Wisconsin,Adams,55001
 Wisconsin,Ashland,55003
@@ -3193,82 +3193,82 @@ Wyoming,Teton,56039
 Wyoming,Uinta,56041
 Wyoming,Washakie,56043
 Wyoming,Weston,56045
-Puerto rico,,72000
-Puerto rico,Adjuntas municipio,72001
-Puerto rico,Aguada municipio,72003
-Puerto rico,Aguadilla municipio,72005
-Puerto rico,Aguas buenas municipio,72007
-Puerto rico,Aibonito municipio,72009
-Puerto rico,Añasco municipio,72011
-Puerto rico,Arecibo municipio,72013
-Puerto rico,Arroyo municipio,72015
-Puerto rico,Barceloneta municipio,72017
-Puerto rico,Barranquitas municipio,72019
-Puerto rico,Bayamón municipio,72021
-Puerto rico,Cabo rojo municipio,72023
-Puerto rico,Caguas municipio,72025
-Puerto rico,Camuy municipio,72027
-Puerto rico,Canóvanas municipio,72029
-Puerto rico,Carolina municipio,72031
-Puerto rico,Cataño municipio,72033
-Puerto rico,Cayey municipio,72035
-Puerto rico,Ceiba municipio,72037
-Puerto rico,Ciales municipio,72039
-Puerto rico,Cidra municipio,72041
-Puerto rico,Coamo municipio,72043
-Puerto rico,Comerío municipio,72045
-Puerto rico,Corozal municipio,72047
-Puerto rico,Culebra municipio,72049
-Puerto rico,Dorado municipio,72051
-Puerto rico,Fajardo municipio,72053
-Puerto rico,Florida municipio,72054
-Puerto rico,Guánica municipio,72055
-Puerto rico,Guayama municipio,72057
-Puerto rico,Guayanilla municipio,72059
-Puerto rico,Guaynabo municipio,72061
-Puerto rico,Gurabo municipio,72063
-Puerto rico,Hatillo municipio,72065
-Puerto rico,Hormigueros municipio,72067
-Puerto rico,Humacao municipio,72069
-Puerto rico,Isabela municipio,72071
-Puerto rico,Jayuya municipio,72073
-Puerto rico,Juana díaz municipio,72075
-Puerto rico,Juncos municipio,72077
-Puerto rico,Lajas municipio,72079
-Puerto rico,Lares municipio,72081
-Puerto rico,Las marías municipio,72083
-Puerto rico,Las piedras municipio,72085
-Puerto rico,Loíza municipio,72087
-Puerto rico,Luquillo municipio,72089
-Puerto rico,Manatí municipio,72091
-Puerto rico,Maricao municipio,72093
-Puerto rico,Maunabo municipio,72095
-Puerto rico,Mayagüez municipio,72097
-Puerto rico,Moca municipio,72099
-Puerto rico,Morovis municipio,72101
-Puerto rico,Naguabo municipio,72103
-Puerto rico,Naranjito municipio,72105
-Puerto rico,Orocovis municipio,72107
-Puerto rico,Patillas municipio,72109
-Puerto rico,Peñuelas municipio,72111
-Puerto rico,Ponce municipio,72113
-Puerto rico,Quebradillas municipio,72115
-Puerto rico,Rincón municipio,72117
-Puerto rico,Río grande municipio,72119
-Puerto rico,Sabana grande municipio,72121
-Puerto rico,Salinas municipio,72123
-Puerto rico,San germán municipio,72125
-Puerto rico,San juan municipio,72127
-Puerto rico,San lorenzo municipio,72129
-Puerto rico,San sebastián municipio,72131
-Puerto rico,Santa isabel municipio,72133
-Puerto rico,Toa alta municipio,72135
-Puerto rico,Toa baja municipio,72137
-Puerto rico,Trujillo alto municipio,72139
-Puerto rico,Utuado municipio,72141
-Puerto rico,Vega alta municipio,72143
-Puerto rico,Vega baja municipio,72145
-Puerto rico,Vieques municipio,72147
-Puerto rico,Villalba municipio,72149
-Puerto rico,Yabucoa municipio,72151
-Puerto rico,Yauco municipio,72153
+Puerto Rico,,72000
+Puerto Rico,Adjuntas municipio,72001
+Puerto Rico,Aguada municipio,72003
+Puerto Rico,Aguadilla municipio,72005
+Puerto Rico,Aguas buenas municipio,72007
+Puerto Rico,Aibonito municipio,72009
+Puerto Rico,Añasco municipio,72011
+Puerto Rico,Arecibo municipio,72013
+Puerto Rico,Arroyo municipio,72015
+Puerto Rico,Barceloneta municipio,72017
+Puerto Rico,Barranquitas municipio,72019
+Puerto Rico,Bayamón municipio,72021
+Puerto Rico,Cabo rojo municipio,72023
+Puerto Rico,Caguas municipio,72025
+Puerto Rico,Camuy municipio,72027
+Puerto Rico,Canóvanas municipio,72029
+Puerto Rico,Carolina municipio,72031
+Puerto Rico,Cataño municipio,72033
+Puerto Rico,Cayey municipio,72035
+Puerto Rico,Ceiba municipio,72037
+Puerto Rico,Ciales municipio,72039
+Puerto Rico,Cidra municipio,72041
+Puerto Rico,Coamo municipio,72043
+Puerto Rico,Comerío municipio,72045
+Puerto Rico,Corozal municipio,72047
+Puerto Rico,Culebra municipio,72049
+Puerto Rico,Dorado municipio,72051
+Puerto Rico,Fajardo municipio,72053
+Puerto Rico,Florida municipio,72054
+Puerto Rico,Guánica municipio,72055
+Puerto Rico,Guayama municipio,72057
+Puerto Rico,Guayanilla municipio,72059
+Puerto Rico,Guaynabo municipio,72061
+Puerto Rico,Gurabo municipio,72063
+Puerto Rico,Hatillo municipio,72065
+Puerto Rico,Hormigueros municipio,72067
+Puerto Rico,Humacao municipio,72069
+Puerto Rico,Isabela municipio,72071
+Puerto Rico,Jayuya municipio,72073
+Puerto Rico,Juana díaz municipio,72075
+Puerto Rico,Juncos municipio,72077
+Puerto Rico,Lajas municipio,72079
+Puerto Rico,Lares municipio,72081
+Puerto Rico,Las marías municipio,72083
+Puerto Rico,Las piedras municipio,72085
+Puerto Rico,Loíza municipio,72087
+Puerto Rico,Luquillo municipio,72089
+Puerto Rico,Manatí municipio,72091
+Puerto Rico,Maricao municipio,72093
+Puerto Rico,Maunabo municipio,72095
+Puerto Rico,Mayagüez municipio,72097
+Puerto Rico,Moca municipio,72099
+Puerto Rico,Morovis municipio,72101
+Puerto Rico,Naguabo municipio,72103
+Puerto Rico,Naranjito municipio,72105
+Puerto Rico,Orocovis municipio,72107
+Puerto Rico,Patillas municipio,72109
+Puerto Rico,Peñuelas municipio,72111
+Puerto Rico,Ponce municipio,72113
+Puerto Rico,Quebradillas municipio,72115
+Puerto Rico,Rincón municipio,72117
+Puerto Rico,Río grande municipio,72119
+Puerto Rico,Sabana grande municipio,72121
+Puerto Rico,Salinas municipio,72123
+Puerto Rico,San germán municipio,72125
+Puerto Rico,San juan municipio,72127
+Puerto Rico,San lorenzo municipio,72129
+Puerto Rico,San sebastián municipio,72131
+Puerto Rico,Santa isabel municipio,72133
+Puerto Rico,Toa alta municipio,72135
+Puerto Rico,Toa baja municipio,72137
+Puerto Rico,Trujillo alto municipio,72139
+Puerto Rico,Utuado municipio,72141
+Puerto Rico,Vega alta municipio,72143
+Puerto Rico,Vega baja municipio,72145
+Puerto Rico,Vieques municipio,72147
+Puerto Rico,Villalba municipio,72149
+Puerto Rico,Yabucoa municipio,72151
+Puerto Rico,Yauco municipio,72153
