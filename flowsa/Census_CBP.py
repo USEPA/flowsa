@@ -12,43 +12,58 @@ This script is designed to run with a configuration parameter
 """
 
 import pandas as pd
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request,\
-    load_json_from_requests_response, load_api_key
+from flowsa.datapull import * #load_sourceconfig, store_flowbyactivity, make_http_request,\
+    #load_json_from_requests_response, load_api_key, build_url_for_api_query
 from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2
 
+#source = 'Census_CBP'
 
 
-def build_url_for_api_query(urlinfo):
-    params = ""
-    for k,v in urlinfo['url_params'].items():
-        params = params+'&'+k+"="+str(v)
-
-    url = "{0}{1}{2}".format(urlinfo['base_url'],urlinfo['url_path'],params)
-    return url
-
-def assemble_urls_for_api_query():
-    urls = []
+def Census_CBP_URL_helper(build_url):
+    urls_census = []
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
     for c in FIPS_2:
-        url = build_url_for_api_query(config['url'])
-        url = url + c
-        # add key to url
-        url = url + '&key=' + load_api_key("Census")
-        urls.append(url)
-    return urls
+        url = build_url
+        url = url.replace("__stateFIPS__", c)
+        urls_census.append(url)
+    return urls_census
 
-def call_cbp_urls(url_list):
-    """This method calls all the urls that have been generated.
-    It then calls the processing method to begin processing the returned data"""
-    data_frames_list = []
-    for url in url_list:
-        log.info("Calling "+url)
-        r = make_http_request(url)
-        cbp_json = load_json_from_requests_response(r)
-        # Convert response
-        df = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
-        data_frames_list.append(df)
-    return data_frames_list
+
+def census_cbp_parse():
+    print("test")
+
+
+# def build_url_for_api_query(urlinfo):
+#     params = ""
+#     for k,v in urlinfo['url_params'].items():
+#         params = params+'&'+k+"="+str(v)
+#
+#     url = "{0}{1}{2}".format(urlinfo['base_url'],urlinfo['url_path'],params)
+#     return url
+
+# def assemble_urls_for_api_query():
+#     urls = []
+#     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
+#     for c in FIPS_2:
+#         url = build_url_for_api_query(config['url'])
+#         url = url + c
+#         # add key to url
+#         url = url + '&key=' + load_api_key("Census")
+#         urls.append(url)
+#     return urls
+
+# def call_cbp_urls(url_list):
+#     """This method calls all the urls that have been generated.
+#     It then calls the processing method to begin processing the returned data"""
+#     data_frames_list = []
+#     for url in url_list:
+#         log.info("Calling "+url)
+#         r = make_http_request(url)
+#         cbp_json = load_json_from_requests_response(r)
+#         # Convert response
+#         df = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
+#         data_frames_list.append(df)
+#     return data_frames_list
 
 # cbp_flow_specific_metadata = \
 #     {"EMP": {"Class": "Employment",
@@ -65,8 +80,7 @@ def call_cbp_urls(url_list):
 #                 "Unit": "1000USD"},
 #      }
 
-def Census_CBP_URL_helper():
-    print("test")
+
 
 
 

@@ -1,72 +1,65 @@
 # Queries Census of Ag API to get all crop land uses at national, state and county levels
----
-# api_name: USDA_Quickstats
-# api_key_required: true
-# format: txt
-# url:
-#   api_path: api_GET/?
-#   base_url: "https://quickstats.nass.usda.gov/api/"
-#   url_params:
-#     agg_level_desc:
-#       - NATIONAL
-#       - STATE
-#       - COUNTY
-#     group_desc:
-#       - "CROP TOTALS"
-#       - "FIELD CROPS"
-#       - "FRUIT & TREE NUTS"
-#       - HORTICULTURE
-#       - VEGETABLES
-#     sector_desc: CROPS
-#     source_desc: CENSUS
-#   year_param: year
-#   key_param: key
-# url_replace_fxn:
-# years:
-#    - 2012
-#    - 2017
+#---
+ api_name: USDA_Quickstats
+ api_key_required: true
+ format: txt
+ url:
+   base_url: "https://quickstats.nass.usda.gov/api/"
+   api_path: "api_GET/?key=__apiKey__" #__apiKey__ should be substituted with user's api key
+   url_params:
+     source_desc: "CENSUS"
+     sector_desc: "CROPS"
+     group_desc: "__groupDesc__" # __groupDesc__ triggers a replace fxn to substitute in "CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"
+     agg_level_desc: "__aggLevel__" # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL", "STATE", or "COUNTY"
+     state_alpha: "__stateAlpha__" # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
+     year: "__year__" # __year__ is used to trigger a replace function to substitute in year
+   key_param: key
+ url_replace_fxn: CoA_Cropland_URL_helper
+ years:
+    - 2012
+    - 2017
 
----
-api_name: USDA_Quickstats
-api_key_required: true
-format: txt
-url:
-   county:
-      url_order: [base_url, key, url_params]
-      base_url: "https://quickstats.nass.usda.gov/api/api_GET/?"
-      url_path:
-      states:
-      url_params:
-         source_desc: "CENSUS"
-         sector_desc: "CROPS" 
-         group_desc: ["CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"]
-         agg_level_desc: "COUNTY"
-         state_alpha: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
-         year: ["2012", "2017"]
-      key: "key"
-   state:
-      url_order: [base_url, key, url_params]
-      base_url: "https://quickstats.nass.usda.gov/api/api_GET/?"
-      url_path:
-      states: 
-      url_params:
-         source_desc: "CENSUS"
-         sector_desc: "CROPS" 
-         group_desc: ["CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"]
-         agg_level_desc: "STATE" 
-         state_alpha:  ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
-         year: ["2012", "2017"]
-      key: "key"
-   national:
-      url_order: [base_url, key, url_params]
-      base_url: "https://quickstats.nass.usda.gov/api/api_GET/?"
-      url_path:
-      states: 
-      url_params:
-         source_desc: "CENSUS"
-         sector_desc: "CROPS" 
-         group_desc: ["CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"]
-         agg_level_desc: "NATIONAL" 
-         year: ["2012", "2017"]
-      key: "key"
+#---
+#api_name: USDA_Quickstats
+#api_key_required: true
+#format: txt
+#url:
+#   county:
+#      url_order: [base_url, key, url_params]
+#      base_url: "https://quickstats.nass.usda.gov/api/api_GET/?"
+#      url_path:
+#      states:
+#      url_params:
+#         source_desc: "CENSUS"
+#         sector_desc: "CROPS"
+#         group_desc: ["CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"]
+#         agg_level_desc: "COUNTY"
+#         state_alpha: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+#         year: ["2012", "2017"]
+#      key: "key"
+#   state:
+#      url_order: [base_url, key, url_params]
+#      base_url: "https://quickstats.nass.usda.gov/api/api_GET/?"
+#      url_path:
+#      states:
+#      url_params:
+#         source_desc: "CENSUS"
+#         sector_desc: "CROPS"
+#         group_desc: ["CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"]
+#         agg_level_desc: "STATE"
+#         state_alpha:  ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS","KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC","ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+#         year: ["2012", "2017"]
+#      key: "key"
+#   national:
+#      url_order: [base_url, key, url_params]
+#      base_url: "https://quickstats.nass.usda.gov/api/api_GET/?"
+#      url_path:
+#      states:
+#      url_params:
+#         source_desc: "CENSUS"
+#         sector_desc: "CROPS"
+#         group_desc: ["CROP TOTALS", "FIELD CROPS", "FRUIT & TREE NUTS", "HORTICULTURE", "VEGETABLES"]
+#         agg_level_desc: "NATIONAL"
+#         year: ["2012", "2017"]
+#      key: "key"
 

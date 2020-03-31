@@ -4,10 +4,22 @@
 import io
 import pandas as pd
 import json
-from flowsa.datapull import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key, get_year_from_url
+from flowsa.datapull import * #import load_sourceconfig, store_flowbyactivity, make_http_request, load_api_key #, get_year_from_url
 from flowsa.common import log, flow_by_activity_fields, withdrawn_keyword, US_FIPS
 
 source = 'USDA_CoA_Cropland'
+
+def CoA_Cropland_URL_helper(build_url):
+    urls_cropland = []
+    FIPS_2 = get_all_state_FIPS_2()['State']
+    for c in FIPS_2:
+        url = build_url
+        url = url.replace("__stateAlpha__", c)
+        urls_cropland.append(url)
+    return urls_cropland
+
+
+
 
 def format_url_values(string):
     if " " in string:
@@ -369,12 +381,14 @@ def parse_data(text):
     df = pd.DataFrame(dict)
     return df
 
-if __name__ == '__main__':
-    config = load_sourceconfig(source)
-    url_list = build_url_list(config, source)
-    df_lists = call_usda_crop_urls(url_list[0:52])
-    
-    for d in df_lists:
-        df = pd.concat(df_lists[d])
-        log.info("Retrieved data for " + source + " " + d)
-        store_flowbyactivity(df, source, d)
+
+
+# if __name__ == '__main__':
+#     config = load_sourceconfig(source)
+#     url_list = build_url_list(config, source)
+#     df_lists = call_usda_crop_urls(url_list[0:52])
+#
+#     for d in df_lists:
+#         df = pd.concat(df_lists[d])
+#         log.info("Retrieved data for " + source + " " + d)
+#         store_flowbyactivity(df, source, d)
