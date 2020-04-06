@@ -30,7 +30,8 @@ fips_number_key = {"national": 0,
                    "state": 2,
                    "county":5}
 
-withdrawn_keyword = "W"
+# withdrawn keyword changed to "none" over "W" because unable to run calculation functions with text string
+withdrawn_keyword = None
 
 flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
 
@@ -215,3 +216,4 @@ us_state_abbrev = {
 
 # thank you to @kinghelix and @trevormarburger for this idea
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
+
