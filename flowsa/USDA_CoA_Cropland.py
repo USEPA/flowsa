@@ -5,7 +5,7 @@ import io
 import pandas as pd
 import json
 import numpy as np
-from flowsa.datapull import make_http_request, load_json_from_requests_response, format_url_values
+from flowsa.datapull import make_http_request, format_url_values # load_from_requests_response,
 from flowsa.common import * #log, flow_by_activity_fields, withdrawn_keyword, US_FIPS, get_state_abbrevs
 
 
@@ -40,8 +40,9 @@ def CoA_Cropland_URL_helper(build_url, config, args):
     return urls_cropland
 
 
-def coa_cropland_call(dat_json):
-    cropland_json = dat_json
+def coa_cropland_call(url, coa_response):
+    cropland_json = json.loads(coa_response.text)
+    #cropland_json = coa_dat
     # Convert response to dataframe
     df_cropland = pd.DataFrame(data=cropland_json["data"])
     return df_cropland
@@ -114,7 +115,10 @@ def coa_cropland_parse(dataframe_list, args):
     df['Spread'] = df['Spread'].str.strip()  # trim whitespace
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
+    df.loc[df['Spread'] == "", 'Spread'] = None # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
+    # drop Descriptions that contain certain phrases, as these data are included in other categories
+    df = df[~df['Description'].isin(['FRESH MARKET', 'PROCESSING', 'ENTIRE CROP', 'NONE OF CROP', 'PART OF CROP'])]
     # Add hardcoded data
     df['Class'] = "Land"
     df['SourceName'] = "USDA_CoA_Cropland"

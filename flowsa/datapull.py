@@ -12,19 +12,20 @@ import requests
 import json
 import io
 import sys  # used to replace keywords in urls
+import csv
 
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path, \
     flow_by_activity_fields, get_all_state_FIPS_2
 from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
 
 from flowsa.USDA_CoA_Cropland import *
-#from flowsa.USGS_Water_Use import *
+from flowsa.USGS_Water_Use import *
 #from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
 
 
 def parse_args():
-    # Make year and source script parameters
+    """Make year and source script parameters"""
     ap = argparse.ArgumentParser()
     ap.add_argument("-y", "--year", required=True, help="Year for data pull and save")
     ap.add_argument("-s", "--source", required=True, help="Data source code to pull and save")
@@ -45,6 +46,7 @@ def store_flowbyactivity(result, source, year=None):
 
 
 def format_url_values(string):
+    """Replace spaces in URLs with appropriate symbol"""
     if " " in string:
         string = string.replace(" ", "%20")
     # if "&" in string:
@@ -65,9 +67,13 @@ def make_http_request(url):
     return r
 
 
-def load_json_from_requests_response(response_w_json):
-    response_json = json.loads(response_w_json.text)
-    return response_json
+# def load_from_requests_response(response):
+#     if config["format"] == 'json':
+#         response_json = json.loads(response.text)
+#         return response_json
+#     elif config["format"] == 'tab':
+#         response_txt = csv.reader(response.text, delimiter='\t')
+#         return response_txt
 
 
 def load_sourceconfig(source):
@@ -126,16 +132,13 @@ def call_urls(url_list):
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
     data_frames_list = []
-    if config["format"] == 'json':
-        for url in url_list:
-            log.info("Calling " + url)
-            r = make_http_request(url)
-            dat_json = load_json_from_requests_response(r)
-            if hasattr(sys.modules[__name__], config["call_response_fxn"]):
-                df = getattr(sys.modules[__name__], config["call_response_fxn"])(dat_json)
-            # df = pd.DataFrame(data=dat_json[1:len(dat_json)], columns=dat_json[0])
-            data_frames_list.append(df)
-        return data_frames_list
+    for url in url_list:
+        log.info("Calling " + url)
+        r = make_http_request(url)
+        if hasattr(sys.modules[__name__], config["call_response_fxn"]):
+            df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r)
+        data_frames_list.append(df)
+    return data_frames_list
 
 
 def parse_data(dataframe_list, args):
@@ -155,7 +158,7 @@ if __name__ == '__main__':
     # replace parts of urls with specific instructions from source.py
     urls = assemble_urls_for_query(build_url, config, args)
     # create a list with data from all source urls
-    dataframe_list = call_urls(urls[98:100])
+    dataframe_list = call_urls(urls)
     # concat the dataframes and parse data with specific instructions from source.py
     df = parse_data(dataframe_list, args)
     # log that data was retrieved

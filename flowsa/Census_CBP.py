@@ -12,8 +12,8 @@ This script is designed to run with a configuration parameter
 """
 
 import pandas as pd
-from flowsa.datapull import * #make_http_request, load_json_from_requests_response
-from flowsa.common import * #log, flow_by_activity_fields, get_all_state_FIPS_2
+#from flowsa.datapull import build_url, make_http_request, load_from_requests_response
+from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2
 
 
 def Census_CBP_URL_helper(build_url, config, args):
@@ -33,8 +33,9 @@ def Census_CBP_URL_helper(build_url, config, args):
     return urls_census
 
 
-def census_cbp_call(dat_json):
-    cbp_json = dat_json
+def census_cbp_call(url, cbp_response):
+    cbp_json = json.loads(cbp_response.text)
+    #cbp_json = cbp_dat
     # convert response to dataframe
     df_census = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
     return df_census

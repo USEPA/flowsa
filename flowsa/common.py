@@ -125,6 +125,16 @@ def clean_str_and_capitalize(s):
         s = s.capitalize()
     return s
 
+
+def capitalize_first_letter(string):
+    """Capitalize first letter of words"""
+    return_string = ""
+    split_array = string.split(" ")
+    for s in split_array:
+        return_string = return_string + " " + s.capitalize()
+    return return_string.strip()
+
+
 def get_state_FIPS():
     """
     Filters FIPS df for state codes only

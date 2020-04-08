@@ -13,7 +13,6 @@ url:
       for: "county:*"  #retrieves every county
       in: "state:__stateFIPS__" #requests a state 2-digit FIPS code that has to be supplied dynamically
       key: "__apiKey__" # make the __apiKey__ part of the url and substitute in individual api key
-   year_param: #not used in query string but rather part of api path
    key_param: key
 url_replace_fxn: Census_CBP_URL_helper
 call_response_fxn: census_cbp_call
