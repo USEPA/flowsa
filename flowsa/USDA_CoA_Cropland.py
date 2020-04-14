@@ -1,12 +1,13 @@
 # USDA_CoA_Cropland.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
+
 import io
 import pandas as pd
 import json
 import numpy as np
-from flowsa.datapull import make_http_request, format_url_values # load_from_requests_response,
-from flowsa.common import * #log, flow_by_activity_fields, withdrawn_keyword, US_FIPS, get_state_abbrevs
+#from flowsa.datapull import format_url_values
+from flowsa.common import *
 
 
 def CoA_Cropland_URL_helper(build_url, config, args):
@@ -27,7 +28,7 @@ def CoA_Cropland_URL_helper(build_url, config, args):
             url = build_url
             url = url.replace("__aggLevel__", c)
             url = url.replace("&state_alpha=__stateAlpha__", "")
-            url = format_url_values(url)
+            url = url.replace(" ", "%20")
             urls_cropland.append(url)
         else:
             # substitute in state acronyms for state and county url calls
@@ -35,15 +36,13 @@ def CoA_Cropland_URL_helper(build_url, config, args):
                 url = build_url
                 url = url.replace("__aggLevel__", c)
                 url = url.replace("__stateAlpha__", e)
-                url = format_url_values(url)
+                url = url.replace(" ", "%20")
                 urls_cropland.append(url)
     return urls_cropland
 
 
 def coa_cropland_call(url, coa_response):
     cropland_json = json.loads(coa_response.text)
-    #cropland_json = coa_dat
-    # Convert response to dataframe
     df_cropland = pd.DataFrame(data=cropland_json["data"])
     return df_cropland
 

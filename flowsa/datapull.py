@@ -18,7 +18,9 @@ from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,
     flow_by_activity_fields, get_all_state_FIPS_2
 from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
 
+
 from flowsa.USDA_CoA_Cropland import *
+from flowsa.USDA_CoA_Livestock import *
 from flowsa.USGS_Water_Use import *
 #from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
@@ -45,13 +47,13 @@ def store_flowbyactivity(result, source, year=None):
         log.error('Failed to save '+source + "_" + str(year) +' file.')
 
 
-def format_url_values(string):
-    """Replace spaces in URLs with appropriate symbol"""
-    if " " in string:
-        string = string.replace(" ", "%20")
-    # if "&" in string:
-    #    string = string.replace("&", "%26")
-    return string
+# def format_url_values(string):
+#     """Replace spaces in URLs with appropriate symbol"""
+#     if " " in string:
+#         string = string.replace(" ", "%20")
+#     # if "&" in string:
+#     #    string = string.replace("&", "%26")
+#     return string
 
 
 def make_http_request(url):

@@ -12,6 +12,7 @@ This script is designed to run with a configuration parameter
 """
 
 import pandas as pd
+import json
 #from flowsa.datapull import build_url, make_http_request, load_from_requests_response
 from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2
 
