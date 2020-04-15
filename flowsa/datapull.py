@@ -10,9 +10,7 @@ import argparse
 import yaml
 import requests
 import json
-import io
-import sys  # used to replace keywords in urls
-import csv
+
 
 from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path, \
     flow_by_activity_fields, get_all_state_FIPS_2
@@ -21,6 +19,7 @@ from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
 
 from flowsa.USDA_CoA_Cropland import *
 from flowsa.USDA_CoA_Livestock import *
+from flowsa.USDA_IWMS import *
 from flowsa.USGS_Water_Use import *
 #from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
@@ -47,15 +46,6 @@ def store_flowbyactivity(result, source, year=None):
         log.error('Failed to save '+source + "_" + str(year) +' file.')
 
 
-# def format_url_values(string):
-#     """Replace spaces in URLs with appropriate symbol"""
-#     if " " in string:
-#         string = string.replace(" ", "%20")
-#     # if "&" in string:
-#     #    string = string.replace("&", "%26")
-#     return string
-
-
 def make_http_request(url):
     r = []
     try:
@@ -67,15 +57,6 @@ def make_http_request(url):
     except requests.exceptions.HTTPError:
         log.error('Error in URL request!')
     return r
-
-
-# def load_from_requests_response(response):
-#     if config["format"] == 'json':
-#         response_json = json.loads(response.text)
-#         return response_json
-#     elif config["format"] == 'tab':
-#         response_txt = csv.reader(response.text, delimiter='\t')
-#         return response_txt
 
 
 def load_sourceconfig(source):

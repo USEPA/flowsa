@@ -84,7 +84,7 @@ def coa_cropland_parse(dataframe_list, args):
     # combine FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
     df['FIPS'] = df['state_fips_code'] + df['county_code']
-    df.loc[df['FIPS'] == '99000', 'FIPS'] = '00000'  # modify national level fips
+    df.loc[df['FIPS'] == '99000', 'FIPS'] = US_FIPS  # modify national level fips
     # use info from other columns to determine flow name
     df['FlowName'] = np.where(df["unit_desc"] == 'OPERATIONS', df["unit_desc"], df['statisticcat_desc'])
     # combine column information to create activity information, and create two new columns for activities

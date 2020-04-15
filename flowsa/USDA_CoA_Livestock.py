@@ -52,8 +52,6 @@ def coa_livestock_parse(dataframe_list, args):
     df = pd.concat(dataframe_list, sort=True)
     # # specify desired data based on domain_desc
     df = df[df['domain_desc'].str.contains("INVENTORY|TOTAL")]
-    # df = df[df['domain_desc'].str.contains("BEEF")] # DELETE THIS
-    # df = df[df['unit_desc'].str.contains("HEAD")] # DELETE THIS
     df = df[~df['domain_desc'].str.contains("ECONOMIC CLASS|NAICS|FARM SALES|AREA OPERATED")]
     # drop any specialized production practices
     df = df[df['prodn_practice_desc'] == 'ALL PRODUCTION PRACTICES']
@@ -69,7 +67,7 @@ def coa_livestock_parse(dataframe_list, args):
     # combine FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
     df['FIPS'] = df['state_fips_code'] + df['county_code']
-    df.loc[df['FIPS'] == '99000', 'FIPS'] = '00000'  # modify national level fips
+    df.loc[df['FIPS'] == '99000', 'FIPS'] = US_FIPS  # modify national level fips
     # combine column information to create activity information, and create two new columns for activities
     df['ActivityProducedBy'] = df['commodity_desc'] + ', ' + df['class_desc']  # drop this column later
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
@@ -79,10 +77,10 @@ def coa_livestock_parse(dataframe_list, args):
                             "year": "Year",
                             "CV (%)": "Spread",
                             "short_desc": "Description",
-                            "domaincat_desc": "Compartment"})
+                            "domain_desc": "Compartment"})
     # drop remaining unused columns
     df = df.drop(columns=['class_desc', 'commodity_desc', 'state_fips_code', 'county_code',
-                          'statisticcat_desc', 'prodn_practice_desc', 'domain_desc'])
+                          'statisticcat_desc', 'prodn_practice_desc', 'domaincat_desc'])
     # modify contents of flowamount column, "D" is supressed data, "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
     df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
