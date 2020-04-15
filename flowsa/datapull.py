@@ -88,11 +88,16 @@ def load_api_key(api_source):
 
 def build_url_for_query(urlinfo):
     """Creates a base url which requires string substitutions that depend on data source"""
-    params = ""
-    for k, v in urlinfo['url_params'].items():
-        params = params+'&'+k+"="+str(v)
+    # if there are url parameters defined in the yaml, then build a url, else use "base_url"
+    if 'url_params' in urlinfo:
+        params = ""
+        for k, v in urlinfo['url_params'].items():
+            params = params+'&'+k+"="+str(v)
 
-    build_url = "{0}{1}{2}".format(urlinfo['base_url'], urlinfo['api_path'], params)
+    if 'url_params' in urlinfo:
+        build_url = "{0}{1}{2}".format(urlinfo['base_url'], urlinfo['api_path'], params)
+    else:
+        build_url = "{0}".format(urlinfo['base_url'])
 
     # substitute year from arguments and users api key into the url
     if "__year__" in build_url:

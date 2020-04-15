@@ -1,0 +1,10 @@
+Animal Type,WUC_Minimum,WUC_25th_Percentile,WUC_Median,WUC_75th_Percentile,WUC_Maximum
+Dairy cows,18,20,35,35,65
+"Beef and other cattle, including calves",6.6,10,12,12,16
+Hogs and pigs,2,2.6,3.5,4.5,8.1
+Laying hens,0.03,0.05,0.06,0.09,0.12
+Broilers and other chickens,0.02,0.04,0.06,0.07,0.1
+Turkeys,0.05,0.08,0.1,0.12,0.22
+Sheep and lambs,0.7,1.5,2,2,3.3
+Goats,1,2,2,2,4
+"Horses (including ponies, mules, burrows, and donkeys)",8.5,12,12,12,15
