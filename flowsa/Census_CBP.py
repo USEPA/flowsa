@@ -14,7 +14,7 @@ This script is designed to run with a configuration parameter
 import pandas as pd
 import json
 #from flowsa.datapull import build_url, make_http_request, load_from_requests_response
-from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2
+from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2, datapath
 
 
 def Census_CBP_URL_helper(build_url, config, args):
@@ -45,6 +45,17 @@ def census_cbp_call(url, cbp_response):
 def census_cbp_parse(dataframe_list, args):
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
+    # Add year
+    df['Year'] = args["year"]
+    # add naics crosswalk dataframe and rename columns to match cbp, drop naics with more than 6 digits
+    naics_df = pd.read_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", dtype=str)
+    naics_df = naics_df.rename(columns={"NAICS_2007_Code": "NAICS2007", "NAICS_2012_Code": "NAICS2012",
+                                        "NAICS_2017_Code": "NAICS2017"})
+    naics_df = naics_df[~(naics_df.NAICS2012.str.len() > 6)]
+    # convert naics codes to naics 2012 and drop ecess naics code columns
+    if 'NAICS2017' in df:
+        df = pd.merge(df, naics_df, how='left', left_on='NAICS2017', right_on="NAICS2017").dropna()
+        df.drop(['NAICS2007', 'NAICS2017'], axis=1, inplace=True)
     # convert county='999' to line for full state
     df.loc[df['county'] == '999', 'county'] = '000'
     # Make FIPS as a combo of state and county codes
@@ -55,8 +66,6 @@ def census_cbp_parse(dataframe_list, args):
     df = df[df['NAICS2012'] != "00"]
     # Rename fields
     df = df.rename(columns={"NAICS2012": "ActivityProducedBy"})
-    # Add year
-    df['Year'] = args["year"]
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5

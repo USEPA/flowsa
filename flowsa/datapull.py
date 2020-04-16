@@ -23,6 +23,7 @@ from flowsa.USDA_IWMS import *
 from flowsa.USGS_Water_Use import *
 #from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
+from flowsa.USDA_CoA_ProdMarkValue import *
 
 
 def parse_args():
