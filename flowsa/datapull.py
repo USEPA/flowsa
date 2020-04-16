@@ -3,13 +3,37 @@
 # coding=utf-8
 """
 Methods for pulling data from http sources
+File configuration requires a year for the data pull and a data source (yaml file name) as parameters
 """
+import pandas as pd
+import argparse
 import yaml
 import requests
 import json
 
-from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path
-url_final_list = []
+
+from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path, \
+    flow_by_activity_fields, get_all_state_FIPS_2
+from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
+
+
+from flowsa.USDA_CoA_Cropland import *
+from flowsa.USDA_CoA_Livestock import *
+from flowsa.USDA_IWMS import *
+from flowsa.USGS_Water_Use import *
+from flowsa.BLS_QCEW import *
+from flowsa.Census_CBP import *
+from flowsa.USDA_CoA_ProdMarkValue import *
+
+
+def parse_args():
+    """Make year and source script parameters"""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-y", "--year", required=True, help="Year for data pull and save")
+    ap.add_argument("-s", "--source", required=True, help="Data source code to pull and save")
+    args = vars(ap.parse_args())
+    return args
+
 
 def store_flowbyactivity(result, source, year=None):
     """Prints the data frame into a parquet file."""
@@ -18,9 +42,10 @@ def store_flowbyactivity(result, source, year=None):
     else:
         f = outputpath + source + '.parquet'
     try:
-        result.to_parquet(f,engine="pyarrow")
+        result.to_parquet(f, engine="pyarrow")
     except:
         log.error('Failed to save '+source + "_" + str(year) +' file.')
+
 
 def make_http_request(url):
     r = []
@@ -34,11 +59,13 @@ def make_http_request(url):
         log.error('Error in URL request!')
     return r
 
+
 def load_sourceconfig(source):
     sfile = sourceconfigpath+source+'.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
+
 
 def load_api_key(api_source):
     """
@@ -50,213 +77,109 @@ def load_api_key(api_source):
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
-    keyfile = local_storage_path+'/'+ api_source + '_API_KEY.txt'
+    keyfile = local_storage_path + '/' + api_source + '_API_KEY.txt'
     key = ""
     try:
-        with open(keyfile,mode='r') as keyfilecontents:
+        with open(keyfile, mode='r') as keyfilecontents:
             key = keyfilecontents.read()
     except IOError:
         log.error("Key file not found.")
     return key
 
-def load_json_from_requests_response(response_w_json):
-    response_json = json.loads(response_w_json.text)
-    return response_json
 
+def build_url_for_query(urlinfo):
+    """Creates a base url which requires string substitutions that depend on data source"""
+    # if there are url parameters defined in the yaml, then build a url, else use "base_url"
+    if 'url_params' in urlinfo:
+        params = ""
+        for k, v in urlinfo['url_params'].items():
+            params = params+'&'+k+"="+str(v)
 
-def get_year_from_url(url):
-    if "year=" in url:
-        year_split = url.split("year=")
-        year_only = year_split[1].split("&")
-        return year_only[0]
-    else: 
-        return None
-
-
-
-def format_url_values(string):
-    if " " in string:
-        string = string.replace(" ", "%20")
-    if "&" in string:
-        string = string.replace("&", "%26")
-    return string
-
-def check_url_type(url_obj):
-    if type(url_obj) is list:
-        return "list"
-    elif type(url_obj) is str:
-        return "string"
-    elif type(url_obj) is dict:
-        return "dict"
+    if 'url_params' in urlinfo:
+        build_url = "{0}{1}{2}".format(urlinfo['base_url'], urlinfo['api_path'], params)
     else:
-        return "None of the above"
+        build_url = "{0}".format(urlinfo['base_url'])
 
-def generate_url(url_order, create_url, type_urls, source):
-    if url_final_list == []:
-            if type(create_url) is str:
-                if url_order == "key":
-                    key_value = load_api_key(source)
-                    create_url = + create_url + "=" + key_value
-                url_final_list.append(format_url_values(create_url))
-            #YAMLS currently do not have a dictonary or list as the start of the URL. 
-            # Due to time conciderations this has not been tested.
-            # elif type(create_url) is list:
-            #     for u in create_url:
-            #         url_final_list.append(u)
-            # elif type(create_url) is dict:
-            #     dict_list = generateDict(create_url)
-            #     for d in dict_list:
-            #         url_final_list.append(d)
+    # substitute year from arguments and users api key into the url
+    if "__year__" in build_url:
+        build_url = build_url.replace("__year__", args["year"])
+    if "__apiKey__" in build_url:
+        userAPIKey = load_api_key(config['api_name'])
+        build_url = build_url.replace("__apiKey__", userAPIKey)
+    return build_url
+
+
+def assemble_urls_for_query(build_url, config, args):
+    """Calls on helper functions defined in source.py files to replace parts of the url string"""
+    if hasattr(sys.modules[__name__], config["url_replace_fxn"]):
+        urls = getattr(sys.modules[__name__], config["url_replace_fxn"])(build_url, config, args)
+        return urls
+
+
+def call_urls(url_list):
+    """This method calls all the urls that have been generated.
+    It then calls the processing method to begin processing the returned data. The processing method is specific to
+    the data source, so this function relies on a function in source.py"""
+    data_frames_list = []
+    for url in url_list:
+        log.info("Calling " + url)
+        r = make_http_request(url)
+        if hasattr(sys.modules[__name__], config["call_response_fxn"]):
+            df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r)
+        data_frames_list.append(df)
+    return data_frames_list
+
+
+def parse_data(dataframe_list, args):
+    """Calls on functions defined in source.py files, as parsing rules are specific to the data source."""
+    if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
+        df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list, args)
+        return df
+
+
+if __name__ == '__main__':
+    # assign arguments
+    args = parse_args()
+    # assign yaml parameters
+    config = load_sourceconfig(args['source'])
+    # build the base url with strings that will be replaced
+    build_url = build_url_for_query(config['url'])
+    # replace parts of urls with specific instructions from source.py
+    urls = assemble_urls_for_query(build_url, config, args)
+    # create a list with data from all source urls
+    dataframe_list = call_urls(urls)
+    # concat the dataframes and parse data with specific instructions from source.py
+    df = parse_data(dataframe_list, args)
+    # log that data was retrieved
+    log.info("Retrieved data for " + args['source'])
+    # if there is specific metadata in source.py, call on it to split dataframe into multiple dataframes
+    if 'flow_metadata' in config:
+        if hasattr(sys.modules[__name__], config["flow_metadata"]):
+            md = getattr(sys.modules[__name__], config["flow_metadata"])
+            dfs = {}
+            for k, v in md.items():
+                flow_df = df
+                flow_df['FlowAmount'] = flow_df[k]
+                drop_fields = list(md.keys())
+                flow_df = df.drop(columns=drop_fields)
+                for k2, v2 in v.items():
+                    flow_df[k2] = v2
+                # add missing dataframe fields (also converts columns to desired datatype)
+                flow_df = add_missing_flow_by_activity_fields(flow_df)
+                dfs[k] = flow_df
+                parquet_name = args['source'] + "_" + str(k) + '_' + args['year']
+                store_flowbyactivity(flow_df, parquet_name)
+    # if there isn't source specific metadata, add missing flowbyactivity fields and store data as parquet
     else:
-        if type(create_url) is list:
-            for i in range(len(url_final_list)):
-                url_previous = url_final_list[i]
-                for j in range(len(create_url)):
-                    url = url_previous + format_url_values(create_url[j]) + "/"
-                    if j == 0:
-                        url_final_list[i] = url
-                    else:
-                        url_final_list.append(url)
-        elif type(create_url) is str:
-            for i in range(len(url_final_list)):
-                if url_order == "key":
-                    key_value = load_api_key(source)
-                    create_url = create_url + "=" + key_value
-                url = url_final_list[i]
-                url = url + format_url_values(create_url)
-                url_final_list[i] = url
-        elif type(create_url) is dict:
-            dict_list = generate_dict(create_url, url_order)
-
-            for i in range(len(url_final_list)):
-                url_previous = url_final_list[i]
-                for j in range(len(dict_list)):
-                    if url_order == "url_params":
-                        url = url_previous + dict_list[j]
-                    else:
-                        url = url_previous + dict_list[j] + "/"
-                    
-                    if j == 0:
-                        url_final_list[i] = url
-                    else:
-                        url_final_list.append(url)
-    return url_final_list
+        # add missing dataframe fields (also converts columns to desired datatype)
+        flow_df = add_missing_flow_by_activity_fields(df)
+        parquet_name = args['source'] + '_' + args['year']
+        store_flowbyactivity(flow_df, parquet_name)
 
 
-def generate_dict(dict_values, url_order):
-    dictonary_list = []
-    for k in dict_values:
-        if dictonary_list == []:
-            if type(dict_values[k]) is list:
-                if url_order == "url_params":
-                    for u in dict_values[k]:
-                        dictonary_list.append("&" + k + "=" + format_url_values(dict_values[k]))
-                else:
-                    for u in dict_values[k]:
-                        dictonary_list.append(format_url_values(dict_values[k]) + "/")
-            elif type(dict_values[k]) is str:
-                 if url_order == "url_params":
-                    dictonary_list.append("&" + k + "=" + format_url_values(dict_values[k]))
-                 else:
-                    dictonary_list.append(format_url_values(dict_values[k]) + "/")
- 
-            #YAMLS currently do not have a dictonary of dictionaries but if we do it will involve recursion
-            #This is the start of this method. Due to time conciderations this has not been tested.
-            # elif type(d) is dict:
-            #     dict_list = generateDict(create_url)
-            #     for d in dict_list:
-            #         dictonary_list.append(d)
-        else:
-            if type(dict_values[k]) is list:
-                for i in range(len(dictonary_list)):
-                    previous_dictonary_list = dictonary_list[i]
-                    
-                    if url_order == "url_params":
-                        values_list = dict_values[k]
-                        for j in range(len(dict_values[k])):
-                            url = previous_dictonary_list + "&" + k + "=" + format_url_values(values_list[j])
-                            if j == 0:
-                                dictonary_list[i] = url
-                            else:
-                                dictonary_list.append(url)
-                    else:
-
-                        for j in range(len(dict_values[k])):
-                            url = previous_dictonary_list + format_url_values(values_list[j]) + "/"
-                            if j == 0:
-                                dictonary_list[i] = url
-                            else:
-                                dictonary_list.append(url)                        
-            elif type(dict_values[k]) is str:
-                for i in range(len(dictonary_list)):
-                    if url_order == "url_params":
-                        previous_dictonary_list = dictonary_list[i]
-                        dictonary_list[i] = previous_dictonary_list + "&" + k + "=" + dict_values[k]
-                    else:
-                        previous_dictonary_list = dictonary_list[i]
-                        dictonary_list[i] = previous_dictonary_list + dict_values[k] + "/"
-        #YAMLS currently do not have a dictonary of dictionaries but if we do it will involve recursion
-        #This is the start of this method. Due to time conciderations this has not been tested.
-            # elif type(d) is dict:
-            #     dict_list = generateDict(d)
-            #     for i in range(len(dictonary_list)):
-            #         url = dictonary_list[i]
-            #         for j in range(len(dict_list)):
-            #             url = url + dict_list[i]
-            #             if j == 0:
-            #                 dictonary_list[i] = url
-            #             else:
-            #                 dictonary_list.append(url)
-    return dictonary_list
 
 
-def build_url_list(config, source):
-    """
-    
-    :param config: 
-    :return: list of urls
-    """
-    for k,v in config.items():
-        api_source = ""
-        if k == "api_name":
-            api_source = v
-        else:
-            api_source = source
-        if k == "url":
-            url_list = []
-            url_order = []
-            for g in v:
-                if g == "county":
-                    geo = v[g]
-                    for r in geo:
-                        if r == "url_order":
-                            url_order = geo[r]
-                            create_url = []
-                            type_urls =[]
-                            for p in url_order:
-                                create_url.append(geo[p])
-                                type_urls.append(check_url_type(geo[p]))
-                elif g == "state":
-                    geo = v[g]
-                    for r in geo:
-                        if r == "url_order":
-                            url_order = geo[r]
-                            create_url = []
-                            type_urls =[]
-                            for p in url_order:
-                                create_url.append(geo[p])
-                                type_urls.append(check_url_type(geo[p]))
-                elif g == "national":
-                    geo = v[g]
-                    for r in geo:
-                        if r == "url_order":
-                            url_order = geo[r]
-                            create_url = []
-                            type_urls =[]
-                            for p in url_order:
-                                create_url.append(geo[p])
-                                type_urls.append(check_url_type(geo[p]))
-                               
-            for i in range(len(url_order)):
-                url_list = generate_url(url_order[i], create_url[i], type_urls[i], api_source)
-    return url_list
+
+
+
+
