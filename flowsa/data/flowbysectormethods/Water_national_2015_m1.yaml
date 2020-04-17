@@ -12,6 +12,7 @@ flowbyactivity_sources:
         activity_set:
             names: "Industrial"
             allocation_source: "BLS_QCEW_EMP"
+            allocation_source_class: "Employment"
             allocation_source_year: 2015
             allocation_flow: "Number of employees"
             allocation_method: proportional
