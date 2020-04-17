@@ -36,7 +36,10 @@ def load_method(method_name):
 # Very important to note that values have not been allocated but are repeated at this point
 
 
-# Removing records that we don't need
+def allocate_by_sector(fba_w_sectors,activity_set):
+    return None
+
+
 
 def main(method_name):
     """
@@ -56,21 +59,31 @@ def main(method_name):
         flows = flows.drop(columns='Description')
         # fill null values
         flows = flows.fillna(value=fba_fill_na_dict)
+
+        #Add sectors
+        flows = add_sectors_to_flowbyactivity(flows,
+                                              sectorsourcename=method['target_sector_source'])
+
         activities = v['activity_sets']
         for aset,attr in activities.items():
             # subset by named activities
             names = [attr['names']]
-            flows = flows[(flows[fba_activity_fields[0]].isin(names)) |
+            flow_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
                           (flows[fba_activity_fields[1]].isin(names))]
             # Reset index values after subset
-            flows = flows.reset_index()
+            flow_subset = flow_subset.reset_index()
             # aggregate geographically
             from_scale = v['geoscale_to_use']
             to_scale = method['target_geoscale']
-            flows = agg_by_geoscale(flows, from_scale, to_scale)
+            flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale)
 
+            fba_allocation = flowsa.getFlowByActivity(flowclass=attr['allocation_source_class'],
+                                                      datasource=attr['allocation_source'],
+                                                      years=[attr['allocation_source_year']])
+            fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
+                                  sectorsourcename=method['target_sector_source'])
+            #Will fail because crosswalk is not present
 
-        flows = add_sectors_to_flowbyactivity(flows,sectorsourcename=method['target_sector_source'])
 
     return flows
 
