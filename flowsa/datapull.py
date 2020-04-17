@@ -24,6 +24,7 @@ from flowsa.USGS_Water_Use import *
 from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
 from flowsa.USDA_CoA_ProdMarkValue import *
+#from flowsa.EIA_CBECS import *
 
 
 def parse_args():
@@ -111,9 +112,14 @@ def build_url_for_query(urlinfo):
 
 def assemble_urls_for_query(build_url, config, args):
     """Calls on helper functions defined in source.py files to replace parts of the url string"""
-    if hasattr(sys.modules[__name__], config["url_replace_fxn"]):
-        urls = getattr(sys.modules[__name__], config["url_replace_fxn"])(build_url, config, args)
-        return urls
+    if "url_replace_fxn" in config:
+        if hasattr(sys.modules[__name__], config["url_replace_fxn"]):
+            urls = getattr(sys.modules[__name__], config["url_replace_fxn"])(build_url, config, args)
+    else:
+        urls = []
+        urls.append(build_url)
+    return urls
+
 
 
 def call_urls(url_list):
