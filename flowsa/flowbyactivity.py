@@ -110,8 +110,11 @@ def add_missing_flow_by_activity_fields(flowbyactivity_partial_df):
     """
     for k in flow_by_activity_fields.keys():
         if k not in flowbyactivity_partial_df.columns:
-            flowbyactivity_partial_df[k]=None
-    #Resort it so order is correct
+            flowbyactivity_partial_df[k] = None
+    # convert data types to match those defined in flow_by_activity_fields
+    for k, v in flow_by_activity_fields.items():
+        flowbyactivity_partial_df[k] = flowbyactivity_partial_df[k].astype(v[0]['dtype'])
+    # Resort it so order is correct
     flowbyactivity_partial_df = flowbyactivity_partial_df[flow_by_activity_fields.keys()]
     return flowbyactivity_partial_df
 

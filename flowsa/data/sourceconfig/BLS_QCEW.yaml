@@ -1,6 +1,19 @@
+#For calling BLS Quarterly Census of Employment and Wages to get establishments, employment, annual payroll
+#by NAICS industry for each state and requested year.
 ---
+api_name: BLS
+api_key_required: false
+format: csv  # comma delineated data
 url:
-   url_order: [base_url, url_path, url_params]
-   base_url: "http://data.bls.gov/cew/data/api/"
-   url_path:
-   url_params:
+  base_url: "http://data.bls.gov/cew/data/api/__year__/a/area/__areaFIPS__.csv"
+url_replace_fxn: BLS_QCEW_URL_helper
+call_response_fxn: bls_qcew_call
+parse_response_fxn: bls_qcew_parse
+flow_metadata: qcew_flow_specific_metadata
+years:
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018

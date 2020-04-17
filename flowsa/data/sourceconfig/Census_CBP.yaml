@@ -7,14 +7,17 @@ api_key_required: true
 format: json
 url:
    base_url: "http://api.census.gov/data/"
-   api_path: "__year__ /cbp?" # __year__ is used to trigger a replace function to substitute in year
+   api_path: "__year__/cbp?" # __year__ is used to trigger a replace function to substitute in year
    url_params:
-      get: "NAICS2012,ESTAB,EMP,PAYANN"
+      get: "__NAICS__,ESTAB,EMP,PAYANN" #replace __NAICS__ based on year of data. >=2017 is NAICS2017, 2012-2016 is NAICS2012
       for: "county:*"  #retrieves every county
       in: "state:__stateFIPS__" #requests a state 2-digit FIPS code that has to be supplied dynamically
-   year_param: #not used in query string but rather part of api path
+      key: "__apiKey__" # make the __apiKey__ part of the url and substitute in individual api key
    key_param: key
-url_replace_fxn:
+url_replace_fxn: Census_CBP_URL_helper
+call_response_fxn: census_cbp_call
+parse_response_fxn: census_cbp_parse
+flow_metadata: cbp_flow_specific_metadata
 years:
    - 2010
    - 2011
