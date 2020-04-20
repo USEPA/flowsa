@@ -87,6 +87,8 @@ activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
                    }
 def read_stored_FIPS():
     FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
+    # ensure that FIPS retain leading 0s
+    FIPS_df['FIPS'] = FIPS_df['FIPS'].apply('{:0>5}'.format)
     return FIPS_df
 
 def getFIPS(state=None, county=None):
