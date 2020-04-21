@@ -10,7 +10,6 @@
      source_desc: "CENSUS"
      sector_desc: "ANIMALS %26 PRODUCTS"
      statisticcat_desc: "INVENTORY&statisticcat_desc=OPERATIONS" # want two categories
-     #unit_desc: "ACRES&unit_desc=OPERATIONS" # want two unit types
      agg_level_desc: "__aggLevel__" # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL", "STATE", or "COUNTY"
      state_alpha: "__stateAlpha__" # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
      year: "__year__" # __year__ is used to trigger a replace function to substitute in year

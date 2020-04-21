@@ -13,6 +13,8 @@ from flowsa.common import datapath
 from rpy2.robjects.packages import importr
 from rpy2.robjects import pandas2ri
 
+
+# does not work due to issues with rpy2. Crosswalk was manually copied from useeior and added as csv (4/18/2020)
 pandas2ri.activate()
 
 useeior = importr('useeior')
