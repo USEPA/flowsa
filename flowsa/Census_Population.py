@@ -17,7 +17,7 @@ from flowsa.common import US_FIPS
 
 
 def Census_pop_URL_helper(build_url, config, args):
-    urls = []
+    urls = []  # todo modify url helper to create correct urls for 2010 and earlier
     for c in config['agg_levels']:
         url = build_url
         url = url.replace("__aggLevel__", c)

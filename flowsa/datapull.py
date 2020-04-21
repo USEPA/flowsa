@@ -24,7 +24,7 @@ from flowsa.USGS_Water_Use import *
 from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
 from flowsa.USDA_CoA_ProdMarkValue import *
-#from flowsa.EIA_CBECS import *
+from flowsa.EIA_CBECS import *
 from flowsa.Stat_Canada import *
 from flowsa.Census_Population import *
 
