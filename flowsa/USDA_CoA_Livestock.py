@@ -1,6 +1,7 @@
 # USDA_CoA_Livestock.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
+
 import io
 import pandas as pd
 import json
@@ -94,8 +95,8 @@ def coa_livestock_parse(dataframe_list, args):
     df.loc[df['Spread'] == "", 'Spread'] = None # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
     # # Add hardcoded data
-    df['Class'] = "Land"
-    df['SourceName'] = "USDA_CoA_Cropland"
+    df['Class'] = "Other"
+    df['SourceName'] = "USDA_CoA_Livestock"
     df['Unit'] = "p"
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = None
