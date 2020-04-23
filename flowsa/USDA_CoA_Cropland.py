@@ -52,13 +52,12 @@ def coa_cropland_parse(dataframe_list, args):
     (irrigated and total)."""
     df = pd.concat(dataframe_list, sort=True)
     # specify desired data based on domain_desc
-    df = df[df['domain_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'TOTAL'])]
+    df = df[df['domain_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'TOTAL', 'AREA BEARING & NON-BEARING'])]
     # Many crops are listed as their own commodities as well as grouped within a broader category (for example, orange
     # trees are also part of orchards). As this dta is not needed, takes up space, and can lead to double counting if
     # included, want to drop these unused columns
     # subset dataframe into the 5 crop types and drop rows
-    # crop totals: keep all data
-    df_ct = df[df['group_desc'] == 'CROP TOTALS']
+    # crop totals: drop all data
     # field crops: don't want certain commodities
     df_fc = df[df['group_desc'] == 'FIELD CROPS']
     df_fc = df_fc[~df_fc['commodity_desc'].isin(['GRASSES', 'GRASSES & LEGUMES, OTHER', 'LEGUMES', 'HAY', 'HAYLAGE'])]
@@ -69,11 +68,11 @@ def coa_cropland_parse(dataframe_list, args):
     # horticulture: only want a few commodities
     df_h = df[df['group_desc'] == 'HORTICULTURE']
     df_h = df_h[df_h['commodity_desc'].isin(['CUT CHRISTMAS TREES', 'SHORT TERM WOODY GROUPS'])]
-    # vegetables: only want a few commodities
+    #vegetables: only want a few commodities
     df_v = df[df['group_desc'] == 'VEGETABLES']
     df_v = df_v[df_v['commodity_desc'].isin(['VEGETABLE TOTALS'])]
     # concat data frames
-    df = pd.concat([df_ct, df_fc, df_ftn, df_h, df_v])
+    df = pd.concat([df_fc, df_ftn, df_h, df_v])
     # drop unused columns
     df = df.drop(columns=['agg_level_desc', 'domain_desc', 'location_desc', 'state_alpha', 'sector_desc',
                           'country_code', 'begin_code', 'watershed_code', 'reference_period_desc',
