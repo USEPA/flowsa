@@ -53,8 +53,12 @@ if __name__ == '__main__':
 
     # new column includes state fips
     df3 = df2.merge(df_state[["State", "FIPS"]], how="left", left_on="State", right_on="State")
-    # if fips is nan, replace with value from another column and drop state name
-    df3.loc[df3['FIPS'].isnull(), 'FIPS'] = df3['State']
+
+    # data includes "process at sea", which is not associated with any fips, assign value of '99'
+    # if fips is nan, add the state name to description and drop state name
+    df3['Description'] = None
+    df3.loc[df3['State'] == 'process at sea', 'Description'] = df3['State']
+    df3.loc[df3['State'] == 'process at sea', 'FIPS'] = 99
     df4 = df3.drop('State', axis=1)
 
     # rename columns to match flowbyactivity format
