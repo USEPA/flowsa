@@ -1,0 +1,73 @@
+# write_NOAA_fisheries_from_csv.py (scripts)
+# !/usr/bin/env python3
+# coding=utf-8
+# ingwersen.wesley@epa.gov
+
+"""
+NOAA fisheries data obtained from: https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200
+                               on: April 28, 2020
+
+Parameters used to select data:
+Landings
+Data set = Commercial
+Year = 2012 --2018
+Region Type = States
+State Landed = Select All
+Species = "ALL SPECIES"
+
+Report Type: "7. Landings by States"
+
+Data output saved as csv, retaining assigned file name "foss_landings.csv"
+"""
+
+from flowsa.common import *
+import pandas as pd
+from flowsa.datapull import store_flowbyactivity
+from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
+
+
+# 2012--2018 fisheries data at state level
+csv_load = datapath + "foss_landings.csv"
+
+
+if __name__ == '__main__':
+    # Read directly into a pandas df
+    df_raw = pd.read_csv(csv_load)
+
+    # read state fips from common.py
+    df_state = get_state_FIPS()
+    df_state['State'] = df_state["State"].str.lower()
+
+    # modify fish state names to match those from common
+    df = df_raw.drop('Sum Pounds', axis=1)
+    df['State'] = df["State"].str.lower()
+
+    # noaa differentiates between florida east and west, which is not necessary for our purposes
+    df['State'] = df['State'].str.replace(r'-east', '')
+    df['State'] = df['State'].str.replace(r'-west', '')
+
+    # sum florida data after casting rows as numeric
+    df['Sum Dollars'] = df['Sum Dollars'].str.replace(r',', '')
+    df["Sum Dollars"] = df["Sum Dollars"].apply(pd.to_numeric)
+    df2 = df.groupby(['Year', 'State'], as_index=False)[["Sum Dollars"]].agg("sum")
+
+    # new column includes state fips
+    df3 = df2.merge(df_state[["State", "FIPS"]], how="left", left_on="State", right_on="State")
+    # if fips is nan, replace with value from another column and drop state name
+    df3.loc[df3['FIPS'].isnull(), 'FIPS'] = df3['State']
+    df4 = df3.drop('State', axis=1)
+
+    # rename columns to match flowbyactivity format
+    df4 = df4.rename(columns={"Sum Dollars": "FlowAmount"})
+
+    # hardcode data
+    df4["Class"] = "Money"
+    df4["SourceName"] = "NOAA_Landings"
+    df4["FlowName"] = None
+    df4["Unit"] = "$"
+    df4["ActivityProducedBy"] = "All Species"
+
+    # add missing dataframe fields (also converts columns to desired datatype)
+    flow_df = add_missing_flow_by_activity_fields(df4)
+    parquet_name = 'NOAA_Landings_2018'
+    store_flowbyactivity(flow_df, parquet_name)

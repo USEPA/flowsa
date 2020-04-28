@@ -126,7 +126,7 @@ def getFIPS(state=None, county=None):
 
 
 def clean_str_and_capitalize(s):
-    """Add docstring in public function."""  # TODO add docstring.
+    """Trim whitespace, modify string so first letter capitalized."""
     if s.__class__ == str:
         s = s.strip()
         s = s.lower()
