@@ -3,7 +3,7 @@ Helper functions for flowbyactivity data
 """
 import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
-    flow_by_activity_fields
+    flow_by_activity_fields, load_sector_crosswalk, sector_source_name
 
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
@@ -130,4 +130,27 @@ def check_fba_fields(flowbyactivity_df):
             log.debug("standard " + k + " data type is " + str(v[0]['dtype']))
         except:
             log.debug("Failed to find field ",k," in fba")
+
+def check_if_activities_match_sectors(fba):
+    """
+    Checks if activities in flowbyactivity that appear to be like sectors are actually sectors
+    :param fba: a flow by activity dataset
+    :return: A list of activities not marching the default sector list or text indicating 100% match
+    """
+    # Get list of activities in a flowbyactivity file
+    activities = []
+    for f in  fba_activity_fields:
+        activities.extend(fba[f])
+    activities.remove("None")
+
+    # Get list of module default sectors
+    flowsa_sector_list = list(load_sector_crosswalk()[sector_source_name])
+    activities_missing_sectors = set(activities) - set(flowsa_sector_list)
+
+    if (len(activities_missing_sectors) > 0):
+        log.info(str(len(activities_missing_sectors)) + " activities not matching sectors in default " + sector_source_name + " list.")
+        return activities_missing_sectors
+    else:
+        log.info("All activities match sectors in " + sector_source_name + " list.")
+        return None
 
