@@ -38,6 +38,12 @@ flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
 #Sets default Sector Source Name
 sector_source_name = 'NAICS_2012_Code'
 
+def load_sector_crosswalk():
+    cw = pd.read_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", dtype="str")
+    return cw
+
+
+
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'SourceName': [{'dtype': 'str'}, {'required': True}],
                            'FlowName': [{'dtype': 'str'}, {'required': True}],
