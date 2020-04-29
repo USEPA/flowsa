@@ -73,5 +73,5 @@ if __name__ == '__main__':
 
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = add_missing_flow_by_activity_fields(df4)
-    parquet_name = 'NOAA_Landings_2018'
+    parquet_name = 'NOAA_FisheryLandings_2012-2018'
     store_flowbyactivity(flow_df, parquet_name)
