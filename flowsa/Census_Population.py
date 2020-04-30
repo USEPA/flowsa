@@ -25,7 +25,7 @@ def Census_pop_URL_helper(build_url, config, args):
     return urls
 
 
-def census_pop_call(url, response_load):
+def census_pop_call(url, response_load, args):
     json_load = json.loads(response_load.text)
     # convert response to dataframe
     df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])

@@ -40,7 +40,7 @@ def CoA_Livestock_URL_helper(build_url, config, args):
     return urls_livestock
 
 
-def coa_livestock_call(url, coa_response):
+def coa_livestock_call(url, coa_response, args):
     livestock_json = json.loads(coa_response.text)
     # Convert response to dataframe
     df_livestock = pd.DataFrame(data=livestock_json["data"])

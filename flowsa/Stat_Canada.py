@@ -7,10 +7,10 @@ Pulls Statistics Canada data on water intake and discharge for 3 digit NAICS fro
 
 import pandas as pd
 import io
-import zipfile #import ZipFile
+import zipfile
 from flowsa.common import *
 
-def sc_call(url, sc_response):
+def sc_call(url, sc_response, args):
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(sc_response.content), "r") as f:

@@ -9,7 +9,7 @@ import pandas as pd
 import io
 from flowsa.common import US_FIPS, withdrawn_keyword
 
-def eia_cbecs_call(url, response_load):
+def eia_cbecs_call(url, response_load, args):
     # Convert response to dataframe
     df_raw = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
     # skip rows and remove extra rows at end of dataframe

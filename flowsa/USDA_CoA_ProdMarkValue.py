@@ -26,7 +26,7 @@ def pmv_URL_helper(build_url, config, args):
     return urls
 
 
-def pmv_call(url, pmv_response):
+def pmv_call(url, pmv_response, args):
     pmv_json = json.loads(pmv_response.text)
     # Convert response to dataframe
     df_pmv = pd.DataFrame(data=pmv_json["data"])

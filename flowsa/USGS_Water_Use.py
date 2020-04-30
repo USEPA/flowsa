@@ -35,7 +35,7 @@ def usgs_URL_helper(build_url, config, args):
     return urls_usgs
 
 
-def usgs_call(url, usgs_response):
+def usgs_call(url, usgs_response, args):
     """Remove the metadata at beginning of files (lines start with #)"""
     usgs_data = []
     metadata = []

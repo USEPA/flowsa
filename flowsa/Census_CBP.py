@@ -34,7 +34,7 @@ def Census_CBP_URL_helper(build_url, config, args):
     return urls_census
 
 
-def census_cbp_call(url, cbp_response):
+def census_cbp_call(url, cbp_response, args):
     cbp_json = json.loads(cbp_response.text)
     # convert response to dataframe
     df_census = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])

@@ -22,7 +22,7 @@ def iwms_url_helper(build_url, config, args):
     return urls_iwms
 
 
-def iwms_call(url, response):
+def iwms_call(url, response, args):
     iwms_json = json.loads(response.text)
     # Convert response to dataframe
     df_iwms = pd.DataFrame(data=iwms_json["data"])
