@@ -28,13 +28,11 @@ def CoA_Cropland_URL_helper(build_url, config, args):
                 url = url.replace("__aggLevel__", x)
                 url = url.replace("__secLevel__", y)
                 url = url.replace("&state_alpha=__stateAlpha__", "")
-                # if y == 'CROPS':
-                #     url = url.replace("&commmodity_desc=AG LAND", "")
                 if y == "ECONOMICS":
                     url = url.replace(
                         "AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc=AREA BEARING %26 NON-BEARING",
                         "AREA")
-                else:  # if y == "CROPS":
+                else:
                     url = url.replace("&commmodity_desc=AG LAND", "")
                 url = url.replace(" ", "%20")
                 urls.append(url)
@@ -45,13 +43,11 @@ def CoA_Cropland_URL_helper(build_url, config, args):
                     url = url.replace("__aggLevel__", x)
                     url = url.replace("__secLevel__", y)
                     url = url.replace("__stateAlpha__", z)
-                    # if y == 'CROPS':
-                    #     url = url.replace("&commmodity_desc=AG LAND", "")
                     if y == "ECONOMICS":
                         url = url.replace(
                             "AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc=AREA BEARING %26 NON-BEARING",
                             "AREA")
-                    else:  # if y == "CROPS":
+                    else:
                         url = url.replace("&commmodity_desc=AG LAND", "")
                     url = url.replace(" ", "%20")
                     urls.append(url)
