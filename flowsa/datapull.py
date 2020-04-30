@@ -124,7 +124,7 @@ def assemble_urls_for_query(build_url, config, args):
 
 
 
-def call_urls(url_list):
+def call_urls(url_list, args):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
@@ -133,7 +133,7 @@ def call_urls(url_list):
         log.info("Calling " + url)
         r = make_http_request(url)
         if hasattr(sys.modules[__name__], config["call_response_fxn"]):
-            df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r)
+            df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r, args)
         data_frames_list.append(df)
     return data_frames_list
 
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     # replace parts of urls with specific instructions from source.py
     urls = assemble_urls_for_query(build_url, config, args)
     # create a list with data from all source urls
-    dataframe_list = call_urls(urls)
+    dataframe_list = call_urls(urls, args)
     # concat the dataframes and parse data with specific instructions from source.py
     df = parse_data(dataframe_list, args)
     # log that data was retrieved
