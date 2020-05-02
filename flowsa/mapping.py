@@ -5,7 +5,8 @@
 Contains mapping functions
 """
 import pandas as pd
-from flowsa.common import datapath, sector_source_name, activity_fields
+from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
+    load_sector_crosswalk
 
 def get_activitytosector_mapping(source):
     """
@@ -25,12 +26,26 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :return: a df with activity fields mapped to 'sectors'
     """
     mappings = []
+
+    #First check if source activities are NAICS like - if so make it into a mapping file
+
+    cat = load_source_catalog()
+
     for s in pd.unique(flowbyactivity_df['SourceName']):
-        mapping = get_activitytosector_mapping(s)
-        #filter by SectorSourceName of interest
-        mapping = mapping[mapping['SectorSourceName']==sectorsourcename]
-        #drop SectorSourceName
-        mapping = mapping.drop(columns=['SectorSourceName'])
+        src_info = cat[s]
+        if src_info['sector-like_activities']:
+            cw = load_sector_crosswalk()
+            sectors = cw.loc[:,[sector_source_name]]
+            #Create mapping df that's just the sectors at first
+            mapping = sectors.drop_duplicates()
+            #Add the sector twice as activities so mapping is identical
+            mapping['Activity'] = sectors[sector_source_name]
+        else:
+            mapping = get_activitytosector_mapping(s)
+            #filter by SectorSourceName of interest
+            mapping = mapping[mapping['SectorSourceName']==sectorsourcename]
+            #drop SectorSourceName
+            mapping = mapping.drop(columns=['SectorSourceName'])
         mappings.append(mapping)
     mappings_df = pd.concat(mappings)
     #Merge in with flowbyactivity by
