@@ -7,6 +7,7 @@
 
 import sys
 import os
+import yaml
 import pandas as pd
 import logging as log
 import appdirs
@@ -42,7 +43,11 @@ def load_sector_crosswalk():
     cw = pd.read_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", dtype="str")
     return cw
 
-
+def load_source_catalog():
+    sources= datapath+'source_catalog.yaml'
+    with open(sources, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'SourceName': [{'dtype': 'str'}, {'required': True}],
