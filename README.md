@@ -29,6 +29,9 @@ Other | Misc flows used for supporting data | _varies_ | All types |
 
 ## FlowByActivity Datasets
  
+Source data are imported and formatted into FlowByActivity datasets. The source data are only modified to meet column 
+formatting criteria, meaning units are not standardized across "Class" types.
+ 
 Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 |
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
 USGS_Water_Use | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | x | NA | NA | NA| NA| x |NA |NA |NA |NA |
@@ -37,6 +40,18 @@ BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages]
 Census_CBP_EMP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment | County | Number of employees per industry |  |  |  |  | X |  |  | NA | NA | NA |
 Census_CBP_PAYANN | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Money | County | Annual payroll per industry |  |  |  |  | X |  |  | NA | NA | NA |
 Census_CBP_ESTAB | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Other | County | Number of establishments per industry |  |  |  |  | x |  |  | NA | NA | NA |
+
+### FlowByActivity Naming Convention
+Source dataset names are consistent across (1) the FlowByActivity dataset 'SourceName' columns, (2) the parquet file names,
+(3) the Crosswalk file names, and (4) the Source Catalog information. Source names are comprised of two or three components.
+The first part of the name is the agency that published the data. The second component is the name or acronym
+of the published dataset. The third piece of the naming schema, if it exists, is the topic of data parsed from the 
+original dataset. Of the four FlowByActivity datasets imported from the U.S. Department of Agriculture (USDA), three are
+data pulled from the same dataset, the Census of Agriculture (CoA). To make data easier to find, the CoA data is separated 
+by topic (Cropland, Livestock, Product Market Value). As the FlowByActivity datasets are grouped by topic, some of the 
+parquets contain multiple class types, meaning the Class type should be specified when calling on the data. The
+USDA_CoA_Cropland dataframe includes acreage information for crops (Class = Land) and the number of farms that grow a
+particular crop (Class = Other). 
 
 ## Disclaimer
 
