@@ -43,9 +43,12 @@ def eia_cbecs_parse(dataframe_list, args):
     df.loc[df['FlowName'] == "Consumption per Building", 'Unit'] = 'thousand gallons'
     df.loc[df['FlowName'] == "Consumption per square foot", 'Unit'] = 'gallons'
     df.loc[df['FlowName'] == "Consumption per worker", 'Unit'] = 'thousand gallons'
-    # hardcode columns
+    # class type based on flowname/unit
     df["Class"] = 'Water'
-    df["SourceName"] = 'EIA_CBECS'
+    df.loc[df['FlowName'] == 'Number of Buildings', 'Class'] = 'Other'
+    df.loc[df['FlowName'] == "Total Floor Space", 'Class'] = 'Other'
+    # hardcode columns
+    df["SourceName"] = 'EIA_CBECS_Water'
     df['Year'] = args["year"]
     df['FIPS'] = US_FIPS
     return df
