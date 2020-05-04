@@ -74,14 +74,14 @@ def coa_livestock_parse(dataframe_list, args):
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount",
-                            "unit_desc": "Unit",
+                            "unit_desc": "FlowName",
                             "year": "Year",
                             "CV (%)": "Spread",
-                            "short_desc": "Description",
-                            "domain_desc": "Compartment"})
+                            "domaincat_desc": "Compartment",
+                            "short_desc": "Description"})
     # drop remaining unused columns
     df = df.drop(columns=['class_desc', 'commodity_desc', 'state_fips_code', 'county_code',
-                          'statisticcat_desc', 'prodn_practice_desc', 'domaincat_desc'])
+                          'statisticcat_desc', 'prodn_practice_desc'])
     # modify contents of flowamount column, "D" is supressed data, "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
     df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
