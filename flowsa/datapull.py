@@ -17,16 +17,16 @@ from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path,
 from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
 
 
-from flowsa.USDA_CoA_Cropland import *
-from flowsa.USDA_CoA_Livestock import *
-from flowsa.USDA_IWMS import *
-from flowsa.USGS_Water_Use import *
 from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
-from flowsa.USDA_CoA_ProdMarkValue import *
+from flowsa.Census_PEP_Population import *
 from flowsa.EIA_CBECS_Water import *
-from flowsa.Stat_Canada import *
-from flowsa.Census_Population import *
+from flowsa.StatCan_IWS_MI import *
+from flowsa.USDA_CoA_Cropland import *
+from flowsa.USDA_CoA_Livestock import *
+from flowsa.USDA_CoA_ProdMarkValue import *
+from flowsa.USDA_IWMS import *
+from flowsa.USGS_NWIS_WU import *
 
 
 def parse_args():

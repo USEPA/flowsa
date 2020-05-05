@@ -33,7 +33,7 @@ prodmarkvalue_coa_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Money']
 
 # "other" based datasets
 census_pop_flowsbyactivity_2015 = flowsa.getFlowByActivity(flowclass=['Other'], years=[2015],
-                                                           datasource="Census_Population")
+                                                           datasource="Census_PEP_Population")
 livestock_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Other'], years=[2017],
                                                           datasource="USDA_CoA_Livestock")
 
@@ -42,13 +42,13 @@ livestock_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Other'], y
 eia_cbecs_flowsbyactivity_2012 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2012],
                                                           datasource="EIA_CBECS_Water")
 stat_canada_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Water'], years=[2015],
-                                                       datasource="Stat_Canada")
+                                                       datasource="StatCan_IWS_MI")
 usda_iwms_flowsbyactivity_2013 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2013],
                                                           datasource="USDA_IWMS")
 usgs_water_flowsbyactivity_2015 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2015],
-                                                           datasource="USGS_Water_Use")
+                                                           datasource="USGS_NWIS_WU")
 usgs_water_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Water'], years=[2010, 2015],
-                                                      datasource="USGS_Water_Use")
+                                                      datasource="USGS_NWIS_WU")
 
 
 

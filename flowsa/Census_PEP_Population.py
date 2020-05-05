@@ -49,7 +49,7 @@ def census_pop_parse(dataframe_list, args):
     df = df.rename(columns={"POP": "FlowAmount"})
     # hardcode dta
     df['Class'] = 'Other'
-    df['SourceName'] = 'US_Census'
+    df['SourceName'] = 'Census_PEP_Population'
     df['FlowName'] = 'Population'
     df['Unit'] = 'p'
     # temporary data quality scores

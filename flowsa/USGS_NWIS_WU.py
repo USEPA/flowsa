@@ -126,7 +126,7 @@ def usgs_parse(dataframe_list, args):
     df = df.rename(columns={"year": "Year"})
     # hardcode column information
     df['Class'] = 'Water'
-    df['SourceName'] = 'USGS_Water_Use'
+    df['SourceName'] = 'USGS_NWIS_WU'
     # Assign data quality scores
     df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
     df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',

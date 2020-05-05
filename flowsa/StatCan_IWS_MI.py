@@ -57,7 +57,7 @@ def sc_parse(dataframe_list, args):
     df.loc[df['Spread'] == 'x', 'Spread'] = withdrawn_keyword
     # hard code data
     df['Class'] = 'Water'
-    df['SourceName'] = 'Statistics_Canada'
+    df['SourceName'] = 'StatCan_IWS_MI'
     df["MeasureofSpread"] = 'RSD'
     df["DataReliability"] = '3'
     df["DataCollection"] = '4'

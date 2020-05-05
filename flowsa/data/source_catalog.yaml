@@ -12,7 +12,7 @@ Census_CBP:
     - Other
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-Census_Population:
+Census_PEP_Population:
   class: Other
   sector-like_activities: False
   activity_schema:
@@ -24,7 +24,7 @@ NOAA_FisheryLandings:
   class: Money
   sector-like_activities: False
   activity_schema:
-Stat_Canada:
+StatCan_IWS_MI:
   class: Water
   sector-like_activities: False
   activity_schema:
@@ -46,7 +46,7 @@ USDA_IWMS:
   class: Water
   sector-like_activities: False
   activity_schema:
-USGS_Water_Use:
+USGS_NWIS_WU:
   class: Water
   sector-like_activities: False
   activity_schema:
