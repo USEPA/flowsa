@@ -160,29 +160,9 @@ if __name__ == '__main__':
     df = parse_data(dataframe_list, args)
     # log that data was retrieved
     log.info("Retrieved data for " + args['source'])
-    # if there is specific metadata in source.py, call on it to split dataframe into multiple dataframes
-    if 'flow_metadata' in config:
-        if hasattr(sys.modules[__name__], config["flow_metadata"]):
-            md = getattr(sys.modules[__name__], config["flow_metadata"])
-            dfs = {}
-            for k, v in md.items():
-                flow_df = df
-                flow_df['FlowAmount'] = flow_df[k]
-                drop_fields = list(md.keys())
-                flow_df = df.drop(columns=drop_fields)
-                for k2, v2 in v.items():
-                    flow_df[k2] = v2
-                # add missing dataframe fields (also converts columns to desired datatype)
-                flow_df = add_missing_flow_by_activity_fields(flow_df)
-                dfs[k] = flow_df
-                parquet_name = args['source'] + "_" + str(k) + '_' + args['year']
-                store_flowbyactivity(flow_df, parquet_name)
-    # if there isn't source specific metadata, add missing flowbyactivity fields and store data as parquet
-    else:
-        # add missing dataframe fields (also converts columns to desired datatype)
-        flow_df = add_missing_flow_by_activity_fields(df)
-        parquet_name = args['source'] + '_' + args['year']
-        store_flowbyactivity(flow_df, parquet_name)
+    flow_df = add_missing_flow_by_activity_fields(df)
+    parquet_name = args['source'] + '_' + args['year']
+    store_flowbyactivity(flow_df, parquet_name)
 
 
 

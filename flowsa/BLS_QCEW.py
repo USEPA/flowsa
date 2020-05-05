@@ -12,6 +12,7 @@ This script is designed to run with a configuration parameter
 '''
 
 import pandas as pd
+import numpy as np
 import io
 import zipfile
 from flowsa.common import log, get_all_state_FIPS_2
@@ -74,11 +75,21 @@ def bls_qcew_parse(dataframe_list, args):
     df = df.rename(columns={'area_fips': 'FIPS',
                             'industry_code': 'ActivityProducedBy',
                             'year': 'Year',
-                            'annual_avg_estabs': 'ESTAB',
-                            'annual_avg_emplvl': 'EMP',
-                            'total_annual_wages': 'PAYANN'})
+                            'annual_avg_estabs': 'Number of establishments',
+                            'annual_avg_emplvl': 'Number of employees',
+                            'total_annual_wages': 'Annual payroll'})
     # Reformat FIPs to 5-digit
     df['FIPS'] = df['FIPS'].apply('{:0>5}'.format)
+    # use "melt" fxn to convert colummns into rows
+    df = df.melt(id_vars=["FIPS", "ActivityProducedBy", "Year"],
+                 var_name="FlowName",
+                 value_name="FlowAmount")
+    # specify unit based on flowname
+    df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
+    # specify class
+    df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
+    df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
+    df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
@@ -87,15 +98,4 @@ def bls_qcew_parse(dataframe_list, args):
     df['SourceName'] = 'BLS_QCEW'
     return df
 
-qcew_flow_specific_metadata = \
-    {'EMP': {'Class': 'Employment',
-             'FlowName': 'Number of employees',
-             'Unit': 'p'},
-     'ESTAB': {'Class': 'Other',
-               'FlowName': 'Number of establishments',
-               'Unit': 'p'},
-     'PAYANN': {'Class': 'Money',
-                'FlowName': 'Annual payroll',
-                'Unit': 'USD'},
-     }
 

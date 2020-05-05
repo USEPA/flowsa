@@ -12,6 +12,7 @@ This script is designed to run with a configuration parameter
 """
 
 import pandas as pd
+import numpy as np
 import json
 #from flowsa.datapull import build_url, make_http_request, load_from_requests_response
 from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2, datapath
@@ -46,15 +47,6 @@ def census_cbp_parse(dataframe_list, args):
     df = pd.concat(dataframe_list, sort=False)
     # Add year
     df['Year'] = args["year"]
-    # # add naics crosswalk dataframe and rename columns to match cbp, drop naics with more than 6 digits
-    # naics_df = pd.read_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", dtype=str)
-    # naics_df = naics_df.rename(columns={"NAICS_2007_Code": "NAICS2007", "NAICS_2012_Code": "NAICS2012",
-    #                                     "NAICS_2017_Code": "NAICS2017"})
-    # naics_df = naics_df[~(naics_df.NAICS2012.str.len() > 6)]
-    # # convert naics codes to naics 2012 and drop ecess naics code columns
-    # if 'NAICS2017' in df:
-    #     df = pd.merge(df, naics_df, how='left', left_on='NAICS2017', right_on="NAICS2017").dropna()
-    #     df.drop(['NAICS2007', 'NAICS2017'], axis=1, inplace=True)
     # convert county='999' to line for full state
     df.loc[df['county'] == '999', 'county'] = '000'
     # Make FIPS as a combo of state and county codes
@@ -73,6 +65,20 @@ def census_cbp_parse(dataframe_list, args):
         df['Description'] = 'NAICS2017'
     # drop all sectors record
     df = df[df['ActivityProducedBy'] != "00"]
+    # rename columns
+    df = df.rename(columns={'ESTAB': 'Number of establishments',
+                            'EMP': 'Number of employees',
+                            'PAYANN': 'Annual payroll'})
+    # use "melt" fxn to convert colummns into rows
+    df = df.melt(id_vars=["FIPS", "ActivityProducedBy", "Year", "Description"],
+                 var_name="FlowName",
+                 value_name="FlowAmount")
+    # specify unit based on flowname
+    df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
+    # specify class
+    df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
+    df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
+    df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
@@ -80,14 +86,14 @@ def census_cbp_parse(dataframe_list, args):
     return df
 
 
-cbp_flow_specific_metadata = \
-    {"EMP": {"Class": "Employment",
-             "FlowName": "Number of employees",
-             "Unit": "p"},
-     "ESTAB": {"Class": "Other",
-               "FlowName": "Number of establishments",
-               "Unit": "p"},
-     "PAYANN": {"Class": "Money",
-                "FlowName": "Annual payroll",
-                "Unit": "1000USD"},
-     }
+# cbp_flow_specific_metadata = \
+#     {"EMP": {"Class": "Employment",
+#              "FlowName": "Number of employees",
+#              "Unit": "p"},
+#      "ESTAB": {"Class": "Other",
+#                "FlowName": "Number of establishments",
+#                "Unit": "p"},
+#      "PAYANN": {"Class": "Money",
+#                 "FlowName": "Annual payroll",
+#                 "Unit": "1000USD"},
+#      }

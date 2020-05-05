@@ -17,7 +17,6 @@ url:
 url_replace_fxn: Census_CBP_URL_helper
 call_response_fxn: census_cbp_call
 parse_response_fxn: census_cbp_parse
-flow_metadata: cbp_flow_specific_metadata
 years:
    - 2010
    - 2011
