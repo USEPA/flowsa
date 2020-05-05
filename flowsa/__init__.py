@@ -11,7 +11,7 @@ from flowsa.common import outputpath, datapath, log
 def getFlowByActivity(flowclass, years, datasource):
     """
     Retrieves stored data in the FlowByActivity format
-    :param flowclass: `Class' of the flow. required. E.g. 'Water'
+    :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or ['Land', 'Other']
     :param year: list, a list of years [2015], or [2010,2011,2012]
     :param datasource: str, the code of the datasource.
     :return: a pandas DataFrame in FlowByActivity format
@@ -20,9 +20,10 @@ def getFlowByActivity(flowclass, years, datasource):
     for y in years:
         try:
             flowbyactivity = pd.read_parquet(outputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
-            fba = pd.concat([fba,flowbyactivity], sort=False)
+            flowbyactivity = flowbyactivity[flowbyactivity['Class'].isin(flowclass)]
+            fba = pd.concat([fba, flowbyactivity], sort=False)
         except FileNotFoundError:
-            log.error("No parquet file found for datasource "+ datasource + "and year " + str(y) + " in flowsa" )
+            log.error("No parquet file found for datasource " + datasource + "and year " + str(y) + " in flowsa")
     return fba
 
 
