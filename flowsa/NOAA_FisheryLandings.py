@@ -4,6 +4,8 @@
 # ingwersen.wesley@epa.gov
 
 """
+This script is run on it's own, not through datapull.py, as data pulled from csv in flowsa.
+
 NOAA fisheries data obtained from: https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200
                                on: April 28, 2020
 
