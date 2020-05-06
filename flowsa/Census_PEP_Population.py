@@ -40,9 +40,9 @@ def census_pop_parse(dataframe_list, args):
     # replace null county cells with '000'
     df['county'] = df['county'].fillna('000')
     # Make FIPS as a combo of state and county codes
-    df['FIPS'] = df['state'] + df['county']
+    df['Location'] = df['state'] + df['county']
     # replace the null value representing the US with US fips
-    df.loc[df['us'] == '1', 'FIPS'] = US_FIPS
+    df.loc[df['us'] == '1', 'Location'] = US_FIPS
     # drop columns
     df = df.drop(columns=['state', 'county', 'us'])
     # rename columns
@@ -51,6 +51,7 @@ def census_pop_parse(dataframe_list, args):
     df['Class'] = 'Other'
     df['SourceName'] = 'Census_PEP_Population'
     df['FlowName'] = 'Population'
+    df['LocationSystem'] = 'FIPS_' + args["year"]
     df['Unit'] = 'p'
     # temporary data quality scores
     df['DataReliability'] = None

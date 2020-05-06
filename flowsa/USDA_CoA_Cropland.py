@@ -96,10 +96,10 @@ def coa_cropland_parse(dataframe_list, args):
                           'asd_desc', 'county_name', 'source_desc', 'congr_district_code', 'asd_code',
                           'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
                           'state_ansi', 'state_name', 'country_name', 'county_ansi', 'end_code', 'group_desc'])
-    # combine FIPS column by combining existing columns
+    # create FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
-    df['FIPS'] = df['state_fips_code'] + df['county_code']
-    df.loc[df['FIPS'] == '99000', 'FIPS'] = US_FIPS  # modify national level fips
+    df['Location'] = df['state_fips_code'] + df['county_code']
+    df.loc[df['Location'] == '99000', 'Location'] = US_FIPS  # modify national level fips
     # use info from other columns to determine flow name
     df['FlowName'] = np.where(df["unit_desc"] == 'OPERATIONS', df["unit_desc"], df['statisticcat_desc'])
     # combine column information to create activity information, and create two new columns for activities
@@ -139,6 +139,7 @@ def coa_cropland_parse(dataframe_list, args):
     # Add hardcoded data
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland"
+    df['LocationSystem'] = 'FIPS_' + args["year"]
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = None
     df['DataCollection'] = 2

@@ -50,6 +50,7 @@ def eia_cbecs_parse(dataframe_list, args):
     # hardcode columns
     df["SourceName"] = 'EIA_CBECS_Water'
     df['Year'] = args["year"]
-    df['FIPS'] = US_FIPS
+    df['Location'] = US_FIPS
+    df['LocationSystem'] = 'FIPS_' + args["year"]
     return df
 

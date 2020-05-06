@@ -42,10 +42,10 @@ def iwms_parse(dataframe_list, args):
                           'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
                           'state_ansi', 'state_name', 'country_name', 'county_ansi', 'end_code', 'group_desc',
                           'util_practice_desc'])
-    # combine FIPS column by combining existing columns
+    # create FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
-    df['FIPS'] = df['state_fips_code'] + df['county_code']
-    df.loc[df['FIPS'] == '99000', 'FIPS'] = US_FIPS  # modify national level fips
+    df['Location'] = df['state_fips_code'] + df['county_code']
+    df.loc[df['Location'] == '99000', 'Location'] = US_FIPS  # modify national level fips
     # combine column information to create activity information, and create two new columns for activities
     df['ActivityConsumedBy'] = df['commodity_desc'] + ', ' + df['class_desc']  # drop this column later
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
@@ -66,6 +66,7 @@ def iwms_parse(dataframe_list, args):
     # # Add hardcoded data
     df['Class'] = "Water"
     df['SourceName'] = "USDA_IWMS"
+    df['LocationSystem'] = 'FIPS_' + args["year"]
     df['DataReliability'] = None  #TODO score data qualtiy
     df['DataCollection'] = None
     return df

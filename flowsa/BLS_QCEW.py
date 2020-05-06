@@ -72,16 +72,16 @@ def bls_qcew_parse(dataframe_list, args):
                                                              'annual_avg_emplvl',
                                                              'total_annual_wages']].sum().reset_index()
     # Rename fields
-    df = df.rename(columns={'area_fips': 'FIPS',
+    df = df.rename(columns={'area_fips': 'Location',
                             'industry_code': 'ActivityProducedBy',
                             'year': 'Year',
                             'annual_avg_estabs': 'Number of establishments',
                             'annual_avg_emplvl': 'Number of employees',
                             'total_annual_wages': 'Annual payroll'})
     # Reformat FIPs to 5-digit
-    df['FIPS'] = df['FIPS'].apply('{:0>5}'.format)
+    df['Location'] = df['Location'].apply('{:0>5}'.format)
     # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["FIPS", "ActivityProducedBy", "Year"],
+    df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year"],
                  var_name="FlowName",
                  value_name="FlowAmount")
     # specify unit based on flowname
@@ -90,12 +90,13 @@ def bls_qcew_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
     df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
+    # add hard code data
+    df['SourceName'] = 'BLS_QCEW'
+    df['LocationSystem'] = 'FIPS_' + args["year"]
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
     df['Compartment'] = None
-    # add hard code data
-    df['SourceName'] = 'BLS_QCEW'
     return df
 
 

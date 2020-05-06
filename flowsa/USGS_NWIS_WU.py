@@ -97,7 +97,7 @@ def usgs_parse(dataframe_list, args):
     df = df[df['FlowAmount'] != '-']
     df = df[df['FlowAmount'] != '']
     # create fips codes by combining columns
-    df['FIPS'] = df['state_cd'] + df['county_cd']
+    df['Location'] = df['state_cd'] + df['county_cd']
     # drop unused columns
     df = df.drop(columns=['county_cd', 'county_nm', 'geo', 'state_cd', 'state_name'])
     # create new columns based on description
@@ -127,6 +127,7 @@ def usgs_parse(dataframe_list, args):
     # hardcode column information
     df['Class'] = 'Water'
     df['SourceName'] = 'USGS_NWIS_WU'
+    df['LocationSystem'] = 'FIPS_' + args["year"]
     # Assign data quality scores
     df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
     df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',

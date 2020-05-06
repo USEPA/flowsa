@@ -50,7 +50,7 @@ def census_cbp_parse(dataframe_list, args):
     # convert county='999' to line for full state
     df.loc[df['county'] == '999', 'county'] = '000'
     # Make FIPS as a combo of state and county codes
-    df['FIPS'] = df['state'] + df['county']
+    df['Location'] = df['state'] + df['county']
     # now drop them
     df = df.drop(columns=['state', 'county'])
     # rename NAICS column and add NAICS year as description
@@ -70,7 +70,7 @@ def census_cbp_parse(dataframe_list, args):
                             'EMP': 'Number of employees',
                             'PAYANN': 'Annual payroll'})
     # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["FIPS", "ActivityProducedBy", "Year", "Description"],
+    df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year", "Description"],
                  var_name="FlowName",
                  value_name="FlowAmount")
     # specify unit based on flowname
@@ -79,6 +79,8 @@ def census_cbp_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
     df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
+    # hard code data
+    df['LocationSystem'] = 'FIPS_' + args["year"]
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
@@ -86,14 +88,3 @@ def census_cbp_parse(dataframe_list, args):
     return df
 
 
-# cbp_flow_specific_metadata = \
-#     {"EMP": {"Class": "Employment",
-#              "FlowName": "Number of employees",
-#              "Unit": "p"},
-#      "ESTAB": {"Class": "Other",
-#                "FlowName": "Number of establishments",
-#                "Unit": "p"},
-#      "PAYANN": {"Class": "Money",
-#                 "FlowName": "Annual payroll",
-#                 "Unit": "1000USD"},
-#      }

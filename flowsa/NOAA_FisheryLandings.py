@@ -64,12 +64,14 @@ if __name__ == '__main__':
     df4 = df3.drop('State', axis=1)
 
     # rename columns to match flowbyactivity format
-    df4 = df4.rename(columns={"Sum Dollars": "FlowAmount"})
+    df4 = df4.rename(columns={"Sum Dollars": "FlowAmount",
+                              "FIPS": "Location"})
 
     # hardcode data
     df4["Class"] = "Money"
     df4["SourceName"] = "NOAA_Landings"
     df4["FlowName"] = None
+    df['LocationSystem'] = "FIPS_2018" # state FIPS codes have not changed over last decade
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
 

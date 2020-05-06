@@ -41,7 +41,7 @@ livestock_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Other'], y
 # "water" based datasets
 eia_cbecs_flowsbyactivity_2012 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2012],
                                                           datasource="EIA_CBECS_Water")
-stat_canada_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Water'], years=[2015],
+stat_canada_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Water'], years=["2005-2015"],
                                                        datasource="StatCan_IWS_MI")
 usda_iwms_flowsbyactivity_2013 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2013],
                                                           datasource="USDA_IWMS")

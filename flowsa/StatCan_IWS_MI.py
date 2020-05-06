@@ -30,7 +30,7 @@ def sc_parse(dataframe_list, args):
     # drop columns
     df = df.drop(columns=['COORDINATE', 'DECIMALS', 'DGUID', 'SYMBOL', 'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR'])
     # rename columns
-    df = df.rename(columns={'GEO': 'FIPS',
+    df = df.rename(columns={'GEO': 'Location',
                             'North American Industry Classification System (NAICS)': 'Description',
                             'REF_DATE': 'Year',
                             'STATUS': 'Spread',
@@ -58,6 +58,9 @@ def sc_parse(dataframe_list, args):
     # hard code data
     df['Class'] = 'Water'
     df['SourceName'] = 'StatCan_IWS_MI'
+    # temp hardcode canada iso code
+    df['Location'] = "124"
+    df['LocationSystem'] = "ISO"
     df["MeasureofSpread"] = 'RSD'
     df["DataReliability"] = '3'
     df["DataCollection"] = '4'
