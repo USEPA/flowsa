@@ -28,10 +28,9 @@ def stripcounty(s):
     return s
 
 
-def annual_fips():
+def annual_fips(years):
     """Fxn to pull the FIPS codes/names from the Census website. Columns are renamed amd subset."""
     # list of years to include in FIPS crosswalk
-    years = ['2015', '2016', '2017', '2018']
     df_list = {}
     for year in years:
         # only works for 2015 +....contacted Census on 5/1 to ask for county level fips for previous years
@@ -102,9 +101,8 @@ def annual_fips():
     return df_list
 
 
-def annual_fips_name(df_fips_codes):
+def annual_fips_name(df_fips_codes, years):
     """Add county names for years (if county names exist)"""
-    years = ['2015', '2016', '2017', '2018']
     df = df_fips_codes
     for year in years:
         df = pd.merge(df, fips_dic['FIPS_' + year], on='FIPS_' + year)
@@ -112,62 +110,63 @@ def annual_fips_name(df_fips_codes):
 
 if __name__ == '__main__':
 
-    # read in the fips data dictionary
-    fips_dic = annual_fips()
+    # years data interested in (list)
+    years = ['2015']
 
-    # map county changes, based on FIPS 2017 df, using info from Census website
+    # read in the fips data dictionary
+    fips_dic = annual_fips(years)
+
+    # map county changes, based on FIPS 2015 df, using info from Census website
     # https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html
     # Accessed 04/10/2020
-    df = fips_dic['FIPS_2017']
+    df = fips_dic['FIPS_2015']
 
     #### modify columns depicting how counties have changed over the years - starting 2010
     # 2019 one FIPS code deleted and split into two FIPS
-    df_19 = pd.DataFrame(df['FIPS_2017'])
-    df_19['FIPS_2019'] = df_19['FIPS_2017']
+    df_19 = pd.DataFrame(df['FIPS_2015'])
+    df_19['FIPS_2019'] = df_19['FIPS_2015']
     df_19.loc[df_19['FIPS_2019'] == "02261", 'FIPS_2019'] = "02063"
     df_19 = df_19.append(pd.DataFrame([["02261", "02066"]], columns=df_19.columns))
 
-    # 2014 had two different/renamed fips
-    df_14 = pd.DataFrame(df['FIPS_2017'])
-    df_14['FIPS_2014'] = df_14['FIPS_2017']
-    df_14.loc[df_14['FIPS_2014'] == "02158", 'FIPS_2014'] = "02270"
-    df_14.loc[df_14['FIPS_2014'] == "46102", 'FIPS_2014'] = "46113"
+    # 2013 had two different/renamed fips
+    df_13 = pd.DataFrame(df['FIPS_2015'])
+    df_13['FIPS_2013'] = df_13['FIPS_2015']
+    df_13.loc[df_13['FIPS_2013'] == "02158", 'FIPS_2013'] = "02270"
+    df_13.loc[df_13['FIPS_2013'] == "46102", 'FIPS_2013'] = "46113"
 
-    # # 2013 had a fips code that was merged with an existing fips, so 2012 will have an additional row
-    df_12 = pd.DataFrame(df_14["FIPS_2014"])
-    df_12['FIPS_2012'] = df_14['FIPS_2014']
-    df_12 = df_12.append(pd.DataFrame([["51019", "51515"]], columns=df_12.columns))
+    # # 2013 had a fips code that was merged with an existing fips, so 2010 will have an additional row
+    df_10 = pd.DataFrame(df_13["FIPS_2013"])
+    df_10['FIPS_2010'] = df_13['FIPS_2013']
+    df_10 = df_10.append(pd.DataFrame([["51019", "51515"]], columns=df_10.columns))
 
     # merge 2013 with 2014 dataframe
-    df2 = pd.merge(df_12, df_14, how="left", on="FIPS_2014")
+    df2 = pd.merge(df_10, df_13, how="left", on="FIPS_2013")
     # merge 2019 with 2017
-    df3 = pd.merge(df_19, df2, on="FIPS_2017")
+    df3 = pd.merge(df_19, df2, on="FIPS_2015")
 
-    # create columns for remaining years and reorder
+    # fips years notes
     # 2010, 2011, 2012       have same fips codes
     # 2013, 2014             have same fips codes
     # 2015, 2016, 2017, 2018 have same fips codes
     # 2019                   have same fips codes
-    df3['FIPS_2010'] = df3['FIPS_2012']
-    df3['FIPS_2011'] = df3['FIPS_2012']
-    df3['FIPS_2013'] = df3['FIPS_2014']
-    df3['FIPS_2015'] = df3['FIPS_2017']
-    df3['FIPS_2016'] = df3['FIPS_2017']
-    df3['FIPS_2018'] = df3['FIPS_2017']
+    # df3['FIPS_2010'] = df3['FIPS_2012']
+    # df3['FIPS_2011'] = df3['FIPS_2012']
+    # df3['FIPS_2013'] = df3['FIPS_2014']
+    # df3['FIPS_2015'] = df3['FIPS_2017']
+    # df3['FIPS_2016'] = df3['FIPS_2017']
+    # df3['FIPS_2018'] = df3['FIPS_2017']
 
     # Use Census data to assign county names to FIPS years. Some county names have changed over the years,
     # while FIPS remain unchanged
-    df4 = annual_fips_name(df3)
+    df4 = annual_fips_name(df3, years)
 
     # drop repeated State columns and rename
-    df5 = df4.drop(columns=['State_x'])
-    df5 = df5.loc[:,~df5.columns.duplicated()]
-    df5 = df5.rename(columns={"State_y": "State"})
+    # df5 = df4.drop(columns=['State_x'])
+    df5 = df4.loc[:, ~df4.columns.duplicated()]
+    # df5 = df5.rename(columns={"State_y": "State"})
 
     # reorder dataframe
-    fips_xwalk = df5[['State', 'FIPS_2010', 'FIPS_2011', 'FIPS_2012', 'FIPS_2013', 'FIPS_2014', 'FIPS_2015',
-                      'County_2015', 'FIPS_2016', 'County_2016', 'FIPS_2017', 'County_2017', 'FIPS_2018',
-                      'County_2018', 'FIPS_2019']]
+    fips_xwalk = df5[['State', 'FIPS_2010', 'FIPS_2013', 'FIPS_2015', 'County_2015', 'FIPS_2019']]
 
     # write fips crosswalk as csv
     fips_xwalk.to_csv(datapath+"Crosswalk_FIPS.csv", index=False)
