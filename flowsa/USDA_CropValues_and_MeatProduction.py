@@ -56,7 +56,7 @@ def prodvalue_parse(dataframe_list, args):
     df = df[~df['group_desc'].isin(['FIELD CROPS', 'FRUIT & TREE NUTS', 'HORTICULTURE', 'VEGETABLES'])]
     # drop unused columns
     df = df.drop(columns=['agg_level_desc', 'domain_desc', 'location_desc', 'state_alpha', 'sector_desc',
-                          'country_code', 'begin_code', 'watershed_code', 'reference_period_desc',
+                          'country_code', 'begin_code', 'watershed_code', 'reference_period_desc', 'CV (%)',
                           'asd_desc', 'county_name', 'source_desc', 'congr_district_code', 'asd_code',
                           'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
                           'state_ansi', 'state_name', 'country_name', 'county_ansi', 'end_code', 'group_desc'])
@@ -77,7 +77,6 @@ def prodvalue_parse(dataframe_list, args):
     df = df.rename(columns={"Value": "FlowAmount",
                             "unit_desc": "Unit",
                             "year": "Year",
-                            "CV (%)": "Spread",
                             "short_desc": "Description"})
     # drop remaining unused columns
     df = df.drop(columns=['class_desc', 'commodity_desc', 'state_fips_code', 'county_code',
@@ -86,14 +85,8 @@ def prodvalue_parse(dataframe_list, args):
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
     df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
     df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(NA)", 'FlowAmount'] = '0'
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
-    # USDA CoA 2017 states that (H) means CV >= 99.95, therefore replacing with 99.95 so can convert column to int
-    # (L) is a CV of <= 0.05
-    df['Spread'] = df['Spread'].str.strip()  # trim whitespace
-    df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
-    df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
-    df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
-    df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
     # drop Descriptions that contain certain phrases, as these data are included in other categories
     df = df[~df['Description'].str.contains('FRESH MARKET|PROCESSING|ENTIRE CROP|NONE OF CROP|PART OF CROP')]
     # drop Descriptions that contain certain phrases - only occur in AG LAND data
