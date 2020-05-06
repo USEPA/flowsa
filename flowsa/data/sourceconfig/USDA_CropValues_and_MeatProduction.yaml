@@ -12,8 +12,8 @@ url:
   api_path: "api_GET/?key=__apiKey__" #__apiKey__ should be substituted with user's api key
   url_params:
     source_desc: "SURVEY"
-    sector_desc: "__secLevel__" # CROPS or ANIMALS & PRODUCTS
-    statisticcat_desc: "PRODUCTION"
+    #sector_desc: "__secLevel__" # CROPS or ANIMALS & PRODUCTS
+    #statisticcat_desc: "PRODUCTION&statisticcat_desc=INVENTORY"
     unit_desc: "$"
     agg_level_desc: "__aggLevel__" # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL", "STATE", or "COUNTY"
     state_alpha: "__stateAlpha__" # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
@@ -32,9 +32,9 @@ years:
   - 2016
   - 2017
   - 2018
-sector_levels:
-  - "CROPS"
-  - "ANIMALS %26 PRODUCTS"
+#sector_levels:
+#  - "CROPS"
+#  - "ANIMALS %26 PRODUCTS"
 agg_levels:
   - "NATIONAL"
   - "STATE"
