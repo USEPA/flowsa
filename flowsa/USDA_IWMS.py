@@ -63,10 +63,18 @@ def iwms_parse(dataframe_list, args):
     df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
     # df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
     # # Add hardcoded data
     df['Class'] = "Water"
     df['SourceName'] = "USDA_IWMS"
-    df['LocationSystem'] = 'FIPS_' + args["year"]
     df['DataReliability'] = None  #TODO score data qualtiy
     df['DataCollection'] = None
     return df

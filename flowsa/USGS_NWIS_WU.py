@@ -124,10 +124,18 @@ def usgs_parse(dataframe_list, args):
     df = df.join(activities)
     # rename year column
     df = df.rename(columns={"year": "Year"})
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
     # hardcode column information
     df['Class'] = 'Water'
     df['SourceName'] = 'USGS_NWIS_WU'
-    df['LocationSystem'] = 'FIPS_' + args["year"]
     # Assign data quality scores
     df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
     df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',

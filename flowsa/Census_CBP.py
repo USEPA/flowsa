@@ -79,8 +79,16 @@ def census_cbp_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
     df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
     # hard code data
-    df['LocationSystem'] = 'FIPS_' + args["year"]
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5

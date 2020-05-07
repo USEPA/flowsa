@@ -21,7 +21,7 @@ employ_cpb_flowsbyactivity_2012 = flowsa.getFlowByActivity(flowclass=['Employmen
 
 
 # "land" based datasets
-cropland_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Land'], years=[2012],
+cropland_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Land'], years=[2017],
                                                          datasource="USDA_CoA_Cropland")
 
 # "money" based datasets

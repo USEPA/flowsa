@@ -72,10 +72,18 @@ def pmv_parse(dataframe_list, args):
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
     df.loc[df['Spread'] == "", 'Spread'] = None # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
     # # Add hardcoded data
     df['Class'] = "Money"
     df['SourceName'] = "USDA_CoA"
-    df['LocationSystem'] = 'FIPS_' + args["year"]
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = None
     df['DataCollection'] = None

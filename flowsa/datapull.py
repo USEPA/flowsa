@@ -167,10 +167,3 @@ if __name__ == '__main__':
     parquet_name = args['source'] + '_' + args['year']
     store_flowbyactivity(flow_df, parquet_name)
 
-
-
-
-
-
-
-

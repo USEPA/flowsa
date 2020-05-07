@@ -54,7 +54,7 @@ def prodvalue_parse(dataframe_list, args):
     df = pd.concat(dataframe_list, sort=True)
     # only want data included in select categories
     df = df[~df['group_desc'].isin(['FIELD CROPS', 'FRUIT & TREE NUTS', 'HORTICULTURE', 'VEGETABLES'])]
-    df = df[~df['statisticcat_desc'].isin(['DISTRIBUTION', 'FARM USE', 'EXPENSE', 'VALUE', 'SALES',
+    df = df[~df['statisticcat_desc'].isin(['DISTRIBUTION', 'FARM USE', 'EXPENSE', 'SALES',
                                            'SALES FOR SLAUGHTER', 'ASSET VALUE'])]
     # drop unused columns
     df = df.drop(columns=['agg_level_desc', 'domain_desc', 'location_desc', 'state_alpha', 'sector_desc',

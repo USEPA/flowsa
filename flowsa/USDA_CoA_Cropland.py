@@ -133,13 +133,21 @@ def coa_cropland_parse(dataframe_list, args):
     df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
     # drop Descriptions that contain certain phrases, as these data are included in other categories
-    df = df[~df['Description'].str.contains('FRESH MARKET | PROCESSING | ENTIRE CROP | NONE OF CROP | PART OF CROP')]
+    df = df[~df['Description'].str.contains('FRESH MARKET|PROCESSING|ENTIRE CROP|NONE OF CROP|PART OF CROP')]
     # drop Descriptions that contain certain phrases - only occur in AG LAND data
     df = df[~df['Description'].str.contains('INSURANCE|OWNED|RENTED|FAILED|FALLOW|IDLE|WOODLAND')]
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
     # Add hardcoded data
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland"
-    df['LocationSystem'] = 'FIPS_' + args["year"]
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = None
     df['DataCollection'] = 2

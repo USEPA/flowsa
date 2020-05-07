@@ -47,11 +47,19 @@ def census_pop_parse(dataframe_list, args):
     df = df.drop(columns=['state', 'county', 'us'])
     # rename columns
     df = df.rename(columns={"POP": "FlowAmount"})
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
     # hardcode dta
     df['Class'] = 'Other'
     df['SourceName'] = 'Census_PEP_Population'
     df['FlowName'] = 'Population'
-    df['LocationSystem'] = 'FIPS_' + args["year"]
     df['Unit'] = 'p'
     # temporary data quality scores
     df['DataReliability'] = None
