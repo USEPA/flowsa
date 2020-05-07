@@ -34,12 +34,16 @@ formatting criteria, meaning units are not standardized across "Class" types.
  
 Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 |
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
-USGS_Water_Use | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | x | NA | NA | NA| NA| x |NA |NA |NA |NA |
-USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) Horticultural Crop Area | Land | County | Crop area by farm size and irrigation status | NA | NA | X | NA| NA | NA | NA | x |NA |NA |
-BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment | County | Number of employees per industry |  |  |  |  | X | X |  |  |  |  |
-Census_CBP_EMP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment | County | Number of employees per industry |  |  |  |  | X |  |  | NA | NA | NA |
-Census_CBP_PAYANN | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Money | County | Annual payroll per industry |  |  |  |  | X |  |  | NA | NA | NA |
-Census_CBP_ESTAB | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Other | County | Number of establishments per industry |  |  |  |  | x |  |  | NA | NA | NA |
+BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment, Money, Other | County | Number of employees per industry |  |  |  |  | X | X |  |  |  |  |
+Census_CBP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment, Money, Other | County | Number of employees per industry, Annual payroll per industry, Number of establishments per industry |  |  |  |  | X |  |  |  |  |  |
+Census_PEP_Population | [Census Bureau Population Estimates](https://www.census.gov/programs-surveys/popest.html) | Other | County | Population | X | X | X | X | X | X | X | X | X | X | 
+EIA_CBECS_Water| [Energy Information Administration Commercial Buildings Energy Consumption Survey](https://www.eia.gov/consumption/commercial/reports/2012/water/) | Water | Country | Water consumption in large buildings |  |  | X |  |  |  |  |  |  |  | 
+NOAA_FisheryLandings | [National Oceanic and Atmospheric Administration Fisheries](https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200) | Money | State | Fishery landings | X | X | X | X | X | X | X | X | X | X | 
+StatCan_IWS_MI | [Statistics Canada Industrial Water Survey](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701) | Water | Country | Water use by NAICS |  | X |  | X |  | X |  |  |  |  | 
+USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) | Land, Other | County | Crop area by farm size and irrigation status | | | X | | | |  | X | | |
+USDA_CoA_Livestock | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) | Other | County | Livestock count by farm size | | | X | | | |  | X | | | 
+USDA_IWMS | [USDA Irrigation and Water Management Survey](https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Farm_and_Ranch_Irrigation/) | Water | State | Water application rate by state and crop |  |  |  | X |  |  |  |  | X |  | 
+USGS_NWIS_WU | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | X |  |  | | | X | | | | |
 
 ### FlowByActivity Naming Convention
 Source dataset names are consistent across (1) the FlowByActivity dataset 'SourceName' columns, (2) the parquet file names,
