@@ -13,15 +13,28 @@ This script is designed to run with a configuration parameter
 
 import pandas as pd
 import json
-from flowsa.common import US_FIPS
+from flowsa.common import US_FIPS, load_api_key
 
 
 def Census_pop_URL_helper(build_url, config, args):
-    urls = []  # todo modify url helper to create correct urls for 2010 and earlier
+    urls = []
+
+    # the url for 2010 and earlier is different
+    url2000 = 'https://api.census.gov/data/2000/pep/int_population?get=POP,DATE_DESC&for=__aggLevel__:*&DATE_=12&key=__apiKey__'
+
     for c in config['agg_levels']:
-        url = build_url
-        url = url.replace("__aggLevel__", c)
-        urls.append(url)
+        if args['year'] > '2010':
+            url = build_url
+            url = url.replace("__aggLevel__", c)
+            urls.append(url)
+        elif args['year'] == '2010':
+            url = url2000
+            url = url.replace("__aggLevel__", c)
+            if c == "us":
+                url = url.replace("*", "1")
+            userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
+            url = url.replace("__apiKey__", userAPIKey)
+            urls.append(url)
     return urls
 
 
