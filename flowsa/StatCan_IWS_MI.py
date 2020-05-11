@@ -8,6 +8,7 @@ Pulls Statistics Canada data on water intake and discharge for 3 digit NAICS fro
 import pandas as pd
 import io
 import zipfile
+import pycountry
 from flowsa.common import *
 
 def sc_call(url, sc_response, args):
@@ -59,10 +60,16 @@ def sc_parse(dataframe_list, args):
     df['Class'] = 'Water'
     df['SourceName'] = 'StatCan_IWS_MI'
     # temp hardcode canada iso code
-    df['Location'] = "124"
+    df['Location'] = call_country_code('Canada')
     df['LocationSystem'] = "ISO"
     df["MeasureofSpread"] = 'RSD'
     df["DataReliability"] = '3'
     df["DataCollection"] = '4'
     return df
 
+
+def call_country_code(country):
+    """use pycountry to call on 3 digit iso country code"""
+    country_info = pycountry.countries.get(name=country)
+    country_numeric_iso = country_info.numeric
+    return country_numeric_iso
