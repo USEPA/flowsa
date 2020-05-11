@@ -8,6 +8,7 @@
 import sys
 import os
 import yaml
+import requests
 import pandas as pd
 import logging as log
 import appdirs
@@ -22,7 +23,7 @@ except NameError:
 datapath = modulepath + 'data/'
 sourceconfigpath = datapath + 'sourceconfig/'
 outputpath = modulepath + 'output/'
-flowbyactivitymethodpath = datapath +  'flowbysectormethods/'
+flowbyactivitymethodpath = datapath + 'flowbysectormethods/'
 
 local_storage_path = appdirs.user_data_dir()
 
@@ -39,13 +40,51 @@ flow_types = ['ELEMENTARY_FLOW','TECHNOSPHERE_FLOW','WASTE_FLOW']
 #Sets default Sector Source Name
 sector_source_name = 'NAICS_2012_Code'
 
+def load_api_key(api_source):
+    """
+    Loads a txt file from the appdirs user directory with a set name
+    in the form of the host name and '_API_KEY.txt' like 'BEA_API_KEY.txt'
+    containing the users personal API key. The user must register with this
+    API and get the key and save it to a .txt file in the user directory specified
+    by local_storage_path (see common.py for definition)
+    :param api_source: str, name of source, like 'BEA' or 'Census'
+    :return: the users API key as a string
+    """
+    keyfile = local_storage_path + '/' + api_source + '_API_KEY.txt'
+    key = ""
+    try:
+        with open(keyfile, mode='r') as keyfilecontents:
+            key = keyfilecontents.read()
+    except IOError:
+        log.error("Key file not found.")
+    return key
+
+
+def make_http_request(url):
+    r = []
+    try:
+        r = requests.get(url)
+    except requests.exceptions.ConnectionError:
+        log.error("URL Connection Error for " + url)
+    try:
+        r.raise_for_status()
+    except requests.exceptions.HTTPError:
+        log.error('Error in URL request!')
+    return r
+
 def load_sector_crosswalk():
     cw = pd.read_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", dtype="str")
     return cw
 
-def load_source_catalog():
-    sources= datapath+'source_catalog.yaml'
-    with open(sources, 'r') as f:
+# def load_source_catalog():
+#     sources= datapath+'source_catalog.yaml'
+#     with open(sources, 'r') as f:
+#         config = yaml.safe_load(f)
+#     return config
+
+def load_sourceconfig(source):
+    sfile = sourceconfigpath+source+'.yaml'
+    with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
 

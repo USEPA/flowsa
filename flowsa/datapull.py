@@ -12,8 +12,7 @@ import requests
 import json
 
 
-from flowsa.common import outputpath, sourceconfigpath, log, local_storage_path, \
-    flow_by_activity_fields, get_all_state_FIPS_2
+from flowsa.common import *
 from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
 
 
@@ -51,46 +50,6 @@ def store_flowbyactivity(result, source, year=None):
         log.error('Failed to save '+source + "_" + str(year) +' file.')
 
 
-def make_http_request(url):
-    r = []
-    try:
-        r = requests.get(url)
-    except requests.exceptions.ConnectionError:
-        log.error("URL Connection Error for " + url)
-    try:
-        r.raise_for_status()
-    except requests.exceptions.HTTPError:
-        log.error('Error in URL request!')
-    return r
-
-
-def load_sourceconfig(source):
-    sfile = sourceconfigpath+source+'.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_api_key(api_source):
-    """
-    Loads a txt file from the appdirs user directory with a set name
-    in the form of the host name and '_API_KEY.txt' like 'BEA_API_KEY.txt'
-    containing the users personal API key. The user must register with this
-    API and get the key and save it to a .txt file in the user directory specified
-    by local_storage_path (see common.py for definition)
-    :param api_source: str, name of source, like 'BEA' or 'Census'
-    :return: the users API key as a string
-    """
-    keyfile = local_storage_path + '/' + api_source + '_API_KEY.txt'
-    key = ""
-    try:
-        with open(keyfile, mode='r') as keyfilecontents:
-            key = keyfilecontents.read()
-    except IOError:
-        log.error("Key file not found.")
-    return key
-
-
 def build_url_for_query(urlinfo):
     """Creates a base url which requires string substitutions that depend on data source"""
     # if there are url parameters defined in the yaml, then build a url, else use "base_url"
@@ -108,7 +67,7 @@ def build_url_for_query(urlinfo):
     if "__year__" in build_url:
         build_url = build_url.replace("__year__", args["year"])
     if "__apiKey__" in build_url:
-        userAPIKey = load_api_key(config['api_name'])
+        userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
         build_url = build_url.replace("__apiKey__", userAPIKey)
     return build_url
 
@@ -122,7 +81,6 @@ def assemble_urls_for_query(build_url, config, args):
         urls = []
         urls.append(build_url)
     return urls
-
 
 
 def call_urls(url_list, args):
@@ -149,7 +107,7 @@ def parse_data(dataframe_list, args):
 if __name__ == '__main__':
     # assign arguments
     args = parse_args()
-    # assign yaml parameters
+    # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(args['source'])
     # build the base url with strings that will be replaced
     build_url = build_url_for_query(config['url'])
