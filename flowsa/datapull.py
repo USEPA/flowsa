@@ -25,6 +25,7 @@ from flowsa.USDA_CoA_Cropland import *
 from flowsa.USDA_CoA_Livestock import *
 from flowsa.USDA_CoA_ProdMarkValue import *
 from flowsa.USDA_CropValues_and_MeatProduction import *
+from flowsa.USDA_ERS_FIWS import *
 from flowsa.USDA_IWMS import *
 from flowsa.USGS_NWIS_WU import *
 

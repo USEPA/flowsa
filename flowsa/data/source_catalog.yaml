@@ -42,6 +42,14 @@ USDA_CoA_ProdMarkValue:
   class: Money
   sector-like_activities: False
   activity_schema:
+USDA_CropValues_and_MeatProduction:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+USDA_ERS_FIWS:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
 USDA_IWMS:
   class: Water
   sector-like_activities: False
