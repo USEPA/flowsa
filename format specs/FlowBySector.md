@@ -9,7 +9,8 @@ SectorProducedBy | String | N* | A valid code from the SectorSourceName system (
 SectorConsumedBy | String | N* | A valid code from the SectorSourceName system
 SectorSourceName | String | Y | By default, `NAICS_2012_Code`. Must be the same for SectorProducedBy and SectorConsumedBy.
 Context | String | Y | Full context for the flow, e.g. "air", "water", "ground". 
-FIPS | String | Y | FIPS code for location
+Location | String | Y | A numeric representation of the activity location, at a national, state, or county level
+LocationSystem | String | Y | Description and year of the Location code, generally FIPS or ISO, e.g. `FIPS_2015`
 Unit | String | Y | SI unit acronym. 'kg' for mass flows; 'MJ' for energy flows.
 FlowType | String | Y | `ELEMENTARY_FLOW`, `TECHNOSPHERE_FLOW`, or `WASTE_FLOW`. See <http://greendelta.github.io/olca-schema/html/FlowType.html>
 Year | Int | Y | Year of data, e.g. `2010`
