@@ -36,20 +36,23 @@ def fiws_parse(dataframe_list, args):
     df = pd.merge(df, fips, how='left', left_on='State', right_on='StateAbbrev')
     # set us location code
     df.loc[df['State_x'] == 'US', 'FIPS_2'] = '00'
+    # drop "All" in variabledescription2
+    df.loc[df['VariableDescriptionPart2'] == 'All', 'VariableDescriptionPart2'] = 'drop'
+    # combine variable descriptions to create Activity name and remove ", drop"
+    df['ActivityProducedBy'] = df['VariableDescriptionPart1'] + ', ' + df['VariableDescriptionPart2']
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", drop", "", regex=True)
+    # trim whitespace
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.strip()
     # drop columns
     df = df.drop(columns=['artificialKey', 'PublicationDate', 'Source', 'ChainType_GDP_Deflator',
                           'VariableDescriptionPart1', 'VariableDescriptionPart2',
-                          'State_x', 'State_y', 'StateAbbrev'])
+                          'State_x', 'State_y', 'StateAbbrev', 'unit_desc'])
     # rename columns
     df = df.rename(columns={"VariableDescriptionTotal": "Description",
                             "Amount": "FlowAmount",
-                            "unit_desc": "Unit",
                             "FIPS_2": "Location"})
-    # split description column into 2 columns, based on comma placement
-    df['FlowName'], df['ActivityProducedBy'] = df['Description'].str.split(', ', 1).str
-    # remove ', all" from compartment
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", all", "", regex=True)
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.strip()  # trim whitespace
+    # assign flowname, based on comma placement
+    df['FlowName'] = df['Description'].str.split(',').str[0]
     # add location system based on year of data
     df['Year'] = df['Year'].astype(int)
     df.loc[df['Year'] >= 2019, 'LocationSystem'] = 'FIPS_2019'
@@ -57,12 +60,14 @@ def fiws_parse(dataframe_list, args):
     df.loc[df['Year'].between(2013, 2014), 'LocationSystem'] = 'FIPS_2013'
     df.loc[df['Year'].between(2010, 2012), 'LocationSystem'] = 'FIPS_2010'
     # drop unnecessary rows
-    df = df[df['FlowName'].str.contains("Cash receipts|Value of production")]
-    df = df[df['ActivityProducedBy'].isin(['all commodities', 'crops', 'livestock and products', 'forest products',
-                                           'agricultural sector', 'services and forestry'])]
+    df = df[df['FlowName'].str.contains("Cash receipts")]
+    # the unit is $1000 USD, so multiply FlowAmount by 1000 and set unit as 'USD'
+    df['FlowAmount'] = df['FlowAmount'].astype(float)
+    df['FlowAmount'] = df['FlowAmount'] * 1000
     # hard code data
     df['Class'] = 'Money'
     df['SourceName'] = 'USDA_ERS_FIWS'
+    df['Unit'] = 'USD'
     # Add tmp DQ scores
     # df['DataReliability'] = 5
     # df['DataCollection'] = 5
