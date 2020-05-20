@@ -9,7 +9,7 @@ url:
   api_path: "__year__/pep/population?" # __year__ is used to trigger a replace function to substitute in year
   url_params:
     get: "POP"
-    for: "__aggLevel__:*"  # county, state, or national level
+    for: "__aggLevel__:*&DATE_CODE=__DateCode__"  # county, state, or national level
     key: "__apiKey__" # make the __apiKey__ part of the url and substitute in individual api key
   key_param: key
 url_replace_fxn: Census_pop_URL_helper
@@ -19,6 +19,17 @@ agg_levels:
   - county
   - state
   - us
+# want all population estimates from july 1
+datecodes:
+  2011: 4
+  2012: 5
+  2013: 6
+  2014: 7
+  2015: 8
+  2016: 9
+  2017: 10
+  2018: 11
+  2019: 12
 years:
   - 2010
   - 2011
