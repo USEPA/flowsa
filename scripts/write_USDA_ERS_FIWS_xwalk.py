@@ -6,6 +6,8 @@
 """
 Create a crosswalk linking the downloaded USDA_ERS_FIWS to NAICS_12. Created by selecting unique Activity Names and
 manually assigning to NAICS
+
+The assigned NAICS line up with 7/8 digit USDA CoA Cropland/Livestock
 """
 import pandas as pd
 from flowsa.common import datapath, outputpath
@@ -34,47 +36,46 @@ def assign_naics(df):
 
     #### CROPS ####################
 
-    # coa equivalent to crop production: 111
+    # equivalent to crop production: 111
     df.loc[df['Activity'] == 'Crops', 'Sector'] = '111'
 
-    ## coa equivalent to soybean farming: 11111
+    ## equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'Soybeans', 'Sector'] = '11111'
 
-    # coa aggregates to oilseed (except soybean) farming: 11112
-    df.loc[df['Activity'] == 'Flaxseed', 'Sector'] = '111120A'
+    # aggregates to oilseed (except soybean) farming: 11112
+    df.loc[df['Activity'] == 'Flaxseed', 'Sector'] = '111120B'
+    df.loc[df['Activity'] == 'Safflower', 'Sector'] = '111120E'
+    df.loc[df['Activity'] == 'Sunflower', 'Sector'] = '111120G'
     df.loc[df['Activity'] == 'Oil crops, Miscellaneous', 'Sector'] = '111120B'
-    # df.loc[df['Activity'] == 'Canola', 'Sector'] = '111120B1'
-    # df.loc[df['Activity'] == 'Mustardseed', 'Sector'] = '111120B2'
-    # df.loc[df['Activity'] == 'Rapeseed', 'Sector'] = '111120B3'
-    df.loc[df['Activity'] == 'Peanuts', 'Sector'] = '111120C'
-    df.loc[df['Activity'] == 'Safflower', 'Sector'] = '111120D'
-    df.loc[df['Activity'] == 'Sunflower', 'Sector'] = '111120E'
+    # df.loc[df['Activity'] == 'Canola', 'Sector'] = '111120A' # part of micellaneous oil crops
+    # df.loc[df['Activity'] == 'Mustardseed', 'Sector'] = '111120C'  # part of micellaneous oil crops
+    # df.loc[df['Activity'] == 'Rapeseed', 'Sector'] = '111120D'  # part of micellaneous oil crops
 
-    # coa aggregates to dry pea and bean farming: 11113
-    df.loc[df['Activity'] == 'Dry beans', 'Sector'] = '111130A'
-    df.loc[df['Activity'] == 'Dry peas', 'Sector'] = '111130B'
-    # df.loc[df['Activity'] == 'Dry peas, Austrian winter peas', 'Sector'] = '111130B1'
-    # df.loc[df['Activity'] == 'Dry peas, Edible peas', 'Sector'] = '111130B2'
-    # df.loc[df['Activity'] == 'Dry peas, Wrinkled seed peas', 'Sector'] = '111130B3'
-    df.loc[df['Activity'] == 'Lentils (Beans)', 'Sector'] = '111130C'
+    #  aggregates to dry pea and bean farming: 11113
+    df.loc[df['Activity'] == 'Dry beans', 'Sector'] = '111130I'
+    df.loc[df['Activity'] == 'Dry peas', 'Sector'] = '111130J'
+    # df.loc[df['Activity'] == 'Dry peas, Austrian winter peas', 'Sector'] = ''
+    # df.loc[df['Activity'] == 'Dry peas, Edible peas', 'Sector'] = ''
+    # df.loc[df['Activity'] == 'Dry peas, Wrinkled seed peas', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Lentils (Beans)', 'Sector'] = '111130E'
 
-    # coa equivalent to wheat farming: 11114
+    # equivalent to wheat farming: 11114
     df.loc[df['Activity'] == 'Wheat', 'Sector'] = '11114'
 
-    # coa aggregates to corn farming: 11115
+    # aggregates to corn farming: 11115
     df.loc[df['Activity'] == 'Corn', 'Sector'] = '11115'
 
-    # coa equivalent to rice farming: 11116
+    # equivalent to rice farming: 11116
     df.loc[df['Activity'] == 'Rice', 'Sector'] = '11116'
 
-    # coa aggregates to all other grain farming: 111199
+    # aggregates to all other grain farming: 111199
     df.loc[df['Activity'] == 'Barley', 'Sector'] = '111199A'
-    df.loc[df['Activity'] == 'Proso millet', 'Sector'] = '111199B'
-    df.loc[df['Activity'] == 'Oats', 'Sector'] = '111199C'
-    df.loc[df['Activity'] == 'Rye', 'Sector'] = '111199D'
-    df.loc[df['Activity'] == 'Sorghum grain', 'Sector'] = '111199E'
+    df.loc[df['Activity'] == 'Proso millet', 'Sector'] = '111199C'
+    df.loc[df['Activity'] == 'Oats', 'Sector'] = '111199D'
+    df.loc[df['Activity'] == 'Rye', 'Sector'] = '111199E'
+    df.loc[df['Activity'] == 'Sorghum grain', 'Sector'] = '111199F'
 
-    ## coa equivalent to vegetable and melon farming: 111200
+    ## equivalent to vegetable and melon farming: 1112
 
     # equivalent to potato farming: 111211
     df.loc[df['Activity'] == 'Potatoes', 'Sector'] = '111211A'
@@ -129,7 +130,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Honeydews', 'Sector'] = '111219Y'
     df.loc[df['Activity'] == 'Watermelons', 'Sector'] = '111219Z'
 
-    # coa aggregates to fruit and tree nut farming: 1113
+    # aggregates to fruit and tree nut farming: 1113
     df.loc[df['Activity'] == 'Fruits/Nuts', 'Sector'] = '1113'
     # df.loc[df['Activity'] == 'Almonds', 'Sector'] = 'test'
     # df.loc[df['Activity'] == 'Apples', 'Sector'] = 'test'
@@ -167,34 +168,35 @@ def assign_naics(df):
     # df.loc[df['Activity'] == 'Tangerines', 'Sector'] = 'test'
     # df.loc[df['Activity'] == 'Walnuts', 'Sector'] = 'test'
 
-    # coa aggregates to greenhouse nursery and floriculture production: 1114
+    # aggregates to greenhouse nursery and floriculture production: 1114
     df.loc[df['Activity'] == 'Greenhouse/Nursery, Floriculture', 'Sector'] = '1114'
 
-    # coa equivalent to tobacco farming: 11191
-    df.loc[df['Activity'] == 'Tobacco', 'Sector'] = '111910'
+    # equivalent to tobacco farming: 11191
+    df.loc[df['Activity'] == 'Tobacco', 'Sector'] = '11191'
 
-    # coa aggregates to cotton: 11192
+    # aggregates to cotton: 11192
     df.loc[df['Activity'] == 'Cotton', 'Sector'] = '11192'
     # df.loc[df['Activity'] == 'Cotton lint', 'Sector'] = '111920A'
     # df.loc[df['Activity'] == 'Cotton lint, Long staple', 'Sector'] = '111920A1'
     # df.loc[df['Activity'] == 'Cotton lint, Upland', 'Sector'] = '111920A2'
     # df.loc[df['Activity'] == 'Cottonseed', 'Sector'] = '111920B'
 
-    # coa aggregates to sugarcane farming: 11193
+    # aggregates to sugarcane farming: 11193
     df.loc[df['Activity'] == 'Cane for sugar', 'Sector'] = '11193'
 
-    # coa aggregates to hay farming: 11194
+    # aggregates to hay farming: 11194
     df.loc[df['Activity'] == 'Hay', 'Sector'] = '11194'
 
-    # coa aggregates to all other crop farming: 11199
-    df.loc[df['Activity'] == 'All other crops, Miscellaneous crops', 'Sector'] = '111990A'
-    df.loc[df['Activity'] == 'Maple products', 'Sector'] = '111990B'
-    df.loc[df['Activity'] == 'Sugar beets', 'Sector'] = '111990C'
-    df.loc[df['Activity'] == 'Hops', 'Sector'] = '111990D'
-    df.loc[df['Activity'] == 'Mint', 'Sector'] = '111990E'
-    # df.loc[df['Activity'] == 'Mint, Peppermint oil', 'Sector'] = '111990E1'
-    # df.loc[df['Activity'] == 'Mint, Spearmint oil', 'Sector'] = '111990E2'
-    df.loc[df['Activity'] == 'Mushrooms', 'Sector'] = '111990F'
+    # aggregates to all other crop farming: 11199
+    df.loc[df['Activity'] == 'Sugar beets', 'Sector'] = '111991'
+    df.loc[df['Activity'] == 'Peanuts', 'Sector'] = '111992'
+    df.loc[df['Activity'] == 'Maple products', 'Sector'] = '111998B'
+    df.loc[df['Activity'] == 'Hops', 'Sector'] = '111998E'
+    df.loc[df['Activity'] == 'Mint', 'Sector'] = '111998G'
+    # df.loc[df['Activity'] == 'Mint, Peppermint oil', 'Sector'] = '111998G1'
+    # df.loc[df['Activity'] == 'Mint, Spearmint oil', 'Sector'] = '111998G2'
+    df.loc[df['Activity'] == 'All other crops, Miscellaneous crops', 'Sector'] = '111998I'
+    df.loc[df['Activity'] == 'Mushrooms', 'Sector'] = '111998J'
 
 
 
@@ -217,11 +219,14 @@ def assign_naics(df):
 
     # poultry and egg production: 1123
     df.loc[df['Activity'] == 'Poultry/Eggs', 'Sector'] = '1123'
+
     # # chicken egg production: 11231
     # df.loc[df['Activity'] == 'Chicken eggs', 'Sector'] = '11231'
+
     # # broilers and other meat-type chicken production: 11232
     # df.loc[df['Activity'] == 'Broilers', 'Sector'] = '112320A'
     # df.loc[df['Activity'] == 'Farm chickens', 'Sector'] = '112320B'
+
     # # turkey production: 11233
     # df.loc[df['Activity'] == 'Turkeys', 'Sector'] = '11233'
 
@@ -238,10 +243,10 @@ def assign_naics(df):
     # apiculture: 11291
     df.loc[df['Activity'] == 'Honey', 'Sector'] = '112910A'
     # all other animal production: 11299
-    df.loc[df['Activity'] == 'Animals and products, Other animals and products', 'Sector'] = '112990A'
-    # df.loc[df['Activity'] == 'Animals and products, All other animals and products', 'Sector'] = '112990A1'
-    # df.loc[df['Activity'] == 'Animals and products, Milk pelts', 'Sector'] = '112990A1'
-    df.loc[df['Activity'] == 'Wool', 'Sector'] = '112990B'
+    df.loc[df['Activity'] == 'Animals and products, Other animals and products', 'Sector'] = '112990E'
+    # df.loc[df['Activity'] == 'Animals and products, All other animals and products', 'Sector'] = '112990E1'
+    # df.loc[df['Activity'] == 'Animals and products, Milk pelts', 'Sector'] = '112990E1'
+    df.loc[df['Activity'] == 'Wool', 'Sector'] = '112990F'
 
 
     ################# FORESTRY ##############33
