@@ -52,7 +52,7 @@ def main(method_name):
     fbas = method['flowbyactivity_sources']
     for k,v in fbas.items():
         print(k)
-        flows = flowsa.getFlowByActivity(flowclass=v['class'],
+        flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                                     years=[v['year']],
                                                     datasource = k)
         # drop description field
