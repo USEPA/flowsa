@@ -76,11 +76,11 @@ def load_sector_crosswalk():
     cw = pd.read_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", dtype="str")
     return cw
 
-# def load_source_catalog():
-#     sources= datapath+'source_catalog.yaml'
-#     with open(sources, 'r') as f:
-#         config = yaml.safe_load(f)
-#     return config
+def load_source_catalog():
+     sources= datapath+'source_catalog.yaml'
+     with open(sources, 'r') as f:
+         config = yaml.safe_load(f)
+     return config
 
 def load_sourceconfig(source):
     sfile = sourceconfigpath+source+'.yaml'
