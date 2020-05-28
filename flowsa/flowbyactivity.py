@@ -42,18 +42,22 @@ def filter_by_geoscale(flowbyactivity_df, geoscale):
     :param geoscale: string, either 'national', 'state', or 'county'
     :return: filtered flowbyactivity
     """
-    fips = []
-    #all_FIPS = read_stored_FIPS()
-    if (geoscale == "national"):
-        fips.append(US_FIPS)
-    elif (geoscale == "state"):
-        state_FIPS = get_state_FIPS()
-        fips = list(state_FIPS['FIPS'])
-    elif (geoscale == "county"):
-        county_FIPS = get_county_FIPS()
-        fips = list(county_FIPS['FIPS'])
+    # filter by geoscale depends on Location System
+    if flowbyactivity_df['LocationSystem'].str.contains('FIPS').any():
+        fips = []
+        # all_FIPS = read_stored_FIPS()
+        if (geoscale == "national"):
+            fips.append(US_FIPS)
+        elif (geoscale == "state"):
+            state_FIPS = get_state_FIPS()
+            fips = list(state_FIPS['FIPS'])
+        # TODO: modify county code to account for changes in FIPS over yrs
+        elif (geoscale == "county"):
+            county_FIPS = get_county_FIPS()
+            fips = list(county_FIPS['FIPS'])
 
-    flowbyactivity_df = flowbyactivity_df[flowbyactivity_df['FIPS'].isin(fips)]
+    flowbyactivity_df = flowbyactivity_df[flowbyactivity_df['Location'].isin(fips)]
+
     if len(flowbyactivity_df) == 0:
         log.error("No flows found in the flow dataset at the " + geoscale + " scale.")
     else:
@@ -75,12 +79,14 @@ def agg_by_geoscale(flowbyactivity_df, from_scale, to_scale):
     fba_from_scale = filter_by_geoscale(flowbyactivity_df,from_scale)
 
     group_cols = fba_default_grouping_fields.copy()
-    group_cols.remove('FIPS')
+    group_cols.remove('Location')
+
+    # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
-        fba_from_scale['to_FIPS'] = fba_from_scale['FIPS'].apply(lambda x: str(x[0:2]))
-        group_cols.append('to_FIPS')
+        fba_from_scale['to_Location'] = fba_from_scale['Location'].apply(lambda x: str(x[0:2]))
+        group_cols.append('to_Location')
     #if national no need to do anything
-    fba_agg = aggregator(fba_from_scale,group_cols)
+    fba_agg = aggregator(fba_from_scale, group_cols)
     return fba_agg
 
 

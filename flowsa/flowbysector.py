@@ -77,7 +77,7 @@ def main(method_name):
             to_scale = method['target_geoscale']
             flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale)
 
-            fba_allocation = flowsa.getFlowByActivity(flowclass=attr['allocation_source_class'],
+            fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                       datasource=attr['allocation_source'],
                                                       years=[attr['allocation_source_year']])
             fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
