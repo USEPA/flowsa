@@ -1,0 +1,192 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+EIA_CBECS_Water,Education,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Education,NAICS_Code_2002,624,I
+EIA_CBECS_Water,Education,NAICS_Code_2002,928,I
+EIA_CBECS_Water,Food Sales,NAICS_Code_2002,424,I
+EIA_CBECS_Water,Food Sales,NAICS_Code_2002,445,I
+EIA_CBECS_Water,Food Sales,NAICS_Code_2002,447,I
+EIA_CBECS_Water,Food Sales,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Food Sales,NAICS_Code_2002,712,I
+EIA_CBECS_Water,Food Sales,NAICS_Code_2002,713,I
+EIA_CBECS_Water,Food Sales,NAICS_Code_2002,928,I
+EIA_CBECS_Water,Food Service,NAICS_Code_2002,722,I
+EIA_CBECS_Water,Food Service,NAICS_Code_2002,721,I
+EIA_CBECS_Water,Food Service,NAICS_Code_2002,713,I
+EIA_CBECS_Water,Food Service,NAICS_Code_2002,928,I
+EIA_CBECS_Water,Food Service,NAICS_Code_2002,624,I
+EIA_CBECS_Water,Food Service,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Food Service,NAICS_Code_2002,712,I
+EIA_CBECS_Water,Inpatient Health Care,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Inpatient Health Care,NAICS_Code_2002,621,I
+EIA_CBECS_Water,Inpatient Health Care,NAICS_Code_2002,622,I
+EIA_CBECS_Water,Lodging,NAICS_Code_2002,721,I
+EIA_CBECS_Water,Lodging,NAICS_Code_2002,713,I
+EIA_CBECS_Water,Lodging,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Lodging,NAICS_Code_2002,623,I
+EIA_CBECS_Water,Lodging,NAICS_Code_2002,624,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,522,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,523,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,524,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,531,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,532,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,521,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,525,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,519,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,493,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,517,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,516,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,515,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,512,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,511,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,533,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,492,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,518,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,541,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,922,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,561,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,928,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,927,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,926,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,925,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,924,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,923,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,488,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,921,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,812,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,811,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,713,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,712,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,711,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,624,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,621,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,562,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,551,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,487,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,813,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,485,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,484,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,483,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,482,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,481,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,454,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,441,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,424,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,423,I
+EIA_CBECS_Water,Office,NAICS_Code_2002,486,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,454,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,481,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,488,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,512,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,562,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,517,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,518,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,541,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,515,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,927,I
+EIA_CBECS_Water,Other,NAICS_Code_2002,928,I
+EIA_CBECS_Water,Outpatient Health Care,NAICS_Code_2002,621,I
+EIA_CBECS_Water,Outpatient Health Care,NAICS_Code_2002,624,I
+EIA_CBECS_Water,Outpatient Health Care,NAICS_Code_2002,928,I
+EIA_CBECS_Water,Outpatient Health Care,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,485,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,487,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,488,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,512,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,515,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,711,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,712,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,713,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,721,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,812,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,921,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,519,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,483,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,482,I
+EIA_CBECS_Water,Public Assembly,NAICS_Code_2002,481,I
+EIA_CBECS_Water,Public Order/ Safety,NAICS_Code_2002,921,I
+EIA_CBECS_Water,Public Order/ Safety,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Public Order/ Safety,NAICS_Code_2002,922,I
+EIA_CBECS_Water,Religious Worship,NAICS_Code_2002,813,I
+EIA_CBECS_Water,Religious Worship,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,448,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,452,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,444,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,443,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,442,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,441,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,453,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,517,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,451,I
+EIA_CBECS_Water,Retail (mall),NAICS_Code_2002,446,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,713,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,611,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,532,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,441,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,442,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,443,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,444,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,712,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,446,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,448,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,451,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,452,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,453,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,517,I
+EIA_CBECS_Water,Retail (non-mall),NAICS_Code_2002,518,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,812,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,811,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,562,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,517,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,532,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,441,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,447,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,482,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,483,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,484,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,485,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,486,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,487,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,488,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,491,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,541,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,481,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,518,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,516,I
+EIA_CBECS_Water,Service,NAICS_Code_2002,492,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,482,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,811,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,921,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,927,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,928,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,453,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,443,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,611,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,442,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,441,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,424,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,423,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,444,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,562,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,532,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,531,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,483,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,484,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,485,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,486,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,487,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,488,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,492,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,493,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,511,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,512,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,454,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,517,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,518,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,519,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,521,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,481,I
+EIA_CBECS_Water,Warehouse/ Storage,NAICS_Code_2002,516,I
