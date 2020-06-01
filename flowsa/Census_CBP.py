@@ -89,6 +89,7 @@ def census_cbp_parse(dataframe_list, args):
     elif '2010' <= args['year'] < '2013':
         df['LocationSystem'] = 'FIPS_2010'
     # hard code data
+    df['SourceName'] = 'Census_CBP'
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
