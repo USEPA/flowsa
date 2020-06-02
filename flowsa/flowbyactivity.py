@@ -1,9 +1,12 @@
 """
 Helper functions for flowbyactivity data
 """
+import flowsa
+from functools import reduce
 import numpy as np
+import pandas as pd
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
-    flow_by_activity_fields, load_sector_crosswalk, sector_source_name
+    flow_by_activity_fields, load_sector_crosswalk, sector_source_name, datapath
 
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
@@ -43,15 +46,14 @@ def filter_by_geoscale(flowbyactivity_df, geoscale):
     :return: filtered flowbyactivity
     """
     # filter by geoscale depends on Location System
+    fips = []
     if flowbyactivity_df['LocationSystem'].str.contains('FIPS').any():
-        fips = []
         # all_FIPS = read_stored_FIPS()
         if (geoscale == "national"):
             fips.append(US_FIPS)
         elif (geoscale == "state"):
             state_FIPS = get_state_FIPS()
             fips = list(state_FIPS['FIPS'])
-        # TODO: modify county code to account for changes in FIPS over yrs
         elif (geoscale == "county"):
             county_FIPS = get_county_FIPS()
             fips = list(county_FIPS['FIPS'])
@@ -90,8 +92,6 @@ def agg_by_geoscale(flowbyactivity_df, from_scale, to_scale):
     return fba_agg
 
 
-
-
 def aggregator(flowbyactivity_df, groupbycols):
     """
     Aggregates flowbyactivity_df by given groupbycols
@@ -99,7 +99,12 @@ def aggregator(flowbyactivity_df, groupbycols):
     :param groupbycols:
     :return:
     """
-    wm = lambda x: np.average(x, weights=flowbyactivity_df.loc[x.index, "FlowAmount"])
+
+    try:
+        wm = lambda x: np.ma.average(x, weights=flowbyactivity_df.loc[x.index, "FlowAmount"])
+    except ZeroDivisionError:
+        wm = 0
+
     agg_funx = {"FlowAmount":"sum",
                 "Spread":wm,
                 "DataReliability": wm,
@@ -137,6 +142,7 @@ def check_fba_fields(flowbyactivity_df):
         except:
             log.debug("Failed to find field ",k," in fba")
 
+
 def check_if_activities_match_sectors(fba):
     """
     Checks if activities in flowbyactivity that appear to be like sectors are actually sectors
@@ -159,4 +165,99 @@ def check_if_activities_match_sectors(fba):
     else:
         log.info("All activities match sectors in " + sector_source_name + " list.")
         return None
+
+
+def convert_unit(df):
+    """Convert unit to standard"""
+    # class = employment, unit = 'p'
+    # class = energy, unit = MJ
+    # class = land, unit = m2/yr
+    # class = money, unit = USD/yr
+
+    # class = water, unit = m3/yr
+    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', ((df['FlowAmount'] * 1000000000) / 264.17) / 365, df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'Bgal/d', 'm3.yr', df['Unit'])
+
+    df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', ((df['FlowAmount'] * 1000000) / 264.17) / 365, df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'Mgal/d', 'm3.yr', df['Unit'])
+
+    # class = other, unit varies
+
+    return df
+
+
+def geoscale_flow_comparison(flowclass, years, datasource, activitynames='all', to_scale='national'):
+    """ Aggregates county data to state and national, and state data to national level, allowing for comparisons
+        in flow totals for a given flowclass and industry. First assigns all flownames to NAICS and standardizes units"""
+
+    # problems with the code:
+    # will not work for usgs wu because nat'l level data has different names. only works for datasets that have county
+    # level data
+
+    # load parquet file checking aggregation
+    flows = flowsa.getFlowByActivity(flowclass=flowclass,
+                                     years=years,
+                                     datasource=datasource)
+    # fill null values
+    flows = flows.fillna(value=fba_fill_na_dict)
+    # convert units
+    flows = convert_unit(flows)
+
+    # if activityname set to default, then compare aggregation for all activities. If looking at particular activity,
+    # filter that activity out
+    if activitynames == ['all']:
+        flow_subset = flows.copy()
+    else:
+        flow_subset = flows[(flows[fba_activity_fields[0]].isin(activitynames)) |
+                            (flows[fba_activity_fields[1]].isin(activitynames))]
+
+    # Reset index values after subset
+    flow_subset = flow_subset.reset_index()
+
+    # create list of geoscales for aggregation
+    if to_scale == 'national':
+        geoscales = ['national', 'state', 'county']
+    elif to_scale =='state':
+        geoscales = ['state', 'county']
+
+    # create empty df list
+    flow_dfs = []
+    for i in geoscales:
+        # filter by geoscale
+        fba_from_scale = filter_by_geoscale(flow_subset, i)
+
+        # remove "location" as a column
+        group_cols = fba_default_grouping_fields.copy()
+        group_cols.remove('Location')
+
+        # county sums to state and national, state sums to national
+        if to_scale == 'state':
+            fba_from_scale['to_Location'] = fba_from_scale['Location'].apply(lambda x: str(x[0:2]))
+        elif to_scale == 'national':
+            fba_from_scale['to_Location'] = US_FIPS
+        group_cols.append('to_Location')
+
+        # aggregate
+        fba_agg = aggregator(fba_from_scale, group_cols)
+
+        # rename flowamount column, based on geoscale
+        fba_agg = fba_agg.rename(columns={"FlowAmount": "FlowAmount_" + i})
+
+        # drop fields irrelevant to aggregated flow comparision
+        drop_fields = flows[['MeasureofSpread', 'Spread', 'DistributionType', 'DataReliability','DataCollection']]
+        fba_agg = fba_agg.drop(columns=drop_fields)
+
+        # reset index
+        fba_agg = fba_agg.reset_index(drop=True)
+
+        #append to datatframe
+        flow_dfs.append(fba_agg)
+
+    # merge list of dfs by column
+    flow_comparison = reduce(lambda left, right: pd.merge(left, right, on=['Class', 'SourceName', 'FlowName', 'Unit',
+                                                                           'ActivityProducedBy','ActivityConsumedBy',
+                                                                           'Compartment', 'to_Location',
+                                                                           'LocationSystem', 'Year']), flow_dfs)
+
+    return flow_comparison
 
