@@ -23,7 +23,6 @@ from flowsa.EIA_CBECS_Water import *
 from flowsa.StatCan_IWS_MI import *
 from flowsa.USDA_CoA_Cropland import *
 from flowsa.USDA_CoA_Livestock import *
-from flowsa.USDA_CoA_ProdMarkValue import *
 from flowsa.USDA_ERS_FIWS import *
 from flowsa.USDA_IWMS import *
 from flowsa.USGS_NWIS_WU import *

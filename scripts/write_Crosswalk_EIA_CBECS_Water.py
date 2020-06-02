@@ -36,7 +36,7 @@ df = df[df['value'].notna()]
 
 # Add additional columns
 df['ActivitySourceName'] = "EIA_CBECS_Water"
-df['SectorSourceName'] = "NAICS_Code_2002"
+df['SectorSourceName'] = "NAICS_2002_Code"
 df['SectorType'] = "I"
 
 # reorder and drop columns

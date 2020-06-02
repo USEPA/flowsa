@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # Activity and Sector are the same
     df['Sector'] = df['Activity'].copy()
     # Add additional columns
-    df['SectorSourceName'] = "NAICS_Code_2012"
+    df['SectorSourceName'] = "NAICS_2012_Code"
     df['SectorType'] = "I"
     # reorder
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
