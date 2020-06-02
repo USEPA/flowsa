@@ -36,7 +36,8 @@ df = df[df['value'].notna()]
 
 # Add additional columns
 df['ActivitySourceName'] = "EIA_CBECS_Water"
-df['SectorSourceName'] = "NAICS_2002_Code"
+# the original dataset is for NAICS 2002, but 3 digit NAICS have not changed between 2002 and 2012, so labeling 2012
+df['SectorSourceName'] = "NAICS_2012_Code"
 df['SectorType'] = "I"
 
 # reorder and drop columns

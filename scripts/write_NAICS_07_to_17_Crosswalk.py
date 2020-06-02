@@ -4,7 +4,9 @@
 
 
 """
-Grabs NAICS 2007, 2012, and 2017 codes from useeior.
+Uses a csv file manually loaded, originally from USEEIOR (4/18/2020), to form base NAICS crosswalk from 2007-2017
+Loops through the source crosswalks to find any NAICS not in offical Census NAICS Code list. Adds the additional NAICS
+to NAICS crosswalk.
 
 - Writes reshaped file to datapath as csv.
 """
@@ -17,11 +19,8 @@ import pandas as pd
 
 
 # does not work due to issues with rpy2. Crosswalk was manually copied from useeior and added as csv (4/18/2020)
-
 # pandas2ri.activate()
-#
 # useeior = importr('useeior')
-#
 # NAICS_crosswalk = useeior.getMasterCrosswalk(2012)
 # NAICS_crosswalk = pandas2ri.ri2py_dataframe(NAICS_crosswalk)
 
@@ -29,8 +28,6 @@ import pandas as pd
 # read the csv loaded as a raw datafile
 naics = pd.read_csv(datapath + "NAICS_useeior_Crosswalk.csv")
 naics = naics[naics['NAICS_2007_Code'].notna()]
-# add new column for 2002
-naics.insert(loc=0, column="NAICS_2002_Code", value=None)
 # convert all rows to string
 naics = naics.astype(str)
 
@@ -56,13 +53,13 @@ for file_name in glob.glob(datapath + "activitytosectormapping/"+'*_toNAICS.csv'
 # concat df list and drop duplications
 missing_naics_df = pd.concat(missing_naics_df_list, ignore_index=True, sort=True).drop_duplicates()
 # sort df
-missing_naics_df = missing_naics_df.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code', 'NAICS_2002_Code'])
+missing_naics_df = missing_naics_df.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code'])
 missing_naics_df = missing_naics_df.reset_index(drop=True)
 
 # add missing naics to master naics crosswalk
 total_naics= naics.append(missing_naics_df, sort=True)
 # sort df
-total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code', 'NAICS_2002_Code'])
+total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code'])
 
 # save as csv
 total_naics.to_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", index=False)
