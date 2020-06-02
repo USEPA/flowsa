@@ -116,7 +116,7 @@ def usgs_parse(dataframe_list, args):
     df["Unit"] = df['Unit'].str.replace("in ", "", regex=True)
     df["Unit"] = df['Unit'].str.replace("In ", "", regex=True)
     df = df[~df['Unit'].isin(["millions", "gallons/person/day", "thousands", "thousand acres", "gigawatt-hours"])]
-    df = df[~df['Description'].str.contains("number of facilities")]
+    df = df[~df['Unit'].str.contains("number of")]
     df.loc[df['Unit'].isin(['Mgal/', 'Mgal']), 'Unit'] = 'Mgal/d'
     # assign activities to produced or consumed by, using functions defined below
     activities = df['Description'].apply(activity)
