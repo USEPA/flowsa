@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 #from flowsa.datapull import make_http_request, load_from_requests_response, format_url_values
 from flowsa.common import *
+from flowsa.flowbyactivity import fba_activity_fields
 
 
 def usgs_URL_helper(build_url, config, args):
@@ -221,6 +222,27 @@ def split_name(name):
     return (upper_case, lower_case)
 
 
+def standardize_usgs_nwis_names(flowbyactivity_df):
+    """
+    The activity names differ at the national level. Method to standardize names to allow for comparison of aggregation
+    to national level.
 
+    Used to check geoscale aggregation
+    """
 
+    # flowbyactivity_df = flow_subset
+    for f in fba_activity_fields:
+        flowbyactivity_df['Sector' + f] = np.where(flowbyactivity_df[f] == 'Public Supply', 'Public',
+                                                   flowbyactivity_df[f])
+        flowbyactivity_df['Sector' + f] = np.where(flowbyactivity_df[f] == 'Irrigation, Total', 'Irrigation',
+                                                   flowbyactivity_df[f])
+        flowbyactivity_df['Sector' + f] = np.where(flowbyactivity_df[f] == 'Total Thermoelectric Power',
+                                                   'Thermoelectric', flowbyactivity_df[f])
+        flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
+    # rename columns
+    flowbyactivity_df = flowbyactivity_df.rename(columns={"SectorActivityProducedBy": "SectorProducedBy",
+                                                          "SectorActivityConsumedBy": "SectorConsumedBy"
+                                                          })
+
+    return flowbyactivity_df
