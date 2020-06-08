@@ -150,7 +150,7 @@ def check_if_activities_match_sectors(fba):
     """
     # Get list of activities in a flowbyactivity file
     activities = []
-    for f in  fba_activity_fields:
+    for f in fba_activity_fields:
         activities.extend(fba[f])
     activities.remove("None")
 
@@ -174,10 +174,10 @@ def convert_unit(df):
     # class = money, unit = USD/yr
 
     # class = water, unit = m3/yr
-    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', ((df['FlowAmount'] * 1000000000) / 264.17) / 365, df['FlowAmount'])
+    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', ((df['FlowAmount'] * 1000000000) / 264.17) * 365, df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'Bgal/d', 'm3.yr', df['Unit'])
 
-    df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', ((df['FlowAmount'] * 1000000) / 264.17) / 365, df['FlowAmount'])
+    df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', ((df['FlowAmount'] * 1000000) / 264.17) * 365, df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'Mgal/d', 'm3.yr', df['Unit'])
 
     # class = other, unit varies
