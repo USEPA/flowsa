@@ -108,4 +108,8 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
                                                                            'Compartment', 'to_Location',
                                                                            'LocationSystem', 'Year'], how='outer'), flow_dfs)
 
+    # sort df
+    flow_comparison = flow_comparison.sort_values(['Year', 'to_Location', 'SectorProducedBy', 'SectorConsumedBy',
+                                                   'FlowName', 'Compartment'])
+
     return flow_comparison
