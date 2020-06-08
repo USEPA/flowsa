@@ -230,14 +230,21 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     Used to check geoscale aggregation
     """
 
-    # flowbyactivity_df = flow_subset
+    # modify national level compartment
+    flowbyactivity_df['Compartment'].loc[
+        (flowbyactivity_df['Location'] == '00000') & (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'total'
+    flowbyactivity_df['FlowName'].loc[
+        (flowbyactivity_df['Location'] == '00000') & (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
+    flowbyactivity_df['Compartment'].loc[
+        (flowbyactivity_df['Compartment'] == 'None') & (flowbyactivity_df['Location'] == '00000')] = 'total'
+
+    # standardize activity names across geoscales
     for f in fba_activity_fields:
-        flowbyactivity_df['Sector' + f] = np.where(flowbyactivity_df[f] == 'Public Supply', 'Public',
-                                                   flowbyactivity_df[f])
-        flowbyactivity_df['Sector' + f] = np.where(flowbyactivity_df[f] == 'Irrigation, Total', 'Irrigation',
-                                                   flowbyactivity_df[f])
-        flowbyactivity_df['Sector' + f] = np.where(flowbyactivity_df[f] == 'Total Thermoelectric Power',
-                                                   'Thermoelectric', flowbyactivity_df[f])
+        flowbyactivity_df['Sector' + f] = flowbyactivity_df[f]
+
+        flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Public'] = 'Public Supply'
+        flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Irrigation, Total'] = 'Irrigation'
+        flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Total Thermoelectric Power'] = 'Thermoelectric'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
     # rename columns
