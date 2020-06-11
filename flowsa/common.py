@@ -137,6 +137,30 @@ activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
                    'ConsumedBy': [{'flowbyactivity':'ActivityConsumedBy'},
                                   {'flowbysector': 'SectorConsumedBy'}]
                    }
+
+
+def generalize_activity_field_names(df):
+    """
+    The 'activityconsumedby' and 'activityproducedby' columns from the allocation dataset do not always align with
+    the water use dataframe. Generalize the allocation activity column.
+    :param fba_df:
+    :return:
+    """
+
+    # if an activity field column is all 'none', drop the column and rename renaming activity columns to generalize
+    for k, v in activity_fields.items():
+        if df[v[0]["flowbyactivity"]].all() == 'None':
+            df = df.drop(columns=[v[0]["flowbyactivity"]])
+        else:
+            df = df.rename(columns={v[0]["flowbyactivity"]: 'Activity'})
+        if df[v[1]["flowbysector"]].all() == 'None':
+            df = df.drop(columns=[v[1]["flowbysector"]])
+        else:
+            df = df.rename(columns={v[1]["flowbysector"]: 'Sector'})
+
+    return df
+
+
 def read_stored_FIPS():
     FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
     # ensure that FIPS retain leading 0s
