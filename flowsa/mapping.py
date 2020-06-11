@@ -5,6 +5,7 @@
 Contains mapping functions
 """
 import pandas as pd
+import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk
 
@@ -41,7 +42,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             #Create mapping df that's just the sectors at first
             mapping = sectors.drop_duplicates()
             #Add the sector twice as activities so mapping is identical
-            mapping['Activity'] = sectors[sector_source_name]
+            mapping['Activity'] = sectors[sector_source_name].copy()
+            mapping = mapping.rename(columns={sector_source_name: "Sector"})
         else:
             # if source data activities are text strings, call on the manually created source crosswalks
             mapping = get_activitytosector_mapping(s)
@@ -65,5 +67,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
             #Merge them in. Critical this is a left merge to preserve all unmapped rows
             flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left')
+            # replace nan in sector columns with none
+            flowbyactivity_wsector_df[flowbysector_field] = flowbyactivity_wsector_df[flowbysector_field].replace(
+                {np.nan: None}).astype(str)
 
     return flowbyactivity_wsector_df
