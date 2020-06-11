@@ -3,6 +3,7 @@ Helper functions for flowbyactivity data
 """
 import flowsa
 import numpy as np
+import pandas as pd
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, load_sector_crosswalk, sector_source_name, datapath
 
@@ -183,3 +184,25 @@ def convert_unit(df):
     # class = other, unit varies
 
     return df
+
+
+def get_fba_allocation_subset(fba_allocation, source, activitynames):
+    """
+    Subset the fba allocation data based on NAICS associated with activity
+    :param fba_allocation:
+    :param sourcename:
+    :param activitynames:
+    :return:
+    """
+
+    # read in source crosswalk
+    df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
+    # subset source crosswalk to only contain values pertaining to list of activity names
+    df = df.loc[df['Activity'].isin(activitynames)]
+    # turn column of sectors related to activity names into list
+    sector_list = pd.unique(df['Sector']).tolist()
+    # subset fba allocation table to the values in the sector list
+    fba_allocation_subset = fba_allocation.loc[(fba_allocation[fba_activity_fields[0]].isin(sector_list)) |
+                                               (fba_allocation[fba_activity_fields[1]].isin(sector_list))]
+
+    return fba_allocation_subset
