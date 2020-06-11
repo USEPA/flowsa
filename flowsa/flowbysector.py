@@ -6,11 +6,21 @@ Produces a FlowBySector data frame based on a method file for the given class
 """
 import flowsa
 import yaml
-from flowsa.common import log, flowbyactivitymethodpath
+import numpy as np
+import pandas as pd
+from flowsa.common import log, flowbyactivitymethodpath, datapath, flow_by_sector_fields, \
+    generalize_activity_field_names
 from flowsa.mapping import add_sectors_to_flowbyactivity
 from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
-    fba_fill_na_dict
+    fba_fill_na_dict, convert_unit, get_fba_groupby_cols, activity_fields, fba_default_grouping_fields, \
+    get_fba_allocation_subset
 
+
+# todo: pull in the R code Mo created to prioritize NAICS codes, so no data is dropped
+
+
+fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
+                       activity_fields['ConsumedBy'][1]['flowbysector']]
 
 def load_method(method_name):
     """
@@ -27,18 +37,36 @@ def load_method(method_name):
     return method
 
 
+def get_fbs_groupby_cols():
+    groupby_cols = []
+    for k,v in flow_by_sector_fields.items():
+        if v[0]['dtype']=='str':
+            groupby_cols.append(k)
+        elif v[0]['dtype']=='int':
+            groupby_cols.append(k)
+    return groupby_cols
 
 
-#Need to create sums by flowtype and unit to check against later
+def allocate_by_sector(fba_w_sectors, allocation_method):
+    # if statements for method of allocation
 
-# Add in Sector matches now to producing and consuming activities
-# df = add_sectors_to_flowbyactivity(df)
-# Very important to note that values have not been allocated but are repeated at this point
+    # # drop coloumns
+    # fba_w_sectors = fba_w_sectors.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy', 'Description'])
+    # #fba_w_sectors['FlowAmountRatio'] = None
+    # # remove/add column names as a column
+    # groupbycols = fba_default_grouping_fields.copy()
+    # for j in ['ActivityProducedBy', 'ActivityConsumedBy']:
+    #     groupbycols.remove(j)
+    # # for j in ['SectorProducedBy', 'SectorConsumedBy']:
+    # #     groupbycols.append(j)
 
+    if allocation_method == 'proportional':
 
-def allocate_by_sector(fba_w_sectors,activity_set):
-    return None
+        fba_w_sectors['FlowAmountRatio'] = fba_w_sectors['FlowAmount'] / fba_w_sectors['FlowAmount'].groupby(
+            fba_w_sectors['Location']).transform('sum')
+        allocation = fba_w_sectors.copy()
 
+        return allocation
 
 
 def main(method_name):
@@ -48,58 +76,104 @@ def main(method_name):
     :return: flowbysector
     """
 
+    # call on method
     method = load_method(method_name)
+    # create dictionary of water data and allocation datasets
     fbas = method['flowbyactivity_sources']
     for k,v in fbas.items():
         print(k)
+        # pull water data for allocation
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
-                                                    years=[v['year']],
-                                                    datasource = k)
+                                         years=[v['year']],
+                                         datasource=k)
         # drop description field
         flows = flows.drop(columns='Description')
         # fill null values
         flows = flows.fillna(value=fba_fill_na_dict)
+        # convert unit
+        flows = convert_unit(flows)
 
-        #Add sectors
-        flows = add_sectors_to_flowbyactivity(flows,
-                                              sectorsourcename=method['target_sector_source'])
-
+        # create dictionary of allocation datasets for different usgs activities
         activities = v['activity_sets']
         for aset,attr in activities.items():
             # subset by named activities
             names = [attr['names']]
+            # subset usgs data by activity
             flow_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
                           (flows[fba_activity_fields[1]].isin(names))]
             # Reset index values after subset
             flow_subset = flow_subset.reset_index()
-            # aggregate geographically
-            from_scale = v['geoscale_to_use']
-            to_scale = method['target_geoscale']
-            flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale)
 
+            # aggregate geographically to the scale of the allocation dataset
+            from_scale = v['geoscale_to_use']
+            to_scale = attr['allocation_from_scale']
+            # aggregate usgs activity to target scale
+            flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale)
+            # rename location column and pad zeros if necessary
+            flow_subset = flow_subset.rename(columns={'to_Location': 'Location'})
+            flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
+                                                                    else x)
+
+            # determine appropriate allocation dataset
             fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                       datasource=attr['allocation_source'],
                                                       years=[attr['allocation_source_year']])
+
+            # fill null values
+            fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
+            # convert unit
+            fba_allocation = convert_unit(fba_allocation)
+
+            # assign naics to allocation dataset
             fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
-                                  sectorsourcename=method['target_sector_source'])
-            #Will fail because crosswalk is not present
+                                                           sectorsourcename=method['target_sector_source'])
+            # subset fba datsets to only keep the naics associated with usgs activity subset
+            fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
+            # Reset index values after subset
+            fba_allocation_subset = fba_allocation_subset.reset_index(drop=True)
+            # generalize activity field names to enable link to water withdrawal table
+            fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
+            # create flow allocation ratios
+            flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
 
+            # Add sectors to usgs activity and merge dataframes
+            flow_subset = add_sectors_to_flowbyactivity(flow_subset, sectorsourcename=method['target_sector_source'])
 
-    return flows
+            # merge water withdrawal df w/flow allocation datset, first on sectorproduced by, then on sectorconsumedby
+            # todo: modify to recalculate data quality scores
 
+            flow = flow_subset.merge(
+                flow_allocation[['Location', 'LocationSystem', 'Year', 'Sector', 'FlowAmountRatio']],
+                left_on=['Location', 'LocationSystem', 'Year', 'SectorProducedBy'],
+                right_on=['Location', 'LocationSystem', 'Year', 'Sector'], how='left')
 
+            flow = flow.merge(
+                flow_allocation[['Location', 'LocationSystem', 'Year', 'Sector', 'FlowAmountRatio']],
+                left_on=['Location', 'LocationSystem', 'Year', 'SectorConsumedBy'],
+                right_on = ['Location', 'LocationSystem', 'Year', 'Sector'], how='left')
 
+            # merge the flowamount columns
+            flow['FlowAmountRatio'] = flow['FlowAmountRatio_x'].fillna(flow['FlowAmountRatio_y'])
+            flow['FlowAmountRatio'] = flow['FlowAmountRatio'].fillna(0)
 
+            # calcuate flow amounts for each sector
+            flow['FlowAmount'] = flow['FlowAmount'] * flow['FlowAmountRatio']
 
+            # drop columns
+            flow = flow.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
+                                      'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
 
+            # drop rows where flowamount = 0
+            flow = flow[flow['FlowAmount'] != 0].reset_index(drop=True)
 
+            # aggregate df geographically
+            from_scale = v['geoscale_to_use']
+            to_scale = method['target_geoscale']
+            # aggregate usgs activity to target scale
+            # todo: create fxns to aggregate by fbs
+            flow = agg_by_geoscale(flow, from_scale, to_scale)
 
-
-
-
-
-
-
+    return flow
 
 
 
