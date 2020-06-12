@@ -42,7 +42,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             #Create mapping df that's just the sectors at first
             mapping = sectors.drop_duplicates()
             #Add the sector twice as activities so mapping is identical
-            mapping['Activity'] = sectors[sector_source_name].copy()
+            mapping['Activity'] = sectors.loc[sectors[sector_source_name]]
             mapping = mapping.rename(columns={sector_source_name: "Sector"})
         else:
             # if source data activities are text strings, call on the manually created source crosswalks
