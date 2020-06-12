@@ -27,6 +27,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :param sectorsourcename: A sector source name, using package default
     :return: a df with activity fields mapped to 'sectors'
     """
+
     mappings = []
 
     #First check if source activities are NAICS like - if so make it into a mapping file
@@ -40,9 +41,9 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             cw = load_sector_crosswalk()
             sectors = cw.loc[:,[sector_source_name]]
             #Create mapping df that's just the sectors at first
-            mapping = sectors.drop_duplicates()
+            mapping = sectors.drop_duplicates().dropna()
             #Add the sector twice as activities so mapping is identical
-            mapping['Activity'] = sectors.loc[sectors[sector_source_name]]
+            mapping['Activity'] = sectors[sector_source_name]
             mapping = mapping.rename(columns={sector_source_name: "Sector"})
         else:
             # if source data activities are text strings, call on the manually created source crosswalks
