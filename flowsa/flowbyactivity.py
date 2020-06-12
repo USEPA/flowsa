@@ -12,6 +12,9 @@ from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activit
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
 
+fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
+                       activity_fields['ConsumedBy'][1]['flowbysector']]
+
 fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
@@ -53,6 +56,9 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
     :return:
     """
     from flowsa.common import fips_number_key
+
+    # df = flow_subset.copy()
+    # groupbycolumns = fba_default_grouping_fields.copy()
 
     from_scale_dig = fips_number_key[from_scale]
     to_scale_dig = fips_number_key[to_scale]
@@ -193,8 +199,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     df = df.loc[df['Activity'].isin(activitynames)]
     # turn column of sectors related to activity names into list
     sector_list = pd.unique(df['Sector']).tolist()
-    # subset fba allocation table to the values in the sector list
-    fba_allocation_subset = fba_allocation.loc[(fba_allocation[fba_activity_fields[0]].isin(sector_list)) |
-                                               (fba_allocation[fba_activity_fields[1]].isin(sector_list))]
+    # subset fba allocation table to the values in the activity list, based on overlapping sectors
+    fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
+                                               (fba_allocation[fbs_activity_fields[1]].isin(sector_list))]
 
     return fba_allocation_subset
