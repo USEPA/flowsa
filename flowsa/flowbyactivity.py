@@ -5,48 +5,27 @@ import flowsa
 import numpy as np
 import pandas as pd
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
-    flow_by_activity_fields, load_sector_crosswalk, sector_source_name, datapath
+    flow_by_activity_fields, load_sector_crosswalk, sector_source_name, datapath, create_fill_na_dict,\
+    get_flow_by_groupby_cols
 
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
 
-def create_fill_na_dict():
-    fill_na_dict = {}
-    for k,v in flow_by_activity_fields.items():
-        if v[0]['dtype']=='str':
-            fill_na_dict[k] = ""
-        elif v[0]['dtype']=='int':
-            fill_na_dict[k] = 9999
-        elif v[0]['dtype']=='float':
-            fill_na_dict[k] = 0.0
-    return fill_na_dict
+fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 
-fba_fill_na_dict =  create_fill_na_dict()
+fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 
-def get_fba_groupby_cols():
-    groupby_cols = []
-    for k,v in flow_by_activity_fields.items():
-        if v[0]['dtype']=='str':
-            groupby_cols.append(k)
-        elif v[0]['dtype']=='int':
-            groupby_cols.append(k)
-    #Do not use description for grouping
-    groupby_cols.remove('Description')
-    return groupby_cols
-
-fba_default_grouping_fields = get_fba_groupby_cols()
-
-def filter_by_geoscale(flowbyactivity_df, geoscale):
+def filter_by_geoscale(df, geoscale):
     """
     Filter flowbyactivity by FIPS at the given scale
-    :param flowbyactitvy_df:
+    :param df: Either flowbyactivity or flowbysector
     :param geoscale: string, either 'national', 'state', or 'county'
     :return: filtered flowbyactivity
     """
     # filter by geoscale depends on Location System
     fips = []
-    if flowbyactivity_df['LocationSystem'].str.contains('FIPS').any():
+    if df['LocationSystem'].str.contains('FIPS').any():
         # all_FIPS = read_stored_FIPS()
         if (geoscale == "national"):
             fips.append(US_FIPS)
@@ -57,50 +36,60 @@ def filter_by_geoscale(flowbyactivity_df, geoscale):
             county_FIPS = get_county_FIPS()
             fips = list(county_FIPS['FIPS'])
 
-    flowbyactivity_df = flowbyactivity_df[flowbyactivity_df['Location'].isin(fips)]
+    df = df[df['Location'].isin(fips)]
 
-    if len(flowbyactivity_df) == 0:
+    if len(df) == 0:
         log.error("No flows found in the flow dataset at the " + geoscale + " scale.")
     else:
-        return flowbyactivity_df
+        return df
 
-def agg_by_geoscale(flowbyactivity_df, from_scale, to_scale):
+def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
     """
 
-    :param flowbyactivity_df:
+    :param df: flowbyactivity or flowbysector df
     :param from_scale:
     :param to_scale:
+    :param groupbycolumns: flowbyactivity or flowbysector default groupby columns
     :return:
     """
     from flowsa.common import fips_number_key
+
     from_scale_dig = fips_number_key[from_scale]
     to_scale_dig = fips_number_key[to_scale]
 
     #use from scale to filter by these values
-    fba_from_scale = filter_by_geoscale(flowbyactivity_df,from_scale)
+    df_from_scale = filter_by_geoscale(df, from_scale)
 
-    group_cols = fba_default_grouping_fields.copy()
+    group_cols = groupbycolumns.copy()
     group_cols.remove('Location')
 
     # code for when the "Location" is a FIPS based system
-    if to_scale == 'state':
-        fba_from_scale['to_Location'] = fba_from_scale['Location'].apply(lambda x: str(x[0:2]))
+    if to_scale == 'county':
+        # drop rows that contain '000'
+        df_from_scale = df_from_scale[~df_from_scale['Location'].str.contains("000")]
+        df_from_scale['to_Location'] = df_from_scale['Location']
         group_cols.append('to_Location')
-    #if national no need to do anything
-    fba_agg = aggregator(fba_from_scale, group_cols)
+    elif to_scale == 'state':
+         df_from_scale['to_Location'] = df_from_scale['Location'].apply(lambda x: str(x[0:2]))
+         group_cols.append('to_Location')
+    elif to_scale == 'national':
+        df_from_scale['to_Location'] = US_FIPS
+        group_cols.append('to_Location')
+    fba_agg = aggregator(df_from_scale, group_cols)
     return fba_agg
 
 
-def aggregator(flowbyactivity_df, groupbycols):
+def aggregator(df, groupbycols):
     """
-    Aggregates flowbyactivity_df by given groupbycols
-    :param flowbyactivity_df:
-    :param groupbycols:
+    Aggregates flowbyactivity or flowbysector df by given groupbycols
+
+    :param df: Either flowbyactivity or flowbysector
+    :param groupbycols: Either flowbyactivity or flowbysector columns
     :return:
     """
 
     try:
-        wm = lambda x: np.ma.average(x, weights=flowbyactivity_df.loc[x.index, "FlowAmount"])
+        wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
     except ZeroDivisionError:
         wm = 0
 
@@ -109,35 +98,38 @@ def aggregator(flowbyactivity_df, groupbycols):
                 "DataReliability": wm,
                 "DataCollection": wm}
 
-    flowbyactivity_dfg = flowbyactivity_df.groupby(groupbycols, as_index=False).agg(agg_funx)
-    return flowbyactivity_dfg
+    df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
+    return df_dfg
 
 
-def add_missing_flow_by_activity_fields(flowbyactivity_partial_df):
+def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
     """
     Add in missing fields to have a complete and ordered
-    :param flowbyactivity_partial_df:
+    :param flowby_partial_df: Either flowbyactivity or flowbysector df
+    :param flowbyfields: Either flow_by_activity_fields or flow_by_sector_fields
     :return:
     """
-    for k in flow_by_activity_fields.keys():
-        if k not in flowbyactivity_partial_df.columns:
-            flowbyactivity_partial_df[k] = None
+    for k in flowbyfields.keys():
+        if k not in flowby_partial_df.columns:
+            flowby_partial_df[k] = None
     # convert data types to match those defined in flow_by_activity_fields
-    for k, v in flow_by_activity_fields.items():
-        flowbyactivity_partial_df[k] = flowbyactivity_partial_df[k].astype(v[0]['dtype'])
+    for k, v in flowbyfields.items():
+        flowby_partial_df[k] = flowby_partial_df[k].astype(v[0]['dtype'])
     # Resort it so order is correct
-    flowbyactivity_partial_df = flowbyactivity_partial_df[flow_by_activity_fields.keys()]
-    return flowbyactivity_partial_df
+    flowby_partial_df = flowby_partial_df[flowbyfields.keys()]
+    return flowby_partial_df
 
-def check_fba_fields(flowbyactivity_df):
+
+def check_flow_by_fields(flowby_df, flowbyfields):
     """
     Add in missing fields to have a complete and ordered
-    :param flowbyactivity_partial_df:
+    :param flowby_df: Either flowbyactivity or flowbysector df
+    :param flowbyfields: Either flow_by_activity_fields or flow_by_sector_fields
     :return:
     """
-    for k,v in flow_by_activity_fields.items():
+    for k,v in flowbyfields.items():
         try:
-            log.debug("fba activity " + k + " data type is " + str(flowbyactivity_df[k].values.dtype))
+            log.debug("fba activity " + k + " data type is " + str(flowby_df[k].values.dtype))
             log.debug("standard " + k + " data type is " + str(v[0]['dtype']))
         except:
             log.debug("Failed to find field ",k," in fba")
