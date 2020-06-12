@@ -9,18 +9,15 @@ import yaml
 import numpy as np
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, datapath, flow_by_sector_fields, \
-    generalize_activity_field_names, get_flow_by_groupby_cols, create_fill_na_dict
+    generalize_activity_field_names, get_flow_by_groupby_cols, create_fill_na_dict, outputpath
 from flowsa.mapping import add_sectors_to_flowbyactivity
-from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, aggregator, \
+from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
     fba_fill_na_dict, convert_unit, activity_fields, fba_default_grouping_fields, \
     get_fba_allocation_subset, add_missing_flow_by_fields
 
 
 # todo: pull in the R code Mo created to prioritize NAICS codes, so no data is dropped
 
-
-fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
-                       activity_fields['ConsumedBy'][1]['flowbysector']]
 
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 
@@ -63,6 +60,15 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
         allocation = fba_w_sectors.copy()
 
     return allocation
+
+
+def store_flowbysector(fbs_df, parquet_name):
+    """Prints the data frame into a parquet file."""
+    f = outputpath + parquet_name + '.parquet'
+    try:
+        fbs_df.to_parquet(f, engine="pyarrow")
+    except:
+        log.error('Failed to save '+parquet_name + ' file.')
 
 
 def main(method_name):
@@ -170,9 +176,13 @@ def main(method_name):
             # fill null values
             flow = flow.fillna(value=fbs_fill_na_dict)
             # aggregate usgs activity to target scale
-            flow = agg_by_geoscale(flow, from_scale, to_scale, fbs_default_grouping_fields)
+            flow_agg = agg_by_geoscale(flow, from_scale, to_scale, fbs_default_grouping_fields)
 
-    return flow
+            # save as parquet file
+            # parquet_name = 'FBS_' + str(k) + '_' + attr['names'] + '_' + str(v['year'])
+            # store_flowbysector(flow_agg, parquet_name)
+
+    return flow_agg
 
 
 

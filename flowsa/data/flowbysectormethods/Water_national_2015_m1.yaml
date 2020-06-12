@@ -9,11 +9,20 @@ flowbyactivity_sources:
     geoscale_to_use: county
     year: 2015
     activity_sets:
-        activity_set:
+        activity_set_1:
             names: "Industrial"
             allocation_source: "BLS_QCEW"
             allocation_source_class: "Employment"
             allocation_source_year: 2015
             allocation_flow: "Number of employees"
             allocation_method: proportional
+            allocation_from_scale: state # add this line code in? These datasets will have different scales than usgs
+        activity_set_2:
+            names: "Aquaculture"
+            allocation_source: "USGS_NWIS_WU"
+            allocation_source_class: "Water"
+            allocation_source_year: 2015
+            allocation_flow: None
+            allocation_method: direct
+            allocation_from_scale: county
 
