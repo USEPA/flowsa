@@ -116,6 +116,7 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'Context': [{'dtype': 'str'}, {'required': True}],
                          'Location': [{'dtype': 'str'}, {'required': True}],
                          'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+                         'FlowAmount': [{'dtype': 'float'}, {'required': True}],
                          'Unit': [{'dtype': 'str'}, {'required': True}],
                          'FlowType': [{'dtype': 'str'}, {'required': True}],
                          'Year': [{'dtype': 'int'}, {'required': True}],
@@ -161,11 +162,37 @@ def generalize_activity_field_names(df):
     return df
 
 
+def create_fill_na_dict(flow_by_fields):
+    fill_na_dict = {}
+    for k,v in flow_by_fields.items():
+        if v[0]['dtype']=='str':
+            fill_na_dict[k] = ""
+        elif v[0]['dtype']=='int':
+            fill_na_dict[k] = 9999
+        elif v[0]['dtype']=='float':
+            fill_na_dict[k] = 0.0
+    return fill_na_dict
+
+
+def get_flow_by_groupby_cols(flow_by_fields):
+    groupby_cols = []
+    for k,v in flow_by_fields.items():
+        if v[0]['dtype']=='str':
+            groupby_cols.append(k)
+        elif v[0]['dtype']=='int':
+            groupby_cols.append(k)
+    if flow_by_fields == 'flow_by_activity_fields':
+        #Do not use description for grouping
+        groupby_cols.remove('Description')
+    return groupby_cols
+
+
 def read_stored_FIPS():
     FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
     # ensure that FIPS retain leading 0s
     FIPS_df['FIPS'] = FIPS_df['FIPS'].apply('{:0>5}'.format)
     return FIPS_df
+
 
 def getFIPS(state=None, county=None):
     """
@@ -232,7 +259,6 @@ def get_county_FIPS():
     fips = fips.drop_duplicates(subset='County')
     fips = fips[fips['County'].notnull()]
     return fips
-
 
 
 def get_all_state_FIPS_2():
