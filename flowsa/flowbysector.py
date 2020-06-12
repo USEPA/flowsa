@@ -9,11 +9,11 @@ import yaml
 import numpy as np
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, datapath, flow_by_sector_fields, \
-    generalize_activity_field_names
+    generalize_activity_field_names, get_flow_by_groupby_cols, create_fill_na_dict
 from flowsa.mapping import add_sectors_to_flowbyactivity
-from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
-    fba_fill_na_dict, convert_unit, get_fba_groupby_cols, activity_fields, fba_default_grouping_fields, \
-    get_fba_allocation_subset
+from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, aggregator, \
+    fba_fill_na_dict, convert_unit, activity_fields, fba_default_grouping_fields, \
+    get_fba_allocation_subset, add_missing_flow_by_fields
 
 
 # todo: pull in the R code Mo created to prioritize NAICS codes, so no data is dropped
@@ -21,6 +21,10 @@ from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
 
 fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
                        activity_fields['ConsumedBy'][1]['flowbysector']]
+
+fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
+
+fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 
 def load_method(method_name):
     """
@@ -37,16 +41,6 @@ def load_method(method_name):
     return method
 
 
-def get_fbs_groupby_cols():
-    groupby_cols = []
-    for k,v in flow_by_sector_fields.items():
-        if v[0]['dtype']=='str':
-            groupby_cols.append(k)
-        elif v[0]['dtype']=='int':
-            groupby_cols.append(k)
-    return groupby_cols
-
-
 def allocate_by_sector(fba_w_sectors, allocation_method):
     # if statements for method of allocation
 
@@ -61,12 +55,14 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
     # #     groupbycols.append(j)
 
     if allocation_method == 'proportional':
-
         fba_w_sectors['FlowAmountRatio'] = fba_w_sectors['FlowAmount'] / fba_w_sectors['FlowAmount'].groupby(
             fba_w_sectors['Location']).transform('sum')
         allocation = fba_w_sectors.copy()
+    elif allocation_method == 'direct':
+        fba_w_sectors['FlowAmountRatio'] = 1
+        allocation = fba_w_sectors.copy()
 
-        return allocation
+    return allocation
 
 
 def main(method_name):
@@ -108,7 +104,7 @@ def main(method_name):
             from_scale = v['geoscale_to_use']
             to_scale = attr['allocation_from_scale']
             # aggregate usgs activity to target scale
-            flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale)
+            flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale, fba_default_grouping_fields)
             # rename location column and pad zeros if necessary
             flow_subset = flow_subset.rename(columns={'to_Location': 'Location'})
             flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
@@ -167,11 +163,14 @@ def main(method_name):
             flow = flow[flow['FlowAmount'] != 0].reset_index(drop=True)
 
             # aggregate df geographically
-            from_scale = v['geoscale_to_use']
+            from_scale = attr['allocation_from_scale']
             to_scale = method['target_geoscale']
+            # add missing data columns
+            flow = add_missing_flow_by_fields(flow, flow_by_sector_fields)
+            # fill null values
+            flow = flow.fillna(value=fbs_fill_na_dict)
             # aggregate usgs activity to target scale
-            # todo: create fxns to aggregate by fbs
-            flow = agg_by_geoscale(flow, from_scale, to_scale)
+            flow = agg_by_geoscale(flow, from_scale, to_scale, fbs_default_grouping_fields)
 
     return flow
 
