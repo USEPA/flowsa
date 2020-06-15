@@ -55,9 +55,9 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
         fba_w_sectors['FlowAmountRatio'] = fba_w_sectors['FlowAmount'] / fba_w_sectors['FlowAmount'].groupby(
             fba_w_sectors['Location']).transform('sum')
         allocation = fba_w_sectors.copy()
-    elif allocation_method == 'direct':
-        fba_w_sectors['FlowAmountRatio'] = 1
-        allocation = fba_w_sectors.copy()
+    # elif allocation_method == 'direct':
+    #     fba_w_sectors['FlowAmountRatio'] = 1
+    #     allocation = fba_w_sectors.copy()
 
     return allocation
 
@@ -116,56 +116,61 @@ def main(method_name):
             flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
                                                                     else x)
 
-            # determine appropriate allocation dataset
-            fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
-                                                      datasource=attr['allocation_source'],
-                                                      years=[attr['allocation_source_year']])
-
-            # fill null values
-            fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
-            # convert unit
-            fba_allocation = convert_unit(fba_allocation)
-
-            # assign naics to allocation dataset
-            fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
-                                                           sectorsourcename=method['target_sector_source'])
-            # subset fba datsets to only keep the naics associated with usgs activity subset
-            fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
-            # Reset index values after subset
-            fba_allocation_subset = fba_allocation_subset.reset_index(drop=True)
-            # generalize activity field names to enable link to water withdrawal table
-            fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
-            # create flow allocation ratios
-            flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
-
-            # Add sectors to usgs activity and merge dataframes
+            # Add sectors to usgs activity
             flow_subset = add_sectors_to_flowbyactivity(flow_subset, sectorsourcename=method['target_sector_source'])
 
-            # merge water withdrawal df w/flow allocation datset, first on sectorproduced by, then on sectorconsumedby
-            # todo: modify to recalculate data quality scores
+            # if allocation method is "direct", then no need to create allocation ratios, else need to use allocation
+            # dataframe to create sector allocation ratios
+            if attr['allocation_method'] == 'direct':
+                flow = flow_subset.copy()
+            else:
+                # determine appropriate allocation dataset
+                fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
+                                                          datasource=attr['allocation_source'],
+                                                          years=[attr['allocation_source_year']])
 
-            flow = flow_subset.merge(
-                flow_allocation[['Location', 'LocationSystem', 'Year', 'Sector', 'FlowAmountRatio']],
-                left_on=['Location', 'LocationSystem', 'Year', 'SectorProducedBy'],
-                right_on=['Location', 'LocationSystem', 'Year', 'Sector'], how='left')
+                # fill null values
+                fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
+                # convert unit
+                fba_allocation = convert_unit(fba_allocation)
 
-            flow = flow.merge(
-                flow_allocation[['Location', 'LocationSystem', 'Year', 'Sector', 'FlowAmountRatio']],
-                left_on=['Location', 'LocationSystem', 'Year', 'SectorConsumedBy'],
-                right_on = ['Location', 'LocationSystem', 'Year', 'Sector'], how='left')
+                # assign naics to allocation dataset
+                fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
+                                                               sectorsourcename=method['target_sector_source'])
+                # subset fba datsets to only keep the naics associated with usgs activity subset
+                fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
+                # Reset index values after subset
+                fba_allocation_subset = fba_allocation_subset.reset_index(drop=True)
+                # generalize activity field names to enable link to water withdrawal table
+                fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
+                # create flow allocation ratios
+                flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
 
-            # merge the flowamount columns
-            flow['FlowAmountRatio'] = flow['FlowAmountRatio_x'].fillna(flow['FlowAmountRatio_y'])
-            flow['FlowAmountRatio'] = flow['FlowAmountRatio'].fillna(0)
+                # merge water withdrawal df w/flow allocation dataset
+                # todo: modify to recalculate data quality scores
 
-            # calcuate flow amounts for each sector
-            flow['FlowAmount'] = flow['FlowAmount'] * flow['FlowAmountRatio']
+                flow = flow_subset.merge(
+                    flow_allocation[['Location', 'LocationSystem', 'Year', 'Sector', 'FlowAmountRatio']],
+                    left_on=['Location', 'LocationSystem', 'Year', 'SectorProducedBy'],
+                    right_on=['Location', 'LocationSystem', 'Year', 'Sector'], how='left')
 
-            # drop columns
-            flow = flow.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
-                                      'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
+                flow = flow.merge(
+                    flow_allocation[['Location', 'LocationSystem', 'Year', 'Sector', 'FlowAmountRatio']],
+                    left_on=['Location', 'LocationSystem', 'Year', 'SectorConsumedBy'],
+                    right_on = ['Location', 'LocationSystem', 'Year', 'Sector'], how='left')
 
-            # drop rows where flowamount = 0
+                # merge the flowamount columns
+                flow['FlowAmountRatio'] = flow['FlowAmountRatio_x'].fillna(flow['FlowAmountRatio_y'])
+                flow['FlowAmountRatio'] = flow['FlowAmountRatio'].fillna(0)
+
+                # calcuate flow amounts for each sector
+                flow['FlowAmount'] = flow['FlowAmount'] * flow['FlowAmountRatio']
+
+                # drop columns
+                flow = flow.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
+                                          'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
+
+            # drop rows where flowamount = 0 (although this includes dropping suppressed data)
             flow = flow[flow['FlowAmount'] != 0].reset_index(drop=True)
 
             # aggregate df geographically
@@ -182,7 +187,7 @@ def main(method_name):
             # parquet_name = 'FBS_' + str(k) + '_' + attr['names'] + '_' + str(v['year'])
             # store_flowbysector(flow_agg, parquet_name)
 
-    return flow_agg
+            return flow_agg
 
 
 
