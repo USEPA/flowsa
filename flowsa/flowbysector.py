@@ -16,9 +16,6 @@ from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
     get_fba_allocation_subset, add_missing_flow_by_fields, fbs_activity_fields
 
 
-# todo: pull in the R code Mo created to prioritize NAICS codes, so no data is dropped
-
-
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
@@ -40,28 +37,24 @@ def load_method(method_name):
 
 
 def allocate_by_sector(fba_w_sectors, allocation_method):
+
+    # create column of naics length to help with allocation grouping
+    fba_w_sectors['NaicsLength'] = fba_w_sectors['Sector'].apply(lambda x: len(x))
+
     # if statements for method of allocation
-
-    # # drop coloumns
-    # fba_w_sectors = fba_w_sectors.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy', 'Description'])
-    # #fba_w_sectors['FlowAmountRatio'] = None
-    # # remove/add column names as a column
-    # groupbycols = fba_default_grouping_fields.copy()
-    # for j in ['ActivityProducedBy', 'ActivityConsumedBy']:
-    #     groupbycols.remove(j)
-    # # for j in ['SectorProducedBy', 'SectorConsumedBy']:
-    # #     groupbycols.append(j)
-
-    #todo: need to incorporate length of naics as a groupby factor
+    allocations = []
     if allocation_method == 'proportional':
-        fba_w_sectors['FlowAmountRatio'] = fba_w_sectors['FlowAmount'] / fba_w_sectors['FlowAmount'].groupby(
-            fba_w_sectors['Location']).transform('sum')
-        allocation = fba_w_sectors.copy()
-    # elif allocation_method == 'direct':
-    #     fba_w_sectors['FlowAmountRatio'] = 1
-    #     allocation = fba_w_sectors.copy()
+        # create subsets of df based on number of naics digits. Concat back into single df
+        for i in range(2, 9):
+            if i in fba_w_sectors['NaicsLength']:
+                df = fba_w_sectors.loc[fba_w_sectors['NaicsLength'] == i]
+                df['FlowAmountRatio'] = df['FlowAmount'] / df['FlowAmount'].groupby(df['Location']).transform('sum')
+                #allocation = fba_w_sectors.copy()
+                allocation = df.drop(columns=['NaicsLength']).reset_index()
+                allocations.append(allocation)
+        allocation_df = pd.concat(allocations)
 
-    return allocation
+        return allocation_df
 
 
 def store_flowbysector(fbs_df, parquet_name):
@@ -195,9 +188,9 @@ def main(method_name):
             # aggregate usgs activity to target scale
             flow_agg = agg_by_geoscale(flow, from_scale, to_scale, fbs_default_grouping_fields)
 
-            # # save as parquet file
-            # parquet_name = 'FBS_' + str(k) + '_' + attr['names'] + '_' + str(v['year'])
-            # store_flowbysector(flow_agg, parquet_name)
+            # save as parquet file
+            parquet_name = 'FBS_' + str(k) + '_' + attr['names'] + '_' + str(v['year'])
+            store_flowbysector(flow_agg, parquet_name)
 
             return flow_agg
 
