@@ -7,6 +7,7 @@ import pandas as pd
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, load_sector_crosswalk, sector_source_name, datapath, create_fill_na_dict,\
     get_flow_by_groupby_cols
+from flowsa.mapping import expand_naics_list
 
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
@@ -192,9 +193,15 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     :param activitynames:
     :return:
     """
+    #testing purposes
+    # fba_allocation = fba_allocation.copy()
+    # source = k
+    # activitynames = names.copy()
 
     # read in source crosswalk
     df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
+    sector_source_name = df['SectorSourceName'].all()
+    df = expand_naics_list(df, sector_source_name)
     # subset source crosswalk to only contain values pertaining to list of activity names
     df = df.loc[df['Activity'].isin(activitynames)]
     # turn column of sectors related to activity names into list
@@ -204,3 +211,4 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
                                                (fba_allocation[fbs_activity_fields[1]].isin(sector_list))]
 
     return fba_allocation_subset
+

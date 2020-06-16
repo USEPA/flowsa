@@ -28,6 +28,10 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :return: a df with activity fields mapped to 'sectors'
     """
 
+    # #testing purposes
+    # flowbyactivity_df = flow_subset.copy()
+    # sectorsourcename = method['target_sector_source']
+
     mappings = []
 
     #First check if source activities are NAICS like - if so make it into a mapping file
@@ -41,7 +45,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             cw = load_sector_crosswalk()
             sectors = cw.loc[:,[sector_source_name]]
             #Create mapping df that's just the sectors at first
-            mapping = sectors.drop_duplicates().dropna()
+            mapping = sectors.drop_duplicates()
             #Add the sector twice as activities so mapping is identical
             mapping['Activity'] = sectors[sector_source_name]
             mapping = mapping.rename(columns={sector_source_name: "Sector"})
@@ -52,6 +56,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             mapping = mapping[mapping['SectorSourceName']==sectorsourcename]
             #drop SectorSourceName
             mapping = mapping.drop(columns=['SectorSourceName'])
+            # Include all digits of naics in mapping
+            mapping = expand_naics_list(mapping, sectorsourcename)
         mappings.append(mapping)
     mappings_df = pd.concat(mappings)
     #Merge in with flowbyactivity by
@@ -67,9 +73,41 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # column doesn't exist for sector-like activities, so ignore if error occurs
             mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
             #Merge them in. Critical this is a left merge to preserve all unmapped rows
-            flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left')
+            flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left', on= flowbyactivity_field)
             # replace nan in sector columns with none
             flowbyactivity_wsector_df[flowbysector_field] = flowbyactivity_wsector_df[flowbysector_field].replace(
                 {np.nan: None}).astype(str)
 
     return flowbyactivity_wsector_df
+
+
+
+def expand_naics_list(df, sectorsourcename):
+
+    ## testing purposes
+    #df = mapping.copy()
+
+    # load master crosswalk
+    cw = load_sector_crosswalk()
+    sectors = cw.loc[:, [sectorsourcename]]
+    #Create mapping df that's just the sectors at first
+    sectors = sectors.drop_duplicates().dropna()
+
+    naics_df = pd.DataFrame([])
+    for i in df['Sector']:
+        dig = len(str(i))
+        n = sectors.loc[sectors[sectorsourcename].apply(lambda x: str(x[0:dig])) == i]
+        n['Sector'] = i
+        naics_df = naics_df.append(n)
+
+    # merge df to retain activityname/sectortype info
+    naics_expanded = df.merge(naics_df, how='left')
+    # drop column of aggregated naics and rename column of disaggregated naics
+    naics_expanded = naics_expanded.drop(columns=["Sector"])
+    naics_expanded = naics_expanded.rename(columns={sectorsourcename: 'Sector'})
+    # drop duplicates and rearrange df columns
+    naics_expanded = naics_expanded.drop_duplicates()
+    naics_expanded = naics_expanded[['ActivitySourceName', 'Activity', 'Sector', 'SectorType']]
+
+    return naics_expanded
+

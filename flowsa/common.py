@@ -331,20 +331,3 @@ us_state_abbrev = {
 # thank you to @kinghelix and @trevormarburger for this idea
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
 
-# def prioritize_naics(crosswalk):
-#     # Adjust the import data using the following logic:
-#     # For each BEA code, find all possible corresponding 4-digit NAICS (dig = 4) and create a subset, then determine:
-#     # If nrow of the subset is larger than 0, keep the subset to represent this BEA code's data;
-#     # Otherwise, go to the corresponding 3-digit NAICS (dig = dig - 1) and repeat the previous steps.
-#     trade_BEA_list = list()
-#     for bea in unique(state_US_trade[, bea_code])
-#         dig = 8
-#         ind = FALSE
-#         while(ind==FALSE & dig>1)
-#             tmp = state_US_trade[state_US_trade[, bea_code]==bea & nchar(state_US_trade$NAICS)==dig, ]
-#             if (nrow(tmp)>0):
-#                 trade_BEA_list[[bea]] = tmp
-#                 ind = TRUE
-#                 trade_BEA_list[[bea]][, "NAICS_digit"] = dig # mark the NAICS digit used for this USEEIO code
-#             else
-#                 dig = dig - 1
