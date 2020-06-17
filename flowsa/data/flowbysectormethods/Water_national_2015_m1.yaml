@@ -11,18 +11,26 @@ flowbyactivity_sources:
     activity_sets:
         activity_set_1:
             names: "Industrial"
+            allocation_method: proportional
             allocation_source: "BLS_QCEW"
             allocation_source_class: "Employment"
             allocation_source_year: 2015
             allocation_flow: "Number of employees"
-            allocation_method: proportional
-            allocation_from_scale: state # add this line code in? These datasets will have different scales than usgs
+            allocation_from_scale: state
         activity_set_2:
             names: "Aquaculture"
-            allocation_source: "USGS_NWIS_WU"
+            allocation_method: direct
+            allocation_source: None
             allocation_source_class: "Water"
             allocation_source_year: 2015
             allocation_flow: None
-            allocation_method: direct
             allocation_from_scale: county
+#        activity_set_3:
+#          names: "Irrigation, Crop"
+#          allocation_method: proportional
+#          allocation_source: "USDA_CoA_Cropland"
+#          allocation_source_class: "Land"
+#          allocation_source_year: 2017
+#          allocation_flow: ["Area Harvested", "Area"]
+#          allocation_from_scale: county
 
