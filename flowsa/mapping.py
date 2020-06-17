@@ -19,18 +19,21 @@ def get_activitytosector_mapping(source):
     return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name):
+def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name, levelofNAICSagg='disagg'):
     """
     Add Sectors from the Activity fields and mapped them to Sector from the crosswalk.
     No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
     :param sectorsourcename: A sector source name, using package default
+    :param levelofNAICSagg: Option of mapping to the most aggregated "agg" or the most disaggregated "disagg" level
+                            of NAICS for an activity
     :return: a df with activity fields mapped to 'sectors'
     """
 
-    # #testing purposes
+    # testing purposes
     # flowbyactivity_df = flow_subset.copy()
     # sectorsourcename = method['target_sector_source']
+    # levelofNAICSagg='agg'
 
     mappings = []
 
@@ -44,25 +47,26 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
         if src_info['sector-like_activities']:
             cw = load_sector_crosswalk()
             sectors = cw.loc[:,[sector_source_name]]
-            #Create mapping df that's just the sectors at first
+            # Create mapping df that's just the sectors at first
             mapping = sectors.drop_duplicates()
-            #Add the sector twice as activities so mapping is identical
+            # Add the sector twice as activities so mapping is identical
             mapping['Activity'] = sectors[sector_source_name]
             mapping = mapping.rename(columns={sector_source_name: "Sector"})
         else:
             # if source data activities are text strings, call on the manually created source crosswalks
             mapping = get_activitytosector_mapping(s)
-            #filter by SectorSourceName of interest
+            # filter by SectorSourceName of interest
             mapping = mapping[mapping['SectorSourceName']==sectorsourcename]
-            #drop SectorSourceName
+            # drop SectorSourceName
             mapping = mapping.drop(columns=['SectorSourceName'])
-            # Include all digits of naics in mapping
-            mapping = expand_naics_list(mapping, sectorsourcename)
+            # Include all digits of naics in mapping, if levelofNAICSagg is specified as "disagg"
+            if levelofNAICSagg == 'disagg':
+                mapping = expand_naics_list(mapping, sectorsourcename)
         mappings.append(mapping)
     mappings_df = pd.concat(mappings)
-    #Merge in with flowbyactivity by
+    # Merge in with flowbyactivity by
     flowbyactivity_wsector_df = flowbyactivity_df
-    for k,v in activity_fields.items():
+    for k, v in activity_fields.items():
             sector_direction = k
             flowbyactivity_field = v[0]["flowbyactivity"]
             flowbysector_field = v[1]["flowbysector"]
@@ -81,7 +85,6 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     return flowbyactivity_wsector_df
 
 
-
 def expand_naics_list(df, sectorsourcename):
 
     ## testing purposes
@@ -90,7 +93,7 @@ def expand_naics_list(df, sectorsourcename):
     # load master crosswalk
     cw = load_sector_crosswalk()
     sectors = cw.loc[:, [sectorsourcename]]
-    #Create mapping df that's just the sectors at first
+    # Create mapping df that's just the sectors at first
     sectors = sectors.drop_duplicates().dropna()
 
     naics_df = pd.DataFrame([])
