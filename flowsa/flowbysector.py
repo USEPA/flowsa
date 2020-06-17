@@ -9,7 +9,7 @@ import yaml
 import numpy as np
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, datapath, flow_by_sector_fields, \
-    generalize_activity_field_names, get_flow_by_groupby_cols, create_fill_na_dict, outputpath
+    generalize_activity_field_names, get_flow_by_groupby_cols, create_fill_na_dict, fbsoutputpath
 from flowsa.mapping import add_sectors_to_flowbyactivity
 from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
     fba_fill_na_dict, convert_unit, activity_fields, fba_default_grouping_fields, \
@@ -58,7 +58,7 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
 
 def store_flowbysector(fbs_df, parquet_name):
     """Prints the data frame into a parquet file."""
-    f = outputpath + parquet_name + '.parquet'
+    f = fbsoutputpath + parquet_name + '.parquet'
     try:
         fbs_df.to_parquet(f, engine="pyarrow")
     except:
@@ -192,7 +192,7 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
 
             # save as parquet file
-            parquet_name = 'FBS_' + str(k) + '_' + attr['names'] + '_' + str(v['year'])
+            parquet_name = attr['names'] + '_' + method_name
             store_flowbysector(fbs, parquet_name)
 
             return fbs
