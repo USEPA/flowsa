@@ -192,7 +192,7 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
 
             # save as parquet file
-            parquet_name = attr['names'] + '_' + method_name
+            parquet_name = method_name + '_' + attr['names']
             store_flowbysector(fbs, parquet_name)
 
             return fbs
