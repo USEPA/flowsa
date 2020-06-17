@@ -6,7 +6,7 @@ Public functions for flowsa
 """
 import yaml
 import pandas as pd
-from flowsa.common import fbaoutputpath, datapath, log
+from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
 
 def getFlowByActivity(flowclass, years, datasource):
     """
@@ -27,5 +27,17 @@ def getFlowByActivity(flowclass, years, datasource):
     return fba
 
 
-
+def getFlowBySector(methodname, activity):
+    """
+    Retrieves stored data in the FlowByActivity format
+    :param methodname:
+    :param activity:
+    :return: a pandas DataFrame in FlowBySector format
+    """
+    fbs = pd.DataFrame()
+    try:
+        fbs = pd.read_parquet(fbsoutputpath + methodname + "_" + activity + ".parquet", engine="pyarrow")
+    except FileNotFoundError:
+        log.error("No parquet file found for datasource " + methodname + "and " + activity + " in flowsa")
+    return fbs
 
