@@ -38,30 +38,23 @@ def load_method(method_name):
 
 def allocate_by_sector(fba_w_sectors, allocation_method):
 
-    # testing purposes
-    fba_w_sectors = fba_allocation_subset.copy()
-    allocation_method = attr['allocation_method']
-
     # drop any columns that contain a "-" in sector column
     fba_w_sectors = fba_w_sectors[~fba_w_sectors['Sector'].str.contains('-', regex=True)]
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
     fba_w_sectors = sector_aggregation(fba_w_sectors)
 
-    # create column of naics length to help with allocation grouping
-    fba_w_sectors['NaicsLength'] = fba_w_sectors['Sector'].apply(lambda x: len(x))
-
     # if statements for method of allocation
-    allocations = []
     if allocation_method == 'proportional':
-        # create subsets of df based on number of naics digits. Concat back into single df
-        for i in range(2, 9):
-            if i in fba_w_sectors['NaicsLength']:
-                df = fba_w_sectors.loc[fba_w_sectors['NaicsLength'] == i]
-                df['FlowAmountRatio'] = df['FlowAmount'] / df['FlowAmount'].groupby(df['Location']).transform('sum')
-                allocation = df.drop(columns=['NaicsLength']).reset_index()
-                allocations.append(allocation)
-        allocation_df = pd.concat(allocations)
+        # denomenator summed from highest level of sector grouped by location
+        denom_df = fba_w_sectors.loc[fba_w_sectors['Sector'].apply(lambda x: len(x) == 2)]
+        denom_df['Denominator'] = denom_df['FlowAmount'].groupby(denom_df['Location']).transform('sum')
+        denom_df = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
+        # merge the denominator column with fba_w_sector df
+        allocation_df = fba_w_sectors.merge(denom_df, how='left')
+        # calculate ratio
+        allocation_df['FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df['Denominator']
+        allocation_df = allocation_df.drop(columns=['Denominator']).reset_index()
 
         return allocation_df
 
