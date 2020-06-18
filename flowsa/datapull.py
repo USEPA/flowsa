@@ -13,7 +13,7 @@ import json
 
 
 from flowsa.common import *
-from flowsa.flowbyactivity import add_missing_flow_by_activity_fields
+from flowsa.flowbyactivity import add_missing_flow_by_fields
 
 
 from flowsa.BLS_QCEW import *
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     # log that data was retrieved
     log.info("Retrieved data for " + args['source'])
     # add any missing columns of data and cast to appropriate data type
-    flow_df = add_missing_flow_by_activity_fields(df)
+    flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
     # save as parquet file
     parquet_name = args['source'] + '_' + args['year']
     store_flowbyactivity(flow_df, parquet_name)
