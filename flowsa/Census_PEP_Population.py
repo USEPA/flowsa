@@ -105,6 +105,7 @@ def census_pop_parse(dataframe_list, args):
     df['SourceName'] = 'Census_PEP_Population'
     df['FlowName'] = 'Population'
     df['Unit'] = 'p'
+    df['ActivityConsumedBy'] = 'All'
     # temporary data quality scores
     df['DataReliability'] = None
     df['DataCollection'] = None
