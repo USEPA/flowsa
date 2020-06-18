@@ -30,14 +30,9 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :return: a df with activity fields mapped to 'sectors'
     """
 
-    # testing purposes
-    # flowbyactivity_df = flow_subset.copy()
-    # sectorsourcename = method['target_sector_source']
-    # levelofNAICSagg='agg'
-
     mappings = []
 
-    #First check if source activities are NAICS like - if so make it into a mapping file
+    # First check if source activities are NAICS like - if so make it into a mapping file
 
     cat = load_source_catalog()
 
@@ -76,7 +71,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
                                                           'SectorType':sector_type_field})
             # column doesn't exist for sector-like activities, so ignore if error occurs
             mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
-            #Merge them in. Critical this is a left merge to preserve all unmapped rows
+            # Merge them in. Critical this is a left merge to preserve all unmapped rows
             flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left', on= flowbyactivity_field)
             # replace nan in sector columns with none
             flowbyactivity_wsector_df[flowbysector_field] = flowbyactivity_wsector_df[flowbysector_field].replace(
@@ -86,9 +81,6 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
 
 
 def expand_naics_list(df, sectorsourcename):
-
-    ## testing purposes
-    #df = mapping.copy()
 
     # load master crosswalk
     cw = load_sector_crosswalk()

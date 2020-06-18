@@ -58,9 +58,6 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
     """
     from flowsa.common import fips_number_key
 
-    # df = flow_subset.copy()
-    # groupbycolumns = fba_default_grouping_fields.copy()
-
     from_scale_dig = fips_number_key[from_scale]
     to_scale_dig = fips_number_key[to_scale]
 
@@ -106,6 +103,7 @@ def aggregator(df, groupbycols):
                 "DataCollection": wm}
 
     df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
+
     return df_dfg
 
 
@@ -193,10 +191,6 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     :param activitynames:
     :return:
     """
-    #testing purposes
-    # fba_allocation = fba_allocation.copy()
-    # source = k
-    # activitynames = names.copy()
 
     # read in source crosswalk
     df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
