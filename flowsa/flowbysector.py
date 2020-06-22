@@ -59,6 +59,38 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
         return allocation_df
 
 
+def allocation_helper(fba_w_sector, method, attr):
+
+    helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
+                                                 datasource=attr['helper_source'],
+                                                 years=[attr['helper_source_year']])
+    # fill null values
+    helper_allocation = helper_allocation.fillna(value=fba_fill_na_dict)
+    # convert unit
+    helper_allocation = convert_unit(helper_allocation)
+
+    # assign naics to allocation dataset
+    helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
+                                                      sectorsourcename=method['target_sector_source'])
+    # generalize activity field names to enable link to water withdrawal table
+    helper_allocation = generalize_activity_field_names(helper_allocation)
+    # drop columns
+    helper_allocation = helper_allocation.drop(columns=['Activity', 'Description', 'Min', 'Max'])
+    # rename column
+    helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
+
+    # merge allocation df with helper df based on sectors
+    modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']], how='left')
+
+    # modify flow amounts using helper data
+    if attr['helper_method'] == 'multiplication':
+        modified_fba_allocation['FlowAmount'] = modified_fba_allocation['FlowAmount'] * modified_fba_allocation['HelperFlow']
+    # drop columns
+    modified_fba_allocation = modified_fba_allocation.drop(columns= "HelperFlow")
+
+    return modified_fba_allocation
+
+
 def sector_aggregation(fbs_df):
     """
     Function that checks if a sector aggregation exists, and if not, sums the less aggregated sector
@@ -121,6 +153,9 @@ def main(method_name):
     :return: flowbysector
     """
 
+    #todo: check if all of industrail is being pulled becausee there are multiple names for industrial in the df
+    # consider running the name standardization code
+
     # call on method
     method = load_method(method_name)
     # create dictionary of water data and allocation datasets
@@ -130,6 +165,9 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
                                          datasource=k)
+        # if function exists to standardize flow names, call on it
+        # todo: fxn here
+
         # drop description field
         flows = flows.drop(columns='Description')
         # fill null values
@@ -180,6 +218,11 @@ def main(method_name):
                 fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
                 # convert unit
                 fba_allocation = convert_unit(fba_allocation)
+                # subset based on yaml settings
+                if attr['allocation_flow'] != 'None':
+                    fba_allocation = fba_allocation.loc[fba_allocation['FlowName'].isin(attr['allocation_flow'])]
+                if attr['allocation_compartment'] != 'None':
+                    fba_allocation = fba_allocation.loc[fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
 
                 # assign naics to allocation dataset
                 fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
@@ -190,8 +233,11 @@ def main(method_name):
                 fba_allocation_subset = fba_allocation_subset.reset_index(drop=True)
                 # generalize activity field names to enable link to water withdrawal table
                 fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
-                # drop activity column
+                # drop columns
                 fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity', 'Description', 'Min', 'Max'])
+                # if there is an allocation helper dataset, modify allocation df
+                if attr['allocation_helper'] == 'yes':
+                    fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr)
                 # create flow allocation ratios
                 flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
 
@@ -213,7 +259,7 @@ def main(method_name):
                 fbs = fbs.merge(
                     flow_allocation[['Location', 'LocationSystem',  'Sector', 'FlowAmountRatio']],
                     left_on=['Location', 'LocationSystem', 'SectorConsumedBy'],
-                    right_on = ['Location', 'LocationSystem', 'Sector'], how='left')
+                    right_on=['Location', 'LocationSystem', 'Sector'], how='left')
 
                 # drop columns where both sector produced/consumed by in flow allocation dif is null
                 fbs = fbs.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
@@ -227,7 +273,7 @@ def main(method_name):
 
                 # drop columns
                 fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
-                                          'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
+                                        'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
 
             # drop rows where flowamount = 0 (although this includes dropping suppressed data)
             fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
