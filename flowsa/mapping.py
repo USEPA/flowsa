@@ -88,6 +88,9 @@ def expand_naics_list(df, sectorsourcename):
     # Create mapping df that's just the sectors at first
     sectors = sectors.drop_duplicates().dropna()
 
+    # fill null values
+    df['Sector'] = df['Sector'].astype('str')
+
     naics_df = pd.DataFrame([])
     for i in df['Sector']:
         dig = len(str(i))
