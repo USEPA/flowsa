@@ -58,3 +58,7 @@ USGS_NWIS_WU:
   class: Water
   sector-like_activities: False
   activity_schema:
+USGS_WU_Coef:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
