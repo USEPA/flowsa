@@ -178,6 +178,9 @@ def convert_unit(df):
     df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', ((df['FlowAmount'] * 1000000) / 264.17) * 365, df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'Mgal/d', 'm3.yr', df['Unit'])
 
+    df['FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day', (df['FlowAmount'] / 264.172052) * 365, df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3.p.yr', df['Unit'])
+
     # class = other, unit varies
 
     return df
