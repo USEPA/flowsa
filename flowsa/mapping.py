@@ -19,13 +19,13 @@ def get_activitytosector_mapping(source):
     return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name, levelofNAICSagg='disagg'):
+def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name, levelofSectoragg='disagg'):
     """
     Add Sectors from the Activity fields and mapped them to Sector from the crosswalk.
     No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
     :param sectorsourcename: A sector source name, using package default
-    :param levelofNAICSagg: Option of mapping to the most aggregated "agg" or the most disaggregated "disagg" level
+    :param levelofSectoragg: Option of mapping to the most aggregated "agg" or the most disaggregated "disagg" level
                             of NAICS for an activity
     :return: a df with activity fields mapped to 'sectors'
     """
@@ -55,7 +55,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # drop SectorSourceName
             mapping = mapping.drop(columns=['SectorSourceName'])
             # Include all digits of naics in mapping, if levelofNAICSagg is specified as "disagg"
-            if levelofNAICSagg == 'disagg':
+            if levelofSectoragg == 'disagg':
                 mapping = expand_naics_list(mapping, sectorsourcename)
         mappings.append(mapping)
     mappings_df = pd.concat(mappings)
