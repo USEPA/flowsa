@@ -169,6 +169,9 @@ def convert_unit(df):
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2/yr
+    df['FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * 4046.8564224, df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'ACRES', 'm2.yr', df['Unit'])
+
     # class = money, unit = USD/yr
 
     # class = water, unit = m3/yr
@@ -180,6 +183,9 @@ def convert_unit(df):
 
     df['FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day', (df['FlowAmount'] / 264.172052) * 365, df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3.p.yr', df['Unit'])
+
+    df['FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', (df['FlowAmount'] / 4046.856422) * 1233.481837, df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'm3.m2.yr', df['Unit'])
 
     # class = other, unit varies
 
