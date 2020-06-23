@@ -155,6 +155,9 @@ def usgs_parse(dataframe_list, args):
                                           'Wastewater Treatment']), 'DataReliability'] = '3'
     df.loc[df['ActivityProducedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
                                           'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
+    # remove commas from activity names
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
     return df
 
 
@@ -243,7 +246,7 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
         flowbyactivity_df['Sector' + f] = flowbyactivity_df[f]
 
         flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Public'] = 'Public Supply'
-        flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Irrigation, Total'] = 'Irrigation'
+        flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Irrigation Total'] = 'Irrigation'
         flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Total Thermoelectric Power'] = 'Thermoelectric'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
