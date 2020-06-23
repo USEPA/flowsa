@@ -39,8 +39,14 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
     # drop any columns that contain a "-" in sector column
     fba_w_sectors = fba_w_sectors[~fba_w_sectors['Sector'].str.contains('-', regex=True)]
 
+    # group by columns, remove "FlowName" because some of the allocation tables have multiple variables and grouping
+    # by them returns incorrect allocation ratios
+    group_cols = fba_default_grouping_fields
+    group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
+    group_cols.append('Sector')
+
     # run sector aggregation fxn to determine total flowamount for each level of sector
-    fba_w_sectors = sector_aggregation(fba_w_sectors)
+    fba_w_sectors = sector_aggregation(fba_w_sectors, group_cols)
 
     # if statements for method of allocation
     if allocation_method == 'proportional':
@@ -97,19 +103,12 @@ def allocation_helper(fba_w_sector, method, attr):
     return modified_fba_allocation
 
 
-def sector_aggregation(fbs_df):
+def sector_aggregation(fbs_df, group_cols):
     """
     Function that checks if a sector aggregation exists, and if not, sums the less aggregated sector
     :param fbs_df: flow by sector dataframe
     :return:
     """
-
-    # todo: make group columns a variable
-    # todo: check which columns should group on, remove flowname? Need to remove flowname for crop irrigation
-    # group by columns
-    group_cols = fba_default_grouping_fields
-    group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-    group_cols.append('Sector')
 
     # find the longest length naics (will be 6 or 8), needs to be integer for for loop
     length = max(fbs_df['Sector'].apply(lambda x: len(x)).unique())
