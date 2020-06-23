@@ -63,16 +63,24 @@ flowbyactivity_sources:
           allocation_helper: no
       activity_set_7:
           names: "Irrigation, Crop"
-          allocation_method: intermediate, proportional
+          allocation_method: proportional
           allocation_source: "USDA_CoA_Cropland"
           allocation_source_class: "Land"
           allocation_source_year: 2017
           allocation_flow:
-            - "Area Harvested"
-            - "Area"
-          allocation_compartment: None
+            - "AREA HARVESTED"
+            - "AREA IN PRODUCTION"
+            - "AREA"
+          allocation_compartment:
+            - "NOT SPECIFIED"
           allocation_from_scale: county
-          allocation_helper: no
+          allocation_helper: yes
+          helper_source: "USDA_IWMS"
+          helper_method: multiplication
+          helper_source_class: "Water"
+          helper_source_year: 2018
+          helper_flow: None
+          helper_from_scale: state
       activity_set_8:
           names: "Livestock"
           allocation_source: "USDA_CoA_Livestock"
@@ -90,4 +98,4 @@ flowbyactivity_sources:
           helper_source_class: "Water"
           helper_source_year: 2005
           helper_flow: None
-
+          helper_from_scale: national
