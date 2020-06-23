@@ -15,7 +15,6 @@ from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
     fba_fill_na_dict, convert_unit, activity_fields, fba_default_grouping_fields, \
     get_fba_allocation_subset, add_missing_flow_by_fields, fbs_activity_fields, aggregator
 
-
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
@@ -27,7 +26,7 @@ def load_method(method_name):
     :param method_name:
     :return:
     """
-    sfile = flowbyactivitymethodpath+method_name+'.yaml'
+    sfile = flowbyactivitymethodpath + method_name + '.yaml'
     try:
         with open(sfile, 'r') as f:
             method = yaml.safe_load(f)
@@ -37,7 +36,6 @@ def load_method(method_name):
 
 
 def allocate_by_sector(fba_w_sectors, allocation_method):
-
     # drop any columns that contain a "-" in sector column
     fba_w_sectors = fba_w_sectors[~fba_w_sectors['Sector'].str.contains('-', regex=True)]
 
@@ -46,7 +44,7 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
 
     # if statements for method of allocation
     if allocation_method == 'proportional':
-        # denomenator summed from highest level of sector grouped by location
+        # denominator summed from highest level of sector grouped by location
         denom_df = fba_w_sectors.loc[fba_w_sectors['Sector'].apply(lambda x: len(x) == 2)]
         denom_df['Denominator'] = denom_df['FlowAmount'].groupby(denom_df['Location']).transform('sum')
         denom_df = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
@@ -60,7 +58,6 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
 
 
 def allocation_helper(fba_w_sector, method, attr):
-
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
                                                  datasource=attr['helper_source'],
                                                  years=[attr['helper_source_year']])
@@ -86,15 +83,16 @@ def allocation_helper(fba_w_sector, method, attr):
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
         helper_allocation['Location_tmp'] = helper_allocation['Location'].apply(lambda x: str(x[0:2]))
         fba_w_sector['Location_tmp'] = fba_w_sector['Location'].apply(lambda x: str(x[0:2]))
-        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'Location_tmp','HelperFlow']],
+        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'Location_tmp', 'HelperFlow']],
                                                      how='left')
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
 
     # modify flow amounts using helper data
     if attr['helper_method'] == 'multiplication':
-        modified_fba_allocation['FlowAmount'] = modified_fba_allocation['FlowAmount'] * modified_fba_allocation['HelperFlow']
+        modified_fba_allocation['FlowAmount'] = modified_fba_allocation['FlowAmount'] * modified_fba_allocation[
+            'HelperFlow']
     # drop columns
-    modified_fba_allocation = modified_fba_allocation.drop(columns= "HelperFlow")
+    modified_fba_allocation = modified_fba_allocation.drop(columns="HelperFlow")
 
     return modified_fba_allocation
 
@@ -106,8 +104,10 @@ def sector_aggregation(fbs_df):
     :return:
     """
 
+    # todo: make group columns a variable
+    # todo: check which columns should group on, remove flowname? Need to remove flowname for crop irrigation
     # group by columns
-    group_cols= fba_default_grouping_fields
+    group_cols = fba_default_grouping_fields
     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
     group_cols.append('Sector')
 
@@ -115,7 +115,7 @@ def sector_aggregation(fbs_df):
     length = max(fbs_df['Sector'].apply(lambda x: len(x)).unique())
     # for loop in reverse order longest length naics minus 1 to 2
     # appends missing naics levels to df
-    for i in range(length-1, 1, -1):
+    for i in range(length - 1, 1, -1):
         # subset df to sectors with length = i and length = i + 1
         df_subset = fbs_df.loc[fbs_df['Sector'].apply(lambda x: i + 2 > len(x) >= i)]
         # create a list of i digit sectors in df subset
@@ -151,7 +151,7 @@ def store_flowbysector(fbs_df, parquet_name):
     try:
         fbs_df.to_parquet(f, engine="pyarrow")
     except:
-        log.error('Failed to save '+parquet_name + ' file.')
+        log.error('Failed to save ' + parquet_name + ' file.')
 
 
 def main(method_name):
@@ -161,14 +161,14 @@ def main(method_name):
     :return: flowbysector
     """
 
-    #todo: check if all of industrail is being pulled becausee there are multiple names for industrial in the df
+    # todo: check if all of industrail is being pulled becausee there are multiple names for industrial in the df
     # consider running the name standardization code
 
     # call on method
     method = load_method(method_name)
     # create dictionary of water data and allocation datasets
     fbas = method['flowbyactivity_sources']
-    for k,v in fbas.items():
+    for k, v in fbas.items():
         # pull water data for allocation
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
@@ -185,12 +185,12 @@ def main(method_name):
 
         # create dictionary of allocation datasets for different usgs activities
         activities = v['activity_sets']
-        for aset,attr in activities.items():
+        for aset, attr in activities.items():
             # subset by named activities
             names = [attr['names']]
             # subset usgs data by activity
             flow_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
-                          (flows[fba_activity_fields[1]].isin(names))]
+                                (flows[fba_activity_fields[1]].isin(names))]
             # Reset index values after subset
             flow_subset = flow_subset.reset_index()
 
@@ -202,12 +202,13 @@ def main(method_name):
             # rename location column and pad zeros if necessary
             flow_subset = flow_subset.rename(columns={'to_Location': 'Location'})
             flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
-                                                                    else x)
+            else x)
 
             # Add sectors to usgs activity, creating two versions of the flow subset
             # the first version "flow_subset" is the most disaggregated version of the Sectors (NAICS)
             # the second version, "flow_subset_agg" includes only the most aggregated level of sectors
-            flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset, sectorsourcename=method['target_sector_source'])
+            flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
+                                                             sectorsourcename=method['target_sector_source'])
             flow_subset_wsec_agg = add_sectors_to_flowbyactivity(flow_subset,
                                                                  sectorsourcename=method['target_sector_source'],
                                                                  levelofSectoragg='agg')
@@ -230,7 +231,8 @@ def main(method_name):
                 if attr['allocation_flow'] != 'None':
                     fba_allocation = fba_allocation.loc[fba_allocation['FlowName'].isin(attr['allocation_flow'])]
                 if attr['allocation_compartment'] != 'None':
-                    fba_allocation = fba_allocation.loc[fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
+                    fba_allocation = fba_allocation.loc[
+                        fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
 
                 # assign naics to allocation dataset
                 fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
@@ -255,7 +257,7 @@ def main(method_name):
                 sector_list = flow_allocation['Sector'].unique().tolist()
                 # subset fba allocation table to the values in the activity list, based on overlapping sectors
                 flow_subset_wsec = flow_subset_wsec.loc[(flow_subset_wsec[fbs_activity_fields[0]].isin(sector_list)) |
-                                              (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
+                                                        (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
 
                 # merge water withdrawal df w/flow allocation dataset
                 # todo: modify to recalculate data quality scores
@@ -266,7 +268,7 @@ def main(method_name):
                     right_on=['Location', 'LocationSystem', 'Sector'], how='left')
 
                 fbs = fbs.merge(
-                    flow_allocation[['Location', 'LocationSystem',  'Sector', 'FlowAmountRatio']],
+                    flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
                     left_on=['Location', 'LocationSystem', 'SectorConsumedBy'],
                     right_on=['Location', 'LocationSystem', 'Sector'], how='left')
 
@@ -283,6 +285,11 @@ def main(method_name):
                 # drop columns
                 fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
                                         'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
+
+            # rename flow name to flowable
+            fbs = fbs.rename(columns={"FlowName": 'Flowable',
+                                      "Compartment": "Context"
+                                      })
 
             # drop rows where flowamount = 0 (although this includes dropping suppressed data)
             fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
@@ -302,6 +309,3 @@ def main(method_name):
             store_flowbysector(fbs, parquet_name)
 
             return fbs
-
-
-
