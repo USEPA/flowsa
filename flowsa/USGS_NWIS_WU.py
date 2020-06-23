@@ -106,7 +106,7 @@ def usgs_parse(dataframe_list, args):
     # create flow name column
     df['FlowName'] = pd.np.where(df.Description.str.contains("fresh"), "fresh",
                      pd.np.where(df.Description.str.contains("saline"), "saline",
-                     pd.np.where(df.Description.str.contains("wastewater"), "wastewater", "None")))
+                     pd.np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
     # create flow name column
     df['Compartment'] = pd.np.where(df.Description.str.contains("ground"), "ground",
                         pd.np.where(df.Description.str.contains("surface"), "surface",
