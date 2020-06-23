@@ -71,7 +71,8 @@ def allocation_helper(fba_w_sector, method, attr):
 
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
-                                                      sectorsourcename=method['target_sector_source'])
+                                                      sectorsourcename=method['target_sector_source'],
+                                                      levelofSectoragg=attr['helper_sector_aggregation'])
     # generalize activity field names to enable link to water withdrawal table
     helper_allocation = generalize_activity_field_names(helper_allocation)
     # drop columns
@@ -79,8 +80,15 @@ def allocation_helper(fba_w_sector, method, attr):
     # rename column
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
 
-    # merge allocation df with helper df based on sectors
-    modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']], how='left')
+    # merge allocation df with helper df based on sectors, depending on geo scales of dfs
+    if attr['helper_from_scale'] == 'national':
+        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']], how='left')
+    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
+        helper_allocation['Location_tmp'] = helper_allocation['Location'].apply(lambda x: str(x[0:2]))
+        fba_w_sector['Location_tmp'] = fba_w_sector['Location'].apply(lambda x: str(x[0:2]))
+        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'Location_tmp','HelperFlow']],
+                                                     how='left')
+        modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
 
     # modify flow amounts using helper data
     if attr['helper_method'] == 'multiplication':
@@ -202,7 +210,7 @@ def main(method_name):
             flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset, sectorsourcename=method['target_sector_source'])
             flow_subset_wsec_agg = add_sectors_to_flowbyactivity(flow_subset,
                                                                  sectorsourcename=method['target_sector_source'],
-                                                                 levelofNAICSagg='agg')
+                                                                 levelofSectoragg='agg')
 
             # if allocation method is "direct", then no need to create allocation ratios, else need to use allocation
             # dataframe to create sector allocation ratios
@@ -226,7 +234,8 @@ def main(method_name):
 
                 # assign naics to allocation dataset
                 fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
-                                                               sectorsourcename=method['target_sector_source'])
+                                                               sectorsourcename=method['target_sector_source'],
+                                                               levelofSectoragg=attr['allocation_sector_aggregation'])
                 # subset fba datsets to only keep the naics associated with usgs activity subset
                 fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
                 # Reset index values after subset
