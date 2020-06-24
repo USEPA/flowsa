@@ -76,14 +76,10 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
     if to_scale == 'county':
         # drop rows that contain '000'
         df_from_scale = df_from_scale[~df_from_scale['Location'].str.contains("000")]
-        df_from_scale['to_Location'] = df_from_scale['Location']
-        group_cols.append('to_Location')
     elif to_scale == 'state':
-         df_from_scale['to_Location'] = df_from_scale['Location'].apply(lambda x: str(x[0:2]))
-         group_cols.append('to_Location')
+         df_from_scale['Location'] = df_from_scale['Location'].apply(lambda x: str(x[0:2]))
     elif to_scale == 'national':
-        df_from_scale['to_Location'] = US_FIPS
-        group_cols.append('to_Location')
+        df_from_scale['Location'] = US_FIPS
     fba_agg = aggregator(df_from_scale, group_cols)
     return fba_agg
 

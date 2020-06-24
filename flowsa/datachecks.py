@@ -80,10 +80,9 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
 
             # county sums to state and national, state sums to national
             if to_scale == 'state':
-                fba_from_scale['to_Location'] = fba_from_scale['Location'].apply(lambda x: str(x[0:2]))
+                fba_from_scale['Location'] = fba_from_scale['Location'].apply(lambda x: str(x[0:2]))
             elif to_scale == 'national':
-                fba_from_scale['to_Location'] = US_FIPS
-            group_cols.append('to_Location')
+                fba_from_scale['Location'] = US_FIPS
 
             # aggregate
             fba_agg = aggregator(fba_from_scale, group_cols)
@@ -105,11 +104,11 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
     # merge list of dfs by column
     flow_comparison = reduce(lambda left, right: pd.merge(left, right, on=['Class', 'SourceName', 'FlowName', 'Unit',
                                                                            'SectorProducedBy', 'SectorConsumedBy',
-                                                                           'Compartment', 'to_Location',
+                                                                           'Compartment', 'Location',
                                                                            'LocationSystem', 'Year'], how='outer'), flow_dfs)
 
     # sort df
-    flow_comparison = flow_comparison.sort_values(['Year', 'to_Location', 'SectorProducedBy', 'SectorConsumedBy',
+    flow_comparison = flow_comparison.sort_values(['Year', 'Location', 'SectorProducedBy', 'SectorConsumedBy',
                                                    'FlowName', 'Compartment'])
 
     return flow_comparison
