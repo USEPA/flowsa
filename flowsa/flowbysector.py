@@ -14,6 +14,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity
 from flowsa.flowbyactivity import fba_activity_fields, agg_by_geoscale, \
     fba_fill_na_dict, convert_unit, activity_fields, fba_default_grouping_fields, \
     get_fba_allocation_subset, add_missing_flow_by_fields, fbs_activity_fields, aggregator
+from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 
@@ -160,9 +161,6 @@ def main(method_name):
     :return: flowbysector
     """
 
-    # todo: check if all of industrail is being pulled becausee there are multiple names for industrial in the df
-    # consider running the name standardization code
-
     # call on method
     method = load_method(method_name)
     # create dictionary of water data and allocation datasets
@@ -172,8 +170,9 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
                                          datasource=k)
-        # if function exists to standardize flow names, call on it
-        # todo: fxn here
+        # if allocating USGS NWIS water data, first standardize names in data set
+        if k == 'USGS_NWIS_WU':
+            flows = standardize_usgs_nwis_names(flows)
 
         # drop description field
         flows = flows.drop(columns='Description')
