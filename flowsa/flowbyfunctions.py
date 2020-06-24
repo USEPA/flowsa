@@ -1,13 +1,14 @@
 """
-Helper functions for flowbyactivity data
+Helper functions for flowbyactivity and flowbysector data
 """
+
 import flowsa
 import numpy as np
 import pandas as pd
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
-    flow_by_activity_fields, load_sector_crosswalk, sector_source_name, datapath, create_fill_na_dict,\
-    get_flow_by_groupby_cols
-from flowsa.mapping import expand_naics_list
+    flow_by_activity_fields, flow_by_sector_fields, load_sector_crosswalk, sector_source_name, datapath,\
+    get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names
+from flowsa.mapping import expand_naics_list, add_sectors_to_flowbyactivity
 
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
@@ -17,8 +18,11 @@ fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
                        activity_fields['ConsumedBy'][1]['flowbysector']]
 
 fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
+fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
+fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
+
 
 def filter_by_geoscale(df, geoscale):
     """
@@ -46,6 +50,7 @@ def filter_by_geoscale(df, geoscale):
         log.error("No flows found in the flow dataset at the " + geoscale + " scale.")
     else:
         return df
+
 
 def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
     """
@@ -165,7 +170,11 @@ def check_if_activities_match_sectors(fba):
 
 
 def convert_unit(df):
-    """Convert unit to standard"""
+    """
+    Convert unit to standard
+    :param df: Either flowbyactivity or flowbysector
+    :return: Df with standarized units
+    """
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2/yr
@@ -215,3 +224,124 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
 
     return fba_allocation_subset
 
+
+def allocate_by_sector(fba_w_sectors, allocation_method):
+    """
+
+    :param fba_w_sectors:
+    :param allocation_method:
+    :return:
+    """
+    # drop any columns that contain a "-" in sector column
+    fba_w_sectors = fba_w_sectors[~fba_w_sectors['Sector'].str.contains('-', regex=True)]
+
+    # group by columns, remove "FlowName" because some of the allocation tables have multiple variables and grouping
+    # by them returns incorrect allocation ratios
+    group_cols = fba_default_grouping_fields
+    group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
+    group_cols.append('Sector')
+
+    # run sector aggregation fxn to determine total flowamount for each level of sector
+    fba_w_sectors = sector_aggregation(fba_w_sectors, group_cols)
+
+    # if statements for method of allocation
+    if allocation_method == 'proportional':
+        # denominator summed from highest level of sector grouped by location
+        denom_df = fba_w_sectors.loc[fba_w_sectors['Sector'].apply(lambda x: len(x) == 2)]
+        denom_df['Denominator'] = denom_df['FlowAmount'].groupby(denom_df['Location']).transform('sum')
+        denom_df = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
+        # merge the denominator column with fba_w_sector df
+        allocation_df = fba_w_sectors.merge(denom_df, how='left')
+        # calculate ratio
+        allocation_df['FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df['Denominator']
+        allocation_df = allocation_df.drop(columns=['Denominator']).reset_index()
+
+        return allocation_df
+
+
+def allocation_helper(fba_w_sector, method, attr):
+    """
+
+    :param fba_w_sector:
+    :param method:
+    :param attr:
+    :return:
+    """
+    helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
+                                                 datasource=attr['helper_source'],
+                                                 years=[attr['helper_source_year']])
+    # fill null values
+    helper_allocation = helper_allocation.fillna(value=fba_fill_na_dict)
+    # convert unit
+    helper_allocation = convert_unit(helper_allocation)
+
+    # assign naics to allocation dataset
+    helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
+                                                      sectorsourcename=method['target_sector_source'],
+                                                      levelofSectoragg=attr['helper_sector_aggregation'])
+    # generalize activity field names to enable link to water withdrawal table
+    helper_allocation = generalize_activity_field_names(helper_allocation)
+    # drop columns
+    helper_allocation = helper_allocation.drop(columns=['Activity', 'Description', 'Min', 'Max'])
+    # rename column
+    helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
+
+    # merge allocation df with helper df based on sectors, depending on geo scales of dfs
+    if attr['helper_from_scale'] == 'national':
+        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']], how='left')
+    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
+        helper_allocation['Location_tmp'] = helper_allocation['Location'].apply(lambda x: str(x[0:2]))
+        fba_w_sector['Location_tmp'] = fba_w_sector['Location'].apply(lambda x: str(x[0:2]))
+        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'Location_tmp', 'HelperFlow']],
+                                                     how='left')
+        modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
+
+    # modify flow amounts using helper data
+    if attr['helper_method'] == 'multiplication':
+        modified_fba_allocation['FlowAmount'] = modified_fba_allocation['FlowAmount'] * modified_fba_allocation[
+            'HelperFlow']
+    # drop columns
+    modified_fba_allocation = modified_fba_allocation.drop(columns="HelperFlow")
+
+    return modified_fba_allocation
+
+
+def sector_aggregation(fbs_df, group_cols):
+    """
+    Function that checks if a sector aggregation exists, and if not, sums the less aggregated sector
+    :param fbs_df: flow by sector dataframe
+    :return:
+    """
+
+    # find the longest length naics (will be 6 or 8), needs to be integer for for loop
+    length = max(fbs_df['Sector'].apply(lambda x: len(x)).unique())
+    # for loop in reverse order longest length naics minus 1 to 2
+    # appends missing naics levels to df
+    for i in range(length - 1, 1, -1):
+        # subset df to sectors with length = i and length = i + 1
+        df_subset = fbs_df.loc[fbs_df['Sector'].apply(lambda x: i + 2 > len(x) >= i)]
+        # create a list of i digit sectors in df subset
+        sector_list = df_subset['Sector'].apply(lambda x: str(x[0:i])).unique().tolist()
+        # create a list of sectors that are exactly i digits long
+        existing_sectors = df_subset['Sector'].loc[df_subset['Sector'].apply(lambda x: len(x) == i)].unique().tolist()
+        # list of sectors of length i that are not in sector list
+        missing_sectors = np.setdiff1d(sector_list, existing_sectors).tolist()
+        # add start of symbol to missing list
+        missing_sectors = ["^" + e for e in missing_sectors]
+        if len(missing_sectors) != 0:
+            # new df of sectors that start with missing sectors. drop the last digit of the sector and sum flow amounts
+            agg_sectors = df_subset.loc[df_subset['Sector'].str.contains('|'.join(missing_sectors))]
+            # only keep data with length greater than i
+            agg_sectors = agg_sectors.loc[agg_sectors['Sector'].apply(lambda x: len(x) > i)]
+            agg_sectors['Sector'] = agg_sectors['Sector'].apply(lambda x: str(x[0:i]))
+            agg_sectors = agg_sectors.fillna(0).reset_index()
+            # aggregate the new sector flow amounts
+            agg_sectors = aggregator(agg_sectors, group_cols)
+            agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
+            # append to df
+            fbs_df = fbs_df.append(agg_sectors, sort=True)
+
+    # sort df
+    fbs_df = fbs_df.sort_values(['Location', 'Sector'])
+
+    return fbs_df

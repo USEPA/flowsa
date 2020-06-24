@@ -13,7 +13,7 @@ import json
 
 
 from flowsa.common import *
-from flowsa.flowbyactivity import add_missing_flow_by_fields
+from flowsa.flowbyfunctions import add_missing_flow_by_fields
 
 
 from flowsa.BLS_QCEW import *

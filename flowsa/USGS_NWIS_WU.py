@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 #from flowsa.datapull import make_http_request, load_from_requests_response, format_url_values
 from flowsa.common import *
-from flowsa.flowbyactivity import fba_activity_fields
+from flowsa.flowbyfunctions import fba_activity_fields
 
 
 def usgs_URL_helper(build_url, config, args):

@@ -7,7 +7,7 @@ from functools import reduce
 import numpy as np
 import pandas as pd
 from flowsa.mapping import get_activitytosector_mapping
-from flowsa.flowbyactivity import fba_fill_na_dict, convert_unit, fba_activity_fields, filter_by_geoscale, \
+from flowsa.flowbyfunctions import fba_fill_na_dict, convert_unit, fba_activity_fields, filter_by_geoscale, \
     fba_default_grouping_fields, aggregator
 from flowsa.common import US_FIPS
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
