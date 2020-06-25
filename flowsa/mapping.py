@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk
+from flowsa.flowbyfunctions import fbs_activity_fields
 
 def get_activitytosector_mapping(source):
     """
@@ -109,3 +110,26 @@ def expand_naics_list(df, sectorsourcename):
 
     return naics_expanded
 
+
+def get_fba_allocation_subset(fba_allocation, source, activitynames):
+    """
+    Subset the fba allocation data based on NAICS associated with activity
+    :param fba_allocation:
+    :param sourcename:
+    :param activitynames:
+    :return:
+    """
+
+    # read in source crosswalk
+    df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
+    sector_source_name = df['SectorSourceName'].all()
+    df = expand_naics_list(df, sector_source_name)
+    # subset source crosswalk to only contain values pertaining to list of activity names
+    df = df.loc[df['Activity'].isin(activitynames)]
+    # turn column of sectors related to activity names into list
+    sector_list = pd.unique(df['Sector']).tolist()
+    # subset fba allocation table to the values in the activity list, based on overlapping sectors
+    fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
+                                               (fba_allocation[fbs_activity_fields[1]].isin(sector_list))]
+
+    return fba_allocation_subset

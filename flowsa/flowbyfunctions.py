@@ -6,10 +6,9 @@ import flowsa
 import numpy as np
 import pandas as pd
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
-    flow_by_activity_fields, flow_by_sector_fields, load_sector_crosswalk, sector_source_name, datapath,\
+    flow_by_activity_fields, flow_by_sector_fields, load_sector_crosswalk, sector_source_name, datapath, \
     get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names
 from flowsa.mapping import expand_naics_list, add_sectors_to_flowbyactivity
-
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -29,7 +28,7 @@ def filter_by_geoscale(df, geoscale):
     Filter flowbyactivity by FIPS at the given scale
     :param df: Either flowbyactivity or flowbysector
     :param geoscale: string, either 'national', 'state', or 'county'
-    :return: filtered flowbyactivity
+    :return: filtered flowbyactivity or flowbysector
     """
     # filter by geoscale depends on Location System
     fips = []
@@ -76,7 +75,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
         # drop rows that contain '000'
         df_from_scale = df_from_scale[~df_from_scale['Location'].str.contains("000")]
     elif to_scale == 'state':
-         df_from_scale['Location'] = df_from_scale['Location'].apply(lambda x: str(x[0:2]))
+        df_from_scale['Location'] = df_from_scale['Location'].apply(lambda x: str(x[0:2]))
     elif to_scale == 'national':
         df_from_scale['Location'] = US_FIPS
     fba_agg = aggregator(df_from_scale, group_cols)
@@ -97,8 +96,8 @@ def aggregator(df, groupbycols):
     except ZeroDivisionError:
         wm = 0
 
-    agg_funx = {"FlowAmount":"sum",
-                "Spread":wm,
+    agg_funx = {"FlowAmount": "sum",
+                "Spread": wm,
                 "DataReliability": wm,
                 "DataCollection": wm}
 
@@ -132,12 +131,12 @@ def check_flow_by_fields(flowby_df, flowbyfields):
     :param flowbyfields: Either flow_by_activity_fields or flow_by_sector_fields
     :return:
     """
-    for k,v in flowbyfields.items():
+    for k, v in flowbyfields.items():
         try:
             log.debug("fba activity " + k + " data type is " + str(flowby_df[k].values.dtype))
             log.debug("standard " + k + " data type is " + str(v[0]['dtype']))
         except:
-            log.debug("Failed to find field ",k," in fba")
+            log.debug("Failed to find field ", k, " in fba")
 
 
 def check_if_activities_match_sectors(fba):
@@ -157,7 +156,8 @@ def check_if_activities_match_sectors(fba):
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if (len(activities_missing_sectors) > 0):
-        log.info(str(len(activities_missing_sectors)) + " activities not matching sectors in default " + sector_source_name + " list.")
+        log.info(str(len(
+            activities_missing_sectors)) + " activities not matching sectors in default " + sector_source_name + " list.")
         return activities_missing_sectors
     else:
         log.info("All activities match sectors in " + sector_source_name + " list.")
@@ -179,16 +179,19 @@ def convert_unit(df):
     # class = money, unit = USD/yr
 
     # class = water, unit = m3/yr
-    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', ((df['FlowAmount'] * 1000000000) / 264.17) * 365, df['FlowAmount'])
+    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', ((df['FlowAmount'] * 1000000000) / 264.17) * 365,
+                                df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'Bgal/d', 'm3.yr', df['Unit'])
 
     df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', ((df['FlowAmount'] * 1000000) / 264.17) * 365, df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'Mgal/d', 'm3.yr', df['Unit'])
 
-    df['FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day', (df['FlowAmount'] / 264.172052) * 365, df['FlowAmount'])
+    df['FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day', (df['FlowAmount'] / 264.172052) * 365,
+                                df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3.p.yr', df['Unit'])
 
-    df['FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', (df['FlowAmount'] / 4046.856422) * 1233.481837, df['FlowAmount'])
+    df['FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', (df['FlowAmount'] / 4046.856422) * 1233.481837,
+                                df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'm3.m2.yr', df['Unit'])
 
     # class = other, unit varies
@@ -196,39 +199,16 @@ def convert_unit(df):
     return df
 
 
-def get_fba_allocation_subset(fba_allocation, source, activitynames):
+def allocate_by_sector(df_w_sectors, allocation_method):
     """
-    Subset the fba allocation data based on NAICS associated with activity
-    :param fba_allocation:
-    :param sourcename:
-    :param activitynames:
-    :return:
-    """
+    Create an allocation ratio, after generalizing df so only one sector column
 
-    # read in source crosswalk
-    df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
-    sector_source_name = df['SectorSourceName'].all()
-    df = expand_naics_list(df, sector_source_name)
-    # subset source crosswalk to only contain values pertaining to list of activity names
-    df = df.loc[df['Activity'].isin(activitynames)]
-    # turn column of sectors related to activity names into list
-    sector_list = pd.unique(df['Sector']).tolist()
-    # subset fba allocation table to the values in the activity list, based on overlapping sectors
-    fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
-                                               (fba_allocation[fbs_activity_fields[1]].isin(sector_list))]
-
-    return fba_allocation_subset
-
-
-def allocate_by_sector(fba_w_sectors, allocation_method):
-    """
-
-    :param fba_w_sectors:
-    :param allocation_method:
-    :return:
+    :param df_w_sectors: df with single column of sectors
+    :param allocation_method: currently written for 'proportional'
+    :return: df with FlowAmountRatio for each sector
     """
     # drop any columns that contain a "-" in sector column
-    fba_w_sectors = fba_w_sectors[~fba_w_sectors['Sector'].str.contains('-', regex=True)]
+    df_w_sectors = df_w_sectors[~df_w_sectors['Sector'].str.contains('-', regex=True)]
 
     # group by columns, remove "FlowName" because some of the allocation tables have multiple variables and grouping
     # by them returns incorrect allocation ratios
@@ -237,16 +217,16 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
     group_cols.append('Sector')
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
-    fba_w_sectors = sector_aggregation(fba_w_sectors, group_cols)
+    df_w_sectors = sector_aggregation(df_w_sectors, group_cols)
 
     # if statements for method of allocation
     if allocation_method == 'proportional':
         # denominator summed from highest level of sector grouped by location
-        denom_df = fba_w_sectors.loc[fba_w_sectors['Sector'].apply(lambda x: len(x) == 2)]
+        denom_df = df_w_sectors.loc[df_w_sectors['Sector'].apply(lambda x: len(x) == 2)]
         denom_df['Denominator'] = denom_df['FlowAmount'].groupby(denom_df['Location']).transform('sum')
         denom_df = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
         # merge the denominator column with fba_w_sector df
-        allocation_df = fba_w_sectors.merge(denom_df, how='left')
+        allocation_df = df_w_sectors.merge(denom_df, how='left')
         # calculate ratio
         allocation_df['FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df['Denominator']
         allocation_df = allocation_df.drop(columns=['Denominator']).reset_index()
@@ -254,11 +234,11 @@ def allocate_by_sector(fba_w_sectors, allocation_method):
         return allocation_df
 
 
-def allocation_helper(fba_w_sector, method, attr):
+def allocation_helper(df_w_sector, method, attr):
     """
-
-    :param fba_w_sector:
-    :param method:
+    Used when two df required to create allocation ratio
+    :param df_w_sector:
+    :param method: currently written for 'multiplication'
     :param attr:
     :return:
     """
@@ -283,12 +263,12 @@ def allocation_helper(fba_w_sector, method, attr):
 
     # merge allocation df with helper df based on sectors, depending on geo scales of dfs
     if attr['helper_from_scale'] == 'national':
-        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']], how='left')
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']], how='left')
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
         helper_allocation['Location_tmp'] = helper_allocation['Location'].apply(lambda x: str(x[0:2]))
-        fba_w_sector['Location_tmp'] = fba_w_sector['Location'].apply(lambda x: str(x[0:2]))
-        modified_fba_allocation = fba_w_sector.merge(helper_allocation[['Sector', 'Location_tmp', 'HelperFlow']],
-                                                     how='left')
+        df_w_sector['Location_tmp'] = df_w_sector['Location'].apply(lambda x: str(x[0:2]))
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'Location_tmp', 'HelperFlow']],
+                                                    how='left')
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
 
     # modify flow amounts using helper data
