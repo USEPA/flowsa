@@ -124,6 +124,8 @@ def main(method_name):
                 fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
                 # Reset index values after subset
                 fba_allocation_subset = fba_allocation_subset.reset_index(drop=True)
+                # todo: before generalizing activity names, run the sector aggregation function
+
                 # generalize activity field names to enable link to water withdrawal table
                 fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
                 # drop columns
