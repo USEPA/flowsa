@@ -35,12 +35,12 @@ def filter_by_geoscale(df, geoscale):
     fips = []
     if df['LocationSystem'].str.contains('FIPS').any():
         # all_FIPS = read_stored_FIPS()
-        if (geoscale == "national"):
+        if geoscale == "national":
             fips.append(US_FIPS)
-        elif (geoscale == "state"):
+        elif geoscale == "state":
             state_FIPS = get_state_FIPS()
             fips = list(state_FIPS['FIPS'])
-        elif (geoscale == "county"):
+        elif geoscale == "county":
             county_FIPS = get_county_FIPS()
             fips = list(county_FIPS['FIPS'])
 
@@ -66,11 +66,10 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
     from_scale_dig = fips_number_key[from_scale]
     to_scale_dig = fips_number_key[to_scale]
 
-    #use from scale to filter by these values
+    # use from scale to filter by these values
     df_from_scale = filter_by_geoscale(df, from_scale)
 
     group_cols = groupbycolumns.copy()
-    group_cols.remove('Location')
 
     # code for when the "Location" is a FIPS based system
     if to_scale == 'county':
