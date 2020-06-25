@@ -4,11 +4,9 @@ Helper functions for flowbyactivity and flowbysector data
 
 import flowsa
 import numpy as np
-import pandas as pd
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
-    flow_by_activity_fields, flow_by_sector_fields, load_sector_crosswalk, sector_source_name, datapath, \
+    flow_by_activity_fields, flow_by_sector_fields, load_sector_crosswalk, sector_source_name, \
     get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names
-from flowsa.mapping import expand_naics_list, add_sectors_to_flowbyactivity
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
