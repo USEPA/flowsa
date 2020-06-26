@@ -6,8 +6,9 @@ Contains mapping functions
 """
 import pandas as pd
 import numpy as np
+import fedelemflowlist
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
-    load_sector_crosswalk
+    load_sector_crosswalk, log
 from flowsa.flowbyfunctions import fbs_activity_fields
 
 def get_activitytosector_mapping(source):
@@ -133,3 +134,54 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
                                                (fba_allocation[fbs_activity_fields[1]].isin(sector_list))]
 
     return fba_allocation_subset
+
+def map_elementary_flows(fba,from_fba_source):
+    """
+    Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
+    :param fba: df flow-by-activity or flow-by-sector with 'Flowable', 'Context', and 'Unit' fields
+    :param from_fba_source: str Source name of fba list to look for mappings
+    :return:
+    """
+    from fedelemflowlist import get_flowmapping
+
+    flowmapping = get_flowmapping(from_fba_source)
+    mapping_fields = [
+            "SourceListName",
+            "SourceFlowName",
+            "SourceFlowContext",
+            "SourceUnit",
+            "TargetFlowName",
+            "TargetFlowContext",
+            "TargetUnit"]
+    if flowmapping.empty:
+        log.ERROR("No mapping file in fedelemflowlist found for " + from_fba_source)
+    flowmapping = flowmapping[mapping_fields]
+    # merge fba with flows
+    fba_mapped_df = pd.merge(fba,flowmapping,
+        left_on=["Flowable", "Context"],
+        right_on=["SourceFlowName", "SourceFlowContext"],
+        how="left",
+    )
+    fba_mapped_df.loc[
+        fba_mapped_df["TargetFlowName"].notnull(), "Flowable"
+    ] = fba_mapped_df["TargetFlowName"]
+    fba_mapped_df.loc[
+        fba_mapped_df["TargetFlowName"].notnull(), "Context"
+    ] = fba_mapped_df["TargetFlowContext"]
+    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df[
+        "TargetUnit"
+    ]
+
+    #drop
+    fba_mapped_df = fba_mapped_df.drop(
+        columns=[
+            "SourceFlowName",
+            "SourceFlowContext",
+            "SourceUnit",
+            "TargetFlowName",
+            "TargetFlowContext",
+            "TargetFlowContext",
+            "TargetUnit"
+        ]
+    return fba_mapped_df
+
