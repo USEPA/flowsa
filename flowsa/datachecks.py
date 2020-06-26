@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from flowsa.mapping import get_activitytosector_mapping
 from flowsa.flowbyfunctions import fba_fill_na_dict, convert_unit, fba_activity_fields, filter_by_geoscale, \
-    fba_default_grouping_fields, aggregator
+    fba_default_grouping_fields, fbs_default_grouping_fields, aggregator, sector_aggregation
 from flowsa.common import US_FIPS
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 
@@ -112,3 +112,67 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
                                                    'FlowName', 'Compartment'])
 
     return flow_comparison
+
+
+def sector_flow_comparision(fbs_df):
+    """
+    Function that sums a flowbysector df to 2 digit sectors, from sectors of various lengths. Allows for comparision of
+    sector totals
+
+    :param fbs: A flowbysector df
+    :return:
+    """
+
+    # testing purposes
+    # fbs_df = flowsa.getFlowBySector(methodname='Water_national_2015_m1', activity="Industrial")
+
+    # grouping columns
+    group_cols = fbs_default_grouping_fields.copy()
+
+    # run  sector aggregation to sum flow amounts to each sector length
+    fbs_agg = sector_aggregation(fbs_df, group_cols)
+
+    # subset df into four df based on values in sector columns
+    # df 1 where sector produced by = none
+    df1 = fbs_agg.loc[fbs_agg['SectorProducedBy'] == 'None']
+    # df 2 where sector consumed by = none
+    df2 = fbs_agg.loc[fbs_agg['SectorConsumedBy'] == 'None']
+    # df 3 where sector produced by = 221320 (public supply)
+    df3 = fbs_agg.loc[
+        (fbs_agg['SectorProducedBy'] != 'None') & (fbs_agg['SectorConsumedBy'] == '221310')]
+    # df 3 where sector consumed by = 221320 (public supply)
+    df4 = fbs_agg.loc[
+        (fbs_agg['SectorProducedBy'] == '221310') & (fbs_agg['SectorConsumedBy'] != 'None')]
+
+    sector_dfs = []
+    for df in (df1, df2, df3, df4):
+        # if the dataframe is not empty, run through sector aggregation code
+        if len(df) != 0:
+            if (df['SectorProducedBy'].all() == 'None') or (
+                    (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None')):
+                sector = 'SectorConsumedBy'
+            elif (df['SectorConsumedBy'].all() == 'None') or (
+                    (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None')):
+                sector = 'SectorProducedBy'
+
+            # find max length of sector column
+            df['SectorLength'] = df[sector].apply(lambda x: len(x))
+            # append to df
+            sector_dfs.append(df)
+
+    # concat and sort df
+    df_agg = pd.concat(sector_dfs, sort=True)
+
+    # sum df based on sector length
+    grouping = fbs_default_grouping_fields.copy()
+    grouping = [e for e in grouping if e not in ('SectorProducedBy', 'SectorConsumedBy')]
+    grouping.append('SectorLength')
+    sector_comparison = df_agg.groupby(grouping, as_index=False)[["FlowAmount"]].agg("sum")
+
+    # drop columns not needed for comparison
+    sector_comparison = sector_comparison.drop(columns=['DistributionType', 'MeasureofSpread'])
+
+    # sort df
+    sector_comparison = sector_comparison.sort_values(['Flowable', 'Context', 'FlowType', 'SectorLength'])
+
+    return sector_comparison
