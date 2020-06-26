@@ -206,17 +206,15 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     :param allocation_method: currently written for 'proportional'
     :return: df with FlowAmountRatio for each sector
     """
-    # drop any columns that contain a "-" in sector column
-    df_w_sectors = df_w_sectors[~df_w_sectors['Sector'].str.contains('-', regex=True)]
 
     # group by columns, remove "FlowName" because some of the allocation tables have multiple variables and grouping
     # by them returns incorrect allocation ratios
     group_cols = fba_default_grouping_fields
     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
-    #group_cols.append('Sector')
+    group_cols.append('Sector')
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
-    df_w_sectors = sector_aggregation(df_w_sectors, group_cols)
+    df_w_sectors = sector_aggregation_generalized(df_w_sectors, group_cols)
 
     # if statements for method of allocation
     if allocation_method == 'proportional':
@@ -280,6 +278,47 @@ def allocation_helper(df_w_sector, method, attr):
     return modified_fba_allocation
 
 
+def sector_aggregation_generalized(fbs_df, group_cols):
+
+    # drop any columns that contain a "-" in sector column
+    fbs_df = fbs_df[~fbs_df['Sector'].str.contains('-', regex=True)]
+
+    # find the longest length naics (will be 6 or 8), needs to be integer for for loop
+    length = max(fbs_df['Sector'].apply(lambda x: len(x)).unique())
+    # for loop in reverse order longest length naics minus 1 to 2
+    # appends missing naics levels to df
+    for i in range(length - 1, 1, -1):
+        # subset df to sectors with length = i and length = i + 1
+        df_subset = fbs_df.loc[fbs_df['Sector'].apply(lambda x: i + 2 > len(x) >= i)]
+        # create a list of i digit sectors in df subset
+        sector_list = df_subset['Sector'].apply(lambda x: str(x[0:i])).unique().tolist()
+        # create a list of sectors that are exactly i digits long
+        existing_sectors = df_subset['Sector'].loc[df_subset['Sector'].apply(lambda x: len(x) == i)].unique().tolist()
+        # list of sectors of length i that are not in sector list
+        missing_sectors = np.setdiff1d(sector_list, existing_sectors).tolist()
+        # add start of symbol to missing list
+        missing_sectors = ["^" + e for e in missing_sectors]
+        if len(missing_sectors) != 0:
+            # new df of sectors that start with missing sectors. drop the last digit of the sector and sum flow amounts
+            agg_sectors = df_subset.loc[df_subset['Sector'].str.contains('|'.join(missing_sectors))]
+            # only keep data with length greater than i
+            agg_sectors = agg_sectors.loc[agg_sectors['Sector'].apply(lambda x: len(x) > i)]
+            agg_sectors['Sector'] = agg_sectors['Sector'].apply(lambda x: str(x[0:i]))
+            agg_sectors = agg_sectors.fillna(0).reset_index()
+            # aggregate the new sector flow amounts
+            agg_sectors = aggregator(agg_sectors, group_cols)
+            agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
+            # append to df
+            fbs_df = fbs_df.append(agg_sectors, sort=True)
+
+    # sort df
+    fbs_df = fbs_df.sort_values(['Location', 'Sector'])
+
+    return fbs_df
+
+
+
+
 def sector_aggregation(df_w_sectors, group_cols):
     """
     Function that checks if a sector aggregation exists, and if not, sums the less aggregated sector
@@ -288,13 +327,17 @@ def sector_aggregation(df_w_sectors, group_cols):
     :return:
     """
     # testing purposes
-    # df_w_sectors = fbs.copy()
+    # df_w_sectors = fbs_df.copy()
     # group_cols = fba_default_grouping_fields
     # df_w_sectors = fba_allocation_subset.copy()
     # group_cols = fba_default_grouping_fields
     # group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
+    # group_cols.append('Sector')
     # group_cols.append('SectorProducedBy')
     # group_cols.append('SectorConsumedBy')
+
+    # drop any columns that contain a "-" in sector column
+    df_w_sectors = df_w_sectors[~df_w_sectors['Sector'].str.contains('-', regex=True)]
 
     # subset df into four df based on values in sector columns
     # df 1 where sector produced by = none
@@ -307,21 +350,20 @@ def sector_aggregation(df_w_sectors, group_cols):
     # df 3 where sector consumed by = 221320 (public supply)
     df4 = df_w_sectors.loc[
         (df_w_sectors['SectorProducedBy'] == '221310') & (df_w_sectors['SectorConsumedBy'] != 'None')]
+    df_list = [df1, df2, df3, df4]
 
     fbs_dfs = []
-    for df in (df1, df2, df3, df4):
+    for df in df_list:
         # if the dataframe is not empty, run through sector aggregation code
         if len(df) != 0:
             if (df['SectorProducedBy'].all() == 'None') or (
                     (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None')):
                 sector = 'SectorConsumedBy'
-                # group_cols.append('SectorProducedBy')
             elif (df['SectorConsumedBy'].all() == 'None') or (
                     (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None')):
                 sector = 'SectorProducedBy'
-                # group_cols.append('SectorConsumedBy')
 
-            # find the longest length naics (will be 6 or 8), needs to be integer for for loop
+            # find the longest length naics (will be 6 or 8)
             length = max(df[sector].apply(lambda x: len(x)).unique())
             # for loop in reverse order longest length naics minus 1 to 2
             # appends missing naics levels to df
@@ -338,7 +380,7 @@ def sector_aggregation(df_w_sectors, group_cols):
                 # add start of symbol to missing list
                 missing_sectors = ["^" + e for e in missing_sectors]
                 if len(missing_sectors) != 0:
-                    # new df of sectors that start with missing sectors. drop the last digit of the sector and sum flow amounts
+                    # new df of sectors that start with missing sectors. drop the last digit of the sector and sum flows
                     agg_sectors = df_subset.loc[df_subset[sector].str.contains('|'.join(missing_sectors))]
                     # only keep data with length greater than i
                     agg_sectors = agg_sectors.loc[agg_sectors[sector].apply(lambda x: len(x) > i)]
@@ -348,12 +390,13 @@ def sector_aggregation(df_w_sectors, group_cols):
                     agg_sectors = aggregator(agg_sectors, group_cols)
                     agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
                     # append to df
-                    fbs_dfs.append(agg_sectors)
+                    df = df.append(agg_sectors)
+                fbs_dfs.append(df)
         else:
             print('Empty Dataframe')
 
     # concat and sort df
     sector_agg_df = pd.concat(fbs_dfs, sort=True)
-    sector_agg_df = sector_agg_df.sort_values(['Location', 'SectorConsumedBy'])
+    sector_agg_df = sector_agg_df.sort_values(['Location', 'SectorConsumedBy']).reset_index(drop=True)
 
     return sector_agg_df
