@@ -6,7 +6,6 @@ Contains mapping functions
 """
 import pandas as pd
 import numpy as np
-import fedelemflowlist
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log
 from flowsa.flowbyfunctions import fbs_activity_fields
@@ -135,6 +134,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
 
     return fba_allocation_subset
 
+
 def map_elementary_flows(fba,from_fba_source):
     """
     Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
@@ -145,23 +145,22 @@ def map_elementary_flows(fba,from_fba_source):
     from fedelemflowlist import get_flowmapping
 
     flowmapping = get_flowmapping(from_fba_source)
-    mapping_fields = [
-            "SourceListName",
-            "SourceFlowName",
-            "SourceFlowContext",
-            "SourceUnit",
-            "TargetFlowName",
-            "TargetFlowContext",
-            "TargetUnit"]
+    mapping_fields = ["SourceListName",
+                      "SourceFlowName",
+                      "SourceFlowContext",
+                      "SourceUnit",
+                      "ConversionFactor",
+                      "TargetFlowName",
+                      "TargetFlowContext",
+                      "TargetUnit"]
     if flowmapping.empty:
         log.ERROR("No mapping file in fedelemflowlist found for " + from_fba_source)
     flowmapping = flowmapping[mapping_fields]
     # merge fba with flows
-    fba_mapped_df = pd.merge(fba,flowmapping,
-        left_on=["Flowable", "Context"],
-        right_on=["SourceFlowName", "SourceFlowContext"],
-        how="left",
-    )
+    fba_mapped_df = pd.merge(fba, flowmapping,
+                             left_on=["Flowable", "Context"],
+                             right_on=["SourceFlowName", "SourceFlowContext"],
+                             how="left")
     fba_mapped_df.loc[
         fba_mapped_df["TargetFlowName"].notnull(), "Flowable"
     ] = fba_mapped_df["TargetFlowName"]
@@ -171,17 +170,11 @@ def map_elementary_flows(fba,from_fba_source):
     fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df[
         "TargetUnit"
     ]
+    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
+        fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
 
-    #drop
+    # drop
     fba_mapped_df = fba_mapped_df.drop(
-        columns=[
-            "SourceFlowName",
-            "SourceFlowContext",
-            "SourceUnit",
-            "TargetFlowName",
-            "TargetFlowContext",
-            "TargetFlowContext",
-            "TargetUnit"
-        ]
+        columns=mapping_fields)
     return fba_mapped_df
 
