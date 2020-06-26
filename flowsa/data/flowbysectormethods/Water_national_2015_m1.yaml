@@ -105,7 +105,7 @@ flowbyactivity_sources:
           allocation_compartment: None
           allocation_from_scale: state
           allocation_helper: no
-      activity_set_7:
+      activity_set_6:
           names: "Irrigation Crop"
           allocation_method: proportional
           allocation_source: "USDA_CoA_Cropland"
@@ -127,7 +127,7 @@ flowbyactivity_sources:
           helper_source_year: 2018
           helper_flow: None
           helper_from_scale: state
-      activity_set_8:
+      activity_set_7:
           names: "Livestock"
           allocation_source: "USDA_CoA_Livestock"
           allocation_method: proportional

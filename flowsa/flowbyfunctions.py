@@ -336,9 +336,6 @@ def sector_aggregation(df_w_sectors, group_cols):
     # group_cols.append('SectorProducedBy')
     # group_cols.append('SectorConsumedBy')
 
-    # drop any columns that contain a "-" in sector column
-    df_w_sectors = df_w_sectors[~df_w_sectors['Sector'].str.contains('-', regex=True)]
-
     # subset df into four df based on values in sector columns
     # df 1 where sector produced by = none
     df1 = df_w_sectors.loc[df_w_sectors['SectorProducedBy'] == 'None']
@@ -350,10 +347,9 @@ def sector_aggregation(df_w_sectors, group_cols):
     # df 3 where sector consumed by = 221320 (public supply)
     df4 = df_w_sectors.loc[
         (df_w_sectors['SectorProducedBy'] == '221310') & (df_w_sectors['SectorConsumedBy'] != 'None')]
-    df_list = [df1, df2, df3, df4]
 
     fbs_dfs = []
-    for df in df_list:
+    for df in (df1, df2, df3, df4):
         # if the dataframe is not empty, run through sector aggregation code
         if len(df) != 0:
             if (df['SectorProducedBy'].all() == 'None') or (
@@ -362,6 +358,9 @@ def sector_aggregation(df_w_sectors, group_cols):
             elif (df['SectorConsumedBy'].all() == 'None') or (
                     (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None')):
                 sector = 'SectorProducedBy'
+
+            # drop any columns that contain a "-" in sector column
+            df = df[~df[sector].str.contains('-', regex=True)]
 
             # find the longest length naics (will be 6 or 8)
             length = max(df[sector].apply(lambda x: len(x)).unique())
@@ -390,10 +389,10 @@ def sector_aggregation(df_w_sectors, group_cols):
                     agg_sectors = aggregator(agg_sectors, group_cols)
                     agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
                     # append to df
-                    df = df.append(agg_sectors)
-                fbs_dfs.append(df)
-        else:
-            print('Empty Dataframe')
+                    df.append(agg_sectors)
+            fbs_dfs.append(df)
+        # else:
+        #     print('Empty Dataframe')
 
     # concat and sort df
     sector_agg_df = pd.concat(fbs_dfs, sort=True)
