@@ -247,7 +247,7 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 
         flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Public'] = 'Public Supply'
         flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Irrigation Total'] = 'Irrigation'
-        flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Total Thermoelectric Power'] = 'Thermoelectric'
+        flowbyactivity_df['Sector' + f].loc[flowbyactivity_df[f] == 'Total Thermoelectric Power'] = 'Thermoelectric Power'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
     # rename columns
