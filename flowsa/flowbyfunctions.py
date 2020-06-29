@@ -317,46 +317,31 @@ def sector_aggregation_generalized(fbs_df, group_cols):
     return fbs_df
 
 
-
-
 def sector_aggregation(df_w_sectors, group_cols):
     """
     Function that checks if a sector aggregation exists, and if not, sums the less aggregated sector
-    :param df: Either a flowbyactivity df with sectors or a flowbysector df
+    :param df_w_sectors: Either a flowbyactivity df with sectors or a flowbysector df
     :param group_cols: columns by which to aggregate
     :return:
     """
-    # testing purposes
-    # df_w_sectors = fbs_df.copy()
-    # group_cols = fba_default_grouping_fields
-    # df_w_sectors = fba_allocation_subset.copy()
-    # group_cols = fba_default_grouping_fields
-    # group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
-    # group_cols.append('Sector')
-    # group_cols.append('SectorProducedBy')
-    # group_cols.append('SectorConsumedBy')
 
     # subset df into four df based on values in sector columns
     # df 1 where sector produced by = none
     df1 = df_w_sectors.loc[df_w_sectors['SectorProducedBy'] == 'None']
     # df 2 where sector consumed by = none
     df2 = df_w_sectors.loc[df_w_sectors['SectorConsumedBy'] == 'None']
-    # df 3 where sector produced by = 221320 (public supply)
-    df3 = df_w_sectors.loc[
-        (df_w_sectors['SectorProducedBy'] != 'None') & (df_w_sectors['SectorConsumedBy'] == '221310')]
     # df 3 where sector consumed by = 221320 (public supply)
-    df4 = df_w_sectors.loc[
+    df3 = df_w_sectors.loc[
         (df_w_sectors['SectorProducedBy'] == '221310') & (df_w_sectors['SectorConsumedBy'] != 'None')]
 
     fbs_dfs = []
-    for df in (df1, df2, df3, df4):
+    for df in (df1, df2, df3):
         # if the dataframe is not empty, run through sector aggregation code
         if len(df) != 0:
             if (df['SectorProducedBy'].all() == 'None') or (
                     (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None')):
                 sector = 'SectorConsumedBy'
-            elif (df['SectorConsumedBy'].all() == 'None') or (
-                    (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None')):
+            elif df['SectorConsumedBy'].all() == 'None':
                 sector = 'SectorProducedBy'
 
             # drop any columns that contain a "-" in sector column
@@ -389,13 +374,11 @@ def sector_aggregation(df_w_sectors, group_cols):
                     agg_sectors = aggregator(agg_sectors, group_cols)
                     agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
                     # append to df
-                    df.append(agg_sectors)
+                    df = df.append(agg_sectors)
             fbs_dfs.append(df)
-        # else:
-        #     print('Empty Dataframe')
 
     # concat and sort df
     sector_agg_df = pd.concat(fbs_dfs, sort=True)
-    sector_agg_df = sector_agg_df.sort_values(['Location', 'SectorConsumedBy']).reset_index(drop=True)
+    sector_agg_df = sector_agg_df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
 
     return sector_agg_df
