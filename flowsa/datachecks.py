@@ -122,9 +122,8 @@ def sector_flow_comparision(fbs_df):
     :param fbs: A flowbysector df
     :return:
     """
-
     # testing purposes
-    # fbs_df = flowsa.getFlowBySector(methodname='Water_national_2015_m1', activity="Industrial")
+    #fbs_df = flowsa.getFlowBySector(methodname='Water_national_2015_m1', activity="Industrial")
 
     # grouping columns
     group_cols = fbs_default_grouping_fields.copy()
@@ -148,6 +147,7 @@ def sector_flow_comparision(fbs_df):
     for df in (df1, df2, df3, df4):
         # if the dataframe is not empty, run through sector aggregation code
         if len(df) != 0:
+            # assign the sector column for aggregation
             if (df['SectorProducedBy'].all() == 'None') or (
                     (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None')):
                 sector = 'SectorConsumedBy'
@@ -157,6 +157,18 @@ def sector_flow_comparision(fbs_df):
 
             # find max length of sector column
             df['SectorLength'] = df[sector].apply(lambda x: len(x))
+
+            # reassign sector consumed/produced by to help wth grouping
+            # assign the sector column for aggregation
+            if df['SectorProducedBy'].all() == 'None':
+                df['SectorConsumedBy'] = 'All'
+            elif (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None'):
+                df['SectorConsumedBy'] = 'All'
+            elif df['SectorConsumedBy'].all() == 'None':
+                df['SectorProducedBy'] = 'All'
+            elif (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None'):
+                df['SectorProducedBy'] = 'All'
+
             # append to df
             sector_dfs.append(df)
 
@@ -165,7 +177,6 @@ def sector_flow_comparision(fbs_df):
 
     # sum df based on sector length
     grouping = fbs_default_grouping_fields.copy()
-    grouping = [e for e in grouping if e not in ('SectorProducedBy', 'SectorConsumedBy')]
     grouping.append('SectorLength')
     sector_comparison = df_agg.groupby(grouping, as_index=False)[["FlowAmount"]].agg("sum")
 
