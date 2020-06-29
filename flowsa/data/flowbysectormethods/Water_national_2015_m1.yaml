@@ -48,7 +48,62 @@ flowbyactivity_sources:
     geoscale_to_use: county
     year: 2015
     activity_sets:
-      activity_set_1:
+        activity_set_1:
+            names: "Aquaculture"
+            allocation_source: None
+            allocation_method: direct
+            allocation_source_class: "Water"
+            allocation_sector_aggregation: 'agg'
+            allocation_source_year: 2015
+            allocation_flow: None
+            allocation_compartment: None
+            allocation_from_scale: county
+            allocation_helper: no
+        activity_set_2:
+            names: "Domestic"
+            allocation_method: direct
+            allocation_source: None
+            allocation_source_class: "Water"
+            allocation_sector_aggregation: 'agg'
+            allocation_source_year: 2015
+            allocation_flow: None
+            allocation_compartment: None
+            allocation_from_scale: county
+            allocation_helper: no
+        activity_set_3:
+           names: "Fossil-fuel Thermoelectric Power"
+           allocation_method: direct
+           allocation_source: None
+           allocation_source_class: "Water"
+           allocation_sector_aggregation: 'agg'
+           allocation_source_year: 2015
+           allocation_flow: None
+           allocation_compartment: None
+           allocation_from_scale: county
+           allocation_helper: no
+       activity_set_4:
+           names: "Geothermal Thermoelectric Power"
+           allocation_method: direct
+           allocation_source: None
+           allocation_source_class: "Water"
+           allocation_sector_aggregation: 'agg'
+           allocation_source_year: 2015
+           allocation_flow: None
+           allocation_compartment: None
+           allocation_from_scale: county
+           allocation_helper: no
+       activity_set_5:
+           names: "Hydroelectric Power"
+           allocation_method: direct
+           allocation_source: None
+           allocation_source_class: "Water"
+           allocation_sector_aggregation: 'agg'
+           allocation_source_year: 2015
+           allocation_flow: None
+           allocation_compartment: None
+           allocation_from_scale: county
+           allocation_helper: no
+      activity_set_6:
           names: "Industrial"
           allocation_source: "BLS_QCEW"
           allocation_method: proportional
@@ -60,10 +115,32 @@ flowbyactivity_sources:
           allocation_compartment: None
           allocation_from_scale: state
           allocation_helper: no
-      activity_set_2:
-          names: "Aquaculture"
-          allocation_source: None
+      activity_set_7:
+          names: "Irrigation Crop"
+          allocation_method: proportional
+          allocation_source: "USDA_CoA_Cropland"
+          allocation_source_class: "Land"
+          allocation_sector_aggregation: 'agg'
+          allocation_source_year: 2017
+          allocation_flow:
+              - "AREA HARVESTED"
+              - "AREA IN PRODUCTION"
+              - "AREA"
+          allocation_compartment:
+              - "NOT SPECIFIED"
+          allocation_from_scale: county
+          allocation_helper: yes
+          helper_source: "USDA_IWMS"
+          helper_method: multiplication
+          helper_source_class: "Water"
+          helper_sector_aggregation: 'agg'
+          helper_source_year: 2018
+          helper_flow: None
+          helper_from_scale: state
+      activity_set_8:
+          names: "Irrigation Golf Courses"
           allocation_method: direct
+          allocation_source: None
           allocation_source_class: "Water"
           allocation_sector_aggregation: 'agg'
           allocation_source_year: 2015
@@ -71,8 +148,40 @@ flowbyactivity_sources:
           allocation_compartment: None
           allocation_from_scale: county
           allocation_helper: no
-      activity_set_3:
-          names: "Domestic"
+      activity_set_9:
+          names: "Livestock"
+          allocation_source: "USDA_CoA_Livestock"
+          allocation_method: proportional
+          allocation_source_class: "Other"
+          allocation_sector_aggregation: 'agg'
+          allocation_source_year: 2017
+          allocation_flow:
+              - "HEAD"
+          allocation_compartment:
+              - "NOT SPECIFIED"
+          allocation_from_scale: county
+          allocation_helper: yes
+          helper_source: "USGS_WU_Coef"
+          helper_method: multiplication
+          helper_source_class: "Water"
+          helper_sector_aggregation: 'disagg'
+          helper_source_year: 2005
+          helper_flow: None
+          helper_from_scale: national
+      activity_set_10:
+          names: "Mining"
+          allocation_method: proportional
+          allocation_source: "BLS_QCEW"
+          allocation_source_class: "Employment"
+          allocation_sector_aggregation: 'disagg'
+          allocation_source_year: 2015
+          allocation_flow:
+              - "Number of employees"
+          allocation_compartment: None
+          allocation_from_scale: state
+          allocation_helper: no
+      activity_set_11:
+          names: "Nuclear Thermoelectric Power"
           allocation_method: direct
           allocation_source: None
           allocation_source_class: "Water"
@@ -82,7 +191,7 @@ flowbyactivity_sources:
           allocation_compartment: None
           allocation_from_scale: county
           allocation_helper: no
-      activity_set_4:
+      activity_set_12:
           names: "Public Supply"
           allocation_method: direct
           allocation_source: None
@@ -93,57 +202,47 @@ flowbyactivity_sources:
           allocation_compartment: None
           allocation_from_scale: county
           allocation_helper: no
-      activity_set_5:
-          names: "Mining"
-          allocation_method: proportional
-          allocation_source: "BLS_QCEW"
-          allocation_source_class: "Employment"
-          allocation_sector_aggregation: 'disagg'
+      activity_set_13:
+          names: "Thermoelectric Power"
+          allocation_method: direct
+          allocation_source: None
+          allocation_source_class: "Water"
+          allocation_sector_aggregation: 'agg'
           allocation_source_year: 2015
-          allocation_flow:
-            - "Number of employees"
+          allocation_flow: None
           allocation_compartment: None
-          allocation_from_scale: state
+          allocation_from_scale: county
           allocation_helper: no
-      activity_set_6:
-          names: "Irrigation Crop"
-          allocation_method: proportional
-          allocation_source: "USDA_CoA_Cropland"
-          allocation_source_class: "Land"
+      activity_set_14:
+          names: "Thermoelectric Power Closed-loop cooling"
+          allocation_method: direct
+          allocation_source: None
+          allocation_source_class: "Water"
           allocation_sector_aggregation: 'agg'
-          allocation_source_year: 2017
-          allocation_flow:
-            - "AREA HARVESTED"
-            - "AREA IN PRODUCTION"
-            - "AREA"
-          allocation_compartment:
-            - "NOT SPECIFIED"
+          allocation_source_year: 2015
+          allocation_flow: None
+          allocation_compartment: None
           allocation_from_scale: county
-          allocation_helper: yes
-          helper_source: "USDA_IWMS"
-          helper_method: multiplication
-          helper_source_class: "Water"
-          helper_sector_aggregation: 'agg'
-          helper_source_year: 2018
-          helper_flow: None
-          helper_from_scale: state
-      activity_set_7:
-          names: "Livestock"
-          allocation_source: "USDA_CoA_Livestock"
-          allocation_method: proportional
-          allocation_source_class: "Other"
+          allocation_helper: no
+      activity_set_15:
+          names: "Thermoelectric Power Once-through cooling"
+          allocation_method: direct
+          allocation_source: None
+          allocation_source_class: "Water"
           allocation_sector_aggregation: 'agg'
-          allocation_source_year: 2017
-          allocation_flow:
-            - "HEAD"
-          allocation_compartment:
-            - "NOT SPECIFIED"
+          allocation_source_year: 2015
+          allocation_flow: None
+          allocation_compartment: None
           allocation_from_scale: county
-          allocation_helper: yes
-          helper_source: "USGS_WU_Coef"
-          helper_method: multiplication
-          helper_source_class: "Water"
-          helper_sector_aggregation: 'disagg'
-          helper_source_year: 2005
-          helper_flow: None
-          helper_from_scale: national
+          allocation_helper: no
+      activity_set_16:
+          names: "Wastewater Treatment"
+          allocation_method: direct
+          allocation_source: None
+          allocation_source_class: "Water"
+          allocation_sector_aggregation: 'agg'
+          allocation_source_year: 2015
+          allocation_flow: None
+          allocation_compartment: None
+          allocation_from_scale: county
+          allocation_helper: no
