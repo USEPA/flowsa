@@ -5,13 +5,14 @@
 Produces a FlowBySector data frame based on a method file for the given class
 """
 import flowsa
+import pandas as pd
 import yaml
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, \
-    generalize_activity_field_names, fbsoutputpath
+    generalize_activity_field_names, fbsoutputpath, datapath
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
-    add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper
+    add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 
 
@@ -188,17 +189,17 @@ def main(method_name):
                 # aggregate usgs activity to target scale
                 fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
 
-                # # aggregate data to every sector level
-                # fbs_agg = sector_aggregation(fbs, fbs_default_grouping_fields)
+                # aggregate data to every sector level
+                fbs_agg = sector_aggregation(fbs, fbs_default_grouping_fields)
 
                 # return sector level specified in method yaml
-                # cw = pd.read_csv(datapath + "NAICS_2012_Crosswalk.csv", dtype="str")
-                # sector_list = cw[method['target_sector_level']].unique().tolist()
-                # fbs_subset = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) |
-                #                          (fbs_agg[fbs_activity_fields[1]].isin(sector_list))]
+                cw = pd.read_csv(datapath + "NAICS_2012_Crosswalk.csv", dtype="str")
+                sector_list = cw[method['target_sector_level']].unique().tolist()
+                fbs_subset = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) |
+                                         (fbs_agg[fbs_activity_fields[1]].isin(sector_list))]
 
                 # save as parquet file
                 parquet_name = method_name + '_' + attr['names']
-                store_flowbysector(fbs, parquet_name)
+                store_flowbysector(fbs_subset, parquet_name)
 
-                return fbs
+                return fbs_subset
