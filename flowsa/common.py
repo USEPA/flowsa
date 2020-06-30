@@ -134,12 +134,35 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'DataCollection': [{'dtype': 'float'}, {'required': True}]
                          }
 
-#A list of activity fields in each flow data format
+# A list of activity fields in each flow data format
 activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
                                   {'flowbysector': 'SectorProducedBy'}],
                    'ConsumedBy': [{'flowbyactivity':'ActivityConsumedBy'},
                                   {'flowbysector': 'SectorConsumedBy'}]
                    }
+
+
+def unique_activity_names(datasource, years):
+    """read in the ers parquet files, select the unique activity names, return list"""
+    # create single df representing all selected years
+    df = []
+    for y in years:
+        df = pd.read_parquet(outputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
+        df.append(df)
+
+    # create list of unique activity names
+    fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
+                           activity_fields['ConsumedBy'][0]['flowbyactivity']]
+
+    activitynames_list = []
+    for i in fba_activity_fields:
+        activitynames = df[i].unique().tolist()
+        activitynames_list.append(activitynames)
+
+    activitynames_list.drop_duplicates()
+    activitynames_list.remove('None')
+
+    return activitynames_list
 
 
 def generalize_activity_field_names(df):
