@@ -1,82 +1,62 @@
-"ActivitySourceName","Activity","SectorSourceName","Sector","SectorType"
-"USGS_Water_Use","Aquaculture","NAICS_2012_Code","1125","I"
-"USGS_Water_Use","Domestic","NAICS_2012_Code","F010","I"
-"USGS_Water_Use","Fossil-fuel Thermoelectric Power","NAICS_2012_Code","221112","I"
-"USGS_Water_Use","Geothermal Thermoelectric Power","NAICS_2012_Code","221116","I"
-"USGS_Water_Use","Hydroelectric Power","NAICS_2012_Code","221111","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","1133","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","23","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","31","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","32","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","33","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","5111","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","51222","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","51223","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","54171","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","56291","I"
-"USGS_Water_Use","Industrial","NAICS_2012_Code","81149","I"
-"USGS_Water_Use","Irrigation","NAICS_2012_Code","111","I"
-"USGS_Water_Use","Irrigation","NAICS_2012_Code","71391","I"
-"USGS_Water_Use","Irrigation Crop","NAICS_2012_Code","111","I"
-"USGS_Water_Use","Irrigation Golf Courses","NAICS_2012_Code","71391","I"
-"USGS_Water_Use","Irrigation Total","NAICS_2012_Code","111","I"
-"USGS_Water_Use","Irrigation Total","NAICS_2012_Code","71391","I"
-"USGS_Water_Use","Livestock","NAICS_2012_Code","1121","I"
-"USGS_Water_Use","Livestock","NAICS_2012_Code","1122","I"
-"USGS_Water_Use","Livestock","NAICS_2012_Code","1123","I"
-"USGS_Water_Use","Livestock","NAICS_2012_Code","1124","I"
-"USGS_Water_Use","Livestock","NAICS_2012_Code","1129","I"
-"USGS_Water_Use","Mining","NAICS_2012_Code","21","I"
-"USGS_Water_Use","Mining","NAICS_2012_Code","54136","I"
-"USGS_Water_Use","Nuclear Thermoelectric Power","NAICS_2012_Code","221113","I"
-"USGS_Water_Use","Public Supply","NAICS_2012_Code","221310","I"
-"USGS_Water_Use","Self-supplied domestic","NAICS_2012_Code","F010","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","1133","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","23","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","31","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","32","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","33","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","5111","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","51222","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","51223","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","54171","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","56291","I"
-"USGS_Water_Use","Self-supplied industrial","NAICS_2012_Code","81149","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221112","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221113","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221114","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221116","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221117","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221118","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221121","I"
-"USGS_Water_Use","Thermoelectric Power","NAICS_2012_Code","221122","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221112","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221113","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221114","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221116","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221117","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221118","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221121","I"
-"USGS_Water_Use","Thermoelectric Power Closed-loop cooling","NAICS_2012_Code","221122","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221112","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221113","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221114","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221116","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221117","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221118","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221121","I"
-"USGS_Water_Use","Thermoelectric Power Once-through cooling","NAICS_2012_Code","221122","I"
-"USGS_Water_Use","Total Groundwater","NAICS_2012_Code",NA,"I"
-"USGS_Water_Use","Total Surface water","NAICS_2012_Code",NA,"I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221112","I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221113","I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221114","I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221116","I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221117","I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221118","I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221121","I"
-"USGS_Water_Use","Total Thermoelectric Power","NAICS_2012_Code","221122","I"
-"USGS_Water_Use","Total withdrawals","NAICS_2012_Code",NA,"I"
-"USGS_Water_Use","Wastewater Treatment","NAICS_2012_Code","22132","I"
-"USGS_Water_Use","Wastewater Treatment","NAICS_2012_Code","562219","I"
-"USGS_Water_Use","Wastewater Treatment","NAICS_2012_Code","92411","I"
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+USGS_NWIS_WU,Aquaculture,NAICS_2012_Code,1125,I
+USGS_NWIS_WU,Domestic,NAICS_2012_Code,F010,I
+USGS_NWIS_WU,Hydroelectric Power,NAICS_2012_Code,221111,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,56291,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,54171,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,51223,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,51222,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,5111,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,33,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,1133,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,32,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,31,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,23,I
+USGS_NWIS_WU,Industrial,NAICS_2012_Code,81149,I
+USGS_NWIS_WU,Irrigation,NAICS_2012_Code,71391,I
+USGS_NWIS_WU,Irrigation,NAICS_2012_Code,111,I
+USGS_NWIS_WU,Irrigation Crop,NAICS_2012_Code,111,I
+USGS_NWIS_WU,Irrigation Golf Courses,NAICS_2012_Code,71391,I
+USGS_NWIS_WU,Irrigation Total,NAICS_2012_Code,111,I
+USGS_NWIS_WU,Irrigation Total,NAICS_2012_Code,71391,I
+USGS_NWIS_WU,Livestock,NAICS_2012_Code,1124,I
+USGS_NWIS_WU,Livestock,NAICS_2012_Code,1129,I
+USGS_NWIS_WU,Livestock,NAICS_2012_Code,1121,I
+USGS_NWIS_WU,Livestock,NAICS_2012_Code,1123,I
+USGS_NWIS_WU,Livestock,NAICS_2012_Code,1122,I
+USGS_NWIS_WU,Mining,NAICS_2012_Code,21,I
+USGS_NWIS_WU,Mining,NAICS_2012_Code,54136,I
+USGS_NWIS_WU,Public,NAICS_2012_Code,221310,I
+USGS_NWIS_WU,Public Supply,NAICS_2012_Code,221310,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221116,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221112,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221122,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221121,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221118,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221113,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221114,I
+USGS_NWIS_WU,Thermoelectric,NAICS_2012_Code,221117,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221118,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221113,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221112,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221114,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221117,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221121,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221116,I
+USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,221122,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221122,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221117,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221121,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221116,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221118,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221114,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221113,I
+USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221112,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221113,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221112,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221121,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221118,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221116,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221114,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221122,I
+USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221117,I
