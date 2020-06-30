@@ -10,6 +10,7 @@ import os
 import yaml
 import requests
 import pandas as pd
+import numpy as np
 import logging as log
 import appdirs
 
@@ -143,26 +144,23 @@ activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
 
 
 def unique_activity_names(datasource, years):
-    """read in the ers parquet files, select the unique activity names, return list"""
+    """read in the ers parquet files, select the unique activity names, return df with one column """
     # create single df representing all selected years
     df = []
     for y in years:
         df = pd.read_parquet(outputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
         df.append(df)
 
-    # create list of unique activity names
-    fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
-                           activity_fields['ConsumedBy'][0]['flowbyactivity']]
+    column_activities = df[["ActivityConsumedBy", "ActivityProducedBy"]].values.ravel()
+    unique_activities = pd.unique(column_activities)
+    df_unique = unique_activities.reshape((-1, 1))
+    df_unique = pd.DataFrame({'Activity': df_unique[:, 0]})
+    df_unique = df_unique.loc[df_unique['Activity'] != 'None']
 
-    activitynames_list = []
-    for i in fba_activity_fields:
-        activitynames = df[i].unique().tolist()
-        activitynames_list.append(activitynames)
+    # sort df
+    df_unique = df_unique.sort_values(['Activity']).reset_index(drop=True)
 
-    activitynames_list.drop_duplicates()
-    activitynames_list.remove('None')
-
-    return activitynames_list
+    return df_unique
 
 
 def generalize_activity_field_names(df):
