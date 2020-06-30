@@ -6,7 +6,7 @@ Public functions for flowsa
 """
 import yaml
 import pandas as pd
-from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
+from flowsa.common import outputpath, datapath, log
 
 def getFlowByActivity(flowclass, years, datasource):
     """
@@ -19,7 +19,7 @@ def getFlowByActivity(flowclass, years, datasource):
     fba = pd.DataFrame()
     for y in years:
         try:
-            flowbyactivity = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
+            flowbyactivity = pd.read_parquet(outputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
             flowbyactivity = flowbyactivity[flowbyactivity['Class'].isin(flowclass)]
             fba = pd.concat([fba, flowbyactivity], sort=False)
         except FileNotFoundError:
@@ -36,7 +36,7 @@ def getFlowBySector(methodname, activity):
     """
     fbs = pd.DataFrame()
     try:
-        fbs = pd.read_parquet(fbsoutputpath + methodname + "_" + activity + ".parquet", engine="pyarrow")
+        fbs = pd.read_parquet(outputpath + methodname + "_" + activity + ".parquet", engine="pyarrow")
     except FileNotFoundError:
         log.error("No parquet file found for datasource " + methodname + "and " + activity + " in flowsa")
     return fbs

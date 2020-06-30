@@ -40,9 +40,9 @@ def parse_args():
 def store_flowbyactivity(result, source, year=None):
     """Prints the data frame into a parquet file."""
     if year is not None:
-        f = fbaoutputpath + source + "_" + str(year) + '.parquet'
+        f = outputpath + source + "_" + str(year) + '.parquet'
     else:
-        f = fbaoutputpath + source + '.parquet'
+        f = outputpath + source + '.parquet'
     try:
         result.to_parquet(f, engine="pyarrow")
     except:

@@ -6,13 +6,13 @@
 import os
 import unittest
 import pandas as pd
-from flowsa.common import fbaoutputpath
+from flowsa.common import outputpath
 
 class TestFlowByActivityFunctions(unittest.TestCase):
 
     def setUp(self):
         self.fbas = []
-        for f in os.listdir(fbaoutputpath):
+        for f in os.listdir(outputpath):
             print(f)
             fba = pd.read_parquet(f)
             self.fbas.append(fba)

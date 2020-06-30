@@ -8,7 +8,7 @@ import flowsa
 import pandas as pd
 import yaml
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, \
-    generalize_activity_field_names, fbsoutputpath, datapath
+    generalize_activity_field_names, outputpath, datapath
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
@@ -33,7 +33,7 @@ def load_method(method_name):
 
 def store_flowbysector(fbs_df, parquet_name):
     """Prints the data frame into a parquet file."""
-    f = fbsoutputpath + parquet_name + '.parquet'
+    f = outputpath + parquet_name + '.parquet'
     try:
         fbs_df.to_parquet(f, engine="pyarrow")
     except:
@@ -122,7 +122,8 @@ def main(method_name):
                     # assign naics to allocation dataset
                     fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
                                                                    sectorsourcename=method['target_sector_source'],
-                                                                   levelofSectoragg=attr['allocation_sector_aggregation'])
+                                                                   levelofSectoragg=attr[
+                                                                       'allocation_sector_aggregation'])
                     # subset fba datsets to only keep the naics associated with usgs activity subset
                     fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
                     # Reset index values after subset
@@ -130,7 +131,8 @@ def main(method_name):
                     # generalize activity field names to enable link to water withdrawal table
                     fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
                     # drop columns
-                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity', 'Description', 'Min', 'Max'])
+                    fba_allocation_subset = fba_allocation_subset.drop(
+                        columns=['Activity', 'Description', 'Min', 'Max'])
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr)
@@ -141,8 +143,9 @@ def main(method_name):
                     # aren't in list
                     sector_list = flow_allocation['Sector'].unique().tolist()
                     # subset fba allocation table to the values in the activity list, based on overlapping sectors
-                    flow_subset_wsec = flow_subset_wsec.loc[(flow_subset_wsec[fbs_activity_fields[0]].isin(sector_list)) |
-                                                            (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
+                    flow_subset_wsec = flow_subset_wsec.loc[
+                        (flow_subset_wsec[fbs_activity_fields[0]].isin(sector_list)) |
+                        (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
 
                     # merge water withdrawal df w/flow allocation dataset
                     # todo: modify to recalculate data quality scores
