@@ -22,7 +22,7 @@ fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 
 
-def filter_by_geoscale(df, geoscale):
+def filter_by_geoscale(df, geoscale, activitynames):
     """
     Filter flowbyactivity by FIPS at the given scale
     :param df: Either flowbyactivity or flowbysector
@@ -45,12 +45,12 @@ def filter_by_geoscale(df, geoscale):
     df = df[df['Location'].isin(fips)]
 
     if len(df) == 0:
-        log.error("No flows found in the flow dataset at the " + geoscale + " scale.")
+        log.error("No flows found in the " + ', '.join(activitynames) + " flow dataset at the " + geoscale + " scale.")
     else:
         return df
 
 
-def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
+def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     """
 
     :param df: flowbyactivity or flowbysector df
@@ -59,13 +59,20 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns):
     :param groupbycolumns: flowbyactivity or flowbysector default groupby columns
     :return:
     """
+
+    # #testing
+    # df = flow_subset.copy()
+    # groupbycolumns = fba_default_grouping_fields.copy()
+    # activitynames = names.copy()
+
+
     from flowsa.common import fips_number_key
 
     from_scale_dig = fips_number_key[from_scale]
     to_scale_dig = fips_number_key[to_scale]
 
     # use from scale to filter by these values
-    df_from_scale = filter_by_geoscale(df, from_scale)
+    df_from_scale = filter_by_geoscale(df, from_scale, activitynames)
 
     group_cols = groupbycolumns.copy()
 
