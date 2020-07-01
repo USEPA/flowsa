@@ -24,8 +24,8 @@ except NameError:
 datapath = modulepath + 'data/'
 sourceconfigpath = datapath + 'sourceconfig/'
 outputpath = modulepath + 'output/'
-# fbaoutputpath = outputpath + 'FlowByActivity/'
-# fbsoutputpath = outputpath + 'FlowBySector/'
+fbaoutputpath = outputpath + 'FlowByActivity/'
+fbsoutputpath = outputpath + 'FlowBySector/'
 flowbyactivitymethodpath = datapath + 'flowbysectormethods/'
 
 local_storage_path = appdirs.user_data_dir()
@@ -148,7 +148,7 @@ def unique_activity_names(datasource, years):
     # create single df representing all selected years
     df = []
     for y in years:
-        df = pd.read_parquet(outputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
+        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
         df.append(df)
 
     column_activities = df[["ActivityConsumedBy", "ActivityProducedBy"]].values.ravel()

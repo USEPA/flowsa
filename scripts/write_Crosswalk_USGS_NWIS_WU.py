@@ -9,7 +9,7 @@ manually assigning to NAICS
 
 """
 import pandas as pd
-from flowsa.common import datapath, outputpath, unique_activity_names
+from flowsa.common import datapath, fbaoutputpath, unique_activity_names
 
 
 def assign_naics(df):

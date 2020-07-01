@@ -13,13 +13,13 @@ on NAICS definitions from the Census.
 7/8 digit NAICS align with USDA ERS FIWS
 """
 import pandas as pd
-from flowsa.common import datapath, outputpath
+from flowsa.common import datapath, fbaoutputpath
 
 def unique_activity_names(datasource, years):
     """read in the ers parquet files, select the unique activity names"""
     df = []
     for y in years:
-        df = pd.read_parquet(outputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
+        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
         df.append(df)
     df = df[['SourceName', 'ActivityProducedBy']]
     # rename columns
