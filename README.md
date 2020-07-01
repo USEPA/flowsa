@@ -20,9 +20,9 @@ Class | Description | FlowBySector Reference Unit | [Flow Types](./formatspecs/F
 --- | --- | --- | --- |
 Employment | Jobs | p | Modeled as ELEMENTARY_FLOWS produced by sectors |
 Energy | Energy consumption, transfer as electricity or waste heat  | MJ | All types |
-Land | Land area occupied | m2 per year | Modeled as ELEMENTARY_FLOWS consumed by sectors |
+Land | Land area occupied | m2 | Modeled as ELEMENTARY_FLOWS consumed by sectors |
 Money | Purchases | USDyear* | Modeled as TECHNOSPHERE_FLOWS with producing and consuming sectors | 
-Water | Water use and release data, including wastewater | m3 | All types |
+Water | Water use and release data, including wastewater | kg | All types |
 Other | Misc flows used for supporting data | _varies_ | All types |
 
 *USD unit value varies by year and is reported like 'USD2012'
