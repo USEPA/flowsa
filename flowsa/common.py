@@ -354,3 +354,19 @@ us_state_abbrev = {
 # thank you to @kinghelix and @trevormarburger for this idea
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
 
+
+def convert_fba_unit(df):
+    """
+    Convert unit to standard
+    :param df: Either flowbyactivity
+    :return: Df with standarized units
+    """
+    # remove temporal aspect of unit and want all flows in Mgal
+    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', df['FlowAmount'] * 1000 * 365, df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
+
+    df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', df['FlowAmount'] * 365, df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
+
+    return df
+
