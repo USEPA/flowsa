@@ -120,6 +120,8 @@ if __name__ == '__main__':
     log.info("Retrieved data for " + args['source'])
     # add any missing columns of data and cast to appropriate data type
     flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
+    # modify flow units
+    flow_df = convert_fba_unit(flow_df)
     # save as parquet file
     parquet_name = args['source'] + '_' + args['year']
     store_flowbyactivity(flow_df, parquet_name)
