@@ -111,7 +111,7 @@ def usgs_parse(dataframe_list, args):
     df['Compartment'] = pd.np.where(df.Description.str.contains("ground"), "ground",
                         pd.np.where(df.Description.str.contains("surface"), "surface",
                         pd.np.where(df.Description.str.contains("consumptive"), "air",
-                        pd.np.where(df.Description.str.contains("total"), "total", "None"))))
+                        pd.np.where(df.Description.str.contains("total"), "total", "total"))))
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df['Unit'] = df['Unit'].str.strip()
     df["Unit"] = df['Unit'].str.replace("in ", "", regex=True)
@@ -158,6 +158,7 @@ def usgs_parse(dataframe_list, args):
     # remove commas from activity names
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
+
     return df
 
 
