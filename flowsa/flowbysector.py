@@ -5,10 +5,9 @@
 Produces a FlowBySector data frame based on a method file for the given class
 """
 import flowsa
-import pandas as pd
 import yaml
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
-    generalize_activity_field_names, fbsoutputpath, datapath, fips_number_key, load_sector_length_crosswalk
+    generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
@@ -79,7 +78,7 @@ def main(method_name):
                                 (flows[fba_activity_fields[1]].isin(names))]
 
             # Reset index values after subset
-            flow_subset = flow_subset.reset_index()
+            flow_subset = flow_subset.reset_index(drop=True)
 
             # aggregate geographically to the scale of the allocation dataset
             from_scale = v['geoscale_to_use']
@@ -237,6 +236,12 @@ def main(method_name):
             # subset df
             fbs_subset = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) |
                                      (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
+
+            # add any missing columns of data and cast to appropriate data type
+            fbs_subset = add_missing_flow_by_fields(fbs_subset, flow_by_sector_fields)
+            # sort df
+            fbs_subset = fbs_subset.sort_values(
+                ['Flowable', 'SectorProducedBy', 'SectorConsumedBy', 'Context']).reset_index(drop=True)
 
             # save as parquet file
             parquet_name = method_name + '_' + attr['names']
