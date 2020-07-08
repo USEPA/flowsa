@@ -7,6 +7,7 @@ Produces a FlowBySector data frame based on a method file for the given class
 import flowsa
 import yaml
 import argparse
+import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk, outputpath, datapath
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
@@ -73,7 +74,6 @@ def main(method_name):
         # convert unit
         log.info("Converting units in " + k)
         flows = convert_unit(flows)
-
 
         # create dictionary of allocation datasets for different usgs activities
         activities = v['activity_sets']
@@ -187,7 +187,6 @@ def main(method_name):
                     (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
 
                 # merge water withdrawal df w/flow allocation dataset
-
                 log.info("Merge " + k + " and subset of " + attr['allocation_source'])
                 fbs = flow_subset_wsec.merge(
                     flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
@@ -243,7 +242,7 @@ def main(method_name):
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 
             # test agg by sector
-            sector_agg_comparison = sector_flow_comparision(fbs_agg)
+            sector_agg_comparison = sector_flow_comparision(fbs)
 
             # return sector level specified in method yaml
             # load the crosswalk linking sector lengths
@@ -259,19 +258,17 @@ def main(method_name):
             fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) |
                                      (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
 
-
             # add any missing columns of data and cast to appropriate data type
-            fbs_subset = add_missing_flow_by_fields(fbs_subset, flow_by_sector_fields)
-            # sort df
-            fbs_subset = fbs_subset.sort_values(
-                ['Flowable', 'SectorProducedBy', 'SectorConsumedBy', 'Context']).reset_index(drop=True)
+            fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
 
-            # save as parquet file
-            #parquet_name = method_name + '_' + attr['names']
-            #store_flowbysector(fbs, parquet_name)
             log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
             fbss.append(fbs)
+    # create single df of all activities
     fbss = pd.concat(fbss, ignore_index=True, sort=False)
+    # sort df
+    fbss = fbss.sort_values(
+        ['Flowable', 'SectorProducedBy', 'SectorConsumedBy', 'Context']).reset_index(drop=True)
+    # save parquet file
     store_flowbysector(fbss,method_name)
 
 def parse_args():
