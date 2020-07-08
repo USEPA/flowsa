@@ -9,12 +9,12 @@ import yaml
 import argparse
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
-    generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk, outputpath, datapath
+    generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
-    filter_by_geoscale
+    filter_by_geoscale, aggregator
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 from flowsa.datachecks import sector_flow_comparision
 
@@ -265,6 +265,8 @@ def main(method_name):
             fbss.append(fbs)
     # create single df of all activities
     fbss = pd.concat(fbss, ignore_index=True, sort=False)
+    # aggregate df as activities might have data for the same specified sector length
+    fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     fbss = fbss.sort_values(
         ['Flowable', 'SectorProducedBy', 'SectorConsumedBy', 'Context']).reset_index(drop=True)
