@@ -7,8 +7,8 @@ Produces a FlowBySector data frame based on a method file for the given class
 import flowsa
 import pandas as pd
 import yaml
-from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, \
-    generalize_activity_field_names, fbaoutputpath, fbsoutputpath, datapath, fips_number_key
+from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
+    generalize_activity_field_names, fbsoutputpath, datapath, fips_number_key, load_sector_length_crosswalk
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
@@ -69,9 +69,6 @@ def main(method_name):
         # convert unit
         flows = convert_unit(flows)
 
-        # dfs for combined activities
-        df_list= []
-
         # create dictionary of allocation datasets for different usgs activities
         activities = v['activity_sets']
         for aset, attr in activities.items():
@@ -87,7 +84,7 @@ def main(method_name):
             # aggregate geographically to the scale of the allocation dataset
             from_scale = v['geoscale_to_use']
             to_scale = attr['allocation_from_scale']
-            # todo: add warning
+            # todo: add warning if usgs is less aggregated than allocation df
             # if usgs is less aggregated than allocation df, aggregate usgs activity to target scale
             if fips_number_key[from_scale] > fips_number_key[to_scale]:
                 flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale, fba_default_grouping_fields, names)
@@ -174,7 +171,6 @@ def main(method_name):
                     (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
 
                 # merge water withdrawal df w/flow allocation dataset
-                # todo: modify to recalculate data quality scores
 
                 fbs = flow_subset_wsec.merge(
                     flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
@@ -229,8 +225,16 @@ def main(method_name):
             sector_agg_comparison = sector_flow_comparision(fbs_agg)
 
             # return sector level specified in method yaml
-            cw = pd.read_csv(datapath + "NAICS_2012_Crosswalk.csv", dtype="str")
+            # load the crosswalk linking sector lengths
+            cw = load_sector_length_crosswalk()
             sector_list = cw[method['target_sector_level']].unique().tolist()
+            # add any non-NAICS sectors used with NAICS
+            household = load_household_sector_codes()
+            household = household.loc[household['NAICS_Level_to_Use_For'] == method['target_sector_level']]
+            # add household sector to sector list
+            sector_list.extend(household['Code'].tolist())
+
+            # subset df
             fbs_subset = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) |
                                      (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
 
@@ -238,14 +242,4 @@ def main(method_name):
             parquet_name = method_name + '_' + attr['names']
             store_flowbysector(fbs_subset, parquet_name)
 
-
-    #todo: combine activities into single parquet
-
-    #     df_list.append(fbs_subset)
-    # combined_df = pd.concat(df_list)
-    #
-    # # save as parquet file
-    # parquet_name = method_name
-    # store_flowbysector(combined_df, parquet_name)
-
-            return fbs_subset  # combined_df
+            return fbs_subset
