@@ -5,16 +5,17 @@
 Produces a FlowBySector data frame based on a method file for the given class
 """
 import flowsa
-import pandas as pd
 import yaml
 import argparse
-from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, \
-    generalize_activity_field_names, outputpath, datapath, fips_number_key
+from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
+    generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk, outputpath, datapath
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
-    add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation
+    add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
+    filter_by_geoscale
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
+from flowsa.datachecks import sector_flow_comparision
 
 
 def load_method(method_name):
@@ -34,7 +35,7 @@ def load_method(method_name):
 
 def store_flowbysector(fbs_df, parquet_name):
     """Prints the data frame into a parquet file."""
-    f = outputpath + parquet_name + '.parquet'
+    f = fbsoutputpath + parquet_name + '.parquet'
     try:
         fbs_df.to_parquet(f)
     except:
@@ -85,22 +86,24 @@ def main(method_name):
                                 (flows[fba_activity_fields[1]].isin(names))]
 
             # Reset index values after subset
-            flow_subset = flow_subset.reset_index()
+            flow_subset = flow_subset.reset_index(drop=True)
 
             # aggregate geographically to the scale of the allocation dataset
             from_scale = v['geoscale_to_use']
             to_scale = attr['allocation_from_scale']
+            # todo: add warning if usgs is less aggregated than allocation df
             # if usgs is less aggregated than allocation df, aggregate usgs activity to target scale
             log.info("Aggregating subset from " + from_scale + " to " + to_scale)
             if fips_number_key[from_scale] > fips_number_key[to_scale]:
                 flow_subset = agg_by_geoscale(flow_subset, from_scale, to_scale, fba_default_grouping_fields, names)
-            # else, if usgs is more aggregated than allocation table, use usgs as both to and from scale
+            # else, if usgs is more aggregated than allocation table, filter relevant rows
             else:
-                flow_subset = agg_by_geoscale(flow_subset, from_scale, from_scale, fba_default_grouping_fields, names)
+                flow_subset = filter_by_geoscale(flow_subset, from_scale, names)
 
             # location column pad zeros if necessary
             flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
-            else x)
+                                                                    else x
+                                                                    )
 
             # Add sectors to usgs activity, creating two versions of the flow subset
             # the first version "flow_subset" is the most disaggregated version of the Sectors (NAICS)
@@ -121,29 +124,31 @@ def main(method_name):
                 log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " + str(attr['allocation_source_year']))
                 fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                           datasource=attr['allocation_source'],
-                                                          years=[attr['allocation_source_year']])
-
-                # aggregate geographically to the scale of the flowbyactivity source, if necessary
-                from_scale = attr['allocation_from_scale']
-                to_scale = v['geoscale_to_use']
-                # if usgs is less aggregated than allocation df, aggregate usgs activity to target scale
-                log.info("Aggregating " + attr['allocation_source'] + " from " + from_scale + " to " + to_scale)
-                if fips_number_key[from_scale] > fips_number_key[to_scale]:
-                    fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale, fba_default_grouping_fields, names)
-                # else, if usgs is more aggregated than allocation table, use usgs as both to and from scale
-                else:
-                    fba_allocation = agg_by_geoscale(fba_allocation, from_scale, from_scale, fba_default_grouping_fields, names)
+                                                          years=[attr['allocation_source_year']]).reset_index(drop=True)           
 
                 # fill null values
                 fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
                 # convert unit
                 fba_allocation = convert_unit(fba_allocation)
+
                 # subset based on yaml settings
                 if attr['allocation_flow'] != 'None':
                     fba_allocation = fba_allocation.loc[fba_allocation['FlowName'].isin(attr['allocation_flow'])]
                 if attr['allocation_compartment'] != 'None':
                     fba_allocation = fba_allocation.loc[
                         fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
+                # reste index
+                fba_allocation = fba_allocation.reset_index(drop=True)
+
+                # aggregate geographically to the scale of the flowbyactivty source, if necessary
+                from_scale = attr['allocation_from_scale']
+                to_scale = v['geoscale_to_use']
+                # if allocation df is less aggregated than FBA df, aggregate allocation df to target scale
+                if fips_number_key[from_scale] > fips_number_key[to_scale]:
+                    fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale, fba_default_grouping_fields, names)
+                # else, if usgs is more aggregated than allocation table, use usgs as both to and from scale
+                else:
+                    fba_allocation = filter_by_geoscale(fba_allocation, from_scale, names)
 
                 # assign naics to allocation dataset
                 log.info("Adding sectors to " + attr['allocation_source'])
@@ -167,6 +172,7 @@ def main(method_name):
                 if attr['allocation_helper'] == 'yes':
                     log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
                     fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr)
+
                 # create flow allocation ratios
                 log.info("Creating allocation ratios for " + attr['allocation_source'])
                 flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
@@ -181,7 +187,6 @@ def main(method_name):
                     (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
 
                 # merge water withdrawal df w/flow allocation dataset
-                # todo: modify to recalculate data quality scores
 
                 log.info("Merge " + k + " and subset of " + attr['allocation_source'])
                 fbs = flow_subset_wsec.merge(
@@ -223,25 +228,43 @@ def main(method_name):
             fbs = fbs.fillna(value=fbs_fill_na_dict)
 
             # aggregate df geographically, if necessary
-            log.info("Aggregating flowbysector to target geographic scale")
-            if fips_number_key[v['geoscale_to_use']] <= fips_number_key[method['target_geoscale']]:
-                from_scale = method['target_geoscale']
-                to_scale = method['target_geoscale']
+            log.info("Aggregating flowbysector to target geographic scale")          
+            if fips_number_key[v['geoscale_to_use']] < fips_number_key[attr['allocation_from_scale']]:
+                from_scale = v['geoscale_to_use']
             else:
                 from_scale = attr['allocation_from_scale']
-                to_scale = method['target_geoscale']
-            # aggregate usgs activity to target scale
+
+            to_scale = method['target_geoscale']
+
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
             log.info("Aggregating flowbysector to target sector scale")
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 
+            # test agg by sector
+            sector_agg_comparison = sector_flow_comparision(fbs_agg)
+
             # return sector level specified in method yaml
-            cw = pd.read_csv(datapath + "NAICS_2012_Crosswalk.csv", dtype="str")
+            # load the crosswalk linking sector lengths
+            cw = load_sector_length_crosswalk()
             sector_list = cw[method['target_sector_level']].unique().tolist()
+
+            # add any non-NAICS sectors used with NAICS
+            household = load_household_sector_codes()
+            household = household.loc[household['NAICS_Level_to_Use_For'] == method['target_sector_level']]
+            # add household sector to sector list
+            sector_list.extend(household['Code'].tolist())
+            # subset df
             fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) |
                                      (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
+
+
+            # add any missing columns of data and cast to appropriate data type
+            fbs_subset = add_missing_flow_by_fields(fbs_subset, flow_by_sector_fields)
+            # sort df
+            fbs_subset = fbs_subset.sort_values(
+                ['Flowable', 'SectorProducedBy', 'SectorConsumedBy', 'Context']).reset_index(drop=True)
 
             # save as parquet file
             #parquet_name = method_name + '_' + attr['names']

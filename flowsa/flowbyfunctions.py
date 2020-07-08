@@ -29,6 +29,7 @@ def filter_by_geoscale(df, geoscale, activitynames):
     :param geoscale: string, either 'national', 'state', or 'county'
     :return: filtered flowbyactivity or flowbysector
     """
+
     # filter by geoscale depends on Location System
     fips = []
     if df['LocationSystem'].str.contains('FIPS').any():
@@ -59,12 +60,6 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     :param groupbycolumns: flowbyactivity or flowbysector default groupby columns
     :return:
     """
-
-    # #testing
-    # df = flow_subset.copy()
-    # groupbycolumns = fba_default_grouping_fields.copy()
-    # activitynames = names.copy()
-
 
     from flowsa.common import fips_number_key
 
