@@ -3,6 +3,12 @@
 # coding=utf-8
 """
 Produces a FlowBySector data frame based on a method file for the given class
+
+To run code, specify the "Run/Debug Configurations" Parameters to the "flowsa/data/flowbysectormethods" yaml file name
+you want to use.
+
+Example: "Parameters: --m Water_national_2015_m1"
+
 """
 import flowsa
 import yaml
