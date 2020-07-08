@@ -14,8 +14,8 @@ import numpy as np
 import logging as log
 import appdirs
 
-log.basicConfig(level='DEBUG',format='%(levelname)s %(message)s',
-                stream=sys.stdout)
+log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
 except NameError:
