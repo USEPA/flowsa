@@ -13,6 +13,7 @@ Example: "Parameters: --m Water_national_2015_m1"
 import flowsa
 import yaml
 import argparse
+import sys
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk
@@ -69,10 +70,11 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
                                          datasource=k)
-        # todo: generalize below code
-        # if allocating USGS NWIS water data, first standardize names in data set
-        if k == 'USGS_NWIS_WU':
-            flows = standardize_usgs_nwis_names(flows)
+
+        # if necessary, standardize names in data set
+        if v['activity_name_standardization_fxn'] != 'None':
+            log.info("Standardizing activity names in " + k)
+            flows = getattr(sys.modules[__name__], v['activity_name_standardization_fxn'])(flows)
 
         # drop description field
         flows = flows.drop(columns='Description')
@@ -103,7 +105,6 @@ def main(method_name):
             # aggregate geographically to the scale of the allocation dataset
             from_scale = v['geoscale_to_use']
             to_scale = attr['allocation_from_scale']
-            # todo: add warning if usgs is less aggregated than allocation df
             # if usgs is less aggregated than allocation df, aggregate usgs activity to target scale
             log.info("Aggregating subset from " + from_scale + " to " + to_scale)
             if fips_number_key[from_scale] > fips_number_key[to_scale]:
