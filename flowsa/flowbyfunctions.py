@@ -91,17 +91,27 @@ def aggregator(df, groupbycols):
     :param groupbycols: Either flowbyactivity or flowbysector columns
     :return:
     """
-
+    # weighted average function
     try:
         wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
     except ZeroDivisionError:
         wm = 0
 
-    agg_funx = {"FlowAmount": "sum",
-                "Spread": wm,
-                "DataReliability": wm,
-                "DataCollection": wm}
+    # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
+    possible_column_headers = ('Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
+                               'GeographicCorrelation', 'TechnologicalCorrelation', 'DataCollection')
 
+    # list of column headers that do exist in the df being aggregated
+    column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
+
+    # initial dictionary of how a column should be aggregated
+    agg_funx = {"FlowAmount": "sum"}
+
+    # add columns to the aggregation dictionary that should be aggregated using a weighted avg
+    for e in column_headers:
+        agg_funx.update({e: wm})
+
+    # aggregate df by groupby columns, either summing or creating weighted averages
     df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
 
     return df_dfg
