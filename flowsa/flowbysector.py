@@ -20,7 +20,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_sub
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
-    filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale
+    filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 from flowsa.datachecks import sector_flow_comparision
 
@@ -183,8 +183,7 @@ def main(method_name):
                 fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
                 # drop columns
                 fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
-                # fba_allocation_subset = fba_allocation_subset.drop(
-                #     columns=['Activity', 'Description', 'Min', 'Max'])
+
                 # if there is an allocation helper dataset, modify allocation df
                 if attr['allocation_helper'] == 'yes':
                     log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
@@ -202,6 +201,10 @@ def main(method_name):
                 flow_subset_wsec = flow_subset_wsec.loc[
                     (flow_subset_wsec[fbs_activity_fields[0]].isin(sector_list)) |
                     (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
+
+                # check if fba and allocation dfs have the same LocationSystem
+                log.info("Checking if flowbyactivity and allocation dataframes use the same location systems")
+                check_if_location_systems_match(flow_subset_wsec, flow_allocation)
 
                 # merge water withdrawal df w/flow allocation dataset
                 log.info("Merge " + k + " and subset of " + attr['allocation_source'])

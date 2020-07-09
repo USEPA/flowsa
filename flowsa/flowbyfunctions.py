@@ -195,6 +195,19 @@ def check_if_data_exists_at_geoscale(df, activitynames, geoscale):
         log.info("Flows found for " + ', '.join(activitynames) + " at the " + geoscale + " scale.")
 
 
+def check_if_location_systems_match(df1, df2):
+    """
+    Check if two dataframes share the same location system
+    :param df1: fba or fbs df
+    :param df2: fba or fbs df
+    :return:
+    """
+
+    if df1["LocationSystem"].all() == df2["LocationSystem"].all():
+        log.info("LocationSystems match")
+    else:
+        log.info("Warning: LocationSystems do not match")
+
 def convert_unit(df):
     """
     Convert unit to standard
