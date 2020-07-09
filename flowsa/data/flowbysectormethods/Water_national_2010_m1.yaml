@@ -47,6 +47,7 @@ flowbyactivity_sources:
     class: Water
     geoscale_to_use: national
     year: 2010
+    activity_name_standardization_fxn: standardize_usgs_nwis_names
     activity_sets:
       activity_set_1:
         names: "Aquaculture"
