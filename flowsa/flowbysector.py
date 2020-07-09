@@ -20,7 +20,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_sub
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
-    filter_by_geoscale, aggregator
+    filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 from flowsa.datachecks import sector_flow_comparision
 
@@ -69,6 +69,7 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
                                          datasource=k)
+        # todo: generalize below code
         # if allocating USGS NWIS water data, first standardize names in data set
         if k == 'USGS_NWIS_WU':
             flows = standardize_usgs_nwis_names(flows)
@@ -77,11 +78,11 @@ def main(method_name):
         flows = flows.drop(columns='Description')
         # fill null values
         flows = flows.fillna(value=fba_fill_na_dict)
-        # convert unit
+        # convert unit todo: think about unit conversion here
         log.info("Converting units in " + k)
         flows = convert_unit(flows)
 
-        # create dictionary of allocation datasets for different usgs activities
+        # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
         for aset, attr in activities.items():
             # subset by named activities
@@ -93,6 +94,11 @@ def main(method_name):
 
             # Reset index values after subset
             flow_subset = flow_subset.reset_index(drop=True)
+
+            # check if flowbyactivity data exists at specified geoscale to use
+            log.info("Checking if flowbyactivity data exists for " + ', '.join(map(str, names)) + " at the " +
+                     v['geoscale_to_use'] + ' level')
+            check_if_data_exists_at_geoscale(flow_subset, names, v['geoscale_to_use'])
 
             # aggregate geographically to the scale of the allocation dataset
             from_scale = v['geoscale_to_use']
@@ -143,8 +149,13 @@ def main(method_name):
                 if attr['allocation_compartment'] != 'None':
                     fba_allocation = fba_allocation.loc[
                         fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
-                # reste index
+                # reset index
                 fba_allocation = fba_allocation.reset_index(drop=True)
+
+                # check if allocation data exists at specified geoscale to use
+                log.info("Checking if " + " allocation data exists for " + ', '.join(map(str, names)) +
+                         " at the " + attr['allocation_from_scale'] + " level")
+                check_if_data_exists_at_geoscale(fba_allocation, names, attr['allocation_from_scale'])
 
                 # aggregate geographically to the scale of the flowbyactivty source, if necessary
                 from_scale = attr['allocation_from_scale']

@@ -165,6 +165,36 @@ def check_if_activities_match_sectors(fba):
         return None
 
 
+def check_if_data_exists_at_geoscale(df, activitynames, geoscale):
+    """
+    Check if an activity or a sector exists at the specified geoscalee
+    :param df: Either flowbyactivity or flowbysector dataframe
+    :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
+    :param geoscale: national, state, or county
+    :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
+    :return:
+    """
+    # filter by geoscale depends on Location System
+    fips = []
+    if df['LocationSystem'].str.contains('FIPS').any():
+        # all_FIPS = read_stored_FIPS()
+        if geoscale == "national":
+            fips.append(US_FIPS)
+        elif geoscale == "state":
+            state_FIPS = get_state_FIPS()
+            fips = list(state_FIPS['FIPS'])
+        elif geoscale == "county":
+            county_FIPS = get_county_FIPS()
+            fips = list(county_FIPS['FIPS'])
+
+    df = df[df['Location'].isin(fips)]
+
+    if len(df) == 0:
+        log.info("No flows found for " + ', '.join(activitynames) + "  at the " + geoscale + " scale.")
+    else:
+        log.info("Flows found for " + ', '.join(activitynames) + " at the " + geoscale + " scale.")
+
+
 def convert_unit(df):
     """
     Convert unit to standard
