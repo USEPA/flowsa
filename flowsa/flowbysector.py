@@ -17,7 +17,7 @@ import sys
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk
-from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
+from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
@@ -80,6 +80,9 @@ def main(method_name):
         flows = flows.drop(columns='Description')
         # fill null values
         flows = flows.fillna(value=fba_fill_na_dict)
+        # map df to elementary flows - commented out until mapping complete
+        # log.info("Mapping flows in " + k + ' to federal elementary flow list')
+        # flows_mapped = map_elementary_flows(flows, k)
         # convert unit todo: think about unit conversion here
         log.info("Converting units in " + k)
         flows = convert_unit(flows)
