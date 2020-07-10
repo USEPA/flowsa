@@ -10,6 +10,7 @@ you want to use.
 Example: "Parameters: --m Water_national_2015_m1"
 
 """
+
 import flowsa
 import yaml
 import argparse
@@ -295,7 +296,7 @@ def main(method_name):
     fbss = fbss.sort_values(
         ['Flowable', 'SectorProducedBy', 'SectorConsumedBy', 'Context']).reset_index(drop=True)
     # save parquet file
-    store_flowbysector(fbss,method_name)
+    store_flowbysector(fbss, method_name)
 
 def parse_args():
     """Make year and source script parameters"""

@@ -16,10 +16,15 @@ import appdirs
 
 log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
+
+# comment out if running test data
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
 except NameError:
     modulepath = 'flowsa/'
+
+# comment in if running test data
+# modulepath = 'C:/Users/cbirney/git_projects/flowsa/tests/'
 
 datapath = modulepath + 'data/'
 sourceconfigpath = datapath + 'sourceconfig/'
