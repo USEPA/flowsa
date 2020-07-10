@@ -216,7 +216,7 @@ def check_if_location_systems_match(df1, df2):
     if df1["LocationSystem"].all() == df2["LocationSystem"].all():
         log.info("LocationSystems match")
     else:
-        log.info("Warning: LocationSystems do not match")
+        log.warning("LocationSystems do not match")
 
 def convert_unit(df):
     """
