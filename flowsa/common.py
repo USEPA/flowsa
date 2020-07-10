@@ -17,21 +17,23 @@ import appdirs
 log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
 
-# comment out if running test data
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
 except NameError:
     modulepath = 'flowsa/'
 
-# comment in if running test data
-# modulepath = 'C:/Users/cbirney/git_projects/flowsa/tests/'
-
+# comment out if running test data
 datapath = modulepath + 'data/'
-sourceconfigpath = datapath + 'sourceconfig/'
 outputpath = modulepath + 'output/'
+
+# comment in if running test data
+# datapath = (modulepath + 'data/').replace('flowsa/flowsa/', 'flowsa/tests/')
+# outputpath = (modulepath + 'output/').replace('flowsa/flowsa/', 'flowsa/tests/')
+
+sourceconfigpath = datapath + 'sourceconfig/'
+flowbyactivitymethodpath = datapath + 'flowbysectormethods/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
-flowbyactivitymethodpath = datapath + 'flowbysectormethods/'
 
 local_storage_path = appdirs.user_data_dir()
 
