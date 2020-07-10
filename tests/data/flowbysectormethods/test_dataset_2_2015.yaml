@@ -1,7 +1,6 @@
 %YAML 1.2
 
-# Test allocation to sectors
-
+# Test sllovsyion yo drvyotd
 
 ---
 
@@ -10,15 +9,15 @@ target_sector_level: NAICS_4
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 flowbyactivity_sources:
-  "USGS_NWIS_WU":
+  "test_dataset_2":
     class: Water
-    geoscale_to_use: county
+    geoscale_to_use: state
     year: 2015
     activity_name_standardization_fxn: standardize_usgs_nwis_names
     activity_sets:
       activity_set_1:
         names: "Irrigation Crop"
-          allocation_method: proportional
+        allocation_method: proportional
         allocation_source: "USDA_CoA_Cropland"
         allocation_source_class: "Land"
         allocation_sector_aggregation: 'agg'
@@ -38,5 +37,3 @@ flowbyactivity_sources:
         helper_source_year: 2018
         helper_flow: None
         helper_from_scale: state
-
-
