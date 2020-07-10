@@ -5,6 +5,7 @@
 """ save flowbyactivity test data as parquet files """
 
 from flowsa.common import *
+from flowsa.flowbyfunctions import add_missing_flow_by_fields
 
 
 def store_test_flowbyactivity(csvname, year=None):
@@ -56,18 +57,15 @@ def gettestFlowBySector(methodname):
     return fbs
 
 
-# store csv test data as parquet files
-store_test_flowbyactivity('test_dataset_1', '2015')
-store_test_flowbyactivity('test_dataset_2', '2015')
-# store_test_flowbyactivity('test_dataset_3', '2015')
-
-# read test fba parquets
-test_1 = gettestFlowByActivity(flowclass=['Water'], years=[2015],
-                                                      datasource="test_dataset_1")
-test_2 = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_2")
-
-test_1_fbs = gettestFlowBySector('test_dataset_1_2015')
-test_2_fbs = gettestFlowBySector('test_dataset_2_2015')
-
-
-method_name = 'test_dataset_2_2015'
+# # store csv test data as parquet files
+# store_test_flowbyactivity('test_dataset_1', '2015')
+# store_test_flowbyactivity('test_dataset_2', '2015')
+# # store_test_flowbyactivity('test_dataset_3', '2015')
+#
+# # read test fba parquets
+# test_1_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_1")
+# test_2_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_2")
+#
+# # read test fbs parquets
+# test_1_fbs = gettestFlowBySector('test_dataset_1_2015')
+# test_2_fbs = gettestFlowBySector('test_dataset_2_2015')
