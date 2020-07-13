@@ -22,12 +22,13 @@ fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 
 
-def filter_by_geoscale(df, geoscale, activitynames):
+def create_geoscale_list(df, geoscale):
     """
-    Filter flowbyactivity by FIPS at the given scale
-    :param df: Either flowbyactivity or flowbysector
-    :param geoscale: string, either 'national', 'state', or 'county'
-    :return: filtered flowbyactivity or flowbysector
+    Create a list of FIPS associated with given geoscale
+
+    :param df: FlowBySector of FlowByActivity df
+    :param geoscale: 'national', 'state', or 'county'
+    :return: list of relevant FIPS
     """
 
     # filter by geoscale depends on Location System
@@ -42,6 +43,18 @@ def filter_by_geoscale(df, geoscale, activitynames):
         elif geoscale == "county":
             county_FIPS = get_county_FIPS()
             fips = list(county_FIPS['FIPS'])
+
+    return fips
+
+def filter_by_geoscale(df, geoscale, activitynames):
+    """
+    Filter flowbyactivity by FIPS at the given scale
+    :param df: Either flowbyactivity or flowbysector
+    :param geoscale: string, either 'national', 'state', or 'county'
+    :return: filtered flowbyactivity or flowbysector
+    """
+
+    fips = create_geoscale_list(df, geoscale)
 
     df = df[df['Location'].isin(fips)]
 
@@ -177,7 +190,7 @@ def check_if_activities_match_sectors(fba):
 
 def check_if_data_exists_at_geoscale(df, activitynames, geoscale):
     """
-    Check if an activity or a sector exists at the specified geoscalee
+    Check if an activity or a sector exists at the specified geoscale
     :param df: Either flowbyactivity or flowbysector dataframe
     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
     :param geoscale: national, state, or county
@@ -185,24 +198,56 @@ def check_if_data_exists_at_geoscale(df, activitynames, geoscale):
     :return:
     """
     # filter by geoscale depends on Location System
-    fips = []
-    if df['LocationSystem'].str.contains('FIPS').any():
-        # all_FIPS = read_stored_FIPS()
-        if geoscale == "national":
-            fips.append(US_FIPS)
-        elif geoscale == "state":
-            state_FIPS = get_state_FIPS()
-            fips = list(state_FIPS['FIPS'])
-        elif geoscale == "county":
-            county_FIPS = get_county_FIPS()
-            fips = list(county_FIPS['FIPS'])
+    fips = create_geoscale_list(df, geoscale)
 
     df = df[df['Location'].isin(fips)]
 
     if len(df) == 0:
-        log.info("No flows found for " + ', '.join(activitynames) + "  at the " + geoscale + " scale.")
+        log.info("No flows found for " + ', '.join(activitynames) + " at the " + geoscale + " scale.")
+        exists = "No"
     else:
         log.info("Flows found for " + ', '.join(activitynames) + " at the " + geoscale + " scale.")
+        exists = "Yes"
+    return exists
+
+
+def check_if_data_exists_at_less_aggregated_geoscale(df, activitynames, geoscale):
+    """
+    In the event data does not exist at specified geoscale, check if data exists at less aggregated level
+
+    :param df: Either flowbyactivity or flowbysector dataframe
+    :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
+    :param geoscale: national, state, or county
+    :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
+    :return:
+    """
+
+    if geoscale == 'national':
+        fips = create_geoscale_list(df, 'state')
+        df = df[df['Location'].isin(fips)]
+        if len(df) == 0:
+            log.info("No flows found for " + ', '.join(activitynames) + "  at the state scale.")
+            fips = create_geoscale_list(df, 'county')
+            df = df[df['Location'].isin(fips)]
+            if len(df) == 0:
+                log.info("No flows found for " + ', '.join(activitynames) + "  at the county scale.")
+            else:
+                log.info("Flowbyactivity data exists for " + ', '.join(activitynames) + " at the county level")
+                new_geoscale_to_use = 'county'
+                return new_geoscale_to_use
+        else:
+            log.info("Flowbyactivity data exists for " + ', '.join(activitynames) + " at the state level")
+            new_geoscale_to_use = 'state'
+            return new_geoscale_to_use
+    if geoscale == 'state':
+        fips = create_geoscale_list(df, 'county')
+        df = df[df['Location'].isin(fips)]
+        if len(df) == 0:
+            log.info("No flows found for " + ', '.join(activitynames) + "  at the county scale.")
+        else:
+            log.info("Flowbyactivity data exists for " + ', '.join(activitynames) + " at the county level")
+            new_geoscale_to_use = 'county'
+            return new_geoscale_to_use
 
 
 def check_if_location_systems_match(df1, df2):
@@ -374,18 +419,19 @@ def sector_aggregation_generalized(fbs_df, group_cols):
 
 def sector_aggregation(df_w_sectors, group_cols):
     """
-    Function that checks if a sector aggregation exists, and if not, sums the less aggregated sector
+    Function that checks if a sector length exists, and if not, sums the less aggregated sector
     :param df_w_sectors: Either a flowbyactivity df with sectors or a flowbysector df
     :param group_cols: columns by which to aggregate
     :return:
     """
 
-    # subset df into four df based on values in sector columns
+    # subset df into three df based on values in sector columns
     # df 1 where sector produced by = none
     df1 = df_w_sectors.loc[df_w_sectors['SectorProducedBy'] == 'None']
     # df 2 where sector consumed by = none
     df2 = df_w_sectors.loc[df_w_sectors['SectorConsumedBy'] == 'None']
     # df 3 where sector consumed by = 221320 (public supply)
+    #
     df3 = df_w_sectors.loc[
         (df_w_sectors['SectorProducedBy'] == '221310') & (df_w_sectors['SectorConsumedBy'] != 'None')]
 
