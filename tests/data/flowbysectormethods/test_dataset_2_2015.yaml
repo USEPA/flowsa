@@ -5,7 +5,7 @@
 ---
 
 
-target_sector_level: NAICS_4
+target_sector_level: NAICS_5
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 flowbyactivity_sources:
@@ -18,7 +18,7 @@ flowbyactivity_sources:
       activity_set_1:
         names: "Irrigation Crop"
         allocation_method: proportional
-        allocation_source: "USDA_CoA_Cropland"
+        allocation_source: "test_USDA_CoA_Cropland"
         allocation_source_class: "Land"
         allocation_sector_aggregation: 'agg'
         allocation_source_year: 2017
@@ -27,10 +27,10 @@ flowbyactivity_sources:
           - "AREA IN PRODUCTION"
           - "AREA"
         allocation_compartment:
-          - "NOT SPECIFIED"
+          - "IRRIGATED, NOT SPECIFIED"
         allocation_from_scale: state
         allocation_helper: yes
-        helper_source: "USDA_IWMS"
+        helper_source: "test_USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
         helper_sector_aggregation: 'agg'
