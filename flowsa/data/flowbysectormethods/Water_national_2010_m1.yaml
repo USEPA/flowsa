@@ -83,39 +83,39 @@ flowbyactivity_sources:
         allocation_compartment: None
         allocation_from_scale: state
         allocation_helper: no
-      #      activity_set_4:
-      #        names: "Irrigation Crop"                # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
-      #        allocation_method: proportional
-      #        allocation_source: "USDA_CoA_Cropland"
-      #        allocation_source_class: "Land"
-      #        allocation_sector_aggregation: 'agg'
-      #        allocation_source_year: 2012
-      #        allocation_flow:
-      #          - "AREA HARVESTED"
-      #          - "AREA IN PRODUCTION"
-      #          - "AREA"
-      #        allocation_compartment:
-      #          - "NOT SPECIFIED"
-      #        allocation_from_scale: state
-      #        allocation_helper: yes
-      #        helper_source: "USDA_IWMS"
-      #        helper_method: multiplication
-      #        helper_source_class: "Water"
-      #        helper_sector_aggregation: 'agg'
-      #        helper_source_year: 2013
-      #        helper_flow: None
-      #        helper_from_scale: state
-      #      activity_set_5:
-      #        names: "Irrigation Golf Courses"                 # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
-      #        allocation_method: direct
-      #        allocation_source: None
-      #        allocation_source_class: "Water"
-      #        allocation_sector_aggregation: 'agg'
-      #        allocation_source_year: 2010
-      #        allocation_flow: None
-      #        allocation_compartment: None
-      #        allocation_from_scale: state
-      #        allocation_helper: no
+      activity_set_4:
+        names: "Irrigation Crop"                # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
+        allocation_method: proportional
+        allocation_source: "USDA_CoA_Cropland"
+        allocation_source_class: "Land"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2012
+        allocation_flow:
+          - "AREA HARVESTED"
+          - "AREA IN PRODUCTION"
+          - "AREA"
+        allocation_compartment:
+          - "IRRIGATED, NOT SPECIFIED"
+        allocation_from_scale: state
+        allocation_helper: yes
+        helper_source: "USDA_IWMS"
+        helper_method: multiplication
+        helper_source_class: "Water"
+        helper_sector_aggregation: 'agg'
+        helper_source_year: 2013
+        helper_flow: None
+        helper_from_scale: state
+#            activity_set_5:
+#              names: "Irrigation Golf Courses"                 # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
+#              allocation_method: direct
+#              allocation_source: None
+#              allocation_source_class: "Water"
+#              allocation_sector_aggregation: 'agg'
+#              allocation_source_year: 2010
+#              allocation_flow: None
+#              allocation_compartment: None
+#              allocation_from_scale: state
+#              allocation_helper: no
       activity_set_6:
         names: "Livestock"
         allocation_source: "USDA_CoA_Livestock"

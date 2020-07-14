@@ -106,7 +106,7 @@ flowbyactivity_sources:
           - "AREA IN PRODUCTION"
           - "AREA"
         allocation_compartment:
-          - "NOT SPECIFIED"
+          - "IRRIGATED, NOT SPECIFIED"
         allocation_from_scale: county
         allocation_helper: yes
         helper_source: "USDA_IWMS"
