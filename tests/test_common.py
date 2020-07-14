@@ -57,23 +57,25 @@ def gettestFlowBySector(methodname):
     return fbs
 
 
-# # store csv test data as parquet files
+# store csv test data as parquet files
 # store_test_flowbyactivity('test_dataset_1', '2015')
 # store_test_flowbyactivity('test_dataset_2', '2015')
-# # store_test_flowbyactivity('test_dataset_3', '2015')
+# store_test_flowbyactivity('test_dataset_3', '2015')
 # store_test_flowbyactivity('test_USDA_CoA_Cropland', '2017')
 # store_test_flowbyactivity('test_USDA_IWMS', '2018')
-#
-# # read test fba parquets
+
+# read test fba parquets
 # test_1_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_1")
 # test_2_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_2")
-#
-# # read test fbs parquets
+
+# read test fbs parquets
 # test_1_fbs = gettestFlowBySector('test_dataset_1_2015')
 # test_2_fbs = gettestFlowBySector('test_dataset_2_2015')
 
 # save parquet as csv
+# import flowsa
 # import pandas as pd
-# df = pd.read_parquet('filename.parquet')
-# cropland_flowsbyactivity_2017.to_csv('test_USDA_CoA_Cropland.csv')
-# usda_iwms_flowsbyactivity_2018.to_csv('test_USDA_IWMS.csv')
+# livestock_df = flowsa.getFlowByActivity(flowclass=['Other'], years=[2012], datasource="USDA_CoA_Livestock")
+# wuc_df = flowsa.getFlowByActivity(flowclass=['Water'], years=[2005], datasource="USGS_WU_Coef")
+# livestock_df.to_csv('test_USDA_CoA_Livestock.csv')
+# wuc_df.to_csv('test_USGS_WU_Coef.csv')

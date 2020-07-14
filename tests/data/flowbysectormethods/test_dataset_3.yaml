@@ -6,83 +6,16 @@
 ---
 
 
-target_sector_level: NAICS_4
+target_sector_level: NAICS_2
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 flowbyactivity_sources:
   "USGS_NWIS_WU":
     class: Water
-    geoscale_to_use: national
+    geoscale_to_use: state
     year: 2010
     activity_name_standardization_fxn: standardize_usgs_nwis_names
     activity_sets:
-      activity_set_1:
-        names: "Aquaculture"
-        allocation_source: None
-        allocation_method: direct
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2010
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: no
-      activity_set_2:
-        names: "Domestic"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2010
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: no
-      activity_set_3:
-        names: "Industrial"
-        allocation_source: "BLS_QCEW"
-        allocation_method: proportional
-        allocation_source_class: "Employment"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2010
-        allocation_flow:
-          - "Number of employees"
-        allocation_compartment: None
-        allocation_from_scale: state
-        allocation_helper: no
-      #      activity_set_4:
-      #        names: "Irrigation Crop"                # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
-      #        allocation_method: proportional
-      #        allocation_source: "USDA_CoA_Cropland"
-      #        allocation_source_class: "Land"
-      #        allocation_sector_aggregation: 'agg'
-      #        allocation_source_year: 2012
-      #        allocation_flow:
-      #          - "AREA HARVESTED"
-      #          - "AREA IN PRODUCTION"
-      #          - "AREA"
-      #        allocation_compartment:
-      #          - "NOT SPECIFIED"
-      #        allocation_from_scale: state
-      #        allocation_helper: yes
-      #        helper_source: "USDA_IWMS"
-      #        helper_method: multiplication
-      #        helper_source_class: "Water"
-      #        helper_sector_aggregation: 'agg'
-      #        helper_source_year: 2013
-      #        helper_flow: None
-      #        helper_from_scale: state
-      #      activity_set_5:
-      #        names: "Irrigation Golf Courses"                 # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
-      #        allocation_method: direct
-      #        allocation_source: None
-      #        allocation_source_class: "Water"
-      #        allocation_sector_aggregation: 'agg'
-      #        allocation_source_year: 2010
-      #        allocation_flow: None
-      #        allocation_compartment: None
-      #        allocation_from_scale: state
-      #        allocation_helper: no
       activity_set_6:
         names: "Livestock"
         allocation_source: "USDA_CoA_Livestock"
@@ -103,59 +36,4 @@ flowbyactivity_sources:
         helper_source_year: 2005
         helper_flow: None
         helper_from_scale: national
-      activity_set_7:
-        names: "Mining"
-        allocation_method: proportional
-        allocation_source: "BLS_QCEW"
-        allocation_source_class: "Employment"
-        allocation_sector_aggregation: 'disagg'
-        allocation_source_year: 2010
-        allocation_flow:
-          - "Number of employees"
-        allocation_compartment: None
-        allocation_from_scale: state
-        allocation_helper: no
-      activity_set_8:
-        names: "Public Supply"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2010
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: no
-      activity_set_9:
-        names: "Thermoelectric Power"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2010
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: no
-#      activity_set_10: # doesn't exist at national level
-#        names: "Thermoelectric Power Closed-loop cooling"
-#        allocation_method: direct
-#        allocation_source: None
-#        allocation_source_class: "Water"
-#        allocation_sector_aggregation: 'agg'
-#        allocation_source_year: 2010
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: national
-#        allocation_helper: no
-#      activity_set_11: # doesn't exist at national level
-#        names: "Thermoelectric Power Once-through cooling"
-#        allocation_method: direct
-#        allocation_source: None
-#        allocation_source_class: "Water"
-#        allocation_sector_aggregation: 'agg'
-#        allocation_source_year: 2010
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: national
-#        allocation_helper: no
+
