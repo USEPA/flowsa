@@ -125,6 +125,7 @@ flowbyactivity_sources:
         allocation_source_year: 2012
         allocation_flow:
           - "HEAD"
+          - "NUMBER"
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
