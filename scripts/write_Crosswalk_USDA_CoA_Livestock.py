@@ -33,22 +33,14 @@ def assign_naics(df):
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
-    # cattle ranching and farming: 112100
+    # cattle ranching and farming: 1121
+    df.loc[df['Activity'] == 'CATTLE, INCL CALVES', 'Sector'] = '1121'
 
-    # beef cattle ranching and farming including feedlots: 11211
-    df.loc[df['Activity'] == 'BISON', 'Sector'] = '112110A'
-    df.loc[df['Activity'] == 'CATTLE, (EXCL COWS)', 'Sector'] = '112110B'
-    df.loc[df['Activity'] == 'CATTLE, COWS', 'Sector'] = '112110C'
-    df.loc[df['Activity'] == 'CATTLE, INCL CALVES', 'Sector'] = '112110D'
-
-    # beef cattle ranching and farming including feedlots: 112111
-    df.loc[df['Activity'] == 'CATTLE, COWS, BEEF', 'Sector'] = '112111'
-
-    # cattle feedlots: 112112
-    df.loc[df['Activity'] == 'CATTLE, ON FEED', 'Sector'] = '112112'
-
-    # dairy cattle and milk production: 11212
-    df.loc[df['Activity'] == 'CATTLE, COWS, MILK', 'Sector'] = '112120A'
+    # dual-purpose cattle ranching and farming: 11213
+    df.loc[df['Activity'] == 'CATTLE, (EXCL COWS)', 'Sector'] = '112130A'
+    df.loc[df['Activity'] == 'CATTLE, COWS', 'Sector'] = '112130B'
+    df.loc[df['Activity'] == 'CATTLE, COWS, BEEF', 'Sector'] = '112130B1'
+    df.loc[df['Activity'] == 'CATTLE, COWS, MILK', 'Sector'] = '112130B2'
 
     # hog and pig farming: 1122
     df.loc[df['Activity'] == 'HOGS', 'Sector'] = '1122'
@@ -127,9 +119,10 @@ def assign_naics(df):
 
     # all other animal production: 11299
     df.loc[df['Activity'] == 'ALPACAS', 'Sector'] = '112990A'
-    df.loc[df['Activity'] == 'DEER', 'Sector'] = '112990B'
-    df.loc[df['Activity'] == 'ELK', 'Sector'] = '112990C'
-    df.loc[df['Activity'] == 'LLAMAS', 'Sector'] = '112990D'
+    df.loc[df['Activity'] == 'BISON', 'Sector'] = '112990B'
+    df.loc[df['Activity'] == 'DEER', 'Sector'] = '112990C'
+    df.loc[df['Activity'] == 'ELK', 'Sector'] = '112990D'
+    df.loc[df['Activity'] == 'LLAMAS', 'Sector'] = '112990E'
 
     return df
 
