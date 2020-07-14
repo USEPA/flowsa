@@ -308,7 +308,7 @@ def main(method_name):
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     fbss = fbss.sort_values(
-        ['Flowable', 'SectorProducedBy', 'SectorConsumedBy', 'Context']).reset_index(drop=True)
+        ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file
     store_flowbysector(fbss, method_name)
 
