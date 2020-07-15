@@ -139,7 +139,7 @@ def main(method_name):
             # Add sectors to usgs activity, creating two versions of the flow subset
             # the first version "flow_subset" is the most disaggregated version of the Sectors (NAICS)
             # the second version, "flow_subset_agg" includes only the most aggregated level of sectors
-            log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)) )
+            log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)))
             flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
                                                              sectorsourcename=method['target_sector_source'])
             flow_subset_wsec_agg = add_sectors_to_flowbyactivity(flow_subset,
@@ -155,7 +155,7 @@ def main(method_name):
                 log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " + str(attr['allocation_source_year']))
                 fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                           datasource=attr['allocation_source'],
-                                                          years=[attr['allocation_source_year']]).reset_index(drop=True)           
+                                                          years=[attr['allocation_source_year']]).reset_index(drop=True)
 
                 # fill null values
                 fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
@@ -186,7 +186,7 @@ def main(method_name):
                 else:
                     fba_allocation = filter_by_geoscale(fba_allocation, from_scale, names)
 
-                # assign naics to allocation dataset
+                # assign sector to allocation dataset
                 log.info("Adding sectors to " + attr['allocation_source'])
                 fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
                                                                sectorsourcename=method['target_sector_source'],
