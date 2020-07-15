@@ -126,6 +126,7 @@ flowbyactivity_sources:
         allocation_flow:
           - "HEAD"
           - "NUMBER"
+          - "COLONIES"
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
