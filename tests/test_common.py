@@ -58,24 +58,35 @@ def gettestFlowBySector(methodname):
 
 
 # store csv test data as parquet files
-# store_test_flowbyactivity('test_dataset_1', '2015')
-# store_test_flowbyactivity('test_dataset_2', '2015')
-# store_test_flowbyactivity('test_dataset_3', '2015')
-# store_test_flowbyactivity('test_USDA_CoA_Cropland', '2017')
-# store_test_flowbyactivity('test_USDA_IWMS', '2018')
+store_test_flowbyactivity('test_dataset_1', '2015')
+store_test_flowbyactivity('test_dataset_2', '2015')
+store_test_flowbyactivity('test_dataset_3', '2010')
+store_test_flowbyactivity('test_USDA_CoA_Cropland', '2017')
+store_test_flowbyactivity('test_USDA_IWMS', '2018')
+store_test_flowbyactivity('test_USDA_CoA_Livestock', '2012')
+store_test_flowbyactivity('test_USGS_WU_Coef', '2005')
 
 # read test fba parquets
-# test_1_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_1")
-# test_2_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_2")
+test_1_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_1")
+test_2_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_2")
+test_3_fba = gettestFlowByActivity(flowclass=['Water'], years=[2010], datasource="test_dataset_3")
 
 # read test fbs parquets
-# test_1_fbs = gettestFlowBySector('test_dataset_1_2015')
-# test_2_fbs = gettestFlowBySector('test_dataset_2_2015')
+test_1_fbs = gettestFlowBySector('test_dataset_1_2015')
+test_2_fbs = gettestFlowBySector('test_dataset_2_2015')
+test_3_fbs = gettestFlowBySector('test_dataset_3_2010')
 
 # save parquet as csv
 # import flowsa
 # import pandas as pd
 # livestock_df = flowsa.getFlowByActivity(flowclass=['Other'], years=[2012], datasource="USDA_CoA_Livestock")
 # wuc_df = flowsa.getFlowByActivity(flowclass=['Water'], years=[2005], datasource="USGS_WU_Coef")
+usgs = flowsa.getFlowByActivity(flowclass=['Water'], years=[2010], datasource="USGS_NWIS_WU")
+usgs = usgs.loc[usgs['ActivityConsumedBy'] == 'Livestock']
+usgs = usgs.loc[usgs['Location'] == '28000']
 # livestock_df.to_csv('test_USDA_CoA_Livestock.csv')
 # wuc_df.to_csv('test_USGS_WU_Coef.csv')
+usgs.to_csv('test_dataset_3.csv')
+
+
+method_name = 'test_dataset_3_2010'

@@ -1,16 +1,16 @@
-%YAML 1.2
+%YAML 1.3
 
-# Testing
+# Testing livestock allocation
 
 
 ---
 
 
-target_sector_level: NAICS_2
+target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 flowbyactivity_sources:
-  "USGS_NWIS_WU":
+  "test_dataset_3":
     class: Water
     geoscale_to_use: state
     year: 2010
@@ -18,18 +18,20 @@ flowbyactivity_sources:
     activity_sets:
       activity_set_6:
         names: "Livestock"
-        allocation_source: "USDA_CoA_Livestock"
+        allocation_source: "test_USDA_CoA_Livestock"
         allocation_method: proportional
         allocation_source_class: "Other"
         allocation_sector_aggregation: 'agg'
         allocation_source_year: 2012
         allocation_flow:
           - "HEAD"
+          - "NUMBER"
+          - "COLONIES"
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
         allocation_helper: yes
-        helper_source: "USGS_WU_Coef"
+        helper_source: "test_USGS_WU_Coef"
         helper_method: multiplication
         helper_source_class: "Water"
         helper_sector_aggregation: 'disagg'

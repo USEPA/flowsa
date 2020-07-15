@@ -1,0 +1,23 @@
+Class,SourceName,FlowName,FlowAmount,Unit,ActivityProducedBy,ActivityConsumedBy,Compartment,Location,LocationSystem,Year,MeasureofSpread,Spread,DistributionType,Min,Max,DataReliability,DataCollection,Description
+Other,test_USDA_CoA_Livestock,HEAD,200,p,"CATTLE, (EXCL COWS)",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,1,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,800,p,"CATTLE, COWS",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,5,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,100,p,"CATTLE, COWS, BEEF",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,1,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,700,p,"CATTLE, COWS, MILK",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,5,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,1000,p,"CATTLE, INCL CALVES",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,5,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,300,p,GOATS,None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,4,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,100,p,"GOATS, ANGORA",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,2,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,200,p,"GOATS, MEAT & OTHER",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,3,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,0,p,"GOATS, MILK",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,2,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,100,p,HOGS,None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,4,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,50,p,"SHEEP, INCL LAMBS",None,NOT SPECIFIED,28000,FIPS_2010,2012,RSD,,None,,,,2,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,400,p,"CATTLE, (EXCL COWS)",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,1,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,100,p,"CATTLE, COWS",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,5,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,0,p,"CATTLE, COWS, BEEF",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,1,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,100,p,"CATTLE, COWS, MILK",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,5,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,500,p,"CATTLE, INCL CALVES",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,5,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,0,p,GOATS,None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,4,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,0,p,"GOATS, ANGORA",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,2,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,0,p,"GOATS, MEAT & OTHER",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,3,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,0,p,"GOATS, MILK",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,2,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,250,p,HOGS,None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,4,livestock made-up test data
+Other,test_USDA_CoA_Livestock,HEAD,300,p,"SHEEP, INCL LAMBS",None,NOT SPECIFIED,32000,FIPS_2010,2012,RSD,,None,,,,2,livestock made-up test data
