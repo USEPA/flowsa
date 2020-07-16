@@ -122,6 +122,9 @@ if __name__ == '__main__':
     flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
     # modify flow units
     flow_df = convert_fba_unit(flow_df)
+    # sort df and reset index
+    flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy', 'FlowName',
+                                   'Compartment']).reset_index(drop=True)
     # save as parquet file
     parquet_name = args['source'] + '_' + args['year']
     store_flowbyactivity(flow_df, parquet_name)

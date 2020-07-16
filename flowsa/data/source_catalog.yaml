@@ -1,6 +1,6 @@
 BLS_QCEW:
   class:
-    - Emplyment
+    - Employment
     - Money
     - Other
   sector-like_activities: True
