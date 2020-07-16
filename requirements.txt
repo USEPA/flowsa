@@ -1,3 +1,4 @@
+git+git://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List#egg=fedelemflowlist
 pandas>=1.0.3                  # Powerful data structures for data analysis, time series, and statistics.
 pip>=9                         # The PyPA recommended tool for installing Python packages.
 setuptools>=41                 # Fully-featured library designed to facilitate packaging Python projects.

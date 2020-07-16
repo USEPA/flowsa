@@ -62,7 +62,7 @@ def coa_cropland_call(url, coa_response, args):
 
 def coa_cropland_parse(dataframe_list, args):
     """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
-    (irrigated and total)."""
+    (irrigated and total). Data is split into two parquets, one for acreage and the other for operations"""
     df = pd.concat(dataframe_list, sort=True)
     # specify desired data based on domain_desc
     df = df[df['domain_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'TOTAL', 'AREA BEARING & NON-BEARING', 'AREA'])]
@@ -96,18 +96,18 @@ def coa_cropland_parse(dataframe_list, args):
                           'asd_desc', 'county_name', 'source_desc', 'congr_district_code', 'asd_code',
                           'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
                           'state_ansi', 'state_name', 'country_name', 'county_ansi', 'end_code', 'group_desc'])
-    # combine FIPS column by combining existing columns
+    # create FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
-    df['FIPS'] = df['state_fips_code'] + df['county_code']
-    df.loc[df['FIPS'] == '99000', 'FIPS'] = US_FIPS  # modify national level fips
+    df['Location'] = df['state_fips_code'] + df['county_code']
+    df.loc[df['Location'] == '99000', 'Location'] = US_FIPS  # modify national level fips
     # use info from other columns to determine flow name
     df['FlowName'] = np.where(df["unit_desc"] == 'OPERATIONS', df["unit_desc"], df['statisticcat_desc'])
     # combine column information to create activity information, and create two new columns for activities
     df['Activity'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + df['util_practice_desc']  # drop this column later
     df['Activity'] = df['Activity'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
     df['Activity'] = df['Activity'].str.replace(", ALL UTILIZATION PRACTICES", "", regex=True)  # not interested in all data from class_desc
-    df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], None)
-    df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], None)
+    df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], 'None')
+    df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], 'None')
     # add compartment based on values from other columns
     df['Compartment'] = df['prodn_practice_desc'] + ', ' + df['domaincat_desc']
     df['Compartment'] = df['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)  # not interested in all data from class_desc
@@ -130,16 +130,28 @@ def coa_cropland_parse(dataframe_list, args):
     df['Spread'] = df['Spread'].str.strip()  # trim whitespace
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
-    df.loc[df['Spread'] == "", 'Spread'] = None # for instances where data is missing
+    df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
     # drop Descriptions that contain certain phrases, as these data are included in other categories
-    df = df[~df['Description'].str.contains('FRESH MARKET | PROCESSING | ENTIRE CROP | NONE OF CROP | PART OF CROP')]
+    df = df[~df['Description'].str.contains('FRESH MARKET|PROCESSING|ENTIRE CROP|NONE OF CROP|PART OF CROP')]
     # drop Descriptions that contain certain phrases - only occur in AG LAND data
     df = df[~df['Description'].str.contains('INSURANCE|OWNED|RENTED|FAILED|FALLOW|IDLE|WOODLAND')]
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
     # Add hardcoded data
-    df['Class'] = "Land"
+    df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland"
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = None
     df['DataCollection'] = 2
     return df
+
+
+

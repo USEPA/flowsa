@@ -9,8 +9,9 @@ FlowAmount | Numeric | Y | The amount of a given flow in its native unit
 Unit | String | Y | SI unit acronym. `kg` for mass flows; `MJ` for energy flows
 ActivityProducedBy | String | N* | An activity defined by the source producing a flow.
 ActivityConsumedBy | String | N* | An activity defined by the source receiving/consuming a flow.
-Compartment | String | Y | Name of compartment to which release goes, e.g. "air", "water", "ground". Used 
-FIPS | String | Y | FIPS code for location
+Compartment | String | Y | Name of compartment to which release goes, e.g. "air", "water", "ground". 
+Location | String | Y | A numeric representation of the activity location, at a national, state, or county level
+LocationSystem | String | Y | Description and year of the Location code, generally FIPS or ISO, e.g. `FIPS_2015`
 Year | Int | Y | Year of data, e.g. `2010`
 MeasureofSpread | String | N | A measure of spread of a frequency distribution. Acceptable values are `RSD` for relative standard deviation (aka coefficient of variation) are `SD` for the normal (aka 'arithmatic') standard deviation, `GSD` for geometric standard deviation
 Spread | Numeric | N | The value for the given measure of spread. 

@@ -1,0 +1,27 @@
+﻿SourceName,Class,FlowName,FlowAmount,Compartment,Unit,ActivityProducedBy,ActivityConsumedBy,Location,LocationSystem,Year,MeasureofSpread,Spread,DistributionType,Min,Max,DataReliability,DataCollection,Description
+test_USGS_NWIS_WU,Water,total,100,total,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,2,3,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,fresh,70,total,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,4,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,saline,30,total,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,3,3,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,60,ground,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,5,3,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,fresh,40,ground,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,5,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,saline,20,ground,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,1,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,40,surface,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,4,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,fresh,30,surface,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,4,1,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,saline,10,surface,Mgal,Aquaculture,None,0,FIPS_2015,2015,None,nan,None,nan,nan,4,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,20,total,Mgal,Aquaculture,None,10000,FIPS_2015,2015,None,nan,None,nan,nan,4,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,5,total,Mgal,Aquaculture,None,10001,FIPS_2015,2015,None,nan,None,nan,nan,1,5,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,5,ground,Mgal,Aquaculture,None,10001,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,0,surface,Mgal,Aquaculture,None,10001,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,15,total,Mgal,Aquaculture,None,10003,FIPS_2015,2015,None,nan,None,nan,nan,4,5,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,3,ground,Mgal,Aquaculture,None,10003,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,12,surface,Mgal,Aquaculture,None,10003,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,80,total,Mgal,Aquaculture,None,13000,FIPS_2015,2015,None,nan,None,nan,nan,1,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,10,total,Mgal,Aquaculture,None,13001,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,2,ground,Mgal,Aquaculture,None,13001,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,8,surface,Mgal,Aquaculture,None,13001,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,20,total,Mgal,Aquaculture,None,13003,FIPS_2015,2015,None,nan,None,nan,nan,5,1,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,11,ground,Mgal,Aquaculture,None,13003,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,9,surface,Mgal,Aquaculture,None,13003,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,50,total,Mgal,Aquaculture,None,13005,FIPS_2015,2015,None,nan,None,nan,nan,5,2,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,30,ground,Mgal,Aquaculture,None,13005,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,total,20,surface,Mgal,Aquaculture,None,13005,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data

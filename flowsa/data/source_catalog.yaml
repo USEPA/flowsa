@@ -1,56 +1,64 @@
-USGS_Water_Use:
-  class: Water
-  sector-like_activities: False
-  activity_schema:
-USDA_IWMS:
-  class: Water
+BLS_QCEW:
+  class:
+    - Employment
+    - Money
+    - Other
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
+Census_CBP:
+  class:
+    - Employment
+    - Money
+    - Other
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
+Census_PEP_Population:
+  class: Other
   sector-like_activities: False
   activity_schema:
 EIA_CBECS_Water:
   class: Water
   sector-like_activities: False
   activity_schema:
-Stat_Canada:
-  class: Water
-  sector-like_activities: False
-  activity_schema:
-BLS_QCEW_EMP:
-  class: Employment
-  sector-like_activities: True
-  activity_schema: NAICS_2012_Code
-Census_CBP_EMP:
-  class: Employment
-  sector-like_activities: True
-  activity_schema: NAICS_2012_Code
-USDA_CoA_Cropland:
-  class: Land
-  sector-like_activities: False
-  activity_schema:
-Census_CBP_PAYANN:
-  class: Money
-  sector-like_activities: True
-  activity_schema: NAICS_2012_Code
-USDA_CoA_ProdMarkValue:
-  class: Money
-  sector-like_activities: False
-  activity_schema:
 NOAA_FisheryLandings:
   class: Money
   sector-like_activities: False
   activity_schema:
-Census_CBP_ESTAB:
-  class: Other
-  sector-like_activities: True
-  activity_schema: NAICS_2012_Code
-BLS_QCEW_ESTAB:
-  class: Other
-  sector-like_activities: True
-  activity_schema: NAICS_2012_Code
-Census_Population:
-  class: Other
+StatCan_IWS_MI:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
+USDA_CoA_Cropland:
+  class:
+    - Land
+    - Other
   sector-like_activities: False
   activity_schema:
 USDA_CoA_Livestock:
   class: Other
+  sector-like_activities: False
+  activity_schema:
+USDA_CoA_ProdMarkValue:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+USDA_CropValues_and_MeatProduction:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+USDA_ERS_FIWS:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+USDA_IWMS:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
+USGS_NWIS_WU:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
+USGS_WU_Coef:
+  class: Water
   sector-like_activities: False
   activity_schema:

@@ -1,0 +1,10 @@
+Class,SourceName,FlowName,FlowAmount,Unit,ActivityProducedBy,ActivityConsumedBy,Compartment,Location,LocationSystem,Year,MeasureofSpread,Spread,DistributionType,Min,Max,DataReliability,DataCollection,Description
+Water,test_USGS_WU_Coef,None,1,gallons/animal/day,None,Dairy cows,None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,10,gallons/animal/day,None,"Beef and other cattle, including calves",None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,5,gallons/animal/day,None,Hogs and pigs,None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,1,gallons/animal/day,None,Laying hens,None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,1,gallons/animal/day,None,Broilers and other chickens,None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,1,gallons/animal/day,None,Turkeys,None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,2,gallons/animal/day,None,Sheep and lambs,None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,2,gallons/animal/day,None,Goats,None,0,FIPS_2015,2005,None,,None,,,,,None
+Water,test_USGS_WU_Coef,None,100,gallons/animal/day,None,"Horses (including ponies, mules, burrows, and donkeys)",None,0,FIPS_2015,2005,None,,None,,,,,None

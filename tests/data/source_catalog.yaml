@@ -1,0 +1,64 @@
+test_BLS_QCEW:
+  class:
+    - Emplyment
+    - Money
+    - Other
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
+test_Census_CBP:
+  class:
+    - Employment
+    - Money
+    - Other
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
+test_Census_PEP_Population:
+  class: Other
+  sector-like_activities: False
+  activity_schema:
+test_EIA_CBECS_Water:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
+test_NOAA_FisheryLandings:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+test_StatCan_IWS_MI:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
+test_USDA_CoA_Cropland:
+  class:
+    - Land
+    - Other
+  sector-like_activities: False
+  activity_schema:
+test_USDA_CoA_Livestock:
+  class: Other
+  sector-like_activities: False
+  activity_schema:
+test_USDA_CoA_ProdMarkValue:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+test_USDA_CropValues_and_MeatProduction:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+test_USDA_ERS_FIWS:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+test_USDA_IWMS:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
+test_USGS_NWIS_WU:
+  class: Water
+  sector-like_activities: False
+  activity_schema:
+test_USGS_WU_Coef:
+  class: Water
+  sector-like_activities: False
+  activity_schema:

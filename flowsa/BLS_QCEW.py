@@ -12,6 +12,7 @@ This script is designed to run with a configuration parameter
 '''
 
 import pandas as pd
+import numpy as np
 import io
 import zipfile
 from flowsa.common import log, get_all_state_FIPS_2
@@ -71,31 +72,39 @@ def bls_qcew_parse(dataframe_list, args):
                                                              'annual_avg_emplvl',
                                                              'total_annual_wages']].sum().reset_index()
     # Rename fields
-    df = df.rename(columns={'area_fips': 'FIPS',
+    df = df.rename(columns={'area_fips': 'Location',
                             'industry_code': 'ActivityProducedBy',
                             'year': 'Year',
-                            'annual_avg_estabs': 'ESTAB',
-                            'annual_avg_emplvl': 'EMP',
-                            'total_annual_wages': 'PAYANN'})
+                            'annual_avg_estabs': 'Number of establishments',
+                            'annual_avg_emplvl': 'Number of employees',
+                            'total_annual_wages': 'Annual payroll'})
     # Reformat FIPs to 5-digit
-    df['FIPS'] = df['FIPS'].apply('{:0>5}'.format)
+    df['Location'] = df['Location'].apply('{:0>5}'.format)
+    # use "melt" fxn to convert colummns into rows
+    df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year"],
+                 var_name="FlowName",
+                 value_name="FlowAmount")
+    # specify unit based on flowname
+    df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
+    # specify class
+    df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
+    df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
+    df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
+    # add location system based on year of data
+    if args['year'] >= '2019':
+        df['LocationSystem'] = 'FIPS_2019'
+    elif '2015' <= args['year'] < '2019':
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= args['year'] < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= args['year'] < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
+    # add hard code data
+    df['SourceName'] = 'BLS_QCEW'
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
     df['Compartment'] = None
-    # add hard code data
-    df['SourceName'] = 'BLS_QCEW'
     return df
 
-qcew_flow_specific_metadata = \
-    {'EMP': {'Class': 'Employment',
-             'FlowName': 'Number of employees',
-             'Unit': 'p'},
-     'ESTAB': {'Class': 'Other',
-               'FlowName': 'Number of establishments',
-               'Unit': 'p'},
-     'PAYANN': {'Class': 'Money',
-                'FlowName': 'Annual payroll',
-                'Unit': 'USD'},
-     }
 

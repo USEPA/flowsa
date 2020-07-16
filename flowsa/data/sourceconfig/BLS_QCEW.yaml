@@ -9,7 +9,6 @@ url:
 url_replace_fxn: BLS_QCEW_URL_helper
 call_response_fxn: bls_qcew_call
 parse_response_fxn: bls_qcew_parse
-flow_metadata: qcew_flow_specific_metadata
 years:
   - 2012
   - 2013

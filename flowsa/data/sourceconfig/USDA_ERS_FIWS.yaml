@@ -1,0 +1,20 @@
+# Queries USDA ERS Farm Income and Wealth Statistics at national and state levels
+---
+# api_name: USDA_ERS_FIWS
+# api_key_required: false
+format: csv
+url:
+  base_url: "https://www.ers.usda.gov/media/10473/farmincome_wealthstatisticsdata_february2020.zip"
+call_response_fxn: fiws_call
+parse_response_fxn: fiws_parse
+years:
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019

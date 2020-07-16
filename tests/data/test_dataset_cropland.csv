@@ -1,0 +1,4 @@
+﻿SourceName,Class,FlowName,FlowAmount,Compartment,Unit,ActivityProducedBy,ActivityConsumedBy,Location,LocationSystem,Year,MeasureofSpread,Spread,DistributionType,Min,Max,DataReliability,DataCollection,Description
+test_USGS_NWIS_WU,Water,total,1000,total,Mgal,Irrigation Crop,None,28000,FIPS_2015,2015,None,nan,None,nan,nan,1,1,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,fresh,600,total,Mgal,Irrigation Crop,None,28000,FIPS_2015,2015,None,nan,None,nan,nan,1,3,water withdrawal made-up test data
+test_USGS_NWIS_WU,Water,saline,400,total,Mgal,Irrigation Crop,None,28000,FIPS_2015,2015,None,nan,None,nan,nan,5,2,water withdrawal made-up test data

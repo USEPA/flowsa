@@ -6,7 +6,7 @@
 import os
 import unittest
 import pandas as pd
-from flowsa.flowbyactivity import *
+from flowsa.flowbyfunctions import *
 
 class TestFlowByActivityFunctions(unittest.TestCase):
 

@@ -1,0 +1,5 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1129,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1121,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1123,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1122,I
