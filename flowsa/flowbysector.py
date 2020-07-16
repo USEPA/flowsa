@@ -99,8 +99,8 @@ def main(method_name):
             flow_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
                                 (flows[fba_activity_fields[1]].isin(names))]
 
-            # Reset index values after subset
-            flow_subset = flow_subset.reset_index(drop=True)
+            # drop duplicate rows (duplicates occur because of "delivery to" and "delivery from") and reset index
+            flow_subset = flow_subset.drop_duplicates().reset_index(drop=True)
 
             # check if flowbyactivity data exists at specified geoscale to use
             log.info("Checking if flowbyactivity data exists for " + ', '.join(map(str, names)) + " at the " +
@@ -253,13 +253,16 @@ def main(method_name):
                 fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
                                         'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
 
-            # rename flow name to flowable
+            # rename flow name to flowable - remove this once elementary flows are mapped
             fbs = fbs.rename(columns={"FlowName": 'Flowable',
                                       "Compartment": "Context"
                                       })
 
             # drop rows where flowamount = 0 (although this includes dropping suppressed data)
             fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
+            # drop rows where sectorproducedby/consumedby is nan
+            #todo: add code here
+
             # add missing data columns
             fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
             # fill null values
@@ -304,6 +307,8 @@ def main(method_name):
             fbss.append(fbs)
     # create single df of all activities
     fbss = pd.concat(fbss, ignore_index=True, sort=False)
+    # drop duplicate rows (duplicates can arise when data is given in both "delivered to" and "delivered from" form)
+    fbss = fbss.drop_duplicates().reset_index(drop=True)
     # aggregate df as activities might have data for the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
