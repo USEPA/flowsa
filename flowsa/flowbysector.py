@@ -149,7 +149,12 @@ def main(method_name):
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
             if attr['allocation_method'] == 'direct':
+                # if direct allocation, only want the rows where one of the activity column values = 'None'
+                # cannot do direct allocation when activities in both the consumed/produced columns
+                # columns with both activity values will be captured in a non-direct allocation method
                 fbs = flow_subset_wsec_agg.copy()
+                fbs = fbs.loc[(fbs[fba_activity_fields[0]] == 'None') |
+                              (fbs[fba_activity_fields[1]] == 'None')].reset_index(drop=True)
             else:
                 # determine appropriate allocation dataset
                 log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " + str(attr['allocation_source_year']))
