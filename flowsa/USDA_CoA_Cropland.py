@@ -110,7 +110,8 @@ def coa_cropland_parse(dataframe_list, args):
     df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], 'None')
     # add compartment based on values from other columns
     df['Compartment'] = df['prodn_practice_desc'] + ', ' + df['domaincat_desc']
-    df['Compartment'] = df['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)  # not interested in all data from class_desc
+    df['Compartment'] = df['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)
+    df['Compartment'] = df['Compartment'].str.replace("IN THE OPEN, ", "", regex=True)
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount", "unit_desc": "Unit",
                             "year": "Year", "CV (%)": "Spread",
