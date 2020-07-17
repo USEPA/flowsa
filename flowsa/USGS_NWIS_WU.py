@@ -67,12 +67,13 @@ def usgs_call(url, usgs_response, args):
 
 def usgs_parse(dataframe_list, args):
     """Parsing the usgs data into flowbyactivity format"""
+
     for df in dataframe_list:
         # add columns at national and state level that only exist at the county level
         if 'state_cd' not in df:
             df['state_cd'] = '00'
         if 'state_name' not in df:
-            df['state_name'] = None
+            df['state_name'] = 'None'
         if 'county_cd' not in df:
             df['county_cd'] = '000'
         if 'county_nm' not in df:
@@ -91,6 +92,8 @@ def usgs_parse(dataframe_list, args):
                     var_name="Description", value_name="FlowAmount")
     # merge national and state/county dataframes
     df = pd.concat([df_n, df_sc], sort=True)
+    # drop any rows associated with commercial data (because only exists for 3 states)
+    df = df[~df['Description'].str.lower().str.contains('commercial')]
     # drop rows that don't have a record and strip values that have extra symbols
     df['FlowAmount'] = df['FlowAmount'].str.strip()
     df["FlowAmount"] = df['FlowAmount'].str.replace("a", "", regex=True)
@@ -109,9 +112,11 @@ def usgs_parse(dataframe_list, args):
                      pd.np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
     # create flow name column
     df['Compartment'] = pd.np.where(df.Description.str.contains("ground"), "ground",
+                        pd.np.where(df.Description.str.contains("Ground"), "ground",
                         pd.np.where(df.Description.str.contains("surface"), "surface",
+                        pd.np.where(df.Description.str.contains("Surface"), "surface",
                         pd.np.where(df.Description.str.contains("consumptive"), "air",
-                        pd.np.where(df.Description.str.contains("total"), "total", "total"))))
+                        pd.np.where(df.Description.str.contains("total"), "total", "total"))))))
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df['Unit'] = df['Unit'].str.strip()
     df["Unit"] = df['Unit'].str.replace("in ", "", regex=True)
@@ -119,6 +124,7 @@ def usgs_parse(dataframe_list, args):
     df = df[~df['Unit'].isin(["millions", "gallons/person/day", "thousands", "thousand acres", "gigawatt-hours"])]
     df = df[~df['Unit'].str.contains("number of")]
     df.loc[df['Unit'].isin(['Mgal/', 'Mgal']), 'Unit'] = 'Mgal/d'
+    df = df.reset_index(drop=True)
     # assign activities to produced or consumed by, using functions defined below
     activities = df['Description'].apply(activity)
     activities.columns = ['ActivityProducedBy', 'ActivityConsumedBy']
@@ -164,6 +170,7 @@ def usgs_parse(dataframe_list, args):
 
 def activity(name):
     """Create rules to assign activities to produced by or consumed by"""
+
     name_split = name.split(",")
     if "Irrigation" in name and "gal" not in name_split[1]:
         n = name_split[0] + "," + name_split[1]
@@ -176,10 +183,18 @@ def activity(name):
         produced = name[0]
         consumed = capitalize_first_letter(activity[1])
     elif " from " in n:
-        activity = n.split(" from ")
-        name = split_name(activity[0])
-        produced = capitalize_first_letter(activity[1])
-        consumed = name[0].strip()
+        if ")" in n:
+            open_paren_split = n.split("(")
+            capitalized_string = capitalize_first_letter(open_paren_split[0])
+            close_paren_split = open_paren_split[1].split(")")
+            produced_split = close_paren_split[1].split(" from ")
+            produced = capitalize_first_letter(produced_split[1].strip())
+            consumed = capitalized_string.strip() + " " + close_paren_split[0].strip()
+        else:
+            activity = n.split(" from ")
+            name = split_name(activity[0])
+            produced = capitalize_first_letter(activity[1])
+            consumed = name[0].strip()
     elif "consumptive" in n:
         if ")" in n:
             open_paren_split = n.split("(")

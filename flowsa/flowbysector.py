@@ -260,8 +260,6 @@ def main(method_name):
 
             # drop rows where flowamount = 0 (although this includes dropping suppressed data)
             fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
-            # drop rows where sectorproducedby/consumedby is nan
-            #todo: add code here
 
             # add missing data columns
             fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
