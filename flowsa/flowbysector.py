@@ -91,6 +91,13 @@ def main(method_name):
 
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
+        # create list of activities for direct allocation
+        direct_allocation_activities = []
+        for aset, attr in activities.items():
+            # if the allocation method is direct, add activity to list
+            if attr['allocation_method'] == 'direct':
+                direct_allocation_activities.extend([attr['names']])
+        # subset activity data and allocate to sector
         for aset, attr in activities.items():
             # subset by named activities
             names = [attr['names']]
@@ -149,12 +156,12 @@ def main(method_name):
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
             if attr['allocation_method'] == 'direct':
-                # if direct allocation, only want the rows where one of the activity column values = 'None'
-                # cannot do direct allocation when activities in both the consumed/produced columns
-                # columns with both activity values will be captured in a non-direct allocation method
+                # if direct allocation, drop rows of data where an activity in either activity column is not in the
+                # direct allocation list. These non-direct activities are captured in other activity allocations
                 fbs = flow_subset_wsec_agg.copy()
-                fbs = fbs.loc[(fbs[fba_activity_fields[0]] == 'None') |
-                              (fbs[fba_activity_fields[1]] == 'None')].reset_index(drop=True)
+                fbs = fbs[(fbs[fba_activity_fields[0]].isin(direct_allocation_activities)) |
+                          (fbs[fba_activity_fields[1]].isin(direct_allocation_activities))]
+
             else:
                 # determine appropriate allocation dataset
                 log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " + str(attr['allocation_source_year']))
@@ -283,6 +290,7 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
+            # todo: fix agg fxn for values in both sector columns
             log.info("Aggregating flowbysector to " + method['target_sector_level'])
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 
