@@ -183,25 +183,3 @@ flowbyactivity_sources:
         allocation_compartment: None
         allocation_from_scale: county
         allocation_helper: no
-      activity_set_11:
-        names: "Thermoelectric Power Closed-loop cooling"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2015
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: county
-        allocation_helper: no
-      activity_set_12:
-        names: "Thermoelectric Power Once-through cooling"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2015
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: county
-        allocation_helper: no
