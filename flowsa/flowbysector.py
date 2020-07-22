@@ -20,7 +20,7 @@ from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, 
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
-    fba_fill_na_dict, fbs_fill_na_dict, convert_unit, fba_default_grouping_fields, \
+    fba_fill_na_dict, fbs_fill_na_dict, harmonize_units, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales
@@ -85,9 +85,6 @@ def main(method_name):
         # map df to elementary flows - commented out until mapping complete
         # log.info("Mapping flows in " + k + ' to federal elementary flow list')
         # flows_mapped = map_elementary_flows(flows, k)
-        # convert unit todo: think about unit conversion here
-        log.info("Converting units in " + k)
-        flows = convert_unit(flows)
 
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
@@ -171,8 +168,8 @@ def main(method_name):
 
                 # fill null values
                 fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
-                # convert unit
-                fba_allocation = convert_unit(fba_allocation)
+                # harmonize units across dfs
+                fba_allocation = harmonize_unit(fba_allocation)
 
                 # subset based on yaml settings
                 if attr['allocation_flow'] != 'None':
@@ -224,6 +221,9 @@ def main(method_name):
                 log.info("Creating allocation ratios for " + attr['allocation_source'])
                 flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
 
+                # drop PR data
+                flow_allocation = flow_allocation.loc[flow_allocation['Location'].apply(lambda x: x[0:2] != '72')]
+
                 # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                 # aren't in list
                 sector_list = flow_allocation['Sector'].unique().tolist()
@@ -256,6 +256,7 @@ def main(method_name):
                 fbs['FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
 
                 # check if fba and allocation dfs have data for same geoscales
+                # todo: revise so also checks if allocation data exists where flow data does not
                 log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
                 check_if_data_exists_for_same_geoscales(fbs, flow_subset_wsec_agg)
 

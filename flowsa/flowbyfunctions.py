@@ -303,7 +303,7 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, fba_w_aggregated_se
 
     return None
 
-def convert_unit(df):
+def harmonize_unit(df):
     """
     Convert unit to standard
     :param df: Either flowbyactivity or flowbysector
@@ -318,13 +318,6 @@ def convert_unit(df):
     # class = money, unit = USD/yr
 
     # class = water, unit = m3/yr
-    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', ((df['FlowAmount'] * 1000000000) / 264.17) * 365,
-                                df['FlowAmount'])
-    df['Unit'] = np.where(df['Unit'] == 'Bgal/d', 'm3.yr', df['Unit'])
-
-    df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', ((df['FlowAmount'] * 1000000) / 264.17) * 365, df['FlowAmount'])
-    df['Unit'] = np.where(df['Unit'] == 'Mgal/d', 'm3.yr', df['Unit'])
-
     df['FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day', (df['FlowAmount'] / 264.172052) * 365,
                                 df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3.p.yr', df['Unit'])
