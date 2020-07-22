@@ -291,6 +291,9 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, fba_w_aggregated_se
 
     # create subset of fba where the allocation data is missing
     missing_alloc = df_subset.loc[df_subset['FlowAmountRatio'].isna()].reset_index(drop=True)
+    # drop any rows where source flow value = 0
+    missing_alloc = missing_alloc.loc[missing_alloc['FlowAmount'] != 0].reset_index(drop=True)
+    # create list of locations with missing alllocation data
     states_missing_data = pd.unique(missing_alloc['Location']).tolist()
 
     if len(missing_alloc) == 0:
