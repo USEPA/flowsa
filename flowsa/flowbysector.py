@@ -78,6 +78,11 @@ def main(method_name):
             log.info("Standardizing activity names in " + k)
             flows = getattr(sys.modules[__name__], v['activity_name_standardization_fxn'])(flows)
 
+        # filter out any rows that contain the phrases in the method file
+        log.info("Removing duplicate rows of information in " + k)
+        for i in v["filter_phrases"]:
+            flows = flows.loc[~flows['Description'].str.contains(i)].reset_index(drop=True)
+
         # drop description field
         flows = flows.drop(columns='Description')
         # fill null values
@@ -102,9 +107,6 @@ def main(method_name):
             # subset usgs data by activity
             flow_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
                                 (flows[fba_activity_fields[1]].isin(names))]
-
-            # drop duplicate rows (duplicates occur because of "delivery to" and "delivery from") and reset index
-            flow_subset = flow_subset.drop_duplicates().reset_index(drop=True)
 
             # check if flowbyactivity data exists at specified geoscale to use
             log.info("Checking if flowbyactivity data exists for " + ', '.join(map(str, names)) + " at the " +
@@ -169,7 +171,7 @@ def main(method_name):
                 # fill null values
                 fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
                 # harmonize units across dfs
-                fba_allocation = harmonize_unit(fba_allocation)
+                fba_allocation = harmonize_units(fba_allocation)
 
                 # subset based on yaml settings
                 if attr['allocation_flow'] != 'None':

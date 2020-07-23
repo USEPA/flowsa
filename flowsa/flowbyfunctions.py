@@ -303,7 +303,7 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, fba_w_aggregated_se
 
     return None
 
-def harmonize_unit(df):
+def harmonize_units(df):
     """
     Convert unit to standard
     :param df: Either flowbyactivity or flowbysector
@@ -378,7 +378,7 @@ def allocation_helper(df_w_sector, method, attr):
     # fill null values
     helper_allocation = helper_allocation.fillna(value=fba_fill_na_dict)
     # convert unit
-    helper_allocation = convert_unit(helper_allocation)
+    helper_allocation = harmonize_units(helper_allocation)
 
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,

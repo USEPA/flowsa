@@ -7,7 +7,7 @@ from functools import reduce
 import numpy as np
 import pandas as pd
 from flowsa.mapping import get_activitytosector_mapping
-from flowsa.flowbyfunctions import fba_fill_na_dict, convert_unit, fba_activity_fields, filter_by_geoscale, \
+from flowsa.flowbyfunctions import fba_fill_na_dict, harmonize_units, fba_activity_fields, filter_by_geoscale, \
     fba_default_grouping_fields, fbs_default_grouping_fields, aggregator, sector_aggregation
 from flowsa.common import US_FIPS
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
@@ -28,7 +28,7 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
     # fill null values
     flows = flows.fillna(value=fba_fill_na_dict)
     # convert units
-    flows = convert_unit(flows)
+    flows = harmonize_units(flows)
 
     # if activityname set to default, then compare aggregation for all activities. If looking at particular activity,
     # filter that activity out
