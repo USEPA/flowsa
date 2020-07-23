@@ -85,14 +85,13 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     group_cols = groupbycolumns.copy()
 
     # code for when the "Location" is a FIPS based system
-    if to_scale == 'county':
-        # drop rows that contain '000'
-        df_from_scale = df_from_scale[~df_from_scale['Location'].str.contains("000")]
-    elif to_scale == 'state':
+    if to_scale == 'state':
         df_from_scale['Location'] = df_from_scale['Location'].apply(lambda x: str(x[0:2]))
     elif to_scale == 'national':
         df_from_scale['Location'] = US_FIPS
+
     fba_agg = aggregator(df_from_scale, group_cols)
+
     return fba_agg
 
 
@@ -104,6 +103,7 @@ def aggregator(df, groupbycols):
     :param groupbycols: Either flowbyactivity or flowbysector columns
     :return:
     """
+
     # weighted average function
     try:
         wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
@@ -271,10 +271,7 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source, activity): 
     :param allocation_fba:
     :return:
     """
-    # testing
-    # fba_wsec_walloc = fbs.copy()
-    # source = k
-    # activity = [attr['names']]
+
 
     from flowsa.mapping import get_activitytosector_mapping
 

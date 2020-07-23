@@ -94,12 +94,6 @@ def main(method_name):
 
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
-        # create list of activities for direct allocation
-        direct_allocation_activities = []
-        for aset, attr in activities.items():
-            # if the allocation method is direct, add activity to list
-            if attr['allocation_method'] == 'direct':
-                direct_allocation_activities.extend([attr['names']])
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
             # subset by named activities
@@ -159,8 +153,10 @@ def main(method_name):
                 # if direct allocation, drop rows of data where an activity in either activity column is not in the
                 # direct allocation list. These non-direct activities are captured in other activity allocations
                 fbs = flow_subset_wsec_agg.copy()
-                fbs = fbs[(fbs[fba_activity_fields[0]].isin(direct_allocation_activities)) |
-                          (fbs[fba_activity_fields[1]].isin(direct_allocation_activities))]
+                if "filter_activities" in attr:
+                    for i in attr["filter_activities"]:
+                        fbs = fbs.loc[~fbs[fba_activity_fields[0]].str.contains(i)]
+                        fbs = fbs.loc[~fbs[fba_activity_fields[1]].str.contains(i)].reset_index(drop=True)
 
             else:
                 # determine appropriate allocation dataset
@@ -259,12 +255,8 @@ def main(method_name):
                 log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
                 check_if_data_exists_for_same_geoscales(fbs, k, [attr['names']])
 
-                # drop columns where both sector produced/consumed by in flow allocation df is null
-                # warning: this results in losing source data
+                # drop rows where there is no allocation data
                 fbs = fbs.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
-
-                # for now, fill in null values with 0
-                fbs['FlowAmountRatio'] = fbs['FlowAmountRatio'].fillna(0)
 
                 # calculate flow amounts for each sector
                 log.info("Calculating new flow amounts using flow ratios")
@@ -297,7 +289,6 @@ def main(method_name):
 
             to_scale = method['target_geoscale']
 
-            #todo: issue with ag by gescale. when both fbs columns have values, end up with same summed value
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
