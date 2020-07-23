@@ -79,9 +79,10 @@ def main(method_name):
             flows = getattr(sys.modules[__name__], v['activity_name_standardization_fxn'])(flows)
 
         # filter out any rows that contain the phrases in the method file
-        log.info("Removing duplicate rows of information in " + k)
-        for i in v["filter_phrases"]:
-            flows = flows.loc[~flows['Description'].str.contains(i)].reset_index(drop=True)
+        if v["filter_phrases"] != 'None':
+            log.info("Removing duplicate rows of information in " + k)
+            for i in v["filter_phrases"]:
+                flows = flows.loc[~flows['Description'].str.contains(i)].reset_index(drop=True)
 
         # drop description field
         flows = flows.drop(columns='Description')
@@ -244,23 +245,23 @@ def main(method_name):
                 fbs = flow_subset_wsec.merge(
                     flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
                     left_on=['Location', 'LocationSystem', 'SectorProducedBy'],
-                    right_on=['Location', 'LocationSystem', 'Sector'], how='outer')
+                    right_on=['Location', 'LocationSystem', 'Sector'], how='left')
 
                 fbs = fbs.merge(
                     flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
                     left_on=['Location', 'LocationSystem', 'SectorConsumedBy'],
-                    right_on=['Location', 'LocationSystem', 'Sector'], how='outer')
-
-                # drop columns where both sector produced/consumed by in flow allocation dif is null
-                fbs = fbs.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
+                    right_on=['Location', 'LocationSystem', 'Sector'], how='left')
 
                 # merge the flowamount columns
                 fbs['FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
 
                 # check if fba and allocation dfs have data for same geoscales
-                # todo: revise so also checks if allocation data exists where flow data does not
                 log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
-                check_if_data_exists_for_same_geoscales(fbs, flow_subset_wsec_agg)
+                check_if_data_exists_for_same_geoscales(fbs, k, [attr['names']])
+
+                # drop columns where both sector produced/consumed by in flow allocation df is null
+                # warning: this results in losing source data
+                fbs = fbs.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
 
                 # for now, fill in null values with 0
                 fbs['FlowAmountRatio'] = fbs['FlowAmountRatio'].fillna(0)

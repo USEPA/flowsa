@@ -264,7 +264,7 @@ def check_if_location_systems_match(df1, df2):
         log.warning("LocationSystems do not match")
 
 
-def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, fba_w_aggregated_sectors):
+def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source, activity):  #fba_w_aggregated_sectors
     """
     Determine if data exists at the same scales for datasource and allocation source
     :param source_fba:
@@ -273,13 +273,17 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, fba_w_aggregated_se
     """
     # testing
     # fba_wsec_walloc = fbs.copy()
-    # fba_w_aggregated_sectors = flow_subset_wsec_agg.copy()
+    # source = k
+    # activity = [attr['names']]
+
+    from flowsa.mapping import get_activitytosector_mapping
 
     # create list of highest sector level for which there should be data
-    sectors = fba_w_aggregated_sectors[["SectorConsumedBy", "SectorProducedBy"]].values.ravel()
-    sectors_list = pd.unique(sectors).tolist()
-    if 'None' in sectors_list:
-        sectors_list.remove('None')
+    mapping = get_activitytosector_mapping(source)
+    # filter by activity of interest
+    mapping = mapping.loc[mapping['Activity'].isin(activity)]
+    # add sectos to list
+    sectors_list = pd.unique(mapping['Sector']).tolist()
 
     # subset fba w sectors and with merged allocation table so only have rows with aggregated sector list
     df_subset = fba_wsec_walloc.loc[
