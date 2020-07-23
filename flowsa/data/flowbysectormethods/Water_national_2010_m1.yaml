@@ -154,6 +154,8 @@ flowbyactivity_sources:
         allocation_helper: no
       activity_set_8:
         names: "Public Supply"
+        filter_activities:
+          - "Industrial"
         allocation_method: direct
         allocation_source: None
         allocation_source_class: "Water"

@@ -166,6 +166,8 @@ flowbyactivity_sources:
       activity_set_9:
         names: "Public Supply"
         allocation_method: direct
+        filter_activities:
+          - "Industrial"
         allocation_source: None
         allocation_source_class: "Water"
         allocation_sector_aggregation: 'agg'
