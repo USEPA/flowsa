@@ -50,6 +50,8 @@ flowbyactivity_sources:
     activity_name_standardization_fxn: standardize_usgs_nwis_names
     filter_phrases:
       - "deliveries from public supply"  # duplicate info of "Public Supply deliveries to"
+    modify_sector_length:
+      - "Public Supply"
     activity_sets:
       activity_set_1:
         names: "Aquaculture"

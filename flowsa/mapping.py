@@ -135,6 +135,45 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     return fba_allocation_subset
 
 
+def match_sector_length(df_wsec, activities):
+    """
+    After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
+    another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
+    "Public Supply" should be modified to match sector length.
+
+    :param df_wsec: a df that includes columns for SectorProducedBy and SectorConsumedBy
+    :param activities: the activity(ies) whose sector length should be modified
+    :return:
+    """
+
+    df_wsec['LengthToModify'] = np.where(df_wsec['ActivityProducedBy'].isin(activities),
+                                         df_wsec['SectorProducedBy'].str.len(), 0)
+    df_wsec['LengthToModify'] = np.where(df_wsec['ActivityConsumedBy'].isin(activities),
+                                         df_wsec['SectorConsumedBy'].str.len(), df_wsec['LengthToModify'])
+    df_wsec['TargetLength'] = np.where(df_wsec['ActivityProducedBy'].isin(activities),
+                                       df_wsec['SectorConsumedBy'].str.len(), 0)
+    df_wsec['TargetLength'] = np.where(df_wsec['ActivityConsumedBy'].isin(activities),
+                                       df_wsec['SectorProducedBy'].str.len(), df_wsec['TargetLength'])
+
+    df_wsec['SectorProducedBy'] = df_wsec.apply(
+        lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
+            'SectorProducedBy'], axis=1)
+    df_wsec['SectorConsumedBy'] = df_wsec.apply(
+        lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
+            'SectorConsumedBy'], axis=1)
+
+    df_wsec['SectorProducedBy'] = df_wsec.apply(
+        lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
+            'SectorProducedBy'], axis=1)
+    df_wsec['SectorConsumedBy'] = df_wsec.apply(
+        lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
+            'SectorConsumedBy'], axis=1)
+
+    df_wsec = df_wsec.drop(columns=["LengthToModify", 'TargetLength'])
+
+    return df_wsec
+
+
 def map_elementary_flows(fba,from_fba_source):
     """
     Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows

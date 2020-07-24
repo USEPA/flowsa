@@ -18,7 +18,8 @@ import sys
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk
-from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows
+from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
+    match_sector_length
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, harmonize_units, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
@@ -115,7 +116,7 @@ def main(method_name):
                 # geoscale, and sum to specified geoscale
                 log.info("Checking if flowbyactivity data exists for " + ', '.join(map(str, names)) + " at a less aggregated level")
                 new_geoscale_to_use = check_if_data_exists_at_less_aggregated_geoscale(flow_subset, names,
-                                                                                        v['geoscale_to_use'])
+                                                                                       v['geoscale_to_use'])
                 activity_from_scale = new_geoscale_to_use
 
             activity_to_scale = attr['allocation_from_scale']
@@ -134,8 +135,7 @@ def main(method_name):
 
             # location column pad zeros if necessary
             flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
-                                                                    else x
-                                                                    )
+                                                                    else x)
 
             # Add sectors to usgs activity, creating two versions of the flow subset
             # the first version "flow_subset" is the most disaggregated version of the Sectors (NAICS)
@@ -146,6 +146,11 @@ def main(method_name):
             flow_subset_wsec_agg = add_sectors_to_flowbyactivity(flow_subset,
                                                                  sectorsourcename=method['target_sector_source'],
                                                                  levelofSectoragg='agg')
+
+            # modifies the sector length of activities specified in yaml
+            if v['modify_sector_length'] != 'None':
+                flow_subset_wsec = match_sector_length(flow_subset_wsec, v['modify_sector_length'])
+                flow_subset_wsec_agg = match_sector_length(flow_subset_wsec_agg, v['modify_sector_length'])
 
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
