@@ -297,7 +297,7 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
-            # todo: fix agg fxn for values in both sector columns
+            # todo: modify the output here. if want a 6 digit output, should add 0s to codes to reach 6 digits
             log.info("Aggregating flowbysector to " + method['target_sector_level'])
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 

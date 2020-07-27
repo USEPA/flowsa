@@ -139,12 +139,15 @@ def match_sector_length(df_wsec, activities):
     """
     After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
     another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
-    "Public Supply" should be modified to match sector length.
+    "Public Supply" should be modified to match sector length. Specify which activities to include in this modification
+    in the method yaml.
 
     :param df_wsec: a df that includes columns for SectorProducedBy and SectorConsumedBy
     :param activities: the activity(ies) whose sector length should be modified
     :return:
     """
+
+    #todo: this code takes a long time to run. so subset rows that contain specific activities and then concat back into df
 
     df_wsec['LengthToModify'] = np.where(df_wsec['ActivityProducedBy'].isin(activities),
                                          df_wsec['SectorProducedBy'].str.len(), 0)
