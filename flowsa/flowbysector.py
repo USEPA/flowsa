@@ -315,6 +315,7 @@ def main(method_name):
             # add household sector to sector list
             sector_list.extend(household['Code'].tolist())
             # subset df
+            # todo: modify because incorrect sector length is currently included when paired with F010
             fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) |
                           (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
 
@@ -324,12 +325,15 @@ def main(method_name):
             log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
             fbss.append(fbs)
     # create single df of all activities
+    log.info("Concat data for all activities")
     fbss = pd.concat(fbss, ignore_index=True, sort=False)
+    log.info("Clean final dataframe")
     # drop duplicate rows (duplicates can arise when data is given in both "delivered to" and "delivered from" form)
     fbss = fbss.drop_duplicates().reset_index(drop=True)
     # aggregate df as activities might have data for the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
+    log.info("Sort and store dataframe")
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file
