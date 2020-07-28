@@ -147,37 +147,49 @@ def match_sector_length(df_wsec, activities):
     :return:
     """
 
-    #todo: this code takes a long time to run. so subset rows that contain specific activities and then concat back into df
+    # testing
+    # df_wsec = flow_subset_wsec.copy()
+    # activities = v['modify_sector_length'].copy()
 
-    df_wsec['LengthToModify'] = np.where(df_wsec['ActivityProducedBy'].isin(activities),
-                                         df_wsec['SectorProducedBy'].str.len(), 0)
-    df_wsec['LengthToModify'] = np.where(df_wsec['ActivityConsumedBy'].isin(activities),
-                                         df_wsec['SectorConsumedBy'].str.len(), df_wsec['LengthToModify'])
-    df_wsec['TargetLength'] = np.where(df_wsec['ActivityProducedBy'].isin(activities),
-                                       df_wsec['SectorConsumedBy'].str.len(), 0)
-    df_wsec['TargetLength'] = np.where(df_wsec['ActivityConsumedBy'].isin(activities),
-                                       df_wsec['SectorProducedBy'].str.len(), df_wsec['TargetLength'])
+    # subset data
+    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] == 'None') | (df_wsec['SectorConsumedBy'] == 'None')]
+    df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] != 'None') & (df_wsec['SectorConsumedBy'] != 'None')]
 
-    df_wsec['SectorProducedBy'] = df_wsec.apply(
-        lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
-            'SectorProducedBy'], axis=1)
-    df_wsec['SectorConsumedBy'] = df_wsec.apply(
-        lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
-            'SectorConsumedBy'], axis=1)
-
-    df_wsec['SectorProducedBy'] = df_wsec.apply(
-        lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
-            'SectorProducedBy'], axis=1)
-    df_wsec['SectorConsumedBy'] = df_wsec.apply(
-        lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
-            'SectorConsumedBy'], axis=1)
-
-    df_wsec = df_wsec.drop(columns=["LengthToModify", 'TargetLength'])
-
-    return df_wsec
+    # concat data into single dataframe
+    if len(df2) != 0:
 
 
-def map_elementary_flows(fba,from_fba_source):
+        df2['LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorProducedBy'].str.len(), 0)
+        df2['LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorConsumedBy'].str.len(),
+                                         df2['LengthToModify'])
+        df2['TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorConsumedBy'].str.len(), 0)
+        df2['TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorProducedBy'].str.len(),
+                                       df2['TargetLength'])
+
+        df2['SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
+                'SectorProducedBy'], axis=1)
+        df2['SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
+                'SectorConsumedBy'], axis=1)
+
+        df2['SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
+                'SectorProducedBy'], axis=1)
+        df2['SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
+                'SectorConsumedBy'], axis=1)
+
+        df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
+
+        df = pd.concat([df1, df2], sort=False)
+    else:
+        df = df1.copy()
+
+    return df
+
+
+def map_elementary_flows(fba, from_fba_source):
     """
     Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
     :param fba: df flow-by-activity or flow-by-sector with 'Flowable', 'Context', and 'Unit' fields
