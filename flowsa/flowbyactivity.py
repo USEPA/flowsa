@@ -1,4 +1,4 @@
-# datapull.py (flowsa)
+# flowbyactivity.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """

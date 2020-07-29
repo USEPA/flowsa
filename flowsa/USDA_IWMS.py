@@ -7,7 +7,7 @@ from flowsa.common import *
 
 
 def iwms_url_helper(build_url, config, args):
-    """This helper function uses the "build_url" input from datapull.py, which is a base url for coa cropland data
+    """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
     This function does not parse the data, only modifies the urls from which data is obtained. """
     # initiate url list for coa cropland data

@@ -4,7 +4,7 @@
 # ingwersen.wesley@epa.gov
 
 """
-This script is run on it's own, not through datapull.py, as data pulled from csv in flowsa.
+This script is run on it's own, not through flowbyactivity.py, as data pulled from csv in flowsa.
 
 NOAA fisheries data obtained from: https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200
                                on: April 28, 2020
@@ -24,7 +24,7 @@ Data output saved as csv, retaining assigned file name "foss_landings.csv"
 
 from flowsa.common import *
 import pandas as pd
-from flowsa.datapull import store_flowbyactivity
+from flowsa.flowbyactivity import store_flowbyactivity
 from flowsa.flowbyfunctions import add_missing_flow_by_fields
 
 
