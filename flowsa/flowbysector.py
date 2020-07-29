@@ -17,7 +17,8 @@ import argparse
 import sys
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
-    generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk
+    generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk, \
+    flow_by_activity_fields
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     match_sector_length
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
@@ -73,6 +74,8 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
                                          datasource=k)
+        # ensure datatypes correct
+        flows = add_missing_flow_by_fields(flows, flow_by_activity_fields)
 
         # if necessary, standardize names in data set
         if v['activity_name_standardization_fxn'] != 'None':
@@ -169,6 +172,8 @@ def main(method_name):
                 fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                           datasource=attr['allocation_source'],
                                                           years=[attr['allocation_source_year']]).reset_index(drop=True)
+                # ensure correct data types
+                fba_allocation = add_missing_flow_by_fields(fba_allocation, flow_by_activity_fields)
 
                 # fill null values
                 fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
