@@ -1,0 +1,56 @@
+Class,SourceName,FlowName,FlowAmount,Unit,ActivityProducedBy,ActivityConsumedBy,Compartment,Location,LocationSystem,Year,MeasureofSpread,Spread,DistributionType,Min,Max,DataReliability,DataCollection,Description
+Water,test_USGS_NWIS_WU,total,100,Mgal,Aquaculture,None,total,0,FIPS_2015,2015,None,nan,None,nan,nan,2,3,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,70,Mgal,Aquaculture,None,total,0,FIPS_2015,2015,None,nan,None,nan,nan,4,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,saline,30,Mgal,Aquaculture,None,total,0,FIPS_2015,2015,None,nan,None,nan,nan,3,3,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,60,Mgal,Aquaculture,None,ground,0,FIPS_2015,2015,None,nan,None,nan,nan,5,3,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,40,Mgal,Aquaculture,None,ground,0,FIPS_2015,2015,None,nan,None,nan,nan,5,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,saline,20,Mgal,Aquaculture,None,ground,0,FIPS_2015,2015,None,nan,None,nan,nan,1,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,40,Mgal,Aquaculture,None,surface,0,FIPS_2015,2015,None,nan,None,nan,nan,4,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,30,Mgal,Aquaculture,None,surface,0,FIPS_2015,2015,None,nan,None,nan,nan,4,1,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,saline,10,Mgal,Aquaculture,None,surface,0,FIPS_2015,2015,None,nan,None,nan,nan,4,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,20,Mgal,Aquaculture,None,total,10000,FIPS_2015,2015,None,nan,None,nan,nan,4,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,5,Mgal,Aquaculture,None,total,10001,FIPS_2015,2015,None,nan,None,nan,nan,1,5,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,5,Mgal,Aquaculture,None,ground,10001,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,0,Mgal,Aquaculture,None,surface,10001,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,15,Mgal,Aquaculture,None,total,10003,FIPS_2015,2015,None,nan,None,nan,nan,4,5,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,3,Mgal,Aquaculture,None,ground,10003,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,12,Mgal,Aquaculture,None,surface,10003,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,80,Mgal,Aquaculture,None,total,13000,FIPS_2015,2015,None,nan,None,nan,nan,1,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,10,Mgal,Aquaculture,None,total,13001,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,2,Mgal,Aquaculture,None,ground,13001,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,8,Mgal,Aquaculture,None,surface,13001,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,20,Mgal,Aquaculture,None,total,13003,FIPS_2015,2015,None,nan,None,nan,nan,5,1,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,11,Mgal,Aquaculture,None,ground,13003,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,9,Mgal,Aquaculture,None,surface,13003,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,50,Mgal,Aquaculture,None,total,13005,FIPS_2015,2015,None,nan,None,nan,nan,5,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,30,Mgal,Aquaculture,None,ground,13005,FIPS_2015,2015,None,nan,None,nan,nan,2,4,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,20,Mgal,Aquaculture,None,surface,13005,FIPS_2015,2015,None,nan,None,nan,nan,3,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,total,1000,Mgal,Irrigation Crop,None,total,28000,FIPS_2015,2015,None,nan,None,nan,nan,1,1,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,600,Mgal,Irrigation Crop,None,total,28000,FIPS_2015,2015,None,nan,None,nan,nan,1,3,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,saline,400,Mgal,Irrigation Crop,None,total,28000,FIPS_2015,2015,None,nan,None,nan,nan,5,2,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,1500,Mgal,None,Domestic,ground,31000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic self-supplied groundwater withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,0,Mgal,None,Domestic,surface,31000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic self-supplied surface-water withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,1500,Mgal,None,Domestic,total,31000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic total self-supplied withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,5000,Mgal,None,Domestic,total,31000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic total self-supplied withdrawals plus deliveries, in Mgal/d"
+Water,test_USGS_NWIS_WU,wastewater,20,Mgal,None,Domestic,total,31000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic reclaimed wastewater, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,50,Mgal,None,Public Supply,ground,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply self-supplied groundwater withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,350,Mgal,None,Public Supply,surface,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply self-supplied surface-water withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,400,Mgal,None,Public Supply,total,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,50,Mgal,None,Public Supply,ground,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, groundwater, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,350,Mgal,None,Public Supply,surface,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, surface water, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,400,Mgal,None,Public Supply,total,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, total, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,3500,Mgal,Public Supply,Domestic,total,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Domestic deliveries from public supply, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,3500,Mgal,Public Supply,Domestic,total,31000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply deliveries to domestic, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,1800,Mgal,None,Domestic,ground,56000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic self-supplied groundwater withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,200,Mgal,None,Domestic,surface,56000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic self-supplied surface-water withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,2000,Mgal,None,Domestic,total,56000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic total self-supplied withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,3000,Mgal,None,Domestic,total,56000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic total self-supplied withdrawals plus deliveries, in Mgal/d"
+Water,test_USGS_NWIS_WU,wastewater,10,Mgal,None,Domestic,total,56000,FIPS_2015,2015,None,,None,,,4,,"TEST DATA - Domestic reclaimed wastewater, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,10000,Mgal,None,Public Supply,ground,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply self-supplied groundwater withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,20000,Mgal,None,Public Supply,surface,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply self-supplied surface-water withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,fresh,30000,Mgal,None,Public Supply,total,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, fresh, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,10000,Mgal,None,Public Supply,ground,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, groundwater, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,20000,Mgal,None,Public Supply,surface,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, surface water, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,30000,Mgal,None,Public Supply,total,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply total self-supplied withdrawals, total, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,1000,Mgal,Public Supply,Domestic,total,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Domestic deliveries from public supply, in Mgal/d"
+Water,test_USGS_NWIS_WU,total,1000,Mgal,Public Supply,Domestic,total,56000,FIPS_2015,2015,None,,None,,,2,,"TEST DATA - Public Supply deliveries to domestic, in Mgal/d"
