@@ -314,9 +314,10 @@ def main(method_name):
             household = household.loc[household['NAICS_Level_to_Use_For'] == method['target_sector_level']]
             # add household sector to sector list
             sector_list.extend(household['Code'].tolist())
-            # subset df
-            # todo: modify because incorrect sector length is currently included when paired with F010
-            fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) |
+            # add "None" to sector list so don't lose rows when filtering df to match sector length
+            sector_list.extend(["None"])
+            # subset df, necessary because not all of the sectors are NAICS
+            fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) &
                           (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
 
             # add any missing columns of data and cast to appropriate data type
