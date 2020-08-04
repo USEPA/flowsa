@@ -165,9 +165,7 @@ if __name__ == '__main__':
     df_10 = df_10.append(pd.DataFrame([["51019", "51515"]], columns=df_10.columns))
 
     # merge 2010 with 2013 dataframe
-    df2 = pd.merge(df_10, df_13, on="FIPS_2013", how='left')
-    # merge 2019 with 2017
-    df3 = pd.merge(df_19, df2, on="FIPS_2015", how='left')
+    df2 = pd.merge(df_10, df_13, on="FIPS_2013", how='left')\
 
     # fips years notes
     # 2010, 2011, 2012       have same fips codes
@@ -177,23 +175,18 @@ if __name__ == '__main__':
 
     # Use Census data to assign county names to FIPS years. Some county names have changed over the years,
     # while FIPS remain unchanged
-    df4 = annual_fips_name(df3, years)
+    df3 = annual_fips_name(df2, years)
 
     # read in fips county names for each year
     names_10 = read_fips_2010()
     annual_names = annual_fips(['2013', '2019'])
     names_13 = annual_names['FIPS_2013']
 
-    df4 = pd.merge(df4, names_10, on="FIPS_2010", how='left')
+    df4 = pd.merge(df3, names_10, on="FIPS_2010", how='left')
     df4 = pd.merge(df4, names_13, on=["State", "FIPS_2013"], how='left')
 
-    # drop repeated State columns and rename
-    df5 = df4.loc[:, ~df4.columns.duplicated()]
-    # drop Puerto Rico data
-    df5 = df5.loc[df5['State'] != 'Puerto rico']
-
     # reorder dataframe
-    fips_xwalk = df5[['State', 'FIPS_2010', 'County_2010', 'FIPS_2013', 'County_2013',
+    fips_xwalk = df4[['State', 'FIPS_2010', 'County_2010', 'FIPS_2013', 'County_2013',
                       'FIPS_2015', 'County_2015']]
     fips_xwalk = fips_xwalk.sort_values(['FIPS_2010', 'FIPS_2013', 'FIPS_2015']).reset_index(drop=True)
 
