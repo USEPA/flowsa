@@ -312,7 +312,7 @@ def get_county_FIPS(year='2015'):
     :return: FIPS df with only county level records
     """
     fips = read_stored_FIPS(year)
-    fips = fips.drop_duplicates(subset='County')
+    fips = fips.drop_duplicates(subset='FIPS')
     fips = fips[fips['County'].notnull()]
     return fips
 
