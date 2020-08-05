@@ -47,10 +47,7 @@ flowbyactivity_sources:
     class: Water
     geoscale_to_use: county
     year: 2015
-    activity_name_standardization_fxn: standardize_usgs_nwis_names
-    row_summation_fxn: missing_row_summation
-    filter_phrases:
-      - "deliveries from public supply"  # duplicate info of "Public Supply deliveries to"
+    clean_fba_df_fxn: usgs_fba_data_cleanup
     modify_sector_length:
       - "Public Supply"
     activity_sets:

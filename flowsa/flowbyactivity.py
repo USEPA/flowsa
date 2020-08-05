@@ -4,6 +4,7 @@
 """
 Methods for pulling data from http sources
 File configuration requires a year for the data pull and a data source (yaml file name) as parameters
+EX: --year 2015 --source USGS_NWIS_WU
 """
 import pandas as pd
 import argparse

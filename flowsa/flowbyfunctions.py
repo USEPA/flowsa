@@ -456,7 +456,7 @@ def sector_aggregation_generalized(fbs_df, group_cols):
 
 
 
-def sector_aggregation(df, group_cols):  # , target_sector_length
+def sector_aggregation(df, group_cols):
     """
     Function that checks if a sector length exists, and if not, sums the less aggregated sector
     :param df: Either a flowbyactivity df with sectors or a flowbysector df
@@ -464,11 +464,9 @@ def sector_aggregation(df, group_cols):  # , target_sector_length
     :return:
     """
 
-    # todo: modify so that output retains trailing 0s for specified length
     # testing
     # df = fbs.copy()
     # group_cols = fbs_default_grouping_fields.copy()
-    # target_sector_length = method['target_sector_level']
 
     # drop any columns that contain a "-" in sector column
     df = df[(~df[fbs_activity_fields[0]].str.contains('-', regex=True)) |
@@ -479,7 +477,6 @@ def sector_aggregation(df, group_cols):  # , target_sector_length
     # for loop in reverse order longest length naics minus 1 to 2
     # appends missing naics levels to df
     for i in range(length - 1, 1, -1):
-        # i = 3
         # subset df to sectors with length = i and length = i + 1
         df_subset = df.loc[df[fbs_activity_fields[0]].apply(lambda x: i + 2 > len(x) >= i) |
                            df[fbs_activity_fields[1]].apply(lambda x: i + 2 > len(x) >= i)]
@@ -514,20 +511,20 @@ def sector_aggregation(df, group_cols):  # , target_sector_length
             agg_sectors = aggregator(agg_sectors, group_cols)
             agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
             # append to df
-            df = df.append(agg_sectors)
+            df = df.append(agg_sectors).reset_index(drop=True)
 
-        # manually modify non-NAICS codes that might exist in sector
-        df['SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['F0', 'F01']),
-                                          'F010', df['SectorConsumedBy'])  # domestic/household
-        df['SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['F0', 'F01']),
-                                          'F010', df['SectorProducedBy'])  # domestic/household
-        df['SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['No', 'Non']),
-                                          'None', df['SectorConsumedBy'])  # domestic/household
-        df['SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['No', 'Non']),
-                                          'None', df['SectorProducedBy'])  # domestic/household
-        # drop any duplicates created by modifying sector codes
-        df = df.drop_duplicates()
-        df = df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
+    # manually modify non-NAICS codes that might exist in sector
+    df['SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['F0', 'F01']),
+                                      'F010', df['SectorConsumedBy'])  # domestic/household
+    df['SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['F0', 'F01']),
+                                      'F010', df['SectorProducedBy'])  # domestic/household
+    df['SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['No', 'Non']),
+                                      'None', df['SectorConsumedBy'])  # domestic/household
+    df['SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['No', 'Non']),
+                                      'None', df['SectorProducedBy'])  # domestic/household
+    # drop any duplicates created by modifying sector codes
+    df = df.drop_duplicates()
+    df = df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
 
     return df
 

@@ -26,8 +26,16 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales
-from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names, missing_row_summation
+from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup
 from flowsa.datachecks import sector_flow_comparision
+
+
+def parse_args():
+    """Make year and source script parameters"""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-m", "--method", required=True, help="Method for flow by sector file. A valid method config file must exist with this name.")
+    args = vars(ap.parse_args())
+    return args
 
 
 def load_method(method_name):
@@ -74,19 +82,15 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
                                          datasource=k)
+
+        # clean up fba, if specified in yaml
+        if v["clean_fba_df_fxn"] != 'None':
+            print('test')
+            log.info("Cleaning up " + k + " FlowByActivity")
+            flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
+
         # ensure datatypes correct
         flows = add_missing_flow_by_fields(flows, flow_by_activity_fields)
-
-        # if necessary, standardize names in data set
-        if v['activity_name_standardization_fxn'] != 'None':
-            log.info("Standardizing activity names in " + k)
-            flows = getattr(sys.modules[__name__], v['activity_name_standardization_fxn'])(flows)
-
-        # filter out any rows that contain the phrases in the method file
-        if v["filter_phrases"] != 'None':
-            log.info("Removing duplicate rows of information in " + k)
-            for i in v["filter_phrases"]:
-                flows = flows.loc[~flows['Description'].str.contains(i)].reset_index(drop=True)
 
         # drop description field
         flows = flows.drop(columns='Description')
@@ -107,12 +111,6 @@ def main(method_name):
             # subset usgs data by activity
             flow_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
                                 (flows[fba_activity_fields[1]].isin(names))].reset_index(drop=True)
-
-            # add missing data by summing existing data (if necessary)
-            # todo: add the usgs nwis wu summation code here
-            if hasattr(sys.modules[__name__], v["row_summation_fxn"]):
-                log.info("Summing missing rows of data from existing data")
-                flow_subset = getattr(sys.modules[__name__], v["row_summation_fxn"])(flow_subset)
 
             # check if flowbyactivity data exists at specified geoscale to use
             log.info("Checking if flowbyactivity data exists for " + ', '.join(map(str, names)) + " at the " +
@@ -309,7 +307,6 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
-            # todo: modify the output here. if want a 6 digit output, should add 0s to codes to reach 6 digits
             log.info("Aggregating flowbysector to " + method['target_sector_level'])
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 
@@ -351,13 +348,6 @@ def main(method_name):
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file
     store_flowbysector(fbss, method_name)
-
-def parse_args():
-    """Make year and source script parameters"""
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-m", "--method", required=True, help="Method for flow by sector file. A valid method config file must exist with this name.")
-    args = vars(ap.parse_args())
-    return args
 
 
 if __name__ == '__main__':
