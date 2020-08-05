@@ -231,4 +231,3 @@ def map_elementary_flows(fba, from_fba_source):
     fba_mapped_df = fba_mapped_df.drop(
         columns=mapping_fields)
     return fba_mapped_df
-
