@@ -22,7 +22,7 @@ fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 
 
-def create_geoscale_list(df, geoscale):
+def create_geoscale_list(df, geoscale, year='2015'):
     """
     Create a list of FIPS associated with given geoscale
 
@@ -38,10 +38,10 @@ def create_geoscale_list(df, geoscale):
         if geoscale == "national":
             fips.append(US_FIPS)
         elif geoscale == "state":
-            state_FIPS = get_state_FIPS()
+            state_FIPS = get_state_FIPS(year)
             fips = list(state_FIPS['FIPS'])
         elif geoscale == "county":
-            county_FIPS = get_county_FIPS()
+            county_FIPS = get_county_FIPS(year)
             fips = list(county_FIPS['FIPS'])
 
     return fips
@@ -574,3 +574,4 @@ def sector_aggregation(df_w_sectors, group_cols):
     sector_agg_df = sector_agg_df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
 
     return sector_agg_df
+

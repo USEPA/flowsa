@@ -48,6 +48,7 @@ flowbyactivity_sources:
     geoscale_to_use: national
     year: 2010
     activity_name_standardization_fxn: standardize_usgs_nwis_names
+    row_summation_fxn: missing_row_summation
     filter_phrases:
       - "deliveries from public supply"  # duplicate info of "Public Supply deliveries to"
     modify_sector_length:
@@ -88,7 +89,7 @@ flowbyactivity_sources:
         allocation_from_scale: state
         allocation_helper: no
       activity_set_4:
-        names: "Irrigation Crop"                # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
+        names: "Irrigation Crop"
         allocation_method: proportional
         allocation_source: "USDA_CoA_Cropland"
         allocation_source_class: "Land"

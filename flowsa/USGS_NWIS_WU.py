@@ -267,3 +267,60 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
     return flowbyactivity_df
+
+def missing_row_summation(df):
+    """
+    In the event there is missing data for a particular FlowName/Compartment combo, sum together existing data.
+    Summation should occur at lowest geoscale.
+    :param df:
+    :return:
+    """
+
+    from flowsa.flowbyfunctions import create_geoscale_list
+    from flowsa.flowbyfunctions import aggregator, fba_default_grouping_fields
+
+    # testing
+    # df = flow_subset.copy()
+
+    # want rows where compartment is total
+    df = df.loc[df['Compartment'] == 'total'].reset_index(drop=True)
+    # drop wastewater rows
+    df = df.loc[df['FlowName'] != 'wastewater']
+    # create list of activity produced/consumed by pairs
+    activity_pairs = pd.DataFrame([])
+    for a, b in zip(df['ActivityProducedBy'], df['ActivityConsumedBy']):
+        pairs = [a, b]
+        activity_pairs = activity_pairs.append(pd.DataFrame([pairs], columns=['ActivityProducedBy', 'ActivityConsumedby']))
+    activity_pairs = activity_pairs.drop_duplicates().values.tolist()
+
+    # list of us counties in df
+    county_fips = create_geoscale_list(df, 'county')
+    state_fips = create_geoscale_list(df, 'state')
+    us_fips = create_geoscale_list(df, 'national')
+
+    geo_level = (county_fips, state_fips, us_fips)
+
+    # todo: modify fxn to check if data exists at less aggregated geoscale, and if so, aggregate
+    for (a, b) in activity_pairs:
+        for i in geo_level:
+            # subset the data based on activity columns
+            df2 = df.loc[(df['ActivityProducedBy'] == a) & (df['ActivityConsumedBy'] == b) &
+                         (df['Location'].isin(i))].reset_index(drop=True)
+            # list of counties that have total/total data
+            df_subset = df2.loc[(df2['FlowName'] == 'total') & (df2['Compartment'] == 'total')]
+            existing_fips = df_subset['Location'][df_subset['Location'].isin(i)].tolist()
+            # drop rows in df that are in the existing counties list
+            df2 = df2.loc[~df2['Location'].isin(existing_fips)].reset_index(drop=True)
+            if len(df2) != 0:
+                # drop flowname from aggregation
+                df2 = df2.drop('FlowName', 1)
+                # aggregate data (weight DQ)
+                groupcols = fba_default_grouping_fields
+                groupcols = [e for e in groupcols if e not in 'FlowName']
+                df3 = aggregator(df2, groupcols)
+                # set flowname = total
+                df3['FlowName'] = 'total'
+                # append new rows to df
+                df = df.append(df3)
+
+    return df

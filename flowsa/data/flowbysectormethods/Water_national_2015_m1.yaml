@@ -48,6 +48,7 @@ flowbyactivity_sources:
     geoscale_to_use: county
     year: 2015
     activity_name_standardization_fxn: standardize_usgs_nwis_names
+    row_summation_fxn: missing_row_summation
     filter_phrases:
       - "deliveries from public supply"  # duplicate info of "Public Supply deliveries to"
     modify_sector_length:
