@@ -275,11 +275,26 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 def usgs_fba_data_cleanup(df):
     """Clean up the dataframe to prepare for flowbysector"""
 
+    from flowsa.common import US_FIPS
+
     # drop duplicate info of "Public Supply deliveries to"
     df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
 
-    # drop compartment = 'total' and flowname = 'total' to prevent double counting
-    # df = df.loc[~(df['FlowName'] == 'total') & ~(df['Compartment'] == 'total')].reset_index(drop=True)
+    # drop flowname = 'total' rows when necessary to prevent double counting
+    # subset data where flowname = total and where it does not
+    df1 = df.loc[df['FlowName'] == 'total']
+    # set conditions for data to keep when flowname = 'total
+    c1 = df1['Location'] == US_FIPS
+    c2 = (df1['ActivityProducedBy'] != 'None') & (df1['ActivityConsumedBy'] != 'None')
+    # subset data
+    df1 = df1.loc[c1 | c2].reset_index(drop=True)
+
+    df2 = df.loc[df['FlowName'] != 'total']
+
+    # concat the two df
+    df = pd.concat([df1, df2])
+    # sort df
+    df = df.sort_values(['Location', 'ActivityProducedBy', 'ActivityConsumedBy']).reset_index(drop=True)
 
     return df
 
