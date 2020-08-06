@@ -7,7 +7,7 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
-    load_sector_crosswalk, log
+    load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
 from flowsa.flowbyfunctions import fbs_activity_fields
 
 def get_activitytosector_mapping(source):
@@ -30,9 +30,6 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
                             of NAICS for an activity
     :return: a df with activity fields mapped to 'sectors'
     """
-
-    # todo: need to add the domestic codes to crosswalk
-    # todo: create fxn that does so
 
     mappings = []
 
@@ -91,6 +88,11 @@ def expand_naics_list(df, sectorsourcename):
     sectors = cw.loc[:, [sectorsourcename]]
     # Create mapping df that's just the sectors at first
     sectors = sectors.drop_duplicates().dropna()
+    # add non-naics to sector list
+    household = load_household_sector_codes()
+    household = pd.DataFrame(household['Code'].drop_duplicates())
+    household.columns = [sectorsourcename]
+    sectors = sectors.append(household, sort=True).drop_duplicates().reset_index(drop=True)
 
     # fill null values
     df['Sector'] = df['Sector'].astype('str')
@@ -180,3 +182,26 @@ def map_elementary_flows(fba, from_fba_source):
     fba_mapped_df = fba_mapped_df.drop(
         columns=mapping_fields)
     return fba_mapped_df
+
+
+def get_sector_list(sector_level):
+    cw = load_sector_length_crosswalk()
+    sector_list = cw[sector_level].unique().tolist()
+
+    return sector_list
+
+
+def add_non_naics_sectors(sector_list, sector_level):
+
+    # load non-NAICS sectors used with NAICS
+    household = load_household_sector_codes()
+    household = household.loc[household['NAICS_Level_to_Use_For'] == sector_level]
+    # add household sector to sector list
+    sector_list.extend(household['Code'].tolist())
+    # add "None" to sector list so don't lose rows when filtering df to match sector length
+    sector_list.extend(["None"])
+
+    return sector_list
+
+
+

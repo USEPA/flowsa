@@ -19,7 +19,8 @@ import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk, \
     flow_by_activity_fields
-from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows
+from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
+    get_sector_list, add_non_naics_sectors
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, harmonize_units, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
@@ -313,16 +314,10 @@ def main(method_name):
 
             # return sector level specified in method yaml
             # load the crosswalk linking sector lengths
-            cw = load_sector_length_crosswalk()
-            sector_list = cw[method['target_sector_level']].unique().tolist()
-
+            sector_list = get_sector_list(method['target_sector_level'])
             # add any non-NAICS sectors used with NAICS
-            household = load_household_sector_codes()
-            household = household.loc[household['NAICS_Level_to_Use_For'] == method['target_sector_level']]
-            # add household sector to sector list
-            sector_list.extend(household['Code'].tolist())
-            # add "None" to sector list so don't lose rows when filtering df to match sector length
-            sector_list.extend(["None"])
+            sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
+
             # subset df, necessary because not all of the sectors are NAICS
             fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) &
                           (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
