@@ -19,14 +19,13 @@ import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, load_household_sector_codes, \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk, \
     flow_by_activity_fields
-from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
-    match_sector_length
+from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, harmonize_units, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales
-from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup
+from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.datachecks import sector_flow_comparision
 
 
@@ -85,7 +84,6 @@ def main(method_name):
 
         # clean up fba, if specified in yaml
         if v["clean_fba_df_fxn"] != 'None':
-            print('test')
             log.info("Cleaning up " + k + " FlowByActivity")
             flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
 
@@ -145,27 +143,27 @@ def main(method_name):
             flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
                                                                     else x)
 
-            # Add sectors to usgs activity, creating two versions of the flow subset
-            # the first version "flow_subset" is the most disaggregated version of the Sectors (NAICS)
-            # the second version, "flow_subset_agg" includes only the most aggregated level of sectors
+            # Add sectors to usgs activity, depending on level of specified sector aggregation
             log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)))
-            flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                             sectorsourcename=method['target_sector_source'])
-            flow_subset_wsec_agg = add_sectors_to_flowbyactivity(flow_subset,
+            if attr['allocation_sector_aggregation'] == 'agg':
+                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
                                                                  sectorsourcename=method['target_sector_source'],
                                                                  levelofSectoragg='agg')
+            else:
+                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
+                                                                 sectorsourcename=method['target_sector_source'])
 
-            # modifies the sector length of activities specified in yaml
-            if v['modify_sector_length'] != 'None':
-                flow_subset_wsec = match_sector_length(flow_subset_wsec, v['modify_sector_length'])
-                flow_subset_wsec_agg = match_sector_length(flow_subset_wsec_agg, v['modify_sector_length'])
+            # clean up fba with sectors, if specified in yaml
+            if v["clean_fba_w_sec_df_fxn"] != 'None':
+                log.info("Cleaning up " + k + " FlowByActivity with sectors")
+                flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec)
 
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
             if attr['allocation_method'] == 'direct':
                 # if direct allocation, drop rows of data where an activity in either activity column is not in the
                 # direct allocation list. These non-direct activities are captured in other activity allocations
-                fbs = flow_subset_wsec_agg.copy()
+                fbs = flow_subset_wsec.copy()
                 if "filter_activities" in attr:
                     for i in attr["filter_activities"]:
                         fbs = fbs.loc[~fbs[fba_activity_fields[0]].str.contains(i)]

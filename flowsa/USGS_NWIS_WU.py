@@ -284,6 +284,58 @@ def usgs_fba_data_cleanup(df):
     return df
 
 
+def usgs_fba_w_sectors_data_cleanup(df_wsec):
+    """
+    After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
+    another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
+    "Public Supply" should be modified to match sector length.
+
+    :param df_wsec: a df that includes columns for SectorProducedBy and SectorConsumedBy
+    :return:
+    """
+
+    # testing
+    #df_wsec = flowbyactivity_wsector_df.copy()
+
+    # the activity(ies) whose sector length should be modified
+    activities = ["Public Supply"]
+
+    # subset data
+    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] == 'None') | (df_wsec['SectorConsumedBy'] == 'None')]
+    df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] != 'None') & (df_wsec['SectorConsumedBy'] != 'None')]
+
+    # concat data into single dataframe
+    if len(df2) != 0:
+        df2['LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorProducedBy'].str.len(), 0)
+        df2['LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorConsumedBy'].str.len(),
+                                         df2['LengthToModify'])
+        df2['TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorConsumedBy'].str.len(), 0)
+        df2['TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorProducedBy'].str.len(),
+                                       df2['TargetLength'])
+
+        df2['SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
+                'SectorProducedBy'], axis=1)
+        df2['SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
+                'SectorConsumedBy'], axis=1)
+
+        df2['SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
+                'SectorProducedBy'], axis=1)
+        df2['SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
+                'SectorConsumedBy'], axis=1)
+
+        df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
+
+        df = pd.concat([df1, df2], sort=False)
+    else:
+        df = df1.copy()
+
+    return df
+
+
 # def missing_row_summation(df):
 #     """
 #     In the event there is missing data for a particular FlowName/Compartment combo, sum together existing data.

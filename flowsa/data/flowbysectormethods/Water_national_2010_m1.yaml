@@ -48,8 +48,7 @@ flowbyactivity_sources:
     geoscale_to_use: national
     year: 2010
     clean_fba_df_fxn: usgs_fba_data_cleanup
-    modify_sector_length:
-      - "Public Supply"
+    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names: "Aquaculture"
