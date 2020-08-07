@@ -21,7 +21,7 @@ from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
 from flowsa.Census_PEP_Population import *
 from flowsa.EIA_CBECS_Water import *
-from flowsa.EPA_NEI_Onroad import *
+from flowsa.EPA_NEI import *
 from flowsa.StatCan_IWS_MI import *
 from flowsa.USDA_CoA_Cropland import *
 from flowsa.USDA_CoA_Livestock import *

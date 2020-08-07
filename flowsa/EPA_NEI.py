@@ -2,18 +2,14 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Pulls EPA National Emissions Inventory (NEI) 2017 data for ONROAD sources
+Pulls EPA National Emissions Inventory (NEI) data for nonpoint sources
 """
 import pandas as pd
 import numpy as np
 import zipfile
 import io
 
-# conversion factors
-lb_kg = 0.4535924
-USton_kg = 907.18474
-
-def epa_nei_onroad_call(url, response_load, args):
+def epa_nei_call(url, response_load, args):
     """
     Takes the .zip archive returned from the url call and extracts
     the individual .csv files. The .csv files are read into a dataframe and 
@@ -44,22 +40,22 @@ def epa_nei_onroad_parse(dataframe_list, args):
                        	      
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"pollutant code": "FlowName",
-                            "pollutant type(s)": "Class", 
                             "total emissions": "FlowAmount", 
                             "scc": "ActivityProducedBy", 
                             "fips code": "Location",
                             "emissions uom":"Unit",
                             "pollutant desc": "Description"})
-           
-	# convert LB/TON to KG
-    df['FlowAmount'] = np.where(df['Unit']=='LB', df['FlowAmount']*lb_kg, df['FlowAmount']*USton_kg)
-    df['Unit'] = "KG"
     
     # add hardcoded data
+    df['Class']="Emission"
     df['SourceName'] = "EPA_NEI_Onroad"
     df['LocationSystem'] = "FIPS_2017"
     df['Compartment'] = "air"
     df['Year'] = args['year']
+    
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
     
     # drop remaining unused columns
     df = df.drop(columns=['epa region code',
@@ -73,11 +69,7 @@ def epa_nei_onroad_parse(dataframe_list, args):
                           'aetc',
                           'reporting period',
                           'emissions operating type',
-                          'data set'])
+                          'data set',
+                          'pollutant type(s)'])
+
     return df
-
-
-
-
-
-
