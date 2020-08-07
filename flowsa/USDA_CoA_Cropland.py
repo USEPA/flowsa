@@ -9,7 +9,7 @@ from flowsa.common import *
 
 
 def CoA_Cropland_URL_helper(build_url, config, args):
-    """This helper function uses the "build_url" input from datapull.py, which is a base url for coa cropland data
+    """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
     This function does not parse the data, only modifies the urls from which data is obtained. """
     # initiate url list for coa cropland data
@@ -110,7 +110,8 @@ def coa_cropland_parse(dataframe_list, args):
     df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], 'None')
     # add compartment based on values from other columns
     df['Compartment'] = df['prodn_practice_desc'] + ', ' + df['domaincat_desc']
-    df['Compartment'] = df['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)  # not interested in all data from class_desc
+    df['Compartment'] = df['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)
+    df['Compartment'] = df['Compartment'].str.replace("IN THE OPEN, ", "", regex=True)
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount", "unit_desc": "Unit",
                             "year": "Year", "CV (%)": "Spread",

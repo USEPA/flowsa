@@ -57,41 +57,9 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Public', 'Sector'] = '221310'
     df.loc[df['Activity'] == 'Public Supply', 'Sector'] = '221310'
 
-    df.loc[df['Activity'] == 'Thermoelectric', 'Sector'] = '221112'
-    df = df.append(pd.DataFrame([['Thermoelectric', '221113']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric', '221114']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric', '221116']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric', '221117']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric', '221118']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric', '221121']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric', '221122']], columns=['Activity', 'Sector']))
-
-    df.loc[df['Activity'] == 'Thermoelectric Power', 'Sector'] = '221112'
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221113']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221114']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221116']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221117']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221118']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221121']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221122']], columns=['Activity', 'Sector']))
-
-    df.loc[df['Activity'] == 'Thermoelectric Power Closed-loop cooling', 'Sector'] = '221112'
-    df = df.append(pd.DataFrame([['Thermoelectric Power Closed-loop cooling', '221113']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Closed-loop cooling', '221114']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Closed-loop cooling', '221116']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Closed-loop cooling', '221117']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Closed-loop cooling', '221118']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Closed-loop cooling', '221121']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Closed-loop cooling', '221122']], columns=['Activity', 'Sector']))
-
-    df.loc[df['Activity'] == 'Thermoelectric Power Once-through cooling', 'Sector'] = '221112'
-    df = df.append(pd.DataFrame([['Thermoelectric Power Once-through cooling', '221113']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Once-through cooling', '221114']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Once-through cooling', '221116']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Once-through cooling', '221117']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Once-through cooling', '221118']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Once-through cooling', '221121']], columns=['Activity', 'Sector']))
-    df = df.append(pd.DataFrame([['Thermoelectric Power Once-through cooling', '221122']], columns=['Activity', 'Sector']))
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '2211']], columns=['Activity', 'Sector']))
+    df.loc[df['Activity'] == 'Thermoelectric Power Closed-loop cooling', 'Sector'] = '221100A'
+    df.loc[df['Activity'] == 'Thermoelectric Power Once-through cooling', 'Sector'] = '221100B'
 
     # df.loc[df['Activity'] == 'Total', 'Sector'] = ''
     # df.loc[df['Activity'] == 'Total Groundwater', 'Sector'] = ''
@@ -123,6 +91,6 @@ if __name__ == '__main__':
     # redorder columns
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
     # sort df
-    df = df.sort_values(['Activity'])
+    df = df.sort_values(['Activity', 'Sector'])
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USGS_NWIS_WU_toNAICS.csv", index=False)

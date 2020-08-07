@@ -47,7 +47,8 @@ flowbyactivity_sources:
     class: Water
     geoscale_to_use: national
     year: 2010
-    activity_name_standardization_fxn: standardize_usgs_nwis_names
+    clean_fba_df_fxn: usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names: "Aquaculture"
@@ -84,7 +85,7 @@ flowbyactivity_sources:
         allocation_from_scale: state
         allocation_helper: no
       activity_set_4:
-        names: "Irrigation Crop"                # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
+        names: "Irrigation Crop"
         allocation_method: proportional
         allocation_source: "USDA_CoA_Cropland"
         allocation_source_class: "Land"
@@ -105,17 +106,17 @@ flowbyactivity_sources:
         helper_source_year: 2013
         helper_flow: None
         helper_from_scale: state
-#            activity_set_5:
-#              names: "Irrigation Golf Courses"                 # doesn't exist at nat'l level, need to use state data, so make "geoscale_to_use" dependent on activity
-#              allocation_method: direct
-#              allocation_source: None
-#              allocation_source_class: "Water"
-#              allocation_sector_aggregation: 'agg'
-#              allocation_source_year: 2010
-#              allocation_flow: None
-#              allocation_compartment: None
-#              allocation_from_scale: state
-#              allocation_helper: no
+      activity_set_5:
+        names: "Irrigation Golf Courses"
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: "Water"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2010
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: state
+        allocation_helper: no
       activity_set_6:
         names: "Livestock"
         allocation_source: "USDA_CoA_Livestock"
@@ -152,6 +153,8 @@ flowbyactivity_sources:
         allocation_helper: no
       activity_set_8:
         names: "Public Supply"
+        filter_activities:
+          - "Industrial"
         allocation_method: direct
         allocation_source: None
         allocation_source_class: "Water"
@@ -172,25 +175,3 @@ flowbyactivity_sources:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_helper: no
-#      activity_set_10: # doesn't exist at national level
-#        names: "Thermoelectric Power Closed-loop cooling"
-#        allocation_method: direct
-#        allocation_source: None
-#        allocation_source_class: "Water"
-#        allocation_sector_aggregation: 'agg'
-#        allocation_source_year: 2010
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: national
-#        allocation_helper: no
-#      activity_set_11: # doesn't exist at national level
-#        names: "Thermoelectric Power Once-through cooling"
-#        allocation_method: direct
-#        allocation_source: None
-#        allocation_source_class: "Water"
-#        allocation_sector_aggregation: 'agg'
-#        allocation_source_year: 2010
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: national
-#        allocation_helper: no

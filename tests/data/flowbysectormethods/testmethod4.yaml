@@ -1,0 +1,45 @@
+%YAML 1.3
+
+# Testing that the deliveries to/from double counted data is filtered out
+# Testing that when calling Public Supply and Domestic, which share data, that there isn't double counting
+---
+
+target_sector_level: NAICS_2
+target_sector_source: NAICS_2012_Code
+target_geoscale: national
+flowbyactivity_sources:
+  "test_USGS_NWIS_WU":
+    class: Water
+    geoscale_to_use: state
+    year: 2015
+    activity_name_standardization_fxn: standardize_usgs_nwis_names
+    filter_phrases:
+      - "deliveries from public supply"  # duplicate info of "Public Supply deliveries to"
+    modify_sector_length:
+      - "Public Supply"
+    activity_sets:
+      activity_set_1:
+        names: "Domestic"
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: "Water"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2015
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: county
+        allocation_helper: no
+      activity_set_2:
+        names: "Public Supply"
+        allocation_method: direct
+        filter_activities:
+          - "Industrial"
+        allocation_source: None
+        allocation_source_class: "Water"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2015
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: county
+        allocation_helper: no
+
