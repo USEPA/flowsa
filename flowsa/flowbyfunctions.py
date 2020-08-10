@@ -529,3 +529,23 @@ def sector_aggregation(df, group_cols):
     df = df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
 
     return df
+
+
+def assign_fips_year(df, year_of_data):
+    """
+    Add location system based on year of data. County level FIPS change over the years.
+    :param df: df with FIPS location system
+    :param year_of_data: year of data pulled
+    :return:
+    """
+
+    if '2015' <= year_of_data:
+        df['LocationSystem'] = 'FIPS_2015'
+    elif '2013' <= year_of_data < '2015':
+        df['LocationSystem'] = 'FIPS_2013'
+    elif '2010' <= year_of_data < '2013':
+        df['LocationSystem'] = 'FIPS_2010'
+    elif year_of_data < '2010':
+        log.warning("Missing FIPS codes from crosswalk for " + year_of_data + ". Temporarily assigning to FIPS_2010")
+        df['LocationSystem'] = 'FIPS_2010'
+    return df
