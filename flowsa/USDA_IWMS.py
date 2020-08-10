@@ -4,7 +4,7 @@
 
 import json
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_year
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def iwms_url_helper(build_url, config, args):
@@ -65,7 +65,7 @@ def iwms_parse(dataframe_list, args):
     # df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # add location system based on year of data
-    df = assign_fips_year(df, args['year'])
+    df = assign_fips_location_system(df, args['year'])
     # # Add hardcoded data
     df['Class'] = "Water"
     df['SourceName'] = "USDA_IWMS"

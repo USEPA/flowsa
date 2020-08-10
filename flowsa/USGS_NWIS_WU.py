@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 #from flowsa.datapull import make_http_request, load_from_requests_response, format_url_values
 from flowsa.common import *
-from flowsa.flowbyfunctions import fba_activity_fields, assign_fips_year
+from flowsa.flowbyfunctions import fba_activity_fields, assign_fips_location_system
 
 
 def usgs_URL_helper(build_url, config, args):
@@ -132,7 +132,7 @@ def usgs_parse(dataframe_list, args):
     # rename year column
     df = df.rename(columns={"year": "Year"})
     # add location system based on year of data
-    df = assign_fips_year(df, args['year'])
+    df = assign_fips_location_system(df, args['year'])
     # hardcode column information
     df['Class'] = 'Water'
     df['SourceName'] = 'USGS_NWIS_WU'

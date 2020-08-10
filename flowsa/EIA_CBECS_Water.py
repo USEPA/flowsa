@@ -8,7 +8,7 @@ Pulls EIA CBECS water use data for large buildings from 2012
 import pandas as pd
 import io
 from flowsa.common import US_FIPS, withdrawn_keyword
-from flowsa.flowbyfunctions import assign_fips_year
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 def eia_cbecs_call(url, response_load, args):
     # Convert response to dataframe
@@ -49,7 +49,7 @@ def eia_cbecs_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of Buildings', 'Class'] = 'Other'
     df.loc[df['FlowName'] == "Total Floor Space", 'Class'] = 'Other'
     # add location system based on year of data
-    df = assign_fips_year(df, args['year'])
+    df = assign_fips_location_system(df, args['year'])
     # hardcode columns
     df["SourceName"] = 'EIA_CBECS_Water'
     df['Year'] = args["year"]

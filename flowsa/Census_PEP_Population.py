@@ -14,7 +14,7 @@ This script is designed to run with a configuration parameter
 import pandas as pd
 import json
 from flowsa.common import US_FIPS, load_api_key, get_all_state_FIPS_2
-from flowsa.flowbyfunctions import assign_fips_year
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def Census_pop_URL_helper(build_url, config, args):
@@ -93,7 +93,7 @@ def census_pop_parse(dataframe_list, args):
     # rename columns
     df = df.rename(columns={"POP": "FlowAmount"})
     # add location system based on year of data
-    df = assign_fips_year(df, args['year'])
+    df = assign_fips_location_system(df, args['year'])
     # hardcode dta
     df['Class'] = 'Other'
     df['SourceName'] = 'Census_PEP_Population'

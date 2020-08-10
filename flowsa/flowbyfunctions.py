@@ -531,7 +531,7 @@ def sector_aggregation(df, group_cols):
     return df
 
 
-def assign_fips_year(df, year_of_data):
+def assign_fips_location_system(df, year_of_data):
     """
     Add location system based on year of data. County level FIPS change over the years.
     :param df: df with FIPS location system
