@@ -7,7 +7,7 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
-    load_sector_crosswalk, log
+    load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
 from flowsa.flowbyfunctions import fbs_activity_fields
 
 def get_activitytosector_mapping(source):
@@ -40,7 +40,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     for s in pd.unique(flowbyactivity_df['SourceName']):
         src_info = cat[s]
         # if data are provided in NAICS format, use the mastercrosswalk
-        if src_info['sector-like_activities']:
+        if src_info['sector-like_activities'] == 'True':
             cw = load_sector_crosswalk()
             sectors = cw.loc[:,[sector_source_name]]
             # Create mapping df that's just the sectors at first
@@ -73,7 +73,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # column doesn't exist for sector-like activities, so ignore if error occurs
             mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
             # Merge them in. Critical this is a left merge to preserve all unmapped rows
-            flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left', on= flowbyactivity_field)
+            flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left', on=flowbyactivity_field)
             # replace nan in sector columns with none
             flowbyactivity_wsector_df[flowbysector_field] = flowbyactivity_wsector_df[flowbysector_field].replace(
                 {np.nan: None}).astype(str)
@@ -88,6 +88,11 @@ def expand_naics_list(df, sectorsourcename):
     sectors = cw.loc[:, [sectorsourcename]]
     # Create mapping df that's just the sectors at first
     sectors = sectors.drop_duplicates().dropna()
+    # add non-naics to sector list
+    household = load_household_sector_codes()
+    household = pd.DataFrame(household['Code'].drop_duplicates())
+    household.columns = [sectorsourcename]
+    sectors = sectors.append(household, sort=True).drop_duplicates().reset_index(drop=True)
 
     # fill null values
     df['Sector'] = df['Sector'].astype('str')
@@ -135,60 +140,6 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     return fba_allocation_subset
 
 
-def match_sector_length(df_wsec, activities):
-    """
-    After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
-    another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
-    "Public Supply" should be modified to match sector length. Specify which activities to include in this modification
-    in the method yaml.
-
-    :param df_wsec: a df that includes columns for SectorProducedBy and SectorConsumedBy
-    :param activities: the activity(ies) whose sector length should be modified
-    :return:
-    """
-
-    # testing
-    # df_wsec = flow_subset_wsec.copy()
-    # activities = v['modify_sector_length'].copy()
-
-    # subset data
-    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] == 'None') | (df_wsec['SectorConsumedBy'] == 'None')]
-    df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] != 'None') & (df_wsec['SectorConsumedBy'] != 'None')]
-
-    # concat data into single dataframe
-    if len(df2) != 0:
-
-
-        df2['LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorProducedBy'].str.len(), 0)
-        df2['LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorConsumedBy'].str.len(),
-                                         df2['LengthToModify'])
-        df2['TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorConsumedBy'].str.len(), 0)
-        df2['TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorProducedBy'].str.len(),
-                                       df2['TargetLength'])
-
-        df2['SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
-                'SectorProducedBy'], axis=1)
-        df2['SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
-                'SectorConsumedBy'], axis=1)
-
-        df2['SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
-                'SectorProducedBy'], axis=1)
-        df2['SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
-                'SectorConsumedBy'], axis=1)
-
-        df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
-
-        df = pd.concat([df1, df2], sort=False)
-    else:
-        df = df1.copy()
-
-    return df
-
-
 def map_elementary_flows(fba, from_fba_source):
     """
     Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
@@ -231,4 +182,26 @@ def map_elementary_flows(fba, from_fba_source):
     fba_mapped_df = fba_mapped_df.drop(
         columns=mapping_fields)
     return fba_mapped_df
+
+
+def get_sector_list(sector_level):
+    cw = load_sector_length_crosswalk()
+    sector_list = cw[sector_level].unique().tolist()
+
+    return sector_list
+
+
+def add_non_naics_sectors(sector_list, sector_level):
+
+    # load non-NAICS sectors used with NAICS
+    household = load_household_sector_codes()
+    household = household.loc[household['NAICS_Level_to_Use_For'] == sector_level]
+    # add household sector to sector list
+    sector_list.extend(household['Code'].tolist())
+    # add "None" to sector list so don't lose rows when filtering df to match sector length
+    sector_list.extend(["None"])
+
+    return sector_list
+
+
 

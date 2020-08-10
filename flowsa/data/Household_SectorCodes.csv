@@ -2,5 +2,5 @@ Code,NAICS_Level_to_Use_For,Name
 F010,NAICS_2,Personal Consumption Expeditures
 F010,NAICS_3,Personal Consumption Expeditures
 F010,NAICS_4,Personal Consumption Expeditures
-F010,NAICS_5,Personal Consumption Expeditures
+F0100,NAICS_5,Personal Consumption Expeditures
 F01000,NAICS_6,Personal Consumption Expeditures

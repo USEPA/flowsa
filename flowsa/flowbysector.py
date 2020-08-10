@@ -20,14 +20,22 @@ from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields, 
     generalize_activity_field_names, fbsoutputpath, fips_number_key, load_sector_length_crosswalk, \
     flow_by_activity_fields
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
-    match_sector_length
+    get_sector_list, add_non_naics_sectors
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, harmonize_units, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales
-from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
+from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.datachecks import sector_flow_comparision
+
+
+def parse_args():
+    """Make year and source script parameters"""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-m", "--method", required=True, help="Method for flow by sector file. A valid method config file must exist with this name.")
+    args = vars(ap.parse_args())
+    return args
 
 
 def load_method(method_name):
@@ -74,24 +82,20 @@ def main(method_name):
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
                                          datasource=k)
+
+        # clean up fba, if specified in yaml
+        if v["clean_fba_df_fxn"] != 'None':
+            log.info("Cleaning up " + k + " FlowByActivity")
+            flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
+
         # ensure datatypes correct
         flows = add_missing_flow_by_fields(flows, flow_by_activity_fields)
-
-        # if necessary, standardize names in data set
-        if v['activity_name_standardization_fxn'] != 'None':
-            log.info("Standardizing activity names in " + k)
-            flows = getattr(sys.modules[__name__], v['activity_name_standardization_fxn'])(flows)
-
-        # filter out any rows that contain the phrases in the method file
-        if v["filter_phrases"] != 'None':
-            log.info("Removing duplicate rows of information in " + k)
-            for i in v["filter_phrases"]:
-                flows = flows.loc[~flows['Description'].str.contains(i)].reset_index(drop=True)
 
         # drop description field
         flows = flows.drop(columns='Description')
         # fill null values
         flows = flows.fillna(value=fba_fill_na_dict)
+
         # map df to elementary flows - commented out until mapping complete
         # log.info("Mapping flows in " + k + ' to federal elementary flow list')
         # flows_mapped = map_elementary_flows(flows, k)
@@ -105,7 +109,7 @@ def main(method_name):
             log.info("Preparing to handle subset of flownames " + ', '.join(map(str, names)) + " in " + k)
             # subset usgs data by activity
             flow_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
-                                (flows[fba_activity_fields[1]].isin(names))]
+                                (flows[fba_activity_fields[1]].isin(names))].reset_index(drop=True)
 
             # check if flowbyactivity data exists at specified geoscale to use
             log.info("Checking if flowbyactivity data exists for " + ', '.join(map(str, names)) + " at the " +
@@ -140,27 +144,27 @@ def main(method_name):
             flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
                                                                     else x)
 
-            # Add sectors to usgs activity, creating two versions of the flow subset
-            # the first version "flow_subset" is the most disaggregated version of the Sectors (NAICS)
-            # the second version, "flow_subset_agg" includes only the most aggregated level of sectors
+            # Add sectors to usgs activity, depending on level of specified sector aggregation
             log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)))
-            flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                             sectorsourcename=method['target_sector_source'])
-            flow_subset_wsec_agg = add_sectors_to_flowbyactivity(flow_subset,
+            if attr['allocation_sector_aggregation'] == 'agg':
+                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
                                                                  sectorsourcename=method['target_sector_source'],
                                                                  levelofSectoragg='agg')
+            else:
+                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
+                                                                 sectorsourcename=method['target_sector_source'])
 
-            # modifies the sector length of activities specified in yaml
-            if v['modify_sector_length'] != 'None':
-                flow_subset_wsec = match_sector_length(flow_subset_wsec, v['modify_sector_length'])
-                flow_subset_wsec_agg = match_sector_length(flow_subset_wsec_agg, v['modify_sector_length'])
+            # clean up fba with sectors, if specified in yaml
+            if v["clean_fba_w_sec_df_fxn"] != 'None':
+                log.info("Cleaning up " + k + " FlowByActivity with sectors")
+                flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec)
 
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
             if attr['allocation_method'] == 'direct':
                 # if direct allocation, drop rows of data where an activity in either activity column is not in the
                 # direct allocation list. These non-direct activities are captured in other activity allocations
-                fbs = flow_subset_wsec_agg.copy()
+                fbs = flow_subset_wsec.copy()
                 if "filter_activities" in attr:
                     for i in attr["filter_activities"]:
                         fbs = fbs.loc[~fbs[fba_activity_fields[0]].str.contains(i)]
@@ -302,7 +306,6 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
-            # todo: modify the output here. if want a 6 digit output, should add 0s to codes to reach 6 digits
             log.info("Aggregating flowbysector to " + method['target_sector_level'])
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 
@@ -311,16 +314,10 @@ def main(method_name):
 
             # return sector level specified in method yaml
             # load the crosswalk linking sector lengths
-            cw = load_sector_length_crosswalk()
-            sector_list = cw[method['target_sector_level']].unique().tolist()
-
+            sector_list = get_sector_list(method['target_sector_level'])
             # add any non-NAICS sectors used with NAICS
-            household = load_household_sector_codes()
-            household = household.loc[household['NAICS_Level_to_Use_For'] == method['target_sector_level']]
-            # add household sector to sector list
-            sector_list.extend(household['Code'].tolist())
-            # add "None" to sector list so don't lose rows when filtering df to match sector length
-            sector_list.extend(["None"])
+            sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
+
             # subset df, necessary because not all of the sectors are NAICS
             fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) &
                           (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
@@ -344,13 +341,6 @@ def main(method_name):
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file
     store_flowbysector(fbss, method_name)
-
-def parse_args():
-    """Make year and source script parameters"""
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-m", "--method", required=True, help="Method for flow by sector file. A valid method config file must exist with this name.")
-    args = vars(ap.parse_args())
-    return args
 
 
 if __name__ == '__main__':

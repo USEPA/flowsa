@@ -47,11 +47,8 @@ flowbyactivity_sources:
     class: Water
     geoscale_to_use: county
     year: 2015
-    activity_name_standardization_fxn: standardize_usgs_nwis_names
-    filter_phrases:
-      - "deliveries from public supply"  # duplicate info of "Public Supply deliveries to"
-    modify_sector_length:
-      - "Public Supply"
+    clean_fba_df_fxn: usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names: "Aquaculture"
