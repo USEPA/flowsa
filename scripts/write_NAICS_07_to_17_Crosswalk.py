@@ -58,6 +58,7 @@ missing_naics_df = missing_naics_df.reset_index(drop=True)
 
 # add missing naics to master naics crosswalk
 total_naics= naics.append(missing_naics_df, sort=True)
+
 # sort df
 total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code'])
 

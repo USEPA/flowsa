@@ -86,7 +86,7 @@ def expand_naics_list(df, sectorsourcename):
     # load master crosswalk
     cw = load_sector_crosswalk()
     sectors = cw.loc[:, [sectorsourcename]]
-    # Create mapping df that's just the sectors at first
+    # drop duplicates
     sectors = sectors.drop_duplicates().dropna()
     # add non-naics to sector list
     household = load_household_sector_codes()

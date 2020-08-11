@@ -16,6 +16,7 @@ import numpy as np
 import io
 import zipfile
 from flowsa.common import log, get_all_state_FIPS_2
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def BLS_QCEW_URL_helper(build_url, config, args):
@@ -91,14 +92,7 @@ def bls_qcew_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
     df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
     # add location system based on year of data
-    if args['year'] >= '2019':
-        df['LocationSystem'] = 'FIPS_2019'
-    elif '2015' <= args['year'] < '2019':
-        df['LocationSystem'] = 'FIPS_2015'
-    elif '2013' <= args['year'] < '2015':
-        df['LocationSystem'] = 'FIPS_2013'
-    elif '2010' <= args['year'] < '2013':
-        df['LocationSystem'] = 'FIPS_2010'
+    df = assign_fips_location_system(df, args['year'])
     # add hard code data
     df['SourceName'] = 'BLS_QCEW'
     # Add tmp DQ scores
