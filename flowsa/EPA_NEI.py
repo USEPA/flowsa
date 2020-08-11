@@ -8,6 +8,28 @@ import pandas as pd
 import numpy as np
 import zipfile
 import io
+from flowbyfunctions import assign_fips_location_system
+
+def epa_nei_url_helper(build_url, config, args):
+    """
+    Takes the basic url text and performs substitutions based on NEI year and version. 
+    Returns the finished url.
+    """
+    urls = []
+    url = build_url
+    
+    url = url.replace('__year__', args['year'])
+
+    if args['year'] == '2017':
+        url = url.replace('__version__', '2017v1/2017neiApr')
+    elif args['year'] == '2014':
+        url = url.replace('__version__', '2014v2/2014neiv2')
+    elif args['year'] == '2011':
+        url = url.replace('__version__', '2011v2/2011neiv2')
+    elif args['year'] == '2008':
+        url = url.replace('__version__', '2008neiv3')
+    urls.append(url)
+    return urls
 
 def epa_nei_call(url, response_load, args):
     """
@@ -29,7 +51,7 @@ def epa_nei_call(url, response_load, args):
         df = pd.concat([df, pd.read_csv(z.open(znames[i]))])
     return df
 
-def epa_nei_onroad_parse(dataframe_list, args):
+def epa_nei_global_parse(dataframe_list, args):
     """
     Modifies the raw data to meet the flowbyactivity criteria. 
     Renames certain column headers to match flowbyactivity format.
@@ -39,37 +61,77 @@ def epa_nei_onroad_parse(dataframe_list, args):
     df = pd.concat(dataframe_list, sort=True)
                        	      
     # rename columns to match flowbyactivity format
-    df = df.rename(columns={"pollutant code": "FlowName",
-                            "total emissions": "FlowAmount", 
-                            "scc": "ActivityProducedBy", 
-                            "fips code": "Location",
-                            "emissions uom":"Unit",
-                            "pollutant desc": "Description"})
+    if args['year'] == '2017':
+        df = df.rename(columns={"pollutant code": "FlowName",
+                                "total emissions": "FlowAmount", 
+                                "scc": "ActivityProducedBy", 
+                                "fips code": "Location",
+                                "emissions uom":"Unit",
+                                "pollutant desc": "Description"})
+    
+    elif args['year'] == '2014':
+        df = df.rename(columns={"pollutant_cd": "FlowName",
+                                "total_emissions": "FlowAmount", 
+                                "scc": "ActivityProducedBy", 
+                                "state_and_county_fips_code": "Location",
+                                "uom":"Unit",
+                                "pollutant_desc": "Description"})
+    
+    elif args['year'] == '2011' or args['year'] == '2008':
+        df = df.rename(columns={"pollutant_cd": "FlowName",
+                                "total_emissions": "FlowAmount", 
+                                "scc": "ActivityProducedBy", 
+                                "state_and_county_fips_code": "Location",
+                                "uom":"Unit",
+                                "description": "Description"})
+    
+    # drop all other columns
+    df.drop(df.columns.difference(['FlowName',
+                                   'FlowAmount',
+                                   'ActivityProducedBy',
+                                   'Location',
+                                   'Unit',
+                                   'Description']), 1, inplace=True)
     
     # add hardcoded data
-    df['Class']="Emission"
-    df['SourceName'] = "EPA_NEI_Onroad"
-    df['LocationSystem'] = "FIPS_2017"
+    df['Class']="Chemical"
+    df['SourceName'] = args['source']
     df['Compartment'] = "air"
     df['Year'] = args['year']
+    df = assign_fips_location_system(df, args['year'])
     
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
     
-    # drop remaining unused columns
-    df = df.drop(columns=['epa region code',
-                          'state',
-                          'fips state code',
-                          'tribal name',
-                          'county',
-                          'data category',
-                          'emissions type code',
-                          'sector',
-                          'aetc',
-                          'reporting period',
-                          'emissions operating type',
-                          'data set',
-                          'pollutant type(s)'])
+    return df
 
+def epa_nei_onroad_parse(dataframe_list, args):
+    """
+    Calls global parse function to run parsing operations common 
+    to all three data categories.
+    Runs additional parsing operations specific to ONROAD data.
+    """
+    df = epa_nei_global_parse(dataframe_list, args)
+    
+    return df
+
+def epa_nei_nonroad_parse(dataframe_list, args):
+    """
+    Calls global parse function to run parsing operations common 
+    to all three data categories.
+    Runs additional parsing operations specific to NONROAD data.
+    """
+    df = epa_nei_global_parse(dataframe_list, args)
+    
+    return df
+
+def epa_nei_nonpoint_parse(dataframe_list, args):
+    """
+    Calls global parse function to run parsing operations common 
+    to all three data categories.
+    Runs additional parsing operations specific to NONPOINT data.
+    """
+    df = epa_nei_global_parse(dataframe_list, args)
+    
     return df
