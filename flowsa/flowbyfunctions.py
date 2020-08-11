@@ -73,10 +73,6 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     :param groupbycolumns: flowbyactivity or flowbysector default groupby columns
     :return:
     """
-    #testing
-    # df = fbs.copy()
-    # groupbycolumns = fbs_default_grouping_fields.copy()
-    # activitynames = names.copy()
 
     from flowsa.common import fips_number_key
 
@@ -192,30 +188,42 @@ def check_if_activities_match_sectors(fba):
         return None
 
 
-def check_if_data_exists_at_geoscale(df, activitynames, geoscale):
+def check_if_data_exists_at_geoscale(df, geoscale, activitynames = 'All'):
     """
     Check if an activity or a sector exists at the specified geoscale
-    :param df: Either flowbyactivity or flowbysector dataframe
-    :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
+    :param df: flowbyactivity dataframe
+    :param activitynames: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
     :param geoscale: national, state, or county
-    :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
     :return:
     """
+
+    # if any activity name is specified, check if activity data exists at the specified geoscale
+    activity_list = []
+    if activitynames != 'All':
+        if isinstance(activitynames, str) == True:
+            activity_list.append(activitynames)
+        else:
+            activity_list = activitynames
+        # check for specified activity name
+        df = df[(df[fba_activity_fields[0]].isin(activity_list)) | (df[fba_activity_fields[1]].isin(activity_list))]
+    else:
+        activity_list.append('activities')
+
     # filter by geoscale depends on Location System
     fips = create_geoscale_list(df, geoscale)
 
     df = df[df['Location'].isin(fips)]
 
     if len(df) == 0:
-        log.info("No flows found for " + ', '.join(activitynames) + " at the " + geoscale + " scale.")
+        log.info("No flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
         exists = "No"
     else:
-        log.info("Flows found for " + ', '.join(activitynames) + " at the " + geoscale + " scale.")
+        log.info("Flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
         exists = "Yes"
     return exists
 
 
-def check_if_data_exists_at_less_aggregated_geoscale(df, activitynames, geoscale):
+def check_if_data_exists_at_less_aggregated_geoscale(df, activityname, geoscale):
     """
     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
 
@@ -227,31 +235,35 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, activitynames, geoscale
     """
 
     if geoscale == 'national':
+        df = df[(df[fba_activity_fields[0]] == activityname) | (df[fba_activity_fields[1]] == activityname)]
         fips = create_geoscale_list(df, 'state')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            log.info("No flows found for " + ', '.join(activitynames) + "  at the state scale.")
+            log.info("No flows found for " + activityname + "  at the state scale.")
             fips = create_geoscale_list(df, 'county')
             df = df[df['Location'].isin(fips)]
             if len(df) == 0:
-                log.info("No flows found for " + ', '.join(activitynames) + "  at the county scale.")
+                log.info("No flows found for " + activityname + "  at the county scale.")
             else:
-                log.info("Flowbyactivity data exists for " + ', '.join(activitynames) + " at the county level")
+                log.info("Flowbyactivity data exists for " + activityname + " at the county level")
                 new_geoscale_to_use = 'county'
                 return new_geoscale_to_use
         else:
-            log.info("Flowbyactivity data exists for " + ', '.join(activitynames) + " at the state level")
+            log.info("Flowbyactivity data exists for " + activityname + " at the state level")
             new_geoscale_to_use = 'state'
             return new_geoscale_to_use
     if geoscale == 'state':
+        df = df[(df[fba_activity_fields[0]] == activityname) | (df[fba_activity_fields[1]] == activityname)]
         fips = create_geoscale_list(df, 'county')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            log.info("No flows found for " + ', '.join(activitynames) + "  at the county scale.")
+            log.info("No flows found for " + activityname + "  at the county scale.")
         else:
-            log.info("Flowbyactivity data exists for " + ', '.join(activitynames) + " at the county level")
+            log.info("Flowbyactivity data exists for " + activityname + " at the county level")
             new_geoscale_to_use = 'county'
             return new_geoscale_to_use
+
+    #return new_geoscale_to_use
 
 
 def check_if_location_systems_match(df1, df2):
@@ -265,7 +277,7 @@ def check_if_location_systems_match(df1, df2):
     if df1["LocationSystem"].all() == df2["LocationSystem"].all():
         log.info("LocationSystems match")
     else:
-        log.warning("LocationSystems do not match")
+        log.warning("LocationSystems do not match, might lose county level data")
 
 
 def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source, activity):  #fba_w_aggregated_sectors
@@ -465,10 +477,6 @@ def sector_aggregation(df, group_cols):
     :param group_cols: columns by which to aggregate
     :return:
     """
-
-    # testing
-    # df = fbs.copy()
-    # group_cols = fbs_default_grouping_fields.copy()
 
     # drop any columns that contain a "-" in sector column
     df = df[(~df[fbs_activity_fields[0]].str.contains('-', regex=True)) |
