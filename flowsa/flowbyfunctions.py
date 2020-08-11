@@ -74,23 +74,18 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     :return:
     """
 
-    from flowsa.common import fips_number_key
-
-    from_scale_dig = fips_number_key[from_scale]
-    to_scale_dig = fips_number_key[to_scale]
-
     # use from scale to filter by these values
-    df_from_scale = filter_by_geoscale(df, from_scale, activitynames)
+    df = filter_by_geoscale(df, from_scale, activitynames).reset_index(drop=True)
 
     group_cols = groupbycolumns.copy()
 
     # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
-        df_from_scale['Location'] = df_from_scale['Location'].apply(lambda x: str(x[0:2]))
+        df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
     elif to_scale == 'national':
-        df_from_scale['Location'] = US_FIPS
+        df.loc[:, 'Location'] = US_FIPS
 
-    fba_agg = aggregator(df_from_scale, group_cols)
+    fba_agg = aggregator(df, group_cols)
 
     return fba_agg
 
@@ -188,7 +183,7 @@ def check_if_activities_match_sectors(fba):
         return None
 
 
-def check_if_data_exists_at_geoscale(df, geoscale, activitynames = 'All'):
+def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
     """
     Check if an activity or a sector exists at the specified geoscale
     :param df: flowbyactivity dataframe
@@ -205,7 +200,8 @@ def check_if_data_exists_at_geoscale(df, geoscale, activitynames = 'All'):
         else:
             activity_list = activitynames
         # check for specified activity name
-        df = df[(df[fba_activity_fields[0]].isin(activity_list)) | (df[fba_activity_fields[1]].isin(activity_list))]
+        df = df[(df[fba_activity_fields[0]].isin(activity_list)) |
+                (df[fba_activity_fields[1]].isin(activity_list))].reset_index(drop=True)
     else:
         activity_list.append('activities')
 
@@ -220,10 +216,11 @@ def check_if_data_exists_at_geoscale(df, geoscale, activitynames = 'All'):
     else:
         log.info("Flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
         exists = "Yes"
+
     return exists
 
 
-def check_if_data_exists_at_less_aggregated_geoscale(df, activityname, geoscale):
+def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname):
     """
     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
 
@@ -262,8 +259,6 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, activityname, geoscale)
             log.info("Flowbyactivity data exists for " + activityname + " at the county level")
             new_geoscale_to_use = 'county'
             return new_geoscale_to_use
-
-    #return new_geoscale_to_use
 
 
 def check_if_location_systems_match(df1, df2):
@@ -329,19 +324,19 @@ def harmonize_units(df):
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2/yr
-    df['FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * 4046.8564224, df['FlowAmount'])
-    df['Unit'] = np.where(df['Unit'] == 'ACRES', 'm2.yr', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * 4046.8564224, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRES', 'm2.yr', df['Unit'])
 
     # class = money, unit = USD/yr
 
     # class = water, unit = m3/yr
-    df['FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day', (df['FlowAmount'] / 264.172052) * 365,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day', (df['FlowAmount'] / 264.172052) * 365,
                                 df['FlowAmount'])
-    df['Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3.p.yr', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3.p.yr', df['Unit'])
 
-    df['FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', (df['FlowAmount'] / 4046.856422) * 1233.481837,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', (df['FlowAmount'] / 4046.856422) * 1233.481837,
                                 df['FlowAmount'])
-    df['Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'm3.m2.yr', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'm3.m2.yr', df['Unit'])
 
     # class = other, unit varies
 
@@ -370,12 +365,12 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     if allocation_method == 'proportional':
         # denominator summed from highest level of sector grouped by location
         denom_df = df_w_sectors.loc[df_w_sectors['Sector'].apply(lambda x: len(x) == 2)]
-        denom_df['Denominator'] = denom_df['FlowAmount'].groupby(denom_df['Location']).transform('sum')
+        denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount'].groupby(denom_df['Location']).transform('sum')
         denom_df = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
         # merge the denominator column with fba_w_sector df
         allocation_df = df_w_sectors.merge(denom_df, how='left')
         # calculate ratio
-        allocation_df['FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df['Denominator']
+        allocation_df.loc[:, 'FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df['Denominator']
         allocation_df = allocation_df.drop(columns=['Denominator']).reset_index()
 
         return allocation_df
@@ -415,15 +410,15 @@ def allocation_helper(df_w_sector, method, attr):
     if attr['helper_from_scale'] == 'national':
         modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']], how='left')
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
-        helper_allocation['Location_tmp'] = helper_allocation['Location'].apply(lambda x: str(x[0:2]))
-        df_w_sector['Location_tmp'] = df_w_sector['Location'].apply(lambda x: str(x[0:2]))
+        helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(lambda x: str(x[0:2]))
+        df_w_sector.loc[:, 'Location_tmp'] = df_w_sector['Location'].apply(lambda x: str(x[0:2]))
         modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'Location_tmp', 'HelperFlow']],
                                                     how='left')
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
 
     # modify flow amounts using helper data
     if attr['helper_method'] == 'multiplication':
-        modified_fba_allocation['FlowAmount'] = modified_fba_allocation['FlowAmount'] * modified_fba_allocation[
+        modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * modified_fba_allocation[
             'HelperFlow']
     # drop columns
     modified_fba_allocation = modified_fba_allocation.drop(columns="HelperFlow")
@@ -434,7 +429,7 @@ def allocation_helper(df_w_sector, method, attr):
 def sector_aggregation_generalized(fbs_df, group_cols):
 
     # drop any columns that contain a "-" in sector column
-    fbs_df = fbs_df[~fbs_df['Sector'].str.contains('-', regex=True)]
+    fbs_df = fbs_df[~fbs_df['Sector'].str.contains('-', regex=True)].reset_index(drop=True)
 
     # find the longest length naics (will be 6 or 8), needs to be integer for for loop
     length = max(fbs_df['Sector'].apply(lambda x: len(x)).unique())
@@ -456,7 +451,7 @@ def sector_aggregation_generalized(fbs_df, group_cols):
             agg_sectors = df_subset.loc[df_subset['Sector'].str.contains('|'.join(missing_sectors))]
             # only keep data with length greater than i
             agg_sectors = agg_sectors.loc[agg_sectors['Sector'].apply(lambda x: len(x) > i)]
-            agg_sectors['Sector'] = agg_sectors['Sector'].apply(lambda x: str(x[0:i]))
+            agg_sectors.loc[:, 'Sector'] = agg_sectors['Sector'].apply(lambda x: str(x[0:i]))
             agg_sectors = agg_sectors.fillna(0).reset_index()
             # aggregate the new sector flow amounts
             agg_sectors = aggregator(agg_sectors, group_cols)
@@ -480,7 +475,7 @@ def sector_aggregation(df, group_cols):
 
     # drop any columns that contain a "-" in sector column
     df = df[(~df[fbs_activity_fields[0]].str.contains('-', regex=True)) |
-            (~df[fbs_activity_fields[1]].str.contains('-', regex=True))]
+            (~df[fbs_activity_fields[1]].str.contains('-', regex=True))].reset_index(drop=True)
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(lambda x: x.str.len()).max().max()
@@ -494,12 +489,12 @@ def sector_aggregation(df, group_cols):
         sector_subset = df_subset[[fbs_activity_fields[0], fbs_activity_fields[1]]].drop_duplicates().reset_index(drop=True)
         df_sectors = sector_subset.copy()
         for col in df_sectors:
-            df_sectors[col] = df_sectors[col].apply(lambda x: x[0:i])
+            df_sectors.loc[:, col] = df_sectors[col].apply(lambda x: x[0:i])
         sector_list = df_sectors.drop_duplicates().values.tolist()
         # create a list of sectors that are exactly i digits long
         df_existing = sector_subset.copy()
         for col in df_existing:
-            df_existing[col] = df_existing.loc[df_existing[col].apply(lambda x: len(x) == i)]
+            df_existing.loc[:, col] = df_existing.loc[df_existing[col].apply(lambda x: len(x) == i)]
         existing_sectors = df_existing.drop_duplicates().dropna().values.tolist()
         # list of sectors of length i that are not in sector list
         missing_sectors = [e for e in sector_list if e not in existing_sectors]
@@ -514,8 +509,8 @@ def sector_aggregation(df, group_cols):
                 agg_sectors_list.append(df_subset.loc[c1 & c2])
             agg_sectors = pd.concat(agg_sectors_list)
             agg_sectors = agg_sectors.loc[agg_sectors[fbs_activity_fields[0]].apply(lambda x: len(x) > i)]
-            agg_sectors[fbs_activity_fields[0]] = agg_sectors[fbs_activity_fields[0]].apply(lambda x: str(x[0:i]))
-            agg_sectors[fbs_activity_fields[1]] = agg_sectors[fbs_activity_fields[1]].apply(lambda x: str(x[0:i]))
+            agg_sectors.loc[:, fbs_activity_fields[0]] = agg_sectors[fbs_activity_fields[0]].apply(lambda x: str(x[0:i]))
+            agg_sectors.loc[:, fbs_activity_fields[1]] = agg_sectors[fbs_activity_fields[1]].apply(lambda x: str(x[0:i]))
             agg_sectors = agg_sectors.fillna(0).reset_index()
             # aggregate the new sector flow amounts
             agg_sectors = aggregator(agg_sectors, group_cols)
@@ -524,14 +519,14 @@ def sector_aggregation(df, group_cols):
             df = df.append(agg_sectors).reset_index(drop=True)
 
     # manually modify non-NAICS codes that might exist in sector
-    df['SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['F0', 'F01']),
-                                      'F010', df['SectorConsumedBy'])  # domestic/household
-    df['SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['F0', 'F01']),
-                                      'F010', df['SectorProducedBy'])  # domestic/household
-    df['SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['No', 'Non']),
-                                      'None', df['SectorConsumedBy'])  # domestic/household
-    df['SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['No', 'Non']),
-                                      'None', df['SectorProducedBy'])  # domestic/household
+    df.loc[:, 'SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['F0', 'F01']),
+                                             'F010', df['SectorConsumedBy'])  # domestic/household
+    df.loc[:, 'SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['F0', 'F01']),
+                                             'F010', df['SectorProducedBy'])  # domestic/household
+    df.loc[:, 'SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['No', 'Non']),
+                                             'None', df['SectorConsumedBy'])  # domestic/household
+    df.loc[:, 'SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['No', 'Non']),
+                                             'None', df['SectorProducedBy'])  # domestic/household
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
     df = df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
@@ -548,12 +543,12 @@ def assign_fips_location_system(df, year_of_data):
     """
 
     if '2015' <= year_of_data:
-        df['LocationSystem'] = 'FIPS_2015'
+        df.loc[:, 'LocationSystem'] = 'FIPS_2015'
     elif '2013' <= year_of_data < '2015':
-        df['LocationSystem'] = 'FIPS_2013'
+        df.loc[:, 'LocationSystem'] = 'FIPS_2013'
     elif '2010' <= year_of_data < '2013':
-        df['LocationSystem'] = 'FIPS_2010'
+        df.loc[:, 'LocationSystem'] = 'FIPS_2010'
     elif year_of_data < '2010':
         log.warning("Missing FIPS codes from crosswalk for " + year_of_data + ". Temporarily assigning to FIPS_2010")
-        df['LocationSystem'] = 'FIPS_2010'
+        df.loc[:, 'LocationSystem'] = 'FIPS_2010'
     return df

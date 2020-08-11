@@ -46,7 +46,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # Create mapping df that's just the sectors at first
             mapping = sectors.drop_duplicates()
             # Add the sector twice as activities so mapping is identical
-            mapping['Activity'] = sectors[sector_source_name]
+            mapping.loc[:, 'Activity'] = sectors[sector_source_name]
             mapping = mapping.rename(columns={sector_source_name: "Sector"})
         else:
             # if source data activities are text strings, call on the manually created source crosswalks
@@ -95,13 +95,13 @@ def expand_naics_list(df, sectorsourcename):
     sectors = sectors.append(household, sort=True).drop_duplicates().reset_index(drop=True)
 
     # fill null values
-    df['Sector'] = df['Sector'].astype('str')
+    df.loc[:, 'Sector'] = df['Sector'].astype('str')
 
     naics_df = pd.DataFrame([])
     for i in df['Sector']:
         dig = len(str(i))
         n = sectors.loc[sectors[sectorsourcename].apply(lambda x: str(x[0:dig])) == i]
-        n['Sector'] = i
+        n.loc[:, 'Sector'] = i
         naics_df = naics_df.append(n)
 
     # merge df to retain activityname/sectortype info
