@@ -9,6 +9,7 @@ import sys
 import os
 import yaml
 import requests
+import requests_ftp
 import pandas as pd
 import numpy as np
 import logging as log
@@ -74,6 +75,9 @@ def make_http_request(url):
     r = []
     try:
         r = requests.get(url)
+    except requests.exceptions.InvalidSchema: # if url is ftp rather than http
+        requests_ftp.monkeypatch_session()
+        r = requests.Session().get(url)
     except requests.exceptions.ConnectionError:
         log.error("URL Connection Error for " + url)
     try:
@@ -225,22 +229,40 @@ def get_flow_by_groupby_cols(flow_by_fields):
     return groupby_cols
 
 
-def read_stored_FIPS():
-    FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
+def read_stored_FIPS(year='2015'):
+    """
+    Read fips based on year specified, year defaults to 2015
+    :param year: '2010', '2013', or '2015'
+    :return:
+    """
+
+    # comment out - going to use fips crosswalk to ensure all possible fips included in list
+    # FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
+
+    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype={"FIPS": str})
+    # subset columns by specified year
+    df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
+    # rename columns
+    cols = ['State', 'FIPS', 'County']
+    df.columns = cols
     # ensure that FIPS retain leading 0s
-    FIPS_df['FIPS'] = FIPS_df['FIPS'].apply('{:0>5}'.format)
-    return FIPS_df
+    df['FIPS'] = df['FIPS'].apply('{:0>5}'.format)
+    # sort df
+    df = df.sort_values(['FIPS']).reset_index(drop=True)
+
+    return df
 
 
-def getFIPS(state=None, county=None):
+def getFIPS(state=None, county=None, year='2015'):
     """
     Pass a state or state and county name to get the FIPS.
 
     :param state: str. A US State Name or Puerto Rico, any case accepted
     :param county: str.
+    :param year: str. '2010', '2013', '2015'
     :return: str. A five digit 2017 FIPS code
     """
-    FIPS_df = read_stored_FIPS()
+    FIPS_df = read_stored_FIPS(year)
 
     if county is None:
         if state is not None:
@@ -278,34 +300,34 @@ def capitalize_first_letter(string):
     return return_string.strip()
 
 
-def get_state_FIPS():
+def get_state_FIPS(year='2015'):
     """
     Filters FIPS df for state codes only
     :return: FIPS df with only state level records
     """
-    fips = read_stored_FIPS()
+    fips = read_stored_FIPS(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
     return fips
 
-def get_county_FIPS():
+def get_county_FIPS(year='2015'):
     """
     Filters FIPS df for county codes only
     :return: FIPS df with only county level records
     """
-    fips = read_stored_FIPS()
-    fips = fips.drop_duplicates(subset='County')
+    fips = read_stored_FIPS(year)
+    fips = fips.drop_duplicates(subset='FIPS')
     fips = fips[fips['County'].notnull()]
     return fips
 
 
-def get_all_state_FIPS_2():
+def get_all_state_FIPS_2(year='2015'):
     """
     Gets a subset of all FIPS 2 digit codes for states
     :return: df with 'State' and 'FIPS_2' cols
     """
 
-    state_fips = get_state_FIPS()
+    state_fips = get_state_FIPS(year)
     state_fips['FIPS_2'] = state_fips['FIPS'].apply(lambda x: x[0:2])
     state_fips = state_fips[['State','FIPS_2']]
     return state_fips

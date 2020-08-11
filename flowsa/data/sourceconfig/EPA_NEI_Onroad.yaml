@@ -1,0 +1,11 @@
+# Calling EPA's National Emissions Inventory (NEI) Data for ONROAD sources
+---
+api_name: EPA_NEI
+api_key_required: false
+format: zip  # .zip file with individual .csv files and .txt
+url: # no replacement needed in url because only single zip file
+  base_url: "ftp://newftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiApr_onroad_byregions.zip"
+call_response_fxn: epa_nei_call
+parse_response_fxn: epa_nei_onroad_parse
+years:
+  - 2017

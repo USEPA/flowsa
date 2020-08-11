@@ -1,0 +1,7 @@
+Class,SourceName,FlowName,FlowAmount,Unit,ActivityProducedBy,ActivityConsumedBy,Compartment,Location,LocationSystem,Year,MeasureofSpread,Spread,DistributionType,Min,Max,DataReliability,DataCollection,Description
+Water,test_USGS_NWIS_WU,fresh,200,Mgal,None,Livestock,ground,28000,FIPS_2010,2010,None,,None,,,1,,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,400,Mgal,None,Livestock,surface,28000,FIPS_2010,2010,None,,None,,,4,,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,600,Mgal,None,Livestock,total,28000,FIPS_2010,2010,None,,None,,,3,,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,100,Mgal,None,Livestock,ground,32000,FIPS_2010,2010,None,,None,,,2,,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,300,Mgal,None,Livestock,surface,32000,FIPS_2010,2010,None,,None,,,2,,water withdrawal made-up test data
+Water,test_USGS_NWIS_WU,fresh,400,Mgal,None,Livestock,total,32000,FIPS_2010,2010,None,,None,,,5,,water withdrawal made-up test data

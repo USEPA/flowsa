@@ -47,7 +47,8 @@ flowbyactivity_sources:
     class: Water
     geoscale_to_use: county
     year: 2015
-    activity_name_standardization_fxn: standardize_usgs_nwis_names
+    clean_fba_df_fxn: usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names: "Aquaculture"
@@ -106,7 +107,7 @@ flowbyactivity_sources:
           - "AREA IN PRODUCTION"
           - "AREA"
         allocation_compartment:
-          - "NOT SPECIFIED"
+          - "IRRIGATED, NOT SPECIFIED"
         allocation_from_scale: county
         allocation_helper: yes
         helper_source: "USDA_IWMS"
@@ -136,6 +137,8 @@ flowbyactivity_sources:
         allocation_source_year: 2017
         allocation_flow:
           - "HEAD"
+          - "NUMBER"
+          - "COLONIES"
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: county
@@ -162,6 +165,8 @@ flowbyactivity_sources:
       activity_set_9:
         names: "Public Supply"
         allocation_method: direct
+        filter_activities:
+          - "Industrial"
         allocation_source: None
         allocation_source_class: "Water"
         allocation_sector_aggregation: 'agg'
@@ -172,28 +177,6 @@ flowbyactivity_sources:
         allocation_helper: no
       activity_set_10:
         names: "Thermoelectric Power"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2015
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: county
-        allocation_helper: no
-      activity_set_11:
-        names: "Thermoelectric Power Closed-loop cooling"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
-        allocation_source_year: 2015
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: county
-        allocation_helper: no
-      activity_set_12:
-        names: "Thermoelectric Power Once-through cooling"
         allocation_method: direct
         allocation_source: None
         allocation_source_class: "Water"

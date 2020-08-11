@@ -55,17 +55,3 @@ def gettestFlowBySector(methodname):
     except FileNotFoundError:
         log.error("No parquet file found for datasource " + methodname + " in flowsa")
     return fbs
-
-
-# # store csv test data as parquet files
-# store_test_flowbyactivity('test_dataset_1', '2015')
-# store_test_flowbyactivity('test_dataset_2', '2015')
-# # store_test_flowbyactivity('test_dataset_3', '2015')
-#
-# # read test fba parquets
-# test_1_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_1")
-# test_2_fba = gettestFlowByActivity(flowclass=['Water'], years=[2015], datasource="test_dataset_2")
-#
-# # read test fbs parquets
-# test_1_fbs = gettestFlowBySector('test_dataset_1_2015')
-# test_2_fbs = gettestFlowBySector('test_dataset_2_2015')

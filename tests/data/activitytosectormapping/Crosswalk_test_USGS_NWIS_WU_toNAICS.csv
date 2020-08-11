@@ -1,0 +1,33 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+test_USGS_NWIS_WU,Aquaculture,NAICS_2012_Code,1125,I
+test_USGS_NWIS_WU,Domestic,NAICS_2012_Code,F010,I
+test_USGS_NWIS_WU,Hydroelectric Power,NAICS_2012_Code,221111,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,1133,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,23,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,31,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,32,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,33,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,5111,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,51222,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,51223,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,54171,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,56291,I
+test_USGS_NWIS_WU,Industrial,NAICS_2012_Code,81149,I
+test_USGS_NWIS_WU,Irrigation,NAICS_2012_Code,111,I
+test_USGS_NWIS_WU,Irrigation,NAICS_2012_Code,71391,I
+test_USGS_NWIS_WU,Irrigation Crop,NAICS_2012_Code,111,I
+test_USGS_NWIS_WU,Irrigation Golf Courses,NAICS_2012_Code,71391,I
+test_USGS_NWIS_WU,Irrigation Total,NAICS_2012_Code,111,I
+test_USGS_NWIS_WU,Irrigation Total,NAICS_2012_Code,71391,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1121,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1122,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1123,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1124,I
+test_USGS_NWIS_WU,Livestock,NAICS_2012_Code,1129,I
+test_USGS_NWIS_WU,Mining,NAICS_2012_Code,21,I
+test_USGS_NWIS_WU,Mining,NAICS_2012_Code,54136,I
+test_USGS_NWIS_WU,Public,NAICS_2012_Code,221310,I
+test_USGS_NWIS_WU,Public Supply,NAICS_2012_Code,221310,I
+test_USGS_NWIS_WU,Thermoelectric Power,NAICS_2012_Code,2211,I
+test_USGS_NWIS_WU,Thermoelectric Power Closed-loop cooling,NAICS_2012_Code,221100A,I
+test_USGS_NWIS_WU,Thermoelectric Power Once-through cooling,NAICS_2012_Code,221100B,I

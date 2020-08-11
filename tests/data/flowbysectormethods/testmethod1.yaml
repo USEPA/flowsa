@@ -1,0 +1,32 @@
+%YAML 1.1
+
+# Test flows sum correctly
+
+---
+
+
+target_sector_level: NAICS_4
+target_sector_source: NAICS_2012_Code
+target_geoscale: national
+flowbyactivity_sources:
+  "test_USGS_NWIS_WU":
+    class: Water
+    geoscale_to_use: county
+    year: 2015
+    activity_name_standardization_fxn: standardize_usgs_nwis_names
+    filter_phrases:
+      - "deliveries from public supply"  # duplicate info of "Public Supply deliveries to"
+    modify_sector_length:
+      - "Public Supply"
+    activity_sets:
+      activity_set_1:
+        names: "Aquaculture"
+        allocation_source: None
+        allocation_method: direct
+        allocation_source_class: "Water"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2015
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: county
+        allocation_helper: no

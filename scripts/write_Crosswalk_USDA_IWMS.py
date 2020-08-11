@@ -37,7 +37,8 @@ def assign_naics(df):
     # assigning iwms activity items to naics 12,
     df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, INCL CHICKPEAS', 'Sector'] = '1113'
 
-    df.loc[df['Activity'] == 'CORN', 'Sector'] = '11115'
+    df.loc[df['Activity'] == 'CORN, GRAIN', 'Sector'] = '111150A'
+    df.loc[df['Activity'] == 'CORN, SILAGE', 'Sector'] = '111150B'
 
     df.loc[df['Activity'] == 'COTTON', 'Sector'] = '11192'
 
@@ -111,11 +112,11 @@ def assign_naics(df):
                    ignore_index=True)    # WILD RICE
 
     # three types of sorghum, so manually add two rows
-    df.loc[df['Activity'] == 'SORGHUM', 'Sector'] = '111199F'  # grain
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199G']],
+    df.loc[df['Activity'] == 'SORGHUM, GRAIN', 'Sector'] = '111199F'  # grain
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199G']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
                    ignore_index=True)  # syrup
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199H']],
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199H']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
                    ignore_index=True)  # silage
 
@@ -129,8 +130,6 @@ def assign_naics(df):
     # df.loc[df['Activity'] == 'POTATOES', 'Sector'] = ''
     # df.loc[df['Activity'] == 'SWEET CORN', 'Sector'] = ''
     # df.loc[df['Activity'] == 'TOMATOES', 'Sector'] = ''
-
-
 
     return df
 
