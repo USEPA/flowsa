@@ -7,6 +7,7 @@ import pandas as pd
 import json
 import numpy as np
 from flowsa.common import *
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def CoA_Livestock_URL_helper(build_url, config, args):
@@ -95,14 +96,7 @@ def coa_livestock_parse(dataframe_list, args):
     df.loc[df['Spread'] == "", 'Spread'] = None # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
     # add location system based on year of data
-    if args['year'] >= '2019':
-        df['LocationSystem'] = 'FIPS_2019'
-    elif '2015' <= args['year'] < '2019':
-        df['LocationSystem'] = 'FIPS_2015'
-    elif '2013' <= args['year'] < '2015':
-        df['LocationSystem'] = 'FIPS_2013'
-    elif '2010' <= args['year'] < '2013':
-        df['LocationSystem'] = 'FIPS_2010'
+    df = assign_fips_location_system(df, args['year'])
     # # Add hardcoded data
     df['Class'] = "Other"
     df['SourceName'] = "USDA_CoA_Livestock"
