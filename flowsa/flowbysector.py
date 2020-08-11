@@ -144,7 +144,7 @@ def main(method_name):
                     flow_subset = filter_by_geoscale(flow_subset, activity_from_scale, n)
 
                 flow_subset_list.append(flow_subset)
-            flow_subset = pd.concat(flow_subset_list, sort=True)
+            flow_subset = pd.concat(flow_subset_list, sort=False).reset_index(drop=True)
 
             # location column pad zeros if necessary
             flow_subset.loc[:, 'Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
@@ -152,13 +152,9 @@ def main(method_name):
 
             # Add sectors to usgs activity, depending on level of specified sector aggregation
             log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)))
-            if attr['allocation_sector_aggregation'] == 'agg':
-                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                                 sectorsourcename=method['target_sector_source'],
-                                                                 levelofSectoragg='agg')
-            else:
-                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                                 sectorsourcename=method['target_sector_source'])
+            flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
+                                                             sectorsourcename=method['target_sector_source'],
+                                                             levelofSectoragg=attr['activity_sector_aggregation'])
 
             # clean up fba with sectors, if specified in yaml
             if v["clean_fba_w_sec_df_fxn"] != 'None':
@@ -219,15 +215,13 @@ def main(method_name):
                 log.info("Adding sectors to " + attr['allocation_source'])
                 fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
                                                                sectorsourcename=method['target_sector_source'],
-                                                               levelofSectoragg=attr[
-                                                                   'allocation_sector_aggregation'])
-                # subset fba datsets to only keep the naics associated with usgs activity subset
+                                                               levelofSectoragg=attr['allocation_sector_aggregation'])
+                # subset fba datsets to only keep the sectors associated with usgs activity subset
                 log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
                 fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
-                # Reset index values after subset
-                fba_allocation_subset = fba_allocation_subset.reset_index(drop=True)
+
                 # generalize activity field names to enable link to water withdrawal table
-                log.info("Generalizing activity names in subset of " + attr['allocation_source'])
+                log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
                 fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
                 # drop columns
                 fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
@@ -313,7 +307,7 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
-            log.info("Aggregating flowbysector to " + method['target_sector_level'])
+            log.info("Aggregating flowbysector to all sector levels")
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 
             # test agg by sector
@@ -321,6 +315,7 @@ def main(method_name):
 
             # return sector level specified in method yaml
             # load the crosswalk linking sector lengths
+            # todo: consider turning target sector level into a list, enabling users to return multiple sector lengths
             sector_list = get_sector_list(method['target_sector_level'])
             # add any non-NAICS sectors used with NAICS
             sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])

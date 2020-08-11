@@ -135,7 +135,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     sector_list = pd.unique(df['Sector']).tolist()
     # subset fba allocation table to the values in the activity list, based on overlapping sectors
     fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
-                                               (fba_allocation[fbs_activity_fields[1]].isin(sector_list))]
+                                               (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
+                                               ].reset_index(drop=True)
 
     return fba_allocation_subset
 
@@ -166,15 +167,9 @@ def map_elementary_flows(fba, from_fba_source):
                              left_on=["Flowable", "Context"],
                              right_on=["SourceFlowName", "SourceFlowContext"],
                              how="left")
-    fba_mapped_df.loc[
-        fba_mapped_df["TargetFlowName"].notnull(), "Flowable"
-    ] = fba_mapped_df["TargetFlowName"]
-    fba_mapped_df.loc[
-        fba_mapped_df["TargetFlowName"].notnull(), "Context"
-    ] = fba_mapped_df["TargetFlowContext"]
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df[
-        "TargetUnit"
-    ]
+    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] = fba_mapped_df["TargetFlowName"]
+    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] = fba_mapped_df["TargetFlowContext"]
+    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df["TargetUnit"]
     fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
         fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
 
