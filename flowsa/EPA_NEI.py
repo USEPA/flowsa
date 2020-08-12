@@ -110,9 +110,9 @@ def epa_nei_onroad_parse(dataframe_list, args):
     """
     df = epa_nei_global_parse(dataframe_list, args)
     
-    # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5
+    # Add DQ scores
+    df['DataReliability'] = 3
+    df['DataCollection'] = 1
     
     return df
 
@@ -124,9 +124,9 @@ def epa_nei_nonroad_parse(dataframe_list, args):
     """
     df = epa_nei_global_parse(dataframe_list, args)
     
-    # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5    
+    # Add DQ scores
+    df['DataReliability'] = 3
+    df['DataCollection'] = 1    
     
     return df
 
@@ -138,8 +138,9 @@ def epa_nei_nonpoint_parse(dataframe_list, args):
     """
     df = epa_nei_global_parse(dataframe_list, args)
 
-    # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5
+    # Add DQ scores
+    df['DataReliability'] = 3
+    df['DataCollection'] = 5 # needs to be updated, originally calculated as 
+    # a function of facility coverage from point source data
     
     return df
