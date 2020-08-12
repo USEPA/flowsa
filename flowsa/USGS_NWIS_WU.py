@@ -71,15 +71,15 @@ def usgs_parse(dataframe_list, args):
     for df in dataframe_list:
         # add columns at national and state level that only exist at the county level
         if 'state_cd' not in df:
-            df.loc[:, 'state_cd'] = '00'
+            df['state_cd'] = '00'
         if 'state_name' not in df:
-            df.loc[:, 'state_name'] = 'None'
+            df['state_name'] = 'None'
         if 'county_cd' not in df:
-            df.loc[:, 'county_cd'] = '000'
+            df['county_cd'] = '000'
         if 'county_nm' not in df:
-            df.loc[:, 'county_nm'] = 'None'
+            df['county_nm'] = 'None'
         if 'year' not in df:
-            df.loc[:, 'year'] = args["year"]
+            df['year'] = args["year"]
     # concat data frame list based on geography and then parse data
     df = pd.concat(dataframe_list, sort=True)
     df_n = df[df['geo'] == 'national']
@@ -115,7 +115,7 @@ def usgs_parse(dataframe_list, args):
                         pd.np.where(df.Description.str.contains("Surface"), "surface",
                         pd.np.where(df.Description.str.contains("instream water use"), "surface",  # based on usgs def
                         pd.np.where(df.Description.str.contains("consumptive"), "air",
-                        pd.np.where(df.Description.str.contains("conveyance"), "air",
+                        pd.np.where(df.Description.str.contains("conveyance"), "water",
                         pd.np.where(df.Description.str.contains("total"), "total", "total"))))))))
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
@@ -134,8 +134,8 @@ def usgs_parse(dataframe_list, args):
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
     # hardcode column information
-    df.loc[:, 'Class'] = 'Water'
-    df.loc[:, 'SourceName'] = 'USGS_NWIS_WU'
+    df['Class'] = 'Water'
+    df['SourceName'] = 'USGS_NWIS_WU'
     # Assign data quality scores
     df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
     df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
@@ -268,13 +268,13 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 def usgs_fba_data_cleanup(df):
     """Clean up the dataframe to prepare for flowbysector"""
 
-    #testing
-    #df = flows.copy()
-
     from flowsa.common import US_FIPS
 
     # drop duplicate info of "Public Supply deliveries to"
     df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
+
+    # drop rows related to wastewater
+    df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
 
     # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
     df = df[~df['Description'].str.lower().str.contains('commercial')]
