@@ -14,8 +14,8 @@ This script is designed to run with a configuration parameter
 import pandas as pd
 import numpy as np
 import json
-#from flowsa.datapull import build_url, make_http_request, load_from_requests_response
 from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2, datapath
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def Census_CBP_URL_helper(build_url, config, args):
@@ -80,14 +80,7 @@ def census_cbp_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
     df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
     # add location system based on year of data
-    if args['year'] >= '2019':
-        df['LocationSystem'] = 'FIPS_2019'
-    elif '2015' <= args['year'] < '2019':
-        df['LocationSystem'] = 'FIPS_2015'
-    elif '2013' <= args['year'] < '2015':
-        df['LocationSystem'] = 'FIPS_2013'
-    elif '2010' <= args['year'] < '2013':
-        df['LocationSystem'] = 'FIPS_2010'
+    df = assign_fips_location_system(df, args['year'])
     # hard code data
     df['SourceName'] = 'Census_CBP'
     # Add tmp DQ scores
