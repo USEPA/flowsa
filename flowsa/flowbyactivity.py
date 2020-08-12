@@ -27,6 +27,7 @@ from flowsa.USDA_CoA_Livestock import *
 from flowsa.USDA_ERS_FIWS import *
 from flowsa.USDA_IWMS import *
 from flowsa.USGS_NWIS_WU import *
+from flowsa.USDA_ERS_MLU import * 
 
 
 def parse_args():
