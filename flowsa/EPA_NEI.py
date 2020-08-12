@@ -94,7 +94,7 @@ def epa_nei_global_parse(dataframe_list, args):
                                    'Description']), 1, inplace=True)
     
     # add hardcoded data
-    df['Class']="Chemical"
+    df['Class']="Chemicals"
     df['SourceName'] = args['source']
     df['Compartment'] = "air"
     df['Year'] = args['year']

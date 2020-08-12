@@ -38,6 +38,9 @@ BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages]
 Census_CBP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment, Money, Other | County | Number of employees per industry, Annual payroll per industry, Number of establishments per industry |  |  |  |  | X |  |  |  |  |  |
 Census_PEP_Population | [Census Bureau Population Estimates](https://www.census.gov/programs-surveys/popest.html) | Other | County | Population | X | X | X | X | X | X | X | X | X | X | 
 EIA_CBECS_Water| [Energy Information Administration Commercial Buildings Energy Consumption Survey](https://www.eia.gov/consumption/commercial/reports/2012/water/) | Water | Country | Water consumption in large buildings |  |  | X |  |  |  |  |  |  |  | 
+EPA_NEI_Nonpoint | | | County | |  |  |  |  |  |  |  |  |  |  | 
+EPA_NEI_Nonroad | | | County | |  |  |  |  |  |  |  |  |  |  |
+EPA_NEI_Onroad | | | County | |  |  |  |  |  |  |  |  |  |  |
 NOAA_FisheryLandings | [National Oceanic and Atmospheric Administration Fisheries](https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200) | Money | State | Fishery landings | X | X | X | X | X | X | X | X | X | X | 
 StatCan_IWS_MI | [Statistics Canada Industrial Water Survey](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701) | Water | Country | Water use by NAICS |  | X |  | X |  | X |  |  |  |  | 
 USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) | Land, Other | County | Crop area by farm size and irrigation status | | | X | | | |  | X | | |
