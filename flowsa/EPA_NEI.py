@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 import zipfile
 import io
-from flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 def epa_nei_url_helper(build_url, config, args):
     """
@@ -99,11 +99,7 @@ def epa_nei_global_parse(dataframe_list, args):
     df['Compartment'] = "air"
     df['Year'] = args['year']
     df = assign_fips_location_system(df, args['year'])
-    
-    # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5
-    
+   
     return df
 
 def epa_nei_onroad_parse(dataframe_list, args):
@@ -113,6 +109,10 @@ def epa_nei_onroad_parse(dataframe_list, args):
     Runs additional parsing operations specific to ONROAD data.
     """
     df = epa_nei_global_parse(dataframe_list, args)
+    
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
     
     return df
 
@@ -124,6 +124,10 @@ def epa_nei_nonroad_parse(dataframe_list, args):
     """
     df = epa_nei_global_parse(dataframe_list, args)
     
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5    
+    
     return df
 
 def epa_nei_nonpoint_parse(dataframe_list, args):
@@ -133,5 +137,9 @@ def epa_nei_nonpoint_parse(dataframe_list, args):
     Runs additional parsing operations specific to NONPOINT data.
     """
     df = epa_nei_global_parse(dataframe_list, args)
+
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
     
     return df
