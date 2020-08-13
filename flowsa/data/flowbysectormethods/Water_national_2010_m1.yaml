@@ -133,8 +133,6 @@ flowbyactivity_sources:
         names:
         - "Public Supply"
         activity_sector_aggregation: 'agg'
-        filter_activities:
-          - "Industrial"
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
