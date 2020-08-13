@@ -377,11 +377,9 @@ def filter_out_activities(df, attr):
     :return:
     """
 
-    filter_list = ['Industrial']
     if attr['allocation_method'] == 'direct':
-        for i in filter_list:
-            df = df.loc[~df[fba_activity_fields[0]].str.contains(i)]
-            df = df.loc[~df[fba_activity_fields[1]].str.contains(i)].reset_index(drop=True)
+        df = df.loc[(df[fba_activity_fields[0]] != 'Industrial') |
+                    (df[fba_activity_fields[1]] != 'Industrial')].reset_index(drop=True)
 
     return df
 

@@ -169,7 +169,7 @@ def main(method_name):
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
             if attr['allocation_method'] == 'direct':
-                log.info('Directly assigning ' + ', '.join(map(str, names)) + 'to sectors')
+                log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
                 fbs = flow_subset_wsec.copy()
 
             else:
@@ -310,7 +310,6 @@ def main(method_name):
 
             # return sector level specified in method yaml
             # load the crosswalk linking sector lengths
-            # todo: consider turning target sector level into a list, enabling users to return multiple sector lengths
             sector_list = get_sector_list(method['target_sector_level'])
             # add any non-NAICS sectors used with NAICS
             sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
