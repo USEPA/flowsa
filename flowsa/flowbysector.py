@@ -164,7 +164,7 @@ def main(method_name):
             # clean up fba with sectors, if specified in yaml
             if v["clean_fba_w_sec_df_fxn"] != 'None':
                 log.info("Cleaning up " + k + " FlowByActivity with sectors")
-                flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec)
+                flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec, attr)
 
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios

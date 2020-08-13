@@ -298,7 +298,22 @@ def usgs_fba_data_cleanup(df):
     return df
 
 
-def usgs_fba_w_sectors_data_cleanup(df_wsec):
+def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
+    """
+    Call on functions to modify the fba with sectors df before being allocated to sectors
+
+    :param df_wsec: a dataframe with sectors
+    :param attr: activity set attributes
+    :return:
+    """
+
+    df = modify_sector_length(df_wsec)
+    df = filter_out_activities(df, attr)
+
+    return df
+
+
+def modify_sector_length(df_wsec):
     """
     After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
     another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
@@ -347,6 +362,26 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec):
         df = pd.concat([df1, df2], sort=False)
     else:
         df = df1.copy()
+
+    return df
+
+
+def filter_out_activities(df, attr):
+    """
+    To avoid double counting and ensure that the deliveries from public supplies to another activity are accurately
+    accounted for, in some activity sets, need to drop certain rows of data. if direct allocation, drop rows of data
+    where an activity in either activity column is not also directly allocated. These non-direct activities are
+    captured in other activity allocations
+    :param df: a dataframe that has activity consumed/produced by columns
+    :param attr: FBS method file activity set attributes
+    :return:
+    """
+
+    filter_list = ['Industrial']
+    if attr['allocation_method'] == 'direct':
+        for i in filter_list:
+            df = df.loc[~df[fba_activity_fields[0]].str.contains(i)]
+            df = df.loc[~df[fba_activity_fields[1]].str.contains(i)].reset_index(drop=True)
 
     return df
 
