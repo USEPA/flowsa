@@ -13,8 +13,6 @@ https://www.ers.usda.gov/data-products/major-land-uses/
 Last updated: Thursday, April 16, 2020
 """
 
-
-
 def mlu_call(url, mlu_response, args):
     with io.StringIO(mlu_response.text) as fp:
        # for line in fp:
@@ -24,20 +22,40 @@ def mlu_call(url, mlu_response, args):
     return df
 
 def mlu_parse(dataframe_list, args):
-    """Class: Land
-    SourceName: USDA_ERS_MLU
-    FlowName: None
-    ActivityProducedBy: None
-    ActivityConsumedBy: column headers
-    Compartment: None"""
+    output = pd.DataFrame()
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
-    data = pd.DataFrame(columns=flow_by_activity_fields)
-    # select data for chosen year, cast year as string to match argument
-    df['Year'] = df['Year'].astype(str)
-    if(df[df['Year'] == args['year']]):
-        data["Class"]="Land"
+    data = {}
+    df_columns = df.columns.tolist()
+    location = ""
+    locationSystem = ""
 
-    return data
+    fips = get_all_state_FIPS_2()
+    for index, row in df.iterrows():
+        if(int(row["Year"]) == int(args['year'])):
+            if(row["Region or State"] != "Northeast" and row["Region or State"] != "Lake States" and row["Region or State"] != "Corn Belt" and row["Region or State"] != "Northern Plains" and row["Region or State"] != "Appalachian" and row["Region or State"] != "Southeast" and row["Region or State"] != "Delta States" and row["Region or State"] != "Southern Plains" and row["Region or State"] != "Mountain" and row["Region or State"] != "Pacific" and row["Region or State"] != "48 States"):
+                if(row['Region or State'] == "U.S. total"):
+                    location = "00000"
+                    locationSystem = "national"
+                else:
+                    for i, fips_row in fips.iterrows():
+                        if(fips_row["State"] == row['Region or State']):
+                            location = fips_row["FIPS_2"] + "000"
+                            locationSystem = "state"
+
+                for col in df_columns:
+                    if(col != "SortOrder" and col != "Region" and col != "Region or State" and col != "Year"):
+                        data["Class"] = "Land"
+                        data["SourceName"] = "USDA_ERS_MLU"
+                        data["FlowName"] = "None"
+                        data["FlowAmount"] = int(row[col])
+                        data["ActivityProducedBy"] = "None"
+                        data["ActivityConsumedBy"] = col
+                        data["Compartment"] = "None"
+                        data["Location"] = location
+                        data["LocationSystem"] = locationSystem
+                        data["Year"] = int(args['year'])
+                        output = output.append(data, ignore_index=True)
+    return output
 
 
