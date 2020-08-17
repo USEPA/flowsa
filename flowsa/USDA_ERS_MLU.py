@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import io
 from flowsa.common import *
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 """
 USDA Economic Research Service (ERS) Major Land Uses (MLU)
@@ -28,7 +29,6 @@ def mlu_parse(dataframe_list, args):
     data = {}
     df_columns = df.columns.tolist()
     location = ""
-    locationSystem = ""
 
     fips = get_all_state_FIPS_2()
     for index, row in df.iterrows():
@@ -36,12 +36,10 @@ def mlu_parse(dataframe_list, args):
             if(row["Region or State"] != "Northeast" and row["Region or State"] != "Lake States" and row["Region or State"] != "Corn Belt" and row["Region or State"] != "Northern Plains" and row["Region or State"] != "Appalachian" and row["Region or State"] != "Southeast" and row["Region or State"] != "Delta States" and row["Region or State"] != "Southern Plains" and row["Region or State"] != "Mountain" and row["Region or State"] != "Pacific" and row["Region or State"] != "48 States"):
                 if(row['Region or State'] == "U.S. total"):
                     location = "00000"
-                    locationSystem = "national"
                 else:
                     for i, fips_row in fips.iterrows():
                         if(fips_row["State"] == row['Region or State']):
                             location = fips_row["FIPS_2"] + "000"
-                            locationSystem = "state"
 
                 for col in df_columns:
                     if(col != "SortOrder" and col != "Region" and col != "Region or State" and col != "Year"):
@@ -53,9 +51,10 @@ def mlu_parse(dataframe_list, args):
                         data["ActivityConsumedBy"] = col
                         data["Compartment"] = "None"
                         data["Location"] = location
-                        data["LocationSystem"] = locationSystem
                         data["Year"] = int(args['year'])
+                        data["Unit"] = "Thousand Acres"
                         output = output.append(data, ignore_index=True)
+    output = assign_fips_location_system(output, args['year'])
     return output
 
 
