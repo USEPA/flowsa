@@ -85,6 +85,9 @@ def epa_nei_global_parse(dataframe_list, args):
                                 "uom":"Unit",
                                 "description": "Description"})
     
+    # make sure FIPS are string and 5 digits
+    df['Location']=df['Location'].astype('str').apply('{:0>5}'.format)
+    
     # drop all other columns
     df.drop(df.columns.difference(['FlowName',
                                    'FlowAmount',
