@@ -16,7 +16,10 @@ def get_activitytosector_mapping(source):
     :param source: The data source name
     :return: a pandas df for a standard ActivitytoSector mapping
     """
-    mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
+    if 'EPA_NEI' in source:
+        source = 'EPA_NEI'
+    mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
+                          dtype={'Activity':'str'})
     return mapping
 
 
@@ -126,6 +129,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     """
 
     # read in source crosswalk
+    if 'EPA_NEI' in source:
+        source = 'EPA_NEI'
     df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
     sector_source_name = df['SectorSourceName'].all()
     df = expand_naics_list(df, sector_source_name)
