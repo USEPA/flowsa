@@ -388,6 +388,11 @@ us_state_abbrev = {
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
 
 
+def get_region_and_division_codes():
+    df = pd.read_csv(datapath + "Census_Regions_and_Divisions.csv", dtype="str")
+    return df
+
+
 def convert_fba_unit(df):
     """
     Convert unit to standard
