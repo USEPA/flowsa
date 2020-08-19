@@ -65,7 +65,7 @@ flowbyactivity_sources:
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
-        helper_sector_aggregation: 'agg'
+        helper_sector_aggregation: 'disagg'
         helper_source_year: 2013
         helper_flow: None
         helper_from_scale: state

@@ -38,10 +38,10 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'AG LAND', 'Sector'] = '11'
 
     # coa equivalent to crop production: 111
-    df.loc[df['Activity'] == 'AG LAND, CROPLAND', 'Sector'] = '111'
+    df.loc[df['Activity'] == 'AG LAND, CROPLAND, HARVESTED', 'Sector'] = '111'
 
     # coa equivalent to Animal Production and Aquaculture: 112
-    df.loc[df['Activity'] == 'AG LAND, PASTURELAND', 'Sector'] = '112'
+    df.loc[df['Activity'] == 'AG LAND, (EXCL HARVESTED CROPLAND)', 'Sector'] = '112'
 
     ## coa equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
@@ -97,9 +97,9 @@ def assign_naics(df):
     # coa aggregates to fruit and tree nut farming: 1113
     # in 2017, pineapples included in "orchards" category. Therefore, for 2012, must sum pineapple data to make
     # comparable
-    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111300A'
-    df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '111300A1'
-    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111300B'
+    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '1113'
+    df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '1113'
+    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334' # not quite right because this naics excludes strawberries
 
     # coa aggregates to greenhouse nursery and floriculture production: 1114
     df.loc[df['Activity'] == 'HORTICULTURE TOTALS', 'Sector'] = '1114'
