@@ -225,7 +225,7 @@ def main(method_name):
                 log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
                 fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
                 # drop columns
-                fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity', 'Description'])
+                fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
                 # if there is an allocation helper dataset, modify allocation df
                 if attr['allocation_helper'] == 'yes':
