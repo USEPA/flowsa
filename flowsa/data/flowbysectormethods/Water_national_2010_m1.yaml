@@ -58,6 +58,7 @@ flowbyactivity_sources:
           - "AREA HARVESTED"
           - "AREA IN PRODUCTION"
           - "AREA"
+          - 'AREA BEARING & NON-BEARING'
         allocation_compartment:
           - "IRRIGATED, NOT SPECIFIED"
         allocation_from_scale: state
