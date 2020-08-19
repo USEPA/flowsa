@@ -38,7 +38,7 @@ flowbyactivity_sources:
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
-        allocation_sector_aggregation: 'disagg'
+        allocation_sector_aggregation: 'agg'
         allocation_source_year: 2015
         allocation_flow:
           - "Number of employees"
@@ -58,6 +58,7 @@ flowbyactivity_sources:
           - "AREA HARVESTED"
           - "AREA IN PRODUCTION"
           - "AREA"
+          - 'AREA BEARING & NON-BEARING'
         allocation_compartment:
           - "IRRIGATED, NOT SPECIFIED"
         allocation_from_scale: county
@@ -65,7 +66,7 @@ flowbyactivity_sources:
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
-        helper_sector_aggregation: 'agg'
+        helper_sector_aggregation: 'disagg'
         helper_source_year: 2018
         helper_flow: None
         helper_from_scale: state

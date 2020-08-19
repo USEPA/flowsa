@@ -1,0 +1,34 @@
+target_sector_level: NAICS_6
+target_sector_source: NAICS_2012_Code
+target_geoscale: national
+flowbyactivity_sources:
+  "EPA_NEI_Nonpoint":
+    class: Chemicals
+    geoscale_to_use: county
+    year: 2017
+    clean_fba_df_fxn: None
+    clean_fba_w_sec_df_fxn: None
+    activity_sets:
+      activity_set_1:
+        names:
+#        - '2801000000'
+#        - '2801000001'
+#        - '2801000002'
+#        - '2801000003'
+#        - '2801000004'
+        - '2801000005'
+#        - '2801000006'
+#        - '2801000007'
+        - '2801000008'
+        allocation_source: "USDA_CoA_Cropland"
+        allocation_method: proportional
+        allocation_source_class: "Land"
+        allocation_sector_aggregation: 'disagg'
+        allocation_source_year: 2017 
+        allocation_flow:
+          - "AREA HARVESTED"
+        allocation_compartment:
+          - "NOT SPECIFIED"
+        allocation_from_scale: county
+        allocation_helper: no
+      

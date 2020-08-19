@@ -178,6 +178,9 @@ def main(method_name):
                 fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                           datasource=attr['allocation_source'],
                                                           years=[attr['allocation_source_year']]).reset_index(drop=True)
+
+                # drop description field
+                fba_allocation = fba_allocation.drop(columns='Description')
                 # ensure correct data types
                 fba_allocation = add_missing_flow_by_fields(fba_allocation, flow_by_activity_fields)
 

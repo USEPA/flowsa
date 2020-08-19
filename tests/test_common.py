@@ -4,7 +4,10 @@
 
 """ save flowbyactivity test data as parquet files """
 
-from flowsa.common import *
+import pandas as pd
+import os
+import logging as log
+from flowsa.common import flow_by_activity_fields, fbaoutputpath, datapath
 from flowsa.flowbyfunctions import add_missing_flow_by_fields
 
 

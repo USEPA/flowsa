@@ -137,7 +137,7 @@ def coa_cropland_parse(dataframe_list, args):
     # drop Descriptions that contain certain phrases, as these data are included in other categories
     df = df[~df['Description'].str.contains('FRESH MARKET|PROCESSING|ENTIRE CROP|NONE OF CROP|PART OF CROP')]
     # drop Descriptions that contain certain phrases - only occur in AG LAND data
-    df = df[~df['Description'].str.contains('INSURANCE|OWNED|RENTED|FAILED|FALLOW|IDLE|WOODLAND')]
+    df = df[~df['Description'].str.contains('INSURANCE|OWNED|RENTED|FAILED|FALLOW|IDLE')].reset_index(drop=True)
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
     # Add hardcoded data
