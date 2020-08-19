@@ -35,7 +35,7 @@ def assign_naics(df):
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
     # assigning iwms activity items to naics 12,
-    df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, INCL CHICKPEAS', 'Sector'] = '1113'
+    df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, INCL CHICKPEAS', 'Sector'] = '11113'
 
     df.loc[df['Activity'] == 'CORN, GRAIN', 'Sector'] = '111150A'
     df.loc[df['Activity'] == 'CORN, SILAGE', 'Sector'] = '111150B'
@@ -83,8 +83,8 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'PASTURELAND', 'Sector'] = '112'
 
     # aggregates to fruit and tree nut farming: 1113
-    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111300A'
-    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111300B'
+    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '1113'
+    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334' # not quite right because this naics excludes strawberries
 
     df.loc[df['Activity'] == 'PEANUTS', 'Sector'] = '111992'
 
