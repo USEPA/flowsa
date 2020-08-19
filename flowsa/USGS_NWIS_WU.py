@@ -92,35 +92,35 @@ def usgs_parse(dataframe_list, args):
                     var_name="Description", value_name="FlowAmount")
     # merge national and state/county dataframes
     df = pd.concat([df_n, df_sc], sort=True)
-    # drop any rows associated with commercial data (because only exists for 3 states)
-    df = df[~df['Description'].str.lower().str.contains('commercial')]
     # drop rows that don't have a record and strip values that have extra symbols
-    df['FlowAmount'] = df['FlowAmount'].str.strip()
-    df["FlowAmount"] = df['FlowAmount'].str.replace("a", "", regex=True)
-    df["FlowAmount"] = df['FlowAmount'].str.replace("c", "", regex=True)
+    df.loc[:, 'FlowAmount'] = df['FlowAmount'].str.strip()
+    df.loc[:, "FlowAmount"] = df['FlowAmount'].str.replace("a", "", regex=True)
+    df.loc[:, "FlowAmount"] = df['FlowAmount'].str.replace("c", "", regex=True)
     df = df[df['FlowAmount'] != '-']
     df = df[df['FlowAmount'] != '']
     # create fips codes by combining columns
-    df['Location'] = df['state_cd'] + df['county_cd']
+    df.loc[:, 'Location'] = df['state_cd'] + df['county_cd']
     # drop unused columns
     df = df.drop(columns=['county_cd', 'county_nm', 'geo', 'state_cd', 'state_name'])
     # create new columns based on description
-    df['Unit'] = df['Description'].str.rsplit(',').str[-1]
+    df.loc[:, 'Unit'] = df['Description'].str.rsplit(',').str[-1]
     # create flow name column
-    df['FlowName'] = pd.np.where(df.Description.str.contains("fresh"), "fresh",
+    df.loc[:, 'FlowName'] = pd.np.where(df.Description.str.contains("fresh"), "fresh",
                      pd.np.where(df.Description.str.contains("saline"), "saline",
                      pd.np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
     # create flow name column
-    df['Compartment'] = pd.np.where(df.Description.str.contains("ground"), "ground",
+    df.loc[:, 'Compartment'] = pd.np.where(df.Description.str.contains("ground"), "ground",
                         pd.np.where(df.Description.str.contains("Ground"), "ground",
                         pd.np.where(df.Description.str.contains("surface"), "surface",
                         pd.np.where(df.Description.str.contains("Surface"), "surface",
+                        pd.np.where(df.Description.str.contains("instream water use"), "surface",  # based on usgs def
                         pd.np.where(df.Description.str.contains("consumptive"), "air",
-                        pd.np.where(df.Description.str.contains("total"), "total", "total"))))))
+                        pd.np.where(df.Description.str.contains("conveyance"), "water",
+                        pd.np.where(df.Description.str.contains("total"), "total", "total"))))))))
     # drop rows of data that are not water use/day. also drop "in" in unit column
-    df['Unit'] = df['Unit'].str.strip()
-    df["Unit"] = df['Unit'].str.replace("in ", "", regex=True)
-    df["Unit"] = df['Unit'].str.replace("In ", "", regex=True)
+    df.loc[:, 'Unit'] = df['Unit'].str.strip()
+    df.loc[:, "Unit"] = df['Unit'].str.replace("in ", "", regex=True)
+    df.loc[:, "Unit"] = df['Unit'].str.replace("In ", "", regex=True)
     df = df[~df['Unit'].isin(["millions", "gallons/person/day", "thousands", "thousand acres", "gigawatt-hours"])]
     df = df[~df['Unit'].str.contains("number of")]
     df.loc[df['Unit'].isin(['Mgal/', 'Mgal']), 'Unit'] = 'Mgal/d'
@@ -155,8 +155,8 @@ def usgs_parse(dataframe_list, args):
     df.loc[df['ActivityProducedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
                                           'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
     # remove commas from activity names
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
+    df.loc[:, 'ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
+    df.loc[:, 'ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -273,6 +273,12 @@ def usgs_fba_data_cleanup(df):
     # drop duplicate info of "Public Supply deliveries to"
     df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
 
+    # drop rows related to wastewater
+    df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
+
+    # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
+    df = df[~df['Description'].str.lower().str.contains('commercial')]
+
     # drop flowname = 'total' rows when necessary to prevent double counting
     # subset data where flowname = total and where it does not
     df1 = df.loc[df['FlowName'] == 'total']
@@ -292,7 +298,22 @@ def usgs_fba_data_cleanup(df):
     return df
 
 
-def usgs_fba_w_sectors_data_cleanup(df_wsec):
+def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
+    """
+    Call on functions to modify the fba with sectors df before being allocated to sectors
+
+    :param df_wsec: a dataframe with sectors
+    :param attr: activity set attributes
+    :return:
+    """
+
+    df = modify_sector_length(df_wsec)
+    df = filter_out_activities(df, attr)
+
+    return df
+
+
+def modify_sector_length(df_wsec):
     """
     After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
     another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
@@ -302,44 +323,63 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec):
     :return:
     """
 
-    # testing
-    #df_wsec = flowbyactivity_wsector_df.copy()
-
     # the activity(ies) whose sector length should be modified
     activities = ["Public Supply"]
 
     # subset data
-    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] == 'None') | (df_wsec['SectorConsumedBy'] == 'None')]
-    df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] != 'None') & (df_wsec['SectorConsumedBy'] != 'None')]
+    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] == 'None') |
+                      (df_wsec['SectorConsumedBy'] == 'None')].reset_index(drop=True)
+    df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] != 'None') &
+                      (df_wsec['SectorConsumedBy'] != 'None')].reset_index(drop=True)
 
     # concat data into single dataframe
     if len(df2) != 0:
-        df2['LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorProducedBy'].str.len(), 0)
-        df2['LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorConsumedBy'].str.len(),
-                                         df2['LengthToModify'])
-        df2['TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities), df2['SectorConsumedBy'].str.len(), 0)
-        df2['TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities), df2['SectorProducedBy'].str.len(),
-                                       df2['TargetLength'])
+        df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities),
+                                                df2['SectorProducedBy'].str.len(), 0)
+        df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities),
+                                                df2['SectorConsumedBy'].str.len(), df2['LengthToModify'])
+        df2.loc[:, 'TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities),
+                                              df2['SectorConsumedBy'].str.len(), 0)
+        df2.loc[:, 'TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities),
+                                              df2['SectorProducedBy'].str.len(), df2['TargetLength'])
 
-        df2['SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
-                'SectorProducedBy'], axis=1)
-        df2['SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength'] else x[
-                'SectorConsumedBy'], axis=1)
+        df2.loc[:, 'SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+            else x['SectorProducedBy'], axis=1)
+        df2.loc[:, 'SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+            else x['SectorConsumedBy'], axis=1)
 
-        df2['SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
-                'SectorProducedBy'], axis=1)
-        df2['SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength'] else x[
-                'SectorConsumedBy'], axis=1)
+        df2.loc[:, 'SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+            else x['SectorProducedBy'], axis=1)
+        df2.loc[:, 'SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+            else x['SectorConsumedBy'], axis=1)
 
         df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
 
         df = pd.concat([df1, df2], sort=False)
     else:
         df = df1.copy()
+
+    return df
+
+
+def filter_out_activities(df, attr):
+    """
+    To avoid double counting and ensure that the deliveries from public supplies to another activity are accurately
+    accounted for, in some activity sets, need to drop certain rows of data. if direct allocation, drop rows of data
+    where an activity in either activity column is not also directly allocated. These non-direct activities are
+    captured in other activity allocations
+    :param df: a dataframe that has activity consumed/produced by columns
+    :param attr: FBS method file activity set attributes
+    :return:
+    """
+
+    if attr['allocation_method'] == 'direct':
+        df = df.loc[(df[fba_activity_fields[0]] != 'Industrial') |
+                    (df[fba_activity_fields[1]] != 'Industrial')].reset_index(drop=True)
 
     return df
 

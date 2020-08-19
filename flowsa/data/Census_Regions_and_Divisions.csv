@@ -1,0 +1,65 @@
+Region,Division,State_FIPS,Name,LocationSystem
+1,0,00,Northeast Region,Census_Region
+1,1,00,New England Division,Census_Division
+1,1,09,Connecticut,None
+1,1,23,Maine,None
+1,1,25,Massachusetts,None
+1,1,33,New Hampshire,None
+1,1,44,Rhode Island,None
+1,1,50,Vermont,None
+1,2,00,Middle Atlantic Division,Census_Division
+1,2,34,New Jersey,None
+1,2,36,New York,None
+1,2,42,Pennsylvania,None
+2,0,00,Midwest Region,Census_Region
+2,3,00,East North Central Division,Census_Division
+2,3,17,Illinois,None
+2,3,18,Indiana,None
+2,3,26,Michigan,None
+2,3,39,Ohio,None
+2,3,55,Wisconsin,None
+2,4,00,West North Central Division,Census_Division
+2,4,19,Iowa,None
+2,4,20,Kansas,None
+2,4,27,Minnesota,None
+2,4,29,Missouri,None
+2,4,31,Nebraska,None
+2,4,38,North Dakota,None
+2,4,46,South Dakota,None
+3,0,00,South Region,Census_Region
+3,5,00,South Atlantic Division,Census_Division
+3,5,10,Delaware,None
+3,5,11,District of Columbia,None
+3,5,12,Florida,None
+3,5,13,Georgia,None
+3,5,24,Maryland,None
+3,5,37,North Carolina,None
+3,5,45,South Carolina,None
+3,5,51,Virginia,None
+3,5,54,West Virginia,None
+3,6,00,East South Central Division,Census_Division
+3,6,01,Alabama,None
+3,6,21,Kentucky,None
+3,6,28,Mississippi,None
+3,6,47,Tennessee,None
+3,7,00,West South Central Division,Census_Division
+3,7,05,Arkansas,None
+3,7,22,Louisiana,None
+3,7,40,Oklahoma,None
+3,7,48,Texas,None
+4,0,00,West Region,Census_Region
+4,8,00,Mountain Division,Census_Division
+4,8,04,Arizona,None
+4,8,08,Colorado,None
+4,8,16,Idaho,None
+4,8,30,Montana,None
+4,8,32,Nevada,None
+4,8,35,New Mexico,None
+4,8,49,Utah,None
+4,8,56,Wyoming,None
+4,9,00,Pacific Division,Census_Division
+4,9,02,Alaska,None
+4,9,06,California,None
+4,9,15,Hawaii,None
+4,9,41,Oregon,None
+4,9,53,Washington,None

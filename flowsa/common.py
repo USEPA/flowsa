@@ -246,7 +246,7 @@ def read_stored_FIPS(year='2015'):
     cols = ['State', 'FIPS', 'County']
     df.columns = cols
     # ensure that FIPS retain leading 0s
-    df['FIPS'] = df['FIPS'].apply('{:0>5}'.format)
+    df.loc[:, 'FIPS'] = df['FIPS'].apply('{:0>5}'.format)
     # sort df
     df = df.sort_values(['FIPS']).reset_index(drop=True)
 
@@ -328,7 +328,7 @@ def get_all_state_FIPS_2(year='2015'):
     """
 
     state_fips = get_state_FIPS(year)
-    state_fips['FIPS_2'] = state_fips['FIPS'].apply(lambda x: x[0:2])
+    state_fips.loc[:, 'FIPS_2'] = state_fips['FIPS'].apply(lambda x: x[0:2])
     state_fips = state_fips[['State','FIPS_2']]
     return state_fips
 
@@ -392,6 +392,11 @@ us_state_abbrev = {
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
 
 
+def get_region_and_division_codes():
+    df = pd.read_csv(datapath + "Census_Regions_and_Divisions.csv", dtype="str")
+    return df
+
+
 def convert_fba_unit(df):
     """
     Convert unit to standard
@@ -399,11 +404,11 @@ def convert_fba_unit(df):
     :return: Df with standarized units
     """
     # remove temporal aspect of unit and want all flows in Mgal
-    df['FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', df['FlowAmount'] * 1000 * 365, df['FlowAmount'])
-    df['Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', df['FlowAmount'] * 1000 * 365, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
 
-    df['FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', df['FlowAmount'] * 365, df['FlowAmount'])
-    df['Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', df['FlowAmount'] * 365, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
 
     return df
 
