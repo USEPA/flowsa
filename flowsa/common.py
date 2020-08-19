@@ -9,6 +9,7 @@ import sys
 import os
 import yaml
 import requests
+import requests_ftp
 import pandas as pd
 import numpy as np
 import logging as log
@@ -74,6 +75,9 @@ def make_http_request(url):
     r = []
     try:
         r = requests.get(url)
+    except requests.exceptions.InvalidSchema: # if url is ftp rather than http
+        requests_ftp.monkeypatch_session()
+        r = requests.Session().get(url)
     except requests.exceptions.ConnectionError:
         log.error("URL Connection Error for " + url)
     try:

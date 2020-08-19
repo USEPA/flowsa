@@ -1,0 +1,15 @@
+# Calling EPA's National Emissions Inventory (NEI) Data for NONPOINT sources
+---
+api_name: EPA_NEI
+api_key_required: false
+format: zip  # .zip file with individual .csv files and .txt
+url: # no replacement needed in url because only single zip file
+  base_url: "ftp://newftp.epa.gov/air/nei/__year__/data_summaries/__version___nonpoint.zip"
+url_replace_fxn: epa_nei_url_helper
+call_response_fxn: epa_nei_call
+parse_response_fxn: epa_nei_nonpoint_parse
+years:
+  - 2008
+  - 2011
+  - 2014
+  - 2017
