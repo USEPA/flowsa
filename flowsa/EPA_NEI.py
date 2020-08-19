@@ -143,7 +143,24 @@ def epa_nei_nonpoint_parse(dataframe_list, args):
 
     # Add DQ scores
     df['DataReliability'] = 3
-    df['DataCollection'] = 5 # needs to be updated, originally calculated as 
+    df['DataCollection'] = 5 # data collection scores are updated in fbs as
     # a function of facility coverage from point source data
     
     return df
+
+def assign_nonpoint_dqi(args):
+    '''
+    Compares facility coverage data between NEI point and Census to estimate
+    facility coverage in NEI nonpoint
+    '''
+    import stewi
+    import flowsa
+    nei_facility_list = stewi.getInventoryFacilities('NEI',args['year'])
+    nei_count = nei_facility_list.groupby('NAICS')['FacilityID'].count()
+    census = flowsa.getFlowByActivity(flowclass=['Other'], years=[args['year']],
+                                                           datasource="Census_CBP")
+    census = census[census['FlowName']=='Number of establishments']
+    census_count = census.groupby('ActivityProducedBy')['FlowAmount'].sum()
+
+    #TODO compare counts across NAICS depending on granularity of fbs method
+
