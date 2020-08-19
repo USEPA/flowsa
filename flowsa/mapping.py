@@ -93,14 +93,22 @@ def expand_naics_list(df, sectorsourcename):
     household = pd.DataFrame(household['Code'].drop_duplicates())
     household.columns = [sectorsourcename]
     sectors = sectors.append(household, sort=True).drop_duplicates().reset_index(drop=True)
+    # drop rows that contain hyphenated sectors
+    sectors = sectors[~sectors[sectorsourcename].str.contains("-")].reset_index(drop=True)
 
     # fill null values
     df.loc[:, 'Sector'] = df['Sector'].astype('str')
 
+    # create list of sectors that exist in original df, which, if created when expanding sector list cannot be added
+    existing_sectors = df[['Sector']]
+
     naics_df = pd.DataFrame([])
     for i in df['Sector']:
         dig = len(str(i))
-        n = sectors.loc[sectors[sectorsourcename].apply(lambda x: str(x[0:dig])) == i]
+        n = sectors.loc[sectors[sectorsourcename].apply(lambda x: str(x[0:dig])) == i].reset_index(drop=True)
+        # drop any rows in n that contian sectors already in original df (if sector length is longer)
+        existing_sectors_subset = existing_sectors.loc[existing_sectors['Sector'].apply(lambda x: len(str(x)) > dig)].reset_index(drop=True)
+        n = n[~n[sectorsourcename].isin(existing_sectors_subset['Sector'].tolist())].reset_index(drop=True)
         n.loc[:, 'Sector'] = i
         naics_df = naics_df.append(n)
 
