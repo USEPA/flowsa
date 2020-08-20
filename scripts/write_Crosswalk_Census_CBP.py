@@ -30,6 +30,10 @@ if __name__ == '__main__':
     df = unique_activity_names('Census_CBP', years)
     # Activity and Sector are the same
     df['Sector'] = df['Activity'].copy()
+    # modify the sector for activity = '31-33'
+    df.loc[df['Activity'] == '31-33', 'Sector'] = '31'
+    df = df.append(pd.DataFrame([['Census_CBP', '31-33', '32']], columns=['ActivitySourceName', 'Activity', 'Sector']))
+    df = df.append(pd.DataFrame([['Census_CBP', '31-33', '33']], columns=['ActivitySourceName', 'Activity', 'Sector']))
     # Add additional columns
     df['SectorSourceName'] = "NAICS_2012_Code"
     df['SectorType'] = "I"

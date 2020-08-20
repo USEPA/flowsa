@@ -30,13 +30,17 @@ if __name__ == '__main__':
     df = unique_activity_names('BLS_QCEW', years)
     # Activity and Sector are the same
     df['Sector'] = df['Activity'].copy()
+    # modify the sector for activity = '31-33'
+    df.loc[df['Activity'] == '31-33', 'Sector'] = '31'
+    df = df.append(pd.DataFrame([['BLS_QCEW', '31-33', '32']], columns=['ActivitySourceName', 'Activity', 'Sector']))
+    df = df.append(pd.DataFrame([['BLS_QCEW', '31-33', '33']], columns=['ActivitySourceName', 'Activity', 'Sector']))
     # Add additional columns
     df['SectorSourceName'] = "NAICS_2012_Code"
     df['SectorType'] = "I"
     # reorder
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
     # sort df
-    df = df.sort_values(['Activity'])
+    df = df.sort_values(['Activity', 'Sector'])
     # reset index
     df.reset_index(drop=True, inplace=True)
     # save as csv
