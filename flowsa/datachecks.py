@@ -156,18 +156,18 @@ def sector_flow_comparision(fbs_df):
                 sector = 'SectorProducedBy'
 
             # find max length of sector column
-            df['SectorLength'] = df[sector].apply(lambda x: len(x))
+            df.loc[:, 'SectorLength'] = df[sector].apply(lambda x: len(x))
 
             # reassign sector consumed/produced by to help wth grouping
             # assign the sector column for aggregation
             if df['SectorProducedBy'].all() == 'None':
-                df['SectorConsumedBy'] = 'All'
+                df.loc[:, 'SectorConsumedBy'] = 'All'
             elif (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None'):
-                df['SectorConsumedBy'] = 'All'
+                df.loc[:, 'SectorConsumedBy'] = 'All'
             elif df['SectorConsumedBy'].all() == 'None':
-                df['SectorProducedBy'] = 'All'
+                df.loc[:, 'SectorProducedBy'] = 'All'
             elif (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None'):
-                df['SectorProducedBy'] = 'All'
+                df.loc[:, 'SectorProducedBy'] = 'All'
 
             # append to df
             sector_dfs.append(df)

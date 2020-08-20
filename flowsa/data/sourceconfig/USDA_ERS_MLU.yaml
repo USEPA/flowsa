@@ -1,0 +1,13 @@
+# Queries USDA ERS Major Land Uses
+---
+# api_name: USDA_ERS_Major_Land_Uses
+# api_key_required: false
+format: csv
+url:
+  base_url: "https://www.ers.usda.gov/webdocs/DataFiles/52096/MajorLandUse.csv?v=438"
+call_response_fxn: mlu_call
+parse_response_fxn: mlu_parse
+years:
+  - 2007
+  - 2012
+  

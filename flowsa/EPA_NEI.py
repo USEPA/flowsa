@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 import zipfile
 import io
-from flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 def epa_nei_url_helper(build_url, config, args):
     """
@@ -85,6 +85,9 @@ def epa_nei_global_parse(dataframe_list, args):
                                 "uom":"Unit",
                                 "description": "Description"})
     
+    # make sure FIPS are string and 5 digits
+    df['Location']=df['Location'].astype('str').apply('{:0>5}'.format)
+    
     # drop all other columns
     df.drop(df.columns.difference(['FlowName',
                                    'FlowAmount',
@@ -94,16 +97,12 @@ def epa_nei_global_parse(dataframe_list, args):
                                    'Description']), 1, inplace=True)
     
     # add hardcoded data
-    df['Class']="Chemical"
+    df['Class']="Chemicals"
     df['SourceName'] = args['source']
     df['Compartment'] = "air"
     df['Year'] = args['year']
     df = assign_fips_location_system(df, args['year'])
-    
-    # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5
-    
+   
     return df
 
 def epa_nei_onroad_parse(dataframe_list, args):
@@ -113,6 +112,10 @@ def epa_nei_onroad_parse(dataframe_list, args):
     Runs additional parsing operations specific to ONROAD data.
     """
     df = epa_nei_global_parse(dataframe_list, args)
+    
+    # Add DQ scores
+    df['DataReliability'] = 3
+    df['DataCollection'] = 1
     
     return df
 
@@ -124,6 +127,10 @@ def epa_nei_nonroad_parse(dataframe_list, args):
     """
     df = epa_nei_global_parse(dataframe_list, args)
     
+    # Add DQ scores
+    df['DataReliability'] = 3
+    df['DataCollection'] = 1    
+    
     return df
 
 def epa_nei_nonpoint_parse(dataframe_list, args):
@@ -133,5 +140,27 @@ def epa_nei_nonpoint_parse(dataframe_list, args):
     Runs additional parsing operations specific to NONPOINT data.
     """
     df = epa_nei_global_parse(dataframe_list, args)
+
+    # Add DQ scores
+    df['DataReliability'] = 3
+    df['DataCollection'] = 5 # data collection scores are updated in fbs as
+    # a function of facility coverage from point source data
     
     return df
+
+def assign_nonpoint_dqi(args):
+    '''
+    Compares facility coverage data between NEI point and Census to estimate
+    facility coverage in NEI nonpoint
+    '''
+    import stewi
+    import flowsa
+    nei_facility_list = stewi.getInventoryFacilities('NEI',args['year'])
+    nei_count = nei_facility_list.groupby('NAICS')['FacilityID'].count()
+    census = flowsa.getFlowByActivity(flowclass=['Other'], years=[args['year']],
+                                                           datasource="Census_CBP")
+    census = census[census['FlowName']=='Number of establishments']
+    census_count = census.groupby('ActivityProducedBy')['FlowAmount'].sum()
+
+    #TODO compare counts across NAICS depending on granularity of fbs method
+

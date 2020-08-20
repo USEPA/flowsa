@@ -20,6 +20,18 @@ EIA_CBECS_Water:
   class: Water
   sector-like_activities: False
   activity_schema:
+EPA_NEI_Nonpoint:
+  class: Chemicals
+  sector-like_activities: False
+  activity_schema: SCC
+EPA_NEI_Nonroad:
+  class: Chemicals
+  sector-like_activities: False
+  activity_schema: SCC
+EPA_NEI_Onroad:
+  class: Chemicals
+  sector-like_activities: False
+  activity_schema: SCC
 NOAA_FisheryLandings:
   class: Money
   sector-like_activities: False

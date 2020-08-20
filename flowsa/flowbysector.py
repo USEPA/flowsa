@@ -9,6 +9,12 @@ you want to use.
 
 Example: "Parameters: --m Water_national_2015_m1"
 
+Files necessary to run FBS:
+a. a method yaml in "flowsa/data/flowbysectormethods"
+b. crosswalk(s) for the main dataset you are allocating and any datasets used to allocate to sectors
+c. a .py file in "flowsa/" for the main dataset you are allocating if you need functions to clean up the FBA
+   before allocating to FBS
+
 """
 
 import flowsa
@@ -113,7 +119,7 @@ def main(method_name):
             for n in names:
                 # subset usgs data by activity
                 flow_subset = flows[(flows[fba_activity_fields[0]] == n) |
-                                (flows[fba_activity_fields[1]] == n)].reset_index(drop=True)
+                                    (flows[fba_activity_fields[1]] == n)].reset_index(drop=True)
                 log.info("Checking if flowbyactivity data exists for " + n + " at the " +
                          v['geoscale_to_use'] + ' level')
                 geocheck = check_if_data_exists_at_geoscale(flow_subset, v['geoscale_to_use'], activitynames=n)
@@ -124,56 +130,47 @@ def main(method_name):
                     # if activity does not exist at specified geoscale, issue warning and use data at less aggregated
                     # geoscale, and sum to specified geoscale
                     log.info("Checking if flowbyactivity data exists for " + n + " at a less aggregated level")
-                    new_geoscale_to_use = check_if_data_exists_at_less_aggregated_geoscale(flow_subset, n,
-                                                                                           v['geoscale_to_use'])
-                    activity_from_scale = new_geoscale_to_use
+                    activity_from_scale = check_if_data_exists_at_less_aggregated_geoscale(flow_subset,
+                                                                                           v['geoscale_to_use'], n)
 
                 activity_to_scale = attr['allocation_from_scale']
-                # if usgs is less aggregated than allocation df, aggregate usgs activity to target scale
+                # if df is less aggregated than allocation df, aggregate usgs activity to allocation geoscale
                 if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
                     log.info("Aggregating subset from " + activity_from_scale + " to " + activity_to_scale)
-                    flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, activity_to_scale, fba_default_grouping_fields, n)
+                    flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, activity_to_scale,
+                                                  fba_default_grouping_fields, n)
                 # else, aggregate to geoscale want to use
                 elif fips_number_key[activity_from_scale] > fips_number_key[v['geoscale_to_use']]:
                     log.info("Aggregating subset from " + activity_from_scale + " to " + v['geoscale_to_use'])
-                    flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, v['geoscale_to_use'], fba_default_grouping_fields, n)
+                    flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, v['geoscale_to_use'],
+                                                  fba_default_grouping_fields, n)
                 # else, if usgs is more aggregated than allocation table, filter relevant rows
                 else:
                     log.info("Subsetting " + activity_from_scale + " data")
                     flow_subset = filter_by_geoscale(flow_subset, activity_from_scale, n)
 
                 flow_subset_list.append(flow_subset)
-            flow_subset = pd.concat(flow_subset_list, sort=True)
+            flow_subset = pd.concat(flow_subset_list, sort=False).reset_index(drop=True)
 
             # location column pad zeros if necessary
-            flow_subset['Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5
-                                                                    else x)
+            flow_subset.loc[:, 'Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5 else x)
 
-            # Add sectors to usgs activity, depending on level of specified sector aggregation
+            # Add sectors to df activity, depending on level of specified sector aggregation
             log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)))
-            if attr['allocation_sector_aggregation'] == 'agg':
-                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                                 sectorsourcename=method['target_sector_source'],
-                                                                 levelofSectoragg='agg')
-            else:
-                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                                 sectorsourcename=method['target_sector_source'])
+            flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
+                                                             sectorsourcename=method['target_sector_source'],
+                                                             levelofSectoragg=attr['activity_sector_aggregation'])
 
             # clean up fba with sectors, if specified in yaml
             if v["clean_fba_w_sec_df_fxn"] != 'None':
                 log.info("Cleaning up " + k + " FlowByActivity with sectors")
-                flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec)
+                flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec, attr)
 
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
             if attr['allocation_method'] == 'direct':
-                # if direct allocation, drop rows of data where an activity in either activity column is not in the
-                # direct allocation list. These non-direct activities are captured in other activity allocations
+                log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
                 fbs = flow_subset_wsec.copy()
-                if "filter_activities" in attr:
-                    for i in attr["filter_activities"]:
-                        fbs = fbs.loc[~fbs[fba_activity_fields[0]].str.contains(i)]
-                        fbs = fbs.loc[~fbs[fba_activity_fields[1]].str.contains(i)].reset_index(drop=True)
 
             else:
                 # determine appropriate allocation dataset
@@ -181,6 +178,9 @@ def main(method_name):
                 fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                           datasource=attr['allocation_source'],
                                                           years=[attr['allocation_source_year']]).reset_index(drop=True)
+
+                # drop description field
+                fba_allocation = fba_allocation.drop(columns='Description')
                 # ensure correct data types
                 fba_allocation = add_missing_flow_by_fields(fba_allocation, flow_by_activity_fields)
 
@@ -216,15 +216,13 @@ def main(method_name):
                 log.info("Adding sectors to " + attr['allocation_source'])
                 fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
                                                                sectorsourcename=method['target_sector_source'],
-                                                               levelofSectoragg=attr[
-                                                                   'allocation_sector_aggregation'])
-                # subset fba datsets to only keep the naics associated with usgs activity subset
+                                                               levelofSectoragg=attr['allocation_sector_aggregation'])
+                # subset fba datsets to only keep the sectors associated with activity subset
                 log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
                 fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
-                # Reset index values after subset
-                fba_allocation_subset = fba_allocation_subset.reset_index(drop=True)
-                # generalize activity field names to enable link to water withdrawal table
-                log.info("Generalizing activity names in subset of " + attr['allocation_source'])
+
+                # generalize activity field names to enable link to main fba source
+                log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
                 fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
                 # drop columns
                 fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
@@ -237,9 +235,6 @@ def main(method_name):
                 # create flow allocation ratios
                 log.info("Creating allocation ratios for " + attr['allocation_source'])
                 flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
-
-                # drop PR data
-                flow_allocation = flow_allocation.loc[flow_allocation['Location'].apply(lambda x: x[0:2] != '72')]
 
                 # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                 # aren't in list
@@ -254,7 +249,7 @@ def main(method_name):
                 log.info("Checking if flowbyactivity and allocation dataframes use the same location systems")
                 check_if_location_systems_match(flow_subset_wsec, flow_allocation)
 
-                # merge water withdrawal df w/flow allocation dataset
+                # merge fba df w/flow allocation dataset
                 log.info("Merge " + k + " and subset of " + attr['allocation_source'])
                 fbs = flow_subset_wsec.merge(
                     flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
@@ -267,7 +262,7 @@ def main(method_name):
                     right_on=['Location', 'LocationSystem', 'Sector'], how='left')
 
                 # merge the flowamount columns
-                fbs['FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
+                fbs.loc[:, 'FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
 
                 # check if fba and allocation dfs have data for same geoscales
                 log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
@@ -278,7 +273,7 @@ def main(method_name):
 
                 # calculate flow amounts for each sector
                 log.info("Calculating new flow amounts using flow ratios")
-                fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
+                fbs.loc[:, 'FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
 
                 # drop columns
                 log.info("Cleaning up new flow by sector")
@@ -310,11 +305,11 @@ def main(method_name):
             fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
             # aggregate data to every sector level
-            log.info("Aggregating flowbysector to " + method['target_sector_level'])
+            log.info("Aggregating flowbysector to all sector levels")
             fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
 
             # test agg by sector
-            sector_agg_comparison = sector_flow_comparision(fbs)
+            # sector_agg_comparison = sector_flow_comparision(fbs)
 
             # return sector level specified in method yaml
             # load the crosswalk linking sector lengths
@@ -322,7 +317,7 @@ def main(method_name):
             # add any non-NAICS sectors used with NAICS
             sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
 
-            # subset df, necessary because not all of the sectors are NAICS
+            # subset df, necessary because not all of the sectors are NAICS and can get duplicate rows
             fbs = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) &
                           (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
 
@@ -335,8 +330,6 @@ def main(method_name):
     log.info("Concat data for all activities")
     fbss = pd.concat(fbss, ignore_index=True, sort=False)
     log.info("Clean final dataframe")
-    # drop duplicate rows (duplicates can arise when data is given in both "delivered to" and "delivered from" form)
-    fbss = fbss.drop_duplicates().reset_index(drop=True)
     # aggregate df as activities might have data for the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df

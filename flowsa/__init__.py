@@ -20,10 +20,13 @@ def getFlowByActivity(flowclass, years, datasource):
     :return: a pandas DataFrame in FlowByActivity format
     """
     fbas = pd.DataFrame()
+    # for assigning dtypes
+    fields = {'ActivityProducedBy':'str'}
     for y in years:
         try:
             fba = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet")
             fba = fba[fba['Class'].isin(flowclass)]
+            fba = fba.astype(fields)
             fbas = pd.concat([fbas, fba], sort=False)
         except FileNotFoundError:
             log.error("No parquet file found for datasource " + datasource + "and year " + str(

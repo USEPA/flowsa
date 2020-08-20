@@ -36,9 +36,11 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['Industrial', '81149']], columns=['Activity', 'Sector']))
 
     df.loc[df['Activity'] == 'Irrigation', 'Sector'] = '111'
+    df = df.append(pd.DataFrame([['Irrigation', '112']], columns=['Activity', 'Sector']))
     df = df.append(pd.DataFrame([['Irrigation', '71391']], columns=['Activity', 'Sector']))
 
     df.loc[df['Activity'] == 'Irrigation Crop', 'Sector'] = '111'
+    df = df.append(pd.DataFrame([['Irrigation Crop', '112']], columns=['Activity', 'Sector']))
 
     df.loc[df['Activity'] == 'Irrigation Golf Courses', 'Sector'] = '71391'
 
