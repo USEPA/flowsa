@@ -102,10 +102,6 @@ def main(method_name):
         # fill null values
         flows = flows.fillna(value=fba_fill_na_dict)
 
-        # map df to elementary flows - commented out until mapping complete
-        # log.info("Mapping flows in " + k + ' to federal elementary flow list')
-        # flows_mapped = map_elementary_flows(flows, k)
-
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
         # subset activity data and allocate to sector
@@ -165,6 +161,10 @@ def main(method_name):
             if v["clean_fba_w_sec_df_fxn"] != 'None':
                 log.info("Cleaning up " + k + " FlowByActivity with sectors")
                 flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec, attr)
+
+            # map df to elementary flows - commented out until mapping complete
+            log.info("Mapping flows in " + k + ' to federal elementary flow list')
+            flow_subset_wsec = map_elementary_flows(flow_subset_wsec, k)
 
             # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
             # dataframe to create sector allocation ratios
@@ -252,21 +252,21 @@ def main(method_name):
                 # merge fba df w/flow allocation dataset
                 log.info("Merge " + k + " and subset of " + attr['allocation_source'])
                 fbs = flow_subset_wsec.merge(
-                    flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
-                    left_on=['Location', 'LocationSystem', 'SectorProducedBy'],
-                    right_on=['Location', 'LocationSystem', 'Sector'], how='left')
+                    flow_allocation[['Location', 'Sector', 'FlowAmountRatio']],
+                    left_on=['Location', 'SectorProducedBy'],
+                    right_on=['Location', 'Sector'], how='left')
 
                 fbs = fbs.merge(
-                    flow_allocation[['Location', 'LocationSystem', 'Sector', 'FlowAmountRatio']],
-                    left_on=['Location', 'LocationSystem', 'SectorConsumedBy'],
-                    right_on=['Location', 'LocationSystem', 'Sector'], how='left')
+                    flow_allocation[['Location', 'Sector', 'FlowAmountRatio']],
+                    left_on=['Location', 'SectorConsumedBy'],
+                    right_on=['Location', 'Sector'], how='left')
 
                 # merge the flowamount columns
                 fbs.loc[:, 'FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
 
-                # check if fba and allocation dfs have data for same geoscales
-                log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
-                check_if_data_exists_for_same_geoscales(fbs, k, attr['names'])
+                # check if fba and allocation dfs have data for same geoscales - comment back in after address the 'todo'
+                # log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
+                # check_if_data_exists_for_same_geoscales(fbs, k, attr['names'])
 
                 # drop rows where there is no allocation data
                 fbs = fbs.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
@@ -279,11 +279,6 @@ def main(method_name):
                 log.info("Cleaning up new flow by sector")
                 fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
                                         'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
-
-            # rename flow name to flowable - remove this once elementary flows are mapped
-            fbs = fbs.rename(columns={"FlowName": 'Flowable',
-                                      "Compartment": "Context"
-                                      })
 
             # drop rows where flowamount = 0 (although this includes dropping suppressed data)
             fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
@@ -334,6 +329,8 @@ def main(method_name):
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     log.info("Sort and store dataframe")
+    # add missing fields, ensure correct data type, reorder columns
+    fbss = add_missing_flow_by_fields(fbss, flow_by_sector_fields)
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file

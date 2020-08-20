@@ -282,7 +282,11 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source, activity): 
     :param allocation_fba:
     :return:
     """
-
+    # todo: modify so only returns warning if no value for entire location, not just no value for one of the possible sectors
+    #testing
+    # fba_wsec_walloc = fbs.copy()
+    # source = k
+    # activity = attr['names']
 
     from flowsa.mapping import get_activitytosector_mapping
 
@@ -290,7 +294,7 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source, activity): 
     mapping = get_activitytosector_mapping(source)
     # filter by activity of interest
     mapping = mapping.loc[mapping['Activity'].isin(activity)]
-    # add sectos to list
+    # add sectors to list
     sectors_list = pd.unique(mapping['Sector']).tolist()
 
     # subset fba w sectors and with merged allocation table so only have rows with aggregated sector list
@@ -298,8 +302,8 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source, activity): 
         (fba_wsec_walloc[fbs_activity_fields[0]].isin(sectors_list)) |
         (fba_wsec_walloc[fbs_activity_fields[1]].isin(sectors_list))].reset_index(drop=True)
     # only interested in total flows
-    df_subset = df_subset.loc[df_subset['FlowName'] == 'total'].reset_index(drop=True)
-    df_subset = df_subset.loc[df_subset['Compartment'] == 'total'].reset_index(drop=True)
+    # df_subset = df_subset.loc[df_subset['FlowName'] == 'total'].reset_index(drop=True)
+    # df_subset = df_subset.loc[df_subset['Compartment'] == 'total'].reset_index(drop=True)
 
     # create subset of fba where the allocation data is missing
     missing_alloc = df_subset.loc[df_subset['FlowAmountRatio'].isna()].reset_index(drop=True)
