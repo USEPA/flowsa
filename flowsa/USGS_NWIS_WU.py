@@ -310,6 +310,9 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     df = modify_sector_length(df_wsec)
     df = filter_out_activities(df, attr)
 
+    # add FlowType
+    df['FlowType'] = 'ELEMENTARY_FLOW'
+
     return df
 
 
