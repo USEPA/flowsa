@@ -108,12 +108,13 @@ def expand_naics_list(df, sectorsourcename):
     naics_df = pd.DataFrame([])
     for i in df['Sector']:
         dig = len(str(i))
-        n = sectors.loc[sectors[sectorsourcename].apply(lambda x: str(x[0:dig])) == i].reset_index(drop=True)
-        # drop any rows in n that contian sectors already in original df (if sector length is longer)
-        existing_sectors_subset = existing_sectors.loc[existing_sectors['Sector'].apply(lambda x: len(str(x)) > dig)].reset_index(drop=True)
-        n = n[~n[sectorsourcename].isin(existing_sectors_subset['Sector'].tolist())].reset_index(drop=True)
-        n.loc[:, 'Sector'] = i
-        naics_df = naics_df.append(n)
+        n = sectors.loc[sectors[sectorsourcename].apply(lambda x: str(x[0:dig])) == i]
+        # drop any rows in n that contain sectors already in original df (if sector length is longer)
+        existing_sectors_subset = existing_sectors.loc[existing_sectors['Sector'].apply(lambda x: len(str(x)) > dig)]
+        n = n[~n[sectorsourcename].isin(existing_sectors_subset['Sector'].tolist())]
+        if len(n) != 0:
+            n.loc[:, 'Sector'] = i
+            naics_df = naics_df.append(n)
 
     # merge df to retain activityname/sectortype info
     naics_expanded = df.merge(naics_df, how='left')
