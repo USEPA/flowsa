@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='flowsa',
-    version='0.0.0.1',
+    version='0.0.1',
     packages=['flowsa'],
     package_dir={'flowsa': 'flowsa'},
     package_data={'flowsa': [
@@ -18,7 +18,9 @@ setup(
         'requests >=2.22.0',
         'appdirs >= 1.4.3',
         'pycountry >= 19.8.18',
-        'xlrd >= 1.2.0'],
+        'xlrd >= 1.2.0',
+        'requests_ftp == 0.3.1'
+    ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',
     author='Wesley Ingwersen',

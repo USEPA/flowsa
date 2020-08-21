@@ -274,7 +274,7 @@ def usgs_fba_data_cleanup(df):
     df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
 
     # drop rows related to wastewater
-    df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
+    # df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
 
     # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
     df = df[~df['Description'].str.lower().str.contains('commercial')]
@@ -309,6 +309,9 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
 
     df = modify_sector_length(df_wsec)
     df = filter_out_activities(df, attr)
+
+    # add FlowType
+    df['FlowType'] = np.where(df["FlowName"] == 'wastewater', "WASTE_FLOW", "ELEMENTARY_FLOW")
 
     return df
 

@@ -85,6 +85,12 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
 
 
 def expand_naics_list(df, sectorsourcename):
+    """
+    Add disaggregated sectors to the crosswalks.
+    :param df:
+    :param sectorsourcename:
+    :return:
+    """
 
     # load master crosswalk
     cw = load_sector_crosswalk()
@@ -162,7 +168,12 @@ def map_elementary_flows(fba, from_fba_source):
     :param from_fba_source: str Source name of fba list to look for mappings
     :return:
     """
+
     from fedelemflowlist import get_flowmapping
+
+    # rename flow name to flowable - remove this once elementary flows are mapped
+    fba = fba.rename(columns={"FlowName": 'Flowable',
+                              "Compartment": "Context"})
 
     flowmapping = get_flowmapping(from_fba_source)
     mapping_fields = ["SourceListName",
@@ -174,22 +185,26 @@ def map_elementary_flows(fba, from_fba_source):
                       "TargetFlowContext",
                       "TargetUnit"]
     if flowmapping.empty:
-        log.ERROR("No mapping file in fedelemflowlist found for " + from_fba_source)
-    flowmapping = flowmapping[mapping_fields]
-    # merge fba with flows
-    fba_mapped_df = pd.merge(fba, flowmapping,
-                             left_on=["Flowable", "Context"],
-                             right_on=["SourceFlowName", "SourceFlowContext"],
-                             how="left")
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] = fba_mapped_df["TargetFlowName"]
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] = fba_mapped_df["TargetFlowContext"]
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df["TargetUnit"]
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
-        fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
+        log.warning("No mapping file in fedelemflowlist found for " + from_fba_source)
+        # return the original df but with columns renamed so can continue working on the FBS
+        fba_mapped_df = fba.copy()
+    else:
+        flowmapping = flowmapping[mapping_fields]
 
-    # drop
-    fba_mapped_df = fba_mapped_df.drop(
-        columns=mapping_fields)
+        # merge fba with flows
+        fba_mapped_df = pd.merge(fba, flowmapping,
+                                 left_on=["Flowable", "Context"],
+                                 right_on=["SourceFlowName", "SourceFlowContext"],
+                                 how="left")
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] = fba_mapped_df["TargetFlowName"]
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] = fba_mapped_df["TargetFlowContext"]
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df["TargetUnit"]
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
+            fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
+
+        # drop
+        fba_mapped_df = fba_mapped_df.drop(columns=mapping_fields)
+
     return fba_mapped_df
 
 

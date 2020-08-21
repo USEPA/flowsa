@@ -8,6 +8,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 
 import pandas as pd
 from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
+from flowsa.flowbysector import collapse_fbs_sector_columns
 
 
 def getFlowByActivity(flowclass, years, datasource):
@@ -47,3 +48,16 @@ def getFlowBySector(methodname):
         log.error("No parquet file found for datasource " + methodname + " in flowsa")
     return fbs
 
+
+def getFlowBySector_collapsed(methodname):
+    """
+    Retrieves stored data in the FlowBySector format, collapsing the Sector Produced/Consumed By columns into a single
+    column named "Sector"
+    :param methodname: string, Name of an available method for the given class
+    :return: dataframe in flow by sector format
+    """
+
+    fbs = getFlowBySector(methodname)
+    fbs_collapsed = collapse_fbs_sector_columns(fbs, methodname)
+
+    return fbs_collapsed

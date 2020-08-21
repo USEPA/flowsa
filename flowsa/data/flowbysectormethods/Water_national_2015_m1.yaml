@@ -2,9 +2,10 @@
 
 ---
 
-target_sector_level: NAICS_2
+target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
+collapsed_sectors_column: 'SectorConsumedBy'
 flowbyactivity_sources:
   "USGS_NWIS_WU":
     class: Water
