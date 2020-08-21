@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import io
 from flowsa.common import *
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 """
 2012 Commercial Buildings Energy Consumption Survey (CBECS)
@@ -52,7 +53,7 @@ def eia_cbecs_call(url, cbesc_response, args):
 
         df_rse = df_rse.melt(id_vars=["Name"],
                     var_name="Location",
-                    value_name="MeasureofSpread")
+                    value_name="Spread")
         df_data =df_data.melt(id_vars=["Name"],
                     var_name="Location",
                     value_name="FlowAmount")
@@ -60,17 +61,17 @@ def eia_cbecs_call(url, cbesc_response, args):
         # skip rows and remove extra rows at end of dataframe
         df_data = pd.DataFrame(df_raw_data.loc[47:52]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[47:52]).reindex()
-        print(df_data)
-        df_data.columns = ["compartment", "All buildings", "Office", "Warehouse and storage", "Service",
+
+        df_data.columns = ["Compartment", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
                            "Education", "Public assembly"]
-        df_rse.columns = ["compartment", "All buildings", "Office", "Warehouse and storage", "Service",
+        df_rse.columns = ["Compartment", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
                            "Education", "Public assembly"]
-        df_rse = df_rse.melt(id_vars=["compartment"],
+        df_rse = df_rse.melt(id_vars=["Compartment"],
                     var_name="Name",
-                    value_name="MeasureofSpread")
-        df_data =df_data.melt(id_vars=["compartment"],
+                    value_name="Spread")
+        df_data =df_data.melt(id_vars=["Compartment"],
                     var_name="Name",
                     value_name="FlowAmount")
     elif ("b14.xlsx" in url):
@@ -78,16 +79,16 @@ def eia_cbecs_call(url, cbesc_response, args):
         df_data = pd.DataFrame(df_raw_data.loc[29:33]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[29:33]).reindex()
 
-        df_data.columns = ["compartment", "All buildings", "Food service", "Food sales", "Lodging",
+        df_data.columns = ["Compartment", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
                            "Public order and safety"]
-        df_rse.columns = ["compartment", "All buildings", "Food service", "Food sales", "Lodging",
+        df_rse.columns = ["Compartment", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
                            "Public order and safety"]
-        df_rse = df_rse.melt(id_vars=["compartment"],
+        df_rse = df_rse.melt(id_vars=["Compartment"],
                              var_name="Name",
-                             value_name="MeasureofSpread")
-        df_data = df_data.melt(id_vars=["compartment"],
+                             value_name="Spread")
+        df_data = df_data.melt(id_vars=["Compartment"],
                                var_name="Name",
                                value_name="FlowAmount")
 
@@ -103,36 +104,27 @@ def eia_cbecs_parse(dataframe_list, args):
         dataframes = dataframes.rename(columns={'Name': 'ActivityConsumedBy'})
         if "Location" not in list(dataframes):
             dataframes["Location"] = "00000"
+            dataframes["LocationSystem"] = "FIPS_2010"
         else:
             dataframes["Location"] = get_region_and_division_codes()
+            dataframes['LocationSystem'] = "Census_Division"
+            dataframes["Compartment"] = "All Buildings"
+            dataframes['Location'] = dataframes['Location'].replace(float("NaN"), '00000')
 
-
-
-        #for i in dataframes:
-         #   if i == "Location":
-          #      for d in dataframes[i]:
-           #         print(d)
-            #        if dataframes[d] == "nan":
-             #           print(dataframes[i])
-
+            dataframes.loc[dataframes.Location == "00000", "LocationSystem"] = "FIPS_2010"
 
         df_array.append(dataframes)
-    print(df_array)
     df = pd.concat(df_array, sort=False)
-    print(df)
 
     # replace withdrawn code
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
     df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
-
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
     df['Year'] = args["year"]
-    df['LocationSystem'] = "Census_Division"
-    df['FlowName'] = "None"
-   # print(df)
-   # test = get_region_and_division_codes()
-   # print(test)
+    df['FlowName'] = "Total Floorspace"
+    df['Unit'] = "million square feet"
+    df['MeasureofSpread'] = "RSE"
 
     return df
 
