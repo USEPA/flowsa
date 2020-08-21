@@ -78,12 +78,12 @@ def main(method_name):
     log.info("Initiating flowbysector creation for " + method_name)
     # call on method
     method = load_method(method_name)
-    # create dictionary of water data and allocation datasets
+    # create dictionary of data and allocation datasets
     fbas = method['flowbyactivity_sources']
     # Create empty list for storing fbs files
     fbss = []
     for k, v in fbas.items():
-        # pull water data for allocation
+        # pull fba data for allocation
         log.info("Retrieving flowbyactivity for datasource " + k + " in year " + str(v['year']))
         flows = flowsa.getFlowByActivity(flowclass=[v['class']],
                                          years=[v['year']],
@@ -335,6 +335,34 @@ def main(method_name):
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file
     store_flowbysector(fbss, method_name)
+
+
+def collapse_fbs_sector_columns(fbs, methodname):
+    """
+    Collapses the two sector columns in a FBS df into single column, named "Sector". Based on reading a stored FBS
+    parquet. Relies on instructions in the source yaml for how to collapse the columns.
+    :param fbs:
+    :param methodname:
+    :return:
+    """
+    # call on method
+    method = load_method(methodname)
+
+    # identify FBS sector column to drop
+    if method['collapsed_sectors_column'] == fbs_activity_fields[0]:
+        dropcol = fbs_activity_fields[1]
+    else:
+        dropcol = fbs_activity_fields[0]
+    # drop specified sector column
+    fbs_collapsed = fbs.drop(columns=[dropcol])
+    # rename remaining fbs column
+    fbs_collapsed = fbs_collapsed.rename(columns={method['collapsed_sectors_column']: "Sector"})
+    # drop any rows where sector value = None
+    fbs_collapsed = fbs_collapsed[fbs_collapsed['Sector'] != 'None'].reset_index(drop=True)
+    # sort df
+    fbs_collapsed = fbs_collapsed.sort_values(['Location', 'Flowable', 'Context', 'Sector'])
+
+    return fbs_collapsed
 
 
 if __name__ == '__main__':
