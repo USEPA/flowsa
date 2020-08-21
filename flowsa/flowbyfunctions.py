@@ -394,6 +394,8 @@ def allocation_helper(df_w_sector, method, attr):
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
                                                  datasource=attr['helper_source'],
                                                  years=[attr['helper_source_year']])
+    # add any missing fields
+    helper_allocation = add_missing_flow_by_fields(helper_allocation, flow_by_activity_fields)
     # fill null values
     helper_allocation = helper_allocation.fillna(value=fba_fill_na_dict)
     # convert unit

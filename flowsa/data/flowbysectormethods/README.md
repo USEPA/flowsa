@@ -7,8 +7,6 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 2. _target_sector_source_: specify NAICS version 2007, 2012, 2017 (ex. NAICS_2012_Code). Recommend NAICS_2012_Code, as the majority of datasets use 
 this version of NAICS
 3. _target_geoscale_: level of geographic aggregation in output parquet (national, state, or county)
-4. _collapsed_sectors_column_: "SectorProducedBy, "SectorConsumedBy", or "None". Identify the column to keep if planning
-on collapsing the dataframe to retain a single sector column. 
 
 ### Flowbyactivity specifications
 1. _flowbyactivity_sources_: The FBA dataset to be allocated to sectors
