@@ -162,7 +162,7 @@ def usgs_parse(dataframe_list, args):
                      np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
                      np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
                      np.where(df["Description"].str.contains('deliveries'), "TECHNOSPHERE_FLOW",
-                                                                            "UNASSIGNED"))))))
+                                                                            "None"))))))
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
