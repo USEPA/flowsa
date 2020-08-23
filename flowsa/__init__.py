@@ -7,8 +7,8 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 
 import pandas as pd
-import numpy as np
 from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
+from flowsa.flowbyfunctions import collapse_fbs_sectors
 
 
 def getFlowByActivity(flowclass, years, datasource):
@@ -51,33 +51,14 @@ def getFlowBySector(methodname):
 
 def getFlowBySector_collapsed(methodname):
     """
-    Retrieves stored data in the FlowBySector format, collapsing the Sector Produced/Consumed By columns into a single
-    column named "Sector"
+    Retrieves stored data in the FlowBySector format,
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
 
     # load saved FBS parquet
     fbs = getFlowBySector(methodname)
-
-    # collapse the FBS sector columns into one column based on FlowType
-    fbs.loc[:, 'Sector'] = np.where(fbs["FlowType"] == 'TECHNOSPHERE_FLOW', fbs["SectorConsumedBy"], "None")
-    fbs.loc[:, 'Sector'] = np.where(fbs["FlowType"] == 'WASTE_FLOW', fbs["SectorProducedBy"], fbs['Sector'])
-    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'WASTE_FLOW') & (fbs['SectorProducedBy'] == "None"),
-                                    fbs["SectorConsumedBy"], fbs['Sector'])
-    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorProducedBy'] == "None"),
-                                    fbs["SectorConsumedBy"], fbs['Sector'])
-    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'] == "None"),
-                                    fbs["SectorProducedBy"], fbs['Sector'])
-
-    # drop sector consumed/produced by columns
-    fbs_collapsed = fbs.drop(columns=['SectorProducedBy', 'SectorConsumedBy'])
-    # reorder df columns
-    fbs_collapsed = fbs_collapsed[['Flowable', 'Class', 'Sector', 'Context', 'Location', 'LocationSystem', 'FlowAmount',
-                                   'Unit', 'FlowType', 'Year', 'MeasureofSpread', 'Spread', 'DistributionType', 'Min',
-                                   'Max', 'DataReliability', 'TemporalCorrelation', 'GeographicCorrelation',
-                                   'TechnologicalCorrelation', 'DataCollection']]
-    # sort dataframe
-    fbs_collapsed = fbs_collapsed.sort_values(['Location', 'Flowable', 'Context', 'Sector']).reset_index(drop=True)
-
+    fbs_collapsed = collapse_fbs_sectors(fbs)
     return fbs_collapsed
+
+

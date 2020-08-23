@@ -574,3 +574,33 @@ def assign_fips_location_system(df, year_of_data):
         log.warning("Missing FIPS codes from crosswalk for " + year_of_data + ". Temporarily assigning to FIPS_2010")
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
     return df
+
+
+def collapse_fbs_sectors(fbs):
+    """
+    Collapses the Sector Produced/Consumed into a single column named "Sector"
+    uses
+    :param fbs: a standard FlowBySector (format)
+    :return:
+    """
+
+    # collapse the FBS sector columns into one column based on FlowType
+    fbs.loc[:, 'Sector'] = np.where(fbs["FlowType"] == 'TECHNOSPHERE_FLOW', fbs["SectorConsumedBy"], "None")
+    fbs.loc[:, 'Sector'] = np.where(fbs["FlowType"] == 'WASTE_FLOW', fbs["SectorProducedBy"], fbs['Sector'])
+    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'WASTE_FLOW') & (fbs['SectorProducedBy'] == "None"),
+                                    fbs["SectorConsumedBy"], fbs['Sector'])
+    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorProducedBy'] == "None"),
+                                    fbs["SectorConsumedBy"], fbs['Sector'])
+    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'] == "None"),
+                                    fbs["SectorProducedBy"], fbs['Sector'])
+
+    # drop sector consumed/produced by columns
+    fbs_collapsed = fbs.drop(columns=['SectorProducedBy', 'SectorConsumedBy'])
+    # reorder df columns
+    fbs_collapsed = fbs_collapsed[['Flowable', 'Class', 'Sector', 'Context', 'Location', 'LocationSystem', 'FlowAmount',
+                                   'Unit', 'FlowType', 'Year', 'MeasureofSpread', 'Spread', 'DistributionType', 'Min',
+                                   'Max', 'DataReliability', 'TemporalCorrelation', 'GeographicCorrelation',
+                                   'TechnologicalCorrelation', 'DataCollection']]
+    # sort dataframe
+    fbs_collapsed = fbs_collapsed.sort_values(['Location', 'Flowable', 'Context', 'Sector']).reset_index(drop=True)
+    return fbs_collapsed
