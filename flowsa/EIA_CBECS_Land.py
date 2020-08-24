@@ -59,8 +59,8 @@ def eia_cbecs_call(url, cbesc_response, args):
                     value_name="FlowAmount")
     elif("b12.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
-        df_data = pd.DataFrame(df_raw_data.loc[47:52]).reindex()
-        df_rse = pd.DataFrame(df_raw_rse.loc[47:52]).reindex()
+        df_data = pd.DataFrame(df_raw_data.loc[46:50]).reindex()
+        df_rse = pd.DataFrame(df_raw_rse.loc[46:50]).reindex()
 
         df_data.columns = ["Compartment", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
@@ -76,8 +76,8 @@ def eia_cbecs_call(url, cbesc_response, args):
                     value_name="FlowAmount")
     elif ("b14.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
-        df_data = pd.DataFrame(df_raw_data.loc[29:33]).reindex()
-        df_rse = pd.DataFrame(df_raw_rse.loc[29:33]).reindex()
+        df_data = pd.DataFrame(df_raw_data.loc[27:31]).reindex()
+        df_rse = pd.DataFrame(df_raw_rse.loc[27:31]).reindex()
 
         df_data.columns = ["Compartment", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
@@ -93,6 +93,7 @@ def eia_cbecs_call(url, cbesc_response, args):
                                value_name="FlowAmount")
 
     df = pd.merge(df_rse, df_data)
+    print(df)
     return df
 
 def eia_cbecs_parse(dataframe_list, args):
@@ -101,12 +102,18 @@ def eia_cbecs_parse(dataframe_list, args):
     df_array = []
     for dataframes in dataframe_list:
         # rename column(s)
+        #indexNames = df[df['ActivityConsumedBy'] == "before 1920"].index
+        #print(df['ActivityConsumedBy'])
+        #df.drop(indexNames, inplace=True)
         dataframes = dataframes.rename(columns={'Name': 'ActivityConsumedBy'})
         if "Location" not in list(dataframes):
             dataframes["Location"] = "00000"
             dataframes["LocationSystem"] = "FIPS_2010"
+            dataframes = dataframes.drop(dataframes[dataframes.Compartment == "Any elevators"].index)
+            dataframes["Compartment"] = dataframes["Compartment"] + " floors"
         else:
-            dataframes["Location"] = get_region_and_division_codes()
+            dataframes = dataframes.drop(dataframes[dataframes.ActivityConsumedBy == "Before 1920"].index)
+            dataframes["Location"] = get_region_and_division_codes()["Division"]
             dataframes['LocationSystem'] = "Census_Division"
             dataframes["Compartment"] = "All Buildings"
             dataframes['Location'] = dataframes['Location'].replace(float("NaN"), '00000')
@@ -126,5 +133,7 @@ def eia_cbecs_parse(dataframe_list, args):
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
 
+
+    #    df.drop(df[df["ActivityConsumedBy"] == "before 1920"].index, inplace=True)
     return df
 
