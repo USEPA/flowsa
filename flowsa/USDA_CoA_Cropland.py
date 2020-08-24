@@ -32,9 +32,9 @@ def CoA_Cropland_URL_helper(build_url, config, args):
                 if y == "ECONOMICS":
                     url = url.replace(
                         "AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc=AREA BEARING %26 NON-BEARING",
-                        "AREA")
+                        "AREA&statisticcat_desc=AREA OPERATED")
                 else:
-                    url = url.replace("&commmodity_desc=AG LAND", "")
+                    url = url.replace("&commodity_desc=AG LAND&commodity_desc=FARM OPERATIONS", "")
                 url = url.replace(" ", "%20")
                 urls.append(url)
             else:
@@ -47,9 +47,9 @@ def CoA_Cropland_URL_helper(build_url, config, args):
                     if y == "ECONOMICS":
                         url = url.replace(
                             "AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc=AREA BEARING %26 NON-BEARING",
-                            "AREA")
+                            "AREA&statisticcat_desc=AREA OPERATED")
                     else:
-                        url = url.replace("&commmodity_desc=AG LAND", "")
+                        url = url.replace("&commodity_desc=AG LAND&commodity_desc=FARM OPERATIONS", "")
                     url = url.replace(" ", "%20")
                     urls.append(url)
     return urls
@@ -64,35 +64,44 @@ def coa_cropland_call(url, coa_response, args):
 def coa_cropland_parse(dataframe_list, args):
     """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
     (irrigated and total). Data is split into two parquets, one for acreage and the other for operations"""
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(dataframe_list, sort=False)
     # specify desired data based on domain_desc
-    df = df[df['domain_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'TOTAL', 'AREA BEARING & NON-BEARING', 'AREA'])]
+    df = df[~df['domain_desc'].isin(['ECONOMIC CLASS', 'FARM SALES', 'IRRIGATION STATUS', 'CONCENTRATION',
+                                     'ORGANIC STATUS'])]
+    df = df[df['statisticcat_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'AREA BEARING & NON-BEARING',
+                                          'AREA'])]
+    # drop rows that subset data into farm sizes (ex. 'area harvested: (1,000 to 1,999 acres)
+    df = df[~df['domaincat_desc'].str.contains(' ACRES')].reset_index(drop=True)
     # Many crops are listed as their own commodities as well as grouped within a broader category (for example, orange
     # trees are also part of orchards). As this dta is not needed, takes up space, and can lead to double counting if
     # included, want to drop these unused columns
-    # subset dataframe into the 5 crop types and drop rows
+    # subset dataframe into the 5 crop types and land in farms and drop rows
     # crop totals: drop all data
     # field crops: don't want certain commodities and don't want detailed types of wheat, cotton, or sunflower
     df_fc = df[df['group_desc'] == 'FIELD CROPS']
     df_fc = df_fc[~df_fc['commodity_desc'].isin(['GRASSES', 'GRASSES & LEGUMES, OTHER', 'LEGUMES', 'HAY', 'HAYLAGE'])]
     df_fc = df_fc[~df_fc['class_desc'].str.contains('SPRING|WINTER|TRADITIONAL|OIL|PIMA|UPLAND', regex=True)]
+    df_fc = df_fc[~df_fc['domain_desc'].isin(['NAICS CLASSIFICATION'])]
     # fruit and tree nuts: only want a few commodities
     df_ftn = df[df['group_desc'] == 'FRUIT & TREE NUTS']
     df_ftn = df_ftn[df_ftn['commodity_desc'].isin(['BERRY TOTALS', 'ORCHARDS'])]
     df_ftn = df_ftn[df_ftn['class_desc'].isin(['ALL CLASSES'])]
+    df_ftn = df_ftn[~df_ftn['domain_desc'].isin(['NAICS CLASSIFICATION'])]
     # horticulture: only want a few commodities
     df_h = df[df['group_desc'] == 'HORTICULTURE']
     df_h = df_h[df_h['commodity_desc'].isin(['CUT CHRISTMAS TREES', 'SHORT TERM WOODY CROPS'])]
+    df_h = df_h[~df_h['domain_desc'].isin(['NAICS CLASSIFICATION'])]
     # vegetables: only want a few commodities
     df_v = df[df['group_desc'] == 'VEGETABLES']
     df_v = df_v[df_v['commodity_desc'].isin(['VEGETABLE TOTALS'])]
-    # only want ag land in farms & land & assets
+    df_v = df_v[~df_v['domain_desc'].isin(['NAICS CLASSIFICATION'])]
+    # only want ag land and farm operations in farms & land & assets
     df_fla = df[df['group_desc'] == 'FARMS & LAND & ASSETS']
-    df_fla = df_fla[df_fla['short_desc'].str.contains("AG LAND")]
+    df_fla = df_fla[df_fla['short_desc'].str.contains("AG LAND|FARM OPERATIONS")]
     # concat data frames
-    df = pd.concat([df_fc, df_ftn, df_h, df_v, df_fla])
+    df = pd.concat([df_fc, df_ftn, df_h, df_v, df_fla]).reset_index(drop=True)
     # drop unused columns
-    df = df.drop(columns=['agg_level_desc', 'domain_desc', 'location_desc', 'state_alpha', 'sector_desc',
+    df = df.drop(columns=['agg_level_desc', 'location_desc', 'state_alpha', 'sector_desc',
                           'country_code', 'begin_code', 'watershed_code', 'reference_period_desc',
                           'asd_desc', 'county_name', 'source_desc', 'congr_district_code', 'asd_code',
                           'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
@@ -101,8 +110,29 @@ def coa_cropland_parse(dataframe_list, args):
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
     df['Location'] = df['state_fips_code'] + df['county_code']
     df.loc[df['Location'] == '99000', 'Location'] = US_FIPS  # modify national level fips
+
+    # subset into naics classification and other to assign flowname/activity/compartment
+    df_n = df[df['domain_desc'] == 'NAICS CLASSIFICATION']
+    df = df[df['domain_desc'] != 'NAICS CLASSIFICATION']
+    # NAICS classification data
+    # flowname
+    df_n.loc[:, 'FlowName'] = df_n['commodity_desc'] + ', ' + df_n['class_desc'] + ', ' + df_n['prodn_practice_desc']
+    df_n.loc[:, 'FlowName'] = df_n['FlowName'].str.replace(", ALL PRODUCTION PRACTICES", "", regex=True)
+    # activity consumed/produced by
+    df_n.loc[:, 'Activity'] = df_n['domaincat_desc']
+    df_n.loc[:, 'Activity'] = df_n['Activity'].str.replace("NAICS CLASSIFICATION: ", "", regex=True)
+    df_n.loc[:, 'Activity'] = df_n['Activity'].str.replace('[()]+', '')
+    df_n['ActivityProducedBy'] = np.where(df_n["unit_desc"] == 'OPERATIONS', df_n["Activity"], 'None')
+    df_n['ActivityConsumedBy'] = np.where(df_n["unit_desc"] == 'ACRES', df_n["Activity"], 'None')
+    # compartment
+    # df_n.loc[:, 'Compartment'] = df_n['prodn_practice_desc'] + ', ' + df_n['domain_desc']
+    # df_n.loc[:, 'Compartment'] = df_n['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)
+
+    # address non-NAICS classification data
     # use info from other columns to determine flow name
-    df['FlowName'] = np.where(df["unit_desc"] == 'OPERATIONS', df["unit_desc"], df['statisticcat_desc'])
+    df.loc[:, 'FlowName'] = df['statisticcat_desc'] + ', ' + df['prodn_practice_desc']
+    df.loc[:, 'FlowName'] = df['FlowName'].str.replace(", ALL PRODUCTION PRACTICES", "", regex=True)
+    df.loc[:, 'FlowName'] = df['FlowName'].str.replace(", IN THE OPEN", "", regex=True)
     # combine column information to create activity information, and create two new columns for activities
     df['Activity'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + df['util_practice_desc']  # drop this column later
     df['Activity'] = df['Activity'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
@@ -110,15 +140,19 @@ def coa_cropland_parse(dataframe_list, args):
     df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], 'None')
     df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], 'None')
     # add compartment based on values from other columns
-    df['Compartment'] = df['prodn_practice_desc'] + ', ' + df['domaincat_desc']
-    df['Compartment'] = df['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)
-    df['Compartment'] = df['Compartment'].str.replace("IN THE OPEN, ", "", regex=True)
+    # df['Compartment'] = df['prodn_practice_desc'] + ', ' + df['domaincat_desc']
+    # df['Compartment'] = df['Compartment'].str.replace("ALL PRODUCTION PRACTICES, ", "", regex=True)
+    # df['Compartment'] = df['Compartment'].str.replace("IN THE OPEN, ", "", regex=True)
+
+    # concat data frames
+    df = pd.concat([df, df_n]).reset_index(drop=True)
+
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount", "unit_desc": "Unit",
                             "year": "Year", "CV (%)": "Spread",
                             "short_desc": "Description"})
     # drop remaining unused columns
-    df = df.drop(columns=['Activity', 'class_desc', 'commodity_desc', 'state_fips_code', 'county_code',
+    df = df.drop(columns=['Activity', 'class_desc', 'commodity_desc', 'domain_desc', 'state_fips_code', 'county_code',
                           'statisticcat_desc', 'prodn_practice_desc', 'domaincat_desc', 'util_practice_desc'])
     # modify contents of units column
     df.loc[df['Unit'] == 'OPERATIONS', 'Unit'] = 'p'
