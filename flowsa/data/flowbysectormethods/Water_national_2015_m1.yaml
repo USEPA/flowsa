@@ -55,12 +55,11 @@ flowbyactivity_sources:
         allocation_sector_aggregation: 'agg'
         allocation_source_year: 2017
         allocation_flow:
-          - "AREA HARVESTED"
-          - "AREA IN PRODUCTION"
-          - "AREA"
-          - 'AREA BEARING & NON-BEARING'
-        allocation_compartment:
-          - "IRRIGATED, NOT SPECIFIED"
+          - "AREA HARVESTED, IRRIGATED"
+          - "AREA IN PRODUCTION, IRRIGATED"
+          - "AREA, IRRIGATED"
+          - 'AREA BEARING & NON-BEARING, IRRIGATED'
+        allocation_compartment: None
         allocation_from_scale: county
         allocation_helper: yes
         helper_source: "USDA_IWMS"

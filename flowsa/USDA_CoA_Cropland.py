@@ -69,7 +69,7 @@ def coa_cropland_parse(dataframe_list, args):
     df = df[~df['domain_desc'].isin(['ECONOMIC CLASS', 'FARM SALES', 'IRRIGATION STATUS', 'CONCENTRATION',
                                      'ORGANIC STATUS'])]
     df = df[df['statisticcat_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'AREA BEARING & NON-BEARING',
-                                          'AREA'])]
+                                          'AREA', 'AREA OPERATED'])]
     # drop rows that subset data into farm sizes (ex. 'area harvested: (1,000 to 1,999 acres)
     df = df[~df['domaincat_desc'].str.contains(' ACRES')].reset_index(drop=True)
     # Many crops are listed as their own commodities as well as grouped within a broader category (for example, orange
@@ -118,6 +118,7 @@ def coa_cropland_parse(dataframe_list, args):
     # flowname
     df_n.loc[:, 'FlowName'] = df_n['commodity_desc'] + ', ' + df_n['class_desc'] + ', ' + df_n['prodn_practice_desc']
     df_n.loc[:, 'FlowName'] = df_n['FlowName'].str.replace(", ALL PRODUCTION PRACTICES", "", regex=True)
+    df_n.loc[:, 'FlowName'] = df_n['FlowName'].str.replace(", ALL CLASSES", "", regex=True)
     # activity consumed/produced by
     df_n.loc[:, 'Activity'] = df_n['domaincat_desc']
     df_n.loc[:, 'Activity'] = df_n['Activity'].str.replace("NAICS CLASSIFICATION: ", "", regex=True)
