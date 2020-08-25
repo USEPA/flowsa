@@ -109,7 +109,7 @@ def aggregator(df, groupbycols):
 
     # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
     possible_column_headers = ('Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
-                               'GeographicCorrelation', 'TechnologicalCorrelation',
+                               'GeographicalCorrelation', 'TechnologicalCorrelation',
                                'DataCollection')
 
     # list of column headers that do exist in the df being aggregated

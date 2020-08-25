@@ -150,7 +150,7 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'Max': [{'dtype': 'float'}, {'required': False}],
                          'DataReliability': [{'dtype': 'float'}, {'required': True}],
                          'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
-                         'GeographicCorrelation': [{'dtype': 'float'}, {'required': True}],
+                         'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'DataCollection': [{'dtype': 'float'}, {'required': True}]
                          }
