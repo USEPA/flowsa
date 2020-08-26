@@ -450,6 +450,9 @@ def allocation_helper(df_w_sector, method, attr):
     if attr['helper_from_scale'] == 'national':
         modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']],
                                                     how='left')
+    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'state'):
+        modified_fba_allocation = df_w_sector.merge(
+            helper_allocation[['Sector', 'Location', 'HelperFlow']], how='left')
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
         helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(
             lambda x: str(x[0:2]))
