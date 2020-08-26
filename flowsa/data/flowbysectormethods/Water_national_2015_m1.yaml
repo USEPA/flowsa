@@ -29,7 +29,7 @@ flowbyactivity_sources:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: county
-        allocation_helper: no
+        allocation_helper: 'no'
       activity_set_2:
         names:
         - "Industrial"
@@ -44,7 +44,7 @@ flowbyactivity_sources:
           - "Number of employees"
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: no
+        allocation_helper: 'no'
       activity_set_3:
         names:
         - "Irrigation Crop"
@@ -60,9 +60,9 @@ flowbyactivity_sources:
           - "AREA, IRRIGATED"
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
         allocation_compartment: None
-        allocation_from_scale:
+        allocation_from_scale: county
         allocation_disaggregation_fxn: disaggregate_pastureland
-        allocation_helper: yes
+        allocation_helper: 'yes'
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
@@ -86,7 +86,7 @@ flowbyactivity_sources:
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: county
-        allocation_helper: yes
+        allocation_helper: 'yes'
         helper_source: "USGS_WU_Coef"
         helper_method: multiplication
         helper_source_class: "Water"
