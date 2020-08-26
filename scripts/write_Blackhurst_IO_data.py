@@ -1,4 +1,4 @@
-# write_IO_data_from_Blackhurst.py (scripts)
+# write_Blackhurst_IO_data.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 
