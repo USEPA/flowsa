@@ -31,15 +31,17 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     fba_fill_na_dict, fbs_fill_na_dict, harmonize_units, fba_default_grouping_fields, \
     add_missing_flow_by_fields, fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match, \
-    check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales
+    check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales, clean_df
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
+from flowsa.USDA_CoA_Cropland import disaggregate_pastureland
 from flowsa.datachecks import sector_flow_comparision
 
 
 def parse_args():
     """Make year and source script parameters"""
     ap = argparse.ArgumentParser()
-    ap.add_argument("-m", "--method", required=True, help="Method for flow by sector file. A valid method config file must exist with this name.")
+    ap.add_argument("-m", "--method", required=True, help="Method for flow by sector file. "
+                                                          "A valid method config file must exist with this name.")
     args = vars(ap.parse_args())
     return args
 
@@ -94,13 +96,7 @@ def main(method_name):
             log.info("Cleaning up " + k + " FlowByActivity")
             flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
 
-        # ensure datatypes correct
-        flows = add_missing_flow_by_fields(flows, flow_by_activity_fields)
-
-        # drop description field
-        flows = flows.drop(columns='Description')
-        # fill null values
-        flows = flows.fillna(value=fba_fill_na_dict)
+        flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict)
 
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
@@ -149,7 +145,8 @@ def main(method_name):
             flow_subset = pd.concat(flow_subset_list, sort=False).reset_index(drop=True)
 
             # location column pad zeros if necessary
-            flow_subset.loc[:, 'Location'] = flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5 else x)
+            flow_subset.loc[:, 'Location'] = \
+                flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5 else x)
 
             # Add sectors to df activity, depending on level of specified sector aggregation
             log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)))
@@ -174,20 +171,13 @@ def main(method_name):
 
             else:
                 # determine appropriate allocation dataset
-                log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " + str(attr['allocation_source_year']))
+                log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " +
+                         str(attr['allocation_source_year']))
                 fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
                                                           datasource=attr['allocation_source'],
                                                           years=[attr['allocation_source_year']]).reset_index(drop=True)
 
-                # ensure correct data types
-                fba_allocation = add_missing_flow_by_fields(fba_allocation, flow_by_activity_fields)
-                # drop description field
-                fba_allocation = fba_allocation.drop(columns='Description')
-
-                # fill null values
-                fba_allocation = fba_allocation.fillna(value=fba_fill_na_dict)
-                # harmonize units across dfs
-                fba_allocation = harmonize_units(fba_allocation)
+                fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
 
                 # subset based on yaml settings
                 if attr['allocation_flow'] != 'None':
@@ -207,7 +197,8 @@ def main(method_name):
                 to_scale = v['geoscale_to_use']
                 # if allocation df is less aggregated than FBA df, aggregate allocation df to target scale
                 if fips_number_key[from_scale] > fips_number_key[to_scale]:
-                    fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale, fba_default_grouping_fields, names)
+                    fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale,
+                                                     fba_default_grouping_fields, names)
                 # else, if usgs is more aggregated than allocation table, use usgs as both to and from scale
                 else:
                     fba_allocation = filter_by_geoscale(fba_allocation, from_scale, names)
@@ -226,6 +217,12 @@ def main(method_name):
                 fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
                 # drop columns
                 fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
+
+                # call on fxn to further disaggregate the fba allocation data, if exists
+                if 'allocation_disaggregation_fxn' in attr:
+                    log.info("Futher disaggregating sectors in " + attr['allocation_source'])
+                    fba_allocation_subset = getattr(sys.modules[__name__],
+                                                    attr["allocation_disaggregation_fxn"])(fba_allocation_subset, attr)
 
                 # if there is an allocation helper dataset, modify allocation df
                 if attr['allocation_helper'] == 'yes':
@@ -264,7 +261,7 @@ def main(method_name):
                 # merge the flowamount columns
                 fbs.loc[:, 'FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
 
-                # check if fba and allocation dfs have data for same geoscales - comment back in after address the 'todo'
+                # check if fba and alloc dfs have data for same geoscales - comment back in after address the 'todo'
                 # log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
                 # check_if_data_exists_for_same_geoscales(fbs, k, attr['names'])
 

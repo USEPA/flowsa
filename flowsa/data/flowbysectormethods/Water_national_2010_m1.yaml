@@ -61,6 +61,7 @@ flowbyactivity_sources:
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
+        allocation_disaggregation_fxn: disaggregate_pastureland
         allocation_helper: yes
         helper_source: "USDA_IWMS"
         helper_method: multiplication

@@ -35,11 +35,12 @@ parameter should be 'None'
 8. _allocation_flow_: a list of relevant 'FlowName' values, as found in the source flowbyactivity parquet
 9. _allocation_compartment_: a list of relevant 'Compartment' values, as found in the source flowbyactivity parquet
 10. _allocation_from_scale_: national, state, or county - dependent on allocation source, as not every level exits for sources
-11. _allocation_helper_: 'yes' if second dataset is needed for allocation, 'no' if not
-12. _helper_source_: secondary df for sector allocation
-13. _helper_method_: currently written for 'multiplication'
-14. _helper_source_class_: specific 'FlowClass' found in the allocation source flowbyactivity parquet
-15. _helper_sector_aggregation_: 'agg' or 'disagg' (see _activity_sector_aggregation_ for explanation)
-16. _helper_source_year_: specific to the allocation datasets, use the year relevant to the main FBA dataframe
-17._helper_flow_: a list of relevant 'FlowName' values, as found in the source flowbyactivity parquet
-18._helper_from_scale_: national, state, or county - dependent on allocation source, as not every level exits for sources
+11. _allocation_disaggregation_fxn_: call on a function to further disaggregate a sector if necessary
+12. _allocation_helper_: 'yes' if second dataset is needed for allocation, 'no' if not
+13. _helper_source_: secondary df for sector allocation
+14. _helper_method_: currently written for 'multiplication'
+15. _helper_source_class_: specific 'FlowClass' found in the allocation source flowbyactivity parquet
+16. _helper_sector_aggregation_: 'agg' or 'disagg' (see _activity_sector_aggregation_ for explanation)
+17. _helper_source_year_: specific to the allocation datasets, use the year relevant to the main FBA dataframe
+18._helper_flow_: a list of relevant 'FlowName' values, as found in the source flowbyactivity parquet
+19._helper_from_scale_: national, state, or county - dependent on allocation source, as not every level exits for sources
