@@ -46,6 +46,11 @@ USDA_CoA_Cropland:
     - Other
   sector-like_activities: False
   activity_schema:
+USDA_CoA_Cropland_NAICS:
+  class:
+    - Land
+  sector-like_activities: True
+  activity_schema:
 USDA_CoA_Livestock:
   class: Other
   sector-like_activities: False
