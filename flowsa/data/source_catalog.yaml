@@ -50,17 +50,9 @@ USDA_CoA_Cropland_NAICS:
   class:
     - Land
   sector-like_activities: True
-  activity_schema:
+  activity_schema: NAICS_2012_Code
 USDA_CoA_Livestock:
   class: Other
-  sector-like_activities: False
-  activity_schema:
-USDA_CoA_ProdMarkValue:
-  class: Money
-  sector-like_activities: False
-  activity_schema:
-USDA_CropValues_and_MeatProduction:
-  class: Money
   sector-like_activities: False
   activity_schema:
 USDA_ERS_FIWS:
