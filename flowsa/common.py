@@ -115,6 +115,7 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'FlowName': [{'dtype': 'str'}, {'required': True}],
                            'FlowAmount': [{'dtype': 'float'}, {'required': True}],
                            'Unit': [{'dtype': 'str'}, {'required': True}],
+                           'FlowType': [{'dtype': 'str'}, {'required': True}],
                            'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
                            'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
                            'Compartment': [{'dtype': 'str'}, {'required': False}],
@@ -149,7 +150,7 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'Max': [{'dtype': 'float'}, {'required': False}],
                          'DataReliability': [{'dtype': 'float'}, {'required': True}],
                          'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
-                         'GeographicCorrelation': [{'dtype': 'float'}, {'required': True}],
+                         'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'DataCollection': [{'dtype': 'float'}, {'required': True}]
                          }
@@ -167,7 +168,8 @@ def unique_activity_names(datasource, years):
     # create single df representing all selected years
     df = []
     for y in years:
-        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
+        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y)
+                             + ".parquet", engine="pyarrow")
         df.append(df)
 
     column_activities = df[["ActivityConsumedBy", "ActivityProducedBy"]].values.ravel()

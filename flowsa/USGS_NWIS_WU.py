@@ -3,9 +3,6 @@
 # coding=utf-8
 
 import io
-import pandas as pd
-import numpy as np
-#from flowsa.datapull import make_http_request, load_from_requests_response, format_url_values
 from flowsa.common import *
 from flowsa.flowbyfunctions import fba_activity_fields, assign_fips_location_system
 
@@ -105,18 +102,18 @@ def usgs_parse(dataframe_list, args):
     # create new columns based on description
     df.loc[:, 'Unit'] = df['Description'].str.rsplit(',').str[-1]
     # create flow name column
-    df.loc[:, 'FlowName'] = pd.np.where(df.Description.str.contains("fresh"), "fresh",
-                     pd.np.where(df.Description.str.contains("saline"), "saline",
-                     pd.np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
+    df.loc[:, 'FlowName'] = np.where(df.Description.str.contains("fresh"), "fresh",
+                     np.where(df.Description.str.contains("saline"), "saline",
+                     np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
     # create flow name column
-    df.loc[:, 'Compartment'] = pd.np.where(df.Description.str.contains("ground"), "ground",
-                        pd.np.where(df.Description.str.contains("Ground"), "ground",
-                        pd.np.where(df.Description.str.contains("surface"), "surface",
-                        pd.np.where(df.Description.str.contains("Surface"), "surface",
-                        pd.np.where(df.Description.str.contains("instream water use"), "surface",  # based on usgs def
-                        pd.np.where(df.Description.str.contains("consumptive"), "air",
-                        pd.np.where(df.Description.str.contains("conveyance"), "water",
-                        pd.np.where(df.Description.str.contains("total"), "total", "total"))))))))
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"), "ground",
+                        np.where(df.Description.str.contains("Ground"), "ground",
+                        np.where(df.Description.str.contains("surface"), "surface",
+                        np.where(df.Description.str.contains("Surface"), "surface",
+                        np.where(df.Description.str.contains("instream water use"), "surface",  # based on usgs def
+                        np.where(df.Description.str.contains("consumptive"), "air",
+                        np.where(df.Description.str.contains("conveyance"), "water",
+                        np.where(df.Description.str.contains("total"), "total", "total"))))))))
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
     df.loc[:, "Unit"] = df['Unit'].str.replace("in ", "", regex=True)
@@ -157,6 +154,15 @@ def usgs_parse(dataframe_list, args):
     # remove commas from activity names
     df.loc[:, 'ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
     df.loc[:, 'ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
+
+    # add FlowType
+    df['FlowType'] = np.where(df["Description"].str.contains('wastewater'), "WASTE_FLOW",
+                     np.where(df["Description"].str.contains('self-supplied'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('Self-supplied'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('deliveries'), "TECHNOSPHERE_FLOW",
+                                                                            "None"))))))
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -266,7 +272,11 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 
 
 def usgs_fba_data_cleanup(df):
-    """Clean up the dataframe to prepare for flowbysector"""
+    """
+    Clean up the dataframe to prepare for flowbysector. Used in flowbysector.py
+    :param df:
+    :return:
+    """
 
     from flowsa.common import US_FIPS
 
@@ -274,7 +284,7 @@ def usgs_fba_data_cleanup(df):
     df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
 
     # drop rows related to wastewater
-    df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
+    # df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
 
     # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
     df = df[~df['Description'].str.lower().str.contains('commercial')]
@@ -301,6 +311,7 @@ def usgs_fba_data_cleanup(df):
 def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     """
     Call on functions to modify the fba with sectors df before being allocated to sectors
+    Used in flowbysector.py
 
     :param df_wsec: a dataframe with sectors
     :param attr: activity set attributes
