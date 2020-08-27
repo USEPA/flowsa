@@ -22,6 +22,26 @@ fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 
 
+def clean_df(df, flowbyfields, fill_na_dict):
+    """
+
+    :param df:
+    :param flowbyfields: flow_by_activity_fields or flow_by_sector_fields
+    :param fill_na_dict: fba_fill_na_dict or fbs_fill_na_dict
+    :return:
+    """
+    # ensure correct data types
+    df = add_missing_flow_by_fields(df, flowbyfields)
+    # drop description field
+    df = df.drop(columns='Description')
+    # fill null values
+    df = df.fillna(value=fill_na_dict)
+    # harmonize units across dfs
+    df = harmonize_units(df)
+
+    return df
+
+
 def create_geoscale_list(df, geoscale, year='2015'):
     """
     Create a list of FIPS associated with given geoscale
@@ -109,7 +129,7 @@ def aggregator(df, groupbycols):
 
     # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
     possible_column_headers = ('Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
-                               'GeographicCorrelation', 'TechnologicalCorrelation',
+                               'GeographicalCorrelation', 'TechnologicalCorrelation',
                                'DataCollection')
 
     # list of column headers that do exist in the df being aggregated
@@ -290,10 +310,6 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
     :return:
     """
     # todo: modify so only returns warning if no value for entire location, not just no value for one of the possible sectors
-    # testing
-    # fba_wsec_walloc = fbs.copy()
-    # source = k
-    # activity = attr['names']
 
     from flowsa.mapping import get_activitytosector_mapping
 
@@ -434,6 +450,9 @@ def allocation_helper(df_w_sector, method, attr):
     if attr['helper_from_scale'] == 'national':
         modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']],
                                                     how='left')
+    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'state'):
+        modified_fba_allocation = df_w_sector.merge(
+            helper_allocation[['Sector', 'Location', 'HelperFlow']], how='left')
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
         helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(
             lambda x: str(x[0:2]))
@@ -472,10 +491,19 @@ def allocation_helper(df_w_sector, method, attr):
     modified_fba_allocation = modified_fba_allocation[
         modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
 
+    #todo: modify the unit
+
     return modified_fba_allocation
 
 
 def sector_aggregation_generalized(df, group_cols):
+    """
+
+    :param df:
+    :param group_cols:
+    :return:
+    """
+
     # drop any columns that contain a "-" in sector column
     df = df[~df['Sector'].str.contains('-', regex=True)].reset_index(drop=True)
 
@@ -491,7 +519,8 @@ def sector_aggregation_generalized(df, group_cols):
         sector_list = sector_subset['Sector'].apply(
             lambda x: x[0:i]).drop_duplicates().values.tolist()
         # create a list of sectors that are exactly i digits long
-        existing_sectors = sector_subset['Sector'].apply(lambda x: len(x) == i)
+        existing_sectors = sector_subset.loc[sector_subset['Sector'].apply(lambda x: len(x) == i)]
+        existing_sectors = existing_sectors['Sector'].drop_duplicates().dropna().values.tolist()
         # list of sectors of length i that are not in sector list
         missing_sectors = [e for e in sector_list if e not in existing_sectors]
         if len(missing_sectors) != 0:

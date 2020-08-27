@@ -9,10 +9,10 @@
    url_params:
      source_desc: "CENSUS"
      sector_desc: "__secLevel__" # CROPS or ECONOMICS
-     # if economics, replace statisticcat_desc with "AREA"
+     # if economics, replace statisticcat_desc with "AREA" and "AREA OPERATED"
      statisticcat_desc: "AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc=AREA BEARING %26 NON-BEARING"
      # only want commodity_desc as part of URL if sector_desc = Economics
-     commmodity_desc: "AG LAND"
+     commodity_desc: "AG LAND&commodity_desc=FARM OPERATIONS"
      unit_desc: "ACRES&unit_desc=OPERATIONS" # want two unit types
      agg_level_desc: "__aggLevel__" # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL", "STATE", or "COUNTY"
      state_alpha: "__stateAlpha__" # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
