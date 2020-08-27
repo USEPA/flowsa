@@ -20,8 +20,6 @@ def eia_cbecs_URL_helper(build_url, config, args):
     This function does not parse the data, only modifies the urls from which data is obtained. """
     # initiate url list for coa cropland data
     urls = []
-
-
     # replace "__xlsx_name__" in build_url to create three urls
     for x in config['xlsx']:
         url = build_url
@@ -93,18 +91,13 @@ def eia_cbecs_call(url, cbesc_response, args):
                                value_name="FlowAmount")
 
     df = pd.merge(df_rse, df_data)
-    print(df)
     return df
 
 def eia_cbecs_parse(dataframe_list, args):
     # concat dataframes
-   # df = pd.concat(dataframe_list, sort=False).dropna()
     df_array = []
     for dataframes in dataframe_list:
         # rename column(s)
-        #indexNames = df[df['ActivityConsumedBy'] == "before 1920"].index
-        #print(df['ActivityConsumedBy'])
-        #df.drop(indexNames, inplace=True)
         dataframes = dataframes.rename(columns={'Name': 'ActivityConsumedBy'})
         if "Location" not in list(dataframes):
             dataframes["Location"] = "00000"
@@ -132,8 +125,5 @@ def eia_cbecs_parse(dataframe_list, args):
     df['FlowName'] = "Total Floorspace"
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
-
-
-    #    df.drop(df[df["ActivityConsumedBy"] == "before 1920"].index, inplace=True)
     return df
 
