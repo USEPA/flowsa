@@ -124,7 +124,10 @@ def eia_mecs_parse(dataframe_list, args):
             row["FlowName"] = flow_name_array[0]
             unit_text = flow_name_array[1]
             unit_text_array = unit_text.split(")")
-            unit.append(unit_text_array[0])
+            if unit_text_array[0] == "counts":
+                unit.append(("p"))
+            else:
+                unit.append(unit_text_array[0])
             ACB = row["ActivityConsumedBy"]
             ACB_str = str(ACB).strip()
             row["ActivityConsumedBy"] = ACB_str
