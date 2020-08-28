@@ -114,6 +114,20 @@ def eia_mecs_parse(dataframe_list, args):
 
         dataframes = dataframes.rename(columns={'NAICS Code(a)': 'ActivityConsumedBy'})
         dataframes = dataframes.rename(columns={'Subsector and Industry': 'Description'})
+        dataframes.loc[dataframes.Description == "Total", "ActivityConsumedBy"] = "31-33"
+        unit = []
+        for index, row in dataframes.iterrows():
+            if row["FlowName"] == "Establishments(b) (counts)":
+                row["FlowName"] = "Establishments (counts)"
+            flow_name_str = row["FlowName"]
+            flow_name_array = flow_name_str.split("(")
+            row["FlowName"] = flow_name_array[0]
+            unit_text = flow_name_array[1]
+            unit_text_array = unit_text.split(")")
+            unit.append(unit_text_array[0])
+            ACB = row["ActivityConsumedBy"]
+            ACB_str = str(ACB).strip()
+            row["ActivityConsumedBy"] = ACB_str
         df_array.append(dataframes)
     df = pd.concat(df_array, sort=False)
 
@@ -125,8 +139,9 @@ def eia_mecs_parse(dataframe_list, args):
     df['Year'] = args["year"]
     df["Compartment"] = None
     df['MeasureofSpread'] = "RSE"
+    df['Location'] = "US_FIPS"
+    df['Unit'] = unit
+    df = assign_fips_location_system(df, args['year'])
 
-
-    #    df.drop(df[df["ActivityConsumedBy"] == "before 1920"].index, inplace=True)
     return df
 
