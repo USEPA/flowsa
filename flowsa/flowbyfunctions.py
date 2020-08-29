@@ -104,6 +104,8 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
         df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
+        # pad zeros
+        df.loc[:, 'Location'] = df['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5 else x)
     elif to_scale == 'national':
         df.loc[:, 'Location'] = US_FIPS
 
@@ -614,6 +616,8 @@ def sector_aggregation(df, group_cols):
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
     df = df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
+
+    #todo: address instances where we have values for naics4, but not naics5/6, but there is only one naics5/6 associated with that naics4
 
     return df
 

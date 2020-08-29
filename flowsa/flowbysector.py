@@ -161,18 +161,13 @@ def main(method_name):
                         log.info("Subsetting " + activity_from_scale + " data")
                         flow_subset = filter_by_geoscale(flow_subset, activity_from_scale, n)
 
-                    flow_subset_list.append(flow_subset)
-                flow_subset = pd.concat(flow_subset_list, sort=False).reset_index(drop=True)
-
-                # location column pad zeros if necessary
-                flow_subset.loc[:, 'Location'] = \
-                    flow_subset['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5 else x)
-
-                # Add sectors to df activity, depending on level of specified sector aggregation
-                log.info("Adding sectors to " + k + " for " + ', '.join(map(str, names)))
-                flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                                 sectorsourcename=method['target_sector_source'],
-                                                                 levelofSectoragg=attr['activity_sector_aggregation'])
+                    # Add sectors to df activity, depending on level of specified sector aggregation
+                    log.info("Adding sectors to " + k + " for " + n)
+                    flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
+                                                                     sectorsourcename=method['target_sector_source'],
+                                                                     levelofSectoragg=attr['activity_sector_aggregation'])
+                    flow_subset_list.append(flow_subset_wsec)
+                flow_subset_wsec = pd.concat(flow_subset_list, sort=False).reset_index(drop=True)
 
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
