@@ -76,7 +76,7 @@ def load_source_dataframe(k, v):
         flows_df = flowsa.getFlowBySector(k)
     elif v['data_format'] == 'FBS_outside_flowsa':
         log.info("Retrieving flowbysector for datasource " + k)
-        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(v)
+        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(v['parameters'])
     else:
         log.error("No parquet file found for datasource " + k)
 
