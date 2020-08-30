@@ -473,9 +473,9 @@ def allocation_helper(df_w_sector, method, attr):
         replacement_values[['Sector', 'ReplacementValue']], how='left')
     modified_fba_allocation.loc[:, 'HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(
         modified_fba_allocation['ReplacementValue'])
-    modified_fba_allocation.loc[:, 'HelperFlow'][modified_fba_allocation['HelperFlow'] == 0] = \
-    modified_fba_allocation['ReplacementValue']
-
+    modified_fba_allocation.loc[:, 'HelperFlow'] = np.where(modified_fba_allocation['HelperFlow'] == 0,
+                                                            modified_fba_allocation['ReplacementValue'],
+                                                            modified_fba_allocation['HelperFlow'])
     # modify flow amounts using helper data
     if attr['helper_method'] == 'multiplication':
         # replace non-existent helper flow values with a 0, so after multiplying, don't have incorrect value associated
@@ -515,24 +515,27 @@ def sector_aggregation_generalized(df, group_cols):
     # appends missing naics levels to df
     for i in range(length - 1, 1, -1):
         # subset df to sectors with length = i and length = i + 1
-        df_subset = df.loc[df['Sector'].apply(lambda x: i + 2 > len(x) >= i)]
+        df_subset = df.loc[df['Sector'].apply(lambda x: i + 1 >= len(x) >= i)]
         # create a list of i digit sectors in df subset
-        sector_subset = df_subset[['Sector']].drop_duplicates().reset_index(drop=True)
-        sector_list = sector_subset['Sector'].apply(
-            lambda x: x[0:i]).drop_duplicates().values.tolist()
+        sector_subset = df_subset[['Location', 'Sector']].drop_duplicates().reset_index(drop=True)
+        df_sectors = sector_subset.copy()
+        df_sectors.loc[:, 'Sector'] = df_sectors['Sector'].apply(lambda x: x[0:i])
+        sector_list = df_sectors.drop_duplicates().values.tolist()
         # create a list of sectors that are exactly i digits long
-        existing_sectors = sector_subset.loc[sector_subset['Sector'].apply(lambda x: len(x) == i)]
-        existing_sectors = existing_sectors['Sector'].drop_duplicates().dropna().values.tolist()
+        df_existing = sector_subset.loc[sector_subset['Sector'].apply(lambda x: len(x) == i)]
+        existing_sectors = df_existing.drop_duplicates().dropna().values.tolist()
         # list of sectors of length i that are not in sector list
         missing_sectors = [e for e in sector_list if e not in existing_sectors]
         if len(missing_sectors) != 0:
             # new df of sectors that start with missing sectors. drop last digit of the sector and sum flows
             # set conditions
             agg_sectors_list = []
-            for x in missing_sectors:
+            for x, y in missing_sectors:
+                c1 = df_subset['Location'] == x
+                c2 = df_subset['Sector'].str.startswith(y)
                 # subset data
-                agg_sectors_list.append(df_subset.loc[df_subset['Sector'].str.startswith(x)])
-            agg_sectors = pd.concat(agg_sectors_list)
+                agg_sectors_list.append(df_subset.loc[c1 & c2])
+            agg_sectors = pd.concat(agg_sectors_list, sort=False)
             agg_sectors = agg_sectors.loc[agg_sectors['Sector'].apply(lambda x: len(x) > i)]
             agg_sectors.loc[:, 'Sector'] = agg_sectors['Sector'].apply(lambda x: str(x[0:i]))
             agg_sectors = agg_sectors.fillna(0).reset_index()
@@ -540,7 +543,43 @@ def sector_aggregation_generalized(df, group_cols):
             agg_sectors = aggregator(agg_sectors, group_cols)
             agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
             # append to df
-            df = df.append(agg_sectors, sort=False).reset_index(drop=True)
+            df = df.append(agg_sectors).reset_index(drop=True)
+
+    # # drop any columns that contain a "-" in sector column
+    # df = df[~df['Sector'].str.contains('-', regex=True)].reset_index(drop=True)
+    #
+    # # find the longest length sector
+    # length = max(df['Sector'].apply(lambda x: len(x)).unique())
+    # # for loop in reverse order longest length naics minus 1 to 2
+    # # appends missing naics levels to df
+    # for i in range(length - 1, 1, -1):
+    #     # subset df to sectors with length = i and length = i + 1
+    #     df_subset = df.loc[df['Sector'].apply(lambda x: i + 2 > len(x) >= i)]
+    #     # create a list of i digit sectors in df subset
+    #     sector_subset = df_subset[['Sector']].drop_duplicates().reset_index(drop=True)
+    #     sector_list = sector_subset['Sector'].apply(
+    #         lambda x: x[0:i]).drop_duplicates().values.tolist()
+    #     # create a list of sectors that are exactly i digits long
+    #     existing_sectors = sector_subset.loc[sector_subset['Sector'].apply(lambda x: len(x) == i)]
+    #     existing_sectors = existing_sectors['Sector'].drop_duplicates().dropna().values.tolist()
+    #     # list of sectors of length i that are not in sector list
+    #     missing_sectors = [e for e in sector_list if e not in existing_sectors]
+    #     if len(missing_sectors) != 0:
+    #         # new df of sectors that start with missing sectors. drop last digit of the sector and sum flows
+    #         # set conditions
+    #         agg_sectors_list = []
+    #         for x in missing_sectors:
+    #             # subset data
+    #             agg_sectors_list.append(df_subset.loc[df_subset['Sector'].str.startswith(x)])
+    #         agg_sectors = pd.concat(agg_sectors_list, sort=False)
+    #         agg_sectors = agg_sectors.loc[agg_sectors['Sector'].apply(lambda x: len(x) > i)]
+    #         agg_sectors.loc[:, 'Sector'] = agg_sectors['Sector'].apply(lambda x: str(x[0:i]))
+    #         agg_sectors = agg_sectors.fillna(0).reset_index()
+    #         # aggregate the new sector flow amounts
+    #         agg_sectors = aggregator(agg_sectors, group_cols)
+    #         agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
+    #         # append to df
+    #         df = df.append(agg_sectors, sort=False).reset_index(drop=True)
 
     return df
 
@@ -553,6 +592,13 @@ def sector_aggregation(df, group_cols):
     :return:
     """
 
+    #from flowsa.mapping import add_missing_naics5_and_naics6
+
+    # #testing
+    # df = naics.copy()
+    #df = naics.loc[naics['SectorConsumedBy'].apply(lambda x: x[0:4]) == '1113']
+    # group_cols = fbs_default_grouping_fields
+
     # drop any columns that contain a "-" in sector column
     df = df[(~df[fbs_activity_fields[0]].str.contains('-', regex=True)) |
             (~df[fbs_activity_fields[1]].str.contains('-', regex=True))].reset_index(drop=True)
@@ -564,20 +610,25 @@ def sector_aggregation(df, group_cols):
     # appends missing naics levels to df
     for i in range(length - 1, 1, -1):
         # subset df to sectors with length = i and length = i + 1
-        df_subset = df.loc[df[fbs_activity_fields[0]].apply(lambda x: i + 2 > len(x) >= i) |
-                           df[fbs_activity_fields[1]].apply(lambda x: i + 2 > len(x) >= i)]
+        df_subset = df.loc[df[fbs_activity_fields[0]].apply(lambda x: i + 1 >= len(x) >= i) |
+                           df[fbs_activity_fields[1]].apply(lambda x: i + 1 >= len(x) >= i)]
         # create a list of i digit sectors in df subset
         sector_subset = df_subset[
-            [fbs_activity_fields[0], fbs_activity_fields[1]]].drop_duplicates().reset_index(
+            ['Location', fbs_activity_fields[0], fbs_activity_fields[1]]].drop_duplicates().reset_index(
             drop=True)
         df_sectors = sector_subset.copy()
-        for col in df_sectors:
-            df_sectors.loc[:, col] = df_sectors[col].apply(lambda x: x[0:i])
+        df_sectors.loc[:, 'SectorProducedBy'] = df_sectors['SectorProducedBy'].apply(lambda x: x[0:i])
+        df_sectors.loc[:, 'SectorConsumedBy'] = df_sectors['SectorConsumedBy'].apply(lambda x: x[0:i])
         sector_list = df_sectors.drop_duplicates().values.tolist()
         # create a list of sectors that are exactly i digits long
-        df_existing = sector_subset.copy()
-        for col in df_existing:
-            df_existing.loc[:, col] = df_existing.loc[df_existing[col].apply(lambda x: len(x) == i)]
+        # where either sector column is i digits in length
+        df_existing_1 = sector_subset.loc[(sector_subset['SectorProducedBy'].apply(lambda x: len(x) == i)) |
+                                          (sector_subset['SectorConsumedBy'].apply(lambda x: len(x) == i))]
+        # where both sector colums are i digits in length
+        df_existing_2 = sector_subset.loc[(sector_subset['SectorProducedBy'].apply(lambda x: len(x) == i)) &
+                                          (sector_subset['SectorConsumedBy'].apply(lambda x: len(x) == i))]
+        # concat existing dfs
+        df_existing = pd.concat([df_existing_1, df_existing_2], sort=False)
         existing_sectors = df_existing.drop_duplicates().dropna().values.tolist()
         # list of sectors of length i that are not in sector list
         missing_sectors = [e for e in sector_list if e not in existing_sectors]
@@ -585,14 +636,16 @@ def sector_aggregation(df, group_cols):
             # new df of sectors that start with missing sectors. drop last digit of the sector and sum flows
             # set conditions
             agg_sectors_list = []
-            for x, y in missing_sectors:
-                c1 = df_subset[fbs_activity_fields[0]].str.startswith(x)
-                c2 = df_subset[fbs_activity_fields[1]].str.startswith(y)
+            for x, y, z in missing_sectors:
+                c1 = df_subset['Location'] == x
+                c2 = df_subset[fbs_activity_fields[0]].str.startswith(y)
+                c3 = df_subset[fbs_activity_fields[1]].str.startswith(z)
                 # subset data
-                agg_sectors_list.append(df_subset.loc[c1 & c2])
-            agg_sectors = pd.concat(agg_sectors_list)
+                agg_sectors_list.append(df_subset.loc[c1 & c2 & c3])
+            agg_sectors = pd.concat(agg_sectors_list, sort=False)
             agg_sectors = agg_sectors.loc[
-                agg_sectors[fbs_activity_fields[0]].apply(lambda x: len(x) > i)]
+                (agg_sectors[fbs_activity_fields[0]].apply(lambda x: len(x) > i)) |
+                (agg_sectors[fbs_activity_fields[1]].apply(lambda x: len(x) > i))]
             agg_sectors.loc[:, fbs_activity_fields[0]] = agg_sectors[fbs_activity_fields[0]].apply(
                 lambda x: str(x[0:i]))
             agg_sectors.loc[:, fbs_activity_fields[1]] = agg_sectors[fbs_activity_fields[1]].apply(
@@ -617,7 +670,8 @@ def sector_aggregation(df, group_cols):
     df = df.drop_duplicates()
     df = df.sort_values(['SectorConsumedBy', 'SectorProducedBy']).reset_index(drop=True)
 
-    #todo: address instances where we have values for naics4, but not naics5/6, but there is only one naics5/6 associated with that naics4
+    # add missing naics5/6 when only one naics5/6 associated with a naics4
+    #df = add_missing_naics5_and_naics6(df)
 
     return df
 
