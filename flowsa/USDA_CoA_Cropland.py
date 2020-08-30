@@ -164,6 +164,7 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr):
     :param attr:
     :return:
     """
+
     # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
     fba_w_sector = disaggregate_pastureland(fba_w_sector, attr)
 
@@ -302,35 +303,10 @@ def disaggregate_cropland(fba_w_sector, attr):
         # rename columns
         df_subset = df_subset.rename(columns={"SectorConsumedBy": "Sector"})
         # add new rows of data to crop df
-        crop.append(df_subset)
+        crop = pd.concat([crop, df_subset], sort=False).reset_index(drop=True)
 
-
-        # # create a list of i digit sectors in df subset
-        # sector_subset = crop_subset[['Sector']].drop_duplicates().reset_index(drop=True)
-        # sector_list = sector_subset['Sector'].apply(
-        #     lambda x: x[0:i]).drop_duplicates().values.tolist()
-        # # create a list of sectors that are exactly i digits long
-        # existing_sectors = sector_subset.loc[sector_subset['Sector'].apply(lambda x: len(x) == i)]
-        # existing_sectors = existing_sectors['Sector'].drop_duplicates().dropna().values.tolist()
-        # # list of sectors of length i that are not in sector list
-        # missing_sectors = [e for e in sector_list if e not in existing_sectors]
-        # if len(missing_sectors) != 0:
-        #     # new df of sectors that start with missing sectors. drop last digit of the sector and sum flows
-        #     # set conditions
-        #     agg_sectors_list = []
-        #     for x in missing_sectors:
-        #         # subset data
-        #         agg_sectors_list.append(df_subset.loc[df_subset['Sector'].str.startswith(x)])
-        #     agg_sectors = pd.concat(agg_sectors_list, sort=False)
-        #     agg_sectors = agg_sectors.loc[agg_sectors['Sector'].apply(lambda x: len(x) > i)]
-        #     agg_sectors.loc[:, 'Sector'] = agg_sectors['Sector'].apply(lambda x: str(x[0:i]))
-        #     agg_sectors = agg_sectors.fillna(0).reset_index()
-        #     # aggregate the new sector flow amounts
-        #     agg_sectors = aggregator(agg_sectors, group_cols)
-        #     agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
-        #     # append to df
-        #     df = df.append(agg_sectors, sort=False).reset_index(drop=True)
-
+    # clean up df
+    crop = crop.drop(columns=['Location_tmp'])
 
     return crop
 
@@ -364,16 +340,3 @@ def sector_ratios(df):
     df_w_ratios = pd.concat(sector_ratios, sort=False).reset_index(drop=True)
 
     return df_w_ratios
-
-
-
-
-
-
-
-
-
-
-
-
-

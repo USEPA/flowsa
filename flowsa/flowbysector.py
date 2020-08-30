@@ -33,7 +33,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales, clean_df
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
-from flowsa.USDA_CoA_Cropland import disaggregate_pastureland
+from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics
 from flowsa.datachecks import sector_flow_comparision
 
 

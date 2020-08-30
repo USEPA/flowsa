@@ -62,7 +62,7 @@ source_names:
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: county
-        allocation_disaggregation_fxn: disaggregate_pastureland
+        allocation_disaggregation_fxn: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'yes'
         helper_source: "USDA_IWMS"
         helper_method: multiplication

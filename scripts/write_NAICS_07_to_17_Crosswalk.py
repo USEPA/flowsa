@@ -51,7 +51,7 @@ for file_name in glob.glob(datapath + "activitytosectormapping/"+'*_toNAICS.csv'
     # append to df list
     missing_naics_df_list.append(missing_naics)
 # concat df list and drop duplications
-missing_naics_df = pd.concat(missing_naics_df_list, ignore_index=True, sort=True).drop_duplicates()
+missing_naics_df = pd.concat(missing_naics_df_list, ignore_index=True, sort=False).drop_duplicates()
 # sort df
 missing_naics_df = missing_naics_df.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code'])
 missing_naics_df = missing_naics_df.reset_index(drop=True)
