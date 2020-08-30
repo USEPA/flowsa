@@ -78,7 +78,7 @@ def usgs_parse(dataframe_list, args):
         if 'year' not in df:
             df['year'] = args["year"]
     # concat data frame list based on geography and then parse data
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(dataframe_list, sort=False)
     df_n = df[df['geo'] == 'national']
     df_sc = df[df['geo'] != 'national']
     # drop columns that are all NAs
@@ -88,7 +88,7 @@ def usgs_parse(dataframe_list, args):
     df_sc = pd.melt(df_sc, id_vars=["geo", "state_cd", "state_name", "county_cd", "county_nm", "year"],
                     var_name="Description", value_name="FlowAmount")
     # merge national and state/county dataframes
-    df = pd.concat([df_n, df_sc], sort=True)
+    df = pd.concat([df_n, df_sc], sort=False)
     # drop rows that don't have a record and strip values that have extra symbols
     df.loc[:, 'FlowAmount'] = df['FlowAmount'].str.strip()
     df.loc[:, "FlowAmount"] = df['FlowAmount'].str.replace("a", "", regex=True)
@@ -301,7 +301,7 @@ def usgs_fba_data_cleanup(df):
     df2 = df.loc[df['FlowName'] != 'total']
 
     # concat the two df
-    df = pd.concat([df1, df2])
+    df = pd.concat([df1, df2], sort=False)
     # sort df
     df = df.sort_values(['Location', 'ActivityProducedBy', 'ActivityConsumedBy']).reset_index(drop=True)
 
