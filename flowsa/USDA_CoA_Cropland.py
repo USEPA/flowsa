@@ -308,7 +308,13 @@ def disaggregate_cropland(fba_w_sector, attr):
     # clean up df
     crop = crop.drop(columns=['Location_tmp'])
 
-    return crop
+    # pasture data
+    pasture = fba_w_sector.loc[fba_w_sector['Sector'].apply(lambda x: str(x[0:3])) == '112'].reset_index(drop=True)
+
+    # concat crop and pasture
+    fba_w_sector = pd.concat([pasture, crop], sort=False).reset_index(drop=True)
+
+    return fba_w_sector
 
 
 def sector_ratios(df):
