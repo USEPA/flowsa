@@ -73,8 +73,8 @@ def coa_cropland_NAICS_parse(dataframe_list, args):
     df.loc[:, 'Activity'] = df['domaincat_desc']
     df.loc[:, 'Activity'] = df['Activity'].str.replace("NAICS CLASSIFICATION: ", "", regex=True)
     df.loc[:, 'Activity'] = df['Activity'].str.replace('[()]+', '')
-    df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], 'None')
-    df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], 'None')
+    df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], '')
+    df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], '')
 
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount", "unit_desc": "Unit",

@@ -390,10 +390,6 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     :return: df with FlowAmountRatio for each sector
     """
 
-    # testing
-    # df_w_sectors = fba_allocation_subset.copy()
-    # allocation_method = attr['allocation_method']
-
     # group by columns, remove "FlowName" because some of the allocation tables have multiple variables and grouping
     # by them returns incorrect allocation ratios
     group_cols = fba_default_grouping_fields
@@ -433,9 +429,6 @@ def allocation_helper(df_w_sector, method, attr):
     """
 
     from flowsa.mapping import add_sectors_to_flowbyactivity
-
-    # testing
-    # df_w_sector = fba_allocation_subset.copy()
 
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
                                                  datasource=attr['helper_source'],
@@ -516,9 +509,6 @@ def sector_aggregation_generalized(df, group_cols):
     :param group_cols: columns to group aggregation by
     :return: A df with sector levels summed from the least aggregated level
     """
-
-    # testing
-    # df = df_w_sectors.copy()
 
     # drop any columns that contain a "-" in sector column
     df = df[~df['Sector'].str.contains('-', regex=True)].reset_index(drop=True)
