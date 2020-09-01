@@ -61,7 +61,7 @@ source_names:
           - "AREA, IRRIGATED"
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
         allocation_compartment: None
-        allocation_from_scale: county
+        allocation_from_scale: state
         allocation_disaggregation_fxn: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'yes'
         helper_source: "USDA_IWMS"
@@ -86,7 +86,7 @@ source_names:
           - "COLONIES"
         allocation_compartment:
           - "NOT SPECIFIED"
-        allocation_from_scale: county
+        allocation_from_scale: state
         allocation_helper: 'yes'
         helper_source: "USGS_WU_Coef"
         helper_method: multiplication
