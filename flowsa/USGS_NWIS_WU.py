@@ -70,7 +70,7 @@ def usgs_parse(dataframe_list, args):
         if 'state_cd' not in df:
             df['state_cd'] = '00'
         if 'state_name' not in df:
-            df['state_name'] = 'None'
+            df['state_name'] = None
         if 'county_cd' not in df:
             df['county_cd'] = '000'
         if 'county_nm' not in df:
@@ -162,7 +162,7 @@ def usgs_parse(dataframe_list, args):
                      np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
                      np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
                      np.where(df["Description"].str.contains('deliveries'), "TECHNOSPHERE_FLOW",
-                                                                            "None"))))))
+                                                                            ""))))))
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -257,7 +257,7 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     flowbyactivity_df['FlowName'].loc[
         (flowbyactivity_df['Location'] == '00000') & (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
     flowbyactivity_df['Compartment'].loc[
-        (flowbyactivity_df['Compartment'] == 'None') & (flowbyactivity_df['Location'] == '00000')] = 'total'
+        (flowbyactivity_df['Compartment'] is None) & (flowbyactivity_df['Location'] == '00000')] = 'total'
 
     # standardize activity names across geoscales
     for f in fba_activity_fields:
@@ -294,7 +294,7 @@ def usgs_fba_data_cleanup(df):
     df1 = df.loc[df['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
     c1 = df1['Location'] == US_FIPS
-    c2 = (df1['ActivityProducedBy'] != 'None') & (df1['ActivityConsumedBy'] != 'None')
+    c2 = (df1['ActivityProducedBy'] is not None) & (df1['ActivityConsumedBy'] is not None)
     # subset data
     df1 = df1.loc[c1 | c2].reset_index(drop=True)
 
@@ -318,13 +318,13 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     :return:
     """
 
-    df = modify_sector_length(df_wsec)
+    df = modify_sector_length(df_wsec, attr)
     df = filter_out_activities(df, attr)
 
     return df
 
 
-def modify_sector_length(df_wsec):
+def modify_sector_length(df_wsec, attr):
     """
     After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
     another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
@@ -337,42 +337,47 @@ def modify_sector_length(df_wsec):
     # the activity(ies) whose sector length should be modified
     activities = ["Public Supply"]
 
-    # subset data
-    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] == 'None') |
-                      (df_wsec['SectorConsumedBy'] == 'None')].reset_index(drop=True)
-    df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] != 'None') &
-                      (df_wsec['SectorConsumedBy'] != 'None')].reset_index(drop=True)
+    if activities in attr['names']:
 
-    # concat data into single dataframe
-    if len(df2) != 0:
-        df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities),
-                                                df2['SectorProducedBy'].str.len(), 0)
-        df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities),
-                                                df2['SectorConsumedBy'].str.len(), df2['LengthToModify'])
-        df2.loc[:, 'TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities),
-                                              df2['SectorConsumedBy'].str.len(), 0)
-        df2.loc[:, 'TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities),
-                                              df2['SectorProducedBy'].str.len(), df2['TargetLength'])
+        # subset data
+        df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] is None) |
+                          (df_wsec['SectorConsumedBy'] is None)].reset_index(drop=True)
+        df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] is None) &
+                          (df_wsec['SectorConsumedBy'] is None)].reset_index(drop=True)
 
-        df2.loc[:, 'SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
-            else x['SectorProducedBy'], axis=1)
-        df2.loc[:, 'SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
-            else x['SectorConsumedBy'], axis=1)
+        # concat data into single dataframe
+        if len(df2) != 0:
+            df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities),
+                                                    df2['SectorProducedBy'].str.len(), 0)
+            df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities),
+                                                    df2['SectorConsumedBy'].str.len(), df2['LengthToModify'])
+            df2.loc[:, 'TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities),
+                                                  df2['SectorConsumedBy'].str.len(), 0)
+            df2.loc[:, 'TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities),
+                                                  df2['SectorProducedBy'].str.len(), df2['TargetLength'])
 
-        df2.loc[:, 'SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
-            else x['SectorProducedBy'], axis=1)
-        df2.loc[:, 'SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
-            else x['SectorConsumedBy'], axis=1)
+            df2.loc[:, 'SectorProducedBy'] = df2.apply(
+                lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+                else x['SectorProducedBy'], axis=1)
+            df2.loc[:, 'SectorConsumedBy'] = df2.apply(
+                lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+                else x['SectorConsumedBy'], axis=1)
 
-        df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
+            df2.loc[:, 'SectorProducedBy'] = df2.apply(
+                lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+                else x['SectorProducedBy'], axis=1)
+            df2.loc[:, 'SectorConsumedBy'] = df2.apply(
+                lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+                else x['SectorConsumedBy'], axis=1)
 
-        df = pd.concat([df1, df2], sort=False)
+            df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
+
+            df = pd.concat([df1, df2], sort=False)
+        else:
+            df = df1.copy()
+
     else:
-        df = df1.copy()
+        df = df_wsec.copy()
 
     return df
 
