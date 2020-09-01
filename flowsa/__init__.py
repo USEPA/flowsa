@@ -49,7 +49,7 @@ def getFlowBySector(methodname):
     return fbs
 
 
-def getFlowBySector_collapsed(methodname):
+def getFlowBySectorCollapsed(methodname):
     """
     Retrieves stored data in the FlowBySector format,
     :param methodname: string, Name of an available method for the given class
