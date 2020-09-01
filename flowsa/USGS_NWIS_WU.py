@@ -337,47 +337,42 @@ def modify_sector_length(df_wsec, attr):
     # the activity(ies) whose sector length should be modified
     activities = ["Public Supply"]
 
-    if activities in attr['names']:
+    # subset data
+    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'].isnull()) |
+                      (df_wsec['SectorConsumedBy'].isnull())].reset_index(drop=True)
+    df2 = df_wsec.loc[(~df_wsec['SectorProducedBy'].isnull()) &
+                      (~df_wsec['SectorConsumedBy'].isnull())].reset_index(drop=True)
 
-        # subset data
-        df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] is None) |
-                          (df_wsec['SectorConsumedBy'] is None)].reset_index(drop=True)
-        df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] is None) &
-                          (df_wsec['SectorConsumedBy'] is None)].reset_index(drop=True)
+    # concat data into single dataframe
+    if len(df2) != 0:
+        df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities),
+                                                df2['SectorProducedBy'].str.len(), 0)
+        df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities),
+                                                df2['SectorConsumedBy'].str.len(), df2['LengthToModify'])
+        df2.loc[:, 'TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities),
+                                              df2['SectorConsumedBy'].str.len(), 0)
+        df2.loc[:, 'TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities),
+                                              df2['SectorProducedBy'].str.len(), df2['TargetLength'])
 
-        # concat data into single dataframe
-        if len(df2) != 0:
-            df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities),
-                                                    df2['SectorProducedBy'].str.len(), 0)
-            df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities),
-                                                    df2['SectorConsumedBy'].str.len(), df2['LengthToModify'])
-            df2.loc[:, 'TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities),
-                                                  df2['SectorConsumedBy'].str.len(), 0)
-            df2.loc[:, 'TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities),
-                                                  df2['SectorProducedBy'].str.len(), df2['TargetLength'])
+        df2.loc[:, 'SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+            else x['SectorProducedBy'], axis=1)
+        df2.loc[:, 'SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+            else x['SectorConsumedBy'], axis=1)
 
-            df2.loc[:, 'SectorProducedBy'] = df2.apply(
-                lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
-                else x['SectorProducedBy'], axis=1)
-            df2.loc[:, 'SectorConsumedBy'] = df2.apply(
-                lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
-                else x['SectorConsumedBy'], axis=1)
+        df2.loc[:, 'SectorProducedBy'] = df2.apply(
+            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+            else x['SectorProducedBy'], axis=1)
+        df2.loc[:, 'SectorConsumedBy'] = df2.apply(
+            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+            else x['SectorConsumedBy'], axis=1)
 
-            df2.loc[:, 'SectorProducedBy'] = df2.apply(
-                lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
-                else x['SectorProducedBy'], axis=1)
-            df2.loc[:, 'SectorConsumedBy'] = df2.apply(
-                lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
-                else x['SectorConsumedBy'], axis=1)
+        df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
 
-            df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
-
-            df = pd.concat([df1, df2], sort=False)
-        else:
-            df = df1.copy()
-
+        df = pd.concat([df1, df2], sort=False)
     else:
-        df = df_wsec.copy()
+        df = df1.copy()
 
     return df
 
