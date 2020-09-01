@@ -67,23 +67,22 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     # Merge in with flowbyactivity by
     flowbyactivity_wsector_df = flowbyactivity_df
     for k, v in activity_fields.items():
-            sector_direction = k
-            flowbyactivity_field = v[0]["flowbyactivity"]
-            flowbysector_field = v[1]["flowbysector"]
-            sector_type_field = sector_direction+'SectorType'
-            mappings_df_tmp = mappings_df.rename(columns={'Activity':flowbyactivity_field,
-                                                          'Sector':flowbysector_field,
-                                                          'SectorType':sector_type_field})
-            # column doesn't exist for sector-like activities, so ignore if error occurs
-            mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
-            # Merge them in. Critical this is a left merge to preserve all unmapped rows
-            flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df, mappings_df_tmp,
-                                                 how='left', on=flowbyactivity_field)
-            # replace nan in sector columns with none
-            # flowbyactivity_wsector_df[flowbysector_field] = flowbyactivity_wsector_df[flowbysector_field].replace(
-            #     {np.nan: None}).astype(str)
-            # temporarily replace 'None' with None until old code modified
-            flowbyactivity_wsector_df = flowbyactivity_wsector_df.replace({'None': None})
+        sector_direction = k
+        flowbyactivity_field = v[0]["flowbyactivity"]
+        flowbysector_field = v[1]["flowbysector"]
+        sector_type_field = sector_direction+'SectorType'
+        mappings_df_tmp = mappings_df.rename(columns={'Activity':flowbyactivity_field,
+                                                      'Sector':flowbysector_field,
+                                                      'SectorType':sector_type_field})
+        # column doesn't exist for sector-like activities, so ignore if error occurs
+        mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
+        # set column types
+        mappings_df_tmp[flowbysector_field] = mappings_df_tmp[flowbysector_field].astype(str)
+        # replace nan in sector columns with none
+        mappings_df_tmp[flowbysector_field] = mappings_df_tmp[flowbysector_field].replace({'nan': None})
+        # Merge them in. Critical this is a left merge to preserve all unmapped rows
+        flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df, mappings_df_tmp,
+                                             how='left', on=flowbyactivity_field)
 
     return flowbyactivity_wsector_df
 

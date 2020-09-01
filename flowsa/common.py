@@ -215,8 +215,12 @@ def generalize_activity_field_names(df):
     :param fba_df:
     :return:
     """
+
     # testing
-    # df = fba_allocation_subset.copy()
+    #df = fba_allocation_subset.copy()
+
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None})
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None})
 
     activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
     activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
@@ -231,22 +235,7 @@ def generalize_activity_field_names(df):
         df = df.rename(columns={'ActivityConsumedBy': 'Activity',
                                 'SectorConsumedBy': 'Sector'})
     else:
-        print('else true')
         log.error('Cannot generalize dataframe')
-
-    # # if an activity field column is all 'none', drop the column and rename renaming activity columns to generalize
-    # # todo: modify after ensuring 'None' values are not strings
-    # if (all(v is None for v in activity_consumed_list)) | (all(v == 'None' for v in activity_consumed_list)):
-    #     df = df.drop(columns=['ActivityConsumedBy', 'SectorConsumedBy'])
-    #     df = df.rename(columns={'ActivityProducedBy': 'Activity',
-    #                             'SectorProducedBy': 'Sector'})
-    # elif (all(v is None for v in activity_produced_list)) | (all(v == 'None' for v in activity_produced_list)):
-    #     df = df.drop(columns=['ActivityProducedBy', 'SectorProducedBy'])
-    #     df = df.rename(columns={'ActivityConsumedBy': 'Activity',
-    #                             'SectorConsumedBy': 'Sector'})
-    # else:
-    #     print('else true')
-    #     log.error('Cannot generalize dataframe')
 
     return df
 
