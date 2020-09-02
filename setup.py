@@ -20,6 +20,7 @@ setup(
         'pycountry>=19.8.18',
         'xlrd>=1.2.0',
         'requests_ftp==0.3.1'
+        'tabula-py => 2.1.1'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',
