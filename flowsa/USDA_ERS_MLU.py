@@ -45,11 +45,11 @@ def mlu_parse(dataframe_list, args):
                     if(col != "SortOrder" and col != "Region" and col != "Region or State" and col != "Year"):
                         data["Class"] = "Land"
                         data["SourceName"] = "USDA_ERS_MLU"
-                        data["FlowName"] = "None"
+                        data["FlowName"] = None
                         data["FlowAmount"] = int(row[col])
-                        data["ActivityProducedBy"] = "None"
+                        data["ActivityProducedBy"] = None
                         data["ActivityConsumedBy"] = col
-                        data["Compartment"] = "None"
+                        data["Compartment"] = None
                         data["Location"] = location
                         data["Year"] = int(args['year'])
                         data["Unit"] = "Thousand Acres"

@@ -27,7 +27,7 @@ def sc_call(url, sc_response, args):
 
 def sc_parse(dataframe_list, args):
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(dataframe_list, sort=False)
     # drop columns
     df = df.drop(columns=['COORDINATE', 'DECIMALS', 'DGUID', 'SYMBOL', 'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR'])
     # rename columns

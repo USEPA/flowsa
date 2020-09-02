@@ -1,0 +1,13 @@
+# Queries Manufacturing Energy Consumption Survey (MBECS) Land
+---
+# api_name: EIA_MBECS_Land
+# api_key_required: false
+format: xlsx
+url:
+  base_url: "https://www.eia.gov/consumption/manufacturing/data/__years__/xls/table9_1.xlsx"
+url_replace_fxn: eia_mecs_URL_helper
+call_response_fxn: eia_mecs_call
+parse_response_fxn: eia_mecs_parse
+years:
+  - 2010
+  - 2014

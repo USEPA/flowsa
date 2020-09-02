@@ -24,6 +24,7 @@ from flowsa.USDA_IWMS import *
 from flowsa.USGS_NWIS_WU import *
 from flowsa.USDA_ERS_MLU import *
 from flowsa.EIA_CBECS_Land import *
+from flowsa.EIA_MECS_Land import *
 
 
 def parse_args():

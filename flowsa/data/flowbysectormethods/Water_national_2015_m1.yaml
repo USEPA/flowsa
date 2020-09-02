@@ -5,8 +5,9 @@
 target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
-flowbyactivity_sources:
+source_names:
   "USGS_NWIS_WU":
+    data_format: 'FBA'
     class: Water
     geoscale_to_use: county
     year: 2015
@@ -60,8 +61,9 @@ flowbyactivity_sources:
           - "AREA, IRRIGATED"
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
         allocation_compartment: None
-        allocation_from_scale: county
-        allocation_disaggregation_fxn: disaggregate_pastureland
+        allocation_from_scale: state
+        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        allocation_disaggregation_fxn: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'yes'
         helper_source: "USDA_IWMS"
         helper_method: multiplication
@@ -85,7 +87,7 @@ flowbyactivity_sources:
           - "COLONIES"
         allocation_compartment:
           - "NOT SPECIFIED"
-        allocation_from_scale: county
+        allocation_from_scale: state
         allocation_helper: 'yes'
         helper_source: "USGS_WU_Coef"
         helper_method: multiplication

@@ -71,3 +71,15 @@ USGS_WU_Coef:
   class: Water
   sector-like_activities: False
   activity_schema:
+USDA_ERS_MLU:
+  class: Land
+  sector-like_activities: False
+  activity_schema:
+EIA_CBECS_Land:
+  class: Land
+  sector-like_activities: False
+  activity_schema:
+EIA_MECS_Land:
+  class: Land
+  sector-like_activities: False
+  activity_schema:

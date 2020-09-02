@@ -8,8 +8,10 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 this version of NAICS
 3. _target_geoscale_: level of geographic aggregation in output parquet (national, state, or county)
 
-### Flowbyactivity specifications
-1. _flowbyactivity_sources_: The FBA dataset to be allocated to sectors
+### Source specifications (in FBA or FBS format)
+1. _source_names_: The name of the FBS dataset or the FBA dataset requiring allocation to sectors
+2. _data_format_: 'FBA', 'FBS', 'FBS_outside_flowsa', loads a FlowByActivity or a FlowBySector parquet stored in flowsa,
+or calls on a specified function to load data from outside flowsa in FBS format
 2. _class_: a text string in 'Class' column of flowbyactivity (ex. Water)
 3. _geoscale_to_use_: the geoscale of the FBA set to use for sector allocation (national, state, or county)
 4. _year_: year of available dataset (ex. 2015)
