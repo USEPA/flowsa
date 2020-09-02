@@ -62,6 +62,7 @@ source_names:
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
+        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         allocation_disaggregation_fxn: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'yes'
         helper_source: "USDA_IWMS"

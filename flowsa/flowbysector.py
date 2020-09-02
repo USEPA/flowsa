@@ -33,7 +33,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales, clean_df,\
     sector_disaggregation
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
-from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics
+from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.datachecks import sector_flow_comparision
 
 
@@ -200,6 +200,11 @@ def main(method_name):
                     if attr['allocation_compartment'] != 'None':
                         fba_allocation = fba_allocation.loc[
                             fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
+                    # cleanup the fba allocation df, if necessary
+                    if 'clean_allocation_fba' in attr:
+                        log.info("Cleaning " + attr['allocation_source'])
+                        fba_allocation = getattr(sys.modules[__name__],
+                                                 attr["clean_allocation_fba"])(fba_allocation)
                     # reset index
                     fba_allocation = fba_allocation.reset_index(drop=True)
 
@@ -223,6 +228,7 @@ def main(method_name):
                     fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
                                                                    sectorsourcename=method['target_sector_source'],
                                                                    levelofSectoragg=attr['allocation_sector_aggregation'])
+
                     # subset fba datsets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
                     fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)

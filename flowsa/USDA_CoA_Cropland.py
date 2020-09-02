@@ -68,11 +68,15 @@ def coa_cropland_parse(dataframe_list, args):
     df = pd.concat(dataframe_list, sort=False)
     # specify desired data based on domain_desc
     df = df[~df['domain_desc'].isin(['ECONOMIC CLASS', 'FARM SALES', 'IRRIGATION STATUS', 'CONCENTRATION',
-                                     'ORGANIC STATUS', 'NAICS CLASSIFICATION'])]
+                                     'ORGANIC STATUS', 'NAICS CLASSIFICATION', 'PRODUCERS'])]
     df = df[df['statisticcat_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'AREA BEARING & NON-BEARING',
                                           'AREA', 'AREA OPERATED'])]
     # drop rows that subset data into farm sizes (ex. 'area harvested: (1,000 to 1,999 acres)
     df = df[~df['domaincat_desc'].str.contains(' ACRES')].reset_index(drop=True)
+    # drop Descriptions that contain certain phrases, as these data are included in other categories
+    df = df[~df['short_desc'].str.contains('FRESH MARKET|PROCESSING|ENTIRE CROP|NONE OF CROP|PART OF CROP')]
+    # drop Descriptions that contain certain phrases - only occur in AG LAND data
+    df = df[~df['short_desc'].str.contains('INSURANCE|OWNED|RENTED|FAILED|FALLOW|IDLE')].reset_index(drop=True)
     # Many crops are listed as their own commodities as well as grouped within a broader category (for example, orange
     # trees are also part of orchards). As this dta is not needed, takes up space, and can lead to double counting if
     # included, want to drop these unused columns
@@ -95,6 +99,10 @@ def coa_cropland_parse(dataframe_list, args):
     # only want ag land and farm operations in farms & land & assets
     df_fla = df[df['group_desc'] == 'FARMS & LAND & ASSETS']
     df_fla = df_fla[df_fla['short_desc'].str.contains("AG LAND|FARM OPERATIONS")]
+    # drop the irrigated acreage in farms (want the irrigated harvested acres)
+    df_fla = df_fla[((df_fla['domaincat_desc'] == 'AREA CROPLAND, HARVESTED:(ANY)') &
+                     (df_fla['domain_desc'] == 'AREA CROPLAND, HARVESTED ') &
+                     (df_fla['short_desc'] == 'AG LAND, IRRIGATED - ACRES'))]
     # concat data frames
     df = pd.concat([df_fc, df_ftn, df_h, df_v, df_fla], sort=False).reset_index(drop=True)
     # drop unused columns
@@ -117,8 +125,8 @@ def coa_cropland_parse(dataframe_list, args):
     df['Activity'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + df['util_practice_desc']  # drop this column later
     df['Activity'] = df['Activity'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
     df['Activity'] = df['Activity'].str.replace(", ALL UTILIZATION PRACTICES", "", regex=True)  # not interested in all data from class_desc
-    df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], '')
-    df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], '')
+    df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], None)
+    df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], None)
 
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount", "unit_desc": "Unit",
@@ -141,10 +149,6 @@ def coa_cropland_parse(dataframe_list, args):
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
     df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
-    # drop Descriptions that contain certain phrases, as these data are included in other categories
-    df = df[~df['Description'].str.contains('FRESH MARKET|PROCESSING|ENTIRE CROP|NONE OF CROP|PART OF CROP')]
-    # drop Descriptions that contain certain phrases - only occur in AG LAND data
-    df = df[~df['Description'].str.contains('INSURANCE|OWNED|RENTED|FAILED|FALLOW|IDLE')].reset_index(drop=True)
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
     # Add hardcoded data
@@ -155,6 +159,19 @@ def coa_cropland_parse(dataframe_list, args):
     df['DataCollection'] = 2
 
     return df
+
+
+def coa_irrigated_cropland_fba_cleanup(fba):
+    """
+    When using irrigated cropland, aggregate sectors to cropland and total ag land. Doing this because published values
+    for irrigated harvested cropland do not include the water use for vegetables, woody crops, berries.
+    :param fba:
+    :return:
+    """
+
+    fba = fba[~fba['ActivityConsumedBy'].isin(['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])]
+
+    return fba
 
 
 def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr):
@@ -185,6 +202,7 @@ def disaggregate_pastureland(fba_w_sector, attr):
     import flowsa
     from flowsa.flowbyfunctions import allocate_by_sector, clean_df, flow_by_activity_fields, \
         fba_fill_na_dict
+
 
     # subset the coa data so only pastureland
     p = fba_w_sector.loc[fba_w_sector['Sector'] == '112']
@@ -238,7 +256,7 @@ def disaggregate_cropland(fba_w_sector, attr):
     """
 
     import flowsa
-    from flowsa.flowbyfunctions import allocate_by_sector, generalize_activity_field_names, sector_aggregation,\
+    from flowsa.flowbyfunctions import generalize_activity_field_names, sector_aggregation,\
         fbs_default_grouping_fields, clean_df, fba_fill_na_dict, add_missing_flow_by_fields
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
