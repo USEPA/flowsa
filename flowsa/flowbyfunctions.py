@@ -741,7 +741,7 @@ def sector_disaggregation_generalized(fbs):
         # create new columns that are length i
         df_subset.loc[:, 'Sector_tmp'] = df_subset['Sector'].apply(lambda x: x[0:i])
         # subset the df to the rows where the tmp sector columns are in naics list
-        df_subset_1 = df_subset.loc[df_subset['Sector_tmp'].isin(sector_list)]
+        df_subset = df_subset.loc[df_subset['Sector_tmp'].isin(sector_list)]
         # drop all rows with duplicate temp values, as a less aggregated naics exists
         df_subset = df_subset.drop_duplicates(subset=['FlowName', 'Compartment', 'Location', 'Sector_tmp'],
                                               keep=False).reset_index(drop=True)
