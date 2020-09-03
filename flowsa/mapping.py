@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
-from flowsa.flowbyfunctions import fbs_activity_fields
+from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk_w_nonnaics
 
 def get_activitytosector_mapping(source):
     """
@@ -207,18 +207,23 @@ def map_elementary_flows(fba, from_fba_source):
 
 
 def get_sector_list(sector_level):
-    cw = load_sector_length_crosswalk()
+
+    cw = load_sector_length_crosswalk_w_nonnaics()
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list
 
 
-def add_non_naics_sectors(sector_list, sector_level):
-
-    # load non-NAICS sectors used with NAICS
-    household = load_household_sector_codes()
-    household = household.loc[household['NAICS_Level_to_Use_For'] == sector_level]
-    # add household sector to sector list
-    sector_list.extend(household['Code'].tolist())
-
-    return sector_list
+# def add_non_naics_sectors(sector_list, sector_level):
+#
+#     # load non-NAICS sectors used with NAICS
+#     household = load_household_sector_codes()
+#     household = household.loc[household['NAICS_Level_to_Use_For'] == sector_level]
+#     # add household sector to sector list
+#     sector_list.extend(household['Code'].tolist())
+#
+#     # temporarily add 4 digit aquacaculture and thermo to the 6 digit level
+#     # todo: write fxn to check for cases where sectors aren't disaggregated to naics6 and instead use the least ag level
+#
+#
+#     return sector_list
