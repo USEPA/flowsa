@@ -322,9 +322,6 @@ def main(method_name):
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
                 fbs = sector_disaggregation(fbs)
 
-                # test agg by sector
-                # sector_agg_comparison = sector_flow_comparision(fbs)
-
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
                 sector_list = get_sector_list(method['target_sector_level'])
