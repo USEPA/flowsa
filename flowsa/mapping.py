@@ -19,7 +19,8 @@ def get_activitytosector_mapping(source):
     if 'EPA_NEI' in source:
         source = 'EPA_NEI'
     mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
-                          dtype={'Activity':'str'})
+                          dtype={'Activity': 'str',
+                                 'Sector': 'str'})
     return mapping
 
 
@@ -62,29 +63,37 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             if levelofSectoragg == 'disagg':
                 mapping = expand_naics_list(mapping, sectorsourcename)
         mappings.append(mapping)
-    mappings_df = pd.concat(mappings)
+    mappings_df = pd.concat(mappings, sort=False)
     # Merge in with flowbyactivity by
     flowbyactivity_wsector_df = flowbyactivity_df
     for k, v in activity_fields.items():
-            sector_direction = k
-            flowbyactivity_field = v[0]["flowbyactivity"]
-            flowbysector_field = v[1]["flowbysector"]
-            sector_type_field = sector_direction+'SectorType'
-            mappings_df_tmp = mappings_df.rename(columns={'Activity':flowbyactivity_field,
-                                                          'Sector':flowbysector_field,
-                                                          'SectorType':sector_type_field})
-            # column doesn't exist for sector-like activities, so ignore if error occurs
-            mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
-            # Merge them in. Critical this is a left merge to preserve all unmapped rows
-            flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp, how='left', on=flowbyactivity_field)
-            # replace nan in sector columns with none
-            flowbyactivity_wsector_df[flowbysector_field] = flowbyactivity_wsector_df[flowbysector_field].replace(
-                {np.nan: None}).astype(str)
+        sector_direction = k
+        flowbyactivity_field = v[0]["flowbyactivity"]
+        flowbysector_field = v[1]["flowbysector"]
+        sector_type_field = sector_direction+'SectorType'
+        mappings_df_tmp = mappings_df.rename(columns={'Activity':flowbyactivity_field,
+                                                      'Sector':flowbysector_field,
+                                                      'SectorType':sector_type_field})
+        # column doesn't exist for sector-like activities, so ignore if error occurs
+        mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
+        # set column types
+        mappings_df_tmp[flowbysector_field] = mappings_df_tmp[flowbysector_field].astype(str)
+        # replace nan in sector columns with none
+        mappings_df_tmp[flowbysector_field] = mappings_df_tmp[flowbysector_field].replace({'nan': None})
+        # Merge them in. Critical this is a left merge to preserve all unmapped rows
+        flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df, mappings_df_tmp,
+                                             how='left', on=flowbyactivity_field)
 
     return flowbyactivity_wsector_df
 
 
 def expand_naics_list(df, sectorsourcename):
+    """
+    Add disaggregated sectors to the crosswalks.
+    :param df:
+    :param sectorsourcename:
+    :return:
+    """
 
     # load master crosswalk
     cw = load_sector_crosswalk()
@@ -98,9 +107,8 @@ def expand_naics_list(df, sectorsourcename):
     sectors = sectors.append(household, sort=True).drop_duplicates().reset_index(drop=True)
     # drop rows that contain hyphenated sectors
     sectors = sectors[~sectors[sectorsourcename].str.contains("-")].reset_index(drop=True)
-
-    # fill null values
-    df.loc[:, 'Sector'] = df['Sector'].astype('str')
+    # drop None
+    sectors = sectors[sectors[sectorsourcename] != "None"]
 
     # create list of sectors that exist in original df, which, if created when expanding sector list cannot be added
     existing_sectors = df[['Sector']]
@@ -162,7 +170,12 @@ def map_elementary_flows(fba, from_fba_source):
     :param from_fba_source: str Source name of fba list to look for mappings
     :return:
     """
+
     from fedelemflowlist import get_flowmapping
+
+    # rename flow name to flowable - remove this once elementary flows are mapped
+    fba = fba.rename(columns={"FlowName": 'Flowable',
+                              "Compartment": "Context"})
 
     flowmapping = get_flowmapping(from_fba_source)
     mapping_fields = ["SourceListName",
@@ -174,22 +187,26 @@ def map_elementary_flows(fba, from_fba_source):
                       "TargetFlowContext",
                       "TargetUnit"]
     if flowmapping.empty:
-        log.ERROR("No mapping file in fedelemflowlist found for " + from_fba_source)
-    flowmapping = flowmapping[mapping_fields]
-    # merge fba with flows
-    fba_mapped_df = pd.merge(fba, flowmapping,
-                             left_on=["Flowable", "Context"],
-                             right_on=["SourceFlowName", "SourceFlowContext"],
-                             how="left")
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] = fba_mapped_df["TargetFlowName"]
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] = fba_mapped_df["TargetFlowContext"]
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df["TargetUnit"]
-    fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
-        fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
+        log.warning("No mapping file in fedelemflowlist found for " + from_fba_source)
+        # return the original df but with columns renamed so can continue working on the FBS
+        fba_mapped_df = fba.copy()
+    else:
+        flowmapping = flowmapping[mapping_fields]
 
-    # drop
-    fba_mapped_df = fba_mapped_df.drop(
-        columns=mapping_fields)
+        # merge fba with flows
+        fba_mapped_df = pd.merge(fba, flowmapping,
+                                 left_on=["Flowable", "Context"],
+                                 right_on=["SourceFlowName", "SourceFlowContext"],
+                                 how="left")
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] = fba_mapped_df["TargetFlowName"]
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] = fba_mapped_df["TargetFlowContext"]
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df["TargetUnit"]
+        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
+            fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
+
+        # drop
+        fba_mapped_df = fba_mapped_df.drop(columns=mapping_fields)
+
     return fba_mapped_df
 
 
@@ -208,9 +225,6 @@ def add_non_naics_sectors(sector_list, sector_level):
     # add household sector to sector list
     sector_list.extend(household['Code'].tolist())
     # add "None" to sector list so don't lose rows when filtering df to match sector length
-    sector_list.extend(["None"])
+    # sector_list.extend(["None"])
 
     return sector_list
-
-
-

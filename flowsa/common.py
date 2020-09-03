@@ -115,6 +115,7 @@ flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'FlowName': [{'dtype': 'str'}, {'required': True}],
                            'FlowAmount': [{'dtype': 'float'}, {'required': True}],
                            'Unit': [{'dtype': 'str'}, {'required': True}],
+                           'FlowType': [{'dtype': 'str'}, {'required': True}],
                            'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
                            'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
                            'Compartment': [{'dtype': 'str'}, {'required': False}],
@@ -135,6 +136,7 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'Class': [{'dtype': 'str'}, {'required': True}],
                          'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
                          'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
+                         'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
                          'Context': [{'dtype': 'str'}, {'required': True}],
                          'Location': [{'dtype': 'str'}, {'required': True}],
                          'LocationSystem': [{'dtype': 'str'}, {'required': True}],
@@ -149,10 +151,33 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'Max': [{'dtype': 'float'}, {'required': False}],
                          'DataReliability': [{'dtype': 'float'}, {'required': True}],
                          'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
-                         'GeographicCorrelation': [{'dtype': 'float'}, {'required': True}],
+                         'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'DataCollection': [{'dtype': 'float'}, {'required': True}]
                          }
+
+flow_by_sector_collapsed_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
+                                   'Class': [{'dtype': 'str'}, {'required': True}],
+                                   'Sector': [{'dtype': 'str'}, {'required': False}],
+                                   'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
+                                   'Context': [{'dtype': 'str'}, {'required': True}],
+                                   'Location': [{'dtype': 'str'}, {'required': True}],
+                                   'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+                                   'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+                                   'Unit': [{'dtype': 'str'}, {'required': True}],
+                                   'FlowType': [{'dtype': 'str'}, {'required': True}],
+                                   'Year': [{'dtype': 'int'}, {'required': True}],
+                                   'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+                                   'Spread': [{'dtype': 'float'}, {'required': False}],
+                                   'DistributionType': [{'dtype': 'str'}, {'required': False}],
+                                   'Min': [{'dtype': 'float'}, {'required': False}],
+                                   'Max': [{'dtype': 'float'}, {'required': False}],
+                                   'DataReliability': [{'dtype': 'float'}, {'required': True}],
+                                   'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
+                                   'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
+                                   'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
+                                   'DataCollection': [{'dtype': 'float'}, {'required': True}]
+                                   }
 
 # A list of activity fields in each flow data format
 activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
@@ -167,14 +192,15 @@ def unique_activity_names(datasource, years):
     # create single df representing all selected years
     df = []
     for y in years:
-        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
+        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y)
+                             + ".parquet", engine="pyarrow")
         df.append(df)
 
     column_activities = df[["ActivityConsumedBy", "ActivityProducedBy"]].values.ravel()
     unique_activities = pd.unique(column_activities)
     df_unique = unique_activities.reshape((-1, 1))
     df_unique = pd.DataFrame({'Activity': df_unique[:, 0]})
-    df_unique = df_unique.loc[df_unique['Activity'] != 'None']
+    df_unique = df_unique.loc[df_unique['Activity'] is not None]
 
     # sort df
     df_unique = df_unique.sort_values(['Activity']).reset_index(drop=True)
@@ -190,16 +216,26 @@ def generalize_activity_field_names(df):
     :return:
     """
 
+    # testing
+    #df = fba_allocation_subset.copy()
+
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None})
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None})
+
+    activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
+    activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
+
     # if an activity field column is all 'none', drop the column and rename renaming activity columns to generalize
-    for k, v in activity_fields.items():
-        if df[v[0]["flowbyactivity"]].all() == 'None':
-            df = df.drop(columns=[v[0]["flowbyactivity"]])
-        else:
-            df = df.rename(columns={v[0]["flowbyactivity"]: 'Activity'})
-        if df[v[1]["flowbysector"]].all() == 'None':
-            df = df.drop(columns=[v[1]["flowbysector"]])
-        else:
-            df = df.rename(columns={v[1]["flowbysector"]: 'Sector'})
+    if all(v is None for v in activity_consumed_list):
+        df = df.drop(columns=['ActivityConsumedBy', 'SectorConsumedBy'])
+        df = df.rename(columns={'ActivityProducedBy': 'Activity',
+                                'SectorProducedBy': 'Sector'})
+    elif all(v is None for v in activity_produced_list):
+        df = df.drop(columns=['ActivityProducedBy', 'SectorProducedBy'])
+        df = df.rename(columns={'ActivityConsumedBy': 'Activity',
+                                'SectorConsumedBy': 'Sector'})
+    else:
+        log.error('Cannot generalize dataframe')
 
     return df
 

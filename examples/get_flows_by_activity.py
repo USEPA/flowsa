@@ -27,8 +27,6 @@ cropland_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Land'], yea
 # "money" based datasets
 fisheries_noaa_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Money'], years=["2012-2018"],
                                                           datasource="NOAA_FisheryLandings")
-prodmarkvalue_coa_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Money'], years=[2012, 2017],
-                                                             datasource="USDA_CoA_ProdMarkValue")
 
 
 # "other" based datasets

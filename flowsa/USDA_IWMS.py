@@ -33,7 +33,7 @@ def iwms_call(url, response, args):
 def iwms_parse(dataframe_list, args):
     """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
     (irrigated and total)."""
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(dataframe_list, sort=False)
     # only interested in total water applied, not water applied by type of irrigation
     df = df[df['domain_desc'] == 'TOTAL']
     # drop unused columns

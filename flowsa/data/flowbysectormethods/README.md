@@ -8,8 +8,10 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 this version of NAICS
 3. _target_geoscale_: level of geographic aggregation in output parquet (national, state, or county)
 
-### Flowbyactivity specifications
-1. _flowbyactivity_sources_: The FBA dataset to be allocated to sectors
+### Source specifications (in FBA or FBS format)
+1. _source_names_: The name of the FBS dataset or the FBA dataset requiring allocation to sectors
+2. _data_format_: 'FBA', 'FBS', 'FBS_outside_flowsa', loads a FlowByActivity or a FlowBySector parquet stored in flowsa,
+or calls on a specified function to load data from outside flowsa in FBS format
 2. _class_: a text string in 'Class' column of flowbyactivity (ex. Water)
 3. _geoscale_to_use_: the geoscale of the FBA set to use for sector allocation (national, state, or county)
 4. _year_: year of available dataset (ex. 2015)
@@ -35,11 +37,12 @@ parameter should be 'None'
 8. _allocation_flow_: a list of relevant 'FlowName' values, as found in the source flowbyactivity parquet
 9. _allocation_compartment_: a list of relevant 'Compartment' values, as found in the source flowbyactivity parquet
 10. _allocation_from_scale_: national, state, or county - dependent on allocation source, as not every level exits for sources
-11. _allocation_helper_: 'yes' if second dataset is needed for allocation, 'no' if not
-12. _helper_source_: secondary df for sector allocation
-13. _helper_method_: currently written for 'multiplication'
-14. _helper_source_class_: specific 'FlowClass' found in the allocation source flowbyactivity parquet
-15. _helper_sector_aggregation_: 'agg' or 'disagg' (see _activity_sector_aggregation_ for explanation)
-16. _helper_source_year_: specific to the allocation datasets, use the year relevant to the main FBA dataframe
-17._helper_flow_: a list of relevant 'FlowName' values, as found in the source flowbyactivity parquet
-18._helper_from_scale_: national, state, or county - dependent on allocation source, as not every level exits for sources
+11. _allocation_disaggregation_fxn_: call on a function to further disaggregate a sector if necessary
+12. _allocation_helper_: 'yes' if second dataset is needed for allocation, 'no' if not
+13. _helper_source_: secondary df for sector allocation
+14. _helper_method_: currently written for 'multiplication'
+15. _helper_source_class_: specific 'FlowClass' found in the allocation source flowbyactivity parquet
+16. _helper_sector_aggregation_: 'agg' or 'disagg' (see _activity_sector_aggregation_ for explanation)
+17. _helper_source_year_: specific to the allocation datasets, use the year relevant to the main FBA dataframe
+18._helper_flow_: a list of relevant 'FlowName' values, as found in the source flowbyactivity parquet
+19._helper_from_scale_: national, state, or county - dependent on allocation source, as not every level exits for sources

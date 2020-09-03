@@ -25,7 +25,7 @@ if __name__ == '__main__':
     df.columns = raw_df.loc[4, ]
 
     # assign location system
-    df['LocationSystem'] = np.where(df["Name"].str.contains("Region"), "Census_Region", "None")
+    df['LocationSystem'] = np.where(df["Name"].str.contains("Region"), "Census_Region", None)
     df['LocationSystem'] = np.where(df["Name"].str.contains("Division"), "Census_Division", df['LocationSystem'])
 
     # rename columns to match flowbyactivity format

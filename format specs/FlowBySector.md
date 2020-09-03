@@ -12,7 +12,7 @@ Context | String | Y | Full context for the flow, e.g. "air", "water", "ground".
 Location | String | Y | A numeric representation of the activity location, at a national, state, or county level
 LocationSystem | String | Y | Description and year of the Location code, generally FIPS or ISO, e.g. `FIPS_2015`
 Unit | String | Y | SI unit acronym. 'kg' for mass flows; 'MJ' for energy flows.
-FlowType | String | Y | `ELEMENTARY_FLOW`, `TECHNOSPHERE_FLOW`, or `WASTE_FLOW`. See <http://greendelta.github.io/olca-schema/html/FlowType.html>
+FlowType | String | Y | `ELEMENTARY_FLOW`, `TECHNOSPHERE_FLOW`, or `WASTE_FLOW`. See <http://greendelta.github.io/olca-schema/FlowType.html>
 Year | Int | Y | Year of data, e.g. `2010`
 MeasureofSpread | String | N | A measure of spread of a frequency distribution. Acceptable values are `RSD` for relative standard deviation (aka coefficient of variation) are `SD` for the normal (aka 'arithmatic') standard deviation, `GSD` for geometric standard deviation
 Spread | Numeric | N | The value for the given measure of spread. 

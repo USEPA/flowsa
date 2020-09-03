@@ -3,9 +3,6 @@
 # coding=utf-8
 
 import io
-import pandas as pd
-import numpy as np
-#from flowsa.datapull import make_http_request, load_from_requests_response, format_url_values
 from flowsa.common import *
 from flowsa.flowbyfunctions import fba_activity_fields, assign_fips_location_system
 
@@ -73,7 +70,7 @@ def usgs_parse(dataframe_list, args):
         if 'state_cd' not in df:
             df['state_cd'] = '00'
         if 'state_name' not in df:
-            df['state_name'] = 'None'
+            df['state_name'] = None
         if 'county_cd' not in df:
             df['county_cd'] = '000'
         if 'county_nm' not in df:
@@ -81,7 +78,7 @@ def usgs_parse(dataframe_list, args):
         if 'year' not in df:
             df['year'] = args["year"]
     # concat data frame list based on geography and then parse data
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(dataframe_list, sort=False)
     df_n = df[df['geo'] == 'national']
     df_sc = df[df['geo'] != 'national']
     # drop columns that are all NAs
@@ -91,7 +88,7 @@ def usgs_parse(dataframe_list, args):
     df_sc = pd.melt(df_sc, id_vars=["geo", "state_cd", "state_name", "county_cd", "county_nm", "year"],
                     var_name="Description", value_name="FlowAmount")
     # merge national and state/county dataframes
-    df = pd.concat([df_n, df_sc], sort=True)
+    df = pd.concat([df_n, df_sc], sort=False)
     # drop rows that don't have a record and strip values that have extra symbols
     df.loc[:, 'FlowAmount'] = df['FlowAmount'].str.strip()
     df.loc[:, "FlowAmount"] = df['FlowAmount'].str.replace("a", "", regex=True)
@@ -105,18 +102,18 @@ def usgs_parse(dataframe_list, args):
     # create new columns based on description
     df.loc[:, 'Unit'] = df['Description'].str.rsplit(',').str[-1]
     # create flow name column
-    df.loc[:, 'FlowName'] = pd.np.where(df.Description.str.contains("fresh"), "fresh",
-                     pd.np.where(df.Description.str.contains("saline"), "saline",
-                     pd.np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
+    df.loc[:, 'FlowName'] = np.where(df.Description.str.contains("fresh"), "fresh",
+                     np.where(df.Description.str.contains("saline"), "saline",
+                     np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
     # create flow name column
-    df.loc[:, 'Compartment'] = pd.np.where(df.Description.str.contains("ground"), "ground",
-                        pd.np.where(df.Description.str.contains("Ground"), "ground",
-                        pd.np.where(df.Description.str.contains("surface"), "surface",
-                        pd.np.where(df.Description.str.contains("Surface"), "surface",
-                        pd.np.where(df.Description.str.contains("instream water use"), "surface",  # based on usgs def
-                        pd.np.where(df.Description.str.contains("consumptive"), "air",
-                        pd.np.where(df.Description.str.contains("conveyance"), "water",
-                        pd.np.where(df.Description.str.contains("total"), "total", "total"))))))))
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"), "ground",
+                        np.where(df.Description.str.contains("Ground"), "ground",
+                        np.where(df.Description.str.contains("surface"), "surface",
+                        np.where(df.Description.str.contains("Surface"), "surface",
+                        np.where(df.Description.str.contains("instream water use"), "surface",  # based on usgs def
+                        np.where(df.Description.str.contains("consumptive"), "air",
+                        np.where(df.Description.str.contains("conveyance"), "water",
+                        np.where(df.Description.str.contains("total"), "total", "total"))))))))
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
     df.loc[:, "Unit"] = df['Unit'].str.replace("in ", "", regex=True)
@@ -157,6 +154,15 @@ def usgs_parse(dataframe_list, args):
     # remove commas from activity names
     df.loc[:, 'ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
     df.loc[:, 'ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
+
+    # add FlowType
+    df['FlowType'] = np.where(df["Description"].str.contains('wastewater'), "WASTE_FLOW",
+                     np.where(df["Description"].str.contains('self-supplied'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('Self-supplied'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('deliveries'), "TECHNOSPHERE_FLOW",
+                                                                            ""))))))
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -251,7 +257,7 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     flowbyactivity_df['FlowName'].loc[
         (flowbyactivity_df['Location'] == '00000') & (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
     flowbyactivity_df['Compartment'].loc[
-        (flowbyactivity_df['Compartment'] == 'None') & (flowbyactivity_df['Location'] == '00000')] = 'total'
+        (flowbyactivity_df['Compartment'] is None) & (flowbyactivity_df['Location'] == '00000')] = 'total'
 
     # standardize activity names across geoscales
     for f in fba_activity_fields:
@@ -266,7 +272,11 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 
 
 def usgs_fba_data_cleanup(df):
-    """Clean up the dataframe to prepare for flowbysector"""
+    """
+    Clean up the dataframe to prepare for flowbysector. Used in flowbysector.py
+    :param df:
+    :return:
+    """
 
     from flowsa.common import US_FIPS
 
@@ -274,7 +284,7 @@ def usgs_fba_data_cleanup(df):
     df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
 
     # drop rows related to wastewater
-    df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
+    # df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
 
     # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
     df = df[~df['Description'].str.lower().str.contains('commercial')]
@@ -284,14 +294,14 @@ def usgs_fba_data_cleanup(df):
     df1 = df.loc[df['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
     c1 = df1['Location'] == US_FIPS
-    c2 = (df1['ActivityProducedBy'] != 'None') & (df1['ActivityConsumedBy'] != 'None')
+    c2 = (df1['ActivityProducedBy'] is not None) & (df1['ActivityConsumedBy'] is not None)
     # subset data
     df1 = df1.loc[c1 | c2].reset_index(drop=True)
 
     df2 = df.loc[df['FlowName'] != 'total']
 
     # concat the two df
-    df = pd.concat([df1, df2])
+    df = pd.concat([df1, df2], sort=False)
     # sort df
     df = df.sort_values(['Location', 'ActivityProducedBy', 'ActivityConsumedBy']).reset_index(drop=True)
 
@@ -301,19 +311,20 @@ def usgs_fba_data_cleanup(df):
 def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     """
     Call on functions to modify the fba with sectors df before being allocated to sectors
+    Used in flowbysector.py
 
     :param df_wsec: a dataframe with sectors
     :param attr: activity set attributes
     :return:
     """
 
-    df = modify_sector_length(df_wsec)
+    df = modify_sector_length(df_wsec, attr)
     df = filter_out_activities(df, attr)
 
     return df
 
 
-def modify_sector_length(df_wsec):
+def modify_sector_length(df_wsec, attr):
     """
     After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
     another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
@@ -327,10 +338,10 @@ def modify_sector_length(df_wsec):
     activities = ["Public Supply"]
 
     # subset data
-    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'] == 'None') |
-                      (df_wsec['SectorConsumedBy'] == 'None')].reset_index(drop=True)
-    df2 = df_wsec.loc[(df_wsec['SectorProducedBy'] != 'None') &
-                      (df_wsec['SectorConsumedBy'] != 'None')].reset_index(drop=True)
+    df1 = df_wsec.loc[(df_wsec['SectorProducedBy'].isnull()) |
+                      (df_wsec['SectorConsumedBy'].isnull())].reset_index(drop=True)
+    df2 = df_wsec.loc[(~df_wsec['SectorProducedBy'].isnull()) &
+                      (~df_wsec['SectorConsumedBy'].isnull())].reset_index(drop=True)
 
     # concat data into single dataframe
     if len(df2) != 0:

@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import io
 from flowsa.common import *
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 """
 2012 Commercial Buildings Energy Consumption Survey (CBECS)
@@ -19,12 +20,10 @@ def eia_cbecs_URL_helper(build_url, config, args):
     This function does not parse the data, only modifies the urls from which data is obtained. """
     # initiate url list for coa cropland data
     urls = []
-
-
     # replace "__xlsx_name__" in build_url to create three urls
-    for x in config['xlsx_name']:
+    for x in config['xlsx']:
         url = build_url
-        url = url.replace("__aggLevel__", x)
+        url = url.replace("__xlsx__", x)
         urls.append(url)
       #  elif:
 
@@ -36,46 +35,95 @@ def eia_cbecs_call(url, cbesc_response, args):
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='data').dropna()
     df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='rse').dropna()
 
-    # skip rows and remove extra rows at end of dataframe
-    df_data = pd.DataFrame(df_raw_data.loc[17:34]).reindex()
-    df_rse = pd.DataFrame(df_raw_rse.loc[17:34]).reindex()
+    if("b5.xlsx" in url):
+        # skip rows and remove extra rows at end of dataframe
+        df_data = pd.DataFrame(df_raw_data.loc[17:34]).reindex()
+        df_rse = pd.DataFrame(df_raw_rse.loc[17:34]).reindex()
 
-    df_data.columns = ["Name", "All buildings", "New England", "Middle Atlantic", "East North Central",
-                      "West North Central", "South Atlantic",
-                      "East South Central", "West South Central",
-                      "Mountain", "Pacific"]
-    df_rse.columns = ["Name", "All buildings", "New England", "Middle Atlantic", "East North Central",
-                      "West North Central", "South Atlantic",
-                      "East South Central", "West South Central",
-                      "Mountain", "Pacific"]
+        df_data.columns = ["Name", "All buildings", "New England", "Middle Atlantic", "East North Central",
+                          "West North Central", "South Atlantic",
+                          "East South Central", "West South Central",
+                          "Mountain", "Pacific"]
+        df_rse.columns = ["Name", "All buildings", "New England", "Middle Atlantic", "East North Central",
+                          "West North Central", "South Atlantic",
+                          "East South Central", "West South Central",
+                          "Mountain", "Pacific"]
 
-    df_rse = df_rse.melt(id_vars=["Name"],
-                var_name="Location",
-                value_name="MeasureofSpread")
+        df_rse = df_rse.melt(id_vars=["Name"],
+                    var_name="Location",
+                    value_name="Spread")
+        df_data =df_data.melt(id_vars=["Name"],
+                    var_name="Location",
+                    value_name="FlowAmount")
+    elif("b12.xlsx" in url):
+        # skip rows and remove extra rows at end of dataframe
+        df_data = pd.DataFrame(df_raw_data.loc[46:50]).reindex()
+        df_rse = pd.DataFrame(df_raw_rse.loc[46:50]).reindex()
 
-    df_data =df_data.melt(id_vars=["Name"],
-                var_name="Location",
-                value_name="FlowAmount")
+        df_data.columns = ["Compartment", "All buildings", "Office", "Warehouse and storage", "Service",
+                           "Mercantile", "Religious worship",
+                           "Education", "Public assembly"]
+        df_rse.columns = ["Compartment", "All buildings", "Office", "Warehouse and storage", "Service",
+                           "Mercantile", "Religious worship",
+                           "Education", "Public assembly"]
+        df_rse = df_rse.melt(id_vars=["Compartment"],
+                    var_name="Name",
+                    value_name="Spread")
+        df_data =df_data.melt(id_vars=["Compartment"],
+                    var_name="Name",
+                    value_name="FlowAmount")
+    elif ("b14.xlsx" in url):
+        # skip rows and remove extra rows at end of dataframe
+        df_data = pd.DataFrame(df_raw_data.loc[27:31]).reindex()
+        df_rse = pd.DataFrame(df_raw_rse.loc[27:31]).reindex()
+
+        df_data.columns = ["Compartment", "All buildings", "Food service", "Food sales", "Lodging",
+                           "Health care In-Patient", "Health care Out-Patient",
+                           "Public order and safety"]
+        df_rse.columns = ["Compartment", "All buildings", "Food service", "Food sales", "Lodging",
+                           "Health care In-Patient", "Health care Out-Patient",
+                           "Public order and safety"]
+        df_rse = df_rse.melt(id_vars=["Compartment"],
+                             var_name="Name",
+                             value_name="Spread")
+        df_data = df_data.melt(id_vars=["Compartment"],
+                               var_name="Name",
+                               value_name="FlowAmount")
 
     df = pd.merge(df_rse, df_data)
-
     return df
 
 def eia_cbecs_parse(dataframe_list, args):
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False).dropna()
+    df_array = []
+    for dataframes in dataframe_list:
+        # rename column(s)
+        dataframes = dataframes.rename(columns={'Name': 'ActivityConsumedBy'})
+        if "Location" not in list(dataframes):
+            dataframes["Location"] = "00000"
+            dataframes["LocationSystem"] = "FIPS_2010"
+            dataframes = dataframes.drop(dataframes[dataframes.Compartment == "Any elevators"].index)
+            dataframes["Compartment"] = dataframes["Compartment"] + " floors"
+        else:
+            dataframes = dataframes.drop(dataframes[dataframes.ActivityConsumedBy == "Before 1920"].index)
+            dataframes["Location"] = get_region_and_division_codes()["Division"]
+            dataframes['LocationSystem'] = "Census_Division"
+            dataframes["Compartment"] = "All Buildings"
+            dataframes['Location'] = dataframes['Location'].replace(float("NaN"), '00000')
 
-    # rename column(s)
-    df = df.rename(columns={'Name': 'ActivityConsumedBy'})
+            dataframes.loc[dataframes.Location == "00000", "LocationSystem"] = "FIPS_2010"
+
+        df_array.append(dataframes)
+    df = pd.concat(df_array, sort=False)
+
     # replace withdrawn code
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
     df['Year'] = args["year"]
-    df['LocationSystem'] = "Census_Division"
-    df['FlowName'] = "None"
-
-   # test = get_region_and_division_codes()
-   # print(test)
+    df['FlowName'] = "Total Floorspace"
+    df['Unit'] = "million square feet"
+    df['MeasureofSpread'] = "RSE"
     return df
 

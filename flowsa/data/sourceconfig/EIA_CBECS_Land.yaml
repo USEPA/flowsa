@@ -4,8 +4,14 @@
 # api_key_required: false
 format: xlsx
 url:
-  base_url: "https://www.eia.gov/consumption/commercial/data/2012/bc/xls/b5.xlsx"
+  base_url: "https://www.eia.gov/consumption/commercial/data/2012/bc/xls/__xlsx__"
+  api_path: ""
+url_replace_fxn: eia_cbecs_URL_helper
 call_response_fxn: eia_cbecs_call
 parse_response_fxn: eia_cbecs_parse
 years:
   - 2012
+xlsx:
+  - "b5.xlsx"
+  - "b12.xlsx"
+  - "b14.xlsx"

@@ -51,7 +51,7 @@ def coa_livestock_call(url, coa_response, args):
 def coa_livestock_parse(dataframe_list, args):
     """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
     (irrigated and total)."""
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(dataframe_list, sort=False)
     # # specify desired data based on domain_desc
     df = df[df['domain_desc'].str.contains("INVENTORY|TOTAL")]
     df = df[~df['domain_desc'].str.contains("ECONOMIC CLASS|NAICS|FARM SALES|AREA OPERATED")]

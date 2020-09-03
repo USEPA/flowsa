@@ -46,16 +46,13 @@ USDA_CoA_Cropland:
     - Other
   sector-like_activities: False
   activity_schema:
+USDA_CoA_Cropland_NAICS:
+  class:
+    - Land
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
 USDA_CoA_Livestock:
   class: Other
-  sector-like_activities: False
-  activity_schema:
-USDA_CoA_ProdMarkValue:
-  class: Money
-  sector-like_activities: False
-  activity_schema:
-USDA_CropValues_and_MeatProduction:
-  class: Money
   sector-like_activities: False
   activity_schema:
 USDA_ERS_FIWS:
@@ -72,5 +69,17 @@ USGS_NWIS_WU:
   activity_schema:
 USGS_WU_Coef:
   class: Water
+  sector-like_activities: False
+  activity_schema:
+USDA_ERS_MLU:
+  class: Land
+  sector-like_activities: False
+  activity_schema:
+EIA_CBECS_Land:
+  class: Land
+  sector-like_activities: False
+  activity_schema:
+EIA_MECS_Land:
+  class: Land
   sector-like_activities: False
   activity_schema:
