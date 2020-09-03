@@ -6,7 +6,7 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system, sector_disaggregation
+from flowsa.flowbyfunctions import assign_fips_location_system, sector_disaggregation, sector_ratios
 
 
 def CoA_Cropland_URL_helper(build_url, config, args):
@@ -203,11 +203,10 @@ def disaggregate_pastureland(fba_w_sector, attr):
     from flowsa.flowbyfunctions import allocate_by_sector, clean_df, flow_by_activity_fields, \
         fba_fill_na_dict
 
-
     # subset the coa data so only pastureland
     p = fba_w_sector.loc[fba_w_sector['Sector'] == '112']
     # add temp loc column for state fips
-    p.loc[:, 'Location_tmp'] = p['Location'].apply(lambda x: str(x[0:2]))
+    p.loc[:, 'Location_tmp'] = p['Location'].apply(lambda x: x[0:2])
 
     # load usda coa cropland naics
     df_f = flowsa.getFlowByActivity(flowclass=['Land'],
@@ -217,7 +216,7 @@ def disaggregate_pastureland(fba_w_sector, attr):
     # subset to land in farms data
     df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
     # subset to rows related to pastureland
-    df_f = df_f.loc[df_f['ActivityConsumedBy'].apply(lambda x: str(x[0:3])) == '112']
+    df_f = df_f.loc[df_f['ActivityConsumedBy'].apply(lambda x: x[0:3]) == '112']
     # drop rows with "&'
     df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
     # create sector column
@@ -227,7 +226,7 @@ def disaggregate_pastureland(fba_w_sector, attr):
     # drop naics = '11
     df_f = df_f[df_f['Sector'] != '11']
     # drop 000 in location
-    df_f.loc[:, 'Location'] = df_f['Location'].apply(lambda x: str(x[0:2]))
+    df_f.loc[:, 'Location'] = df_f['Location'].apply(lambda x: x[0:2])
 
     # merge the coa pastureland data with land in farm data
     df = p.merge(df_f[['Sector', 'Location', 'FlowAmountRatio']], how='left',
@@ -240,7 +239,7 @@ def disaggregate_pastureland(fba_w_sector, attr):
                             "Location_x": 'Location'})
 
     # drop rows where sector = 112 and then concat with original fba_w_sector
-    fba_w_sector = fba_w_sector[fba_w_sector['Sector'].apply(lambda x: str(x[0:3])) != '112'].reset_index(drop=True)
+    fba_w_sector = fba_w_sector[fba_w_sector['Sector'].apply(lambda x: x[0:3]) != '112'].reset_index(drop=True)
     fba_w_sector = pd.concat([fba_w_sector, df], sort=False).reset_index(drop=True)
 
     return fba_w_sector
@@ -261,11 +260,11 @@ def disaggregate_cropland(fba_w_sector, attr):
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # drop pastureland data
-    crop = fba_w_sector.loc[fba_w_sector['Sector'].apply(lambda x: str(x[0:3])) != '112'].reset_index(drop=True)
+    crop = fba_w_sector.loc[fba_w_sector['Sector'].apply(lambda x: x[0:3]) != '112'].reset_index(drop=True)
     # drop sectors < 4 digits
     crop = crop[crop['Sector'].apply(lambda x: len(x) > 3)].reset_index(drop=True)
     # create tmp location
-    crop.loc[:, 'Location_tmp'] = crop['Location'].apply(lambda x: str(x[0:2]))
+    crop.loc[:, 'Location_tmp'] = crop['Location'].apply(lambda x: x[0:2])
 
     # load the relevant state level harvested cropland by naics
     naics_load = flowsa.getFlowByActivity(flowclass=['Land'],
@@ -288,11 +287,11 @@ def disaggregate_cropland(fba_w_sector, attr):
     naics = naics[naics['SectorConsumedBy'].notnull()]
     naics = naics.loc[naics['FlowAmount'] != 0]
     # create ratios
-    naics = sector_ratios(naics)
+    naics = sector_ratios(naics, 'SectorConsumedBy')
     # drop sectors < 4 digits
     #naics = naics[naics['SectorConsumedBy'].apply(lambda x: len(x) > 3)].reset_index(drop=True)
     # create temporary sector column to match the two dfs on
-    naics.loc[:, 'Location_tmp'] = naics['Location'].apply(lambda x: str(x[0:2]))
+    naics.loc[:, 'Location_tmp'] = naics['Location'].apply(lambda x: x[0:2])
 
     # for loop through naics lengths to determine naics 4 and 5 digits to disaggregate
     for i in range(4, 6):
@@ -327,37 +326,9 @@ def disaggregate_cropland(fba_w_sector, attr):
     crop = crop.drop(columns=['Location_tmp'])
 
     # pasture data
-    pasture = fba_w_sector.loc[fba_w_sector['Sector'].apply(lambda x: str(x[0:3])) == '112'].reset_index(drop=True)
+    pasture = fba_w_sector.loc[fba_w_sector['Sector'].apply(lambda x: x[0:3]) == '112'].reset_index(drop=True)
 
     # concat crop and pasture
     fba_w_sector = pd.concat([pasture, crop], sort=True).reset_index(drop=True)
 
     return fba_w_sector
-
-
-def sector_ratios(df):
-
-    # find the longest length sector
-    length = max(df['SectorConsumedBy'].apply(lambda x: len(x)).unique())
-    # for loop in reverse order longest length naics minus 1 to 2
-    # appends missing naics levels to df
-    sector_ratios = []
-    for i in range(length, 3, -1):
-        # subset df to sectors with length = i and length = i + 1
-        df_subset = df.loc[df['SectorConsumedBy'].apply(lambda x: len(x) == i)]
-        # create column for sector grouping
-        df_subset.loc[:, 'Sector_group'] = df_subset['SectorConsumedBy'].apply(lambda x: x[0:i-1])
-        # subset df to create denominator
-        df_denom = df_subset[['FlowAmount', 'Location', 'Sector_group']]
-        df_denom = df_denom.groupby(['Location', 'Sector_group'], as_index=False)[["FlowAmount"]].agg("sum")
-        df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
-        # merge the denominator column with fba_w_sector df
-        ratio_df = df_subset.merge(df_denom, how='left')
-        # calculate ratio
-        ratio_df.loc[:, 'FlowAmountRatio'] = ratio_df['FlowAmount'] / ratio_df['Denominator']
-        ratio_df = ratio_df.drop(columns=['Denominator', 'Sector_group']).reset_index()
-        sector_ratios.append(ratio_df)
-    # concat list of dataframes (info on each page)
-    df_w_ratios = pd.concat(sector_ratios, sort=True).reset_index(drop=True)
-
-    return df_w_ratios
