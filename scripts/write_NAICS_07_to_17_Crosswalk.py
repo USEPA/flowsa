@@ -11,9 +11,10 @@ to NAICS crosswalk.
 - Writes reshaped file to datapath as csv.
 """
 
-from flowsa.common import datapath
+from flowsa.common import datapath, load_household_sector_codes
 import glob
 import pandas as pd
+import numpy as np
 #from rpy2.robjects.packages import importr
 #from rpy2.robjects import pandas2ri
 
@@ -47,11 +48,14 @@ for file_name in glob.glob(datapath + "activitytosectormapping/"+'*_toNAICS.csv'
     df_naics = naics[[naics_year]]
     # find any NAICS that are in source crosswalk but not in mastercrosswalk
     common = df.merge(df_naics, on=[naics_year, naics_year])
-    missing_naics = df[(~df[naics_year].isin(common[naics_year])) & (~df[naics_year].isin(common[naics_year]))]
+    missing_naics = df[(~df[naics_year].isin(common[naics_year]))]
+    # drop sectors with '-'
+    missing_naics = missing_naics[~missing_naics[naics_year].str.contains('-')]
     # append to df list
     missing_naics_df_list.append(missing_naics)
 # concat df list and drop duplications
 missing_naics_df = pd.concat(missing_naics_df_list, ignore_index=True, sort=False).drop_duplicates()
+missing_naics_df = missing_naics_df[missing_naics_df['NAICS_2012_Code'] != 'None']
 # sort df
 missing_naics_df = missing_naics_df.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code'])
 missing_naics_df = missing_naics_df.reset_index(drop=True)
@@ -59,8 +63,16 @@ missing_naics_df = missing_naics_df.reset_index(drop=True)
 # add missing naics to master naics crosswalk
 total_naics= naics.append(missing_naics_df, sort=True)
 
+# append household codes
+household = load_household_sector_codes()
+h = household['Code'].drop_duplicates().tolist()
+for i in h:
+    if (total_naics['NAICS_2012_Code'] != i).all():
+        total_naics = total_naics.append({'NAICS_2007_Code': np.nan, 'NAICS_2012_Code': i, 'NAICS_2017_Code': np.nan},
+                                         ignore_index = True)
+
 # sort df
-total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code'])
+total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code']).reset_index(drop=True)
 
 # save as csv
 total_naics.to_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", index=False)
