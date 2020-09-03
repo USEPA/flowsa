@@ -8,7 +8,7 @@ import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, load_sector_crosswalk, \
     sector_source_name, get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names, \
-    load_sector_length_crosswalk
+    load_sector_length_crosswalk, load_sector_length_crosswalk_w_nonnaics
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -398,7 +398,7 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     # run sector aggregation fxn to determine total flowamount for each level of sector
     df = sector_aggregation_generalized(df_w_sectors, group_cols)
     # run sector disaggregation to capture one-to-one naics4/5/6 relationships
-    df = sector_disaggregation_generalized(df)
+    df = sector_disaggregation_generalized(df, group_cols)
 
     # if statements for method of allocation
     if allocation_method == 'proportional':
@@ -546,9 +546,6 @@ def sector_aggregation_generalized(df, group_cols):
     :return: A df with sector levels summed from the least aggregated level
     """
 
-    # ensure None values are not strings
-    #df['Sector'] = df['Sector'].replace({'None': ""})
-
     # find the longest length sector
     length = max(df['Sector'].apply(lambda x: len(x)).unique())
     # for loop in reverse order longest length naics minus 1 to 2 digit
@@ -599,6 +596,8 @@ def sector_aggregation(df, group_cols):
     # ensure None values are not strings
     df['SectorConsumedBy'] = df['SectorConsumedBy'].replace({'nan': ""})
     df['SectorProducedBy'] = df['SectorProducedBy'].replace({'nan': ""})
+    df['SectorConsumedBy'] = df['SectorConsumedBy'].replace({'None': ""})
+    df['SectorProducedBy'] = df['SectorProducedBy'].replace({'None': ""})
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -681,8 +680,15 @@ def sector_disaggregation(sector_disaggregation):
     #todo: need to modify so works with either a fBA with sectors or a FBS because called on in a fxn \
     # that accepts either
 
+
+    sector_disaggregation = clean_df(sector_disaggregation, flow_by_sector_fields, fbs_fill_na_dict)
+
+    # ensure None values are not strings
+    sector_disaggregation['SectorConsumedBy'] = sector_disaggregation['SectorConsumedBy'].replace({'None': ""})
+    sector_disaggregation['SectorProducedBy'] = sector_disaggregation['SectorProducedBy'].replace({'None': ""})
+
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_sector_length_crosswalk()
+    cw_load = load_sector_length_crosswalk_w_nonnaics()
     cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
 
     # subset the naics 4 and 5 columsn
@@ -698,7 +704,6 @@ def sector_disaggregation(sector_disaggregation):
     # for loop in reverse order longest length naics minus 1 to 2
     # appends missing naics levels to df
     for i in range(4, 6):
-        sector_disaggregation = clean_df(sector_disaggregation, flow_by_sector_fields, fbs_fill_na_dict)
 
         if i == 4:
             sector_list = naics4
@@ -716,12 +721,14 @@ def sector_disaggregation(sector_disaggregation):
         df_subset.loc[:, 'SectorProduced_tmp'] = df_subset[fbs_activity_fields[0]].apply(lambda x: x[0:i])
         df_subset.loc[:, 'SectorConsumed_tmp'] = df_subset[fbs_activity_fields[1]].apply(lambda x: x[0:i])
         # subset the df to the rows where the tmp sector columns are in naics list
-        df_subset_1 = df_subset.loc[(df_subset['SectorProduced_tmp'].isin(sector_list)) |
+        df_subset_1 = df_subset.loc[(df_subset['SectorProduced_tmp'].isin(sector_list)) &
+                                    (df_subset['SectorConsumed_tmp'] == "")]
+        df_subset_2 = df_subset.loc[(df_subset['SectorProduced_tmp'] == "") &
                                     (df_subset['SectorConsumed_tmp'].isin(sector_list))]
-        df_subset_2 = df_subset.loc[(df_subset['SectorProduced_tmp'].isin(sector_list)) &
+        df_subset_3 = df_subset.loc[(df_subset['SectorProduced_tmp'].isin(sector_list)) &
                                     (df_subset['SectorConsumed_tmp'].isin(sector_list))]
         # concat existing dfs
-        df_subset = pd.concat([df_subset_1, df_subset_2], sort=False)
+        df_subset = pd.concat([df_subset_1, df_subset_2, df_subset_3], sort=False)
         # drop all rows with duplicate temp values, as a less aggregated naics exists
         df_subset = df_subset.drop_duplicates(subset=['Flowable', 'Context', 'Location', 'SectorProduced_tmp',
                                                       'SectorConsumed_tmp'], keep=False).reset_index(drop=True)
@@ -740,12 +747,16 @@ def sector_disaggregation(sector_disaggregation):
         new_naics = new_naics.rename(columns={"SPB": "SectorProducedBy",
                                               "SCB": "SectorConsumedBy"})
         # append new naics to df
+        new_naics['SectorConsumedBy'] = new_naics['SectorConsumedBy'].replace({'nan': ""})
+        new_naics['SectorProducedBy'] = new_naics['SectorProducedBy'].replace({'nan': ""})
         sector_disaggregation = pd.concat([sector_disaggregation, new_naics], sort=True)
+    # replace blank strings with None
+    sector_disaggregation = sector_disaggregation.replace({'': None})
 
     return sector_disaggregation
 
 
-def sector_disaggregation_generalized(fbs):
+def sector_disaggregation_generalized(fbs, group_cols):
     """
     function to disaggregate sectors if there is only one naics at a lower level
     works for lower than naics 4
@@ -754,7 +765,7 @@ def sector_disaggregation_generalized(fbs):
     """
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_sector_length_crosswalk()
+    cw_load = load_sector_length_crosswalk_w_nonnaics()
     cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
 
     # subset the naics 4 and 5 columsn
@@ -787,7 +798,9 @@ def sector_disaggregation_generalized(fbs):
         # subset the df to the rows where the tmp sector columns are in naics list
         df_subset = df_subset.loc[df_subset['Sector_tmp'].isin(sector_list)]
         # drop all rows with duplicate temp values, as a less aggregated naics exists
-        df_subset = df_subset.drop_duplicates(subset=['FlowName', 'Compartment', 'Location', 'Sector_tmp'],
+        group_cols = [e for e in group_cols if e not in ('Sector')]
+        group_cols.append('Sector_tmp')
+        df_subset = df_subset.drop_duplicates(subset=group_cols,
                                               keep=False).reset_index(drop=True)
         # merge the naics cw
         new_naics = pd.merge(df_subset, cw[[sector_merge, sector_add]],
