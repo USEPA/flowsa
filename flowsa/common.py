@@ -94,6 +94,12 @@ def load_sector_length_crosswalk():
     cw = pd.read_csv(datapath + 'NAICS_2012_Crosswalk.csv', dtype='str')
     return cw
 
+def load_sector_length_crosswalk_w_nonnaics():
+    cw = load_sector_length_crosswalk()
+    # append household codes
+    cw = cw.append(pd.DataFrame([["F010", "F010", "F010", "F0100", "F01000"]], columns=cw.columns), ignore_index=True)
+    return cw
+
 def load_household_sector_codes():
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
