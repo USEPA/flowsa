@@ -386,8 +386,14 @@ def filter_out_activities(df, attr):
     :return:
     """
 
-    if attr['allocation_method'] == 'direct':
+    # if the activity is public supply and the method is direct, drop rows of industrial and domestic because
+    # accounted for in other activity sets
+    if (attr['allocation_method'] == 'direct') & ('Public Supply' in attr['names']):
+        # drop rows of Industrial
         df = df.loc[(df[fba_activity_fields[0]] != 'Industrial') |
                     (df[fba_activity_fields[1]] != 'Industrial')].reset_index(drop=True)
+        # drop rows of Domestic
+        df = df.loc[(df[fba_activity_fields[0]] != 'Domestic') |
+                    (df[fba_activity_fields[1]] != 'Domestic')].reset_index(drop=True)
 
     return df
