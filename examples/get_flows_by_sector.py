@@ -13,5 +13,6 @@ Retrieves stored data in the FlowBySector format
 import flowsa
 
 fbs_water = flowsa.getFlowBySector('Water_national_2015_m1')
+fbs_water_collapsed = flowsa.getFlowBySector_collapsed('Water_national_2015_m1')
 
-fsb_collapsed_water = flowsa.getFlowBySector_collapsed('Water_national_2015_m1')
+

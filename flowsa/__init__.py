@@ -49,6 +49,7 @@ def getFlowBySector(methodname):
     return fbs
 
 
+
 def getFlowBySector_collapsed(methodname):
     """
     Retrieves stored data in the FlowBySector format,

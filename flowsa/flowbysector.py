@@ -25,7 +25,7 @@ import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields,  \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
-    get_sector_list, add_non_naics_sectors
+    get_sector_list #, add_non_naics_sectors
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
@@ -33,7 +33,8 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales, clean_df,\
     sector_disaggregation
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
-from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics
+from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
+from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
 from flowsa.datachecks import sector_flow_comparision
 
 
@@ -105,7 +106,7 @@ def main(method_name):
     # create dictionary of data and allocation datasets
     fb = method['source_names']
     # Create empty list for storing fbs files
-    fbss = []
+    fbs_list = []
     for k, v in fb.items():
         # pull fba data for allocation
         flows = load_source_dataframe(k, v)
@@ -174,7 +175,7 @@ def main(method_name):
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
                     flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec, attr)
 
-                # map df to elementary flows - commented out until mapping complete
+                # map df to elementary flows
                 log.info("Mapping flows in " + k + ' to federal elementary flow list')
                 flow_subset_wsec = map_elementary_flows(flow_subset_wsec, k)
 
@@ -200,6 +201,11 @@ def main(method_name):
                     if attr['allocation_compartment'] != 'None':
                         fba_allocation = fba_allocation.loc[
                             fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
+                    # cleanup the fba allocation df, if necessary
+                    if 'clean_allocation_fba' in attr:
+                        log.info("Cleaning " + attr['allocation_source'])
+                        fba_allocation = getattr(sys.modules[__name__],
+                                                 attr["clean_allocation_fba"])(fba_allocation)
                     # reset index
                     fba_allocation = fba_allocation.reset_index(drop=True)
 
@@ -223,6 +229,7 @@ def main(method_name):
                     fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
                                                                    sectorsourcename=method['target_sector_source'],
                                                                    levelofSectoragg=attr['allocation_sector_aggregation'])
+
                     # subset fba datsets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
                     fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
@@ -315,14 +322,11 @@ def main(method_name):
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
                 fbs = sector_disaggregation(fbs)
 
-                # test agg by sector
-                # sector_agg_comparison = sector_flow_comparision(fbs)
-
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
                 sector_list = get_sector_list(method['target_sector_level'])
                 # add any non-NAICS sectors used with NAICS
-                sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
+                #sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
 
                 # subset df, necessary because not all of the sectors are NAICS and can get duplicate rows
                 fbs_1 = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) &
@@ -331,26 +335,29 @@ def main(method_name):
                                 (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2], sort=False)
 
+                # if any sector is not allocated to the specified sector level, add the next available sector level
+                # todo: add fxn
+                #fbs_sector_subset = add_less_aggregated_sectors(fbs, fbs_sector_subset)
+
                 # set source name
                 fbs_sector_subset.loc[:, 'SectorSourceName'] = method['target_sector_source']
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
-                fbss.append(fbs_sector_subset)
+                fbs_list.append(fbs_sector_subset)
         else:
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append " + k + " to FBS list")
-            fbss.append(flows)
+            fbs_list.append(flows)
     # create single df of all activities
     log.info("Concat data for all activities")
-    fbss = pd.concat(fbss, ignore_index=True, sort=False)
+    fbss = pd.concat(fbs_list, ignore_index=True, sort=False)
     log.info("Clean final dataframe")
     # aggregate df as activities might have data for the same specified sector length
+    fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     log.info("Sort and store dataframe")
-    fbss = fbss.replace({'nan': None})
     # add missing fields, ensure correct data type, reorder columns
-    fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file

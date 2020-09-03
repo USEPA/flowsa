@@ -9,18 +9,17 @@ source_names:
   "USGS_NWIS_WU":
     data_format: 'FBA'
     class: Water
-    geoscale_to_use: national
+    geoscale_to_use: county
     year: 2010
     clean_fba_df_fxn: usgs_fba_data_cleanup
     clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names:
-        - "Aquaculture"
-        - "Domestic"
-        - "Irrigation Golf Courses"
-        - "Public Supply"
-        - "Thermoelectric Power"
+          - "Aquaculture"
+          - "Irrigation Golf Courses"
+          - "Public Supply"
+          - "Thermoelectric Power"
         activity_sector_aggregation: 'agg'
         allocation_method: direct
         allocation_source: None
@@ -29,12 +28,25 @@ source_names:
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
-        allocation_from_scale: national
+        allocation_from_scale: county
         allocation_helper: 'no'
       activity_set_2:
         names:
-        - "Industrial"
-        - "Mining"
+          - "Domestic"
+        activity_sector_aggregation: 'disagg'
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: None
+        allocation_sector_aggregation: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: county
+        allocation_helper: 'no'
+      activity_set_3:
+        names:
+          - "Industrial"
+          - "Mining"
         activity_sector_aggregation: 'disagg'
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
@@ -46,9 +58,9 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         allocation_helper: 'no'
-      activity_set_3:
+      activity_set_4:
         names:
-        - "Irrigation Crop"
+          - "Irrigation Crop"
         activity_sector_aggregation: 'disagg'
         allocation_method: proportional
         allocation_source: "USDA_CoA_Cropland"
@@ -62,6 +74,7 @@ source_names:
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
+        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         allocation_disaggregation_fxn: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'yes'
         helper_source: "USDA_IWMS"
@@ -71,9 +84,9 @@ source_names:
         helper_source_year: 2013
         helper_flow: None
         helper_from_scale: state
-      activity_set_4:
+      activity_set_5:
         names:
-        - "Livestock"
+          - "Livestock"
         activity_sector_aggregation: 'disagg'
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
