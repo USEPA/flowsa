@@ -200,7 +200,7 @@ def unique_activity_names(datasource, years):
     unique_activities = pd.unique(column_activities)
     df_unique = unique_activities.reshape((-1, 1))
     df_unique = pd.DataFrame({'Activity': df_unique[:, 0]})
-    df_unique = df_unique.loc[df_unique['Activity'] is not None]
+    df_unique = df_unique.loc[df_unique['Activity'].notnull()]
 
     # sort df
     df_unique = df_unique.sort_values(['Activity']).reset_index(drop=True)
@@ -215,9 +215,6 @@ def generalize_activity_field_names(df):
     :param fba_df:
     :return:
     """
-
-    # testing
-    #df = fba_allocation_subset.copy()
 
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None})
     df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None})

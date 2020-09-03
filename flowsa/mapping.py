@@ -46,7 +46,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
         # if data are provided in NAICS format, use the mastercrosswalk
         if src_info['sector-like_activities'] == 'True':
             cw = load_sector_crosswalk()
-            sectors = cw.loc[:,[sector_source_name]]
+            sectors = cw.loc[:, [sector_source_name]]
             # Create mapping df that's just the sectors at first
             mapping = sectors.drop_duplicates()
             # Add the sector twice as activities so mapping is identical
@@ -56,7 +56,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # if source data activities are text strings, call on the manually created source crosswalks
             mapping = get_activitytosector_mapping(s)
             # filter by SectorSourceName of interest
-            mapping = mapping[mapping['SectorSourceName']==sectorsourcename]
+            mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
             # drop SectorSourceName
             mapping = mapping.drop(columns=['SectorSourceName'])
             # Include all digits of naics in mapping, if levelofNAICSagg is specified as "disagg"
@@ -76,12 +76,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
                                                       'SectorType':sector_type_field})
         # column doesn't exist for sector-like activities, so ignore if error occurs
         mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
-        # set column types
-        mappings_df_tmp[flowbysector_field] = mappings_df_tmp[flowbysector_field].astype(str)
-        # replace nan in sector columns with none
-        mappings_df_tmp[flowbysector_field] = mappings_df_tmp[flowbysector_field].replace({'nan': None})
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
-        flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df, mappings_df_tmp,
+        flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
 
     return flowbyactivity_wsector_df
@@ -107,7 +103,7 @@ def expand_naics_list(df, sectorsourcename):
     sectors = sectors.append(household, sort=True).drop_duplicates().reset_index(drop=True)
     # drop rows that contain hyphenated sectors
     sectors = sectors[~sectors[sectorsourcename].str.contains("-")].reset_index(drop=True)
-    # drop None
+    # Ensure 'None' not added to sectors
     sectors = sectors[sectors[sectorsourcename] != "None"]
 
     # create list of sectors that exist in original df, which, if created when expanding sector list cannot be added
@@ -116,7 +112,7 @@ def expand_naics_list(df, sectorsourcename):
     naics_df = pd.DataFrame([])
     for i in df['Sector']:
         dig = len(str(i))
-        n = sectors.loc[sectors[sectorsourcename].apply(lambda x: str(x[0:dig])) == i]
+        n = sectors.loc[sectors[sectorsourcename].apply(lambda x: x[0:dig]) == i]
         # drop any rows in n that contain sectors already in original df (if sector length is longer)
         existing_sectors_subset = existing_sectors.loc[existing_sectors['Sector'].apply(lambda x: len(str(x)) > dig)]
         n = n[~n[sectorsourcename].isin(existing_sectors_subset['Sector'].tolist())]
@@ -224,7 +220,5 @@ def add_non_naics_sectors(sector_list, sector_level):
     household = household.loc[household['NAICS_Level_to_Use_For'] == sector_level]
     # add household sector to sector list
     sector_list.extend(household['Code'].tolist())
-    # add "None" to sector list so don't lose rows when filtering df to match sector length
-    # sector_list.extend(["None"])
 
     return sector_list

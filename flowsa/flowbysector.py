@@ -34,6 +34,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     sector_disaggregation
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
+from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
 from flowsa.datachecks import sector_flow_comparision
 
 
@@ -105,7 +106,7 @@ def main(method_name):
     # create dictionary of data and allocation datasets
     fb = method['source_names']
     # Create empty list for storing fbs files
-    fbss = []
+    fbs_list = []
     for k, v in fb.items():
         # pull fba data for allocation
         flows = load_source_dataframe(k, v)
@@ -337,24 +338,27 @@ def main(method_name):
                                 (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2], sort=False)
 
+                # if any sector is not allocated to the specified sector level, add the next available sector level
+                # todo: add fxn
+                #fbs_sector_subset = add_less_aggregated_sectors(fbs, fbs_sector_subset)
+
                 # set source name
                 fbs_sector_subset.loc[:, 'SectorSourceName'] = method['target_sector_source']
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
-                fbss.append(fbs_sector_subset)
+                fbs_list.append(fbs_sector_subset)
         else:
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append " + k + " to FBS list")
-            fbss.append(flows)
+            fbs_list.append(flows)
     # create single df of all activities
     log.info("Concat data for all activities")
-    fbss = pd.concat(fbss, ignore_index=True, sort=False)
+    fbss = pd.concat(fbs_list, ignore_index=True, sort=False)
     log.info("Clean final dataframe")
     # aggregate df as activities might have data for the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     log.info("Sort and store dataframe")
-    fbss = fbss.replace({'nan': None})
     # add missing fields, ensure correct data type, reorder columns
     fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     fbss = fbss.sort_values(
