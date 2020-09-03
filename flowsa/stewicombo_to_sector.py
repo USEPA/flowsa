@@ -24,13 +24,11 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_level, compartments):
         - inventory_dict: a dictionary of inventory types and years (e.g., {'NEI':'2017', 'TRI':'2017'})
         - NAICS_level: desired NAICS aggregation level (2-6)
         - geo_level: desired geographic aggregation level ('National', 'State', 'County')
-        - compartments: compartments to include (e.g., 'water', 'air', 'land')
+        - compartments: list of compartments to include (e.g., 'water', 'air', 'land')
     """
     
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
-    df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True)
-    # filter by compartment
-    df = df[df['Compartment'].isin(compartments)]
+    df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True, compartments=compartments)
         
     ## create mapping to convert facility IDs --> NAICS codes 
     facility_mapping = pd.DataFrame()
