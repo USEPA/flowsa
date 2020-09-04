@@ -41,7 +41,13 @@ local_storage_path = appdirs.user_data_dir()
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
                    "state": 2,
-                   "county":5}
+                   "county": 5}
+
+sector_level_key = {"NAICS_2": 2,
+                    "NAICS_3": 3,
+                    "NAICS_4": 4,
+                    "NAICS_5": 5,
+                    "NAICS_6": 6}
 
 # withdrawn keyword changed to "none" over "W" because unable to run calculation functions with text string
 withdrawn_keyword = None
