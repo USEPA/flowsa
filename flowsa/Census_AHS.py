@@ -1,12 +1,12 @@
-# USDA_ERS_FIWS.py (flowsa)
+# Census_AHS.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """
-USDA Economic Research Service (ERS) Farm Income and Wealth Statistics (FIWS)
-https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
-
-Downloads the February 5, 2020 update
+US Census American Housing Survey (AHS)
+2011 - 2017, National Level
+https://www.census.gov/programs-surveys/ahs/data.html
 """
+
 
 import zipfile
 import io

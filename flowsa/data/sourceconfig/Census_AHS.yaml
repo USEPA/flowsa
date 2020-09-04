@@ -1,4 +1,4 @@
-# Queries USDA ERS Farm Income and Wealth Statistics at national and state levels
+# Downloads and parses CSV from US Census American Housing Survey (AHS) at national level
 ---
 # api_name: Census_AHS
 # api_key_required: false
