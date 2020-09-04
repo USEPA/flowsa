@@ -31,7 +31,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, check_if_data_exists_at_geoscale, check_if_location_systems_match, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales, clean_df,\
-    sector_disaggregation
+    sector_disaggregation, check_if_losing_sector_data
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
@@ -314,13 +314,13 @@ def main(method_name):
 
                 to_scale = method['target_geoscale']
 
-                fbs = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
+                fbs_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
-                fbs = sector_aggregation(fbs, fbs_default_grouping_fields)
+                fbs_agg = sector_aggregation(fbs_agg, fbs_default_grouping_fields)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
-                fbs = sector_disaggregation(fbs)
+                fbs_agg = sector_disaggregation(fbs_agg)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
@@ -329,21 +329,25 @@ def main(method_name):
                 #sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
 
                 # subset df, necessary because not all of the sectors are NAICS and can get duplicate rows
-                fbs_1 = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) &
-                                (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
-                fbs_2 = fbs.loc[(fbs[fbs_activity_fields[0]].isin(sector_list)) |
-                                (fbs[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
-                fbs_sector_subset = pd.concat([fbs_1, fbs_2], sort=False)
+                fbs_1 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) &
+                                    (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
+                fbs_2 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) &
+                                    (fbs_agg[fbs_activity_fields[1]].isnull())].reset_index(drop=True)
+                fbs_3 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isnull()) &
+                                     (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
+                fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3], sort=False)
 
                 # if any sector is not allocated to the specified sector level, add the next available sector level
-                # todo: add fxn
-                #fbs_sector_subset = add_less_aggregated_sectors(fbs, fbs_sector_subset)
+                log.info('Checking if losing data by subsetting dataframe')
+                #todo: replace with commented out fxn, once fxn modified
+                fbs_sector_subset_2 = fbs_sector_subset.copy()
+                #fbs_sector_subset_2 = check_if_losing_sector_data(fbs, fbs_sector_subset, method['target_sector_level'])
 
                 # set source name
-                fbs_sector_subset.loc[:, 'SectorSourceName'] = method['target_sector_source']
+                fbs_sector_subset_2.loc[:, 'SectorSourceName'] = method['target_sector_source']
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
-                fbs_list.append(fbs_sector_subset)
+                fbs_list.append(fbs_sector_subset_2)
         else:
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append " + k + " to FBS list")

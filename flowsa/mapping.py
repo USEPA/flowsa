@@ -222,8 +222,4 @@ def get_sector_list(sector_level):
 #     # add household sector to sector list
 #     sector_list.extend(household['Code'].tolist())
 #
-#     # temporarily add 4 digit aquacaculture and thermo to the 6 digit level
-#     # todo: write fxn to check for cases where sectors aren't disaggregated to naics6 and instead use the least ag level
-#
-#
 #     return sector_list

@@ -287,23 +287,25 @@ def usgs_fba_data_cleanup(df):
     # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
     df = df[~df['Description'].str.lower().str.contains('commercial')]
 
+    # national
+    df1 = df[df['Location'] == US_FIPS]
+
     # drop flowname = 'total' rows when necessary to prevent double counting
     # subset data where flowname = total and where it does not
-    df1 = df.loc[df['FlowName'] == 'total']
+    df2 = df[df['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
-    c1 = df1['Location'] == US_FIPS
-    c2 = (df1['ActivityProducedBy'] != 'None') & (df1['ActivityConsumedBy'] != 'None')
+    c1 = df2['Location'] != US_FIPS
+    c2 = (df2['ActivityProducedBy'] != 'None') & (df2['ActivityConsumedBy'] != 'None')
     # subset data
-    df1 = df1.loc[c1 | c2].reset_index(drop=True)
+    df2 = df2[c1 & c2].reset_index(drop=True)
 
     # second subset doesn't have total flowname or total compartment
-    df2 = df.loc[df['FlowName'] != 'total']
-    df2 = df2.loc[df2['Compartment'] != 'total']
+    df3 = df[df['FlowName'] != 'total']
+    df3 = df3[df3['Compartment'] != 'total']
+    df3 = df3[df3['Location'] != US_FIPS]
 
     # concat the two df
-    df = pd.concat([df1, df2], sort=False)
-    # sort df
-    df = df.sort_values(['Location', 'ActivityProducedBy', 'ActivityConsumedBy']).reset_index(drop=True)
+    df = pd.concat([df1, df2, df3], ignore_index=True, sort=False)
 
     return df
 
