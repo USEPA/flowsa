@@ -8,7 +8,7 @@ import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, load_sector_crosswalk, \
     sector_source_name, get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names, \
-    load_sector_length_crosswalk, load_sector_length_crosswalk_w_nonnaics
+    load_sector_length_crosswalk, load_sector_length_crosswalk_w_nonnaics, sector_level_key
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -870,18 +870,65 @@ def collapse_fbs_sectors(fbs):
     return fbs_collapsed
 
 
-# def add_less_aggregated_sectors(fbs_df, fbs_subset_df):
-#     """
-#     In some instances, currently do not allocate to the NAICS 5/6 level. Check if data exists at specified level in
-#     final fbs output. If not, pull in more aggregated naics
-#     :param fbs:
-#     :return:
-#     """
-#
-#     # testing
-#     # fbs_df = fbs.copy()
-#     # fbs_subset_df = fbs_sector_subset.copy()
-#
-#
-#
-#     return None
+def check_if_losing_sector_data(df, df_subset, target_sector_level):
+    """
+    Determine rows of data that will be lost if subset data at target sector level
+    In some instances, not all
+    :param fbs:
+    :return:
+    """
+
+    # test
+    # df = fbs.copy()
+    # df_subset = fbs_sector_subset.copy()
+    # target_sector_level = method['target_sector_level']
+
+    df = df.fillna(fbs_fill_na_dict)
+
+    rows_lost = pd.DataFrame()
+    for i in range(2, sector_level_key[target_sector_level]):
+        # create df of i length
+        df_x1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) |
+                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i)]
+        df_x2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) &
+                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i)]
+        df_x = pd.concat([df_x1, df_x2], ignore_index=True)
+
+        # create df of i + 1 length
+        df_y1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) |
+                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
+        df_y2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) &
+                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
+        df_y = pd.concat([df_y1, df_y2], ignore_index=True)
+
+        # create temp sector columns in df y, that are i digits in length
+        df_y.loc[:, 'spb_tmp'] = df_y[fbs_activity_fields[0]].apply(lambda x: x[0:i])
+        df_y.loc[:, 'scb_tmp'] = df_y[fbs_activity_fields[1]].apply(lambda x: x[0:i])
+        # don't modify household sector lengths
+        df_y = df_y.replace({'F0': 'F010',
+                             'F01': 'F010'})
+
+        # merge the two dfs
+        df_m = pd.merge(df_x,
+                        df_y[['Class', 'Context', 'FlowType', 'Flowable', 'Location', 'LocationSystem', 'Unit',
+                              'Year', 'spb_tmp', 'scb_tmp']],
+                        how='left',
+                        left_on=['Class', 'Context', 'FlowType', 'Flowable', 'Location', 'LocationSystem', 'Unit',
+                                 'Year', 'SectorProducedBy', 'SectorConsumedBy'],
+                        right_on=['Class', 'Context', 'FlowType', 'Flowable', 'Location', 'LocationSystem', 'Unit',
+                                    'Year', 'spb_tmp', 'scb_tmp'])
+
+        # extract the rows that are not disaggregated to more specific naics
+        rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())]
+        # clean df
+        rl = clean_df(rl, flow_by_sector_fields, fbs_fill_na_dict)
+        rl = rl.replace({'': None})
+        # append to df
+        if len(rl) != 0:
+            log.info('Data found at ' + str(i) + ' digit NAICS not represented in current data subset')
+            rows_lost = rows_lost.append(rl, ignore_index=True)
+    # add rows of missing data to the fbs sector subset
+    log.info('Adding the less aggregated sectors to the dataframe subset')
+    df_w_lost_data = pd.concat([df_subset, rows_lost], ignore_index=True, sort=False)
+
+    return df_w_lost_data
