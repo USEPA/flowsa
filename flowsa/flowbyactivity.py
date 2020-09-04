@@ -25,7 +25,7 @@ from flowsa.USGS_NWIS_WU import *
 from flowsa.USDA_ERS_MLU import *
 from flowsa.EIA_CBECS_Land import *
 from flowsa.EIA_MECS_Land import *
-
+from flowsa.BLM_Public_Land_Statistics import *
 
 def parse_args():
     """Make year and source script parameters"""
