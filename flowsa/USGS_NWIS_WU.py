@@ -444,10 +444,53 @@ def filter_out_activities(df, attr):
     # accounted for in other activity sets
     if (attr['allocation_method'] == 'direct') & ('Public Supply' in attr['names']):
         # drop rows of Industrial
-        df = df.loc[(df[fba_activity_fields[0]] != 'Industrial') |
+        df = df.loc[(df[fba_activity_fields[0]] != 'Industrial') &
                     (df[fba_activity_fields[1]] != 'Industrial')].reset_index(drop=True)
         # drop rows of Domestic
-        df = df.loc[(df[fba_activity_fields[0]] != 'Domestic') |
+        df = df.loc[(df[fba_activity_fields[0]] != 'Domestic') &
                     (df[fba_activity_fields[1]] != 'Domestic')].reset_index(drop=True)
 
     return df
+
+
+# def assign_ps_to_bea(ps_df):
+#     """
+#     Use BEA Use Table before redefinitions to directly assign public supply to BEA sectors
+#     :param ps_df:
+#     :return:
+#     """
+#
+#     # test
+#     ps_df = fbs.copy()
+#
+#     # only want rows where public supply is 'activityconsumedby', when it is produced by, data captured with domestic
+#     ps_df = ps_df[ps_df['ActivityConsumedBy'] == 'Public Supply']
+#
+#     # change 'activityconsumedby' to 'producedby' because now further allocating to BEA sectors
+#     ps_df = ps_df.rename(columns={"ActivityConsumedBy": "ActivityProducedBy",
+#                                    "ActivityProducedBy": "ActivityConsumedBy"
+#                                   })
+#
+#     # load BEA use table
+#     bea = pd.read_csv(datapath + "BEA_2012_Detail_Use_PRO_BeforeRedef.csv") #, dtype="str")
+#     # use T001 instead of T007 (total commodity output) because domestic use already accounted for
+#     bea = bea.rename(columns={'Unnamed: 0': 'BEA_2012_Detail_Code',
+#                               'T001': 'TotalIntermediateCommodityOutput'})
+#     # subset to the row of 'water, sewage, and other systems'
+#     bea_sub = bea[bea['BEA_2012_Detail_Code'] == '221300']
+#     # melt bea data
+#     bea_m = pd.melt(bea_sub, id_vars=['BEA_2012_Detail_Code', "TotalIntermediateCommodityOutput"],
+#                     var_name="SectorConsumedBy", value_name="FlowAmount")
+#     # drop flowamount = 0 and unnecessary industries
+#     bea_m = bea_m[bea_m['FlowAmount'] != 0]
+#     bea_m = bea_m[~bea_m['SectorConsumedBy'].str.contains('T0|F0')]
+#     # add column to match on
+#     bea_m.loc[:, 'SectorProducedBy'] = '221310'
+#     # calculate flow ratio
+#     bea_m.loc[:, 'FlowRatio'] = bea_m['FlowAmount']/bea_m['TotalIntermediateCommodityOutput']
+#
+#     # join the public supply df with the bea data and allocate PS water to BEA sectors
+#     ps_allocated = pd.merge(ps_df, bea_m[['SectorProducedBy', 'SectorConsumedBy', 'FlowRatio']],
+#                              how='left', left_on='SectorProducedBy', right_on='SectorProducedBy')
+#
+#     return ps_df
