@@ -240,7 +240,7 @@ def disaggregate_pastureland(fba_w_sector, attr):
 
     # drop rows where sector = 112 and then concat with original fba_w_sector
     fba_w_sector = fba_w_sector[fba_w_sector['Sector'].apply(lambda x: x[0:3]) != '112'].reset_index(drop=True)
-    fba_w_sector = pd.concat([fba_w_sector, df], sort=False).reset_index(drop=True)
+    fba_w_sector = pd.concat([fba_w_sector, df], sort=True).reset_index(drop=True)
 
     return fba_w_sector
 

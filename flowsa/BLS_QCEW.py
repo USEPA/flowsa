@@ -110,8 +110,6 @@ def replace_missing_2_digit_sector_values(df):
     :return:
     """
     from flowsa.flowbyfunctions import aggregator, fba_default_grouping_fields
-    # test
-    # df = fba_allocation.copy()
 
     # check for 2 digit 0 values
     df_missing = df[(df['ActivityProducedBy'].apply(lambda x: len(x) == 2)) & (df['FlowAmount'] == 0)]

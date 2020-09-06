@@ -100,7 +100,7 @@ def expand_naics_list(df, sectorsourcename):
     household = load_household_sector_codes()
     household = pd.DataFrame(household['Code'].drop_duplicates())
     household.columns = [sectorsourcename]
-    sectors = sectors.append(household, sort=True).drop_duplicates().reset_index(drop=True)
+    sectors = sectors.append(household, sort=False).drop_duplicates().reset_index(drop=True)
     # drop rows that contain hyphenated sectors
     sectors = sectors[~sectors[sectorsourcename].str.contains("-")].reset_index(drop=True)
     # Ensure 'None' not added to sectors

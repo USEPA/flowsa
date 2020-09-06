@@ -52,7 +52,7 @@ for file_name in glob.glob(datapath + "activitytosectormapping/"+'*_toNAICS.csv'
     # drop sectors with '-'
     missing_naics = missing_naics[~missing_naics[naics_year].str.contains('-')]
     # append to df list
-    missing_naics_df_list.append(missing_naics)
+    missing_naics_df_list.append(missing_naics, sort=True)
 # concat df list and drop duplications
 missing_naics_df = pd.concat(missing_naics_df_list, ignore_index=True, sort=False).drop_duplicates()
 missing_naics_df = missing_naics_df[missing_naics_df['NAICS_2012_Code'] != 'None']
