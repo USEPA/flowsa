@@ -35,6 +35,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
+from flowsa.BLS_QCEW import replace_missing_2_digit_sector_values
 from flowsa.datachecks import sector_flow_comparision
 
 
@@ -177,13 +178,13 @@ def main(method_name):
 
                 # map df to elementary flows
                 log.info("Mapping flows in " + k + ' to federal elementary flow list')
-                flow_subset_wsec = map_elementary_flows(flow_subset_wsec, k)
+                flow_subset_mapped = map_elementary_flows(flow_subset_wsec, k)
 
                 # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
                 # dataframe to create sector allocation ratios
                 if attr['allocation_method'] == 'direct':
                     log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
-                    fbs = flow_subset_wsec.copy()
+                    fbs = flow_subset_mapped.copy()
 
                 else:
                     # determine appropriate allocation dataset
@@ -260,17 +261,17 @@ def main(method_name):
                     sector_list = flow_allocation['Sector'].unique().tolist()
 
                     # subset fba allocation table to the values in the activity list, based on overlapping sectors
-                    flow_subset_wsec = flow_subset_wsec.loc[
-                        (flow_subset_wsec[fbs_activity_fields[0]].isin(sector_list)) |
-                        (flow_subset_wsec[fbs_activity_fields[1]].isin(sector_list))]
+                    flow_subset_mapped = flow_subset_mapped.loc[
+                        (flow_subset_mapped[fbs_activity_fields[0]].isin(sector_list)) |
+                        (flow_subset_mapped[fbs_activity_fields[1]].isin(sector_list))]
 
                     # check if fba and allocation dfs have the same LocationSystem
                     log.info("Checking if flowbyactivity and allocation dataframes use the same location systems")
-                    check_if_location_systems_match(flow_subset_wsec, flow_allocation)
+                    check_if_location_systems_match(flow_subset_mapped, flow_allocation)
 
                     # merge fba df w/flow allocation dataset
                     log.info("Merge " + k + " and subset of " + attr['allocation_source'])
-                    fbs = flow_subset_wsec.merge(
+                    fbs = flow_subset_mapped.merge(
                         flow_allocation[['Location', 'Sector', 'FlowAmountRatio']],
                         left_on=['Location', 'SectorProducedBy'],
                         right_on=['Location', 'Sector'], how='left')
@@ -282,6 +283,8 @@ def main(method_name):
 
                     # merge the flowamount columns
                     fbs.loc[:, 'FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
+                    # fill null rows with 0 because no allocation info
+                    fbs['FlowAmountRatio'] = fbs['FlowAmountRatio'].fillna(0)
 
                     # check if fba and alloc dfs have data for same geoscales - comment back in after address the 'todo'
                     # log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
@@ -335,13 +338,11 @@ def main(method_name):
                                     (fbs_agg[fbs_activity_fields[1]].isnull())].reset_index(drop=True)
                 fbs_3 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isnull()) &
                                      (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
-                fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3], sort=False)
+                fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
 
                 # if any sector is not allocated to the specified sector level, add the next available sector level
                 log.info('Checking if losing data by subsetting dataframe')
-                #todo: replace with commented out fxn, once fxn modified
-                fbs_sector_subset_2 = fbs_sector_subset.copy()
-                #fbs_sector_subset_2 = check_if_losing_sector_data(fbs, fbs_sector_subset, method['target_sector_level'])
+                fbs_sector_subset_2 = check_if_losing_sector_data(fbs_agg, fbs_sector_subset, method['target_sector_level'])
 
                 # set source name
                 fbs_sector_subset_2.loc[:, 'SectorSourceName'] = method['target_sector_source']

@@ -166,7 +166,7 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
             flowby_partial_df[k] = None
     # convert data types to match those defined in flow_by_activity_fields
     for k, v in flowbyfields.items():
-        flowby_partial_df[k] = flowby_partial_df[k].astype(v[0]['dtype'])
+        flowby_partial_df.loc[:, k] = flowby_partial_df[k].astype(v[0]['dtype'])
     # Resort it so order is correct
     flowby_partial_df = flowby_partial_df[flowbyfields.keys()]
     return flowby_partial_df
@@ -578,7 +578,7 @@ def sector_aggregation_generalized(df, group_cols):
                 c2 = df_subset['Sector'].apply(lambda x: x[0:i] == r)
                 # subset data
                 agg_sectors_list.append(df_subset.loc[c1 & c2])
-            agg_sectors = pd.concat(agg_sectors_list, sort=True)
+            agg_sectors = pd.concat(agg_sectors_list, sort=False)
             agg_sectors = agg_sectors.loc[
                 (agg_sectors['Sector'].apply(lambda x: len(x) > i))]
             agg_sectors.loc[:, 'Sector'] = agg_sectors['Sector'].apply(lambda x: x[0:i])
@@ -588,7 +588,7 @@ def sector_aggregation_generalized(df, group_cols):
             agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
             # append to df
             agg_sectors['Sector'] = agg_sectors['Sector'].replace({'nan': ""})
-            df = df.append(agg_sectors).reset_index(drop=True)
+            df = df.append(agg_sectors, sort=False).reset_index(drop=True)
 
     # manually modify non-NAICS codes that might exist in sector
     df.loc[:, 'Sector'] = np.where(df['Sector'].isin(['F0', 'F01']),
@@ -641,7 +641,7 @@ def sector_aggregation(df, group_cols):
         df_existing_2 = sector_subset.loc[(sector_subset['SectorProducedBy'].apply(lambda x: len(x) == i)) &
                                           (sector_subset['SectorConsumedBy'].apply(lambda x: len(x) == i))]
         # concat existing dfs
-        df_existing = pd.concat([df_existing_1, df_existing_2], sort=True)
+        df_existing = pd.concat([df_existing_1, df_existing_2], sort=False)
         existing_sectors = df_existing.drop_duplicates().dropna().values.tolist()
         # list of sectors of length i that are not in sector list
         missing_sectors = [e for e in sector_list if e not in existing_sectors]
@@ -655,7 +655,7 @@ def sector_aggregation(df, group_cols):
                 c3 = df_subset[fbs_activity_fields[1]].apply(lambda x: x[0:i] == s)   #.str.startswith(z)
                 # subset data
                 agg_sectors_list.append(df_subset.loc[c1 & c2 & c3])
-            agg_sectors = pd.concat(agg_sectors_list, sort=True)
+            agg_sectors = pd.concat(agg_sectors_list, sort=False)
             agg_sectors = agg_sectors.loc[
                 (agg_sectors[fbs_activity_fields[0]].apply(lambda x: len(x) > i)) |
                 (agg_sectors[fbs_activity_fields[1]].apply(lambda x: len(x) > i))]
@@ -670,7 +670,7 @@ def sector_aggregation(df, group_cols):
             # append to df
             agg_sectors['SectorConsumedBy'] = agg_sectors['SectorConsumedBy'].replace({'nan': ""})
             agg_sectors['SectorProducedBy'] = agg_sectors['SectorProducedBy'].replace({'nan': ""})
-            df = df.append(agg_sectors).reset_index(drop=True)
+            df = df.append(agg_sectors, sort=False).reset_index(drop=True)
 
     # manually modify non-NAICS codes that might exist in sector
     df.loc[:, 'SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['F0', 'F01']),
@@ -768,6 +768,7 @@ def sector_disaggregation(sector_disaggregation):
         sector_disaggregation = pd.concat([sector_disaggregation, new_naics], sort=True)
     # replace blank strings with None
     sector_disaggregation = sector_disaggregation.replace({'': None})
+    sector_disaggregation = sector_disaggregation.replace({np.nan: None})
 
     return sector_disaggregation
 
@@ -898,22 +899,28 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     """
 
     df = df.fillna(fbs_fill_na_dict)
+    # exclude nonsectors
+    df = df.replace({'nan': '',
+                     'None': ''})
 
     rows_lost = pd.DataFrame()
-    for i in range(2, sector_level_key[target_sector_level]):
+    ### tmp set range to start at 4 - set to 2 after modify usgs data
+    for i in range(4, sector_level_key[target_sector_level]):
         # create df of i length
-        df_x1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) |
+        df_x1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) &
+                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == '')]
+        df_x2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == '') &
                        df[fbs_activity_fields[1]].apply(lambda x: len(x) == i)]
-        df_x2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) &
+        df_x3 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) &
                        df[fbs_activity_fields[1]].apply(lambda x: len(x) == i)]
-        df_x = pd.concat([df_x1, df_x2], ignore_index=True)
+        df_x = pd.concat([df_x1, df_x2, df_x3], ignore_index=True, sort=False)
 
         # create df of i + 1 length
         df_y1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) |
                        df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
         df_y2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) &
                        df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
-        df_y = pd.concat([df_y1, df_y2], ignore_index=True)
+        df_y = pd.concat([df_y1, df_y2], ignore_index=True, sort=False)
 
         # create temp sector columns in df y, that are i digits in length
         df_y.loc[:, 'spb_tmp'] = df_y[fbs_activity_fields[0]].apply(lambda x: x[0:i])
@@ -936,13 +943,15 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
         rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())]
         # clean df
         rl = clean_df(rl, flow_by_sector_fields, fbs_fill_na_dict)
+        rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']].drop_duplicates().values.tolist()
         rl = rl.replace({'': None})
         # append to df
         if len(rl) != 0:
-            log.info('Data found at ' + str(i) + ' digit NAICS not represented in current data subset')
-            rows_lost = rows_lost.append(rl, ignore_index=True)
+            log.warning('Data found at ' + str(i) + ' digit NAICS not represented in current '
+                                                    'data subset: {}'.format(' '.join(map(str, rl_list))))
+            rows_lost = rows_lost.append(rl, ignore_index=True, sort=True)
     # add rows of missing data to the fbs sector subset
     log.info('Adding the less aggregated sectors to the dataframe subset')
-    df_w_lost_data = pd.concat([df_subset, rows_lost], ignore_index=True, sort=False)
+    df_w_lost_data = pd.concat([df_subset, rows_lost], ignore_index=True, sort=True)
 
     return df_w_lost_data
