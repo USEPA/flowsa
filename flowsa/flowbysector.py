@@ -328,8 +328,6 @@ def main(method_name):
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
                 sector_list = get_sector_list(method['target_sector_level'])
-                # add any non-NAICS sectors used with NAICS
-                #sector_list = add_non_naics_sectors(sector_list, method['target_sector_level'])
 
                 # subset df, necessary because not all of the sectors are NAICS and can get duplicate rows
                 fbs_1 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) &

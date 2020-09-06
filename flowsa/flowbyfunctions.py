@@ -151,6 +151,8 @@ def aggregator(df, groupbycols):
     # aggregate df by groupby columns, either summing or creating weighted averages
     df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
 
+    df_dfg = df_dfg.replace({np.nan: None})
+
     return df_dfg
 
 
@@ -907,12 +909,12 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     ### tmp set range to start at 4 - set to 2 after modify usgs data
     for i in range(4, sector_level_key[target_sector_level]):
         # create df of i length
-        df_x1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) &
-                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == '')]
-        df_x2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == '') &
-                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i)]
-        df_x3 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i) &
-                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i)]
+        df_x1 = df.loc[(df[fbs_activity_fields[0]].apply(lambda x: len(x) == i)) &
+                        (df[fbs_activity_fields[1]] == '')]
+        df_x2 = df.loc[(df[fbs_activity_fields[0]] == '') &
+                        (df[fbs_activity_fields[1]].apply(lambda x: len(x) == i))]
+        df_x3 = df.loc[(df[fbs_activity_fields[0]].apply(lambda x: len(x) == i)) &
+                        (df[fbs_activity_fields[1]].apply(lambda x: len(x) == i))]
         df_x = pd.concat([df_x1, df_x2, df_x3], ignore_index=True, sort=False)
 
         # create df of i + 1 length
@@ -944,14 +946,19 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
         # clean df
         rl = clean_df(rl, flow_by_sector_fields, fbs_fill_na_dict)
         rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']].drop_duplicates().values.tolist()
-        rl = rl.replace({'': None})
         # append to df
         if len(rl) != 0:
             log.warning('Data found at ' + str(i) + ' digit NAICS not represented in current '
                                                     'data subset: {}'.format(' '.join(map(str, rl_list))))
             rows_lost = rows_lost.append(rl, ignore_index=True, sort=True)
+
+    if len(rows_lost) != 0:
+        log.info('Adding the less aggregated sectors to the dataframe subset')
+    else:
+        log.info('No data loss from subsetting the dataframe by specified sector')
+
     # add rows of missing data to the fbs sector subset
-    log.info('Adding the less aggregated sectors to the dataframe subset')
     df_w_lost_data = pd.concat([df_subset, rows_lost], ignore_index=True, sort=True)
+    df_w_lost_data = df_w_lost_data.replace({'': None})
 
     return df_w_lost_data
