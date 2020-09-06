@@ -148,6 +148,9 @@ def aggregator(df, groupbycols):
     for e in column_headers:
         agg_funx.update({e: wm})
 
+    # drop columns with flowamount = 0
+    df = df[df['FlowAmount'] != 0]
+
     # aggregate df by groupby columns, either summing or creating weighted averages
     df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
 
