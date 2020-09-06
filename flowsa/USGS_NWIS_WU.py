@@ -78,7 +78,7 @@ def usgs_parse(dataframe_list, args):
         if 'year' not in df:
             df['year'] = args["year"]
     # concat data frame list based on geography and then parse data
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(dataframe_list, sort=False)
     df_n = df[df['geo'] == 'national']
     df_sc = df[df['geo'] != 'national']
     # drop columns that are all NAs
@@ -88,7 +88,7 @@ def usgs_parse(dataframe_list, args):
     df_sc = pd.melt(df_sc, id_vars=["geo", "state_cd", "state_name", "county_cd", "county_nm", "year"],
                     var_name="Description", value_name="FlowAmount")
     # merge national and state/county dataframes
-    df = pd.concat([df_n, df_sc], sort=True)
+    df = pd.concat([df_n, df_sc], sort=False)
     # drop rows that don't have a record and strip values that have extra symbols
     df.loc[:, 'FlowAmount'] = df['FlowAmount'].str.strip()
     df.loc[:, "FlowAmount"] = df['FlowAmount'].str.replace("a", "", regex=True)
@@ -278,19 +278,16 @@ def usgs_fba_data_cleanup(df):
 
     from flowsa.common import US_FIPS
 
-    # drop duplicate info of "Public Supply deliveries to"
-    df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
-
-    # drop rows related to wastewater
-    # df = df.loc[df['FlowName'] != 'wastewater'].reset_index(drop=True)
-
     # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
     df = df[~df['Description'].str.lower().str.contains('commercial')]
+
+    # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
+    df = calculate_net_public_supply(df)
 
     # national
     df1 = df[df['Location'] == US_FIPS]
 
-    # drop flowname = 'total' rows when necessary to prevent double counting
+    # drop flowname = 'total' rows when possible to prevent double counting
     # subset data where flowname = total and where it does not
     df2 = df[df['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
@@ -308,6 +305,61 @@ def usgs_fba_data_cleanup(df):
     df = pd.concat([df1, df2, df3], ignore_index=True, sort=False)
 
     return df
+
+
+def calculate_net_public_supply(df):
+    """
+    USGS Provides info on the quantity of public supply withdrawals that are delivered to domestic use.
+    The USGS PS withdrawals are not necessarily greater than/equal to the Domestic deliveries because water can be
+    withdrawn in one county and delivered in another (water can also cross state lines). Therefore, can/do end up
+    with NEGATIVE net public supply values and PS water should only be used at a national level
+
+    Domestic deliveries are subtracted from public supply. An assumption is made that PS deliveries to domestic is
+    fresh water. The national level data can then be allocated to end users using the BEA Use tables.
+    :param df: USGS df
+    :return:
+    """
+
+    # drop duplicate info of "Public Supply deliveries to"
+    df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
+
+    # subset into 2 dfs, one that contains PS data and one that does not
+    df1 = df[(df[fba_activity_fields[0]] == 'Public Supply') |
+             (df[fba_activity_fields[1]] == 'Public Supply')]
+    df2 = df[(df[fba_activity_fields[0]] != 'Public Supply') &
+             (df[fba_activity_fields[1]] != 'Public Supply')]
+    # drop all deliveries to thermo and industrial (not enough states report the data to make useable)
+    df1_sub = df1[~df1[fba_activity_fields[1]].isin(['Industrial', 'Thermoelectric Power',
+                                                     'Thermoelectric Power Closed-loop cooling',
+                                                     'Thermoelectric Power Once-through cooling'])]
+    # df of ps delivered and ps consumed
+    df_p = df1_sub[df1_sub[fba_activity_fields[0]] == 'Public Supply']
+    df_c = df1_sub[df1_sub[fba_activity_fields[1]] == 'Public Supply']
+    # split consumed further into fresh water (assumption domestic deliveries are freshwater)
+    # temporary assumption that water withdrawal taken evenly from ground and surface
+    df_c1 = df_c[(df_c['FlowName'] == 'fresh') & (df_c['Compartment'] != 'total')]
+    df_c2 = df_c[(df_c['FlowName'] == 'fresh') & (df_c['Compartment'] == 'total')]
+    df_cm = pd.merge(df_c1, df_c2[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
+    df_cm = df_cm.rename(columns={"FlowAmount_x": "FlowAmount",
+                                  "FlowAmount_y": "FlowTotal"
+                                  })
+    # merge the deliveries to domestic
+    df_c_modified = pd.merge(df_cm, df_p[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
+    df_c_modified = df_c_modified.rename(columns={"FlowAmount_x": "FlowAmount",
+                                  "FlowAmount_y": "DomesticDeliveries"
+                                  })
+    # calculate new, net total public supply withdrawals
+    # will end up with negative values due to instances of water deliveries coming form surrounding counties
+    df_c_modified.loc[:, 'FlowAmount'] = df_c_modified['FlowAmount'] - \
+                                         ((df_c_modified['FlowAmount'] / df_c_modified['FlowTotal']) *
+                                          df_c_modified['DomesticDeliveries'])
+
+    net_ps = df_c_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
+
+    # concat dfs back (non-public supply, public supply deliveries, net ps withdrawals)
+    modified_ps = pd.concat([df2, df_p, net_ps], ignore_index=True)
+
+    return modified_ps
 
 
 def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
@@ -370,7 +422,7 @@ def modify_sector_length(df_wsec):
 
         df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
 
-        df = pd.concat([df1, df2], sort=False)
+        df = pd.concat([df1, df2], sort=True)
     else:
         df = df1.copy()
 
