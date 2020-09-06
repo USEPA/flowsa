@@ -8,6 +8,21 @@ A script to get Use table transactions from a useeior EEIOmodel.
 
 - Store them as .csv
 - Depends on rpy2 and tzlocal as well as having R installed and useeior installed.
+
+
+
+The BEA_2012_Detail_Use_PRO_BeforeRedef was pulled from USEEIOR's Detail_Use_2012_PRO_BeforeRedef.rda on 09/06/2020.
+
+The original file is found here:
+https://github.com/USEPA/useeior/blob/master/data/Detail_Use_2012_PRO_BeforeRedef.rda
+
+csv obtained by running the following code in Rstudio:
+bea <- get('Detail_Use_2012_PRO_BeforeRedef')
+write.csv(bea, file='BEA_2012_Detail_Use_PRO_BeforeRedef.csv')
+
+CSV manually added to flowsa
+
+
 """
 
 from flowsa.common import datapath
