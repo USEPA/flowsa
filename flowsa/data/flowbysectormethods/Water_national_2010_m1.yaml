@@ -18,6 +18,7 @@ source_names:
         names:
           - "Aquaculture"
           - "Irrigation Golf Courses"
+          - "Public Supply"
           - "Thermoelectric Power"
         activity_sector_aggregation: 'agg'
         allocation_method: direct
@@ -108,16 +109,3 @@ source_names:
         helper_source_year: 2005
         helper_flow: None
         helper_from_scale: national
-      activity_set_6:
-        names:
-          - "Public Supply"
-        activity_sector_aggregation: 'disagg'
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: None
-        allocation_sector_aggregation: None
-        allocation_source_year: 2010
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: 'no'
