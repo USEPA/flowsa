@@ -35,7 +35,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
-from flowsa.BLS_QCEW import replace_missing_2_digit_sector_values
+from flowsa.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.datachecks import sector_flow_comparision
 
 

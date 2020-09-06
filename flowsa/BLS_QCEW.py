@@ -102,6 +102,14 @@ def bls_qcew_parse(dataframe_list, args):
     return df
 
 
+def clean_bls_qcew_fba(fba_df):
+
+    fba_df = replace_missing_2_digit_sector_values(fba_df)
+    fba_df = remove_2_digit_sector_ranges(fba_df)
+
+    return fba_df
+
+
 def replace_missing_2_digit_sector_values(df):
     """
     In the 2015 (and possibly other dfs, there are instances of values at the 3 digit NAICS level, while
@@ -148,5 +156,19 @@ def replace_missing_2_digit_sector_values(df):
     modified_df = modified_df.append(new_sectors, sort=False)
 
     return modified_df
+
+
+def remove_2_digit_sector_ranges(fba_df):
+    """
+    BLS publishes activity ranges of '31-33', 44-45', '48-49... drop these ranges.
+    The individual 2 digit naics are summed later.
+    :param df:
+    :return:
+    """
+
+    df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')]
+
+
+    return df
 
 
