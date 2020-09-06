@@ -110,6 +110,10 @@ def load_household_sector_codes():
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
 
+def load_bea_crosswalk():
+    cw = pd.read_csv(datapath + "BEA_Crosswalk.csv", dtype="str")
+    return cw
+
 def load_source_catalog():
      sources= datapath+'source_catalog.yaml'
      with open(sources, 'r') as f:
