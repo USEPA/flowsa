@@ -157,12 +157,12 @@ def usgs_parse(dataframe_list, args):
 
     # add FlowType
     df['FlowType'] = np.where(df["Description"].str.contains('wastewater'), "WASTE_FLOW",
-                              np.where(df["Description"].str.contains('self-supplied'), "ELEMENTARY_FLOW",
-                                       np.where(df["Description"].str.contains('Self-supplied'), "ELEMENTARY_FLOW",
-                                                np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
-                                                         np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
-                                                                  np.where(df["Description"].str.contains('deliveries'), "TECHNOSPHERE_FLOW",
-                                                                           "None"))))))
+                     np.where(df["Description"].str.contains('self-supplied'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('Self-supplied'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
+                     np.where(df["Description"].str.contains('deliveries'), "ELEMENTARY_FLOW", # is really a "TECHNOSPHERE_FLOW"
+                                                              "None"))))))
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -332,32 +332,43 @@ def calculate_net_public_supply(df):
     df1_sub = df1[~df1[fba_activity_fields[1]].isin(['Industrial', 'Thermoelectric Power',
                                                      'Thermoelectric Power Closed-loop cooling',
                                                      'Thermoelectric Power Once-through cooling'])]
-    # df of ps delivered and ps consumed
-    df_p = df1_sub[df1_sub[fba_activity_fields[0]] == 'Public Supply']
-    df_c = df1_sub[df1_sub[fba_activity_fields[1]] == 'Public Supply']
+    # df of ps delivered and ps withdrawan
+    df_d = df1_sub[df1_sub[fba_activity_fields[0]] == 'Public Supply']
+    df_w = df1_sub[df1_sub[fba_activity_fields[1]] == 'Public Supply']
     # split consumed further into fresh water (assumption domestic deliveries are freshwater)
     # temporary assumption that water withdrawal taken evenly from ground and surface
-    df_c1 = df_c[(df_c['FlowName'] == 'fresh') & (df_c['Compartment'] != 'total')]
-    df_c2 = df_c[(df_c['FlowName'] == 'fresh') & (df_c['Compartment'] == 'total')]
-    df_cm = pd.merge(df_c1, df_c2[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
-    df_cm = df_cm.rename(columns={"FlowAmount_x": "FlowAmount",
+    df_w1 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] != 'total')]
+    df_w2 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] == 'total')]
+    df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
+    df_wm = df_wm.rename(columns={"FlowAmount_x": "FlowAmount",
                                   "FlowAmount_y": "FlowTotal"
                                   })
     # merge the deliveries to domestic
-    df_c_modified = pd.merge(df_cm, df_p[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
-    df_c_modified = df_c_modified.rename(columns={"FlowAmount_x": "FlowAmount",
+    df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
+    df_w_modified = df_w_modified.rename(columns={"FlowAmount_x": "FlowAmount",
                                   "FlowAmount_y": "DomesticDeliveries"
                                   })
+
+    # create flowratio for ground/surface
+    df_w_modified.loc[:, 'FlowRatio'] = df_w_modified['FlowAmount'] / df_w_modified['FlowTotal']
     # calculate new, net total public supply withdrawals
     # will end up with negative values due to instances of water deliveries coming form surrounding counties
-    df_c_modified.loc[:, 'FlowAmount'] = df_c_modified['FlowAmount'] - \
-                                         ((df_c_modified['FlowAmount'] / df_c_modified['FlowTotal']) *
-                                          df_c_modified['DomesticDeliveries'])
+    df_w_modified.loc[:, 'FlowAmount'] = df_w_modified['FlowAmount'] - \
+                                         (df_w_modified['FlowRatio'] * df_w_modified['DomesticDeliveries'])
 
-    net_ps = df_c_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
+    net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
+
+    # because assumiming domestic is all fresh, change flow name. also allocate to ground/surface from state ratios
+    df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']], how='left', left_on='Location', right_on='Location')
+    df_d_modified.loc[:, 'FlowAmount'] = df_d_modified['FlowAmount'] * df_d_modified['FlowRatio']
+    df_d_modified.loc[:, 'FlowName'] = 'fresh'
+    df_d_modified = df_d_modified.rename(columns={"Compartment_y": "Compartment"})
+    df_d_modified = df_d_modified.drop(columns=["Compartment_x", "FlowRatio"])
+
+    net_ps = df_w_modified.drop(columns=["FlowRatio"])
 
     # concat dfs back (non-public supply, public supply deliveries, net ps withdrawals)
-    modified_ps = pd.concat([df2, df_p, net_ps], ignore_index=True)
+    modified_ps = pd.concat([df2, df_d_modified, net_ps], ignore_index=True, sort=True)
 
     return modified_ps
 
