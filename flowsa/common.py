@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 import logging as log
 import appdirs
+import pycountry
 
 log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -359,6 +360,7 @@ def get_state_FIPS(year='2015'):
     fips = fips[fips['State'].notnull()]
     return fips
 
+
 def get_county_FIPS(year='2015'):
     """
     Filters FIPS df for county codes only
@@ -444,6 +446,13 @@ abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
 def get_region_and_division_codes():
     df = pd.read_csv(datapath + "Census_Regions_and_Divisions.csv", dtype="str")
     return df
+
+
+def call_country_code(country):
+    """use pycountry to call on 3 digit iso country code"""
+    country_info = pycountry.countries.get(name=country)
+    country_numeric_iso = country_info.numeric
+    return country_numeric_iso
 
 
 def convert_fba_unit(df):
