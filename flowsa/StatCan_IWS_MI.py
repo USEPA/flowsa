@@ -65,11 +65,8 @@ def sc_parse(dataframe_list, args):
     df["MeasureofSpread"] = 'RSD'
     df["DataReliability"] = '3'
     df["DataCollection"] = '4'
+
+    # subset based on year
+    df = df[df['Year'] == args['year']]
+
     return df
-
-
-def call_country_code(country):
-    """use pycountry to call on 3 digit iso country code"""
-    country_info = pycountry.countries.get(name=country)
-    country_numeric_iso = country_info.numeric
-    return country_numeric_iso
