@@ -23,6 +23,16 @@ write.csv(bea, file='BEA_2012_Detail_Use_PRO_BeforeRedef.csv')
 CSV manually added to flowsa
 
 
+
+The BEA_Detail_GrossOutput was pulled from USEEIOR's Detail_GrossOutput_IO.rda on 09/07/2020.
+
+csv obtained by running the following code in Rstudio:
+bea <- get('Detail_GrossOutput_IO')
+write.csv(bea, file='BEA_GDP_GrossOutput_IO.csv')
+
+CSV manually added to flowsa
+
+
 """
 
 from flowsa.common import datapath
