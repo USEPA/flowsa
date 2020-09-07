@@ -1,0 +1,16 @@
+# Info required to download single CSV from statistics canada site. Downloads as a zip
+---
+api_name: Stat Canada
+api_key_required: false
+format: csv  # comma delineated data
+url:
+  base_url: "https://www150.statcan.gc.ca/n1/tbl/csv/36100401-eng.zip"
+call_response_fxn: sc_gdp_call
+parse_response_fxn: sc_gdp_parse
+years:
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
