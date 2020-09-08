@@ -61,6 +61,7 @@ def sc_parse(dataframe_list, args):
     df['SourceName'] = 'StatCan_IWS_MI'
     # temp hardcode canada iso code
     df['Location'] = call_country_code('Canada')
+    df['Year'] = df['Year'].astype(str)
     df['LocationSystem'] = "ISO"
     df["MeasureofSpread"] = 'RSD'
     df["DataReliability"] = '3'
@@ -68,5 +69,78 @@ def sc_parse(dataframe_list, args):
 
     # subset based on year
     df = df[df['Year'] == args['year']]
+
+    return df
+
+
+def convert_statcan_data_to_US_water_use(df, attr):
+    """
+    Use Canadian GDP data to convert 3 digit canadian water use to us water
+    use:
+    - canadian gdp
+    - us gdp
+    :return:
+    """
+    import flowsa
+    from flowsa.values_from_literature import get_Canadian_to_USD_exchange_rate
+    from flowsa.flowbyfunctions import assign_fips_location_system, aggregator, fba_default_grouping_fields
+    from flowsa.common import US_FIPS, load_bea_crosswalk
+
+    # load Canadian GDP data
+    gdp = flowsa.getFlowByActivity(flowclass=['Money'], datasource='StatCan_GDP', years=[attr['allocation_source_year']])
+    # drop 31-33
+    gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
+    gdp = gdp.rename(columns={"FlowAmount": "MilCanDollar"})
+
+    # merge df
+    df_m = pd.merge(df, gdp[['MilCanDollar', 'ActivityProducedBy']], how='left', left_on='ActivityConsumedBy',
+                    right_on='ActivityProducedBy')
+    df_m['MilCanDollar'] = df_m['MilCanDollar'].fillna(0)
+    df_m = df_m.drop(columns=["ActivityProducedBy_y"])
+    df_m = df_m.rename(columns={"ActivityProducedBy_x": "ActivityProducedBy"})
+    df_m = df_m[df_m['MilCanDollar'] != 0]
+
+    exchange_rate = get_Canadian_to_USD_exchange_rate(str(attr['allocation_source_year']))
+    exchange_rate = float(exchange_rate)
+    # convert to mgal/MUSD
+    df_m.loc[:, 'FlowAmount'] = df_m['FlowAmount'] / (df_m['MilCanDollar'] / exchange_rate)
+    df_m.loc[:, 'Unit'] = 'Mgal/$M USD'
+
+    df_m = df_m.drop(columns=["MilCanDollar"])
+
+    # convert Location to US
+    df_m.loc[:, 'Location'] = US_FIPS
+    df_m = assign_fips_location_system(df_m, str(attr['allocation_source_year']))
+
+    # load us gdp
+    # load Canadian GDP data
+    us_gdp_load = flowsa.getFlowByActivity(flowclass=['Money'], datasource='BEA_GDP_GrossOutput_IO', years=[attr['allocation_source_year']])
+    # load bea crosswalk
+    cw_load = load_bea_crosswalk()
+    cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates()
+    cw = cw[cw['NAICS_2012_Code'].apply(lambda x: len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)
+
+    # merge
+    us_gdp = pd.merge(us_gdp_load, cw, how='left', left_on='ActivityProducedBy', right_on='BEA_2012_Detail_Code')
+    us_gdp = us_gdp.drop(columns=['ActivityProducedBy', 'BEA_2012_Detail_Code'])
+    # rename columns
+    us_gdp = us_gdp.rename(columns={'NAICS_2012_Code': 'ActivityProducedBy'})
+    # agg by naics
+    us_gdp = aggregator(us_gdp, fba_default_grouping_fields)
+    us_gdp = us_gdp.rename(columns={'FlowAmount': 'us_gdp'})
+
+    # determine annual us water use
+    df_m2 = pd.merge(df_m, us_gdp[['ActivityProducedBy', 'us_gdp']], how='left', left_on='ActivityConsumedBy',
+                     right_on='ActivityProducedBy')
+
+    df_m2.loc[:, 'FlowAmount'] = df_m2['FlowAmount'] * (df_m2['us_gdp']/ 1000000)
+    df_m2.loc[:, 'Unit'] = 'Mgal'
+    df_m2 = df_m2.rename(columns={'ActivityProducedBy_x': 'ActivityProducedBy'})
+    df_m2 = df_m2.drop(columns=['ActivityProducedBy_y', 'us_gdp'])
+
+    return df_m2
+
+
+def disaggregate_statcan_to_naics_6(df):
 
     return df

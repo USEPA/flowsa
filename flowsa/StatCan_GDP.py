@@ -43,11 +43,10 @@ def sc_gdp_parse(dataframe_list, args):
                             "UOM": 'Unit'})
     # extract NAICS as activity column. rename activity based on flowname
     df['ActivityProducedBy'] = df['Description'].str.extract('.*\[(.*)\].*')
-    df.loc[:, 'FlowAmount'] = df['FlowAmount'] * 1000000
     # hard code data
     df['Class'] = 'Money'
     df.loc[:, 'FlowName'] = 'GDP'
-    df.loc[:, 'Unit'] = 'Canadian Dollar'
+    df.loc[:, 'Unit'] = 'Million Canadian Dollar'
     df['SourceName'] = 'StatCan_GDP'
     df.loc[:, 'Year'] = df['Year'].astype(str)
     # temp hardcode canada iso code
