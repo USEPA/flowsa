@@ -235,6 +235,8 @@ def generalize_activity_field_names(df):
 
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None})
     df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None})
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'nan': None})
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'nan': None})
 
     activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
     activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
@@ -482,6 +484,9 @@ def convert_fba_unit(df):
                                        df['FlowAmount'] * mj_in_btu * (10 ** 14),
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year', df['FlowAmount'] * 264.172, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
 
     return df
 
