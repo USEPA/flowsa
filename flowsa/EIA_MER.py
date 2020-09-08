@@ -98,7 +98,6 @@ def eia_mer_parse(dataframe_list, args):
     # hard code data
     output['Class'] = 'Energy'
     output['SourceName'] = 'EIA_MER'
-    output['Unit'] = 'MJ'
     output['Location'] = '00000'
     # output['Compartment'] = 'None'
     # output['LocationSystem'] = 'None'

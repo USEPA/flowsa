@@ -468,5 +468,20 @@ def convert_fba_unit(df):
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', df['FlowAmount'] * 365, df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
 
+    # Convert Energy unit "Quadrillion Btu" to MJ
+    mj_in_btu = .0010550559
+    # 1 Quad = .0010550559 x 10^15
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
+
+    # Convert Energy unit "Trillion Btu" to MJ
+    # 1 Tril = .0010550559 x 10^14
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+
     return df
 
