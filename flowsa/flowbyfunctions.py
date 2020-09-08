@@ -71,7 +71,7 @@ def create_geoscale_list(df, geoscale, year='2015'):
     return fips
 
 
-def filter_by_geoscale(df, geoscale, activitynames):
+def filter_by_geoscale(df, geoscale):
     """
     Filter flowbyactivity by FIPS at the given scale
     :param df: Either flowbyactivity or flowbysector
@@ -84,13 +84,12 @@ def filter_by_geoscale(df, geoscale, activitynames):
     df = df[df['Location'].isin(fips)]
 
     if len(df) == 0:
-        log.error("No flows found in the " + ', '.join(
-            activitynames) + " flow dataset at the " + geoscale + " scale.")
+        log.error("No flows found in the "  + " flow dataset at the " + geoscale + " scale.")
     else:
         return df
 
 
-def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
+def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     """
 
     :param df: flowbyactivity or flowbysector df
@@ -101,9 +100,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     """
 
     # use from scale to filter by these values
-    df = filter_by_geoscale(df, from_scale, activitynames).reset_index(drop=True)
-
-    group_cols = groupbycolumns.copy()
+    df = filter_by_geoscale(df, from_scale).reset_index(drop=True)
 
     # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
@@ -113,7 +110,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycolumns, activitynames):
     elif to_scale == 'national':
         df.loc[:, 'Location'] = US_FIPS
 
-    fba_agg = aggregator(df, group_cols)
+    fba_agg = aggregator(df, groupbycols)
 
     return fba_agg
 
@@ -126,7 +123,6 @@ def aggregator(df, groupbycols):
     :param groupbycols: Either flowbyactivity or flowbysector columns
     :return:
     """
-
     # weighted average function
     try:
         wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
@@ -469,7 +465,7 @@ def allocation_helper(df_w_sector, method, attr):
 
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
-    # tet
+    # test
     #df_w_sector = fba_allocation_subset.copy()
 
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
@@ -480,10 +476,13 @@ def allocation_helper(df_w_sector, method, attr):
     # drop rows with flowamount = 0
     helper_allocation = helper_allocation[helper_allocation['FlowAmount'] != 0]
 
+    # agg data if necessary
+    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'national'):
+        helper_allocation = agg_by_geoscale(helper_allocation, 'state', 'national', fba_default_grouping_fields)
+
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
-                                                      sectorsourcename=method[
-                                                          'target_sector_source'],
+                                                      sectorsourcename=method['target_sector_source'],
                                                       levelofSectoragg=attr[
                                                           'helper_sector_aggregation'])
     # generalize activity field names to enable link to water withdrawal table
@@ -508,6 +507,9 @@ def allocation_helper(df_w_sector, method, attr):
             helper_allocation[['Sector', 'Location_tmp', 'HelperFlow']],
             how='left')
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
+    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'national'):
+        modified_fba_allocation = df_w_sector.merge(
+            helper_allocation[['Sector', 'Location', 'HelperFlow']], how='left')
 
     # todo: modify so if missing data, replaced with value from one geoscale up instead of national
     # if missing values (na or 0), replace with national level values
@@ -538,7 +540,10 @@ def allocation_helper(df_w_sector, method, attr):
     modified_fba_allocation = modified_fba_allocation[
         modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
 
-    #todo: modify the unit
+    # todo: change unites
+    modified_fba_allocation.loc[modified_fba_allocation['Unit'] == 'gal/employee', 'Unit'] = 'gal'
+
+    # todo: include option to scale up usgs values
 
     return modified_fba_allocation
 
@@ -871,16 +876,13 @@ def collapse_fbs_sectors(fbs):
     fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
 
     # collapse the FBS sector columns into one column based on FlowType
-    fbs.loc[:, 'Sector'] = np.where(fbs["FlowType"] == 'TECHNOSPHERE_FLOW',
-                                    fbs["SectorConsumedBy"], "None")
-    fbs.loc[:, 'Sector'] = np.where(fbs["FlowType"] == 'WASTE_FLOW',
-                                    fbs["SectorProducedBy"], fbs['Sector'])
-    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'WASTE_FLOW') & (fbs['SectorProducedBy'] == 'None'),
-                                    fbs["SectorConsumedBy"], fbs['Sector'])
-    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorProducedBy'] == 'None'),
-                                    fbs["SectorConsumedBy"], fbs['Sector'])
-    fbs.loc[:, 'Sector'] = np.where((fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'] == 'None'),
-                                    fbs["SectorProducedBy"], fbs['Sector'])
+    fbs.loc[fbs["FlowType"] == 'TECHNOSPHERE_FLOW', 'Sector'] = fbs["SectorConsumedBy"]
+    fbs.loc[fbs["FlowType"] == 'WASTE_FLOW', 'Sector'] = fbs["SectorProducedBy"]
+    fbs.loc[(fbs["FlowType"] == 'WASTE_FLOW') & (fbs['SectorProducedBy'] == 'None'), 'Sector'] = fbs["SectorConsumedBy"]
+    fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorProducedBy'] == 'None'), 'Sector'] = fbs["SectorConsumedBy"]
+    fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'] == 'None'), 'Sector'] = fbs["SectorProducedBy"]
+    fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'].isin(['F010', 'F0100', 'F01000'])) &
+            (fbs['SectorProducedBy'].isin(['22', '221', '2213', '22131', '221310'])), 'Sector'] = fbs["SectorConsumedBy"]
 
     # drop sector consumed/produced by columns
     fbs_collapsed = fbs.drop(columns=['SectorProducedBy', 'SectorConsumedBy'])
