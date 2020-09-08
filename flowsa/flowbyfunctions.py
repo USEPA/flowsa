@@ -5,6 +5,7 @@ Helper functions for flowbyactivity and flowbysector data
 import flowsa
 import pandas as pd
 import numpy as np
+import sys
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, load_sector_crosswalk, \
     sector_source_name, get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names, \
@@ -404,19 +405,62 @@ def allocate_by_sector(df_w_sectors, allocation_method):
 
     # if statements for method of allocation
     if allocation_method == 'proportional':
-        # denominator summed from highest level of sector grouped by location
-        denom_df = df.loc[df['Sector'].apply(lambda x: len(x) == 2)]
-        denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount'].groupby(
-            denom_df['Location']).transform('sum')
-        denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
-        # merge the denominator column with fba_w_sector df
-        allocation_df = df.merge(denom_df_2, how='left')
-        # calculate ratio
-        allocation_df.loc[:, 'FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df[
-            'Denominator']
-        allocation_df = allocation_df.drop(columns=['Denominator']).reset_index()
+        allocation_df = proportional_allocation_by_location(df, 'Sector')
 
         return allocation_df
+
+
+def proportional_allocation_by_location(df, sectorcolumn):
+    """
+    Creates a proportional allocation based on all the most aggregated sectors within a location
+    :param df:
+    :param sectorcolumn:
+    :return:
+    """
+
+    denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == 2)]
+    denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount'].groupby(
+        denom_df['Location']).transform('sum')
+    denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
+    # merge the denominator column with fba_w_sector df
+    allocation_df = df.merge(denom_df_2, how='left')
+    # calculate ratio
+    allocation_df.loc[:, 'FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df[
+        'Denominator']
+    allocation_df = allocation_df.drop(columns=['Denominator']).reset_index()
+
+    return allocation_df
+
+
+def proportional_allocation_by_location_and_sector(df, sectorcolumn):
+    """
+    Creates a proportional allocation within each aggregated sector within a location
+    :param df:
+    :param sectorcolumn:
+    :param groupcols:
+    :return:
+    """
+
+    # test
+    # df = helper_allocation.copy()
+    # sectorcolumn = 'Sector'
+
+    # denominator summed from highest level of sector grouped by location
+    short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
+    denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == short_length)]
+    denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount']
+    denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year', sectorcolumn, 'Denominator']].drop_duplicates()
+    # merge the denominator column with fba_w_sector df
+    df.loc[:, 'sec_tmp'] = df[sectorcolumn].apply(lambda x: x[0:short_length])
+    allocation_df = df.merge(denom_df_2, how='left', left_on=['Location', 'LocationSystem', 'Year', 'sec_tmp'],
+                             right_on=['Location', 'LocationSystem', 'Year', sectorcolumn])
+    # calculate ratio
+    allocation_df.loc[:, 'FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df[
+        'Denominator']
+    allocation_df = allocation_df.drop(columns=['Denominator', 'sec_tmp', 'Sector_y']).reset_index(drop=True)
+    allocation_df = allocation_df.rename(columns={'Sector_x': 'Sector'})
+
+    return allocation_df
 
 
 def sector_ratios(df, sectorcolumn):
@@ -426,7 +470,12 @@ def sector_ratios(df, sectorcolumn):
     :param sectorcolumn: 'SectorConsumedBy' or 'SectorProducedBy'
     :return:
     """
+    # test
+    #df = helper_allocation.copy()
+    #sectorcolumn = 'SectorProducedBy'
 
+    # drop any null rows (can occur when activities are ranges)
+    df = df[~df[sectorcolumn].isnull()]
 
     # find the longest length sector
     length = max(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
@@ -458,7 +507,7 @@ def allocation_helper(df_w_sector, method, attr):
     """
     Used when two df required to create allocation ratio
     :param df_w_sector:
-    :param method: currently written for 'multiplication'
+    :param method: currently written for 'multiplication' and 'proportional'
     :param attr:
     :return:
     """
@@ -466,11 +515,14 @@ def allocation_helper(df_w_sector, method, attr):
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # test
-    #df_w_sector = fba_allocation_subset.copy()
+    # df_w_sector = fba_allocation_subset.copy()
 
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
                                                  datasource=attr['helper_source'],
                                                  years=[attr['helper_source_year']])
+    # if 'clean_helper_fba' in attr:
+    #     log.info("Cleaning " + attr['helper_source'])
+    #     helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
     # clean df
     helper_allocation = clean_df(helper_allocation, flow_by_activity_fields, fba_fill_na_dict)
     # drop rows with flowamount = 0
@@ -489,58 +541,68 @@ def allocation_helper(df_w_sector, method, attr):
     helper_allocation = generalize_activity_field_names(helper_allocation)
     # drop columns
     helper_allocation = helper_allocation.drop(columns=['Activity', 'Min', 'Max'])
+
+    if attr['helper_method'] == 'proportional':
+        # if calculating proportion, first subset the helper allocation df to only contain relevant sectors
+        # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
+        # aren't in list
+        sector_list = df_w_sector['Sector'].unique().tolist()
+        # subset fba allocation table to the values in the activity list, based on overlapping sectors
+        helper_allocation = helper_allocation.loc[helper_allocation['Sector'].isin(sector_list)]
+        # calculate proportional ratios
+        helper_allocation = proportional_allocation_by_location_and_sector(helper_allocation, 'Sector')
+
     # rename column
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
-
+    merge_columns = [e for e in ['Location','Sector', 'HelperFlow', 'FlowAmountRatio'] if e in
+                     helper_allocation.columns.values.tolist()]
     # merge allocation df with helper df based on sectors, depending on geo scales of dfs
     if attr['helper_from_scale'] == 'national':
-        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']],
-                                                    how='left')
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'state'):
-        modified_fba_allocation = df_w_sector.merge(
-            helper_allocation[['Sector', 'Location', 'HelperFlow']], how='left')
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
-        helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(
-            lambda x: x[0:2])
+        helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(lambda x: x[0:2])
         df_w_sector.loc[:, 'Location_tmp'] = df_w_sector['Location'].apply(lambda x: x[0:2])
-        modified_fba_allocation = df_w_sector.merge(
-            helper_allocation[['Sector', 'Location_tmp', 'HelperFlow']],
-            how='left')
+        merge_columns.append('Location_tmp')
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'national'):
-        modified_fba_allocation = df_w_sector.merge(
-            helper_allocation[['Sector', 'Location', 'HelperFlow']], how='left')
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
 
-    # todo: modify so if missing data, replaced with value from one geoscale up instead of national
-    # if missing values (na or 0), replace with national level values
-    replacement_values = helper_allocation[helper_allocation['Location'] == US_FIPS].reset_index(
-        drop=True)
-    replacement_values = replacement_values.rename(columns={"HelperFlow": 'ReplacementValue'})
-    modified_fba_allocation = modified_fba_allocation.merge(
-        replacement_values[['Sector', 'ReplacementValue']], how='left')
-    modified_fba_allocation.loc[:, 'HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(
-        modified_fba_allocation['ReplacementValue'])
-    modified_fba_allocation.loc[:, 'HelperFlow'] = np.where(modified_fba_allocation['HelperFlow'] == 0,
-                                                            modified_fba_allocation['ReplacementValue'],
-                                                            modified_fba_allocation['HelperFlow'])
     # modify flow amounts using helper data
     if attr['helper_method'] == 'multiplication':
+        # todo: modify so if missing data, replaced with value from one geoscale up instead of national
+        # if missing values (na or 0), replace with national level values
+        replacement_values = helper_allocation[helper_allocation['Location'] == US_FIPS].reset_index(
+            drop=True)
+        replacement_values = replacement_values.rename(columns={"HelperFlow": 'ReplacementValue'})
+        modified_fba_allocation = modified_fba_allocation.merge(
+            replacement_values[['Sector', 'ReplacementValue']], how='left')
+        modified_fba_allocation.loc[:, 'HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(
+            modified_fba_allocation['ReplacementValue'])
+        modified_fba_allocation.loc[:, 'HelperFlow'] = np.where(modified_fba_allocation['HelperFlow'] == 0,
+                                                                modified_fba_allocation['ReplacementValue'],
+                                                                modified_fba_allocation['HelperFlow'])
+
         # replace non-existent helper flow values with a 0, so after multiplying, don't have incorrect value associated
         # with new unit
-        modified_fba_allocation['HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(
-            value=0)
+        modified_fba_allocation['HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(value=0)
         modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
-                                                       modified_fba_allocation[
-                                                           'HelperFlow']
-    # drop columns
-    modified_fba_allocation = modified_fba_allocation.drop(
-        columns=["HelperFlow", 'ReplacementValue'])
+                                                       modified_fba_allocation['HelperFlow']
+        # drop columns
+        modified_fba_allocation = modified_fba_allocation.drop(columns=["HelperFlow", 'ReplacementValue'])
 
-    # drop rows of 0 to speed up allocation
-    modified_fba_allocation = modified_fba_allocation[
-        modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
+    elif attr['helper_method'] == 'proportional':
+        modified_fba_allocation['FlowAmountRatio'] = modified_fba_allocation['FlowAmountRatio'].fillna(0)
+        modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
+                                                       modified_fba_allocation['FlowAmountRatio']
+        modified_fba_allocation = modified_fba_allocation.drop(columns=["HelperFlow", 'FlowAmountRatio'])
 
-    # todo: change unites
+    # drop rows of 0
+    modified_fba_allocation = modified_fba_allocation[modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
+
+    # todo: change units
     modified_fba_allocation.loc[modified_fba_allocation['Unit'] == 'gal/employee', 'Unit'] = 'gal'
 
     # todo: include option to scale up usgs values
