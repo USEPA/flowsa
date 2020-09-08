@@ -1,0 +1,12 @@
+# EIA_MER
+---
+api_name: EIA_MER
+format: pdf
+url:
+  base_url: "https://www.eia.gov/totalenergy/data/browser/csv.php?tbl=__tbl__"
+url_replace_fxn: eia_mer_url_helper
+call_response_fxn: eia_mer_call
+parse_response_fxn: eia_mer_parse
+tbls:
+  - T01.02
+  - T02.02
