@@ -102,7 +102,7 @@ def bls_qcew_parse(dataframe_list, args):
     return df
 
 
-def clean_bls_qcew_fba(fba_df):
+def clean_bls_qcew_fba(fba_df, attr):
 
     fba_df = replace_missing_2_digit_sector_values(fba_df)
     fba_df = remove_2_digit_sector_ranges(fba_df)

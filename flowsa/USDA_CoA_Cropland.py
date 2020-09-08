@@ -161,7 +161,7 @@ def coa_cropland_parse(dataframe_list, args):
     return df
 
 
-def coa_irrigated_cropland_fba_cleanup(fba):
+def coa_irrigated_cropland_fba_cleanup(fba, attr):
     """
     When using irrigated cropland, aggregate sectors to cropland and total ag land. Doing this because published values
     for irrigated harvested cropland do not include the water use for vegetables, woody crops, berries.
@@ -174,7 +174,7 @@ def coa_irrigated_cropland_fba_cleanup(fba):
     return fba
 
 
-def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr):
+def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     """
     Disaggregate usda coa cropland to naics 6
     :param fba_w_sector:
