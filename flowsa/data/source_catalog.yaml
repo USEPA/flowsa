@@ -1,3 +1,8 @@
+Blackhurst_IO:
+  class:
+    - Water
+  sector-like_activities: False
+  activity_schema:
 BLS_QCEW:
   class:
     - Employment
@@ -36,10 +41,14 @@ NOAA_FisheryLandings:
   class: Money
   sector-like_activities: False
   activity_schema:
+StatCan_GDP:
+  class: Money
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Schema
 StatCan_IWS_MI:
   class: Water
-  sector-like_activities: False
-  activity_schema:
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Schema
 USDA_CoA_Cropland:
   class:
     - Land
