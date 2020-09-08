@@ -25,7 +25,7 @@ import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields,  \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
-    get_sector_list #, add_non_naics_sectors
+    get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
@@ -33,10 +33,12 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     check_if_data_exists_at_less_aggregated_geoscale, check_if_data_exists_for_same_geoscales, clean_df,\
     sector_disaggregation, check_if_losing_sector_data
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
+from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
 from flowsa.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.datachecks import sector_flow_comparision
+from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 
 
 def parse_args():
@@ -152,16 +154,16 @@ def main(method_name):
                     if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
                         log.info("Aggregating subset from " + activity_from_scale + " to " + activity_to_scale)
                         flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, activity_to_scale,
-                                                      fba_default_grouping_fields, n)
+                                                      fba_default_grouping_fields)
                     # else, aggregate to geoscale want to use
                     elif fips_number_key[activity_from_scale] > fips_number_key[v['geoscale_to_use']]:
                         log.info("Aggregating subset from " + activity_from_scale + " to " + v['geoscale_to_use'])
                         flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, v['geoscale_to_use'],
-                                                      fba_default_grouping_fields, n)
+                                                      fba_default_grouping_fields)
                     # else, if usgs is more aggregated than allocation table, filter relevant rows
                     else:
                         log.info("Subsetting " + activity_from_scale + " data")
-                        flow_subset = filter_by_geoscale(flow_subset, activity_from_scale, n)
+                        flow_subset = filter_by_geoscale(flow_subset, activity_from_scale)
 
                     # Add sectors to df activity, depending on level of specified sector aggregation
                     log.info("Adding sectors to " + k + " for " + n)
@@ -202,11 +204,12 @@ def main(method_name):
                     if attr['allocation_compartment'] != 'None':
                         fba_allocation = fba_allocation.loc[
                             fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
+
                     # cleanup the fba allocation df, if necessary
                     if 'clean_allocation_fba' in attr:
                         log.info("Cleaning " + attr['allocation_source'])
                         fba_allocation = getattr(sys.modules[__name__],
-                                                 attr["clean_allocation_fba"])(fba_allocation)
+                                                 attr["clean_allocation_fba"])(fba_allocation, attr)
                     # reset index
                     fba_allocation = fba_allocation.reset_index(drop=True)
 
@@ -220,10 +223,10 @@ def main(method_name):
                     # if allocation df is less aggregated than FBA df, aggregate allocation df to target scale
                     if fips_number_key[from_scale] > fips_number_key[to_scale]:
                         fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale,
-                                                         fba_default_grouping_fields, names)
+                                                         fba_default_grouping_fields)
                     # else, if usgs is more aggregated than allocation table, use usgs as both to and from scale
                     else:
-                        fba_allocation = filter_by_geoscale(fba_allocation, from_scale, names)
+                        fba_allocation = filter_by_geoscale(fba_allocation, from_scale)
 
                     # assign sector to allocation dataset
                     log.info("Adding sectors to " + attr['allocation_source'])
@@ -231,7 +234,7 @@ def main(method_name):
                                                                    sectorsourcename=method['target_sector_source'],
                                                                    levelofSectoragg=attr['allocation_sector_aggregation'])
 
-                    # subset fba datsets to only keep the sectors associated with activity subset
+                    # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
                     fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
 
@@ -242,10 +245,10 @@ def main(method_name):
                     fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
                     # call on fxn to further disaggregate the fba allocation data, if exists
-                    if 'allocation_disaggregation_fxn' in attr:
+                    if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Futher disaggregating sectors in " + attr['allocation_source'])
                         fba_allocation_subset = getattr(sys.modules[__name__],
-                                                        attr["allocation_disaggregation_fxn"])(fba_allocation_subset, attr)
+                                                        attr["clean_allocation_fba_w_sec"])(fba_allocation_subset, attr, method)
 
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
@@ -317,7 +320,7 @@ def main(method_name):
 
                 to_scale = method['target_geoscale']
 
-                fbs_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields, names)
+                fbs_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
