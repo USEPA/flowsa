@@ -29,6 +29,7 @@ if __name__ == '__main__':
                  var_name="Year",
                  value_name="FlowAmount")
 
+    df = df[df['Year'] == '2011']
     # hardcode data
     df["Class"] = "Money"
     df['Description'] = 'BEA_2012_Detail_Code'
@@ -37,12 +38,8 @@ if __name__ == '__main__':
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"  # state FIPS codes have not changed over last decade
     df["Unit"] = "USD"
-    df["Year"] = df["Year"].astype(str)
 
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
-    # years = df['Year'].drop_duplicates().values.tolist()
-    years = ['2011', '2015']
-    for y in years:
-        parquet_name = 'BEA_GDP_GrossOutput_IO_' + y
-        store_flowbyactivity(flow_df, parquet_name)
+    parquet_name = 'BEA_GDP_GrossOutput_IO_2011'
+    store_flowbyactivity(flow_df, parquet_name)
