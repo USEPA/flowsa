@@ -45,7 +45,8 @@ def bea_make_parse(dataframe_list, args):
                             'IndustryDescription': 'Description',
                             'ProVal': 'FlowAmount',
                             'IOYear': 'Year'})
-       # hard code data
+    df.loc[:, 'FlowAmount'] = df['FlowAmount'].astype(float) * 1000000
+    # hard code data
     df['Class'] = 'Money'
     df['SourceName'] = 'BEA_Make_Table'
     df['Unit'] = 'USD'
