@@ -43,77 +43,75 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: county
         allocation_helper: 'no'
-    activity_set_3:
-      names:
-        - "Industrial"
-      activity_sector_aggregation: 'disagg'
-      allocation_method: proportional
-      allocation_source: "StatCan_IWS_MI"
-      allocation_source_class: "Water"
-      allocation_sector_aggregation: 'disagg'
-      allocation_source_year: 2011
-      allocation_flow:
-        - "Water intake"
-      allocation_compartment: None
-      allocation_from_scale: national
-      clean_allocation_fba: convert_statcan_data_to_US_water_use
-      allocation_helper: 'yes'
-      helper_source: "BLS_QCEW"
-      helper_method: proportional
-      helper_source_class: "Employment"
-      helper_sector_aggregation: 'agg'
-      helper_source_year: 2011
-      helper_flow:
-        - "Number of employees"
-      helper_from_scale: state
-      clean_helper_fba: clean_bls_qcew_fba
-    activity_set_4:
-     names:
-       - "Mining"
-     activity_sector_aggregation: 'disagg'
-     allocation_method: proportional
-     allocation_source: "Blackhurst_IO"
-     allocation_source_class: "Water"
-     allocation_sector_aggregation: 'disagg'
-     allocation_source_year: 2002
-     allocation_flow:
-       - 'Water Withdrawals IO Vector'
-     allocation_compartment: None
-     allocation_from_scale: national
-     clean_allocation_fba: convert_blackhurst_data_to_gal_per_year
-     clean_allocation_fba_w_sec: convert_blackhurst_data_to_gal_per_employee
-     allocation_helper: 'yes'
-     helper_source: "BLS_QCEW"
-     helper_method: multiplication
-     helper_source_class: "Employment"
-     helper_sector_aggregation: 'agg'
-     helper_source_year: 2010
-     helper_flow:
-       - "Number of employees"
-     helper_from_scale: state
-#      activity_set_5:
-#        names:
-#          - "Irrigation Crop"
-#        activity_sector_aggregation: 'disagg'
-#        allocation_method: proportional
-#        allocation_source: "USDA_CoA_NAICS"
-#        allocation_source_class: "Land"
-#        allocation_sector_aggregation: 'agg'
-#        allocation_source_year: 2012
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: state
-#        #clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-#        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-#        allocation_helper: 'yes'
-#        helper_source: "USDA_IWMS"
-#        helper_method: multiplication
-#        helper_source_class: "Water"
-#        helper_sector_aggregation: 'disagg'
-#        helper_source_year: 2013
-#        helper_flow: None
-#        helper_from_scale: state
-#        clean_helper_fba_w_sec: aggregate_iwms_multiplier
+      activity_set_3:
+        names:
+          - "Industrial"
+        activity_sector_aggregation: 'disagg'
+        allocation_method: proportional
+        allocation_source: "StatCan_IWS_MI"
+        allocation_source_class: "Water"
+        allocation_sector_aggregation: 'disagg'
+        allocation_source_year: 2011
+        allocation_flow:
+          - "Water intake"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: convert_statcan_data_to_US_water_use
+        allocation_helper: 'yes'
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_sector_aggregation: 'agg'
+        helper_source_year: 2011
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: state
+        clean_helper_fba: clean_bls_qcew_fba
+      activity_set_4:
+        names:
+          - "Mining"
+        activity_sector_aggregation: 'disagg'
+        allocation_method: proportional
+        allocation_source: "Blackhurst_IO"
+        allocation_source_class: "Water"
+        allocation_sector_aggregation: 'disagg'
+        allocation_source_year: 2002
+        allocation_flow:
+          - 'Water Withdrawals IO Vector'
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: convert_blackhurst_data_to_gal_per_year
+        clean_allocation_fba_w_sec: convert_blackhurst_data_to_gal_per_employee
+        allocation_helper: 'yes'
+        helper_source: "BLS_QCEW"
+        helper_method: multiplication
+        helper_source_class: "Employment"
+        helper_sector_aggregation: 'agg'
+        helper_source_year: 2010
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: state
+      activity_set_5:
+        names:
+          - "Irrigation Crop"
+        activity_sector_aggregation: 'disagg'
+        allocation_method: proportional
+        allocation_source: "USDA_IWMS"
+        allocation_source_class: "Land"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2013
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: state
+        clean_allocation_fba_w_sec: disaggregate_iwms_to_6_digit_naics
+        allocation_helper: 'yes'
+        helper_source: "USDA_IWMS"
+        helper_method: multiplication
+        helper_source_class: "Water"
+        helper_sector_aggregation: 'disagg'
+        helper_source_year: 2013
+        helper_flow: None
+        helper_from_scale: state
       activity_set_6:
         names:
           - "Livestock"
