@@ -39,6 +39,7 @@ from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
 from flowsa.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.datachecks import sector_flow_comparision
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
+from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
 
 
 def parse_args():
