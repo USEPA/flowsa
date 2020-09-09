@@ -6,7 +6,7 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system, sector_ratios
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def CoA_Cropland_URL_helper(build_url, config, args):
@@ -183,15 +183,15 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     """
 
     # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
-    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr)
+    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, years_list=[attr['allocation_source_year']])
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit naics
-    fba_w_sector = disaggregate_cropland(fba_w_sector, attr)
+    fba_w_sector = disaggregate_cropland(fba_w_sector, attr, years_list=[attr['allocation_source_year']])
 
     return fba_w_sector
 
 
-def disaggregate_pastureland(fba_w_sector, attr):
+def disaggregate_pastureland(fba_w_sector, attr, years_list):
     """
     The USDA CoA Cropland irrigated pastureland data only links to the 3 digit NAICS '112'. This function uses state
     level CoA 'Land in Farms' to allocate the county level acreage data to 6 digit NAICS.
@@ -210,7 +210,7 @@ def disaggregate_pastureland(fba_w_sector, attr):
 
     # load usda coa cropland naics
     df_f = flowsa.getFlowByActivity(flowclass=['Land'],
-                                    years=[attr['allocation_source_year']],
+                                    years=years_list,
                                     datasource='USDA_CoA_Cropland_NAICS')
     df_f = clean_df(df_f, flow_by_activity_fields, fba_fill_na_dict)
     # subset to land in farms data
@@ -245,7 +245,7 @@ def disaggregate_pastureland(fba_w_sector, attr):
     return fba_w_sector
 
 
-def disaggregate_cropland(fba_w_sector, attr):
+def disaggregate_cropland(fba_w_sector, attr, years_list):
     """
     In the event there are 4 (or 5) digit naics for cropland at the county level, use state level harvested cropland to
     create ratios
@@ -257,7 +257,7 @@ def disaggregate_cropland(fba_w_sector, attr):
     import flowsa
     from flowsa.flowbyfunctions import generalize_activity_field_names, sector_aggregation_generalized,\
         fbs_default_grouping_fields, clean_df, fba_fill_na_dict, fbs_fill_na_dict, add_missing_flow_by_fields,\
-        sector_disaggregation_generalized
+        sector_disaggregation_generalized, sector_ratios
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # drop pastureland data
@@ -269,7 +269,7 @@ def disaggregate_cropland(fba_w_sector, attr):
 
     # load the relevant state level harvested cropland by naics
     naics_load = flowsa.getFlowByActivity(flowclass=['Land'],
-                                          years=[attr['allocation_source_year']],
+                                          years=years_list,
                                           datasource="USDA_CoA_Cropland_NAICS").reset_index(drop=True)
     # clean df
     naics = clean_df(naics_load, flow_by_activity_fields, fba_fill_na_dict)
