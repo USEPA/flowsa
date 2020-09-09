@@ -28,7 +28,7 @@ def assign_naics(df):
     cw_load = load_bea_crosswalk()
     cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # least aggregate level that applies is 5 digits
-    cw = cw[cw['NAICS_2012_Code'].apply(lambda x: len(str(x)) == 5)].reset_index(drop=True)
+    cw = cw[cw['NAICS_2012_Code'].apply(lambda x: len(str(x)) == 6)].reset_index(drop=True)
 
     cw = cw.sort_values(['BEA_2012_Detail_Code', 'NAICS_2012_Code'])
 
