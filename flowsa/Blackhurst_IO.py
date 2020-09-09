@@ -46,7 +46,7 @@ def bh_parse(dataframe_list, args):
     return df
 
 
-def convert_blackhurst_data_to_gal_per_year(df):
+def convert_blackhurst_data_to_gal_per_year(df, attr):
 
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
@@ -75,12 +75,13 @@ def convert_blackhurst_data_to_gal_per_year(df):
 
     return bh_df_revised
 
+
 def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
 
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
     from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict, agg_by_geoscale, fba_default_grouping_fields, \
-        sector_ratios
+        sector_ratios, proportional_allocation_by_location_and_sector
     from flowsa.BLS_QCEW import clean_bls_qcew_fba
 
     # test
@@ -89,36 +90,39 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     bls = flowsa.getFlowByActivity(flowclass=['Employment'], datasource='BLS_QCEW', years=[2002])
     # clean df
     bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
-    bls = clean_bls_qcew_fba(bls)
+    bls = clean_bls_qcew_fba(bls, attr)
 
-    blm_agg = agg_by_geoscale(bls, 'state', 'national', fba_default_grouping_fields)
+    bls_agg = agg_by_geoscale(bls, 'state', 'national', fba_default_grouping_fields)
 
     # assign naics to allocation dataset
-    bls_wsec = add_sectors_to_flowbyactivity(blm_agg, sectorsourcename= method['target_sector_source'],
+    bls_wsec = add_sectors_to_flowbyactivity(bls_agg, sectorsourcename= method['target_sector_source'],
                                              levelofSectoragg='national')
     # drop rows where sector = None ( does not occur with mining)
     bls_wsec = bls_wsec[~bls_wsec['SectorProducedBy'].isnull()]
-    bls_wsec.loc[:, 'sec_tmp'] = bls_wsec['SectorProducedBy'].apply(lambda x: x[0:2])
-    # create ratio of employees within a 2 digit sector
-    bls_w_sec_2 = bls_wsec[bls_wsec['SectorProducedBy'].apply(lambda x: len(str(x)) == 2)]
-    bls_w_sec_2 = bls_w_sec_2.rename(columns={"FlowAmount": "FlowAmount_2dig"})
-    # merge the two dfs
-    bls_mod = pd.merge(bls_wsec, bls_w_sec_2[['FlowAmount_2dig', 'Location', 'sec_tmp']],
-                  how='left', left_on='sec_tmp', right_on='sec_tmp')
-    bls_mod.loc[:, 'EmployeeRatio'] = bls_mod['FlowAmount'] / bls_mod['FlowAmount_2dig']
-    # drop columns
-    bls_mod = bls_mod.drop(columns=["sec_tmp", 'FlowAmount_2dig'])
-    bls_mod = bls_mod.rename(columns={"FlowAmount": "Employees"})
+    bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector'})
+    #bls_wsec.loc[:, 'sec_tmp'] = bls_wsec['SectorProducedBy'].apply(lambda x: x[0:2])
+
+    # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
+    # aren't in list
+    sector_list = df_wsec['Sector'].unique().tolist()
+    # subset fba allocation table to the values in the activity list, based on overlapping sectors
+    bls_wsec = bls_wsec.loc[bls_wsec['Sector'].isin(sector_list)]
+    # calculate proportional ratios
+    # todo: address problem that occurs here, employee values don't sum to one
+    bls_wsec = proportional_allocation_by_location_and_sector(bls_wsec, 'Sector')
+    bls_wsec = bls_wsec.rename(columns = {'FlowAmountRatio': 'EmployeeRatio',
+                                          'FlowAmount': 'Employees'})
 
     # merge the two dfs
-    df = pd.merge(df_wsec, bls_mod[['Employees', 'SectorProducedBy', 'EmployeeRatio']], how='left',
-                  left_on='Sector', right_on='SectorProducedBy')
+    df = pd.merge(df_wsec, bls_wsec[['Sector', 'EmployeeRatio', 'Employees']], how='left',
+                  left_on='Sector', right_on='Sector')
+    df['EmployeeRatio'] = df['EmployeeRatio'].fillna(0)
     # calculate gal/employee in 2002
     df.loc[:, 'FlowAmount'] = (df['FlowAmount'] * df['EmployeeRatio'])/df['Employees']
     df.loc[:, 'Unit'] = 'gal/employee'
 
     # drop cols
-    df = df.drop(columns = ['Employees', 'SectorProducedBy', 'EmployeeRatio'])
+    df = df.drop(columns = ['Employees', 'EmployeeRatio'])
 
     #bls_wsec = sector_ratios(bls_wsec, 'SectorProducedBy')
 
