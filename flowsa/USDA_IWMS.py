@@ -78,3 +78,18 @@ def iwms_parse(dataframe_list, args):
         drop=True)
 
     return df
+
+
+def disaggregate_iwms_to_6_digit_naics(df, attr, method):
+
+    from flowsa.USDA_CoA_Cropland import disaggregate_pastureland, disaggregate_cropland
+    # test
+    # df = fba_allocation_subset.copy()
+
+    # address double counting brought on by iwms categories applying to multiply NAICS
+    df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment', 'Location'], keep = 'first', inplace = True)
+    years = [attr['allocation_source_year'] - 1]
+    df = disaggregate_pastureland(df, attr, years)
+    df = disaggregate_cropland(df, attr, years)
+
+    return df
