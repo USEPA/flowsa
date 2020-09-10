@@ -1,0 +1,231 @@
+'2014':
+  Table 2.1:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total | trillion Btu
+      - Residual Fuel Oil | million bbl
+      - Distillate Fuel Oil | million bbl
+      - Natural Gas | billion cu ft
+      - Hydrocarbon Gas Liquids, excluding natural gasoline | million bbl
+      - Coal | million short tons
+      - Coke and Breeze | million short tons
+      - Other | trillion Btu
+    regions:
+      { 
+      Total United States : [14,97],
+      Northeast Census Region : [100,181],
+      Midwest Census Region : [184,265],
+      South Census Region : [268,349],
+      West Census Region : [352,433]
+      }
+    rse_regions:
+      { 
+      Total United States : [12,95],
+      Northeast Census Region : [98,179],
+      Midwest Census Region : [182,263],
+      South Census Region : [266,347],
+      West Census Region : [350,431]
+      }
+  Table 2.2:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total
+      - Residual Fuel Oil
+      - Distillate Fuel Oil
+      - Natural Gas
+      - Hydrocarbon Gas Liquids, excluding natural gasoline
+      - Coal
+      - Coke and Breeze
+      - Other
+    regions:
+      { 
+      Total United States : [14,97],
+      Northeast Census Region : [100,181],
+      Midwest Census Region : [184,265],
+      South Census Region : [268,349],
+      West Census Region : [352,433]
+      }
+    rse_regions:
+      { 
+      Total United States : [12,95],
+      Northeast Census Region : [98,179],
+      Midwest Census Region : [182,263],
+      South Census Region : [266,347],
+      West Census Region : [350,431]
+      }
+  Table 3.1:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total | trillion Btu
+      - Net Electricity | million kWh
+      - Residual Fuel Oil | million bbl
+      - Distillate Fuel Oil | million bbl
+      - Natural Gas | billion cu ft
+      - Hydrocarbon Gas Liquids, excluding natural gasoline | million bbl
+      - Coal | million short tons
+      - Coke and Breeze | million short tons
+      - Other | trillion Btu
+    regions:
+      { 
+      Total United States : [14,95],
+      Northeast Census Region : [98,179],
+      Midwest Census Region : [182,263],
+      South Census Region : [266,347],
+      West Census Region : [350,431]
+      }
+    rse_regions:
+      { 
+      Total United States : [12,93],
+      Northeast Census Region : [96,177],
+      Midwest Census Region : [180,261],
+      South Census Region : [264,345],
+      West Census Region : [348,429]
+      }
+  Table 3.2:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total
+      - Net Electricity
+      - Residual Fuel Oil
+      - Distillate Fuel Oil
+      - Natural Gas
+      - Hydrocarbon Gas Liquids, excluding natural gasoline
+      - Coal
+      - Coke and Breeze
+      - Other
+    regions:
+      { 
+      Total United States : [14,95],
+      Northeast Census Region : [98,179],
+      Midwest Census Region : [182,263],
+      South Census Region : [266,347],
+      West Census Region : [350,431]
+      }
+    rse_regions:
+      { 
+      Total United States : [12,93],
+      Northeast Census Region : [96,177],
+      Midwest Census Region : [180,261],
+      South Census Region : [264,345],
+      West Census Region : [348,429]
+      }
+
+'2010':
+  Table 2.1:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total | trillion Btu
+      - Residual Fuel Oil | million bbl
+      - Distillate Fuel Oil | million bbl
+      - Natural Gas | billion cu ft
+      - Liquified Petroleum Gas and Natural Gas Liquids | million bbl
+      - Coal | million short tons
+      - Coke and Breeze | million short tons
+      - Other | trillion Btu
+    regions:
+      { 
+      Total United States : [16,99],
+      Northeast Census Region : [104,187],
+      Midwest Census Region : [192,275],
+      South Census Region : [280,363],
+      West Census Region : [368,451]
+      }
+    rse_regions:
+      { 
+      Total United States : [15,98],
+      Northeast Census Region : [103,186],
+      Midwest Census Region : [191,274],
+      South Census Region : [279,362],
+      West Census Region : [367,450]
+      }
+  Table 2.2:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total
+      - Residual Fuel Oil
+      - Distillate Fuel Oil
+      - Natural Gas
+      - Liquified Petroleum Gas and Natural Gas Liquids
+      - Coal
+      - Coke and Breeze
+      - Other
+    regions:
+      { 
+      Total United States : [15,98],
+      Northeast Census Region : [103,186],
+      Midwest Census Region : [191,274],
+      South Census Region : [279,362],
+      West Census Region : [367,450]
+      }
+    rse_regions:
+      { 
+      Total United States : [13,96],
+      Northeast Census Region : [101,184],
+      Midwest Census Region : [189,272],
+      South Census Region : [277,360],
+      West Census Region : [365,448]
+      }
+  Table 3.1:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total | trillion Btu
+      - Net Electricity | million kWh
+      - Residual Fuel Oil | million bbl
+      - Distillate Fuel Oil | million bbl
+      - Natural Gas | billion cu ft
+      - Liquified Petroleum Gas and Natural Gas Liquids | million bbl
+      - Coal | million short tons
+      - Coke and Breeze | million short tons
+      - Other | trillion Btu
+    regions:
+      { 
+      Total United States : [16,99],
+      Northeast Census Region : [104,187],
+      Midwest Census Region : [192,275],
+      South Census Region : [280,363],
+      West Census Region : [368,451]
+      }
+    rse_regions:
+      { 
+      Total United States : [15,98],
+      Northeast Census Region : [103,186],
+      Midwest Census Region : [191,274],
+      South Census Region : [279,362],
+      West Census Region : [367,450]
+      }
+  Table 3.2:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total
+      - Net Electricity
+      - Residual Fuel Oil
+      - Distillate Fuel Oil
+      - Natural Gas
+      - Liquified Petroleum Gas and Natural Gas Liquids
+      - Coal
+      - Coke and Breeze
+      - Other
+    regions:
+      { 
+      Total United States : [15,98],
+      Northeast Census Region : [103,186],
+      Midwest Census Region : [191,274],
+      South Census Region : [279,362],
+      West Census Region : [367,450]
+      }
+    rse_regions:
+      { 
+      Total United States : [13,96],
+      Northeast Census Region : [101,184],
+      Midwest Census Region : [189,272],
+      South Census Region : [277,360],
+      West Census Region : [365,448]
+      }
