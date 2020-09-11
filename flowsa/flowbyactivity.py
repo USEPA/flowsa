@@ -14,6 +14,7 @@ from flowsa.BEA_Make_Table import *
 from flowsa.Blackhurst_IO import *
 from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
+from flowsa.Census_AHS import *
 from flowsa.Census_PEP_Population import *
 from flowsa.EIA_CBECS_Water import *
 from flowsa.EPA_NEI import *
