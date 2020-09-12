@@ -12,6 +12,7 @@ Last updated: September 8, 2020
 
 import io
 from flowsa.common import *
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def eia_mer_url_helper(build_url, config, args):
@@ -65,9 +66,15 @@ def eia_mer_parse(dataframe_list, args):
     """Combine and parse the provided dataframes. """
     df = pd.concat(dataframe_list, sort=False)
     # Filter only the rows we want, YYYYMM field beginning with 201, for 2010's.
-    df = df[df['YYYYMM'] > 201000]
-    output = pd.DataFrame()
+    # df = df[df['YYYYMM'] > 201000]
+    # For doing year-by-year based on args['year']
+    min_year = int(args['year'] + '00')
+    max_year = int(str(int(args['year']) + 1) + '00')
+    # df = df[min_year < df['YYYYMM'] < max_year]
+    df = df[df['YYYYMM'] > min_year]
+    df = df[df['YYYYMM'] < max_year]
 
+    output = pd.DataFrame()
     sums_key_map = {}
     sums = []
     for index, row in df.iterrows():
@@ -95,17 +102,16 @@ def eia_mer_parse(dataframe_list, args):
 
     output = pd.DataFrame(sums)
 
+    output = assign_fips_location_system(output, args["year"])
+
     # hard code data
     output['Class'] = 'Energy'
     output['SourceName'] = 'EIA_MER'
     output['Location'] = '00000'
-    # output['Compartment'] = 'None'
-    # output['LocationSystem'] = 'None'
-    # output['MeasureofSpread'] = 'None'
-    # output['Spread'] = 'None'
-    # output['Distribution'] = 'None'
-    # output['Min'] = 'None'
-    # output['Max'] = 'None'
+    # Fill in the rest of the Flow by fields so they show "None" instead of nan.
+    output['Compartment'] = 'None'
+    output['MeasureofSpread'] = 'None'
+    output['DistributionType'] = 'None'
     # Add tmp DQ scores
     output['DataReliability'] = 5
     output['DataCollection'] = 5
