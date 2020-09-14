@@ -17,7 +17,7 @@ def get_activitytosector_mapping(source):
     :return: a pandas df for a standard ActivitytoSector mapping
     """
     if 'EPA_NEI' in source:
-        source = 'EPA_NEI'
+        source = 'SCC'
     mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
