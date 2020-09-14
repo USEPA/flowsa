@@ -47,7 +47,7 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11112']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
                    ignore_index=True)  # oilseed (except soybean) farming
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'NAICS_2012_Code', 'CROPS, OTHER', '111991']],
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER','NAICS_2012_Code',  '111991']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
                    ignore_index=True)  # SUGARBEETS
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998A']],

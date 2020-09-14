@@ -10,12 +10,17 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 from flowsa.common import *
 from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.BEA_Make_Table import *
+from flowsa.Blackhurst_IO import *
 from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
+from flowsa.Census_AHS import *
 from flowsa.Census_PEP_Population import *
 from flowsa.EIA_CBECS_Water import *
 from flowsa.EPA_NEI import *
+from flowsa.StatCan_GDP import *
 from flowsa.StatCan_IWS_MI import *
+from flowsa.StatCan_LFS import *
 from flowsa.USDA_CoA_Cropland import *
 from flowsa.USDA_CoA_Cropland_NAICS import *
 from flowsa.USDA_CoA_Livestock import *
@@ -25,6 +30,8 @@ from flowsa.USGS_NWIS_WU import *
 from flowsa.USDA_ERS_MLU import *
 from flowsa.EIA_CBECS_Land import *
 from flowsa.EIA_MECS_Land import *
+from flowsa.BLM_Public_Land_Statistics import *
+from flowsa.EIA_MER import *
 
 
 def parse_args():
@@ -85,6 +92,7 @@ def call_urls(url_list, args):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
+
     data_frames_list = []
     for url in url_list:
         log.info("Calling " + url)
@@ -92,6 +100,7 @@ def call_urls(url_list, args):
         if hasattr(sys.modules[__name__], config["call_response_fxn"]):
             df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r, args)
         data_frames_list.append(df)
+
     return data_frames_list
 
 

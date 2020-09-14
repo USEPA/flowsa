@@ -1,4 +1,4 @@
-# write_USGS_WU_Coef.py (scripts)
+# write_FBA_USGS_WU_Coef.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 # ingwersen.wesley@epa.gov

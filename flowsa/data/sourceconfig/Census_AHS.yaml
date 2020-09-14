@@ -1,0 +1,16 @@
+# Downloads and parses CSV from US Census American Housing Survey (AHS) at national level
+---
+# api_name: Census_AHS
+# api_key_required: false
+format: csv
+url:
+#  base_url: "https://www2.census.gov/programs-surveys/ahs/__year__/AHS __year__ National PUF __ver__ Flat CSV.zip"
+  base_url: "https://www2.census.gov/programs-surveys/ahs/__year__/AHS __year__ National PUF __ver__ CSV.zip"
+url_replace_fxn: ahs_url_helper
+call_response_fxn: ahs_call
+parse_response_fxn: ahs_parse
+years:
+  "2011": "v2.0"
+  "2013": "v1.3"
+  "2015": "v3.0"
+  "2017": "v3.0"

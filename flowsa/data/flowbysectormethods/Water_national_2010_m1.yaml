@@ -17,7 +17,6 @@ source_names:
       activity_set_1:
         names:
           - "Aquaculture"
-          - "Domestic"
           - "Irrigation Golf Courses"
           - "Public Supply"
           - "Thermoelectric Power"
@@ -33,6 +32,19 @@ source_names:
         allocation_helper: 'no'
       activity_set_2:
         names:
+          - "Domestic"
+        activity_sector_aggregation: 'disagg'
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: None
+        allocation_sector_aggregation: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: county
+        allocation_helper: 'no'
+      activity_set_3:
+        names:
           - "Industrial"
           - "Mining"
         activity_sector_aggregation: 'disagg'
@@ -45,8 +57,9 @@ source_names:
           - "Number of employees"
         allocation_compartment: None
         allocation_from_scale: state
+        clean_allocation_fba: clean_bls_qcew_fba
         allocation_helper: 'no'
-      activity_set_3:
+      activity_set_4:
         names:
           - "Irrigation Crop"
         activity_sector_aggregation: 'disagg'
@@ -63,7 +76,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        allocation_disaggregation_fxn: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'yes'
         helper_source: "USDA_IWMS"
         helper_method: multiplication
@@ -72,7 +85,7 @@ source_names:
         helper_source_year: 2013
         helper_flow: None
         helper_from_scale: state
-      activity_set_4:
+      activity_set_5:
         names:
           - "Livestock"
         activity_sector_aggregation: 'disagg'

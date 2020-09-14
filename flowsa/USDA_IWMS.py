@@ -6,7 +6,6 @@ import json
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-
 def iwms_url_helper(build_url, config, args):
     """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
@@ -33,7 +32,7 @@ def iwms_call(url, response, args):
 def iwms_parse(dataframe_list, args):
     """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
     (irrigated and total)."""
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(dataframe_list, sort=False, ignore_index=True)
     # only interested in total water applied, not water applied by type of irrigation
     df = df[df['domain_desc'] == 'TOTAL']
     # drop unused columns
@@ -42,7 +41,7 @@ def iwms_parse(dataframe_list, args):
                           'asd_desc', 'county_name', 'source_desc', 'congr_district_code', 'asd_code',
                           'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
                           'state_ansi', 'state_name', 'country_name', 'county_ansi', 'end_code', 'group_desc',
-                          'util_practice_desc', 'class_desc'])
+                          'util_practice_desc','class_desc'])
     # create FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
     df['Location'] = df['state_fips_code'] + df['county_code']
@@ -55,20 +54,42 @@ def iwms_parse(dataframe_list, args):
                             "unit_desc": "Unit",
                             "year": "Year",
                             "short_desc": "Description",
-                            "domaincat_desc": "Compartment"})
+                            "prodn_practice_desc": "Compartment",
+                            "statisticcat_desc": "FlowName"})
     # drop remaining unused columns
-    df = df.drop(columns=['commodity_desc', 'state_fips_code', 'county_code',
-                          'statisticcat_desc', 'prodn_practice_desc', 'domain_desc'])
+    df = df.drop(columns=['commodity_desc', 'state_fips_code', 'county_code', 'domain_desc', 'domaincat_desc'])
     # modify contents of flowamount column, "D" is supressed data, "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
     df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
-    # df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
     # # Add hardcoded data
-    df['Class'] = "Water"
+    df.loc[df['Unit'] == 'ACRES', 'Class'] = 'Land'
+    df.loc[df['Unit'] == 'ACRE FEET / ACRE', 'Class'] = 'Water'
     df['SourceName'] = "USDA_IWMS"
     df['DataReliability'] = None  #TODO score data qualtiy
     df['DataCollection'] = None
+
+    # drop rows of unused data
+    df = df[~df['ActivityConsumedBy'].str.contains(
+        'CUT CHRISTMAS|SOD|FLORICULTURE|UNDER PROTECTION|HORTICULTURE, OTHER|NURSERY|PROPAGATIVE|LETTUCE')].reset_index(
+        drop=True)
+
+    return df
+
+
+def disaggregate_iwms_to_6_digit_naics(df, attr, method):
+
+    from flowsa.USDA_CoA_Cropland import disaggregate_pastureland, disaggregate_cropland
+    # test
+    # df = fba_allocation_subset.copy()
+
+    # address double counting brought on by iwms categories applying to multiply NAICS
+    df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment', 'Location'], keep = 'first', inplace = True)
+    years = [attr['allocation_source_year'] - 1]
+    df = disaggregate_pastureland(df, attr, years)
+    df = disaggregate_cropland(df, attr, years)
+
     return df

@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 import logging as log
 import appdirs
+import pycountry
 
 log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -41,7 +42,13 @@ local_storage_path = appdirs.user_data_dir()
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
                    "state": 2,
-                   "county":5}
+                   "county": 5}
+
+sector_level_key = {"NAICS_2": 2,
+                    "NAICS_3": 3,
+                    "NAICS_4": 4,
+                    "NAICS_5": 5,
+                    "NAICS_6": 6}
 
 # withdrawn keyword changed to "none" over "W" because unable to run calculation functions with text string
 withdrawn_keyword = None
@@ -94,9 +101,19 @@ def load_sector_length_crosswalk():
     cw = pd.read_csv(datapath + 'NAICS_2012_Crosswalk.csv', dtype='str')
     return cw
 
+def load_sector_length_crosswalk_w_nonnaics():
+    cw = load_sector_length_crosswalk()
+    # append household codes
+    cw = cw.append(pd.DataFrame([["F010", "F010", "F010", "F0100", "F01000"]], columns=cw.columns), ignore_index=True)
+    return cw
+
 def load_household_sector_codes():
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
+
+def load_bea_crosswalk():
+    cw = pd.read_csv(datapath + "BEA_Crosswalk.csv", dtype="str")
+    return cw
 
 def load_source_catalog():
      sources= datapath+'source_catalog.yaml'
@@ -200,7 +217,7 @@ def unique_activity_names(datasource, years):
     unique_activities = pd.unique(column_activities)
     df_unique = unique_activities.reshape((-1, 1))
     df_unique = pd.DataFrame({'Activity': df_unique[:, 0]})
-    df_unique = df_unique.loc[df_unique['Activity'] is not None]
+    df_unique = df_unique.loc[df_unique['Activity'].notnull()]
 
     # sort df
     df_unique = df_unique.sort_values(['Activity']).reset_index(drop=True)
@@ -216,11 +233,10 @@ def generalize_activity_field_names(df):
     :return:
     """
 
-    # testing
-    #df = fba_allocation_subset.copy()
-
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None})
     df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None})
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'nan': None})
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'nan': None})
 
     activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
     activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
@@ -346,6 +362,7 @@ def get_state_FIPS(year='2015'):
     fips = fips[fips['State'].notnull()]
     return fips
 
+
 def get_county_FIPS(year='2015'):
     """
     Filters FIPS df for county codes only
@@ -433,6 +450,13 @@ def get_region_and_division_codes():
     return df
 
 
+def call_country_code(country):
+    """use pycountry to call on 3 digit iso country code"""
+    country_info = pycountry.countries.get(name=country)
+    country_numeric_iso = country_info.numeric
+    return country_numeric_iso
+
+
 def convert_fba_unit(df):
     """
     Convert unit to standard
@@ -445,6 +469,24 @@ def convert_fba_unit(df):
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', df['FlowAmount'] * 365, df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
+
+    # Convert Energy unit "Quadrillion Btu" to MJ
+    mj_in_btu = .0010550559
+    # 1 Quad = .0010550559 x 10^15
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
+
+    # Convert Energy unit "Trillion Btu" to MJ
+    # 1 Tril = .0010550559 x 10^14
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year', df['FlowAmount'] * 264.172, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
 
     return df
 

@@ -102,3 +102,73 @@ def bls_qcew_parse(dataframe_list, args):
     return df
 
 
+def clean_bls_qcew_fba(fba_df, attr):
+
+    fba_df = replace_missing_2_digit_sector_values(fba_df)
+    fba_df = remove_2_digit_sector_ranges(fba_df)
+
+    return fba_df
+
+
+def replace_missing_2_digit_sector_values(df):
+    """
+    In the 2015 (and possibly other dfs, there are instances of values at the 3 digit NAICS level, while
+    the 2 digit NAICS is reported as 0. The 0 values are replaced with summed 3 digit NAICS
+    :param df:
+    :return:
+    """
+    from flowsa.flowbyfunctions import aggregator, fba_default_grouping_fields
+
+    # check for 2 digit 0 values
+    df_missing = df[(df['ActivityProducedBy'].apply(lambda x: len(x) == 2)) & (df['FlowAmount'] == 0)]
+    # create list of location/activityproduced by combos
+    missing_sectors = df_missing[['Location', 'ActivityProducedBy']].drop_duplicates().values.tolist()
+
+    # subset the df to 3 naics where flow amount is not 0 and that would sum to the missing 2 digit naics
+    df_subset = df[df['ActivityProducedBy'].apply(lambda x: len(x) == 3) & (df['FlowAmount'] != 0)]
+    new_sectors_list = []
+    for q, r in missing_sectors:
+        c1 = df_subset['Location'] == q
+        c2 = df_subset['ActivityProducedBy'].apply(lambda x: x[0:2] == r)
+        # subset data
+        new_sectors_list.append(df_subset[c1 & c2])
+    new_sectors = pd.concat(new_sectors_list, sort=False, ignore_index=True)
+
+    # drop last digit of naics and aggregate
+    new_sectors.loc[:, 'ActivityProducedBy'] = new_sectors['ActivityProducedBy'].apply(lambda x: x[0:2])
+    new_sectors = aggregator(new_sectors, fba_default_grouping_fields)
+
+    # drop the old location/activity columns in the bls df and add new sector values
+    new_sectors_list = new_sectors[['Location', 'ActivityProducedBy']].drop_duplicates().values.tolist()
+
+    # rows to drop
+    rows_list = []
+    for q, r in new_sectors_list:
+        c1 = df['Location'] == q
+        c2 = df['ActivityProducedBy'].apply(lambda x: x == r)
+        # subset data
+        rows_list.append(df[(c1 & c2)])
+    rows_to_drop = pd.concat(rows_list, ignore_index=True)
+
+    # drop rows from df
+    modified_df = pd.merge(df, rows_to_drop, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
+    # add new rows
+    modified_df = modified_df.append(new_sectors, sort=False)
+
+    return modified_df
+
+
+def remove_2_digit_sector_ranges(fba_df):
+    """
+    BLS publishes activity ranges of '31-33', 44-45', '48-49... drop these ranges.
+    The individual 2 digit naics are summed later.
+    :param df:
+    :return:
+    """
+
+    df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')]
+
+
+    return df
+
+

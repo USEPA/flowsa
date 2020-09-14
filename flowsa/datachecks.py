@@ -13,6 +13,28 @@ from flowsa.common import US_FIPS
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 
 
+
+def geoscale_summation(flowclass, years, datasource):
+
+    # test
+    # flowclass = ['Water']
+    # years = [2015]
+    # datasource = 'USGS_NWIS_WU'
+
+    # load parquet file checking aggregation
+    flows = flowsa.getFlowByActivity(flowclass=flowclass,
+                                     years=years,
+                                     datasource=datasource)
+    # fill null values
+    flows = flows.fillna(value=fba_fill_na_dict)
+
+
+    return None
+
+
+
+
+
 def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all'], to_scale='national'):
     """ Aggregates county data to state and national, and state data to national level, allowing for comparisons
         in flow totals for a given flowclass and industry. First assigns all flownames to NAICS and standardizes units.
@@ -21,12 +43,8 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
         time/geoscale
     """
 
-    # load parquet file checking aggregation
-    flows = flowsa.getFlowByActivity(flowclass=flowclass,
-                                     years=years,
-                                     datasource=datasource)
-    # fill null values
-    flows = flows.fillna(value=fba_fill_na_dict)
+
+
     # convert units
     flows = harmonize_units(flows)
 
@@ -55,8 +73,8 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
                                right_on='Activity', how='left').rename({'Sector': 'SectorConsumedBy'}, axis=1)
     flow_subset = flow_subset.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy', 'Activity_x', 'Activity_y',
                                             'Description'], errors='ignore')
-    flow_subset['SectorProducedBy'] = flow_subset['SectorProducedBy'].replace({np.nan: None}).astype(str)
-    flow_subset['SectorConsumedBy'] = flow_subset['SectorConsumedBy'].replace({np.nan: None}).astype(str)
+    flow_subset['SectorProducedBy'] = flow_subset['SectorProducedBy'].replace({np.nan: None})
+    flow_subset['SectorConsumedBy'] = flow_subset['SectorConsumedBy'].replace({np.nan: None})
 
     # create list of geoscales for aggregation
     if to_scale == 'national':
@@ -80,7 +98,7 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
 
             # county sums to state and national, state sums to national
             if to_scale == 'state':
-                fba_from_scale['Location'] = fba_from_scale['Location'].apply(lambda x: str(x[0:2]))
+                fba_from_scale['Location'] = fba_from_scale['Location'].apply(lambda x: x[0:2])
             elif to_scale == 'national':
                 fba_from_scale['Location'] = US_FIPS
 
@@ -114,6 +132,9 @@ def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all']
     return flow_comparison
 
 
+
+
+
 def sector_flow_comparision(fbs_df):
     """
     Function that sums a flowbysector df to 2 digit sectors, from sectors of various lengths. Allows for comparision of
@@ -130,29 +151,31 @@ def sector_flow_comparision(fbs_df):
 
     # run  sector aggregation to sum flow amounts to each sector length
     fbs_agg = sector_aggregation(fbs_df, group_cols)
+    # add missing naics5/6 when only one naics5/6 associated with a naics4
+    fbs_agg = sector_disaggregation(fbs_agg)
 
     # subset df into four df based on values in sector columns
     # df 1 where sector produced by = none
-    df1 = fbs_agg.loc[fbs_agg['SectorProducedBy'] == 'None']
+    df1 = fbs_agg.loc[fbs_agg['SectorProducedBy'].isnull()]
     # df 2 where sector consumed by = none
-    df2 = fbs_agg.loc[fbs_agg['SectorConsumedBy'] == 'None']
+    df2 = fbs_agg.loc[fbs_agg['SectorConsumedBy'].isnull()]
     # df 3 where sector produced by = 221320 (public supply)
     df3 = fbs_agg.loc[
-        (fbs_agg['SectorProducedBy'] != 'None') & (fbs_agg['SectorConsumedBy'] == '221310')]
+        (fbs_agg['SectorProducedBy'].isnull()) & (fbs_agg['SectorConsumedBy'] == '221310')]
     # df 3 where sector consumed by = 221320 (public supply)
     df4 = fbs_agg.loc[
-        (fbs_agg['SectorProducedBy'] == '221310') & (fbs_agg['SectorConsumedBy'] != 'None')]
+        (fbs_agg['SectorProducedBy'] == '221310') & (fbs_agg['SectorConsumedBy'].isnull())]
 
     sector_dfs = []
     for df in (df1, df2, df3, df4):
         # if the dataframe is not empty, run through sector aggregation code
         if len(df) != 0:
             # assign the sector column for aggregation
-            if (df['SectorProducedBy'].all() == 'None') or (
-                    (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None')):
+            if (df['SectorProducedBy'].all() == 'None') | (
+                    (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() is None)):
                 sector = 'SectorConsumedBy'
-            elif (df['SectorConsumedBy'].all() == 'None') or (
-                    (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None')):
+            elif (df['SectorConsumedBy'].all() == 'None') | (
+                    (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() is None)):
                 sector = 'SectorProducedBy'
 
             # find max length of sector column
@@ -173,7 +196,7 @@ def sector_flow_comparision(fbs_df):
             sector_dfs.append(df)
 
     # concat and sort df
-    df_agg = pd.concat(sector_dfs, sort=True)
+    df_agg = pd.concat(sector_dfs, sort=False)
 
     # sum df based on sector length
     grouping = fbs_default_grouping_fields.copy()
@@ -187,3 +210,93 @@ def sector_flow_comparision(fbs_df):
     sector_comparison = sector_comparison.sort_values(['Flowable', 'Context', 'FlowType', 'SectorLength'])
 
     return sector_comparison
+
+
+def fba_to_fbs_summation_check(fba_source, fbs_methodname):
+    """
+    Temporary code - need to update
+    :param fba_source:
+    :param fbs_methodname:
+    :return:
+    """
+
+    import flowsa
+
+    # testing
+    # df = fbss.copy()
+    # test1 = df[df['SectorConsumedBy'].isnull()]
+    # test2 = df[df['SectorProducedBy'].isnull()]
+    # test3 = df[df['SectorConsumedBy'] == 'None']
+    # test4 = df[df['SectorProducedBy'] == 'None']
+
+
+
+    fbs_methodname = 'Water_total_2015'
+
+    fbs = flowsa.getFlowBySector(fbs_methodname)
+    fbs_c = flowsa.getFlowBySector_collapsed(fbs_methodname)
+
+    return None
+
+
+
+def flowname_summation_check(df, flownames_to_sum, flownames_published):
+    """
+    Check if rows with specified flowname values sum to another specified flowname (do fresh + saline = total?)
+
+    :param df: fba or fbs
+    :param flownames_to_sum: list of strings
+    :param flownames_published: string
+    :return:
+    """
+
+    return None
+
+
+
+def check_golf_and_crop_irrigation_totals(df):
+    """
+    Check that golf + crop values equal published irrigation totals. If not, ,assign water to crop.
+
+    Resuult : 2010 and 2015 published data correct
+    :param df:
+    :return:
+    """
+
+    # test
+    #df = flows.copy()
+
+    # subset into golf, crop, and total irrigation (and non irrigation)
+    df_g = df[(df[fba_activity_fields[0]] == 'Irrigation Golf Courses') |
+              (df[fba_activity_fields[1]] == 'Irrigation Golf Courses')]
+    df_c = df[(df[fba_activity_fields[0]] == 'Irrigation Crop') |
+              (df[fba_activity_fields[1]] == 'Irrigation Crop')]
+    df_i = df[(df[fba_activity_fields[0]] == 'Irrigation') |
+              (df[fba_activity_fields[1]] == 'Irrigation')]
+
+    # merge the golf and total irrigation into crop df and modify crop FlowAmounts if necessary
+    df_m = pd.merge(df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment',
+                          'Location', 'Year']], df_g[['FlowName', 'FlowAmount', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment',
+                                                      'Location', 'Year']], how='left', right_on=['FlowName', 'Compartment', 'Location', 'Year'],
+                    left_on=['FlowName', 'Compartment', 'Location', 'Year'])
+    df_m = df_m.rename(columns={"FlowAmount_x": "FlowAmount",
+                                "ActivityProducedBy_x": "ActivityProducedBy",
+                                "ActivityConsumedBy_x": "ActivityConsumedBy",
+                                "FlowAmount_y": "Golf_Amount",
+                                "ActivityProducedBy_y": "Golf_APB",
+                                "ActivityConsumedBy_y": "Golf_ACB",
+                                })
+    df_m2 = pd.merge(df_m, df_i[['FlowName', 'FlowAmount', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment',
+                                 'Location', 'Year']], how='left', right_on=['FlowName', 'Compartment', 'Location', 'Year'],
+                     left_on=['FlowName', 'Compartment', 'Location', 'Year'])
+    df_m2 = df_m2.rename(columns={"FlowAmount_x": "FlowAmount",
+                                  "ActivityProducedBy_x": "ActivityProducedBy",
+                                  "ActivityConsumedBy_x": "ActivityConsumedBy",
+                                  "FlowAmount_y": "Total_Amount",
+                                  "ActivityProducedBy_y": "Total_APB",
+                                  "ActivityConsumedBy_y": "Total_ACB",
+                                  })
+    df_m2.loc[:, 'NewIrrigation'] = df_m2['Total_Amount'] - df_m2['Golf_Amount']
+    df_m2.loc[:, 'IrrigationDifference'] = df_m2['FlowAmount'] - df_m2['NewIrrigation']
+
+    return None
