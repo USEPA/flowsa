@@ -17,6 +17,12 @@ US Energy Information Administration, Commercial Buildings Energy Consumption Su
 ## EIA_CBECS_Water
 US Energy Information Administration, Commercial Buildings Energy Consumption Survey, Water
 
+## EIA_MECS_Energy
+US Energy Information Administration, Manufacturing Energy Consumption Survey
+- Energy (Tables 2.1, 2.2, 3.1, 3.2)
+- National and regional (4 Census regions)
+- Flows in energy units and physical units
+
 ## EPA_NEI
 Environmental Protection Agency National Emissions Inventory
 
