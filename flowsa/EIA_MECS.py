@@ -1,4 +1,4 @@
-# EIA_CBECS_Land.py (flowsa)
+# EIA_MECS.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -26,20 +26,15 @@ def eia_mecs_URL_helper(build_url, config, args):
     
     # for all tables listed in the source config file...
     for table in config['tables']:
-        
         # start with build url
         url = build_url
-    
         # replace '__year__' in build url
         url = url.replace('__year__', args['year'])
-    
         # 2014 files are in .xlsx format; 2010 files are in .xls format
         if(args['year'] == '2010'):
             url = url[:-1]
-    
         # replace '__table__' in build url
         url = url.replace('__table__', table)
-        
         # add to list of urls
         urls.append(url)
         
@@ -166,7 +161,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     return df
 
 
-def eia_mecs_energy_call(url, cbesc_response, args):
+def eia_mecs_energy_call(url, mecs_response, args):
     """
     Takes the .xlsx or .xls file returned from the url call and reads it into a dataframe.
     Grabs data for each of the census regions and "unpivots" dataframe.
@@ -184,8 +179,8 @@ def eia_mecs_energy_call(url, cbesc_response, args):
     
     ## read raw data into dataframe
     ## (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name=0, header=None)
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name=1, header=None)
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(mecs_response.content), sheet_name=0, header=None)
+    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(mecs_response.content), sheet_name=1, header=None)
     
     ## retrieve table name from cell A3 of Excel file
     table = df_raw_data.iloc[2][0]
@@ -243,13 +238,16 @@ def eia_mecs_energy_call(url, cbesc_response, args):
         
         ## add units
         # if table name ends in 1, units must be extracted from flow names
+        data_type = table_dict[args['year']][table]['data_type']
         if table[-1] == '1':
             flow_name_array = df_data_region['FlowName'].str.split('\s+\|+\s')
-            df_data_region['FlowName'] = flow_name_array.str[0]
+            flow_name_list = [s + ', ' + data_type for s in flow_name_array.str[0]]
+            df_data_region['FlowName'] = flow_name_list 
             df_data_region['Unit'] = flow_name_array.str[1]
         # if table name ends in 2, units are 'trillion Btu'
         elif table[-1] == '2':
             df_data_region['Unit'] = 'trillion Btu'
+            df_data_region['FlowName'] = df_data_region['FlowName'] + ', ' + data_type
             
         # remove extra spaces before 'Subsector and Industry' descriptions
         df_data_region['Subsector and Industry'] = df_data_region['Subsector and Industry'].str.lstrip(' ')
@@ -273,18 +271,24 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df["Class"] = 'Energy'
     df["SourceName"] = args['source']
     df["Compartment"] = None
+    df['FlowType'] = 'TECHNOSPHERE_FLOWS'
     df['Year'] = args["year"]
     df['MeasureofSpread'] = "RSE"
-    df = assign_fips_location_system(df, args['year'])
+    df['LocationSystem'] = 'Census_Region'
+    df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     
+    # drop rows that reflect subtotals (only necessary in 2014)
+    df.dropna(subset=['ActivityConsumedBy'], inplace=True)
+        
+        
     ## replace withheld/unavailable data
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
     # Q = withheld because relative standard error is greater than 50 percent
     # NA = not available
     df.loc[df['FlowAmount'] == '*', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = None
+    df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = withdrawn_keyword
     df.loc[df['FlowAmount'] == 'NA', 'FlowAmount'] = None
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
@@ -293,8 +297,8 @@ def eia_mecs_energy_parse(dataframe_list, args):
     # X = not defined because relative standard error corresponds to a value of zero
     # at least one 'empty' cell appears to contain a space
     df.loc[df['Spread'] == '*', 'Spread'] = None
-    df.loc[df['Spread'] == 'W', 'Spread'] = None
-    df.loc[df['Spread'] == 'Q', 'Spread'] = None
+    df.loc[df['Spread'] == 'W', 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == 'Q', 'Spread'] = withdrawn_keyword
     df.loc[df['Spread'] == 'NA', 'Spread'] = None
     df.loc[df['Spread'] == 'X', 'Spread'] = None
     df.loc[df['Spread'] == ' ', 'Spread'] = None
