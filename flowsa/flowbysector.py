@@ -341,7 +341,7 @@ def main(method_name):
                                      (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
 
-                # if any sector is not allocated to the specified sector level, add the next available sector level
+                # check if losing data by subsetting at specified sector length
                 log.info('Checking if losing data by subsetting dataframe')
                 fbs_sector_subset_2 = check_if_losing_sector_data(fbs_agg, fbs_sector_subset, method['target_sector_level'])
 
