@@ -39,6 +39,7 @@ from flowsa.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.datachecks import sector_flow_comparision
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
+from flowsa.stewicombo_to_sector import stewicombo_to_sector
 
 
 def parse_args():
@@ -80,7 +81,7 @@ def load_source_dataframe(k, v):
         flows_df = flowsa.getFlowBySector(k)
     elif v['data_format'] == 'FBS_outside_flowsa':
         log.info("Retrieving flowbysector for datasource " + k)
-        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(v['parameters'])
+        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(*v['parameters'])
     else:
         log.error("No parquet file found for datasource " + k)
 
