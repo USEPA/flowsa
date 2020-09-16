@@ -9,7 +9,8 @@ import sys
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, load_sector_crosswalk, \
     sector_source_name, get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names, \
-    load_sector_length_crosswalk, load_sector_length_crosswalk_w_nonnaics, sector_level_key
+    load_sector_length_crosswalk, load_sector_length_crosswalk_w_nonnaics, sector_level_key, \
+    update_geoscale
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -103,13 +104,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     # use from scale to filter by these values
     df = filter_by_geoscale(df, from_scale).reset_index(drop=True)
 
-    # code for when the "Location" is a FIPS based system
-    if to_scale == 'state':
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
-        # pad zeros
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5 else x)
-    elif to_scale == 'national':
-        df.loc[:, 'Location'] = US_FIPS
+    df = update_geoscale(df, to_scale)
 
     fba_agg = aggregator(df, groupbycols)
 
