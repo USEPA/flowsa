@@ -62,28 +62,28 @@ def epa_nei_global_parse(dataframe_list, args):
                        	      
     # rename columns to match flowbyactivity format
     if args['year'] == '2017':
-        df = df.rename(columns={"pollutant code": "FlowName",
+        df = df.rename(columns={"pollutant desc": "FlowName",
                                 "total emissions": "FlowAmount", 
                                 "scc": "ActivityProducedBy", 
                                 "fips code": "Location",
                                 "emissions uom":"Unit",
-                                "pollutant desc": "Description"})
+                                "pollutant code": "Description"})
     
     elif args['year'] == '2014':
-        df = df.rename(columns={"pollutant_cd": "FlowName",
+        df = df.rename(columns={"pollutant_desc": "FlowName",
                                 "total_emissions": "FlowAmount", 
                                 "scc": "ActivityProducedBy", 
                                 "state_and_county_fips_code": "Location",
                                 "uom":"Unit",
-                                "pollutant_desc": "Description"})
+                                "pollutant_cd": "Description"})
     
     elif args['year'] == '2011' or args['year'] == '2008':
-        df = df.rename(columns={"pollutant_cd": "FlowName",
+        df = df.rename(columns={"description": "FlowName",
                                 "total_emissions": "FlowAmount", 
                                 "scc": "ActivityProducedBy", 
                                 "state_and_county_fips_code": "Location",
                                 "uom":"Unit",
-                                "description": "Description"})
+                                "pollutant_cd": "Description"})
     
     # make sure FIPS are string and 5 digits
     df['Location']=df['Location'].astype('str').apply('{:0>5}'.format)
@@ -97,6 +97,7 @@ def epa_nei_global_parse(dataframe_list, args):
                                    'Description']), 1, inplace=True)
     
     # add hardcoded data
+    df['FlowType']="ELEMENTARY_FLOW"
     df['Class']="Chemicals"
     df['SourceName'] = args['source']
     df['Compartment'] = "air"
