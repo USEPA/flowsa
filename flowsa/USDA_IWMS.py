@@ -76,6 +76,9 @@ def iwms_parse(dataframe_list, args):
     df = df[~df['ActivityConsumedBy'].str.contains(
         'CUT CHRISTMAS|SOD|FLORICULTURE|UNDER PROTECTION|HORTICULTURE, OTHER|NURSERY|PROPAGATIVE|LETTUCE')].reset_index(
         drop=True)
+    # standardize compartment names for irrigated land
+    df.loc[df['Compartment'] == 'IN THE OPEN, IRRIGATED', 'Compartment'] = 'IRRIGATED'
+
 
     return df
 
@@ -83,8 +86,6 @@ def iwms_parse(dataframe_list, args):
 def disaggregate_iwms_to_6_digit_naics(df, attr, method):
 
     from flowsa.USDA_CoA_Cropland import disaggregate_pastureland, disaggregate_cropland
-    # test
-    # df = fba_allocation_subset.copy()
 
     # address double counting brought on by iwms categories applying to multiply NAICS
     df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment', 'Location'], keep = 'first', inplace = True)
