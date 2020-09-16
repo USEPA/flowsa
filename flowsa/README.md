@@ -21,7 +21,9 @@ US Energy Information Administration, Commercial Buildings Energy Consumption Su
 US Energy Information Administration, Manufacturing Energy Consumption Survey
 - Energy (Tables 2.1, 2.2, 3.1, 3.2)
 - National and regional (4 Census regions)
-- Flows in energy units and physical units
+- Flows in energy units (MJ) and physical units (varies), represents dupicate data
+- Fuel consumption Class: Energy
+- Nonfuel consumption (feedstock) Class: Other
 
 ## EPA_NEI
 Environmental Protection Agency National Emissions Inventory
