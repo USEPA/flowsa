@@ -28,8 +28,8 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_level, compartments):
     """
     
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
-    df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True, compartments=compartments)
-        
+    #df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True, compartments=compartments)
+    df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True)    
     ## create mapping to convert facility IDs --> NAICS codes 
     facility_mapping = pd.DataFrame()
     # for all inventories in list:
@@ -96,3 +96,4 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_level, compartments):
     
     ## save result to output directory
     fbs.to_csv(output_dir + 'Chemicals_' + geo_level + '.csv')
+    return fbs
