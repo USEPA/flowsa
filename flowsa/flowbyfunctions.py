@@ -441,10 +441,6 @@ def proportional_allocation_by_location_and_sector(df, sectorcolumn):
     :return:
     """
 
-    # test
-    # df = helper_allocation.copy()
-    # sectorcolumn = 'Sector'
-
     # denominator summed from highest level of sector grouped by location
     short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
     denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == short_length)]
@@ -470,9 +466,6 @@ def sector_ratios(df, sectorcolumn):
     :param sectorcolumn: 'SectorConsumedBy' or 'SectorProducedBy'
     :return:
     """
-    # test
-    #df = helper_allocation.copy()
-    #sectorcolumn = 'SectorProducedBy'
 
     # drop any null rows (can occur when activities are ranges)
     df = df[~df[sectorcolumn].isnull()]
@@ -513,9 +506,6 @@ def allocation_helper(df_w_sector, method, attr):
     """
 
     from flowsa.mapping import add_sectors_to_flowbyactivity
-
-    # test
-    # df_w_sector = fba_allocation_subset.copy()
 
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
                                                  datasource=attr['helper_source'],
@@ -619,6 +609,7 @@ def sector_aggregation_generalized(df, group_cols):
     :return: A df with sector levels summed from the least aggregated level
     """
 
+
     # ensure None values are not strings
     df['Sector'] = df['Sector'].replace({'nan': ""})
     df['Sector'] = df['Sector'].replace({'None': ""})
@@ -656,11 +647,11 @@ def sector_aggregation_generalized(df, group_cols):
             agg_sectors.loc[:, 'Sector'] = agg_sectors['Sector'].apply(lambda x: x[0:i])
             agg_sectors = agg_sectors.fillna(0).reset_index()
             # aggregate the new sector flow amounts
-            agg_sectors = aggregator(agg_sectors, group_cols)
-            agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
+            agg_sectors2 = aggregator(agg_sectors, group_cols)
+            agg_sectors2 = agg_sectors2.fillna(0).reset_index(drop=True)
             # append to df
-            agg_sectors['Sector'] = agg_sectors['Sector'].replace({'nan': ""})
-            df = df.append(agg_sectors, sort=False).reset_index(drop=True)
+            agg_sectors2['Sector'] = agg_sectors2['Sector'].replace({'nan': ""})
+            df = df.append(agg_sectors2, sort=False).reset_index(drop=True)
 
     # manually modify non-NAICS codes that might exist in sector
     df.loc[:, 'Sector'] = np.where(df['Sector'].isin(['F0', 'F01']),

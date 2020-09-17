@@ -43,37 +43,19 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'COTTON', 'Sector'] = '11192'
 
     # a number of naics are the generalized "crops, other", so manually add each row
-    df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '1119'  # other crop farming
+    df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '11191'  # tobacco farming
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11193']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
+                   ignore_index=True)  # sugarcane farming
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11112']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
                    ignore_index=True)  # oilseed (except soybean) farming
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER','NAICS_2012_Code',  '111991']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
                    ignore_index=True)  # SUGARBEETS
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998A']],
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # DILL, OIL
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998B']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # GRASSES & LEGUMES TOTALS, SEED
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998C']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # GUAR
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998D']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # HERBS, DRY
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998E']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # HOPS
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998F']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # JOJOBA
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998G']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # MINT, OIL
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998H']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # MISCANTHUS
+                   ignore_index=True)
 
     df.loc[df['Activity'] == 'HAY & HAYLAGE, (EXCL ALFALFA)', 'Sector'] = '111940A'
     df.loc[df['Activity'] == 'HAY & HAYLAGE, ALFALFA', 'Sector'] = '111940B'

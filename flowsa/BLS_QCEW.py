@@ -15,13 +15,16 @@ import pandas as pd
 import numpy as np
 import io
 import zipfile
-from flowsa.common import log, get_all_state_FIPS_2
+from flowsa.common import log, get_all_state_FIPS_2, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def BLS_QCEW_URL_helper(build_url, config, args):
     urls = []
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
+    us = pd.Series(['US'])
+    FIPS_2 = FIPS_2.append(us, ignore_index=True)
+
 
     # the url for 2013 earlier is different than the base url (and is a zip file)
     if args["year"] < '2014':
@@ -45,7 +48,7 @@ def bls_qcew_call(url, qcew_response, args):
             # read in file names
             for name in f.namelist():
                 # Only want state info
-                if "Statewide" in name:
+                if "Statewide" in name or "US000" in name:
                     data = f.open(name)
                     df_state = pd.read_csv(data, header=0)
                     df_list.append(df_state)
@@ -80,6 +83,7 @@ def bls_qcew_parse(dataframe_list, args):
                             'annual_avg_emplvl': 'Number of employees',
                             'total_annual_wages': 'Annual payroll'})
     # Reformat FIPs to 5-digit
+    df.loc[df['Location'] == 'US000', 'Location'] = US_FIPS
     df['Location'] = df['Location'].apply('{:0>5}'.format)
     # use "melt" fxn to convert colummns into rows
     df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year"],
@@ -103,6 +107,7 @@ def bls_qcew_parse(dataframe_list, args):
 
 
 def clean_bls_qcew_fba(fba_df, attr):
+
 
     fba_df = replace_missing_2_digit_sector_values(fba_df)
     fba_df = remove_2_digit_sector_ranges(fba_df)
@@ -167,7 +172,6 @@ def remove_2_digit_sector_ranges(fba_df):
     """
 
     df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')]
-
 
     return df
 

@@ -56,7 +56,7 @@ source_names:
         allocation_flow:
           - "Number of employees"
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         allocation_helper: 'no'
       activity_set_4:
