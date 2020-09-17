@@ -30,6 +30,7 @@ if __name__ == '__main__':
     df['Year'] = str(year)
     # hardcode data
     df["Class"] = "Money"
+    df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
     df["SourceName"] = "BEA_Make"
     df["Location"] = US_FIPS
