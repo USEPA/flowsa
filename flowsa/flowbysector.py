@@ -39,7 +39,7 @@ from flowsa.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.datachecks import sector_flow_comparision
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
-from flowsa.stewicombo_to_sector import stewicombo_to_sector
+#from flowsa.stewicombo_to_sector import stewicombo_to_sector
 
 
 def parse_args():
@@ -262,9 +262,14 @@ def main(method_name):
                         log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr)
 
-                    # create flow allocation ratios
-                    log.info("Creating allocation ratios for " + attr['allocation_source'])
-                    flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
+                    # create flow allocation ratios for each activity
+                    flow_alloc_list = []
+                    for n in names:
+                        log.info("Creating allocation ratios for " + n)
+                        fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
+                        flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
+                        flow_alloc_list.append(flow_alloc)
+                    flow_allocation = pd.concat(flow_alloc_list)
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
@@ -327,13 +332,13 @@ def main(method_name):
 
                 to_scale = method['target_geoscale']
 
-                fbs_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
+                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
-                fbs_agg = sector_aggregation(fbs_agg, fbs_default_grouping_fields)
+                fbs_sec_agg = sector_aggregation(fbs_geo_agg, fbs_default_grouping_fields)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
-                fbs_agg = sector_disaggregation(fbs_agg)
+                fbs_agg = sector_disaggregation(fbs_sec_agg)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
