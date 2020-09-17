@@ -151,9 +151,12 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     # turn column of sectors related to activity names into list
     sector_list = pd.unique(df['Sector']).tolist()
     # subset fba allocation table to the values in the activity list, based on overlapping sectors
-    fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
-                                               (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
-                                               ].reset_index(drop=True)
+    if 'Sector' in fba_allocation:
+        fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(sector_list)].reset_index(drop=True)
+    else:
+        fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
+                                                   (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
+                                                   ].reset_index(drop=True)
 
     return fba_allocation_subset
 
