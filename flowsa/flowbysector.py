@@ -35,11 +35,11 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
-from flowsa.USDA_CoA_Cropland_NAICS import disaggregate_usda_coa_cropland_naics
-from flowsa.BLS_QCEW import clean_bls_qcew_fba
+from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
 from flowsa.datachecks import sector_flow_comparision
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
+from flowsa.stewicombo_to_sector import stewicombo_to_sector
 
 
 def parse_args():
@@ -81,7 +81,7 @@ def load_source_dataframe(k, v):
         flows_df = flowsa.getFlowBySector(k)
     elif v['data_format'] == 'FBS_outside_flowsa':
         log.info("Retrieving flowbysector for datasource " + k)
-        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(v['parameters'])
+        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(*v['parameters'])
     else:
         log.error("No parquet file found for datasource " + k)
 
@@ -134,44 +134,47 @@ def main(method_name):
                 # check if flowbyactivity data exists at specified geoscale to use
                 flow_subset_list = []
                 for n in names:
-                    # subset usgs data by activity
+                    # subset fba data by activity
                     flow_subset = flows[(flows[fba_activity_fields[0]] == n) |
                                         (flows[fba_activity_fields[1]] == n)].reset_index(drop=True)
-                    log.info("Checking if flowbyactivity data exists for " + n + " at the " +
-                             v['geoscale_to_use'] + ' level')
-                    geocheck = check_if_data_exists_at_geoscale(flow_subset, v['geoscale_to_use'], activitynames=n)
-                    # aggregate geographically to the scale of the allocation dataset
-                    if geocheck == "Yes":
-                        activity_from_scale = v['geoscale_to_use']
+                    if len(flow_subset)==0:
+                        log.info("No data for " + n + " - skipping")
                     else:
-                        # if activity does not exist at specified geoscale, issue warning and use data at less aggregated
-                        # geoscale, and sum to specified geoscale
-                        log.info("Checking if flowbyactivity data exists for " + n + " at a less aggregated level")
-                        activity_from_scale = check_if_data_exists_at_less_aggregated_geoscale(flow_subset,
-                                                                                               v['geoscale_to_use'], n)
+                        log.info("Checking if flowbyactivity data exists for " + n + " at the " +
+                                 v['geoscale_to_use'] + ' level')
+                        geocheck = check_if_data_exists_at_geoscale(flow_subset, v['geoscale_to_use'], activitynames=n)
+                        # aggregate geographically to the scale of the allocation dataset
+                        if geocheck == "Yes":
+                            activity_from_scale = v['geoscale_to_use']
+                        else:
+                            # if activity does not exist at specified geoscale, issue warning and use data at less aggregated
+                            # geoscale, and sum to specified geoscale
+                            log.info("Checking if flowbyactivity data exists for " + n + " at a less aggregated level")
+                            activity_from_scale = check_if_data_exists_at_less_aggregated_geoscale(flow_subset,
+                                                                                                   v['geoscale_to_use'], n)
 
-                    activity_to_scale = attr['allocation_from_scale']
-                    # if df is less aggregated than allocation df, aggregate usgs activity to allocation geoscale
-                    if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
-                        log.info("Aggregating subset from " + activity_from_scale + " to " + activity_to_scale)
-                        flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, activity_to_scale,
-                                                      fba_default_grouping_fields)
-                    # else, aggregate to geoscale want to use
-                    elif fips_number_key[activity_from_scale] > fips_number_key[v['geoscale_to_use']]:
-                        log.info("Aggregating subset from " + activity_from_scale + " to " + v['geoscale_to_use'])
-                        flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, v['geoscale_to_use'],
-                                                      fba_default_grouping_fields)
-                    # else, if usgs is more aggregated than allocation table, filter relevant rows
-                    else:
-                        log.info("Subsetting " + activity_from_scale + " data")
-                        flow_subset = filter_by_geoscale(flow_subset, activity_from_scale)
+                        activity_to_scale = attr['allocation_from_scale']
+                        # if df is less aggregated than allocation df, aggregate fba activity to allocation geoscale
+                        if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
+                            log.info("Aggregating subset from " + activity_from_scale + " to " + activity_to_scale)
+                            flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, activity_to_scale,
+                                                          fba_default_grouping_fields)
+                        # else, aggregate to geoscale want to use
+                        elif fips_number_key[activity_from_scale] > fips_number_key[v['geoscale_to_use']]:
+                            log.info("Aggregating subset from " + activity_from_scale + " to " + v['geoscale_to_use'])
+                            flow_subset = agg_by_geoscale(flow_subset, activity_from_scale, v['geoscale_to_use'],
+                                                          fba_default_grouping_fields)
+                        # else, if fba is more aggregated than allocation table, filter relevant rows
+                        else:
+                            log.info("Subsetting " + activity_from_scale + " data")
+                            flow_subset = filter_by_geoscale(flow_subset, activity_from_scale)
 
-                    # Add sectors to df activity, depending on level of specified sector aggregation
-                    log.info("Adding sectors to " + k + " for " + n)
-                    flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
-                                                                     sectorsourcename=method['target_sector_source'],
-                                                                     levelofSectoragg=attr['activity_sector_aggregation'])
-                    flow_subset_list.append(flow_subset_wsec)
+                        # Add sectors to df activity, depending on level of specified sector aggregation
+                        log.info("Adding sectors to " + k + " for " + n)
+                        flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
+                                                                         sectorsourcename=method['target_sector_source'],
+                                                                         levelofSectoragg=attr['activity_sector_aggregation'])
+                        flow_subset_list.append(flow_subset_wsec)
                 flow_subset_wsec = pd.concat(flow_subset_list, sort=False).reset_index(drop=True)
 
                 # clean up fba with sectors, if specified in yaml
@@ -181,7 +184,10 @@ def main(method_name):
 
                 # map df to elementary flows
                 log.info("Mapping flows in " + k + ' to federal elementary flow list')
-                flow_subset_mapped = map_elementary_flows(flow_subset_wsec, k)
+                if 'fedefl_mapping' in v:
+                    mapping_files = v['fedefl_mapping']
+                else: mapping_files = k
+                flow_subset_mapped = map_elementary_flows(flow_subset_wsec, mapping_files)
 
                 # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
                 # dataframe to create sector allocation ratios
@@ -225,7 +231,7 @@ def main(method_name):
                     if fips_number_key[from_scale] > fips_number_key[to_scale]:
                         fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale,
                                                          fba_default_grouping_fields)
-                    # else, if usgs is more aggregated than allocation table, use usgs as both to and from scale
+                    # else, if fba is more aggregated than allocation table, use fba as both to and from scale
                     else:
                         fba_allocation = filter_by_geoscale(fba_allocation, from_scale)
 
@@ -245,7 +251,7 @@ def main(method_name):
                     # drop columns
                     fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
-                    # call on fxn to further disaggregate the fba allocation data, if exists
+                    # call on fxn to further clean up/disaggregate the fba allocation data, if exists
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Futher disaggregating sectors in " + attr['allocation_source'])
                         fba_allocation_subset = getattr(sys.modules[__name__],
@@ -256,9 +262,14 @@ def main(method_name):
                         log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr)
 
-                    # create flow allocation ratios
-                    log.info("Creating allocation ratios for " + attr['allocation_source'])
-                    flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
+                    # create flow allocation ratios for each activity
+                    flow_alloc_list = []
+                    for n in names:
+                        log.info("Creating allocation ratios for " + n)
+                        fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
+                        flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
+                        flow_alloc_list.append(flow_alloc)
+                    flow_allocation = pd.concat(flow_alloc_list)
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
@@ -321,13 +332,13 @@ def main(method_name):
 
                 to_scale = method['target_geoscale']
 
-                fbs_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
+                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
-                fbs_agg = sector_aggregation(fbs_agg, fbs_default_grouping_fields)
+                fbs_sec_agg = sector_aggregation(fbs_geo_agg, fbs_default_grouping_fields)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
-                fbs_agg = sector_disaggregation(fbs_agg)
+                fbs_agg = sector_disaggregation(fbs_sec_agg)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
@@ -342,7 +353,7 @@ def main(method_name):
                                      (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
 
-                # if any sector is not allocated to the specified sector level, add the next available sector level
+                # check if losing data by subsetting at specified sector length
                 log.info('Checking if losing data by subsetting dataframe')
                 fbs_sector_subset_2 = check_if_losing_sector_data(fbs_agg, fbs_sector_subset, method['target_sector_level'])
 

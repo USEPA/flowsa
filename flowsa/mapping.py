@@ -17,7 +17,7 @@ def get_activitytosector_mapping(source):
     :return: a pandas df for a standard ActivitytoSector mapping
     """
     if 'EPA_NEI' in source:
-        source = 'EPA_NEI'
+        source = 'SCC'
     mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
@@ -109,14 +109,12 @@ def expand_naics_list(df, sectorsourcename):
 
     # create list of sectors that exist in original df, which, if created when expanding sector list cannot be added
     existing_sectors = df[['Sector']]
+    existing_sectors = existing_sectors.drop_duplicates()
 
     naics_df = pd.DataFrame([])
-    for i in df['Sector']:
+    for i in existing_sectors['Sector']:
         dig = len(str(i))
         n = sectors.loc[sectors[sectorsourcename].apply(lambda x: x[0:dig]) == i]
-        # drop any rows in n that contain sectors already in original df (if sector length is longer)
-        existing_sectors_subset = existing_sectors.loc[existing_sectors['Sector'].apply(lambda x: len(str(x)) > dig)]
-        n = n[~n[sectorsourcename].isin(existing_sectors_subset['Sector'].tolist())]
         if len(n) != 0:
             n.loc[:, 'Sector'] = i
             naics_df = naics_df.append(n)
@@ -144,7 +142,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
 
     # read in source crosswalk
     if 'EPA_NEI' in source:
-        source = 'EPA_NEI'
+        source = 'SCC'
     df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
     sector_source_name = df['SectorSourceName'].all()
     df = expand_naics_list(df, sector_source_name)
@@ -153,9 +151,12 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     # turn column of sectors related to activity names into list
     sector_list = pd.unique(df['Sector']).tolist()
     # subset fba allocation table to the values in the activity list, based on overlapping sectors
-    fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
-                                               (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
-                                               ].reset_index(drop=True)
+    if 'Sector' in fba_allocation:
+        fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(sector_list)].reset_index(drop=True)
+    else:
+        fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
+                                                   (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
+                                                   ].reset_index(drop=True)
 
     return fba_allocation_subset
 

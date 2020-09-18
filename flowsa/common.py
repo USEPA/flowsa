@@ -487,6 +487,18 @@ def convert_fba_unit(df):
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year', df['FlowAmount'] * 264.172, df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
-
+    
+    # Convert mass units (LB or TON) to kg
+    ton_to_kg = 907.185
+    lb_to_kg = 0.45359
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
+                                       df['FlowAmount'] * ton_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
+                                       df['FlowAmount'] * lb_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where((df['Unit'] == 'TON') | (df['Unit'] == 'LB'),
+                                 'kg', df['Unit'])
+    
     return df
 

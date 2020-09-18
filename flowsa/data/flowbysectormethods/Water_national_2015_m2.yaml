@@ -43,30 +43,30 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: county
         allocation_helper: 'no'
-        activity_set_3:
-          names:
-            - "Industrial"
-          activity_sector_aggregation: 'disagg'
-          allocation_method: proportional
-          allocation_source: "StatCan_IWS_MI"
-          allocation_source_class: "Water"
-          allocation_sector_aggregation: 'disagg'
-          allocation_source_year: 2015
-          allocation_flow:
-            - "Water intake"
-          allocation_compartment: None
-          allocation_from_scale: national
-          clean_allocation_fba: convert_statcan_data_to_US_water_use
-          allocation_helper: 'yes'
-          helper_source: "BLS_QCEW"
-          helper_method: proportional
-          helper_source_class: "Employment"
-          helper_sector_aggregation: 'agg'
-          helper_source_year: 2015
-          helper_flow:
-            - "Number of employees"
-          helper_from_scale: state
-          clean_helper_fba: clean_bls_qcew_fba
+      activity_set_3:
+        names:
+          - "Industrial"
+        activity_sector_aggregation: 'disagg'
+        allocation_method: proportional
+        allocation_source: "StatCan_IWS_MI"
+        allocation_source_class: "Water"
+        allocation_sector_aggregation: 'disagg'
+        allocation_source_year: 2015
+        allocation_flow:
+          - "Water intake"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: convert_statcan_data_to_US_water_use
+        allocation_helper: 'yes'
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_sector_aggregation: 'agg'
+        helper_source_year: 2015
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: state
+        clean_helper_fba: clean_bls_qcew_fba
       activity_set_4:
         names:
           - "Mining"
@@ -90,7 +90,7 @@ source_names:
         helper_source_year: 2015
         helper_flow:
           - "Number of employees"
-        helper_from_scale: state
+        helper_from_scale: national
       activity_set_5:
         names:
           - "Irrigation Crop"
