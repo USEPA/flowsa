@@ -58,6 +58,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
         allocation_helper: 'no'
       activity_set_4:
         names:
