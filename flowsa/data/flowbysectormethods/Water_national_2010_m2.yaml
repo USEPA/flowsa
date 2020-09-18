@@ -65,8 +65,9 @@ source_names:
         helper_source_year: 2011
         helper_flow:
           - "Number of employees"
-        helper_from_scale: state
+        helper_from_scale: national
         clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_4:
         names:
           - "Mining"
@@ -91,6 +92,8 @@ source_names:
         helper_flow:
           - "Number of employees"
         helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_5:
         names:
           - "Irrigation Crop"
