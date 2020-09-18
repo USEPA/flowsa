@@ -15,7 +15,7 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-COLS_TO_KEEP = ["LOTSIZE", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
+COLS_TO_KEEP = ["LOT", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
 
 
 def ahs_url_helper(build_url, config, args):
@@ -67,15 +67,22 @@ def ahs_parse(dataframe_list, args):
 
     # Set index on the df:
     df.set_index(id_vars)
+
+    # Replace quotes ONLY on the rows with quotes: CROPSL and METRO3
+    if args['year'] != '2017':
+        df["CROPSL"] = df["CROPSL"].str.replace(r"[\']", "")
+    if args['year'] not in ['2015', '2017']:
+        df["METRO3"] = df["METRO3"].str.replace(r"[\']", "")
+
     df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
 
-    print("Replacing single quotes from the values.")
-    try:
-        df["FlowAmount"] = df["FlowAmount"].str.replace(r"[\']", "")
-        print("Done replacing FlowAmount.")
-    except AttributeError as err:
-        print(err)
-        print("No need to parse this set's FlowAmount. Continue.")
+    # print("Replacing single quotes from the values.")
+    # try:
+    #     df["FlowAmount"] = df["FlowAmount"].str.replace(r"[\']", "")
+    #     print("Done replacing FlowAmount.")
+    # except AttributeError as err:
+    #     print(err)
+    #     print("No need to parse this set's FlowAmount. Continue.")
 
     try:
         df["ActivityConsumedBy"] = df["ActivityConsumedBy"].str.replace(r"[\']", "")
@@ -85,10 +92,10 @@ def ahs_parse(dataframe_list, args):
         print("No need to parse this set's ActivityConsumedBy. Continue.")
 
     # All values in the "codes" dictionary were acquired from the "AHS Codebook 1997 and later.pdf"
-    codes = {"LOTSIZE": {},
-             "WEIGHT": {"Description": "Final weight", "Unit": "Range"},
-             "METRO3": {"Description": "Central city / suburban status", "Unit": "Choice"},
-             "CROPSL": {"Description": "Receive farm income", "Unit": "Choice"},
+    codes = {"LOT": {"Description": "Square footage of lot", "Unit": "square feet"},
+             "WEIGHT": {"Description": "Final weight", "Unit": "None"},
+             "METRO3": {"Description": "Central city / suburban status", "Unit": "None"},
+             "CROPSL": {"Description": "Receive farm income", "Unit": "None"},
              "CONTROL": {"Description": "Control number", "Unit": "String"}}
 
     df["Description"] = "None"
