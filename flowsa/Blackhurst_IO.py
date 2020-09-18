@@ -35,7 +35,8 @@ def bh_parse(dataframe_list, args):
                             "gal/$M": "FlowAmount",
                             })
     # hardcode
-    df['Unit'] = 'gal/$M'
+    df.loc[:, 'FlowAmount'] = df['FlowAmount'] / 1000000 # original data in gal/million usd
+    df['Unit'] = 'gal/USD'
     df['SourceName'] = 'Blackhurst_IO'
     df['Class'] = 'Water'
     df['FlowName'] = 'Water Withdrawals IO Vector'
@@ -67,7 +68,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     bh_df_revised = pd.merge(df, bmt[['FlowAmount', 'ActivityProducedBy', 'Location']],
                              left_on=['ActivityConsumedBy', 'Location'], right_on=['ActivityProducedBy', 'Location'])
 
-    bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']/1000000) * (bh_df_revised['FlowAmount_y']))
+    bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']) * (bh_df_revised['FlowAmount_y']))
     bh_df_revised.loc[:, 'Unit'] = 'gal'
     # drop columns
     bh_df_revised = bh_df_revised.drop(columns=["FlowAmount_x", "FlowAmount_y", 'ActivityProducedBy_y'])
