@@ -35,11 +35,11 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
-from flowsa.BLS_QCEW import clean_bls_qcew_fba
+from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
 from flowsa.datachecks import sector_flow_comparision
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
-#from flowsa.stewicombo_to_sector import stewicombo_to_sector
+from flowsa.stewicombo_to_sector import stewicombo_to_sector
 
 
 def parse_args():
@@ -152,7 +152,7 @@ def main(method_name):
                             log.info("Checking if flowbyactivity data exists for " + n + " at a less aggregated level")
                             activity_from_scale = check_if_data_exists_at_less_aggregated_geoscale(flow_subset,
                                                                                                    v['geoscale_to_use'], n)
-    
+
                         activity_to_scale = attr['allocation_from_scale']
                         # if df is less aggregated than allocation df, aggregate fba activity to allocation geoscale
                         if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
@@ -168,7 +168,7 @@ def main(method_name):
                         else:
                             log.info("Subsetting " + activity_from_scale + " data")
                             flow_subset = filter_by_geoscale(flow_subset, activity_from_scale)
-    
+
                         # Add sectors to df activity, depending on level of specified sector aggregation
                         log.info("Adding sectors to " + k + " for " + n)
                         flow_subset_wsec = add_sectors_to_flowbyactivity(flow_subset,
@@ -251,7 +251,7 @@ def main(method_name):
                     # drop columns
                     fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
-                    # call on fxn to further disaggregate the fba allocation data, if exists
+                    # call on fxn to further clean up/disaggregate the fba allocation data, if exists
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Futher disaggregating sectors in " + attr['allocation_source'])
                         fba_allocation_subset = getattr(sys.modules[__name__],
