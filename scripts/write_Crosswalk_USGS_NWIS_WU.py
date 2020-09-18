@@ -28,6 +28,7 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['Industrial', '31']], columns=['Activity', 'Sector']))
     df = df.append(pd.DataFrame([['Industrial', '32']], columns=['Activity', 'Sector']))
     df = df.append(pd.DataFrame([['Industrial', '33']], columns=['Activity', 'Sector']))
+    df = df.append(pd.DataFrame([['Industrial', '48839']], columns=['Activity', 'Sector']))
     df = df.append(pd.DataFrame([['Industrial', '5111']], columns=['Activity', 'Sector']))
     df = df.append(pd.DataFrame([['Industrial', '51222']], columns=['Activity', 'Sector']))
     df = df.append(pd.DataFrame([['Industrial', '51223']], columns=['Activity', 'Sector']))

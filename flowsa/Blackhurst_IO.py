@@ -81,7 +81,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
     from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict, agg_by_geoscale, fba_default_grouping_fields, \
-        sector_ratios, proportional_allocation_by_location_and_sector
+        sector_ratios, proportional_allocation_by_location_and_sector, filter_by_geoscale
     from flowsa.BLS_QCEW import clean_bls_qcew_fba
 
     # test
@@ -92,7 +92,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
     bls = clean_bls_qcew_fba(bls, attr)
 
-    bls_agg = agg_by_geoscale(bls, 'state', 'national', fba_default_grouping_fields)
+    # bls_agg = agg_by_geoscale(bls, 'state', 'national', fba_default_grouping_fields)
+    bls_agg = filter_by_geoscale(bls, 'national')
 
     # assign naics to allocation dataset
     bls_wsec = add_sectors_to_flowbyactivity(bls_agg, sectorsourcename= method['target_sector_source'],

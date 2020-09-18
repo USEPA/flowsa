@@ -21,8 +21,17 @@ bea <- get('Detail_Use_2012_PRO_BeforeRedef')
 write.csv(bea, file='BEA_2012_Detail_Use_PRO_BeforeRedef.csv')
 
 CSV manually added to flowsa
+---
+The BEA_2012_Detail_Make_BeforeRedef was pulled from USEEIOR's Detail_Make_2012_BeforeRedef.rda on 09/17/2020.
+The original file is found here:
+https://github.com/USEPA/useeior/blob/master/data/Detail_Make_2012_BeforeRedef.rda
 
+csv obtained by running the following code in Rstudio:
+bea <- get('Detail_Make_2012_BeforeRedef')
+write.csv(bea, file='BEA_2012_Detail_Make_BeforeRedef.csv')
 
+CSV manually added to flowsa
+---
 
 The BEA_Detail_GrossOutput was pulled from USEEIOR's Detail_GrossOutput_IO.rda on 09/07/2020.
 

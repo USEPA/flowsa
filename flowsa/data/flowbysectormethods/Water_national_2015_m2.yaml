@@ -90,7 +90,7 @@ source_names:
         helper_source_year: 2015
         helper_flow:
           - "Number of employees"
-        helper_from_scale: state
+        helper_from_scale: national
       activity_set_5:
         names:
           - "Irrigation Crop"

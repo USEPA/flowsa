@@ -15,6 +15,37 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 https://www.eia.gov/consumption/commercial/reports/2012/energyusage/index.php 
 Last updated: Monday, August 17, 2020
 """
+
+
+def split(row, header, sub_header):
+    LocationStr = ""
+    FlowName = ""
+    FlowAmount = ""
+    FlowAmount_No_Comma = ""
+    df = pd.DataFrame()
+    split_str_one = row["one"].split(" ")
+
+    FlowName = header + ", " + sub_header
+
+    if split_str_one[0] == "North" or split_str_one[0] == "South" or split_str_one[0] == "West" or \
+            split_str_one[0] == "New":
+        LocationStr = split_str_one[0] + " " + split_str_one[1].lower()
+    else:
+        LocationStr = split_str_one[0]
+
+    if isinstance(row["two"], str):
+        split_str_two = row["two"].split(" ")
+        FlowAmount = split_str_two[0]
+    else:
+        FlowAmount_No_Comma = row["two"]
+    if "," in FlowAmount:
+        FlowAmount_No_Comma = "".join(FlowAmount.split(","))
+    else:
+        FlowAmount_No_Comma = float(FlowAmount)
+
+    return LocationStr, FlowName, FlowAmount_No_Comma
+
+
 def blm_pls_URL_helper(build_url, config, args):
     """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
@@ -35,81 +66,80 @@ def blm_pls_URL_helper(build_url, config, args):
 
 def blm_pls_call(url, response_load, args):
     dataframe = pd.DataFrame()
-
-
-    # define pages to extract data from
-    pages = range(99, 114)
-
-    # Read pdf into list of DataFrame
+    df = pd.DataFrame()
     df_list = []
-    for x in pages:
-        df = tabula.read_pdf(io.BytesIO(response_load.content), pages=x, stream=True)[0]
-    oil_and_gas_pre_reform_act_leases = False
-    pre_reform_act_leases_public_domain = False
-    pre_reform_act_leases_acquired_lands = False
-    pre_reform_act_future_interest_leases = False
-
-    df.columns = ["one", "two", "three", "four"]
-    df = df.drop(columns=["two", "three"])
-    df.dropna(subset=["one"], inplace=True)
     LocationStr = []
-
     FlowName = []
     FlowAmount = []
     FlowAmount_No_Comma = []
+    pdf_pages = []
 
-    for index, row in df.iterrows():
-        if row["one"] == "Public Domain":
-            pre_reform_act_leases_public_domain = True
-        if row["one"] == "Acquired Lands":
-            pre_reform_act_leases_acquired_lands = True
-        if row["one"] == "Pre-Reform Act Future Interest Leases":
-            pre_reform_act_leases_acquired_lands = True
+#, "Acquired Lands"
+    sub_headers = {
+                "Pre-Reform Act Future Interest Leases": ["Public Domain & Acquired Lands"]
+}
 
 
 
 
-        if row["one"] != "Public Domain" and row["one"] != "Acquired Lands":
-            if pre_reform_act_leases_public_domain:
-                split_str = row["one"].split(" ")
-                if split_str[0] == "North" or split_str[0] == "South" or split_str[0] == "West" or split_str[0] == "New":
-                    LocationStr.append(split_str[0] + " " + split_str[1].lower())
-                    FlowName.append("Oil and gas pre-Reform Act leases, public domain")
-                    FlowAmount.append(split_str[3])
-                else:
-                    LocationStr.append(split_str[0])
-                    FlowName.append("Oil and gas pre-Reform Act leases, public domain")
-                    FlowAmount.append(split_str[2])
-                    if split_str[0] == "Total":
-                        pre_reform_act_leases_public_domain = False
-            if pre_reform_act_leases_acquired_lands:
-                split_str = row["one"].split(" ")
-                if split_str[0] == "North" or split_str[0] == "South" or split_str[0] == "West" or split_str[0] == "New":
-                    LocationStr.append(split_str[0] + " " + split_str[1].lower())
-                    FlowName.append("Oil and gas pre-Reform Act leases, acquired land")
-                    FlowAmount.append(split_str[3])
-                else:
-                    LocationStr.append(split_str[0])
-                    FlowName.append("Oil and gas pre-Reform Act leases, acquired land")
-                    FlowAmount.append(split_str[2])
-                    if split_str[0] == "Total":
-                        pre_reform_act_leases_acquired_lands = False
 
-    for i in range(len(FlowAmount)):
-        if "," in FlowAmount[i]:
-            FlowAmount_No_Comma.append("".join(FlowAmount[i].split(",")))
-        else:
-            FlowAmount_No_Comma.append(FlowAmount[i])
-    dataframe["LocationStr"] = LocationStr
-    dataframe["FlowName"] = FlowName
-    dataframe["FlowAmount"] = FlowAmount_No_Comma
-    return dataframe
+    if args["year"] == "2007":
+        #pages = [99, 100, 101, 102, 103, 104, 106, 107, 108, 109, 110, 111, 112, 114, 115, 122, 123, 124, 126, 127, 128,
+                # 129, 130]
+        #pages = [99, 100, 101, 102]
+        pages = [100]
+        copy = False
+        skip = False
+        header = ""
+        sub_header = ""
+        sub_head = False
+        data_frame_list = []
+        location_str = []
+        flow_value = []
+        flow_name = []
+        for x in pages:
+            pdf_page = tabula.read_pdf(io.BytesIO(response_load.content), pages=x, stream=True, guess=False,)[0]
+            pdf_page.columns = ["one", "two"]
+            pdf_page.dropna(subset=["one"], inplace=True)
+            pdf_pages.append(pdf_page)
+
+        for page in pdf_pages:
+            for index, row in page.iterrows():
+               for item in sub_headers:
+                    if row["one"] == item:
+                        header = row["one"]
+                    if row["one"] in sub_headers[item] and header == item:
+                        sub_header = row["one"]
+                        copy = True
+
+                    if copy == True :
+                        if header == item:
+                            for x in sub_headers[item]:
+                                if sub_header == x:
+                                    if "FISCAL" in row["one"]:
+                                        skip = True
+                                    if sub_header is not row["one"] and skip is not True:
+                                        lists = split(row, header, sub_header)
+                                        location_str.append(lists[0])
+                                        flow_name.append(lists[1])
+                                        flow_value.append(lists[2])
+                                      #  data_frame_list.append(df)
+                                        if "Total" in row["one"]:
+                                            copy = False
+                                    if sub_header + "—continued" in row["one"]:
+                                        skip = False
+
+    df["LocationStr"] = location_str
+    df["FlowName"] = flow_name
+    df["FlowAmount"] = flow_value
+    return df
 
 
 def blm_pls_parse(dataframe_list, args):
     Location = []
     fips = get_all_state_FIPS_2()
     for df in dataframe_list:
+        df = df.drop(df[df.FlowAmount == ""].index)
         for index, row in df.iterrows():
             if (row['LocationStr'] == "Total"):
                 Location.append("00000")
@@ -122,6 +152,7 @@ def blm_pls_parse(dataframe_list, args):
         # replace withdrawn code
         df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
         df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
+
         df['Location'] = Location
         df["Class"] = 'Land'
         df["SourceName"] = 'BLM_Public_Land_Statistics'

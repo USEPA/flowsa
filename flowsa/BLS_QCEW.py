@@ -15,13 +15,16 @@ import pandas as pd
 import numpy as np
 import io
 import zipfile
-from flowsa.common import log, get_all_state_FIPS_2
+from flowsa.common import log, get_all_state_FIPS_2, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def BLS_QCEW_URL_helper(build_url, config, args):
     urls = []
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
+    us = pd.Series(['US'])
+    FIPS_2 = FIPS_2.append(us, ignore_index=True)
+
 
     # the url for 2013 earlier is different than the base url (and is a zip file)
     if args["year"] < '2014':
@@ -45,7 +48,7 @@ def bls_qcew_call(url, qcew_response, args):
             # read in file names
             for name in f.namelist():
                 # Only want state info
-                if "Statewide" in name:
+                if "Statewide" in name or "US000" in name:
                     data = f.open(name)
                     df_state = pd.read_csv(data, header=0)
                     df_list.append(df_state)
@@ -80,6 +83,7 @@ def bls_qcew_parse(dataframe_list, args):
                             'annual_avg_emplvl': 'Number of employees',
                             'total_annual_wages': 'Annual payroll'})
     # Reformat FIPs to 5-digit
+    df.loc[df['Location'] == 'US000', 'Location'] = US_FIPS
     df['Location'] = df['Location'].apply('{:0>5}'.format)
     # use "melt" fxn to convert colummns into rows
     df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year"],
@@ -168,7 +172,91 @@ def remove_2_digit_sector_ranges(fba_df):
 
     df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')]
 
+    return df
+
+
+
+def bls_clean_allocation_fba_w_sec(df_w_sec, attr, method):
+    """
+    clean up bls df with sectors by estimating suppresed data
+    :param df_w_sec:
+    :param attr:
+    :param method:
+    :return:
+    """
+
+    df = estimate_suppressed_data(df_w_sec)
 
     return df
 
+
+def estimate_suppressed_data(df):
+    """
+    Estimate data suppressions
+    :param df:
+    :return:
+    """
+
+    # exclude nonsectors
+    df = df.replace({'nan': '',
+                     'None': ''})
+
+    # can be changed to expand range - takes a long time and at national level, only missing suppresed \
+    # 6 digit for industrial
+    estimate_range = [5]
+    for i in estimate_range:
+
+        # create df of i length
+        df_x = df.loc[df['Sector'].apply(lambda x: len(x) == i)]
+
+        # create df of i + 1 length
+        df_y = df.loc[df['Sector'].apply(lambda x: len(x) == i + 1)]
+
+        # create temp sector columns in df y, that are i digits in length
+        df_y.loc[:, 's_tmp'] = df_y['Sector'].apply(lambda x: x[0:i])
+
+        # create list of location and temp activity combos that contain a 0
+        missing_sectors_df = df_y[df_y['FlowAmount'] == 0]
+        missing_sectors_list = missing_sectors_df[['Location', 's_tmp']].drop_duplicates().values.tolist()
+        # subset the y df
+        if len(missing_sectors_list) != 0:
+            # new df of sectors that start with missing sectors. drop last digit of the sector and sum flows
+            # set conditions
+            suppressed_list = []
+            for q, r, in missing_sectors_list:
+                c1 = df_y['Location'] == q
+                c2 = df_y['s_tmp'] == r
+                # subset data
+                suppressed_list.append(df_y.loc[c1 & c2])
+            suppressed_sectors = pd.concat(suppressed_list, sort=False)
+            # add column of existing allocated data for length of i
+            suppressed_sectors['alloc_flow'] = suppressed_sectors.groupby(['Location', 's_tmp'])['FlowAmount'].transform('sum')
+            # subset further so only keep rows of 0 value
+            suppressed_sectors_sub = suppressed_sectors[suppressed_sectors['FlowAmount'] == 0]
+            # add count
+            suppressed_sectors_sub['sector_count'] = suppressed_sectors_sub.groupby(['Location', 's_tmp'])['s_tmp'].transform('count')
+
+            # merge suppressed sector subset with df x
+            df_m = pd.merge(df_x,
+                            suppressed_sectors_sub[['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
+                                                    'Year', 'Sector', 's_tmp', 'alloc_flow', 'sector_count']],
+                            how='right',
+                            left_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
+                                     'Year', 'Sector'],
+                            right_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
+                                      'Year', 's_tmp'])
+            # calculate estimated flows by subtracting the flow amount already allocated from total flow of \
+            # sector one level up and divide by number of sectors with suppresed data
+            df_m.loc[:, 'FlowAmount'] = (df_m['FlowAmount'] - df_m['alloc_flow']) / df_m['sector_count']
+            # only keep the suppressed sector subset activity columns
+            df_m2 = df_m.drop(columns = ['Sector_x', 's_tmp', 'alloc_flow', 'sector_count'])
+            df_m2 = df_m2.rename(columns={'Sector_y': 'Sector'})
+
+            # drop the existing rows with suppressed data and append the new estimates from fba df
+            modified_df = pd.merge(df, suppressed_sectors_sub, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
+            df = pd.concat([modified_df, df_m2], ignore_index=True, sort=True)
+
+    df_w_estimated_data = df.replace({'': None})
+
+    return df_w_estimated_data
 

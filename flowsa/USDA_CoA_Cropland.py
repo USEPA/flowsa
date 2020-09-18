@@ -204,7 +204,7 @@ def disaggregate_pastureland(fba_w_sector, attr, years_list):
         fba_fill_na_dict
 
     # subset the coa data so only pastureland
-    p = fba_w_sector.loc[fba_w_sector['Sector'] == '112']
+    p = fba_w_sector.loc[fba_w_sector['Sector'].apply(lambda x: x[0:3]) == '112'].reset_index(drop=True)
     # add temp loc column for state fips
     p.loc[:, 'Location_tmp'] = p['Location'].apply(lambda x: x[0:2])
 
