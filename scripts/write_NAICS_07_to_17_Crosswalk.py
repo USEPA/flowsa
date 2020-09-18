@@ -73,7 +73,7 @@ for i in h:
 
 # sort df
 total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code']).reset_index(drop=True)
-total_naics = total_naics[total_naics['NAICS_2012_Code'] != 'None']
+total_naics = total_naics[~total_naics['NAICS_2012_Code'].isin(['None', 'unknown', 'Unknown'])]
 
 # save as csv
 total_naics.to_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", index=False)
