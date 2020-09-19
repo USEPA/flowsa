@@ -53,9 +53,6 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     from flowsa.mapping import add_sectors_to_flowbyactivity
     from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict
 
-    # test
-    #df = fba_allocation.copy()
-
     # load the bea make table
     bmt = flowsa.getFlowByActivity(flowclass=['Money'],
                                    datasource='BEA_Make_Table',
@@ -85,9 +82,6 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
         sector_ratios, proportional_allocation_by_location_and_sector, filter_by_geoscale
     from flowsa.BLS_QCEW import clean_bls_qcew_fba
 
-    # test
-    #df_wsec = fba_allocation_subset.copy()
-
     bls = flowsa.getFlowByActivity(flowclass=['Employment'], datasource='BLS_QCEW', years=[2002])
     # clean df
     bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
@@ -102,7 +96,6 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     # drop rows where sector = None ( does not occur with mining)
     bls_wsec = bls_wsec[~bls_wsec['SectorProducedBy'].isnull()]
     bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector'})
-    #bls_wsec.loc[:, 'sec_tmp'] = bls_wsec['SectorProducedBy'].apply(lambda x: x[0:2])
 
     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
     # aren't in list
@@ -110,8 +103,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     # subset fba allocation table to the values in the activity list, based on overlapping sectors
     bls_wsec = bls_wsec.loc[bls_wsec['Sector'].isin(sector_list)]
     # calculate proportional ratios
-    # todo: address problem that occurs here, employee values don't sum to one
-    bls_wsec = proportional_allocation_by_location_and_sector(bls_wsec, 'Sector')
+    bls_wsec = proportional_allocation_by_location_and_sector(bls_wsec, 'Sector', 'agg')
     bls_wsec = bls_wsec.rename(columns = {'FlowAmountRatio': 'EmployeeRatio',
                                           'FlowAmount': 'Employees'})
 
@@ -124,8 +116,46 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     df.loc[:, 'Unit'] = 'gal/employee'
 
     # drop cols
-    df = df.drop(columns = ['Employees', 'EmployeeRatio'])
-
-    #bls_wsec = sector_ratios(bls_wsec, 'SectorProducedBy')
+    df = df.drop(columns=['Employees', 'EmployeeRatio'])
 
     return df
+
+
+def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
+    """
+    Scale the initial estimates for Blackhurst-based mining estimates to USGS values. Oil-based sectors are allocated
+    a larger percentage of the difference between initial water withdrawal estimates and published USGS values.
+
+    This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
+    :param df_to_scale:
+    :param attr:
+    :return:
+    """
+
+    import flowsa
+
+    # determine national level published withdrawal data for usgs mining in FBS method year
+    pv_load = flowsa.getFlowByActivity(flowclass=['Water'], years=[str(attr['helper_source_year'])], datasource="USGS_NWIS_WU")
+    pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) & (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
+    pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
+
+    # sum quantity of water withdrawals already allocated to sectors
+    av = df_to_scale['FlowAmount'].sum()
+
+    # calculate the difference between published value and allocated value
+    vd = pv - av
+
+    # subset df to scale into oil and non-oil sectors
+    df_to_scale['sector_label'] = np.where(df_to_scale['Sector'].apply(lambda x: x[0:5] == '21111'), 'oil', 'nonoil')
+    df_to_scale['ratio'] = np.where(df_to_scale['sector_label'] == 'oil', 2/3, 1/3)
+    df_to_scale['label_sum'] = df_to_scale.groupby(['Location', 'sector_label'])['FlowAmount'].transform('sum')
+    df_to_scale.loc[:, 'value_difference'] = vd.astype(float)
+
+    # calculate revised water withdrawal allocation
+    df_scaled = df_to_scale.copy()
+    df_scaled.loc[:, 'FlowAmount'] = df_scaled['FlowAmount'] + \
+                                     (df_scaled['FlowAmount'] / df_scaled['label_sum']) * \
+                                     (df_scaled['ratio'] * df_scaled['value_difference'])
+    df_scaled = df_scaled.drop(columns=['sector_label', 'ratio', 'label_sum', 'value_difference'])
+
+    return df_scaled

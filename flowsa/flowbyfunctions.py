@@ -5,11 +5,10 @@ Helper functions for flowbyactivity and flowbysector data
 import flowsa
 import pandas as pd
 import numpy as np
-import sys
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, load_sector_crosswalk, \
     sector_source_name, get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names, \
-    load_sector_length_crosswalk, load_sector_length_crosswalk_w_nonnaics, sector_level_key
+    load_sector_length_crosswalk_w_nonnaics, sector_level_key
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -432,29 +431,43 @@ def proportional_allocation_by_location(df, sectorcolumn):
     return allocation_df
 
 
-def proportional_allocation_by_location_and_sector(df, sectorcolumn):
+def proportional_allocation_by_location_and_sector(df, sectorcolumn, level_of_aggregation):
     """
     Creates a proportional allocation within each aggregated sector within a location
     :param df:
     :param sectorcolumn:
-    :param groupcols:
+    :param level_of_aggregation: 'agg' or 'disagg'
     :return:
     """
 
     # denominator summed from highest level of sector grouped by location
     short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
+    # want to create denominator based on short_length - 1, unless short_length = 2
     denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == short_length)]
-    denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount']
-    denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year', sectorcolumn, 'Denominator']].drop_duplicates()
+    if (level_of_aggregation == 'agg') & (short_length != 2):
+        short_length = short_length - 1
+        denom_df.loc[:, 'sec_tmp'] = denom_df[sectorcolumn].apply(lambda x: x[0:short_length])
+        denom_df.loc[:, 'Denominator'] = denom_df.groupby(['Location', 'sec_tmp'])['FlowAmount'].transform('sum')
+    else:  # short_length == 2:]
+        denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount']
+        denom_df.loc[:, 'sec_tmp'] = denom_df[sectorcolumn]
+    # if short_length == 2:
+    #     denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount']
+    #     denom_df.loc[:, 'sec_tmp'] = denom_df[sectorcolumn]
+    # else:
+    #     short_length = short_length - 1
+    #     denom_df.loc[:, 'sec_tmp'] = denom_df[sectorcolumn].apply(lambda x: x[0:short_length])
+    #     denom_df.loc[:, 'Denominator'] = denom_df.groupby(['Location', 'sec_tmp'])['FlowAmount'].transform('sum')
+
+    denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year', 'sec_tmp', 'Denominator']].drop_duplicates()
     # merge the denominator column with fba_w_sector df
     df.loc[:, 'sec_tmp'] = df[sectorcolumn].apply(lambda x: x[0:short_length])
     allocation_df = df.merge(denom_df_2, how='left', left_on=['Location', 'LocationSystem', 'Year', 'sec_tmp'],
-                             right_on=['Location', 'LocationSystem', 'Year', sectorcolumn])
+                             right_on=['Location', 'LocationSystem', 'Year', 'sec_tmp'])
     # calculate ratio
     allocation_df.loc[:, 'FlowAmountRatio'] = allocation_df['FlowAmount'] / allocation_df[
         'Denominator']
-    allocation_df = allocation_df.drop(columns=['Denominator', 'sec_tmp', 'Sector_y']).reset_index(drop=True)
-    allocation_df = allocation_df.rename(columns={'Sector_x': 'Sector'})
+    allocation_df = allocation_df.drop(columns=['Denominator', 'sec_tmp']).reset_index(drop=True)
 
     return allocation_df
 
@@ -505,30 +518,47 @@ def allocation_helper(df_w_sector, method, attr):
     :return:
     """
 
+    from flowsa.Blackhurst_IO import scale_blackhurst_results_to_usgs_values
+    from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
                                                  datasource=attr['helper_source'],
                                                  years=[attr['helper_source_year']])
-    # if 'clean_helper_fba' in attr:
-    #     log.info("Cleaning " + attr['helper_source'])
-    #     helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
+    if 'clean_helper_fba' in attr:
+        log.info("Cleaning " + attr['helper_source'] + ' FBA')
+        # tmp hard coded - need to generalize
+        if attr['helper_source'] == 'BLS_QCEW':
+            helper_allocation = clean_bls_qcew_fba(helper_allocation, attr)
+            # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
     # clean df
     helper_allocation = clean_df(helper_allocation, flow_by_activity_fields, fba_fill_na_dict)
     # drop rows with flowamount = 0
     helper_allocation = helper_allocation[helper_allocation['FlowAmount'] != 0]
 
+    # filter geoscale
+    helper_allocation = filter_by_geoscale(helper_allocation, attr['helper_from_scale'])
+
     # agg data if necessary
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'national'):
         helper_allocation = agg_by_geoscale(helper_allocation, 'state', 'national', fba_default_grouping_fields)
+
 
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
                                                       sectorsourcename=method['target_sector_source'],
                                                       levelofSectoragg=attr[
                                                           'helper_sector_aggregation'])
+
     # generalize activity field names to enable link to water withdrawal table
     helper_allocation = generalize_activity_field_names(helper_allocation)
+    # clean up helper fba with sec
+    if 'clean_helper_fba_wsec' in attr:
+        log.info("Cleaning " + attr['helper_source'] + ' FBA with sectors')
+        # tmp hard coded - need to generalize
+        if attr['helper_source'] == 'BLS_QCEW':
+            helper_allocation = bls_clean_allocation_fba_w_sec(helper_allocation, attr, method)
+            # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba_wsec"])(helper_allocation, attr, method)
     # drop columns
     helper_allocation = helper_allocation.drop(columns=['Activity', 'Min', 'Max'])
 
@@ -540,7 +570,8 @@ def allocation_helper(df_w_sector, method, attr):
         # subset fba allocation table to the values in the activity list, based on overlapping sectors
         helper_allocation = helper_allocation.loc[helper_allocation['Sector'].isin(sector_list)]
         # calculate proportional ratios
-        helper_allocation = proportional_allocation_by_location_and_sector(helper_allocation, 'Sector')
+        helper_allocation = proportional_allocation_by_location_and_sector(helper_allocation, 'Sector',
+                                                                           attr['allocation_sector_aggregation'])
 
     # rename column
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
@@ -561,8 +592,9 @@ def allocation_helper(df_w_sector, method, attr):
         modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
 
     # modify flow amounts using helper data
-    if attr['helper_method'] == 'multiplication':
+    if 'multiplication' in attr['helper_method']:
         # todo: modify so if missing data, replaced with value from one geoscale up instead of national
+        # todo: modify year after merge if necessary
         # if missing values (na or 0), replace with national level values
         replacement_values = helper_allocation[helper_allocation['Location'] == US_FIPS].reset_index(
             drop=True)
@@ -595,7 +627,13 @@ def allocation_helper(df_w_sector, method, attr):
     # todo: change units
     modified_fba_allocation.loc[modified_fba_allocation['Unit'] == 'gal/employee', 'Unit'] = 'gal'
 
-    # todo: include option to scale up usgs values
+    # option to scale up fba values
+    if 'scaled' in attr['helper_method']:
+        log.info("Scaling " + attr['helper_source'] + ' to FBA values')
+        # tmp hard coded - need to generalize
+        if attr['helper_source'] == 'BLS_QCEW':
+            modified_fba_allocation = scale_blackhurst_results_to_usgs_values(modified_fba_allocation, attr)
+            # modified_fba_allocation = getattr(sys.modules[__name__], attr["scale_helper_results"])(modified_fba_allocation, attr)
 
     return modified_fba_allocation
 
