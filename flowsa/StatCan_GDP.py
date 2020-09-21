@@ -46,7 +46,8 @@ def sc_gdp_parse(dataframe_list, args):
     # hard code data
     df['Class'] = 'Money'
     df.loc[:, 'FlowName'] = 'GDP'
-    df.loc[:, 'Unit'] = 'Million Canadian Dollar'
+    df.loc[:, 'Unit'] = 'Canadian Dollar'
+    df.loc[:, 'FlowAmount'] = df['FlowAmount'].astype(float) * 1000000  # original unit million canadian dollars
     df['SourceName'] = 'StatCan_GDP'
     df.loc[:, 'Year'] = df['Year'].astype(str)
     # temp hardcode canada iso code

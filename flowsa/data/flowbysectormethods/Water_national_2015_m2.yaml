@@ -65,8 +65,9 @@ source_names:
         helper_source_year: 2015
         helper_flow:
           - "Number of employees"
-        helper_from_scale: state
+        helper_from_scale: national
         clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_4:
         names:
           - "Mining"
@@ -74,7 +75,7 @@ source_names:
         allocation_method: proportional
         allocation_source: "Blackhurst_IO"
         allocation_source_class: "Water"
-        allocation_sector_aggregation: 'disagg'
+        allocation_sector_aggregation: 'agg'
         allocation_source_year: 2002
         allocation_flow:
           - 'Water Withdrawals IO Vector'
@@ -84,13 +85,16 @@ source_names:
         clean_allocation_fba_w_sec: convert_blackhurst_data_to_gal_per_employee
         allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
-        helper_method: multiplication
+        helper_method: "multiplication and scaled"
         helper_source_class: "Employment"
         helper_sector_aggregation: 'agg'
         helper_source_year: 2015
         helper_flow:
           - "Number of employees"
         helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        scale_helper_results: scale_blackhurst_results_to_usgs_values
       activity_set_5:
         names:
           - "Irrigation Crop"

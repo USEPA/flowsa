@@ -200,6 +200,8 @@ def estimate_suppressed_data(df):
     # exclude nonsectors
     df = df.replace({'nan': '',
                      'None': ''})
+    df = df.replace({None: '',
+                     np.nan: ''})
 
     # can be changed to expand range - takes a long time and at national level, only missing suppresed \
     # 6 digit for industrial
