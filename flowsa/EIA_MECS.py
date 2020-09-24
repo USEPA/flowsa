@@ -306,3 +306,9 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df.loc[df['Spread'] == ' ', 'Spread'] = None
 
     return df
+
+def filter_flows_for_energy(fba):
+    
+    fba = fba.loc[fba['Unit']=='MJ']
+    return fba
+    
