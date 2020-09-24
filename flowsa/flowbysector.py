@@ -139,6 +139,8 @@ def main(method_name):
                                         (flows[fba_activity_fields[1]] == n)].reset_index(drop=True)
                     if len(flow_subset)==0:
                         log.info("No data for " + n + " - skipping")
+                    elif flow_subset['FlowAmount'].sum()==0:
+                        log.info("All flows are 0 for " + n + " - skipping")
                     else:
                         log.info("Checking if flowbyactivity data exists for " + n + " at the " +
                                  v['geoscale_to_use'] + ' level')
@@ -241,21 +243,22 @@ def main(method_name):
                                                                    sectorsourcename=method['target_sector_source'],
                                                                    levelofSectoragg=attr['allocation_sector_aggregation'])
 
-                    # subset fba datasets to only keep the sectors associated with activity subset
-                    log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
-                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
-
                     # generalize activity field names to enable link to main fba source
                     log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
-                    fba_allocation_subset = generalize_activity_field_names(fba_allocation_subset)
-                    # drop columns
-                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
+                    fba_allocation = generalize_activity_field_names(fba_allocation)
 
                     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Futher disaggregating sectors in " + attr['allocation_source'])
-                        fba_allocation_subset = getattr(sys.modules[__name__],
-                                                        attr["clean_allocation_fba_w_sec"])(fba_allocation_subset, attr, method)
+                        fba_allocation = getattr(sys.modules[__name__],
+                                                        attr["clean_allocation_fba_w_sec"])(fba_allocation, attr, method)
+
+                    # subset fba datasets to only keep the sectors associated with activity subset
+                    log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
+                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
+
+                    # drop columns
+                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
@@ -267,8 +270,11 @@ def main(method_name):
                     for n in names:
                         log.info("Creating allocation ratios for " + n)
                         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
-                        flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
-                        flow_alloc_list.append(flow_alloc)
+                        if len(fba_allocation_subset_2)==0:
+                            log.info("No data found to allocate " + n)
+                        else:
+                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
+                            flow_alloc_list.append(flow_alloc)
                     flow_allocation = pd.concat(flow_alloc_list)
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
