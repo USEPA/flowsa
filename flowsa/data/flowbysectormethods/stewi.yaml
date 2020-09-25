@@ -7,6 +7,6 @@ source_names:
     FBS_datapull_fxn: stewicombo_to_sector
     parameters:
      - {"TRI":"2017"}   # inventory_dict
-     - 4                # NAICS_level
-     - 'National'       # geo_level
+     - 'NAICS_4'        # NAICS_level
+     - 'state'          # geo_scale
      - 'air'            # compartments

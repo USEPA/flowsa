@@ -141,9 +141,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     """
 
     # read in source crosswalk
-    if 'EPA_NEI' in source:
-        source = 'SCC'
-    df = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv')
+    df = get_activitytosector_mapping(source)
     sector_source_name = df['SectorSourceName'].all()
     df = expand_naics_list(df, sector_source_name)
     # subset source crosswalk to only contain values pertaining to list of activity names

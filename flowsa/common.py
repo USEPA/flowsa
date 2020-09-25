@@ -333,6 +333,42 @@ def getFIPS(state=None, county=None, year='2015'):
         code = code.values[0]
         return code
 
+def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
+    """
+    Applies FIPS codes by county to dataframe containing columns with State and County
+    
+    :param df: dataframe must contain columns with 'State' and 'County', but not 'Location'
+    :return dataframe with new column 'FIPS', blanks not removed
+    """
+    # If using 2 letter abbrevations, map to state names
+    if source_state_abbrev:
+        df['State']=df['State'].map(abbrev_us_state)
+    df['State']=df.apply(lambda x: clean_str_and_capitalize(x.State), axis=1)
+    df['County']=df.apply(lambda x: clean_str_and_capitalize(x.County), axis=1)
+    
+    # Pull and merge FIPS on state and county
+    mapping_FIPS = get_county_FIPS()
+    df = df.merge(mapping_FIPS, how = 'left')
+    
+    # Where no county match occurs, assign state FIPS instead
+    mapping_FIPS = get_state_FIPS()
+    mapping_FIPS.drop(columns = ['County'], inplace=True)
+    df = df.merge(mapping_FIPS, left_on = 'State', right_on = 'State', how = 'left')
+    df['Location']=df['FIPS_x'].where(df['FIPS_x'].notnull(),df['FIPS_y'])
+    df.drop(columns = ['FIPS_x','FIPS_y'], inplace=True)
+    
+    return df
+
+def update_geoscale(df, to_scale):
+    """Updates df['Location'] based on specified to_scale"""
+    # code for when the "Location" is a FIPS based system
+    if to_scale == 'state':
+        df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
+        # pad zeros
+        df.loc[:, 'Location'] = df['Location'].apply(lambda x: x.ljust(3 + len(x), '0') if len(x) < 5 else x)
+    elif to_scale == 'national':
+        df.loc[:, 'Location'] = US_FIPS
+    return df
 
 def clean_str_and_capitalize(s):
     """Trim whitespace, modify string so first letter capitalized."""

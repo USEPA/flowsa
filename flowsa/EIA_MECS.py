@@ -238,17 +238,20 @@ def eia_mecs_energy_call(url, mecs_response, args):
         
         ## add units
         # if table name ends in 1, units must be extracted from flow names
-        data_type = table_dict[args['year']][table]['data_type']
         if table[-1] == '1':
             flow_name_array = df_data_region['FlowName'].str.split('\s+\|+\s')
-            flow_name_list = [s + ', ' + data_type for s in flow_name_array.str[0]]
-            df_data_region['FlowName'] = flow_name_list 
+            df_data_region['FlowName'] = flow_name_array.str[0] 
             df_data_region['Unit'] = flow_name_array.str[1]
         # if table name ends in 2, units are 'trillion Btu'
         elif table[-1] == '2':
-            df_data_region['Unit'] = 'trillion Btu'
-            df_data_region['FlowName'] = df_data_region['FlowName'] + ', ' + data_type
-            
+            df_data_region['Unit'] = 'Trillion Btu'
+            df_data_region['FlowName'] = df_data_region['FlowName']
+        
+        data_type = table_dict[args['year']][table]['data_type']
+        if data_type == 'nonfuel consumption':
+            df_data_region['Class']='Other'    
+        elif data_type == 'fuel consumption':
+            df_data_region['Class']='Energy'
         # remove extra spaces before 'Subsector and Industry' descriptions
         df_data_region['Subsector and Industry'] = df_data_region['Subsector and Industry'].str.lstrip(' ')
         
@@ -268,7 +271,6 @@ def eia_mecs_energy_parse(dataframe_list, args):
                             'Subsector and Industry' : 'Description'})
     
     # add hardcoded data
-    df["Class"] = 'Energy'
     df["SourceName"] = args['source']
     df["Compartment"] = None
     df['FlowType'] = 'TECHNOSPHERE_FLOWS'
@@ -304,3 +306,9 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df.loc[df['Spread'] == ' ', 'Spread'] = None
 
     return df
+
+def filter_flows_for_energy(fba):
+    
+    fba = fba.loc[fba['Unit']=='MJ']
+    return fba
+    
