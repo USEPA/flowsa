@@ -18,6 +18,8 @@ def get_activitytosector_mapping(source):
     """
     if 'EPA_NEI' in source:
         source = 'SCC'
+    if 'BEA' in source:
+        source = 'BEA_2012_Detail'
     mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
