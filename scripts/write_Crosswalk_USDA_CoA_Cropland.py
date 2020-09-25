@@ -54,6 +54,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'SAFFLOWER', 'Sector'] = '111120E'
     df.loc[df['Activity'] == 'SESAME', 'Sector'] = '111120F'
     df.loc[df['Activity'] == 'SUNFLOWER', 'Sector'] = '111120G'
+    df.loc[df['Activity'] == 'CAMELINA', 'Sector'] = '111120H'
 
     # coa aggregates to dry pea and bean farming: 11113
     df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, (EXCL LIMA), INCL CHICKPEAS', 'Sector'] = '111130A'
@@ -68,7 +69,7 @@ def assign_naics(df):
 
     # coa equivalent to wheat farming: 11114
     df.loc[df['Activity'] == 'WHEAT', 'Sector'] = '11114'
-
+    
     # coa aggregates to corn farming: 11115
     df.loc[df['Activity'] == 'CORN', 'Sector'] = '11115'
     df.loc[df['Activity'] == 'CORN, GRAIN', 'Sector'] = '111150A'
@@ -89,10 +90,12 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'SORGHUM, SYRUP', 'Sector'] = '111199H'
     df.loc[df['Activity'] == 'TRITICALE', 'Sector'] = '111199I'
     df.loc[df['Activity'] == 'WILD RICE', 'Sector'] = '111199J'
+    df.loc[df['Activity'] == 'EMMER & SPELT', 'Sector'] = '111199K'
     # df.loc[df['Activity'] == 'SWEET RICE', 'Sector'] = '' # last year published 2002
 
     # coa equivalent to vegetable and melon farming: 1112
     df.loc[df['Activity'] == 'VEGETABLE TOTALS', 'Sector'] = '1112'  # this category does include melons
+    df.loc[df['Activity'] == 'TARO', 'Sector'] = '111219'
 
     # coa aggregates to fruit and tree nut farming: 1113
     # in 2017, pineapples included in "orchards" category. Therefore, for 2012, must sum pineapple data to make
@@ -108,6 +111,7 @@ def assign_naics(df):
 
     # coa equivalent to other crop farming: 1119
     df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '1119'
+    df.loc[df['Activity'] == 'FIELD CROPS, OTHER', 'Sector'] = '1119'
 
     # coa equivalent to tobacco farming: 11191
     df.loc[df['Activity'] == 'TOBACCO', 'Sector'] = '11191'
@@ -131,7 +135,8 @@ def assign_naics(df):
     # df.loc[df['Activity'] == 'HAYLAGE, ALFALFA', 'Sector'] = '1119402B'
 
     # coa aggregates to all other crop farming: 11199
-    df.loc[df['Activity'] == 'SUGARBEETS', 'Sector'] = '111991'
+    df.loc[df['Activity'] == 'SUGARBEETS', 'Sector'] = '111991A'
+    df.loc[df['Activity'] == 'SUGARBEETS, SEED', 'Sector'] = '111991B'
     df.loc[df['Activity'] == 'PEANUTS', 'Sector'] = '111992'
     df.loc[df['Activity'] == 'DILL, OIL', 'Sector'] = '111998A'
     df.loc[df['Activity'] == 'GRASSES & LEGUMES TOTALS, SEED', 'Sector'] = '111998B'
@@ -141,6 +146,10 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'JOJOBA', 'Sector'] = '111998F'
     df.loc[df['Activity'] == 'MINT, OIL', 'Sector'] = '111998G'
     df.loc[df['Activity'] == 'MISCANTHUS', 'Sector'] = '111998H'
+    df.loc[df['Activity'] == 'MINT, PEPPERMINT, OIL', 'Sector'] = '111998I'
+    df.loc[df['Activity'] == 'MINT, SPEARMINT, OIL', 'Sector'] = '111998J'
+    df.loc[df['Activity'] == 'MINT, TEA LEAVES', 'Sector'] = '111998K'
+    df.loc[df['Activity'] == 'SWITCHGRASS', 'Sector'] = '111998L'
 
     return df
 
