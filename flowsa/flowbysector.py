@@ -284,6 +284,10 @@ def main(method_name):
                             flow_alloc_list.append(flow_alloc)
                     flow_allocation = pd.concat(flow_alloc_list)
 
+                    # remove duplicates in flow_allocation
+                    flow_allocation.drop_duplicates(subset=['Location', 'Sector'], inplace=True)
+
+
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
                     sector_list = flow_allocation['Sector'].unique().tolist()
