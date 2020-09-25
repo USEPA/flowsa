@@ -46,7 +46,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     for s in pd.unique(flowbyactivity_df['SourceName']):
         src_info = cat[s]
         # if data are provided in NAICS format, use the mastercrosswalk
-        if src_info['sector-like_activities'] == 'True':
+        if src_info['sector-like_activities']:
             cw = load_sector_crosswalk()
             sectors = cw.loc[:, [sector_source_name]]
             # Create mapping df that's just the sectors at first
