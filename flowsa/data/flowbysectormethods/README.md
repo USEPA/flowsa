@@ -21,7 +21,7 @@ data to sectors. If FBA does not need to be modified, this parameter should be '
 columns are added but prior to allocating data to sectors. If FBA _with sectors_ does not need to be modified, this 
 parameter should be 'None'
 7. _fedefl_mapping_: name of mapping file in FEDEFL. If none supplied will use the source_names
-8. _activity_set_file: name of mapping file within flowbysectormethods folder which contains list of names for one or more activity_sets
+8. _activity_set_file_: name of mapping file within flowbysectormethods folder which contains list of names for one or more activity_sets
 
 ### Activity set specifications
 1. _activity_sets_: A subset of the FBA dataset and the method and allocation datasets used to create a FBS
