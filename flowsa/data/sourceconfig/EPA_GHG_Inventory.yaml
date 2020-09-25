@@ -1,0 +1,10 @@
+# Downloads and parses CSV from EPA GHG Inventory
+---
+# api_name: EPA_GHG_Inventory
+# api_key_required: false
+format: csv
+url:
+  base_url: "https://www.epa.gov/sites/production/files/2020-08/chapter_0.zip"
+url_replace_fxn: ghg_url_helper
+call_response_fxn: ghg_call
+parse_response_fxn: ghg_parse
