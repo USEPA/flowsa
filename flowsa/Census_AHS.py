@@ -15,7 +15,8 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-COLS_TO_KEEP = ["LOTSIZE", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
+# 2011 and 2013 are LOT, 2015 and 2017 are LOTSIZE
+COLS_TO_KEEP = ["LOT", "LOTSIZE", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
 
 
 def ahs_url_helper(build_url, config, args):
@@ -49,6 +50,23 @@ def ahs_call(url, ahs_response, args):
         return pd.concat(frames)
 
 
+# def convert_values(df, args):
+#     """
+#     Convert columns to usable values. Columns include:
+#     LOT/LOTSIZE, WEIGHT, METRO3, CROPSL
+#     """
+#     if args['year'] in ['2011', '2013']:
+#         print("All four columns are available.")
+#
+#     elif args['year'] == '2015':
+#         print("LOT, WEIGHT, CROPSL")
+#
+#     elif args['year'] == '2017':
+#         print("LOT, WEIGHT")
+#
+#     return df
+
+
 # TODO: Figure out why all the None fields in parquet are nan instead.
 def ahs_parse(dataframe_list, args):
     """ TODO. """
@@ -67,15 +85,33 @@ def ahs_parse(dataframe_list, args):
 
     # Set index on the df:
     df.set_index(id_vars)
-    df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
 
-    print("Replacing single quotes from the values.")
-    try:
-        df["FlowAmount"] = df["FlowAmount"].str.replace(r"[\']", "")
-        print("Done replacing FlowAmount.")
-    except AttributeError as err:
-        print(err)
-        print("No need to parse this set's FlowAmount. Continue.")
+    # Replace quotes ONLY on the rows with quotes: CROPSL and METRO3
+    if args['year'] != '2017':
+        df["CROPSL"] = df["CROPSL"].str.replace("B", "0")
+        df["CROPSL"] = df["CROPSL"].str.replace("-6", "0")
+        # df["CROPSL"] = df["CROPSL"].str.replace("-9", "withdrawn_keyword")
+        df["CROPSL"] = df["CROPSL"].str.replace(r"[\']", "")
+
+    if args['year'] not in ['2015', '2017']:
+        df["METRO3"] = df["METRO3"].str.replace("B", "0")
+        df["METRO3"] = df["METRO3"].str.replace("-6", "0")
+        # df["METRO3"] = df["METRO3"].str.replace("-9", "withdrawn_keyword")
+        df["METRO3"] = df["METRO3"].str.replace(r"[\']", "")
+        df["LOT"] = df["LOT"].replace(-6, 0)
+        # df["LOT"] = df["LOT"].replace(-9, "withdrawn_keyword")
+
+    else:
+        df["LOTSIZE"] = df["LOTSIZE"].str.replace("B", "0")
+        df["LOTSIZE"] = df["LOTSIZE"].str.replace("-6", "0")
+        # df["LOTSIZE"] = df["LOTSIZE"].str.replace("-9", "withdrawn_keyword")
+        df["LOTSIZE"] = df["LOTSIZE"].str.replace(r"[\']", "")
+
+    df["WEIGHT"] = df["WEIGHT"].replace(-6, 0)
+    # df["WEIGHT"] = df["WEIGHT"].replace(-9, "withdrawn_keyword")
+
+    # df = convert_values(df, args)
+    df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
 
     try:
         df["ActivityConsumedBy"] = df["ActivityConsumedBy"].str.replace(r"[\']", "")
@@ -85,10 +121,11 @@ def ahs_parse(dataframe_list, args):
         print("No need to parse this set's ActivityConsumedBy. Continue.")
 
     # All values in the "codes" dictionary were acquired from the "AHS Codebook 1997 and later.pdf"
-    codes = {"LOTSIZE": {},
-             "WEIGHT": {"Description": "Final weight", "Unit": "Range"},
-             "METRO3": {"Description": "Central city / suburban status", "Unit": "Choice"},
-             "CROPSL": {"Description": "Receive farm income", "Unit": "Choice"},
+    codes = {"LOT": {"Description": "Square footage of lot", "Unit": "square feet"},
+             "LOTSIZE": {"Description": "Square footage of lot", "Unit": "square feet"},
+             "WEIGHT": {"Description": "Final weight", "Unit": "None"},
+             "METRO3": {"Description": "Central city / suburban status", "Unit": "None"},
+             "CROPSL": {"Description": "Receive farm income", "Unit": "None"},
              "CONTROL": {"Description": "Control number", "Unit": "String"}}
 
     df["Description"] = "None"

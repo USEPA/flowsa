@@ -103,8 +103,8 @@ def assign_naics(df):
 
     # coa aggregates to greenhouse nursery and floriculture production: 1114
     df.loc[df['Activity'] == 'HORTICULTURE TOTALS', 'Sector'] = '1114'
-    df.loc[df['Activity'] == 'CUT CHRISTMAS TREES', 'Sector'] = '111400A'
-    df.loc[df['Activity'] == 'SHORT TERM WOODY CROPS', 'Sector'] = '1114008'
+    df.loc[df['Activity'] == 'CUT CHRISTMAS TREES', 'Sector'] = '111421A'
+    df.loc[df['Activity'] == 'SHORT TERM WOODY CROPS', 'Sector'] = '111421B'
 
     # coa equivalent to other crop farming: 1119
     df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '1119'

@@ -284,6 +284,9 @@ def usgs_fba_data_cleanup(df):
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
     df = calculate_net_public_supply(df)
 
+    # check that golf + crop = total irrigation, if not, assign all of total irrigation to crop
+    df = check_golf_and_crop_irrigation_totals(df)
+
     # national
     df1 = df[df['Location'] == US_FIPS]
 
@@ -321,6 +324,7 @@ def calculate_net_public_supply(df):
     """
 
     # drop duplicate info of "Public Supply deliveries to"
+    df = df.loc[~df['Description'].str.contains("Public Supply total deliveries")]
     df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
 
     # subset into 2 dfs, one that contains PS data and one that does not
@@ -332,9 +336,10 @@ def calculate_net_public_supply(df):
     df1_sub = df1[~df1[fba_activity_fields[1]].isin(['Industrial', 'Thermoelectric Power',
                                                      'Thermoelectric Power Closed-loop cooling',
                                                      'Thermoelectric Power Once-through cooling'])]
-    # df of ps delivered and ps withdrawan
+    # df of ps delivered and ps withdrawan and us total
     df_d = df1_sub[df1_sub[fba_activity_fields[0]] == 'Public Supply']
     df_w = df1_sub[df1_sub[fba_activity_fields[1]] == 'Public Supply']
+    df_us = df1_sub[df1_sub['Location'] == '00000']
     # split consumed further into fresh water (assumption domestic deliveries are freshwater)
     # temporary assumption that water withdrawal taken evenly from ground and surface
     df_w1 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] != 'total')]
@@ -368,9 +373,76 @@ def calculate_net_public_supply(df):
     net_ps = df_w_modified.drop(columns=["FlowRatio"])
 
     # concat dfs back (non-public supply, public supply deliveries, net ps withdrawals)
-    modified_ps = pd.concat([df2, df_d_modified, net_ps], ignore_index=True, sort=True)
+    modified_ps = pd.concat([df2, df_d_modified, net_ps, df_us], ignore_index=True, sort=True)
 
     return modified_ps
+
+
+def check_golf_and_crop_irrigation_totals(df_load):
+    """
+    Check that golf + crop values equal published irrigation totals. If not, assign water to crop irrigation.
+
+    Resuult : 2010 and 2015 published data correct
+    :param df:
+    :return:
+    """
+
+    # drop national data
+    df = df_load[df_load['Location'] != '00000']
+
+    # subset into golf, crop, and total irrigation (and non irrigation)
+    df_i = df[(df[fba_activity_fields[0]] == 'Irrigation') |
+              (df[fba_activity_fields[1]] == 'Irrigation')]
+    df_g = df[(df[fba_activity_fields[0]] == 'Irrigation Golf Courses') |
+              (df[fba_activity_fields[1]] == 'Irrigation Golf Courses')]
+    df_c = df[(df[fba_activity_fields[0]] == 'Irrigation Crop') |
+              (df[fba_activity_fields[1]] == 'Irrigation Crop')]
+
+    # merge the golf and total irrigation into crop df and modify crop FlowAmounts if necessary
+    df_m = pd.merge(df_i, df_g[['FlowName', 'FlowAmount', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment',
+                                'Location', 'Year']],
+                    how='outer',
+                    right_on=['FlowName', 'Compartment', 'Location', 'Year'],
+                    left_on=['FlowName', 'Compartment', 'Location', 'Year'])
+    df_m = df_m.rename(columns={"FlowAmount_x": "FlowAmount",
+                                "ActivityProducedBy_x": "ActivityProducedBy",
+                                "ActivityConsumedBy_x": "ActivityConsumedBy",
+                                "FlowAmount_y": "Golf_Amount",
+                                "ActivityProducedBy_y": "Golf_APB",
+                                "ActivityConsumedBy_y": "Golf_ACB",
+                                })
+    df_m2 = pd.merge(df_m, df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment',
+                                 'Location', 'Year']],
+                     how='outer',
+                     right_on=['FlowName', 'Compartment', 'Location', 'Year'],
+                     left_on=['FlowName', 'Compartment', 'Location', 'Year'])
+    df_m2 = df_m2.rename(columns={"FlowAmount_x": "FlowAmount",
+                                  "ActivityProducedBy_x": "ActivityProducedBy",
+                                  "ActivityConsumedBy_x": "ActivityConsumedBy",
+                                  "FlowAmount_y": "Crop_Amount",
+                                  "ActivityProducedBy_y": "Crop_APB",
+                                  "ActivityConsumedBy_y": "Crop_ACB",
+                                  })
+
+    # fill na and sum crop and golf
+    df_m2 = df_m2.fillna(0)
+    df_m2['subset_sum'] = df_m2['Crop_Amount'] + df_m2['Golf_Amount']
+    df_m2['Diff'] = df_m2['FlowAmount'] - df_m2['subset_sum']
+
+    df_m3 = df_m2[df_m2['Diff'] >= 0.000001].reset_index(drop=True)
+
+    # rename irrigation to irrgation crop and append rows to df
+    df_m3.loc[df_m3['ActivityProducedBy'] == 'Irrigation', 'ActivityProducedBy'] = 'Irrigation Crop'
+    df_m3.loc[df_m3['ActivityConsumedBy'] == 'Irrigation', 'ActivityConsumedBy'] = 'Irrigation Crop'
+    df_m3 = df_m3.drop(columns=['Golf_Amount', 'Golf_APB', 'Golf_ACB', 'Crop_Amount', 'Crop_APB',
+                                'Crop_ACB', 'subset_sum', 'Diff'])
+
+    if len(df_m3) != 0:
+        df_w_missing_crop = df_load.append(df_m3, sort=True, ignore_index=True)
+    else:
+        df_w_missing_crop = df_load.copy()
+
+    return df_w_missing_crop
 
 
 def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
@@ -463,45 +535,3 @@ def filter_out_activities(df, attr):
 
     return df
 
-
-# def assign_ps_to_bea(ps_df):
-#     """
-#     Use BEA Use Table before redefinitions to directly assign public supply to BEA sectors
-#     :param ps_df:
-#     :return:
-#     """
-#
-#     # test
-#     ps_df = fbs.copy()
-#
-#     # only want rows where public supply is 'activityconsumedby', when it is produced by, data captured with domestic
-#     ps_df = ps_df[ps_df['ActivityConsumedBy'] == 'Public Supply']
-#
-#     # change 'activityconsumedby' to 'producedby' because now further allocating to BEA sectors
-#     ps_df = ps_df.rename(columns={"ActivityConsumedBy": "ActivityProducedBy",
-#                                    "ActivityProducedBy": "ActivityConsumedBy"
-#                                   })
-#
-#     # load BEA use table
-#     bea = pd.read_csv(datapath + "BEA_2012_Detail_Use_PRO_BeforeRedef.csv") #, dtype="str")
-#     # use T001 instead of T007 (total commodity output) because domestic use already accounted for
-#     bea = bea.rename(columns={'Unnamed: 0': 'BEA_2012_Detail_Code',
-#                               'T001': 'TotalIntermediateCommodityOutput'})
-#     # subset to the row of 'water, sewage, and other systems'
-#     bea_sub = bea[bea['BEA_2012_Detail_Code'] == '221300']
-#     # melt bea data
-#     bea_m = pd.melt(bea_sub, id_vars=['BEA_2012_Detail_Code', "TotalIntermediateCommodityOutput"],
-#                     var_name="SectorConsumedBy", value_name="FlowAmount")
-#     # drop flowamount = 0 and unnecessary industries
-#     bea_m = bea_m[bea_m['FlowAmount'] != 0]
-#     bea_m = bea_m[~bea_m['SectorConsumedBy'].str.contains('T0|F0')]
-#     # add column to match on
-#     bea_m.loc[:, 'SectorProducedBy'] = '221310'
-#     # calculate flow ratio
-#     bea_m.loc[:, 'FlowRatio'] = bea_m['FlowAmount']/bea_m['TotalIntermediateCommodityOutput']
-#
-#     # join the public supply df with the bea data and allocate PS water to BEA sectors
-#     ps_allocated = pd.merge(ps_df, bea_m[['SectorProducedBy', 'SectorConsumedBy', 'FlowRatio']],
-#                              how='left', left_on='SectorProducedBy', right_on='SectorProducedBy')
-#
-#     return ps_df
