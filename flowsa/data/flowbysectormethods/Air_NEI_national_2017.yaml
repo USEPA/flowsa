@@ -10,22 +10,44 @@ source_names:
     clean_fba_df_fxn: None
     clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
+    activity_set_file: 'NEI_asets.csv'
     activity_sets:
-      activity_set_1:
-        names: #crops
-#        - '2801000000' #Agriculture - Crops & Livestock Dust
-#        - '2801000001' #Agriculture - Crops & Livestock Dust
-#        - '2801000002' #Agriculture - Crops & Livestock Dust
-        - '2801000003' #Agriculture - Crops & Livestock Dust
+      activity_set_1: #Direct
         activity_sector_aggregation: 'disagg'
-        allocation_source: "USDA_CoA_Cropland_NAICS"
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: None
+        allocation_sector_aggregation: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: county
+        allocation_helper: 'no'
+      activity_set_2: #Crops
+        activity_sector_aggregation: 'disagg'
+        allocation_source: "USDA_CoA_Cropland"
         allocation_method: proportional
         allocation_source_class: "Land"
-        allocation_sector_aggregation: 'disagg'
+        allocation_sector_aggregation: 'agg'
         allocation_source_year: 2017 
         allocation_flow:
-          - "AG LAND, CROPLAND, HARVESTED"
+          - "AREA HARVESTED"
         allocation_compartment: None
         allocation_from_scale: state
+        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics        
+        allocation_helper: no
+      activity_set_3: #Fuel Combustion - Industry
+        activity_sector_aggregation: 'disagg'
+        allocation_source: "EIA_MECS_Energy"
+        allocation_method: proportional
+        allocation_source_class: "Energy"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2014 
+        allocation_flow:
+          - "Total"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: mecs_energy_fba_cleanup
         allocation_helper: no
       
