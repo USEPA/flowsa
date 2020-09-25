@@ -122,13 +122,20 @@ def main(method_name):
                 flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
 
             flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict)
-
+            
+            # if activity_sets are specified in a file, call them here
+            if 'activity_set_file' in v:
+                aset_names = pd.read_csv(flowbyactivitymethodpath + v['activity_set_file'], dtype=str)
+           
             # create dictionary of allocation datasets for different activities
             activities = v['activity_sets']
             # subset activity data and allocate to sector
             for aset, attr in activities.items():
                 # subset by named activities
-                names = attr['names']
+                if 'activity_set_file' in v:
+                    names = aset_names[aset_names['activity_set']==aset]['name']
+                else:
+                    names = attr['names']
                 log.info("Preparing to handle subset of flownames " + ', '.join(map(str, names)) + " in " + k)
 
                 # check if flowbyactivity data exists at specified geoscale to use
