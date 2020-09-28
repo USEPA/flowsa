@@ -34,6 +34,7 @@ outputpath = modulepath + 'output/'
 
 sourceconfigpath = datapath + 'sourceconfig/'
 flowbyactivitymethodpath = datapath + 'flowbysectormethods/'
+flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 

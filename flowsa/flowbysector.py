@@ -23,7 +23,8 @@ import argparse
 import sys
 import pandas as pd
 from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields,  \
-    generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields
+    generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields, \
+    flowbysectoractivitysetspath
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
@@ -40,6 +41,7 @@ from flowsa.datachecks import sector_flow_comparision
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
 from flowsa.stewicombo_to_sector import stewicombo_to_sector
+from flowsa.EIA_MECS import mecs_energy_fba_cleanup
 
 
 def parse_args():
@@ -125,7 +127,7 @@ def main(method_name):
             
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
-                aset_names = pd.read_csv(flowbyactivitymethodpath + v['activity_set_file'], dtype=str)
+                aset_names = pd.read_csv(flowbysectoractivitysetspath + v['activity_set_file'], dtype=str)
            
             # create dictionary of allocation datasets for different activities
             activities = v['activity_sets']
