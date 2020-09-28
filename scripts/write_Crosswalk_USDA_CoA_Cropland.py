@@ -18,16 +18,20 @@ from flowsa.common import datapath, fbaoutputpath
 
 def unique_activity_names(datasource, years):
     """read in the ers parquet files, select the unique activity names"""
-    df = []
+    df_u = []
     for y in years:
         df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
-        df.append(df)
-    df = df[['SourceName', 'ActivityConsumedBy']]
+        df = df[['SourceName', 'ActivityConsumedBy']]
+        df = df.drop_duplicates().reset_index(drop=True)
+        df = df[df['ActivityConsumedBy'] != 'None']
+        df_u.append(df)
+    df = pd.concat(df_u, sort=False, ignore_index=True)
     # rename columns
     df = df.rename(columns={"SourceName": "ActivitySourceName",
                             "ActivityConsumedBy": "Activity"})
-    df = df.drop_duplicates()
+    df = df.drop_duplicates().reset_index(drop=True)
     return df
+
 
 def assign_naics(df):
     """manually assign each ERS activity to a NAICS_2012 code"""
