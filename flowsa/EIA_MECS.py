@@ -307,7 +307,7 @@ def eia_mecs_energy_parse(dataframe_list, args):
 
     return df
 
-def filter_flows_for_energy(fba):
+def mecs_energy_fba_cleanup(fba, attr):
     
     fba = fba.loc[fba['Unit']=='MJ']
     return fba
