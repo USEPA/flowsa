@@ -13,24 +13,8 @@ on NAICS definitions from the Census.
 7/8 digit NAICS align with USDA ERS FIWS
 
 """
-import pandas as pd
-from flowsa.common import datapath, fbaoutputpath
-
-def unique_activity_names(datasource, years):
-    """read in the ers parquet files, select the unique activity names"""
-    df_u = []
-    for y in years:
-        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
-        df = df[['SourceName', 'ActivityConsumedBy']]
-        df = df.drop_duplicates().reset_index(drop=True)
-        df = df[df['ActivityConsumedBy'] != 'None']
-        df_u.append(df)
-    df = pd.concat(df_u, sort=False, ignore_index=True)
-    # rename columns
-    df = df.rename(columns={"SourceName": "ActivitySourceName",
-                            "ActivityConsumedBy": "Activity"})
-    df = df.drop_duplicates().reset_index(drop=True)
-    return df
+from flowsa.common import datapath
+from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
@@ -170,8 +154,6 @@ if __name__ == '__main__':
     # assign sector type
     df['SectorType'] = None
     # sort df
-    df = df.sort_values('Sector')
-    # reset index
-    df.reset_index(drop=True, inplace=True)
+    df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USDA_CoA_Cropland_toNAICS.csv", index=False)
