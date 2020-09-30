@@ -39,8 +39,8 @@ def order_crosswalk(df):
     :return:
     """
     # set column order
-    df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']].reset_index(drop=True)
+    df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
     # sort df
-    df = df.sort_values(['Sector', 'Activity'])
+    df = df.sort_values(['Sector', 'Activity']).reset_index(drop=True)
 
     return df
