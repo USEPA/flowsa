@@ -58,11 +58,11 @@ def create_geoscale_list(df, geoscale, year='2015'):
 
     # filter by geoscale depends on Location System
     fips = []
-    if df['LocationSystem'].str.contains('FIPS').any():
+    if geoscale == "national":
+        fips.append(US_FIPS)
+    elif df['LocationSystem'].str.contains('FIPS').any():
         # all_FIPS = read_stored_FIPS()
-        if geoscale == "national":
-            fips.append(US_FIPS)
-        elif geoscale == "state":
+        if geoscale == "state":
             state_FIPS = get_state_FIPS(year)
             fips = list(state_FIPS['FIPS'])
         elif geoscale == "county":
