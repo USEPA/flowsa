@@ -277,6 +277,7 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df['Year'] = args["year"]
     df['MeasureofSpread'] = "RSE"
     df['LocationSystem'] = 'Census_Region'
+    df.loc[df['Location']=='Total United States','Location'] = US_FIPS
     df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     
     # drop rows that reflect subtotals (only necessary in 2014)
