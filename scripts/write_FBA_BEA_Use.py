@@ -20,15 +20,16 @@ if __name__ == '__main__':
     df_raw = pd.read_csv(csv_load)
 
     # first column is the commodity being consumed
-    df = df_raw.rename(columns={'Unnamed: 0': 'FlowName'})
+    df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
 
     # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["FlowName"],
+    df = df.melt(id_vars=["ActivityProducedBy"],
                  var_name="ActivityConsumedBy",
                  value_name="FlowAmount")
 
     df['Year'] = str(year)
     # hardcode data
+    df['FlowName'] = "USD"+str(year)
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'

@@ -24,11 +24,12 @@ if __name__ == '__main__':
 
     # use "melt" fxn to convert colummns into rows
     df = df.melt(id_vars=["ActivityProducedBy"],
-                 var_name="FlowName",
+                 var_name="ActivityConsumedBy",
                  value_name="FlowAmount")
 
     df['Year'] = str(year)
     # hardcode data
+    df['FlowName'] = "USD"+str(year)
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
