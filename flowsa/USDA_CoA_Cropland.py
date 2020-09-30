@@ -100,9 +100,9 @@ def coa_cropland_parse(dataframe_list, args):
     df_fla = df[df['group_desc'] == 'FARMS & LAND & ASSETS']
     df_fla = df_fla[df_fla['short_desc'].str.contains("AG LAND|FARM OPERATIONS")]
     # drop the irrigated acreage in farms (want the irrigated harvested acres)
-    df_fla = df_fla[((df_fla['domaincat_desc'] == 'AREA CROPLAND, HARVESTED:(ANY)') &
-                     (df_fla['domain_desc'] == 'AREA CROPLAND, HARVESTED ') &
-                     (df_fla['short_desc'] == 'AG LAND, IRRIGATED - ACRES'))]
+    df_fla = df_fla[~((df_fla['domaincat_desc'] == 'AREA CROPLAND, HARVESTED: (ANY)') &
+                    (df_fla['domain_desc'] == 'AREA CROPLAND, HARVESTED') &
+                    (df_fla['short_desc'] == 'AG LAND, IRRIGATED - ACRES'))]
     # concat data frames
     df = pd.concat([df_fc, df_ftn, df_h, df_v, df_fla], sort=False).reset_index(drop=True)
     # drop unused columns
@@ -155,7 +155,7 @@ def coa_cropland_parse(dataframe_list, args):
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland"
     df['MeasureofSpread'] = "RSD"
-    df['DataReliability'] = None
+    df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
 
     return df
@@ -181,6 +181,9 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     :param attr:
     :return:
     """
+
+    # drop rows without assigned sectors
+    fba_w_sector = fba_w_sector[~fba_w_sector['Sector'].isna()]
 
     # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
     fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, years_list=[attr['allocation_source_year']])
@@ -275,6 +278,8 @@ def disaggregate_cropland(fba_w_sector, attr, years_list):
     naics = clean_df(naics_load, flow_by_activity_fields, fba_fill_na_dict)
     # subset the harvested cropland by naics
     naics = naics[naics['FlowName'] == 'AG LAND, CROPLAND, HARVESTED'].reset_index(drop=True)
+    # drop the activities that include '&'
+    naics = naics[~naics['ActivityConsumedBy'].str.contains('&')].reset_index(drop=True)
     # add sectors
     naics = add_sectors_to_flowbyactivity(naics, sectorsourcename='NAICS_2012_Code', levelofSectoragg='agg')
     # add missing fbs fields
@@ -300,6 +305,9 @@ def disaggregate_cropland(fba_w_sector, attr, years_list):
 
     # for loop through naics lengths to determine naics 4 and 5 digits to disaggregate
     for i in range(4, 6):
+        # test
+        # i = 5
+
         # subset df to sectors with length = i and length = i + 1
         crop_subset = crop.loc[crop['Sector'].apply(lambda x: i+1 >= len(x) >= i)]
         crop_subset.loc[:, 'Sector_tmp'] = crop_subset['Sector'].apply(lambda x: x[0:i])
