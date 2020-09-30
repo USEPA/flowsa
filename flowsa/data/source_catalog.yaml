@@ -3,6 +3,16 @@ Blackhurst_IO:
     - Water
   sector-like_activities: False
   activity_schema:
+BEA_Use_Detail_PRO_BeforeRedef:
+  class:
+    - Money
+  sector-like_activities: False #update to true once alternate activity_schema in place
+#  activity_schema: BEA_2012_Detail_Code
+BEA_Make_Detail_BeforeRedef:
+  class:
+    - Money
+  sector-like_activities: False #update to true once alternate activity_schema in place
+#  activity_schema: BEA_2012_Detail_Code
 BLS_QCEW:
   class:
     - Employment
@@ -28,8 +38,9 @@ EIA_CBECS_Water:
 EIA_MECS_Energy:
   class:
     - Energy
-  sector-like_activities: False
-  activity_schema:
+    - Other
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
 EPA_NEI_Nonpoint:
   class: Chemicals
   sector-like_activities: False
