@@ -8,7 +8,7 @@ import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
     create_fill_na_dict, generalize_activity_field_names, \
-    load_sector_length_crosswalk_w_nonnaics, update_geoscale
+    load_sector_length_crosswalk_w_nonnaics, update_geoscale, flow_by_activity_wsec_mapped_fields
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -22,6 +22,7 @@ fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
 
 
 def clean_df(df, flowbyfields, fill_na_dict):

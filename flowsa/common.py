@@ -197,6 +197,32 @@ flow_by_sector_collapsed_fields = {'Flowable': [{'dtype': 'str'}, {'required': T
                                    'DataCollection': [{'dtype': 'float'}, {'required': True}]
                                    }
 
+flow_by_activity_wsec_mapped_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
+                                       'SourceName': [{'dtype': 'str'}, {'required': True}],
+                                       'Flowable': [{'dtype': 'str'}, {'required': True}],
+                                       'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+                                       'Unit': [{'dtype': 'str'}, {'required': True}],
+                                       'FlowType': [{'dtype': 'str'}, {'required': True}],
+                                       'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+                                       'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+                                       'Context': [{'dtype': 'str'}, {'required': False}],
+                                       'Location': [{'dtype': 'str'}, {'required': True}],
+                                       'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+                                       'Year': [{'dtype': 'int'}, {'required': True}],
+                                       'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+                                       'Spread': [{'dtype': 'float'}, {'required': False}],
+                                       'DistributionType': [{'dtype': 'str'}, {'required': False}],
+                                       'Min': [{'dtype': 'float'}, {'required': False}],
+                                       'Max': [{'dtype': 'float'}, {'required': False}],
+                                       'DataReliability': [{'dtype': 'float'}, {'required': True}],
+                                       'DataCollection': [{'dtype': 'float'}, {'required': True}],
+                                       #'Description': [{'dtype': 'str'}, {'required': True}],
+                                       'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
+                                       'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
+                                       'ProducedBySectorType': [{'dtype': 'str'}, {'required': False}],
+                                       'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}]
+                                       }
+
 # A list of activity fields in each flow data format
 activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
                                   {'flowbysector': 'SectorProducedBy'}],
