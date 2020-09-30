@@ -32,13 +32,13 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, clean_df,\
     sector_disaggregation
+from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
+    check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
+    check_if_data_exists_for_same_geoscales, check_allocation_ratios
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
-from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
-    check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
-    check_if_data_exists_for_same_geoscales
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
 from flowsa.stewicombo_to_sector import stewicombo_to_sector
@@ -289,6 +289,8 @@ def main(method_name):
 
                     # remove duplicates in flow_allocation
                     flow_allocation.drop_duplicates(subset=['Location', 'Sector'], inplace=True)
+                    # check for issues with allocation ratios
+                    check_allocation_ratios(flow_allocation)
 
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \

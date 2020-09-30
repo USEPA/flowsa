@@ -292,6 +292,57 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     return df_w_lost_data
 
 
+def check_allocation_ratios(flow_alloc_df):
+    """
+    Check for issues with the flow allocation ratios
+    :param df:
+    :return:
+    """
+
+    # create column of sector lengths
+    flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
+    # subset df
+    flow_alloc_df2 = flow_alloc_df[['Location', 'slength', 'FlowAmountRatio']]
+    # sum the flow amount ratios by location and sector length
+    flow_alloc_df3 = flow_alloc_df2.groupby(['Location', 'slength'], as_index=False)[["FlowAmountRatio"]].agg("sum")
+
+    # issue warning for under allocated sectors todo: Determine what level of data loss to report
+    ua = flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 1]
+    # not interested in sector length > 6
+    ua = ua[ua['slength'] <= 6]
+
+    if len(ua) > 0:
+        ua_count = ua['FlowAmountRatio'].count()
+        print(ua_count)
+        log.warning('There are ' + str(ua_count) +
+                    ' instances where the allocation ratio for a location and sector length is < 1')
+    else:
+        log.info('There are no cases of under allocation for a location and sector length')
+
+    ua_95 = ua[ua['FlowAmountRatio'] < 0.95]
+    if len(ua_95) > 0:
+        ua_95_count = ua_95['FlowAmountRatio'].count()
+        log.warning('There are ' + str(ua_95_count) +
+                    ' instances where the allocation ratio for a location and sector length is < 0.95')
+
+    # issue warning for over allocated sectors
+    oa = flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1]
+    if len(oa) > 0:
+        oa_count = oa['FlowAmountRatio'].count()
+        log.warning('There are ' + str(oa_count) +
+                    ' instances where the allocation ratio for a location and sector length is > 1')
+    else:
+        log.info('There are no cases of over allocation for a location and sector length')
+
+    oa2 = oa[oa['FlowAmountRatio'] > 1.00001]
+    if len(oa2) > 0:
+        oa2_count = oa2['FlowAmountRatio'].count()
+        log.warning('There are ' + str(oa2_count) +
+                    ' instances where the allocation ratio for a location and sector length is > 1.00001')
+
+    return None
+
+
 # def geoscale_summation(flowclass, years, datasource):
 #
 #     # test
