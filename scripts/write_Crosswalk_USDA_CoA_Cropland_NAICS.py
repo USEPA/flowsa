@@ -6,20 +6,8 @@
 Create a crosswalk for CoA Cropland Naics to NAICS 2012. Downloaded data is already provided in NAICS
 """
 import pandas as pd
-from flowsa.common import datapath, fbaoutputpath
-
-def unique_activity_names(datasource, years):
-    """read in the ers parquet files, select the unique activity names"""
-    df = []
-    for y in years:
-        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
-        df.append(df)
-    df = df[['SourceName', 'ActivityConsumedBy']]
-    # rename columns
-    df = df.rename(columns={"SourceName": "ActivitySourceName",
-                            "ActivityConsumedBy": "Activity"})
-    df = df.drop_duplicates()
-    return df
+from flowsa.common import datapath
+from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
 if __name__ == '__main__':
@@ -34,24 +22,22 @@ if __name__ == '__main__':
     # modify the sector for activity ranges
     #df.loc[df['Activity'] == '11193 & 11194 & 11199', 'Sector'] = '11193'
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland_NAICS', '11193 & 11194 & 11199', '11193']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']))
+                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland_NAICS', '11193 & 11194 & 11199', '11194']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']))
+                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland_NAICS', '11193 & 11194 & 11199', '11199']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']))
+                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
     #df.loc[df['Activity'] == '1125 & 1129', 'Sector'] = '1125'
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland_NAICS', '1125 & 1129', '1125']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']))
+                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland_NAICS', '1125 & 1129', '1129']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']))
+                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
     # Add additional columns
     df['SectorSourceName'] = "NAICS_2012_Code"
     df['SectorType'] = None
     # reorder
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
     # sort df
-    df = df.sort_values(['Activity', 'Sector'])
-    # reset index
-    df.reset_index(drop=True, inplace=True)
+    df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USDA_CoA_Cropland_NAICS_toNAICS.csv", index=False)

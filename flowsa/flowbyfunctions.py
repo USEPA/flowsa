@@ -6,9 +6,9 @@ import flowsa
 import pandas as pd
 import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
-    flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, load_sector_crosswalk, \
-    sector_source_name, get_flow_by_groupby_cols, create_fill_na_dict, generalize_activity_field_names, \
-    load_sector_length_crosswalk_w_nonnaics, sector_level_key, update_geoscale
+    flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
+    create_fill_na_dict, generalize_activity_field_names, \
+    load_sector_length_crosswalk_w_nonnaics, update_geoscale
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -165,183 +165,6 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
     # Resort it so order is correct
     flowby_partial_df = flowby_partial_df[flowbyfields.keys()]
     return flowby_partial_df
-
-
-def check_flow_by_fields(flowby_df, flowbyfields):
-    """
-    Add in missing fields to have a complete and ordered
-    :param flowby_df: Either flowbyactivity or flowbysector df
-    :param flowbyfields: Either flow_by_activity_fields or flow_by_sector_fields
-    :return:
-    """
-    for k, v in flowbyfields.items():
-        try:
-            log.debug("fba activity " + k + " data type is " + str(flowby_df[k].values.dtype))
-            log.debug("standard " + k + " data type is " + str(v[0]['dtype']))
-        except:
-            log.debug("Failed to find field ", k, " in fba")
-
-
-def check_if_activities_match_sectors(fba):
-    """
-    Checks if activities in flowbyactivity that appear to be like sectors are actually sectors
-    :param fba: a flow by activity dataset
-    :return: A list of activities not marching the default sector list or text indicating 100% match
-    """
-    # Get list of activities in a flowbyactivity file
-    activities = []
-    for f in fba_activity_fields:
-        activities.extend(fba[f])
-    #activities.remove("None")
-
-    # Get list of module default sectors
-    flowsa_sector_list = list(load_sector_crosswalk()[sector_source_name])
-    activities_missing_sectors = set(activities) - set(flowsa_sector_list)
-
-    if len(activities_missing_sectors) > 0:
-        log.info(str(len(
-            activities_missing_sectors)) + " activities not matching sectors in default " + sector_source_name + " list.")
-        return activities_missing_sectors
-    else:
-        log.info("All activities match sectors in " + sector_source_name + " list.")
-        return None
-
-
-def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
-    """
-    Check if an activity or a sector exists at the specified geoscale
-    :param df: flowbyactivity dataframe
-    :param activitynames: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-    :param geoscale: national, state, or county
-    :return:
-    """
-
-    # if any activity name is specified, check if activity data exists at the specified geoscale
-    activity_list = []
-    if activitynames != 'All':
-        if isinstance(activitynames, str) == True:
-            activity_list.append(activitynames)
-        else:
-            activity_list = activitynames
-        # check for specified activity name
-        df = df[(df[fba_activity_fields[0]].isin(activity_list)) |
-                (df[fba_activity_fields[1]].isin(activity_list))].reset_index(drop=True)
-    else:
-        activity_list.append('activities')
-
-    # filter by geoscale depends on Location System
-    fips = create_geoscale_list(df, geoscale)
-
-    df = df[df['Location'].isin(fips)]
-
-    if len(df) == 0:
-        log.info(
-            "No flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
-        exists = "No"
-    else:
-        log.info("Flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
-        exists = "Yes"
-
-    return exists
-
-
-def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname):
-    """
-    In the event data does not exist at specified geoscale, check if data exists at less aggregated level
-
-    :param df: Either flowbyactivity or flowbysector dataframe
-    :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-    :param geoscale: national, state, or county
-    :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
-    :return:
-    """
-
-    if geoscale == 'national':
-        df = df[(df[fba_activity_fields[0]] == activityname) | (
-             df[fba_activity_fields[1]] == activityname)]
-        fips = create_geoscale_list(df, 'state')
-        df = df[df['Location'].isin(fips)]
-        if len(df) == 0:
-            log.info("No flows found for " + activityname + "  at the state scale.")
-            fips = create_geoscale_list(df, 'county')
-            df = df[df['Location'].isin(fips)]
-            if len(df) == 0:
-                log.info("No flows found for " + activityname + "  at the county scale.")
-            else:
-                log.info("Flowbyactivity data exists for " + activityname + " at the county level")
-                new_geoscale_to_use = 'county'
-                return new_geoscale_to_use
-        else:
-            log.info("Flowbyactivity data exists for " + activityname + " at the state level")
-            new_geoscale_to_use = 'state'
-            return new_geoscale_to_use
-    if geoscale == 'state':
-        df = df[(df[fba_activity_fields[0]] == activityname) | (
-             df[fba_activity_fields[1]] == activityname)]
-        fips = create_geoscale_list(df, 'county')
-        df = df[df['Location'].isin(fips)]
-        if len(df) == 0:
-            log.info("No flows found for " + activityname + "  at the county scale.")
-        else:
-            log.info("Flowbyactivity data exists for " + activityname + " at the county level")
-            new_geoscale_to_use = 'county'
-            return new_geoscale_to_use
-
-
-def check_if_location_systems_match(df1, df2):
-    """
-    Check if two dataframes share the same location system
-    :param df1: fba or fbs df
-    :param df2: fba or fbs df
-    :return:
-    """
-
-    if df1["LocationSystem"].all() == df2["LocationSystem"].all():
-        log.info("LocationSystems match")
-    else:
-        log.warning("LocationSystems do not match, might lose county level data")
-
-
-def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
-                                            activity):  # fba_w_aggregated_sectors
-    """
-    Determine if data exists at the same scales for datasource and allocation source
-    :param source_fba:
-    :param allocation_fba:
-    :return:
-    """
-    # todo: modify so only returns warning if no value for entire location, not just no value for one of the possible sectors
-
-    from flowsa.mapping import get_activitytosector_mapping
-
-    # create list of highest sector level for which there should be data
-    mapping = get_activitytosector_mapping(source)
-    # filter by activity of interest
-    mapping = mapping.loc[mapping['Activity'].isin(activity)]
-    # add sectors to list
-    sectors_list = pd.unique(mapping['Sector']).tolist()
-
-    # subset fba w sectors and with merged allocation table so only have rows with aggregated sector list
-    df_subset = fba_wsec_walloc.loc[
-        (fba_wsec_walloc[fbs_activity_fields[0]].isin(sectors_list)) |
-        (fba_wsec_walloc[fbs_activity_fields[1]].isin(sectors_list))].reset_index(drop=True)
-    # only interested in total flows
-    # df_subset = df_subset.loc[df_subset['FlowName'] == 'total'].reset_index(drop=True)
-    # df_subset = df_subset.loc[df_subset['Compartment'] == 'total'].reset_index(drop=True)
-
-    # create subset of fba where the allocation data is missing
-    missing_alloc = df_subset.loc[df_subset['FlowAmountRatio'].isna()].reset_index(drop=True)
-    # drop any rows where source flow value = 0
-    missing_alloc = missing_alloc.loc[missing_alloc['FlowAmount'] != 0].reset_index(drop=True)
-    # create list of locations with missing alllocation data
-    states_missing_data = pd.unique(missing_alloc['Location']).tolist()
-
-    if len(missing_alloc) == 0:
-        log.info("All aggregated sector flows have allocation flow ratio data")
-    else:
-        log.warning("Missing allocation flow ratio data for " + ', '.join(states_missing_data))
-
-    return None
 
 
 def harmonize_units(df):
@@ -876,6 +699,9 @@ def sector_disaggregation_generalized(fbs, group_cols):
     :return: A FBS df with missing naics5 and naics6
     """
 
+    # test
+    # fbs = naics2.copy()
+
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk_w_nonnaics()
     cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
@@ -894,6 +720,9 @@ def sector_disaggregation_generalized(fbs, group_cols):
     # appends missing naics levels to df
     for i in range(4, 6):
 
+        # test
+        # i = 4
+
         if i == 4:
             sector_list = naics4
             sector_merge = "NAICS_4"
@@ -904,7 +733,7 @@ def sector_disaggregation_generalized(fbs, group_cols):
             sector_add = "NAICS_6"
 
         # subset df to sectors with length = i and length = i + 1
-        df_subset = fbs.loc[fbs['Sector'].apply(lambda x: i + 1 >= len(x) >= i)]
+        df_subset = fbs[fbs['Sector'].apply(lambda x: i + 1 >= len(x) >= i)]
         # create new columns that are length i
         df_subset.loc[:, 'Sector_tmp'] = df_subset['Sector'].apply(lambda x: x[0:i])
         # subset the df to the rows where the tmp sector columns are in naics list
@@ -982,101 +811,3 @@ def collapse_fbs_sectors(fbs):
     return fbs_collapsed
 
 
-def check_if_losing_sector_data(df, df_subset, target_sector_level):
-    """
-    Determine rows of data that will be lost if subset data at target sector level
-    In some instances, not all
-    :param fbs:
-    :return:
-    """
-
-    df = df.fillna(fbs_fill_na_dict)
-    # exclude nonsectors
-    df = df.replace({'nan': '',
-                     'None': ''})
-
-    rows_lost = pd.DataFrame()
-    for i in range(2, sector_level_key[target_sector_level]):
-        # create df of i length
-        df_x1 = df.loc[(df[fbs_activity_fields[0]].apply(lambda x: len(x) == i)) &
-                        (df[fbs_activity_fields[1]] == '')]
-        df_x2 = df.loc[(df[fbs_activity_fields[0]] == '') &
-                        (df[fbs_activity_fields[1]].apply(lambda x: len(x) == i))]
-        df_x3 = df.loc[(df[fbs_activity_fields[0]].apply(lambda x: len(x) == i)) &
-                        (df[fbs_activity_fields[1]].apply(lambda x: len(x) == i))]
-        df_x = pd.concat([df_x1, df_x2, df_x3], ignore_index=True, sort=False)
-
-        # create df of i + 1 length
-        df_y1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) |
-                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
-        df_y2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) &
-                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
-        df_y = pd.concat([df_y1, df_y2], ignore_index=True, sort=False)
-
-        # create temp sector columns in df y, that are i digits in length
-        df_y.loc[:, 'spb_tmp'] = df_y[fbs_activity_fields[0]].apply(lambda x: x[0:i])
-        df_y.loc[:, 'scb_tmp'] = df_y[fbs_activity_fields[1]].apply(lambda x: x[0:i])
-        # don't modify household sector lengths
-        df_y = df_y.replace({'F0': 'F010',
-                             'F01': 'F010'})
-
-        # merge the two dfs
-        df_m = pd.merge(df_x,
-                        df_y[['Class', 'Context', 'FlowType', 'Flowable', 'Location', 'LocationSystem', 'Unit',
-                              'Year', 'spb_tmp', 'scb_tmp']],
-                        how='left',
-                        left_on=['Class', 'Context', 'FlowType', 'Flowable', 'Location', 'LocationSystem', 'Unit',
-                                 'Year', 'SectorProducedBy', 'SectorConsumedBy'],
-                        right_on=['Class', 'Context', 'FlowType', 'Flowable', 'Location', 'LocationSystem', 'Unit',
-                                    'Year', 'spb_tmp', 'scb_tmp'])
-
-        # extract the rows that are not disaggregated to more specific naics
-        rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())]
-        # clean df
-        rl = clean_df(rl, flow_by_sector_fields, fbs_fill_na_dict)
-        rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']].drop_duplicates().values.tolist()
-
-        # match sectors with target sector length sectors
-
-        # import cw and subset to current sector length and target sector length
-        cw_load = load_sector_length_crosswalk_w_nonnaics()
-        nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
-        cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
-        # add column with counts
-        cw['sector_count'] = cw.groupby(nlength)[nlength].transform('count')
-
-        # merge df & conditionally replace sector produced/consumed columns
-        rl_m = pd.merge(rl, cw, how='left', left_on=[fbs_activity_fields[0]], right_on=[nlength])
-        rl_m.loc[rl_m[fbs_activity_fields[0]] != '', fbs_activity_fields[0]] = rl_m[target_sector_level]
-        rl_m = rl_m.drop(columns=[nlength, target_sector_level])
-
-        rl_m2 = pd.merge(rl_m, cw, how='left', left_on=[fbs_activity_fields[1]], right_on=[nlength])
-        rl_m2.loc[rl_m2[fbs_activity_fields[1]] != '', fbs_activity_fields[1]] = rl_m2[target_sector_level]
-        rl_m2 = rl_m2.drop(columns=[nlength, target_sector_level])
-
-        # create one sector count column
-        rl_m2['sector_count_x'] = rl_m2['sector_count_x'].fillna(rl_m2['sector_count_y'])
-        rl_m3 = rl_m2.rename(columns={'sector_count_x': 'sector_count'})
-        rl_m3 = rl_m3.drop(columns=['sector_count_y'])
-
-        # calculate new flow amounts, based on sector count, allocating equally to the new sector length codes
-        rl_m3['FlowAmount'] = rl_m3['FlowAmount'] / rl_m3['sector_count']
-        rl_m3 = rl_m3.drop(columns=['sector_count'])
-
-        # append to df
-        if len(rl) != 0:
-            log.warning('Data found at ' + str(i) + ' digit NAICS not represented in current '
-                                                    'data subset: {}'.format(' '.join(map(str, rl_list))))
-            rows_lost = rows_lost.append(rl_m3, ignore_index=True, sort=True)
-
-    if len(rows_lost) == 0:
-        log.info('No data loss from subsetting the dataframe by specified sector length')
-    else:
-        log.info('Allocating FlowAmounts equally to each ' + target_sector_level +
-                 ' associated with the sectors previously being dropped')
-
-    # add rows of missing data to the fbs sector subset
-    df_w_lost_data = pd.concat([df_subset, rows_lost], ignore_index=True, sort=True)
-    df_w_lost_data = df_w_lost_data.replace({'': None})
-
-    return df_w_lost_data

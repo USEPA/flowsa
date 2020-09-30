@@ -14,20 +14,8 @@ on NAICS definitions from the Census.
 
 """
 import pandas as pd
-from flowsa.common import datapath, fbaoutputpath
-
-def unique_activity_names(datasource, years):
-    """read in the ers parquet files, select the unique activity names"""
-    df = []
-    for y in years:
-        df = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
-        df.append(df)
-    df = df[['SourceName', 'ActivityConsumedBy']]
-    # rename columns
-    df = df.rename(columns={"SourceName": "ActivitySourceName",
-                            "ActivityConsumedBy": "Activity"})
-    df = df.drop_duplicates()
-    return df
+from flowsa.common import datapath
+from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):
     """manually assign each ERS activity to a NAICS_2012 code"""
@@ -46,16 +34,16 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '11191'  # tobacco farming
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11193']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # sugarcane farming
+                                ignore_index=True, sort=True)  # sugarcane farming
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11112']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # oilseed (except soybean) farming
+                                ignore_index=True, sort=True)  # oilseed (except soybean) farming
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER','NAICS_2012_Code',  '111991']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # SUGARBEETS
+                                ignore_index=True, sort=True)  # SUGARBEETS
     df = df.append(pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)
+                                ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'HAY & HAYLAGE, (EXCL ALFALFA)', 'Sector'] = '111940A'
     df.loc[df['Activity'] == 'HAY & HAYLAGE, ALFALFA', 'Sector'] = '111940B'
@@ -76,31 +64,31 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'SMALL GRAINS, OTHER', 'Sector'] = '111199A'  # BARLEY
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199B']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # BUCKWHEAT
+                                ignore_index=True, sort=True)  # BUCKWHEAT
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199C']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)    # MILLET, PROSO
+                                ignore_index=True, sort=True)    # MILLET, PROSO
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199D']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)    # OATS
+                                ignore_index=True, sort=True)    # OATS
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199E']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)   # RYE
+                                ignore_index=True, sort=True)   # RYE
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199I']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)    # TRITICALE
+                                ignore_index=True, sort=True)    # TRITICALE
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199J']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)    # WILD RICE
+                                ignore_index=True, sort=True)    # WILD RICE
 
     # three types of sorghum, so manually add two rows
     df.loc[df['Activity'] == 'SORGHUM, GRAIN', 'Sector'] = '111199F'  # grain
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199G']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # syrup
+                                ignore_index=True, sort=True)  # syrup
     df = df.append(pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199H']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)  # silage
+                                ignore_index=True, sort=True)  # silage
 
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
 
@@ -128,8 +116,6 @@ if __name__ == '__main__':
     # assign sector type
     df['SectorType'] = None
     # sort df
-    df = df.sort_values('Sector')
-    # reset index
-    df.reset_index(drop=True, inplace=True)
+    df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USDA_IWMS_toNAICS.csv", index=False)

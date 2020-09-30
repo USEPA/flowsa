@@ -262,6 +262,65 @@ def blm_pls_call(url, response_load, args):
         }
         competitive_page_numbers = [100, 101, 102]
         no_header_page_numbers = [123, 129]
+    elif args["year"] == "2011":
+        sub_headers = {
+        #    "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [111]"Acquired Lands": [111, 112]},
+        #    "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [113]},
+        #    "Reform Act Leases": {"Public Domain": [113]},
+
+        #    "Reform Act Leases—continued": {"Acquired Lands": [114]},
+
+        #    "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [116]},
+        #    "Competitive Protective Leases": {"Public Domain and Acquired Lands": [116]},
+        #    "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [116]},
+        #    "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [116]},
+
+        #    "Pre-EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
+        #    "EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
+
+        #    "Oil and Gas Pre-Reform Act Over-the-Counter Leases": {"Public Domain": [119],
+        #                                                           "Acquired Lands": [119]},
+            "Pre-Reform Act Simultaneous Leases": {"Acquired Lands": [120, 121]},
+        #    "Pre-Reform Act Simultaneous Leases": {"Public Domain & Acquired Lands": [122]},
+        #    "Pre-Reform Act Future Interest Leases": {"Public Domain & Acquired Lands": [122]},
+        #    "Reform Act Leases": {"Public Domain": [123], "Acquired Lands": [123, 124]},
+        #    "Reform Act Future Interest Leases": {"Acquired Lands": [125]},
+        #    "Geothermal Leases": {"Public Domain & Acquired Lands": [125]},
+        #    "Private Leases": {"Acquired Lands": [126]},
+        #    "Exchange Leases": {"Public Domain": [126]},
+        #    "Renewal Leases": {"Public Domain": [126, 127]},
+        #    "Class III Reinstatement Leases": {"Public Domain": [127]},
+        #    "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [127, 128]},
+        #    "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [128]},
+        #    "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [128]},
+        #    "Federal Coal Leases": {"Competitive Nonregional Lease-by-Application Leases": [135],
+        #                            "Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases": [135],
+        #                            "Competitive Regional Emergency/Bypass Leases": [135],
+        #                            "Competitive Regional Leases": [136], "Exchange Leases": [136],
+        #                            "Preference Right Leases": [136]},
+        #    "Coal Licenses": {"Exploration Licenses": [137],
+        #                      "Licenses to Mine": [137]},
+        #    "Logical Mining Units": {"None": [137]},
+        #    "Combined Hydrocarbon Leases": {"None": [139]},
+        #    "Phosphate Leases": {"Phosphate Competitive Leases": [139],
+        #                         "Phosphate Fringe Acreage Noncompetitive Leases": [139],
+        #                         "Phosphate Preference Right Leases": [139]},
+        #    "Phosphate Use Permits": {"None": [139]},
+        #    "Sodium Leases": {"Sodium Competitive Leases": [140],
+        #                      "Sodium Fringe Acreage Noncompetitive Leases": [140],
+        #                      "Sodium Preference Right Leases": [140]},
+        #    "Sodium Use Permit": {"None": [140]},
+        #    "Potassium Leases": {"Potassium Competitive Leases": [141],
+        #                         "Potassium Fringe Acreage Noncompetitive Leases": [141],
+        #                         "Potassium Preference Right Leases": [141]},
+        #    "Gilsonite Leases": {"Gilsonite Competitive Leases": [142],
+        #                         "Gilsonite Fringe Acreage Noncompetitive Lease": [142],
+        #                         "Gilsonite Preference Right Leases": [142]},
+        #    "Oil Shale Leases": {"Oil Shale RD&D Leases": [142]},
+        #    "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [143]}
+        }
+        competitive_page_numbers = [113, 114]
+        no_header_page_numbers = [136]
 
     for header in sub_headers:
         for sub_header in sub_headers[header]:

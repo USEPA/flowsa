@@ -15,17 +15,7 @@ on NAICS definitions from the Census.
 """
 import pandas as pd
 from flowsa.common import datapath
-
-def unique_activity_names(datasource):
-    """read in the usgs csv file, select the unique activity names"""
-    df = pd.read_csv(datapath + datasource + ".csv")
-    df = df[['Animal Type']]
-    # rename columns
-    df = df.rename(columns={"Animal Type": "Activity"})
-    # add source name column
-    df.insert(0,'ActivitySourceName','USGS_WU_Coef')
-    df = df.drop_duplicates()
-    return df
+from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):
     """manually assign each ERS activity to a NAICS_2012 code"""
@@ -60,7 +50,7 @@ def assign_naics(df):
     # other poultry production: 11239, manually add row
     df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11239']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)
+                                ignore_index=True, sort=True)
 
 
     # sheep and goat farming: 1124
@@ -83,20 +73,21 @@ def assign_naics(df):
     # fur-bearing animal and rabbit production: 11293, manually add row
     df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11293']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)
+                                ignore_index=True, sort=True)
 
 
     # all other animal production: 11299, manually add row
     df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Sheep and lambs', 'NAICS_2012_Code', '11299']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                   ignore_index=True)
+                                ignore_index=True, sort=True)
 
     return df
 
 
 if __name__ == '__main__':
     # select unique activity names from file
-    df = unique_activity_names('USGS_WU_Coef_Raw')
+    years = ['2005']
+    df = unique_activity_names('USGS_WU_Coef', years)
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
@@ -104,8 +95,6 @@ if __name__ == '__main__':
     # assign sector type
     df['SectorType'] = None
     # sort df
-    df = df.sort_values('Sector')
-    # reset index
-    df.reset_index(drop=True, inplace=True)
+    df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USGS_WU_Coef_toNAICS.csv", index=False)
