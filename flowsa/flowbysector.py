@@ -44,6 +44,7 @@ from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
 from flowsa.stewicombo_to_sector import stewicombo_to_sector
 from flowsa.EIA_MECS import mecs_energy_fba_cleanup
 from flowsa.EPA_NEI import clean_NEI
+from flowsa.BEA import subset_BEA_Use
 
 
 def parse_args():

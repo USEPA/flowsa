@@ -1,9 +1,9 @@
-# BEA_Make_Table.py (flowsa)
+# BEA.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
 """
-Import BEA Make Table
+Supporting functions for BEA data
 """
 import pandas as pd
 import io
@@ -53,4 +53,13 @@ def bea_make_parse(dataframe_list, args):
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, args['year'])
     df['FlowName'] = 'Gross Output Producer Value After Redef'
+    return df
+
+def subset_BEA_Use(df,attr):
+    commodity = attr['clean_parameter']
+    df = df.loc[df['ActivityProducedBy']==commodity]
+    
+    # set column to None to enable generalizing activity column later
+    df.loc[:,'ActivityProducedBy'] = None
+    
     return df
