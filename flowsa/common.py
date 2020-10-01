@@ -505,12 +505,19 @@ def convert_fba_unit(df):
     :param df: Either flowbyactivity
     :return: Df with standarized units
     """
-    # remove temporal aspect of unit and want all flows in Mgal
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', df['FlowAmount'] * 1000 * 365, df['FlowAmount'])
+    # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
+    days_in_year = 365
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d', df['FlowAmount'] * 1000 * days_in_year, df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
 
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', df['FlowAmount'] * 365, df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d', df['FlowAmount'] * days_in_year, df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
+
+    # Convert Land unit 'Thousand Acres' to 'Acres
+    acres_in_thousand_acres = 1000
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand Acres', df['FlowAmount'] * acres_in_thousand_acres,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres', 'Acres', df['Unit'])
 
     # Convert Energy unit "Quadrillion Btu" to MJ
     mj_in_btu = .0010550559
