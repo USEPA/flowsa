@@ -13,6 +13,7 @@ on NAICS definitions from the Census.
 7/8 digit NAICS align with USDA ERS FIWS
 
 """
+import pandas as pd
 from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
@@ -88,9 +89,25 @@ def assign_naics(df):
     # coa aggregates to fruit and tree nut farming: 1113
     # in 2017, pineapples included in "orchards" category. Therefore, for 2012, must sum pineapple data to make
     # comparable
-    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '1113'
-    df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '1113'
-    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334' # not quite right because this naics excludes strawberries
+    # orchards associated with 6 naics6, for now, after allocation, divide values associated with these naics by 6
+    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111331'
+    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
+    df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '111339'
 
     # coa aggregates to greenhouse nursery and floriculture production: 1114
     df.loc[df['Activity'] == 'HORTICULTURE TOTALS', 'Sector'] = '1114'
@@ -98,8 +115,8 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'SHORT TERM WOODY CROPS', 'Sector'] = '111421B'
 
     # coa equivalent to other crop farming: 1119
-    df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '1119'
-    df.loc[df['Activity'] == 'FIELD CROPS, OTHER', 'Sector'] = '1119'
+    # df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '1119'
+    # df.loc[df['Activity'] == 'FIELD CROPS, OTHER', 'Sector'] = '1119'
 
     # coa equivalent to tobacco farming: 11191
     df.loc[df['Activity'] == 'TOBACCO', 'Sector'] = '11191'
@@ -133,11 +150,12 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'HOPS', 'Sector'] = '111998E'
     df.loc[df['Activity'] == 'JOJOBA', 'Sector'] = '111998F'
     df.loc[df['Activity'] == 'MINT, OIL', 'Sector'] = '111998G'
+    # df.loc[df['Activity'] == 'MINT, PEPPERMINT, OIL', 'Sector'] = '111998G1'
+    # df.loc[df['Activity'] == 'MINT, SPEARMINT, OIL', 'Sector'] = '111998G2'
     df.loc[df['Activity'] == 'MISCANTHUS', 'Sector'] = '111998H'
-    df.loc[df['Activity'] == 'MINT, PEPPERMINT, OIL', 'Sector'] = '111998I'
-    df.loc[df['Activity'] == 'MINT, SPEARMINT, OIL', 'Sector'] = '111998J'
     df.loc[df['Activity'] == 'MINT, TEA LEAVES', 'Sector'] = '111998K'
     df.loc[df['Activity'] == 'SWITCHGRASS', 'Sector'] = '111998L'
+    df.loc[df['Activity'] == 'FIELD CROPS, OTHER', 'Sector'] = '111998M'
 
     return df
 
@@ -150,7 +168,7 @@ if __name__ == '__main__':
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
-    df.dropna(subset=["Sector"], inplace=True)
+    df = df.dropna()
     # assign sector type
     df['SectorType'] = None
     # sort df
