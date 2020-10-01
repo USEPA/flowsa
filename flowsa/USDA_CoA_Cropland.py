@@ -183,7 +183,11 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     """
 
     # drop rows without assigned sectors
+    # todo: print list of activities that are dropped because unmapped
     fba_w_sector = fba_w_sector[~fba_w_sector['Sector'].isna()]
+
+    # modify the flowamounts related to the 6 naics 'orchards' are mapped to
+    fba_w_sector = modify_orchard_flowamounts(fba_w_sector)
 
     # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
     fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, years_list=[attr['allocation_source_year']])
@@ -192,6 +196,21 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     fba_w_sector = disaggregate_cropland(fba_w_sector, attr, years_list=[attr['allocation_source_year']])
 
     return fba_w_sector
+
+
+def modify_orchard_flowamounts(fba):
+    """
+    In the CoA cropland crosswalk, the activity 'orchards' is mapped to six 6-digit naics. Therefore, after mapping,
+    arbitrarily divide the orchard flow amount by 6.
+    :param fba:
+    :return:
+    """
+
+    from flowsa.flowbyfunctions import fba_activity_fields
+
+    fba.loc[fba['Activity'] == 'ORCHARDS', 'FlowAmount'] = fba['FlowAmount'] / 6
+
+    return fba
 
 
 def disaggregate_pastureland(fba_w_sector, attr, years_list):
