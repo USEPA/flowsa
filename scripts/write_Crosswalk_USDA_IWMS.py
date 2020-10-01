@@ -53,8 +53,25 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'PASTURELAND', 'Sector'] = '112'
 
     # aggregates to fruit and tree nut farming: 1113
-    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '1113'
-    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334' # not quite right because this naics excludes strawberries
+    df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111331'
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+
+    df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
+
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                                ), ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'PEANUTS', 'Sector'] = '111992'
 
