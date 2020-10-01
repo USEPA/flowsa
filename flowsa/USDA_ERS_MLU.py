@@ -33,7 +33,12 @@ def mlu_parse(dataframe_list, args):
     fips = get_all_state_FIPS_2()
     for index, row in df.iterrows():
         if(int(row["Year"]) == int(args['year'])):
-            if(row["Region or State"] != "Northeast" and row["Region or State"] != "Lake States" and row["Region or State"] != "Corn Belt" and row["Region or State"] != "Northern Plains" and row["Region or State"] != "Appalachian" and row["Region or State"] != "Southeast" and row["Region or State"] != "Delta States" and row["Region or State"] != "Southern Plains" and row["Region or State"] != "Mountain" and row["Region or State"] != "Pacific" and row["Region or State"] != "48 States"):
+            if(row["Region or State"] != "Northeast" and row["Region or State"] != "Lake States" and
+                    row["Region or State"] != "Corn Belt" and row["Region or State"] != "Northern Plains" and
+                    row["Region or State"] != "Appalachian" and row["Region or State"] != "Southeast" and
+                    row["Region or State"] != "Delta States" and row["Region or State"] != "Southern Plains" and
+                    row["Region or State"] != "Mountain" and row["Region or State"] != "Pacific" and
+                    row["Region or State"] != "48 States"):
                 if(row['Region or State'] == "U.S. total"):
                     location = "00000"
                 else:
@@ -45,16 +50,35 @@ def mlu_parse(dataframe_list, args):
                     if(col != "SortOrder" and col != "Region" and col != "Region or State" and col != "Year"):
                         data["Class"] = "Land"
                         data["SourceName"] = "USDA_ERS_MLU"
-                        data["FlowName"] = None
                         data["FlowAmount"] = int(row[col])
                         data["ActivityProducedBy"] = None
                         data["ActivityConsumedBy"] = col
-                        data["Compartment"] = None
+                        data["Compartment"] = 'ground'
                         data["Location"] = location
                         data["Year"] = int(args['year'])
                         data["Unit"] = "Thousand Acres"
                         output = output.append(data, ignore_index=True)
     output = assign_fips_location_system(output, args['year'])
+
+    # hardcode flownames based on file names of excel workbooks
+    output.loc[output['ActivityConsumedBy'] == 'Total land', 'FlowName'] = 'Total land'
+    output.loc[output['ActivityConsumedBy'] == 'Total cropland', 'FlowName'] = 'Cropland'
+    output.loc[output['ActivityConsumedBy'].isin(['Cropland used for crops',
+                                                  'Cropland used for pasture',
+                                                  'Cropland idled'
+                                                  ]), 'FlowName'] = 'Cropland components'
+    output.loc[output['ActivityConsumedBy'] == 'Grassland pasture and range', 'FlowName'] = 'Grassland pasture and range'
+    output.loc[output['ActivityConsumedBy'] == 'Forest-use land (all)', 'FlowName'] = 'Forest-use land'
+    output.loc[output['ActivityConsumedBy'].isin(['Forest-use land grazed',
+                                                  'Forest-use land not grazed'
+                                                  ]), 'FlowName'] = 'Forest-use land components'
+    output.loc[output['ActivityConsumedBy'] == 'All special uses of land', 'FlowName'] = 'Special uses'
+    output.loc[output['ActivityConsumedBy'].isin(['Land in rural transportation facilities',
+                                                  'Land in rural parks and wildlife areas',
+                                                  'Land in defense and industrial areas',
+                                                  'Farmsteads, roads, and miscellaneous farmland'
+                                                  ]), 'FlowName'] = 'Special use components'
+    output.loc[output['ActivityConsumedBy'] == 'Land in urban areas', 'FlowName'] = 'Urban area'
+    output.loc[output['ActivityConsumedBy'] == 'Other land', 'FlowName'] = 'Other or miscellaneous land uses'
+
     return output
-
-
