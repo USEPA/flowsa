@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
-    create_fill_na_dict, generalize_activity_field_names, \
+    create_fill_na_dict, generalize_activity_field_names, fips_number_key, \
     load_sector_length_crosswalk_w_nonnaics, update_geoscale, flow_by_activity_wsec_mapped_fields
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
@@ -812,3 +812,136 @@ def collapse_fbs_sectors(fbs):
     return fbs_collapsed
 
 
+def return_activity_from_scale(df, provided_from_scale):
+    """
+    Determine the 'from scale' used for aggregation/df subsetting for each activity combo in a df
+    :param df: flowbyactivity df
+    :param activity_df: a df with the activityproducedby, activityconsumedby columns and
+    a column 'exists' denoting if data is available at specified geoscale
+    :param provided_from_scale: The scale to use specified in method yaml
+    :return:
+    """
+
+    # determine the unique combinations of activityproduced/consumedby
+    unique_activities = unique_activity_names(df)
+    # filter by geoscale
+    fips = create_geoscale_list(df, provided_from_scale)
+    df_sub = df[df['Location'].isin(fips)]
+    # determine unique activities after subsetting by geoscale
+    unique_activities_sub = unique_activity_names(df_sub)
+
+    # return df of the difference between unique_activities and unique_activities2
+    df_missing = dataframe_difference(unique_activities, unique_activities_sub, which='left_only')
+    # return df of the similarities between unique_activities and unique_activities2
+    df_existing = dataframe_difference(unique_activities, unique_activities_sub, which='both')
+    df_existing = df_existing.drop(columns='_merge')
+    df_existing['activity_from_scale'] = provided_from_scale
+
+    # for loop through geoscales until find data for each activity combo
+    if provided_from_scale == 'national':
+        geoscales = ['state', 'county']
+    elif provided_from_scale == 'state':
+        geoscales = ['county']
+    elif provided_from_scale == 'county':
+        log.info('No data - skipping')
+
+    if len(df_missing) > 0:
+        for i in geoscales:
+            # filter by geoscale
+            fips_i = create_geoscale_list(df, i)
+            df_i = df[df['Location'].isin(fips_i)]
+
+            # determine unique activities after subsetting by geoscale
+            unique_activities_i = unique_activity_names(df_i)
+
+            # return df of the difference between unique_activities subset and unique_activities for geoscale
+            df_missing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='right_only')
+            df_missing_i = df_missing_i.drop(columns='_merge')
+            df_missing_i['activity_from_scale'] = i
+            # return df of the similarities between unique_activities and unique_activities2
+            df_existing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='both')
+
+            # append unique activities and df with defined activity_from_scale
+            unique_activities_sub = unique_activities_sub.append(df_missing_i[[fba_activity_fields[0],
+                                                                               fba_activity_fields[1]]])
+            df_existing = df_existing.append(df_missing_i)
+            df_missing = dataframe_difference(df_missing[[fba_activity_fields[0],fba_activity_fields[1]]],
+                                              df_existing_i[[fba_activity_fields[0],fba_activity_fields[1]]],
+                                              which=None)
+
+    return df_existing
+
+
+def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
+    """
+    Subset a df by geoscale or agg to create data specified in method yaml
+    :param flow_subset:
+    :param activity_from_scale:
+    :param activity_to_scale:
+    :return:
+    """
+
+    # determine 'activity_from_scale' for use in df geoscale subset,  by activity
+    log.info('Check if data exists at ' + activity_from_scale + ' level')
+    modified_from_scale = return_activity_from_scale(df, activity_from_scale)
+    # add 'activity_from_scale' column to df
+    df2 = pd.merge(df, modified_from_scale)
+
+    # list of unique 'from' geoscales
+    unique_geoscales = modified_from_scale['activity_from_scale'].drop_duplicates().values.tolist()
+
+    # to scale
+    if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
+        to_scale = activity_to_scale
+    else:
+        to_scale = activity_from_scale
+
+    df_subset_list = []
+    # subset df based on activity 'from' scale
+    for i in unique_geoscales:
+        df3 = df2[df2['activity_from_scale'] == i]
+        # if desired geoscale doesn't exist, aggregate existing data
+        # if df is less aggregated than allocation df, aggregate fba activity to allocation geoscale
+        if fips_number_key[i] > fips_number_key[to_scale]:
+            log.info("Aggregating subset from " + i + " to " + to_scale)
+            df_sub = agg_by_geoscale(df3, i, to_scale, fba_default_grouping_fields)
+        # else filter relevant rows
+        else:
+            log.info("Subsetting " + i + " data")
+            df_sub = filter_by_geoscale(df3, i)
+        df_subset_list.append(df_sub)
+    df_subset = pd.concat(df_subset_list)
+
+    return df_subset
+
+
+def unique_activity_names(fba_df):
+    """
+    Determine the unique activity names in a df
+    :param fba_df: a flowbyactivity df
+    :return: df with ActivityProducedBy and ActivityConsumedBy columns
+    """
+
+    activities = fba_df[[fba_activity_fields[0], fba_activity_fields[1]]]
+    unique_activities = activities.drop_duplicates().reset_index(drop=True)
+
+    return unique_activities
+
+
+def dataframe_difference(df1, df2, which=None):
+    """
+    Find rows which are different between two DataFrames
+    :param df1:
+    :param df2:
+    :param which: 'both', 'right_only', 'left_only'
+    :return:
+    """
+    comparison_df = df1.merge(df2,
+                              indicator=True,
+                              how='outer')
+    if which is None:
+        diff_df = comparison_df[comparison_df['_merge'] != 'both']
+    else:
+        diff_df = comparison_df[comparison_df['_merge'] == which]
+
+    return diff_df
