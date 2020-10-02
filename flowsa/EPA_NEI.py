@@ -171,5 +171,8 @@ def assign_nonpoint_dqi(args):
 def clean_NEI(df):
     excluded_fips = ['78','85','88'] 
     df = df[~df['Location'].str[0:2].isin(excluded_fips)]
+    excluded_fips2 = ['777']
+    df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
+    
     return df
     
