@@ -3,7 +3,7 @@ Blackhurst_IO:
     - Water
   sector-like_activities: False
   activity_schema:
-BEA_Use_Detail_PRO_BeforeRedef:
+BEA_Use:
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
