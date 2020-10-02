@@ -37,7 +37,7 @@ source_names:
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics        
         allocation_helper: no
-      activity_set_3: #Fuel Combustion - Industry
+      activity_set_3: #Fuel Combustion - Industry #only allocating to 3digits
         activity_sector_aggregation: 'disagg'
         allocation_source: "EIA_MECS_Energy"
         allocation_method: proportional
@@ -50,4 +50,26 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: mecs_energy_fba_cleanup
         allocation_helper: no
+      activity_set_4: #Livestock losing NAICS 11211
+        activity_sector_aggregation: 'disagg'
+        allocation_method: proportional
+        allocation_source: "USDA_CoA_Livestock"
+        allocation_source_class: "Other"
+        allocation_sector_aggregation: 'agg'
+        allocation_source_year: 2017
+        allocation_flow:
+          - "HEAD"
+          - "NUMBER"
+          - "COLONIES"
+        allocation_compartment:
+          - "NOT SPECIFIED"
+        allocation_from_scale: state
+        allocation_helper: 'yes'
+        helper_source: "USGS_WU_Coef"
+        helper_method: multiplication
+        helper_source_class: "Water"
+        helper_sector_aggregation: 'disagg'
+        helper_source_year: 2005
+        helper_flow: None
+        helper_from_scale: national        
       
