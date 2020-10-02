@@ -50,35 +50,17 @@ def mlu_parse(dataframe_list, args):
                     if(col != "SortOrder" and col != "Region" and col != "Region or State" and col != "Year"):
                         data["Class"] = "Land"
                         data["SourceName"] = "USDA_ERS_MLU"
+                        # flownames are the same as ActivityConsumedBy for purposes of mapping elementary flows
+                        data['FlowName'] = col
                         data["FlowAmount"] = int(row[col])
                         data["ActivityProducedBy"] = None
                         data["ActivityConsumedBy"] = col
+                        data['FlowType'] = 'ELEMENTARY_FLOW'
                         data["Compartment"] = 'ground'
                         data["Location"] = location
                         data["Year"] = int(args['year'])
                         data["Unit"] = "Thousand Acres"
                         output = output.append(data, ignore_index=True)
     output = assign_fips_location_system(output, args['year'])
-
-    # hardcode flownames based on file names of excel workbooks
-    output.loc[output['ActivityConsumedBy'] == 'Total land', 'FlowName'] = 'Total land'
-    output.loc[output['ActivityConsumedBy'] == 'Total cropland', 'FlowName'] = 'Cropland'
-    output.loc[output['ActivityConsumedBy'].isin(['Cropland used for crops',
-                                                  'Cropland used for pasture',
-                                                  'Cropland idled'
-                                                  ]), 'FlowName'] = 'Cropland components'
-    output.loc[output['ActivityConsumedBy'] == 'Grassland pasture and range', 'FlowName'] = 'Grassland pasture and range'
-    output.loc[output['ActivityConsumedBy'] == 'Forest-use land (all)', 'FlowName'] = 'Forest-use land'
-    output.loc[output['ActivityConsumedBy'].isin(['Forest-use land grazed',
-                                                  'Forest-use land not grazed'
-                                                  ]), 'FlowName'] = 'Forest-use land components'
-    output.loc[output['ActivityConsumedBy'] == 'All special uses of land', 'FlowName'] = 'Special uses'
-    output.loc[output['ActivityConsumedBy'].isin(['Land in rural transportation facilities',
-                                                  'Land in rural parks and wildlife areas',
-                                                  'Land in defense and industrial areas',
-                                                  'Farmsteads, roads, and miscellaneous farmland'
-                                                  ]), 'FlowName'] = 'Special use components'
-    output.loc[output['ActivityConsumedBy'] == 'Land in urban areas', 'FlowName'] = 'Urban area'
-    output.loc[output['ActivityConsumedBy'] == 'Other land', 'FlowName'] = 'Other or miscellaneous land uses'
 
     return output
