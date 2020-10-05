@@ -300,7 +300,7 @@ def disaggregate_cropland(fba_w_sector, attr, years_list):
     # drop the activities that include '&'
     naics = naics[~naics['ActivityConsumedBy'].str.contains('&')].reset_index(drop=True)
     # add sectors
-    naics = add_sectors_to_flowbyactivity(naics, sectorsourcename='NAICS_2012_Code', levelofSectoragg='agg')
+    naics = add_sectors_to_flowbyactivity(naics, sectorsourcename='NAICS_2012_Code')
     # add missing fbs fields
     naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
     # drop cols and rename

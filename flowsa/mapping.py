@@ -26,14 +26,12 @@ def get_activitytosector_mapping(source):
     return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name, levelofSectoragg='disagg'):
+def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name):
     """
     Add Sectors from the Activity fields and mapped them to Sector from the crosswalk.
     No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
     :param sectorsourcename: A sector source name, using package default
-    :param levelofSectoragg: Option of mapping to the most aggregated "agg" or the most disaggregated "disagg" level
-                            of NAICS for an activity
     :return: a df with activity fields mapped to 'sectors'
     """
 
@@ -45,6 +43,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
 
     for s in pd.unique(flowbyactivity_df['SourceName']):
         src_info = cat[s]
+        # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
+        levelofSectoragg = src_info['sector_aggregation_level']
         # if data are provided in NAICS format, use the mastercrosswalk
         if src_info['sector-like_activities']:
             cw = load_sector_crosswalk()
@@ -61,8 +61,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
             # drop SectorSourceName
             mapping = mapping.drop(columns=['SectorSourceName'])
-            # Include all digits of naics in mapping, if levelofNAICSagg is specified as "disagg"
-            if levelofSectoragg == 'disagg':
+            # Include all digits of naics in mapping, if levelofNAICSagg is specified as "aggregated"
+            if levelofSectoragg == 'aggregated':
                 mapping = expand_naics_list(mapping, sectorsourcename)
         mappings.append(mapping)
     mappings_df = pd.concat(mappings, sort=False)

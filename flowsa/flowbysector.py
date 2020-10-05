@@ -155,8 +155,7 @@ def main(method_name):
                 # Add sectors to df activity, depending on level of specified sector aggregation
                 log.info("Adding sectors to " + k)
                 flow_subset_wsec = add_sectors_to_flowbyactivity(flows_subset_geo,
-                                                                 sectorsourcename=method['target_sector_source'],
-                                                                 levelofSectoragg=attr['activity_sector_aggregation'])
+                                                                 sectorsourcename=method['target_sector_source'])
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
@@ -218,8 +217,7 @@ def main(method_name):
                     # assign sector to allocation dataset
                     log.info("Adding sectors to " + attr['allocation_source'])
                     fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
-                                                                   sectorsourcename=method['target_sector_source'],
-                                                                   levelofSectoragg=attr['allocation_sector_aggregation'])
+                                                                   sectorsourcename=method['target_sector_source'])
 
                     # generalize activity field names to enable link to main fba source
                     log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
