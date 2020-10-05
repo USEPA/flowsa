@@ -4,7 +4,7 @@
 
 import io
 from flowsa.common import *
-from flowsa.flowbyfunctions import fba_activity_fields, assign_fips_location_system
+from flowsa.flowbyfunctions import fba_activity_fields, fbs_activity_fields, assign_fips_location_system
 
 
 def usgs_URL_helper(build_url, config, args):
@@ -454,8 +454,12 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     :return:
     """
 
+    # test
+    #df_wsec = flow_subset_wsec.copy()
+
     df = modify_sector_length(df_wsec)
     df = filter_out_activities(df, attr)
+    df = modify_thermo_and_aqua_sector_assignments(df)
 
     return df
 
@@ -535,3 +539,29 @@ def filter_out_activities(df, attr):
 
     return df
 
+
+def modify_thermo_and_aqua_sector_assignments(df):
+    """
+    Currently, do not have a method to allocate water withdrawal beyond four digits for Thermoelectric and Aquaculture.
+    Therefore, after mapping these 2 activities to sectors, drop associated sectors > 4 digits.
+    :param df:
+    :return:
+    """
+
+    activities_to_modify = ("Aquaculture", "Thermoelectric Power")
+    max_sector_length = 4
+
+    # if activities are in the activities to modify length and if sector length is greater than max specified, drop rows
+    # tmp set None to "" so len(x) fxn woks
+    df = df.replace({None: 'None'})
+    # set conditions
+    c1 = df[fba_activity_fields[0]].isin(activities_to_modify)
+    c2 = df[fba_activity_fields[1]].isin(activities_to_modify)
+    c3 = df[fbs_activity_fields[0]].apply(lambda x: len(x) > max_sector_length)
+    c4 = df[fbs_activity_fields[1]].apply(lambda x: len(x) > max_sector_length)
+    # subset data
+    df_modified = df.loc[~((c1 | c2) & (c3 | c4))].reset_index(drop=True)
+    # set 'None' back to None
+    df_modified = df_modified.replace({'None': None})
+
+    return df_modified
