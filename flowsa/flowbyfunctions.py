@@ -249,20 +249,25 @@ def proportional_allocation_by_location(df, sectorcolumn):
     return allocation_df
 
 
-def proportional_allocation_by_location_and_sector(df, sectorcolumn, level_of_aggregation):
+def proportional_allocation_by_location_and_sector(df, sectorcolumn):
     """
     Creates a proportional allocation within each aggregated sector within a location
     :param df:
     :param sectorcolumn:
-    :param level_of_aggregation: 'agg' or 'disagg'
     :return:
     """
+    from flowsa.common import load_source_catalog
+
+    cat = load_source_catalog()
+    src_info = cat[pd.unique(df['SourceName'])[0]]
+    # load source catalog to determine the level of sector aggregation associated with a crosswalk
+    level_of_aggregation = src_info['sector_aggregation_level']
 
     # denominator summed from highest level of sector grouped by location
     short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
     # want to create denominator based on short_length - 1, unless short_length = 2
     denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == short_length)]
-    if (level_of_aggregation == 'agg') & (short_length != 2):
+    if (level_of_aggregation == 'disaggregated') & (short_length != 2):
         short_length = short_length - 1
         denom_df.loc[:, 'sec_tmp'] = denom_df[sectorcolumn].apply(lambda x: x[0:short_length])
         denom_df.loc[:, 'Denominator'] = denom_df.groupby(['Location', 'sec_tmp'])['FlowAmount'].transform('sum')
@@ -364,9 +369,7 @@ def allocation_helper(df_w_sector, method, attr):
 
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
-                                                      sectorsourcename=method['target_sector_source'],
-                                                      levelofSectoragg=attr[
-                                                          'helper_sector_aggregation'])
+                                                      sectorsourcename=method['target_sector_source'])
 
     # generalize activity field names to enable link to water withdrawal table
     helper_allocation = generalize_activity_field_names(helper_allocation)
@@ -388,8 +391,7 @@ def allocation_helper(df_w_sector, method, attr):
         # subset fba allocation table to the values in the activity list, based on overlapping sectors
         helper_allocation = helper_allocation.loc[helper_allocation['Sector'].isin(sector_list)]
         # calculate proportional ratios
-        helper_allocation = proportional_allocation_by_location_and_sector(helper_allocation, 'Sector',
-                                                                           attr['allocation_sector_aggregation'])
+        helper_allocation = proportional_allocation_by_location_and_sector(helper_allocation, 'Sector')
 
     # rename column
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})

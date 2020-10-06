@@ -20,11 +20,9 @@ source_names:
           - "Irrigation Golf Courses"
           - "Public Supply"
           - "Thermoelectric Power"
-        activity_sector_aggregation: 'agg'
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
-        allocation_sector_aggregation: None
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
@@ -33,11 +31,9 @@ source_names:
       activity_set_2:
         names:
           - "Domestic"
-        activity_sector_aggregation: 'disagg'
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
-        allocation_sector_aggregation: None
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
@@ -46,11 +42,9 @@ source_names:
       activity_set_3:
         names:
           - "Industrial"
-        activity_sector_aggregation: 'disagg'
         allocation_method: proportional
         allocation_source: "StatCan_IWS_MI"
         allocation_source_class: "Water"
-        allocation_sector_aggregation: 'disagg'
         allocation_source_year: 2011
         allocation_flow:
           - "Water intake"
@@ -61,7 +55,6 @@ source_names:
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
-        helper_sector_aggregation: 'agg'
         helper_source_year: 2011
         helper_flow:
           - "Number of employees"
@@ -71,11 +64,9 @@ source_names:
       activity_set_4:
         names:
           - "Mining"
-        activity_sector_aggregation: 'disagg'
         allocation_method: proportional
         allocation_source: "Blackhurst_IO"
         allocation_source_class: "Water"
-        allocation_sector_aggregation: 'agg'
         allocation_source_year: 2002
         allocation_flow:
           - 'Water Withdrawals IO Vector'
@@ -87,7 +78,6 @@ source_names:
         helper_source: "BLS_QCEW"
         helper_method: "multiplication and scaled"
         helper_source_class: "Employment"
-        helper_sector_aggregation: 'agg'
         helper_source_year: 2010
         helper_flow:
           - "Number of employees"
@@ -98,11 +88,9 @@ source_names:
       activity_set_5:
         names:
           - "Irrigation Crop"
-        activity_sector_aggregation: 'disagg'
         allocation_method: proportional
         allocation_source: "USDA_IWMS"
         allocation_source_class: "Land"
-        allocation_sector_aggregation: 'agg'
         allocation_source_year: 2013
         allocation_flow: None
         allocation_compartment: None
@@ -112,18 +100,15 @@ source_names:
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
-        helper_sector_aggregation: 'disagg'
         helper_source_year: 2013
         helper_flow: None
         helper_from_scale: state
       activity_set_6:
         names:
           - "Livestock"
-        activity_sector_aggregation: 'disagg'
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
         allocation_source_class: "Other"
-        allocation_sector_aggregation: 'agg'
         allocation_source_year: 2012
         allocation_flow:
           - "HEAD"
@@ -136,7 +121,6 @@ source_names:
         helper_source: "USGS_WU_Coef"
         helper_method: multiplication
         helper_source_class: "Water"
-        helper_sector_aggregation: 'disagg'
         helper_source_year: 2005
         helper_flow: None
         helper_from_scale: national

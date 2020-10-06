@@ -91,8 +91,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     bls_agg = filter_by_geoscale(bls, 'national')
 
     # assign naics to allocation dataset
-    bls_wsec = add_sectors_to_flowbyactivity(bls_agg, sectorsourcename= method['target_sector_source'],
-                                             levelofSectoragg='national')
+    bls_wsec = add_sectors_to_flowbyactivity(bls_agg, sectorsourcename=method['target_sector_source'])
     # drop rows where sector = None ( does not occur with mining)
     bls_wsec = bls_wsec[~bls_wsec['SectorProducedBy'].isnull()]
     bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector'})
@@ -103,7 +102,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     # subset fba allocation table to the values in the activity list, based on overlapping sectors
     bls_wsec = bls_wsec.loc[bls_wsec['Sector'].isin(sector_list)]
     # calculate proportional ratios
-    bls_wsec = proportional_allocation_by_location_and_sector(bls_wsec, 'Sector', 'agg')
+    bls_wsec = proportional_allocation_by_location_and_sector(bls_wsec, 'Sector') #, 'agg')
     bls_wsec = bls_wsec.rename(columns = {'FlowAmountRatio': 'EmployeeRatio',
                                           'FlowAmount': 'Employees'})
 
