@@ -13,11 +13,9 @@ source_names:
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
     activity_sets:
       activity_set_2: # off-highway vehicles and equipment
-        activity_sector_aggregation: 'disagg'
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
         allocation_source_class: "Money"
-        allocation_sector_aggregation: 'disagg'
         allocation_source_year: 2012 
         allocation_flow:
           - "USD2012"
@@ -29,7 +27,6 @@ source_names:
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
-        helper_sector_aggregation: 'agg'
         helper_source_year: 2012
         helper_flow:
           - "Number of employees"
@@ -37,11 +34,9 @@ source_names:
         clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_1: #Direct
-        activity_sector_aggregation: 'disagg'
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
-        allocation_sector_aggregation: None
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
