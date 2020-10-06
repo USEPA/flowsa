@@ -54,6 +54,14 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # Add the sector twice as activities so mapping is identical
             mapping.loc[:, 'Activity'] = sectors[sector_source_name]
             mapping = mapping.rename(columns={sector_source_name: "Sector"})
+            # add columns so can run expand_naics_list_fxn
+            # if sector-like_activities = True, missing columns, so add
+            mapping['ActivitySourceName'] = s
+            # tmp assignment
+            mapping['SectorType'] = None
+            # Include all digits of naics in mapping, if levelofNAICSagg is specified as "aggregated"
+            if levelofSectoragg == 'aggregated':
+                mapping = expand_naics_list(mapping, sectorsourcename)
         else:
             # if source data activities are text strings, call on the manually created source crosswalks
             mapping = get_activitytosector_mapping(s)
