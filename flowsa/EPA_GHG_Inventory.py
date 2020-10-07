@@ -24,15 +24,15 @@ from flowsa.common import flow_by_activity_fields
 
 # NOTE: 3-22 is completely different format...
 TABLES = {
-    "Ch 4 - Industrial Processes": ["4-43", "4-48", "4-80", "4-94", "4-99", "4-101"],
-    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
+    "Ch 4 - Industrial Processes": ["4-48", "4-94", ]  # "4-99", "4-101"],
+    # "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
     # "Appendices": [""]
-    "Executive Summary": ["ES-5"]
-}   # "3-22",
+    # "Executive Summary": ["ES-5"]
+}
 
 # Table 3-22 has TOTAL data, and not YEARLY data, so the format varies drastically.
 # Consider splitting the calls by YEARLY and TOTAL to facilitate data gathering.
-SPECIAL_FORMAT = ["3-22"]
+SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
 
 DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
@@ -86,6 +86,59 @@ TBL_META = {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table 3-59:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
     },
+    "EPA_GHG_Inventory_T_4_48": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
+    },
+    "EPA_GHG_Inventory_T_4_94": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture [1] (MMT CO2 Eq.)"
+    },
+    "EPA_GHG_Inventory_T_4_99": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 4-99:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)"
+    },
+    "EPA_GHG_Inventory_T_4_101": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 4-101:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.) by Sector"
+    },
+    "EPA_GHG_Inventory_T_5_3": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
+    },
+    "EPA_GHG_Inventory_T_5_7": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 5-7:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
+    },
+    "EPA_GHG_Inventory_T_5_18": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 5-18:  Direct N2O Emissions from Agricultural " +
+                "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
+    },
+    "EPA_GHG_Inventory_T_5_19": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
+    },
+    "EPA_GHG_Inventory_T_5_30": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field Burning of Agricultural Residues (kt)"
+    },
+    # "A_17": {
+    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+    #     "desc": ""
+    # },
+    # "A_93": {
+    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+    #     "desc": ""
+    # },
+    # "A_94": {
+    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+    #     "desc": ""
+    # },
+    # "A_118": {
+    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+    #     "desc": ""
+    # },
 }
 
 
@@ -209,7 +262,7 @@ def ghg_parse(dataframe_list, args):
 
         df = assign_fips_location_system(df, args["year"])
         # add missing flow by sector fields
-        df = add_missing_flow_by_fields(df, flow_by_activity_fields)
+        # df = add_missing_flow_by_fields(df, flow_by_activity_fields)
 
         cleaned_list.append(df)
 
