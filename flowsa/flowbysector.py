@@ -216,22 +216,22 @@ def main(method_name):
 
                     # assign sector to allocation dataset
                     log.info("Adding sectors to " + attr['allocation_source'])
-                    fba_allocation = add_sectors_to_flowbyactivity(fba_allocation,
+                    fba_allocation_wsec = add_sectors_to_flowbyactivity(fba_allocation,
                                                                    sectorsourcename=method['target_sector_source'])
 
                     # generalize activity field names to enable link to main fba source
                     log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
-                    fba_allocation = generalize_activity_field_names(fba_allocation)
+                    fba_allocation_wsec = generalize_activity_field_names(fba_allocation_wsec)
 
                     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Futher disaggregating sectors in " + attr['allocation_source'])
-                        fba_allocation = getattr(sys.modules[__name__],
-                                                        attr["clean_allocation_fba_w_sec"])(fba_allocation, attr, method)
+                        fba_allocation_wsec = getattr(sys.modules[__name__],
+                                                        attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr, method)
 
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
-                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation, k, names)
+                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
 
                     # drop columns
                     fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
@@ -257,7 +257,6 @@ def main(method_name):
                     flow_allocation.drop_duplicates(subset=['Location', 'Sector'], inplace=True)
                     # check for issues with allocation ratios
                     check_allocation_ratios(flow_allocation)
-
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
