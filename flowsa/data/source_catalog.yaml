@@ -4,6 +4,12 @@ Blackhurst_IO:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
+BEA_GDP_GrossOutput_IO:
+  class:
+    - Money
+  sector-like_activities: False
+  #  activity_schema: BEA_2012_Detail_Code
+  sector_aggregation_level: "disaggregated"
 BEA_Use:
   class:
     - Money
@@ -83,12 +89,12 @@ StatCan_GDP:
   class: Money
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: ""
+  sector_aggregation_level: "disaggregated"
 StatCan_IWS_MI:
   class: Water
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: ""
+  sector_aggregation_level: "aggregated"
 USDA_CoA_Cropland:
   class:
     - Land
