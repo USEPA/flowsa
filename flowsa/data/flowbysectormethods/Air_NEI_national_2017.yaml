@@ -43,6 +43,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: mecs_energy_fba_cleanup
+        clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
         allocation_helper: no
       activity_set_4: #Livestock losing NAICS 11211
         allocation_method: proportional
