@@ -269,7 +269,7 @@ def eia_mecs_energy_parse(dataframe_list, args):
     # rename columns to match standard flowbyactivity format
     df = df.rename(columns={'NAICS Code' : 'ActivityConsumedBy',
                             'Subsector and Industry' : 'Description'})
-    
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
     # add hardcoded data
     df["SourceName"] = args['source']
     df["Compartment"] = None
@@ -312,4 +312,74 @@ def mecs_energy_fba_cleanup(fba, attr):
     
     fba = fba.loc[fba['Unit']=='MJ']
     return fba
+
+def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
+    """
+    clean up eia_mecs_energy df with sectors by estimating missing data
+    :param df_w_sec:
+    :param attr:
+    :param method:
+    :return:
+    """
+
+    df = estimate_missing_data(df_w_sec, [3,4,5])
+
+    return df
     
+def estimate_missing_data(df, sector_lengths):
+    """
+    For a given dataframe where data is reported by NAICS, but not all nested NAICS are listed,
+    this function applies the unaccounted for amounts equally across unreported children
+    """
+    df.dropna(subset=['Sector'], inplace=True)
+    cw = load_sector_length_crosswalk()
+    suppressed_list = []
+    for i in sector_lengths:
+
+        # create df with sectors of i length, need to disaggregate to i+1
+        df_parent = df.loc[df['Activity'].apply(lambda x: len(x) == i)]
+        parentlist = df_parent['Activity'].drop_duplicates().tolist()
+
+        # create df with sectors of length > i (i.e. children)
+        df_child = df.loc[df['Activity'].apply(lambda x: len(x) > i)]
+        df_child.loc[:, 's_tmp'] = df_child['Activity'].apply(lambda x: x[0:i])
+        
+        cw2 = cw[['NAICS_'+str(i),'NAICS_'+str(i+1)]]
+        new_df = pd.DataFrame(columns=df.columns)
+        
+        for sector in parentlist:
+            df_temp_parent = df_parent[df_parent['Activity']==sector]
+            # extract the children of the given sector of level i that exist in the dataframe
+            df_temp_child = df_child[df_child['s_tmp'] == sector]
+            childlist = df_temp_child['Activity'].tolist()
+            df_temp_child['s_tmp'] = df_child['Activity'].apply(lambda x: x[0:i+1])
+            df_temp_child['length'] = df_child['Activity'].str.len()
+
+            # drop children that have the same sector of i+1 (because these are double counting), as long as they are not the same length
+            net_flow = df_temp_child.groupby(['length','s_tmp']).agg({'FlowAmount':['sum']}).reset_index()
+            net_flow.columns=['length','s_tmp','FlowAmount']
+            # calculate the amount supplied by existing sectors
+            net_flow = net_flow.drop_duplicates(subset=['s_tmp'])
+            
+            cw_temp = cw2[cw2['NAICS_'+str(i)]==sector]
+            cw_childlist = cw_temp['NAICS_'+str(i+1)].drop_duplicates().tolist()
+            sectors_to_add = list(set(cw_childlist).difference(childlist))
+
+            if len(sectors_to_add) != 0:
+                new_flow_amount = (df_temp_parent['FlowAmount'].sum()-net_flow['FlowAmount'].sum())/len(sectors_to_add)
+                # Add new children to dataframe as new Activities, and assign flow amount,
+                # all other data remains the same as the parent (update DQI?)
+                new_child = pd.DataFrame(sectors_to_add, columns=['Sector'])
+                new_child['Activity']= sector
+                new_child = df_temp_parent.merge(new_child, how='left', on='Activity')
+                new_child['Sector']=new_child['Sector_y']
+                new_child.drop(columns=['Sector_x','Sector_y'], inplace=True)
+                new_child['FlowAmount']=new_flow_amount
+                new_df = pd.concat([new_df,new_child],axis=0, ignore_index=True)
+                suppressed_list.extend(sectors_to_add)
+        
+        df = pd.concat([df,new_df],axis=0, ignore_index=True)
+        # drop the parent list from original df
+        df = df[~df['Sector'].isin(parentlist)]
+  
+    return df
