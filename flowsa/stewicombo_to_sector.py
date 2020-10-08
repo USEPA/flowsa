@@ -10,7 +10,8 @@ data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
 """
 
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow_by_fields
+from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow_by_fields,\
+    sector_disaggregation
 from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log
@@ -32,48 +33,58 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     from stewi.globals import weighted_average
     import stewi
     import stewicombo
+    import facilitymatcher
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
-    
+    from facilitymatcher import output_dir as fm_output_dir
+
     NAICS_level_value=sector_level_key[NAICS_level]
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
     df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True, compartments=compartments)
-    
-    ## create mapping to convert facility IDs --> NAICS codes 
+    df.drop(columns = ['SRS_CAS','SRS_ID','FacilityIDs_Combined'], inplace=True)
+
     facility_mapping = pd.DataFrame()
-    # for all inventories in list:
-    # - load facility data from stewi output directory, keeping only the facility IDs, NAICS codes, and geographic information
-    # - create new column indicating inventory source (database and year)
-    # - append data to master data frame
+    # load facility data from stewi output directory, keeping only the facility IDs, and geographic information
     inventory_list = list(inventory_dict.keys())
     for i in range(len(inventory_dict)):
         # define inventory name as inventory type + inventory year (e.g., NEI_2017)
         inventory_name = inventory_list[i] + '_' + list(inventory_dict.values())[i]
         facilities = pd.read_csv(stw_output_dir + 'facility/' + inventory_name + '.csv',
-                                 usecols=['FacilityID', 'NAICS', 'State', 'County'],
-                                 dtype={'FacilityID':str, 'NAICS':int})
-        facilities.drop_duplicates(subset='FacilityID', keep='first')
-        facilities['SourceYear'] = inventory_name
+                                 usecols=['FacilityID', 'State', 'County'],
+                                 dtype={'FacilityID':str})
+        if len(facilities[facilities.duplicated(subset='FacilityID',keep=False)])>0:
+            log.info('Duplicate facilities in '+ inventory_name +' - keeping first listed')
+            facilities.drop_duplicates(subset='FacilityID',
+                                       keep='first', inplace = True)
         facility_mapping = facility_mapping.append(facilities)
 
     # Apply FIPS to facility locations
     facility_mapping = apply_county_FIPS(facility_mapping)
          
-    ## merge dataframes to assign NAICS codes based on facility IDs
-    df['SourceYear'] = df['Source'] + '_' + df['Year']
+    ## merge dataframes to assign facility information based on facility IDs
     df = pd.merge(df, facility_mapping, how = 'left',
-                  left_on=['FacilityID', 'SourceYear'],
-                  right_on=['FacilityID', 'SourceYear'])
-      
+                  on= 'FacilityID')
+    
+    ## Access NAICS From facility matcher and assign based on FRS_ID
+    all_NAICS = facilitymatcher.get_FRS_NAICSInfo_for_facility_list(frs_id_list = None,
+        inventories_of_interest_list=inventory_list)
+    all_NAICS = all_NAICS.loc[all_NAICS['PRIMARY_INDICATOR']=='PRIMARY']
+    all_NAICS.drop(columns=['PRIMARY_INDICATOR'], inplace=True)
+    if len(all_NAICS[all_NAICS.duplicated(subset = ['FRS_ID','Source'], keep = False)])>0:
+        log.info('Duplicate primary NAICS reported - keeping first')
+        all_NAICS.drop_duplicates(subset = ['FRS_ID','Source'], 
+                                  keep = 'first', inplace = True)
+    df = pd.merge(df, all_NAICS, how = 'left', on = ['FRS_ID','Source'])
+
     # add levelized NAICS code prior to aggregation
-    df['NAICS_lvl'] = df['NAICS'].astype(str).str[0:NAICS_level_value]
+    df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
     ## subtract emissions for air transportation from airports in NEI
     airport_NAICS = '4881'
     air_transportation_SCC = '2275020000'
     air_transportation_naics = '481111'
     if 'NEI' in inventory_list:
-        log.info('reassigning emissions from air transportation from airports')
+        log.info('Reassigning emissions from air transportation from airports')
 
         # obtain and prepare SCC dataset
         df_airplanes = stewi.getInventory('NEI', inventory_dict['NEI'],
@@ -84,11 +95,14 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
         df_airplanes = remove_default_flow_overlaps(df_airplanes, SCC=True)
         df_airplanes.drop(columns=['SCC'], inplace=True)
         
-        df_airplanes = df_airplanes.merge(facility_mapping, how = 'left',
+        facility_mapping_air = df[['FacilityID','NAICS']]
+        facility_mapping_air.drop_duplicates(keep = 'first', inplace = True)
+        df_airplanes = df_airplanes.merge(facility_mapping_air, how = 'left',
                                           on='FacilityID')
+
         df_airplanes['Year']=inventory_dict['NEI']
         df_airplanes = df_airplanes[
-            df_airplanes['NAICS'].astype(str).str[0:len(airport_NAICS)]==airport_NAICS]
+            df_airplanes['NAICS'].str[0:len(airport_NAICS)]==airport_NAICS]
 
         # subtract airplane emissions from airport NAICS at individual facilities
         df_planeemissions = df_airplanes[['FacilityID','FlowName','FlowAmount']] 
@@ -131,10 +145,14 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     fbs['SectorConsumedBy'] = 'None'
     fbs['SectorSourceName'] = 'NAICS_2012_Code'
     fbs['FlowType'] = 'ELEMENTARY_FLOW'
+
+    # carry out to 6-digit NAICS where possible
+    #fbs = sector_disaggregation(fbs)
+    
     fbs = assign_fips_location_system(fbs, list(inventory_dict.values())[0])
     # add missing flow by sector fields
     fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
-
+    
     # sort dataframe and reset index
     fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
 

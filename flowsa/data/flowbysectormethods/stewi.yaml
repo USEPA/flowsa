@@ -1,4 +1,4 @@
-target_sector_level: NAICS_4
+target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: state
 source_names:
@@ -7,6 +7,6 @@ source_names:
     FBS_datapull_fxn: stewicombo_to_sector
     parameters:
      - {"NEI":"2017"}   # inventory_dict
-     - 'NAICS_4'        # NAICS_level
+     - 'NAICS_6'        # NAICS_level
      - 'state'          # geo_scale
      - ['air']          # compartments
