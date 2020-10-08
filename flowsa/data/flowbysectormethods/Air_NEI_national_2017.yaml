@@ -7,7 +7,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: state
     year: 2017
-    clean_fba_df_fxn: clean_NEI
+    clean_fba_df_fxn: None
     clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'

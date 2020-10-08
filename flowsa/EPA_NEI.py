@@ -90,6 +90,8 @@ def epa_nei_global_parse(dataframe_list, args):
     # remove records from certain FIPS
     excluded_fips = ['78','85','88'] 
     df = df[~df['Location'].str[0:2].isin(excluded_fips)]
+    excluded_fips2 = ['777']
+    df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
     
     # drop all other columns
     df.drop(df.columns.difference(['FlowName',
@@ -168,11 +170,5 @@ def assign_nonpoint_dqi(args):
 
     #TODO compare counts across NAICS depending on granularity of fbs method
 
-def clean_NEI(df):
-    excluded_fips = ['78','85','88'] 
-    df = df[~df['Location'].str[0:2].isin(excluded_fips)]
-    excluded_fips2 = ['777']
-    df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
-    
-    return df
+
     
