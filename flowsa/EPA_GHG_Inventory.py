@@ -14,25 +14,31 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow_by_fields
 from flowsa.common import flow_by_activity_fields
 
+DEFAULT_YEAR = 9999
+
 # Decided to add tables as a constant in the source code because the YML config isn't available in the ghg_call method.
 # Only keeping years 2010-2018 for the following tables:
 # TABLES = {
 #     "Ch 2 - Trends": ["2-1"],
-#     "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-22", "3-37", "3-38", "3-39", "3-57", "3-59"]
-#     "Ch 4 - Industrial Processes": ["4-43"]
+#     # "Ch 3 - Energy": ["3-22"],
+#     # "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59"],
+#     "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
+#     # "Ch 4 - Industrial Processes": ["4-43", "4-80"],
+#     # "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101"],
+#     "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101", "4-43", "4-80"],
+#     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
 # }
 
-# NOTE: 3-22 is completely different format...
 TABLES = {
-    "Ch 4 - Industrial Processes": ["4-48", "4-94", ]  # "4-99", "4-101"],
-    # "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
-    # "Appendices": [""]
-    # "Executive Summary": ["ES-5"]
+    "Ch 3 - Energy": ["3-22"],
+    # "Ch 4 - Industrial Processes": ["4-43", "4-80"],
 }
 
+# NOTE: 3-22, 4-43, 4-80 are completely different formats...
 # Table 3-22 has TOTAL data, and not YEARLY data, so the format varies drastically.
 # Consider splitting the calls by YEARLY and TOTAL to facilitate data gathering.
 SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
+SRC_NAME_SPECIAL_FORMAT = ["T_3_22"]
 
 DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
@@ -64,7 +70,8 @@ TBL_META = {
     },
     "EPA_GHG_Inventory_T_3_22": {  # TODO: This is a different format!
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
-        "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions"
+        "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions",
+        "year": "2018"
     },
     "EPA_GHG_Inventory_T_3_37": {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
@@ -86,6 +93,10 @@ TBL_META = {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table 3-59:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
     },
+    # TODO: This is a different format!
+    # "EPA_GHG_Inventory_T_4_43"
+    # TODO: This is a different format!
+    # "EPA_GHG_Inventory_T_4_80"
     "EPA_GHG_Inventory_T_4_48": {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
@@ -161,9 +172,7 @@ def ghg_call(url, response, args):
                 data = f.open(path)
                 if table not in SPECIAL_FORMAT:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1")
-                else:
-                    # Skipping this weird tables for now. Will require more thought for processing...
-                    pass
+                elif '3-' in table:
                     # Skip first two rows, as usual, but make headers the next 3 rows:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1, 2])
                     # The next two rows are headers and the third is units:
@@ -184,6 +193,14 @@ def ghg_call(url, response, args):
                         new_headers.append(new_header)
                     df.columns = new_headers
                     print('break')
+                elif '4-' in table:
+                    break
+                elif 'A-' in table:
+                    break
+                elif 'ES-' in table:
+                    break
+                else:
+                    break
 
                 if len(df.columns) > 1:
                     # Assign SourceName now while we still have access to the table name:
@@ -191,21 +208,22 @@ def ghg_call(url, response, args):
                     df["SourceName"] = source_name
                     frames.append(df)
 
-        return pd.concat(frames)
+        # return pd.concat(frames)
+        return frames
 
 
 def ghg_parse(dataframe_list, args):
     """ TODO. """
     cleaned_list = []
     for df in dataframe_list:
+        special_format = False
+        source_name = df["SourceName"][0]
+        for src in SRC_NAME_SPECIAL_FORMAT:
+            if src in source_name:
+                special_format = True
+
         # Specify to ignore errors in case one of the drop_cols is missing.
         df = df.drop(columns=DROP_COLS, errors='ignore')
-
-        # data_type = df.columns[0]
-        # if 'gas' in data_type.lower():
-        #     df["Class"] = "Chemicals"
-        # else:
-        #     df["Class"] = "Other"
 
         # Rename the PK column from data_type to "ActivityProducedBy":
         df = df.rename(columns={df.columns[0]: "ActivityProducedBy"})
@@ -215,16 +233,16 @@ def ghg_parse(dataframe_list, args):
         df["Compartment"] = "None"
         # df["FlowType"] = "ELEMENTARY_FLOW"
         df["Location"] = "00000"
-        # if 'Year' not in df.columns:
-        #     df["Year"] = args["year"]
 
         id_vars = ["SourceName", "ActivityConsumedBy", "ActivityProducedBy", "Compartment", "Location"]
         # Set index on the df:
         df.set_index(id_vars)
 
         # If Table 3-22:
-        # df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
-        df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
+        if special_format:
+            df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
+        else:
+            df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
 
         # Dropping all rows with value "+"
         try:
@@ -244,12 +262,14 @@ def ghg_parse(dataframe_list, args):
         df["Description"] = "None"
         df["Unit"] = "Other"
         # Update classes:
-        for tbl, meta in TBL_META.items():
-            df.loc[df["SourceName"] == tbl, "Class"] = meta["class"]
-            df.loc[df["SourceName"] == tbl, "Unit"] = meta["unit"]
-            df.loc[df["SourceName"] == tbl, "Description"] = meta["desc"]
-            df.loc[df["SourceName"] == tbl, "Compartment"] = meta["compartment"]
-            df.loc[df["SourceName"] == tbl, "FlowName"] = meta["flow_name"]
+        meta = TBL_META[source_name]
+        df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
+        df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
+        df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
+        df.loc[df["SourceName"] == source_name, "Compartment"] = meta["compartment"]
+        df.loc[df["SourceName"] == source_name, "FlowName"] = meta["flow_name"]
+        if 'Year' not in df.columns:
+            df['Year'] = meta.get("year", DEFAULT_YEAR)
 
         # Add tmp DQ scores
         df["DataReliability"] = 5
