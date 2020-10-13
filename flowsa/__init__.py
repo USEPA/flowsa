@@ -22,16 +22,25 @@ def getFlowByActivity(flowclass, years, datasource):
     """
     fbas = pd.DataFrame()
     # for assigning dtypes
-    fields = {'ActivityProducedBy':'str'}
+    fields = {'ActivityProducedBy': 'str'}
     for y in years:
+        # first try reading parquet from your local repo
         try:
             fba = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet")
             fba = fba[fba['Class'].isin(flowclass)]
             fba = fba.astype(fields)
             fbas = pd.concat([fbas, fba], sort=False)
         except FileNotFoundError:
-            log.error("No parquet file found for datasource " + datasource + "and year " + str(
-                y) + " in flowsa")
+            # if parquet does not exist in local repo, read file from Data Commons
+            try:
+                fba = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' +
+                                      datasource + "_" + str(y) + '.parquet')
+                fba = fba[fba['Class'].isin(flowclass)]
+                fba = fba.astype(fields)
+                fbas = pd.concat([fbas, fba], sort=False)
+            except FileNotFoundError:
+                log.error("No parquet file found for datasource " + datasource + "and year " + str(
+                    y) + " in flowsa or Data Commons")
     return fbas
 
 
@@ -42,12 +51,18 @@ def getFlowBySector(methodname):
     :return: dataframe in flow by sector format
     """
     fbs = pd.DataFrame()
+    # first try reading parquet from your local repo
     try:
         fbs = pd.read_parquet(fbsoutputpath + methodname + ".parquet")
     except FileNotFoundError:
-        log.error("No parquet file found for datasource " + methodname + " in flowsa")
-    return fbs
+        # if parquet does not exist in local repo, read file from Data Commons
+        try:
+            fbs = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/' +
+                                  methodname + ".parquet")
+        except FileNotFoundError:
+            log.error("No parquet file found for datasource " + methodname + " in flowsa or Data Commons")
 
+    return fbs
 
 
 def getFlowBySector_collapsed(methodname):
@@ -60,6 +75,5 @@ def getFlowBySector_collapsed(methodname):
     # load saved FBS parquet
     fbs = getFlowBySector(methodname)
     fbs_collapsed = collapse_fbs_sectors(fbs)
+
     return fbs_collapsed
-
-
