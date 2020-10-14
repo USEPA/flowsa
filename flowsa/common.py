@@ -33,7 +33,7 @@ outputpath = modulepath + 'output/'
 # outputpath = (modulepath + 'output/').replace('flowsa/flowsa/', 'flowsa/tests/')
 
 sourceconfigpath = datapath + 'sourceconfig/'
-flowbyactivitymethodpath = datapath + 'flowbysectormethods/'
+flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'

@@ -22,7 +22,7 @@ import yaml
 import argparse
 import sys
 import pandas as pd
-from flowsa.common import log, flowbyactivitymethodpath, flow_by_sector_fields,  \
+from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields,  \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields, \
     flowbysectoractivitysetspath
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
@@ -61,12 +61,12 @@ def load_method(method_name):
     :param method_name:
     :return:
     """
-    sfile = flowbyactivitymethodpath + method_name + '.yaml'
+    sfile = flowbysectormethodpath + method_name + '.yaml'
     try:
         with open(sfile, 'r') as f:
             method = yaml.safe_load(f)
     except IOError:
-        log.error("File not found.")
+        log.error("FlowBySector method file not found.")
     return method
 
 def load_source_dataframe(k, v):
@@ -87,7 +87,7 @@ def load_source_dataframe(k, v):
         log.info("Retrieving flowbysector for datasource " + k)
         flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(*v['parameters'])
     else:
-        log.error("No parquet file found for datasource " + k)
+        log.error("Data format not specified in method file for datasource " + k)
 
     return flows_df
 
