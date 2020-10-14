@@ -11,7 +11,7 @@ from flowsa.flowbyfunctions import fba_fill_na_dict, harmonize_units, fba_activi
     fba_default_grouping_fields, fbs_default_grouping_fields, aggregator, sector_aggregation, fbs_fill_na_dict, \
     fbs_activity_fields, clean_df, create_geoscale_list, sector_disaggregation
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk_w_nonnaics, \
-    load_sector_crosswalk, sector_source_name, log, fips_number_key
+    load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 
 
@@ -489,7 +489,7 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     return df_w_lost_data
 
 
-def check_allocation_ratios(flow_alloc_df):
+def check_allocation_ratios(flow_alloc_df, activity_set):
     """
     Check for issues with the flow allocation ratios
     :param df:
@@ -502,51 +502,32 @@ def check_allocation_ratios(flow_alloc_df):
     flow_alloc_df2 = flow_alloc_df[['Location', 'slength', 'FlowAmountRatio']]
     # sum the flow amount ratios by location and sector length
     flow_alloc_df3 = flow_alloc_df2.groupby(['Location', 'slength'], as_index=False)[["FlowAmountRatio"]].agg("sum")
-
-    # issue warning for under allocated sectors
-    # todo: Determine what level of data loss to report
-    # todo: Combine output into single file
-    # todo: Make data available to user
-    ua = flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 1]
     # not interested in sector length > 6
-    ua = ua[ua['slength'] <= 6]
+    flow_alloc_df3 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
 
-    if len(ua) > 0:
-        ua_count = ua['FlowAmountRatio'].count()
-        log.warning('There are ' + str(ua_count) +
-                    ' instances where the allocation ratio for a location and sector length is < 1')
-    else:
-        log.info('There are no cases of under allocation for a location and sector length')
+    ua_count1 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 1])
+    log.info('There are ' + str(ua_count1) +
+             ' instances where the allocation ratio for a location and sector length is < 1')
+    ua_count2 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 0.99])
+    log.info('There are ' + str(ua_count2) +
+             ' instances where the allocation ratio for a location and sector length is < 0.99')
+    ua_count3 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1])
+    log.info('There are ' + str(ua_count3) +
+             ' instances where the allocation ratio for a location and sector length is > 1')
+    ua_count4 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1.01])
+    log.info('There are ' + str(ua_count4) +
+             ' instances where the allocation ratio for a location and sector length is > 1.01')
 
-    ua_99 = ua[ua['FlowAmountRatio'] < 0.99]
-    if len(ua_99) > 0:
-        ua_99_count = ua_99['FlowAmountRatio'].count()
-        log.warning('There are ' + str(ua_99_count) +
-                    ' instances where the allocation ratio for a location and sector length is < 0.99')
-    else:
-        log.info('There are no cases where the allocation ratio for a location and sector length is < 0.99')
-
-    # issue warning for over allocated sectors
-    oa = flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1]
-    if len(oa) > 0:
-        oa_count = oa['FlowAmountRatio'].count()
-        log.warning('There are ' + str(oa_count) +
-                    ' instances where the allocation ratio for a location and sector length is > 1')
-    else:
-        log.info('There are no cases of over allocation for a location and sector length')
-
-    oa2 = oa[oa['FlowAmountRatio'] > 1.01]
-    if len(oa2) > 0:
-        oa2_count = oa2['FlowAmountRatio'].count()
-        log.warning('There are ' + str(oa2_count) +
-                    ' instances where the allocation ratio for a location and sector length is > 1.01')
-    else:
-        log.info('There are no cases where the allocation ratio for a location and sector length is > 1.01')
+    # save csv to output folder
+    log.info('Save the summary table of flow allocation ratios for each sector length for ' +
+             activity_set + ' in output folder')
+    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + "allocation_ratios_" +
+                          activity_set + ".csv", index=False)
 
     return None
 
 
-def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load):
+def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, activity_set):
     """
     Function to compare the loaded flowbyactivity with the final flowbysector output, checking for data loss
     :param df:
@@ -599,6 +580,12 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load):
     oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
     log.info('There are ' + str(oa_count2) +
              ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.01')
+
+    # save csv to output folder
+    log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
+             activity_set + ' in output folder')
+    comparison.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + "FBA_load_to_FBS_comparision_" +
+                      activity_set + ".csv", index=False)
 
     return None
 

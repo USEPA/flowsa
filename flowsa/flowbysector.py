@@ -257,7 +257,7 @@ def main(method_name):
                     # remove duplicates in flow_allocation
                     flow_allocation.drop_duplicates(subset=['Location', 'Sector'], inplace=True)
                     # check for issues with allocation ratios
-                    check_allocation_ratios(flow_allocation)
+                    check_allocation_ratios(flow_allocation, aset)
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
@@ -329,7 +329,7 @@ def main(method_name):
                 fbs_agg = sector_disaggregation(fbs_sec_agg)
 
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg)
+                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
