@@ -324,8 +324,6 @@ def disaggregate_cropland(fba_w_sector, attr, years_list):
 
     # for loop through naics lengths to determine naics 4 and 5 digits to disaggregate
     for i in range(4, 6):
-        # test
-        # i = 5
 
         # subset df to sectors with length = i and length = i + 1
         crop_subset = crop.loc[crop['Sector'].apply(lambda x: i+1 >= len(x) >= i)]
