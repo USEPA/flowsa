@@ -30,7 +30,7 @@ def getFlowByActivity(flowclass, years, datasource):
             fba = fba[fba['Class'].isin(flowclass)]
             fba = fba.astype(fields)
             fbas = pd.concat([fbas, fba], sort=False)
-        except OSError:
+        except (OSError, FileNotFoundError):
             # if parquet does not exist in local repo, read file from Data Commons
             try:
                 fba = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' +
@@ -54,7 +54,7 @@ def getFlowBySector(methodname):
     # first try reading parquet from your local repo
     try:
         fbs = pd.read_parquet(fbsoutputpath + methodname + ".parquet")
-    except OSError:
+    except (OSError, FileNotFoundError):
         # if parquet does not exist in local repo, read file from Data Commons
         try:
             fbs = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/' +

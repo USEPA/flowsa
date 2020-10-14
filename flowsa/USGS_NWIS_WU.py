@@ -454,9 +454,6 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     :return:
     """
 
-    # test
-    #df_wsec = flow_subset_wsec.copy()
-
     df = modify_sector_length(df_wsec)
     df = filter_out_activities(df, attr)
     df = modify_thermo_and_aqua_sector_assignments(df)

@@ -118,6 +118,7 @@ def aggregator(df, groupbycols):
     :param groupbycols: Either flowbyactivity or flowbysector columns
     :return:
     """
+
     # weighted average function
     try:
         wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
@@ -143,9 +144,10 @@ def aggregator(df, groupbycols):
     df = df[df['FlowAmount'] != 0]
 
     # aggregate df by groupby columns, either summing or creating weighted averages
-    df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
+    df_dfg = df.groupby(groupbycols, as_index=False, dropna=False).agg(agg_funx)
 
-    df_dfg = df_dfg.replace({np.nan: None})
+    df_dfg = df_dfg.replace({np.nan: None,
+                             'None': None})
 
     return df_dfg
 
@@ -702,9 +704,6 @@ def sector_disaggregation_generalized(fbs, group_cols):
     :return: A FBS df with missing naics5 and naics6
     """
 
-    # test
-    # fbs = naics2.copy()
-
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk_w_nonnaics()
     cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
@@ -722,9 +721,6 @@ def sector_disaggregation_generalized(fbs, group_cols):
     # for loop in reverse order longest length naics minus 1 to 2
     # appends missing naics levels to df
     for i in range(4, 6):
-
-        # test
-        # i = 4
 
         if i == 4:
             sector_list = naics4
