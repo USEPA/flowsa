@@ -17,16 +17,18 @@ US Energy Information Administration, Commercial Buildings Energy Consumption Su
 ## EIA_CBECS_Water
 US Energy Information Administration, Commercial Buildings Energy Consumption Survey, Water
 
-## EIA_MECS_Energy
+## [EIA_MECS_Energy](https://www.eia.gov/consumption/manufacturing/)
 US Energy Information Administration, Manufacturing Energy Consumption Survey
 - Energy (Tables 2.1, 2.2, 3.1, 3.2)
 - National and regional (4 Census regions)
-- Flows in energy units (MJ) and physical units (varies), represents dupicate data
+- Flows in energy units (MJ) and physical units (varies), represents duplicate data
 - Fuel consumption Class: Energy
 - Nonfuel consumption (feedstock) Class: Other
 
-## EPA_NEI
+## [EPA_NEI](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei)
 Environmental Protection Agency National Emissions Inventory
+- Nonpoint, Nonroad, Onroad emissions
+- County level 
 
 ## NOAA_FisheryLandings
 National Oceanic and Atmospheric Administration, Fishery Landings
