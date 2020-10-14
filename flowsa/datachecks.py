@@ -546,35 +546,61 @@ def check_allocation_ratios(flow_alloc_df):
     return None
 
 
-# def check_for_differences_between_fba_load_and_fbs_output(df):
-#     """
-#     Function to compare the loaded flowbyactivity with the final flowbysector output, checking for data loss
-#     :param df:
-#     :return:
-#     """
-#
-#     # initial fba loaded and cleaned
-#     fba1_load = flow_subset_wsec.copy()
-#     # convert to kg
-#     fba1_load.loc[:, 'FlowAmount'] = np.where(fba1_load['FlowName'] == 'saline',
-#                                               fba1_load['FlowAmount'] * 3880000,
-#                                               fba1_load['FlowAmount'] * 3790000)
-#     fba1_load.loc[:, 'Unit'] = 'kg'
-#     fba1_load.loc[:, 'Location'] = US_FIPS
-#     fba1_agg = aggregator(fba1_load, fba_default_grouping_fields)
-#     compare1 = fba1_agg.copy().sort_values(['FlowAmount'], ascending=False)
-#
-#     # final fbs output
-#     fbs2_load = fbss.copy()
-#     #too many columns, agg
-#     group_cols = fbs_default_grouping_fields
-#     group_cols = [e for e in group_cols if e not in ('SectorProducedBy', 'SectorConsumedBy')]
-#     fbs2_load = aggregator(fbs2_load, group_cols)
-#     compare2 = fbs2_load.copy().sort_values(['FlowAmount'], ascending=False)
-#
-#     # merge compare 1 and compare 2
-#
-#     return None
+def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load):
+    """
+    Function to compare the loaded flowbyactivity with the final flowbysector output, checking for data loss
+    :param df:
+    :return:
+    """
+
+    # subset fba df
+    fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
+                    'Context', 'Location', 'LocationSystem', 'Year', 'FlowAmount']].drop_duplicates().reset_index(drop=True)
+    fba.loc[:, 'Location'] = US_FIPS
+    group_cols = ['Flowable', 'Unit', 'FlowType','Context', 'Location', 'LocationSystem', 'Year']
+    fba_agg = aggregator(fba, group_cols)
+    fba_agg.rename(columns={'FlowAmount': 'FBA_amount'}, inplace=True)
+
+    # subset fbs df
+    fbs = fbs_load[['Class', 'SectorSourceName', 'Flowable', 'Unit', 'FlowType', 'SectorProducedBy', 'SectorConsumedBy',
+                    'Context', 'Location', 'LocationSystem', 'Year', 'FlowAmount']].drop_duplicates().reset_index(drop=True)
+
+    fbs['SectorProducedBy'] = fbs['SectorProducedBy'].replace({'nan': ''})
+    fbs['SectorConsumedBy'] = fbs['SectorConsumedBy'].replace({'nan': ''})
+    fbs['ProducedLength'] = fbs['SectorProducedBy'].apply(lambda x: len(x))
+    fbs['ConsumedLength'] = fbs['SectorConsumedBy'].apply(lambda x: len(x))
+    fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
+    fbs.loc[:, 'Location'] = US_FIPS
+    group_cols = ['Flowable', 'Unit', 'FlowType', 'Context', 'Location', 'LocationSystem', 'Year', 'SectorLength']
+    fbs_agg = aggregator(fbs, group_cols)
+    fbs_agg.rename(columns={'FlowAmount': 'FBS_amount'}, inplace=True)
+
+    # merge compare 1 and compare 2
+    comparison = fba_agg.merge(fbs_agg, left_on=['Flowable', 'Unit', 'FlowType', 'Context', 'Location',
+                                                 'LocationSystem', 'Year'],
+                               right_on=['Flowable', 'Unit', 'FlowType', 'Context', 'Location',
+                                         'LocationSystem', 'Year'],
+                               how='left')
+    comparison['Ratio'] = comparison['FBS_amount'] / comparison['FBA_amount']
+
+    # reorder
+    comparison = comparison[['Flowable', 'Unit', 'FlowType', 'Context', 'Location', 'LocationSystem',
+                             'Year', 'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
+
+    ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
+    log.info('There are ' + str(ua_count1) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.95')
+    ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
+    log.info('There are ' + str(ua_count2) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.99')
+    oa_count1 = len(comparison[comparison['Ratio'] > 1])
+    log.info('There are ' + str(oa_count1) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.0')
+    oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
+    log.info('There are ' + str(oa_count2) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.01')
+
+    return None
 
 
 # def geoscale_summation(flowclass, years, datasource):

@@ -34,7 +34,8 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     sector_disaggregation, return_activity_from_scale
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
-    check_if_data_exists_for_same_geoscales, check_allocation_ratios
+    check_if_data_exists_for_same_geoscales, check_allocation_ratios,\
+    check_for_differences_between_fba_load_and_fbs_output
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
@@ -214,6 +215,7 @@ def main(method_name):
                         fba_allocation = filter_by_geoscale(fba_allocation, from_scale)
 
                     # assign sector to allocation dataset
+                    # todo: add sectorsourcename col value
                     log.info("Adding sectors to " + attr['allocation_source'])
                     fba_allocation_wsec = add_sectors_to_flowbyactivity(fba_allocation,
                                                                    sectorsourcename=method['target_sector_source'])
@@ -325,6 +327,9 @@ def main(method_name):
                 fbs_sec_agg = sector_aggregation(fbs_geo_agg, fbs_default_grouping_fields)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
                 fbs_agg = sector_disaggregation(fbs_sec_agg)
+
+                # compare flowbysector with flowbyactivity
+                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
