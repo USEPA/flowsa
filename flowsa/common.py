@@ -294,17 +294,12 @@ def read_stored_FIPS(year='2015'):
     :return:
     """
 
-    # comment out - going to use fips crosswalk to ensure all possible fips included in list
-    # FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
-
-    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype={"FIPS": str})
+    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
     # subset columns by specified year
     df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
     # rename columns
     cols = ['State', 'FIPS', 'County']
     df.columns = cols
-    # ensure that FIPS retain leading 0s
-    df.loc[:, 'FIPS'] = df['FIPS'].apply('{:0>5}'.format)
     # sort df
     df = df.sort_values(['FIPS']).reset_index(drop=True)
 
@@ -399,6 +394,7 @@ def get_state_FIPS(year='2015'):
     Filters FIPS df for state codes only
     :return: FIPS df with only state level records
     """
+
     fips = read_stored_FIPS(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
