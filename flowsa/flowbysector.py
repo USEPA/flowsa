@@ -226,7 +226,7 @@ def main(method_name):
 
                     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
                     if 'clean_allocation_fba_w_sec' in attr:
-                        log.info("Futher disaggregating sectors in " + attr['allocation_source'])
+                        log.info("Further disaggregating sectors in " + attr['allocation_source'])
                         fba_allocation_wsec = getattr(sys.modules[__name__],
                                                         attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr, method)
 
@@ -240,7 +240,7 @@ def main(method_name):
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
                         log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
-                        fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr)
+                        fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
 
                     # create flow allocation ratios for each activity
                     flow_alloc_list = []

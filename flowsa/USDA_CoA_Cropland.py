@@ -206,8 +206,6 @@ def modify_orchard_flowamounts(fba):
     :return:
     """
 
-    from flowsa.flowbyfunctions import fba_activity_fields
-
     fba.loc[fba['Activity'] == 'ORCHARDS', 'FlowAmount'] = fba['FlowAmount'] / 6
 
     return fba
@@ -228,7 +226,7 @@ def disaggregate_pastureland(fba_w_sector, attr, years_list):
     # subset the coa data so only pastureland
     p = fba_w_sector.loc[fba_w_sector['Sector'].apply(lambda x: x[0:3]) == '112'].reset_index(drop=True)
     # add temp loc column for state fips
-    p.loc[:, 'Location_tmp'] = p['Location'].apply(lambda x: x[0:2])
+    p = p.assign(Location_tmp=p['Location'].apply(lambda x: x[0:2]))
 
     # load usda coa cropland naics
     df_f = flowsa.getFlowByActivity(flowclass=['Land'],
@@ -242,13 +240,13 @@ def disaggregate_pastureland(fba_w_sector, attr, years_list):
     # drop rows with "&'
     df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
     # create sector column
-    df_f.loc[:, 'Sector'] = df_f['ActivityConsumedBy']
+    df_f = df_f.assign(Sector=df_f['ActivityConsumedBy'])
     # create proportional ratios
     df_f = allocate_by_sector(df_f, 'proportional')
     # drop naics = '11
     df_f = df_f[df_f['Sector'] != '11']
     # drop 000 in location
-    df_f.loc[:, 'Location'] = df_f['Location'].apply(lambda x: x[0:2])
+    df_f = df_f.assign(Location=df_f['Location'].apply(lambda x: x[0:2]))\
 
     # merge the coa pastureland data with land in farm data
     df = p.merge(df_f[['Sector', 'Location', 'FlowAmountRatio']], how='left',
@@ -287,7 +285,7 @@ def disaggregate_cropland(fba_w_sector, attr, years_list):
     # drop sectors < 4 digits
     crop = crop[crop['Sector'].apply(lambda x: len(x) > 3)].reset_index(drop=True)
     # create tmp location
-    crop.loc[:, 'Location_tmp'] = crop['Location'].apply(lambda x: x[0:2])
+    crop = crop.assign(Location_tmp=crop['Location'].apply(lambda x: x[0:2]))\
 
     # load the relevant state level harvested cropland by naics
     naics_load = flowsa.getFlowByActivity(flowclass=['Land'],
@@ -320,14 +318,13 @@ def disaggregate_cropland(fba_w_sector, attr, years_list):
     # create ratios
     naics4 = sector_ratios(naics3, 'Sector')
     # create temporary sector column to match the two dfs on
-    naics4.loc[:, 'Location_tmp'] = naics4['Location'].apply(lambda x: x[0:2])
+    naics4 = naics4.assign(Location_tmp=naics4['Location'].apply(lambda x: x[0:2]))
 
     # for loop through naics lengths to determine naics 4 and 5 digits to disaggregate
     for i in range(4, 6):
-
         # subset df to sectors with length = i and length = i + 1
         crop_subset = crop.loc[crop['Sector'].apply(lambda x: i+1 >= len(x) >= i)]
-        crop_subset.loc[:, 'Sector_tmp'] = crop_subset['Sector'].apply(lambda x: x[0:i])
+        crop_subset = crop_subset.assign(Sector_tmp=crop_subset['Sector'].apply(lambda x: x[0:i]))
         # if duplicates drop all rows
         df = crop_subset.drop_duplicates(subset=['Location', 'Sector_tmp'], keep=False).reset_index(drop=True)
         # drop sector temp column
@@ -336,7 +333,7 @@ def disaggregate_cropland(fba_w_sector, attr, years_list):
         df_subset = df.loc[df['Sector'].apply(lambda x: len(x) == i)]
         # subset the naics df where naics length is i + 1
         naics_subset = naics4.loc[naics4['Sector'].apply(lambda x: len(x) == i+1)].reset_index(drop=True)
-        naics_subset.loc[:, 'Sector_tmp'] = naics_subset['Sector'].apply(lambda x: x[0:i])
+        naics_subset = naics_subset.assign(Sector_tmp=naics_subset['Sector'].apply(lambda x: x[0:i]))
         # merge the two df based on locations
         df_subset = pd.merge(df_subset, naics_subset[['Sector', 'FlowAmountRatio', 'Sector_tmp', 'Location_tmp']],
                       how='left', left_on=['Sector', 'Location_tmp'], right_on=['Sector_tmp', 'Location_tmp'])
