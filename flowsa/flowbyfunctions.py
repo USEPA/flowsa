@@ -245,9 +245,6 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     group_cols = [e for e in group_cols if
                   e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
     group_cols.append('Sector')
-    # if there is an 'Activity' column, add to group cols
-    if 'Activity' in df_w_sectors:
-        group_cols.append('Activity')
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
     df = sector_aggregation_generalized(df_w_sectors, group_cols)
@@ -734,30 +731,20 @@ def sector_disaggregation_generalized(fbs, group_cols):
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk_w_nonnaics()
-    cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
 
-    # subset the naics 4 and 5 columsn
-    cw4 = cw_load[['NAICS_4', 'NAICS_5']]
-    cw4 = cw4.drop_duplicates(subset=['NAICS_4'], keep=False).reset_index(drop=True)
-    naics4 = cw4['NAICS_4'].values.tolist()
-
-    # subset the naics 5 and 6 columsn
-    cw5 = cw_load[['NAICS_5', 'NAICS_6']]
-    cw5 = cw5.drop_duplicates(subset=['NAICS_5'], keep=False).reset_index(drop=True)
-    naics5 = cw5['NAICS_5'].values.tolist()
-
-    # for loop in reverse order longest length naics minus 1 to 2
+    # for loop min length to 6 digits
+    length = min(fbs['Sector'].apply(lambda x: len(x)).unique())
     # appends missing naics levels to df
-    for i in range(4, 6):
+    for i in range(length, 6):
 
-        if i == 4:
-            sector_list = naics4
-            sector_merge = "NAICS_4"
-            sector_add = "NAICS_5"
-        elif i == 5:
-            sector_list = naics5
-            sector_merge = "NAICS_5"
-            sector_add = "NAICS_6"
+        sector_merge = 'NAICS_' + str(i)
+        sector_add = 'NAICS_' + str(i+1)
+
+        # subset the naics 4 and 5 columsn
+        cw = cw_load[[sector_merge, sector_add]]
+        # only keep the rows where there is only one value in sector_add for a value in sector_merge
+        cw = cw.drop_duplicates(subset=[sector_merge], keep=False).reset_index(drop=True)
+        sector_list = cw[sector_merge].values.tolist()
 
         # subset df to sectors with length = i and length = i + 1
         df_subset = fbs[fbs['Sector'].apply(lambda x: i + 1 >= len(x) >= i)]
