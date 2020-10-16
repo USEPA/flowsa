@@ -24,14 +24,14 @@ import sys
 import pandas as pd
 from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields,  \
     generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields, \
-    flowbysectoractivitysetspath
+    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, clean_df,subset_df_by_geoscale, \
-    sector_disaggregation, return_activity_from_scale
+    sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
     check_if_data_exists_for_same_geoscales, check_allocation_ratios,\
@@ -303,13 +303,13 @@ def main(method_name):
                     # drop columns
                     log.info("Cleaning up new flow by sector")
                     fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
-                                            'FlowAmountRatio', 'ActivityProducedBy', 'ActivityConsumedBy'])
+                                            'FlowAmountRatio'])
 
                 # drop rows where flowamount = 0 (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
 
                 # clean df
-                fbs = clean_df(fbs, flow_by_sector_fields, fbs_fill_na_dict)
+                fbs = clean_df(fbs, flow_by_sector_fields_w_activity, fbs_fill_na_dict)
 
                 # aggregate df geographically, if necessary
                 log.info("Aggregating flowbysector to " + method['target_geoscale'] + " level")
@@ -320,13 +320,13 @@ def main(method_name):
 
                 to_scale = method['target_geoscale']
 
-                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_default_grouping_fields)
+                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_grouping_fields_w_activities)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
-                fbs_sec_agg = sector_aggregation(fbs_geo_agg, fbs_default_grouping_fields)
+                fbs_sec_agg = sector_aggregation(fbs_geo_agg, fbs_grouping_fields_w_activities)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
-                fbs_agg = sector_disaggregation(fbs_sec_agg)
+                fbs_agg = sector_disaggregation(fbs_sec_agg, flow_by_sector_fields_w_activity)
 
                 # compare flowbysector with flowbyactivity
                 check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset)
@@ -350,6 +350,9 @@ def main(method_name):
 
                 # set source name
                 fbs_sector_subset_2.loc[:, 'SectorSourceName'] = method['target_sector_source']
+
+                # drop activity columns
+                del fbs_sector_subset_2['ActivityProducedBy'], fbs_sector_subset_2['ActivityConsumedBy']
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
                 fbs_list.append(fbs_sector_subset_2)
