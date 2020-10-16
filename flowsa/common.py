@@ -128,6 +128,7 @@ def load_sourceconfig(source):
         config = yaml.safe_load(f)
     return config
 
+
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'SourceName': [{'dtype': 'str'}, {'required': True}],
                            'FlowName': [{'dtype': 'str'}, {'required': True}],
@@ -173,6 +174,10 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'DataCollection': [{'dtype': 'float'}, {'required': True}]
                          }
+
+flow_by_sector_fields_w_activity = flow_by_sector_fields.copy()
+flow_by_sector_fields_w_activity.update({'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+                                         'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}]})
 
 flow_by_sector_collapsed_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                                    'Class': [{'dtype': 'str'}, {'required': True}],
