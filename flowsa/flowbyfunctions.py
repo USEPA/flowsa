@@ -21,6 +21,7 @@ fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
+fbs_grouping_fields_w_activities = fbs_default_grouping_fields + (['ActivityProducedBy', 'ActivityConsumedBy'])
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
 fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
 
@@ -150,6 +151,34 @@ def aggregator(df, groupbycols):
                              'None': None})
 
     return df_dfg
+
+
+def weighted_average(df, data_col, weight_col, by_col):
+    """
+    Generates a weighted average result based on passed columns
+    Parameters
+    ----------
+    df : DataFrame
+        Dataframe prior to aggregating from which a weighted average is calculated
+    data_col : str
+        Name of column to be averaged.
+    weight_col : str
+        Name of column to serve as the weighting.
+    by_col : list
+        List of columns on which the dataframe is aggregated.
+    Returns
+    -------
+    result : series
+        Series reflecting the weighted average values for the data_col,
+        at length consistent with the aggregated dataframe, to be reapplied
+        to the data_col in the aggregated dataframe.
+    """
+    df['_data_times_weight'] = df[data_col] * df[weight_col]
+    df['_weight_where_notnull'] = df[weight_col] * pd.notnull(df[data_col])
+    g = df.groupby(by_col)
+    result = g['_data_times_weight'].sum() / g['_weight_where_notnull'].sum()
+    del df['_data_times_weight'], df['_weight_where_notnull']
+    return result
 
 
 def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
@@ -608,7 +637,7 @@ def sector_aggregation(df, group_cols):
     return df
 
 
-def sector_disaggregation(sector_disaggregation):
+def sector_disaggregation(sector_disaggregation, groupby_dict):
     """
     function to disaggregate sectors if there is only one naics at a lower level
     works for lower than naics 4
@@ -616,7 +645,7 @@ def sector_disaggregation(sector_disaggregation):
     :return: A FBS df with missing naics5 and naics6
     """
 
-    sector_disaggregation = clean_df(sector_disaggregation, flow_by_sector_fields, fbs_fill_na_dict)
+    sector_disaggregation = clean_df(sector_disaggregation, groupby_dict, fbs_fill_na_dict)
 
     # ensure None values are not strings
     sector_disaggregation['SectorConsumedBy'] = sector_disaggregation['SectorConsumedBy'].replace({'None': ""})
