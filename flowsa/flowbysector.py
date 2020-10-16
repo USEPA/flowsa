@@ -255,8 +255,6 @@ def main(method_name):
                             flow_alloc_list.append(flow_alloc)
                     flow_allocation = pd.concat(flow_alloc_list)
 
-                    # remove duplicates in flow_allocation
-                    flow_allocation.drop_duplicates(subset=['Location', 'Sector', 'Activity'], inplace=True)
                     # check for issues with allocation ratios
                     check_allocation_ratios(flow_allocation, aset)
 
@@ -276,14 +274,14 @@ def main(method_name):
                     # merge fba df w/flow allocation dataset
                     log.info("Merge " + k + " and subset of " + attr['allocation_source'])
                     fbs = flow_subset_mapped.merge(
-                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio']],
-                        left_on=['Location', 'SectorProducedBy'],
-                        right_on=['Location', 'Sector'], how='left')
+                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'Activity']],
+                        left_on=['Location', 'SectorProducedBy', 'ActivityProducedBy'],
+                        right_on=['Location', 'Sector', 'Activity'], how='left')
 
                     fbs = fbs.merge(
-                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio']],
-                        left_on=['Location', 'SectorConsumedBy'],
-                        right_on=['Location', 'Sector'], how='left')
+                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'Activity']],
+                        left_on=['Location', 'SectorConsumedBy', 'ActivityConsumedBy'],
+                        right_on=['Location', 'Sector', 'Activity'], how='left')
 
                     # merge the flowamount columns
                     fbs.loc[:, 'FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
@@ -304,7 +302,7 @@ def main(method_name):
                     # drop columns
                     log.info("Cleaning up new flow by sector")
                     fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
-                                            'FlowAmountRatio'])
+                                            'FlowAmountRatio', 'Activity_x', 'Activity_y'])
 
                 # drop rows where flowamount = 0 (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
