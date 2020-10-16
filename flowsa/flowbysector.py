@@ -251,11 +251,12 @@ def main(method_name):
                             log.info("No data found to allocate " + n)
                         else:
                             flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
+                            flow_alloc = flow_alloc.assign(Activity=n)
                             flow_alloc_list.append(flow_alloc)
                     flow_allocation = pd.concat(flow_alloc_list)
 
                     # remove duplicates in flow_allocation
-                    flow_allocation.drop_duplicates(subset=['Location', 'Sector'], inplace=True)
+                    flow_allocation.drop_duplicates(subset=['Location', 'Sector', 'Activity'], inplace=True)
                     # check for issues with allocation ratios
                     check_allocation_ratios(flow_allocation, aset)
 
