@@ -535,38 +535,45 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     """
 
     # subset fba df
-    fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
-                    'Context', 'Location', 'LocationSystem', 'Year', 'FlowAmount']].drop_duplicates().reset_index(drop=True)
+    fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
+                    'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
+                    'FlowAmount']].drop_duplicates().reset_index(drop=True)
     fba.loc[:, 'Location'] = US_FIPS
-    group_cols = ['Flowable', 'Unit', 'FlowType','Context', 'Location', 'LocationSystem', 'Year']
+    group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
+                  'Location', 'LocationSystem', 'Year']
     fba_agg = aggregator(fba, group_cols)
     fba_agg.rename(columns={'FlowAmount': 'FBA_amount'}, inplace=True)
 
     # subset fbs df
     fbs = fbs_load[['Class', 'SectorSourceName', 'Flowable', 'Unit', 'FlowType', 'SectorProducedBy', 'SectorConsumedBy',
-                    'Context', 'Location', 'LocationSystem', 'Year', 'FlowAmount']].drop_duplicates().reset_index(drop=True)
+                    'ActivityProducedBy', 'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
+                    'FlowAmount']].drop_duplicates().reset_index(drop=True)
 
     fbs['SectorProducedBy'] = fbs['SectorProducedBy'].replace({'nan': ''})
     fbs['SectorConsumedBy'] = fbs['SectorConsumedBy'].replace({'nan': ''})
+    fbs['ActivityProducedBy'] = fbs['ActivityProducedBy'].replace({'nan': None})
+    fbs['ActivityConsumedBy'] = fbs['ActivityConsumedBy'].replace({'nan': None})
     fbs['ProducedLength'] = fbs['SectorProducedBy'].apply(lambda x: len(x))
     fbs['ConsumedLength'] = fbs['SectorConsumedBy'].apply(lambda x: len(x))
     fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
     fbs.loc[:, 'Location'] = US_FIPS
-    group_cols = ['Flowable', 'Unit', 'FlowType', 'Context', 'Location', 'LocationSystem', 'Year', 'SectorLength']
+    group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
+                  'Location', 'LocationSystem', 'Year', 'SectorLength']
     fbs_agg = aggregator(fbs, group_cols)
     fbs_agg.rename(columns={'FlowAmount': 'FBS_amount'}, inplace=True)
 
     # merge compare 1 and compare 2
-    comparison = fba_agg.merge(fbs_agg, left_on=['Flowable', 'Unit', 'FlowType', 'Context', 'Location',
-                                                 'LocationSystem', 'Year'],
-                               right_on=['Flowable', 'Unit', 'FlowType', 'Context', 'Location',
-                                         'LocationSystem', 'Year'],
+    comparison = fba_agg.merge(fbs_agg,
+                               left_on=['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
+                                        'FlowType', 'Context', 'Location','LocationSystem', 'Year'],
+                               right_on=['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
+                                         'FlowType', 'Context', 'Location', 'LocationSystem', 'Year'],
                                how='left')
     comparison['Ratio'] = comparison['FBS_amount'] / comparison['FBA_amount']
 
     # reorder
-    comparison = comparison[['Flowable', 'Unit', 'FlowType', 'Context', 'Location', 'LocationSystem',
-                             'Year', 'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
+    comparison = comparison[['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
+                             'Location', 'LocationSystem', 'Year', 'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
 
     ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
     log.info('There are ' + str(ua_count1) +
