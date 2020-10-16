@@ -245,6 +245,9 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     group_cols = [e for e in group_cols if
                   e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
     group_cols.append('Sector')
+    # if there is an 'Activity' column, add to group cols
+    if 'Activity' in df_w_sectors:
+        group_cols.append('Activity')
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
     df = sector_aggregation_generalized(df_w_sectors, group_cols)

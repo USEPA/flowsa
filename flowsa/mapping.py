@@ -165,6 +165,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
         fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
                                                    (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
                                                    ].reset_index(drop=True)
+    # drop columns
+    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
     return fba_allocation_subset
 

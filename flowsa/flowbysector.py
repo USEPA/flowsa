@@ -232,10 +232,16 @@ def main(method_name):
 
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
-                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
-
-                    # drop columns
-                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
+                    fba_alloc_list = []
+                    for n in names:
+                        log.info("Subset allocation dataframe by " + n)
+                        fba_alloc_subset = get_fba_allocation_subset(fba_allocation_wsec, k, [n])
+                        fba_alloc_subset = fba_alloc_subset.assign(Activity=n)
+                        if len(fba_alloc_subset) == 0:
+                            log.info("No data found to allocate " + n)
+                        else:
+                            fba_alloc_list.append(fba_alloc_subset)
+                    fba_allocation_subset = pd.concat(fba_alloc_list, ignore_index=True)
 
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
@@ -243,17 +249,8 @@ def main(method_name):
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
 
                     # create flow allocation ratios for each activity
-                    flow_alloc_list = []
-                    for n in names:
-                        log.info("Creating allocation ratios for " + n)
-                        fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
-                        if len(fba_allocation_subset_2)==0:
-                            log.info("No data found to allocate " + n)
-                        else:
-                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
-                            flow_alloc = flow_alloc.assign(Activity=n)
-                            flow_alloc_list.append(flow_alloc)
-                    flow_allocation = pd.concat(flow_alloc_list)
+                    log.info("Creating allocation ratios for " + aset)
+                    flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
 
                     # check for issues with allocation ratios
                     check_allocation_ratios(flow_allocation, aset)
