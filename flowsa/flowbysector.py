@@ -127,11 +127,11 @@ def main(method_name):
                 flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
 
             flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict)
-            
+
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
                 aset_names = pd.read_csv(flowbysectoractivitysetspath + v['activity_set_file'], dtype=str)
-           
+
             # create dictionary of allocation datasets for different activities
             activities = v['activity_sets']
             # subset activity data and allocate to sector
@@ -218,7 +218,7 @@ def main(method_name):
                     # todo: add sectorsourcename col value
                     log.info("Adding sectors to " + attr['allocation_source'])
                     fba_allocation_wsec = add_sectors_to_flowbyactivity(fba_allocation,
-                                                                   sectorsourcename=method['target_sector_source'])
+                                                                        sectorsourcename=method['target_sector_source'])
 
                     # generalize activity field names to enable link to main fba source
                     log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
@@ -228,20 +228,14 @@ def main(method_name):
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Further disaggregating sectors in " + attr['allocation_source'])
                         fba_allocation_wsec = getattr(sys.modules[__name__],
-                                                        attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr, method)
+                                                      attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr, method)
 
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
-                    fba_alloc_list = []
-                    for n in names:
-                        log.info("Subset allocation dataframe by " + n)
-                        fba_alloc_subset = get_fba_allocation_subset(fba_allocation_wsec, k, [n])
-                        fba_alloc_subset = fba_alloc_subset.assign(Activity=n)
-                        if len(fba_alloc_subset) == 0:
-                            log.info("No data found to allocate " + n)
-                        else:
-                            fba_alloc_list.append(fba_alloc_subset)
-                    fba_allocation_subset = pd.concat(fba_alloc_list, ignore_index=True)
+                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
+
+                    # drop columns
+                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
@@ -249,8 +243,17 @@ def main(method_name):
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
 
                     # create flow allocation ratios for each activity
-                    log.info("Creating allocation ratios for " + aset)
-                    flow_allocation = allocate_by_sector(fba_allocation_subset, attr['allocation_method'])
+                    flow_alloc_list = []
+                    for n in names:
+                        log.info("Creating allocation ratios for " + n)
+                        fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
+                        if len(fba_allocation_subset_2)==0:
+                            log.info("No data found to allocate " + n)
+                        else:
+                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
+                            flow_alloc = flow_alloc.assign(FBA_Activity=n)
+                            flow_alloc_list.append(flow_alloc)
+                    flow_allocation = pd.concat(flow_alloc_list)
 
                     # check for issues with allocation ratios
                     check_allocation_ratios(flow_allocation, aset)
@@ -271,14 +274,14 @@ def main(method_name):
                     # merge fba df w/flow allocation dataset
                     log.info("Merge " + k + " and subset of " + attr['allocation_source'])
                     fbs = flow_subset_mapped.merge(
-                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'Activity']],
+                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']],
                         left_on=['Location', 'SectorProducedBy', 'ActivityProducedBy'],
-                        right_on=['Location', 'Sector', 'Activity'], how='left')
+                        right_on=['Location', 'Sector', 'FBA_Activity'], how='left')
 
                     fbs = fbs.merge(
-                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'Activity']],
+                        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']],
                         left_on=['Location', 'SectorConsumedBy', 'ActivityConsumedBy'],
-                        right_on=['Location', 'Sector', 'Activity'], how='left')
+                        right_on=['Location', 'Sector', 'FBA_Activity'], how='left')
 
                     # merge the flowamount columns
                     fbs.loc[:, 'FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
@@ -299,7 +302,7 @@ def main(method_name):
                     # drop columns
                     log.info("Cleaning up new flow by sector")
                     fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y', 'FlowAmountRatio_y',
-                                            'FlowAmountRatio', 'Activity_x', 'Activity_y'])
+                                            'FlowAmountRatio', 'FBA_Activity_x', 'FBA_Activity_y'])
 
                 # drop rows where flowamount = 0 (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
@@ -337,7 +340,7 @@ def main(method_name):
                 fbs_2 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) &
                                     (fbs_agg[fbs_activity_fields[1]].isnull())].reset_index(drop=True)
                 fbs_3 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isnull()) &
-                                     (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
+                                    (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
 
                 # check if losing data by subsetting at specified sector length

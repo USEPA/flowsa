@@ -499,9 +499,9 @@ def check_allocation_ratios(flow_alloc_df, activity_set):
     # create column of sector lengths
     flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
     # subset df
-    flow_alloc_df2 = flow_alloc_df[['Activity', 'Location', 'slength', 'FlowAmountRatio']]
+    flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'slength', 'FlowAmountRatio']]
     # sum the flow amount ratios by location and sector length
-    flow_alloc_df3 = flow_alloc_df2.groupby(['Activity', 'Location', 'slength'],
+    flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'slength'],
                                             as_index=False)[["FlowAmountRatio"]].agg("sum")
     # not interested in sector length > 6
     flow_alloc_df3 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
