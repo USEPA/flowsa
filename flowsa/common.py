@@ -33,7 +33,7 @@ outputpath = modulepath + 'output/'
 # outputpath = (modulepath + 'output/').replace('flowsa/flowsa/', 'flowsa/tests/')
 
 sourceconfigpath = datapath + 'sourceconfig/'
-flowbyactivitymethodpath = datapath + 'flowbysectormethods/'
+flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
@@ -128,6 +128,7 @@ def load_sourceconfig(source):
         config = yaml.safe_load(f)
     return config
 
+
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'SourceName': [{'dtype': 'str'}, {'required': True}],
                            'FlowName': [{'dtype': 'str'}, {'required': True}],
@@ -173,6 +174,10 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'DataCollection': [{'dtype': 'float'}, {'required': True}]
                          }
+
+flow_by_sector_fields_w_activity = flow_by_sector_fields.copy()
+flow_by_sector_fields_w_activity.update({'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+                                         'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}]})
 
 flow_by_sector_collapsed_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                                    'Class': [{'dtype': 'str'}, {'required': True}],
@@ -294,17 +299,12 @@ def read_stored_FIPS(year='2015'):
     :return:
     """
 
-    # comment out - going to use fips crosswalk to ensure all possible fips included in list
-    # FIPS_df = pd.read_csv(datapath + "FIPS.csv", header=0, dtype={"FIPS": str})
-
-    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype={"FIPS": str})
+    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
     # subset columns by specified year
     df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
     # rename columns
     cols = ['State', 'FIPS', 'County']
     df.columns = cols
-    # ensure that FIPS retain leading 0s
-    df.loc[:, 'FIPS'] = df['FIPS'].apply('{:0>5}'.format)
     # sort df
     df = df.sort_values(['FIPS']).reset_index(drop=True)
 
@@ -399,6 +399,7 @@ def get_state_FIPS(year='2015'):
     Filters FIPS df for state codes only
     :return: FIPS df with only state level records
     """
+
     fips = read_stored_FIPS(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]

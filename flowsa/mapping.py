@@ -52,7 +52,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # Create mapping df that's just the sectors at first
             mapping = sectors.drop_duplicates()
             # Add the sector twice as activities so mapping is identical
-            mapping.loc[:, 'Activity'] = sectors[sector_source_name]
+            mapping = mapping.assign(Activity=sectors[sector_source_name])
             mapping = mapping.rename(columns={sector_source_name: "Sector"})
             # add columns so can run expand_naics_list_fxn
             # if sector-like_activities = True, missing columns, so add
@@ -126,7 +126,7 @@ def expand_naics_list(df, sectorsourcename):
         dig = len(str(i))
         n = sectors.loc[sectors[sectorsourcename].apply(lambda x: x[0:dig]) == i]
         if len(n) != 0:
-            n.loc[:, 'Sector'] = i
+            n = n.assign(Sector=i)
             naics_df = naics_df.append(n)
 
     # merge df to retain activityname/sectortype info

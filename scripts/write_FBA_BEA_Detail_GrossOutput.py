@@ -1,11 +1,9 @@
-# write_FBA_USGS_WU_Coef.py (flowsa)
+# write_FBA_BEA_Detail_GrossOutput.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
 """
-Animal Water Use coefficients data obtained from: USGS Publication (Lovelace, 2005)
-
-Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
+Generation of BEA Gross Output data as FBA
 """
 
 from flowsa.common import *
@@ -13,8 +11,7 @@ import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
 from flowsa.flowbyfunctions import add_missing_flow_by_fields
 
-
-# 2012--2018 fisheries data at state level
+year = '2017'
 csv_load = datapath + "BEA_GDP_GrossOutput_IO.csv"
 
 
@@ -29,9 +26,10 @@ if __name__ == '__main__':
                  var_name="Year",
                  value_name="FlowAmount")
 
-    df = df[df['Year'] == '2011']
+    df = df[df['Year'] == year]
     # hardcode data
     df["Class"] = "Money"
+    df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
     df['FlowName'] = 'Gross Output'
     df["SourceName"] = "BEA_GDP"
@@ -41,5 +39,5 @@ if __name__ == '__main__':
 
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
-    parquet_name = 'BEA_GDP_GrossOutput_IO_2011'
+    parquet_name = 'BEA_GDP_GrossOutput_'+year
     store_flowbyactivity(flow_df, parquet_name)

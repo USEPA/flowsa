@@ -384,7 +384,7 @@ activity_set_1,2505040090,Fuel Storage
 activity_set_1,2505040120,Fuel Storage
 activity_set_1,2505040150,Fuel Storage
 activity_set_1,2505040180,Fuel Storage
-activity_set_1,2301040000,Industrial processes
+activity_set_7,2301040000,Industrial processes
 activity_set_1,2301050001,Industrial processes
 activity_set_1,2301050002,Industrial processes
 activity_set_1,2302070001,Industrial processes
@@ -547,3 +547,45 @@ activity_set_7,2399010000,Industrial processes
 activity_set_7,2420000000,Industrial processes
 activity_set_7,2420000055,Industrial processes
 activity_set_7,2420000999,Industrial processes
+activity_set_7,2103001000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103002000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103004000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103004001,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103004002,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103005000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103006000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103007000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103008000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103010000,Fuel Combustion - Institutional/Commercial
+activity_set_7,2103011000,Fuel Combustion - Institutional/Commercial
+activity_set_1,2601000000,Waste Treatment
+activity_set_1,2601010000,Waste Treatment
+activity_set_1,2601020000,Waste Treatment
+activity_set_1,2610030000,Waste Treatment
+activity_set_1,2620000000,Waste Treatment
+activity_set_1,2620010000,Waste Treatment
+activity_set_1,2620020000,Waste Treatment
+activity_set_1,2620030000,Waste Treatment
+activity_set_1,2620030001,Waste Treatment
+activity_set_1,2630010000,Waste Treatment
+activity_set_1,2630020000,Waste Treatment
+activity_set_1,2630020001,Waste Treatment
+activity_set_1,2630020010,Waste Treatment
+activity_set_1,2630030000,Waste Treatment
+activity_set_1,2630050000,Waste Treatment
+activity_set_1,2635000000,Waste Treatment
+activity_set_1,2640000000,Waste Treatment
+activity_set_1,2650000000,Waste Treatment
+activity_set_1,2650000001,Waste Treatment
+activity_set_1,2650000002,Waste Treatment
+activity_set_1,2650000003,Waste Treatment
+activity_set_1,2650000004,Waste Treatment
+activity_set_1,2650000005,Waste Treatment
+activity_set_1,2660000000,Waste Treatment
+activity_set_1,2670001000,Waste Treatment
+activity_set_1,2670002000,Waste Treatment
+activity_set_1,2670003000,Waste Treatment
+activity_set_1,2680001000,Waste Treatment
+activity_set_1,2680002000,Waste Treatment
+activity_set_1,2680003000,Waste Treatment
+activity_set_1,2680003010,Waste Treatment

@@ -21,6 +21,7 @@ fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
+fbs_grouping_fields_w_activities = fbs_default_grouping_fields + (['ActivityProducedBy', 'ActivityConsumedBy'])
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
 fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
 
@@ -118,6 +119,7 @@ def aggregator(df, groupbycols):
     :param groupbycols: Either flowbyactivity or flowbysector columns
     :return:
     """
+
     # weighted average function
     try:
         wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
@@ -143,11 +145,40 @@ def aggregator(df, groupbycols):
     df = df[df['FlowAmount'] != 0]
 
     # aggregate df by groupby columns, either summing or creating weighted averages
-    df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
+    df_dfg = df.groupby(groupbycols, as_index=False, dropna=False).agg(agg_funx)
 
-    df_dfg = df_dfg.replace({np.nan: None})
+    df_dfg = df_dfg.replace({np.nan: None,
+                             'None': None})
 
     return df_dfg
+
+
+def weighted_average(df, data_col, weight_col, by_col):
+    """
+    Generates a weighted average result based on passed columns
+    Parameters
+    ----------
+    df : DataFrame
+        Dataframe prior to aggregating from which a weighted average is calculated
+    data_col : str
+        Name of column to be averaged.
+    weight_col : str
+        Name of column to serve as the weighting.
+    by_col : list
+        List of columns on which the dataframe is aggregated.
+    Returns
+    -------
+    result : series
+        Series reflecting the weighted average values for the data_col,
+        at length consistent with the aggregated dataframe, to be reapplied
+        to the data_col in the aggregated dataframe.
+    """
+    df['_data_times_weight'] = df[data_col] * df[weight_col]
+    df['_weight_where_notnull'] = df[weight_col] * pd.notnull(df[data_col])
+    g = df.groupby(by_col)
+    result = g['_data_times_weight'].sum() / g['_weight_where_notnull'].sum()
+    del df['_data_times_weight'], df['_weight_where_notnull']
+    return result
 
 
 def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
@@ -236,8 +267,8 @@ def proportional_allocation_by_location(df, sectorcolumn):
     """
 
     denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == 2)]
-    denom_df.loc[:, 'Denominator'] = denom_df['FlowAmount'].groupby(
-        denom_df['Location']).transform('sum')
+    denom_df = denom_df.assign(Denominator=denom_df['FlowAmount'].groupby(
+        denom_df['Location']).transform('sum'))
     denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
     # merge the denominator column with fba_w_sector df
     allocation_df = df.merge(denom_df_2, how='left')
@@ -315,7 +346,7 @@ def sector_ratios(df, sectorcolumn):
         # subset df to sectors with length = i and length = i + 1
         df_subset = df.loc[df[sectorcolumn].apply(lambda x: len(x) == i)]
         # create column for sector grouping
-        df_subset.loc[:, 'Sector_group'] = df_subset[sectorcolumn].apply(lambda x: x[0:i-1])
+        df_subset = df_subset.assign(Sector_group=df_subset[sectorcolumn].apply(lambda x: x[0:i-1]))
         # subset df to create denominator
         df_denom = df_subset[['FlowAmount', 'Location', 'Sector_group']]
         df_denom = df_denom.groupby(['Location', 'Sector_group'], as_index=False)[["FlowAmount"]].agg("sum")
@@ -332,7 +363,7 @@ def sector_ratios(df, sectorcolumn):
     return df_w_ratios
 
 
-def allocation_helper(df_w_sector, method, attr):
+def allocation_helper(df_w_sector, method, attr, v):
     """
     Used when two df required to create allocation ratio
     :param df_w_sector:
@@ -359,13 +390,16 @@ def allocation_helper(df_w_sector, method, attr):
     # drop rows with flowamount = 0
     helper_allocation = helper_allocation[helper_allocation['FlowAmount'] != 0]
 
-    # filter geoscale
-    helper_allocation = filter_by_geoscale(helper_allocation, attr['helper_from_scale'])
-
-    # agg data if necessary
-    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'national'):
-        helper_allocation = agg_by_geoscale(helper_allocation, 'state', 'national', fba_default_grouping_fields)
-
+    # agg data if necessary or filter
+    # determine to scale
+    to_scale = min(fips_number_key[attr['allocation_from_scale']], fips_number_key[v['geoscale_to_use']])
+    if fips_number_key[attr['helper_from_scale']] > to_scale:
+        helper_allocation = agg_by_geoscale(helper_allocation,
+                                            attr['helper_from_scale'],
+                                            list(fips_number_key.keys())[list(fips_number_key.values()).index(to_scale)],
+                                            fba_default_grouping_fields)
+    else:
+        helper_allocation = filter_by_geoscale(helper_allocation, attr['helper_from_scale'])
 
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
@@ -397,18 +431,15 @@ def allocation_helper(df_w_sector, method, attr):
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
     merge_columns = [e for e in ['Location','Sector', 'HelperFlow', 'FlowAmountRatio'] if e in
                      helper_allocation.columns.values.tolist()]
+
     # merge allocation df with helper df based on sectors, depending on geo scales of dfs
-    if attr['helper_from_scale'] == 'national':
-        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
-    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'state'):
-        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
         helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(lambda x: x[0:2])
         df_w_sector.loc[:, 'Location_tmp'] = df_w_sector['Location'].apply(lambda x: x[0:2])
         merge_columns.append('Location_tmp')
         modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
-    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'national'):
+    else:
         modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns], how='left')
 
     # modify flow amounts using helper data
@@ -606,7 +637,7 @@ def sector_aggregation(df, group_cols):
     return df
 
 
-def sector_disaggregation(sector_disaggregation):
+def sector_disaggregation(sector_disaggregation, groupby_dict):
     """
     function to disaggregate sectors if there is only one naics at a lower level
     works for lower than naics 4
@@ -614,11 +645,7 @@ def sector_disaggregation(sector_disaggregation):
     :return: A FBS df with missing naics5 and naics6
     """
 
-    #todo: need to modify so works with either a fBA with sectors or a FBS because called on in a fxn \
-    # that accepts either
-
-
-    sector_disaggregation = clean_df(sector_disaggregation, flow_by_sector_fields, fbs_fill_na_dict)
+    sector_disaggregation = clean_df(sector_disaggregation, groupby_dict, fbs_fill_na_dict)
 
     # ensure None values are not strings
     sector_disaggregation['SectorConsumedBy'] = sector_disaggregation['SectorConsumedBy'].replace({'None': ""})
@@ -655,8 +682,8 @@ def sector_disaggregation(sector_disaggregation):
         df_subset = sector_disaggregation.loc[sector_disaggregation[fbs_activity_fields[0]].apply(lambda x: i + 1 >= len(x) >= i) |
                                               sector_disaggregation[fbs_activity_fields[1]].apply(lambda x: i + 1 >= len(x) >= i)]
         # create new columns that are length i
-        df_subset.loc[:, 'SectorProduced_tmp'] = df_subset[fbs_activity_fields[0]].apply(lambda x: x[0:i])
-        df_subset.loc[:, 'SectorConsumed_tmp'] = df_subset[fbs_activity_fields[1]].apply(lambda x: x[0:i])
+        df_subset = df_subset.assign(SectorProduced_tmp=df_subset[fbs_activity_fields[0]].apply(lambda x: x[0:i]))
+        df_subset = df_subset.assign(SectorConsumed_tmp=df_subset[fbs_activity_fields[1]].apply(lambda x: x[0:i]))
         # subset the df to the rows where the tmp sector columns are in naics list
         df_subset_1 = df_subset.loc[(df_subset['SectorProduced_tmp'].isin(sector_list)) &
                                     (df_subset['SectorConsumed_tmp'] == "")]
@@ -702,43 +729,27 @@ def sector_disaggregation_generalized(fbs, group_cols):
     :return: A FBS df with missing naics5 and naics6
     """
 
-    # test
-    # fbs = naics2.copy()
-
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk_w_nonnaics()
-    cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
 
-    # subset the naics 4 and 5 columsn
-    cw4 = cw_load[['NAICS_4', 'NAICS_5']]
-    cw4 = cw4.drop_duplicates(subset=['NAICS_4'], keep=False).reset_index(drop=True)
-    naics4 = cw4['NAICS_4'].values.tolist()
-
-    # subset the naics 5 and 6 columsn
-    cw5 = cw_load[['NAICS_5', 'NAICS_6']]
-    cw5 = cw5.drop_duplicates(subset=['NAICS_5'], keep=False).reset_index(drop=True)
-    naics5 = cw5['NAICS_5'].values.tolist()
-
-    # for loop in reverse order longest length naics minus 1 to 2
+    # for loop min length to 6 digits
+    length = min(fbs['Sector'].apply(lambda x: len(x)).unique())
     # appends missing naics levels to df
-    for i in range(4, 6):
+    for i in range(length, 6):
 
-        # test
-        # i = 4
+        sector_merge = 'NAICS_' + str(i)
+        sector_add = 'NAICS_' + str(i+1)
 
-        if i == 4:
-            sector_list = naics4
-            sector_merge = "NAICS_4"
-            sector_add = "NAICS_5"
-        elif i == 5:
-            sector_list = naics5
-            sector_merge = "NAICS_5"
-            sector_add = "NAICS_6"
+        # subset the naics 4 and 5 columsn
+        cw = cw_load[[sector_merge, sector_add]]
+        # only keep the rows where there is only one value in sector_add for a value in sector_merge
+        cw = cw.drop_duplicates(subset=[sector_merge], keep=False).reset_index(drop=True)
+        sector_list = cw[sector_merge].values.tolist()
 
         # subset df to sectors with length = i and length = i + 1
         df_subset = fbs[fbs['Sector'].apply(lambda x: i + 1 >= len(x) >= i)]
         # create new columns that are length i
-        df_subset.loc[:, 'Sector_tmp'] = df_subset['Sector'].apply(lambda x: x[0:i])
+        df_subset = df_subset.assign(Sector_tmp=df_subset['Sector'].apply(lambda x: x[0:i]))
         # subset the df to the rows where the tmp sector columns are in naics list
         df_subset = df_subset.loc[df_subset['Sector_tmp'].isin(sector_list)]
         # drop all rows with duplicate temp values, as a less aggregated naics exists

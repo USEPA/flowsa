@@ -11,7 +11,7 @@ from flowsa.flowbyfunctions import fba_fill_na_dict, harmonize_units, fba_activi
     fba_default_grouping_fields, fbs_default_grouping_fields, aggregator, sector_aggregation, fbs_fill_na_dict, \
     fbs_activity_fields, clean_df, create_geoscale_list, sector_disaggregation
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk_w_nonnaics, \
-    load_sector_crosswalk, sector_source_name, log, fips_number_key
+    load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath
 from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
 
 
@@ -489,7 +489,7 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     return df_w_lost_data
 
 
-def check_allocation_ratios(flow_alloc_df):
+def check_allocation_ratios(flow_alloc_df, activity_set):
     """
     Check for issues with the flow allocation ratios
     :param df:
@@ -499,82 +499,103 @@ def check_allocation_ratios(flow_alloc_df):
     # create column of sector lengths
     flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
     # subset df
-    flow_alloc_df2 = flow_alloc_df[['Location', 'slength', 'FlowAmountRatio']]
+    flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'slength', 'FlowAmountRatio']]
     # sum the flow amount ratios by location and sector length
-    flow_alloc_df3 = flow_alloc_df2.groupby(['Location', 'slength'], as_index=False)[["FlowAmountRatio"]].agg("sum")
-
-    # issue warning for under allocated sectors
-    # todo: Determine what level of data loss to report
-    # todo: Combine output into single file
-    # todo: Make data available to user
-    ua = flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 1]
+    flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'slength'],
+                                            as_index=False)[["FlowAmountRatio"]].agg("sum")
     # not interested in sector length > 6
-    ua = ua[ua['slength'] <= 6]
+    flow_alloc_df3 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
 
-    if len(ua) > 0:
-        ua_count = ua['FlowAmountRatio'].count()
-        log.warning('There are ' + str(ua_count) +
-                    ' instances where the allocation ratio for a location and sector length is < 1')
-    else:
-        log.info('There are no cases of under allocation for a location and sector length')
+    ua_count1 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 1])
+    log.info('There are ' + str(ua_count1) +
+             ' instances where the allocation ratio for a location and sector length is < 1')
+    ua_count2 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 0.99])
+    log.info('There are ' + str(ua_count2) +
+             ' instances where the allocation ratio for a location and sector length is < 0.99')
+    ua_count3 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1])
+    log.info('There are ' + str(ua_count3) +
+             ' instances where the allocation ratio for a location and sector length is > 1')
+    ua_count4 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1.01])
+    log.info('There are ' + str(ua_count4) +
+             ' instances where the allocation ratio for a location and sector length is > 1.01')
 
-    ua_99 = ua[ua['FlowAmountRatio'] < 0.99]
-    if len(ua_99) > 0:
-        ua_99_count = ua_99['FlowAmountRatio'].count()
-        log.warning('There are ' + str(ua_99_count) +
-                    ' instances where the allocation ratio for a location and sector length is < 0.99')
-    else:
-        log.info('There are no cases where the allocation ratio for a location and sector length is < 0.99')
-
-    # issue warning for over allocated sectors
-    oa = flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1]
-    if len(oa) > 0:
-        oa_count = oa['FlowAmountRatio'].count()
-        log.warning('There are ' + str(oa_count) +
-                    ' instances where the allocation ratio for a location and sector length is > 1')
-    else:
-        log.info('There are no cases of over allocation for a location and sector length')
-
-    oa2 = oa[oa['FlowAmountRatio'] > 1.01]
-    if len(oa2) > 0:
-        oa2_count = oa2['FlowAmountRatio'].count()
-        log.warning('There are ' + str(oa2_count) +
-                    ' instances where the allocation ratio for a location and sector length is > 1.01')
-    else:
-        log.info('There are no cases where the allocation ratio for a location and sector length is > 1.01')
+    # save csv to output folder
+    log.info('Save the summary table of flow allocation ratios for each sector length for ' +
+             activity_set + ' in output folder')
+    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + "allocation_ratios_" +
+                          activity_set + ".csv", index=False)
 
     return None
 
 
-# def check_for_differences_between_fba_load_and_fbs_output(df):
-#     """
-#     Function to compare the loaded flowbyactivity with the final flowbysector output, checking for data loss
-#     :param df:
-#     :return:
-#     """
-#
-#     # initial fba loaded and cleaned
-#     fba1_load = flow_subset_wsec.copy()
-#     # convert to kg
-#     fba1_load.loc[:, 'FlowAmount'] = np.where(fba1_load['FlowName'] == 'saline',
-#                                               fba1_load['FlowAmount'] * 3880000,
-#                                               fba1_load['FlowAmount'] * 3790000)
-#     fba1_load.loc[:, 'Unit'] = 'kg'
-#     fba1_load.loc[:, 'Location'] = US_FIPS
-#     fba1_agg = aggregator(fba1_load, fba_default_grouping_fields)
-#     compare1 = fba1_agg.copy().sort_values(['FlowAmount'], ascending=False)
-#
-#     # final fbs output
-#     fbs2_load = fbss.copy()
-#     #too many columns, agg
-#     group_cols = fbs_default_grouping_fields
-#     group_cols = [e for e in group_cols if e not in ('SectorProducedBy', 'SectorConsumedBy')]
-#     fbs2_load = aggregator(fbs2_load, group_cols)
-#     compare2 = fbs2_load.copy().sort_values(['FlowAmount'], ascending=False)
-#
-#     # merge compare 1 and compare 2
-#
-#     return None
+def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, activity_set):
+    """
+    Function to compare the loaded flowbyactivity with the final flowbysector output, checking for data loss
+    :param df:
+    :return:
+    """
+
+    # subset fba df
+    fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
+                    'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
+                    'FlowAmount']].drop_duplicates().reset_index(drop=True)
+    fba.loc[:, 'Location'] = US_FIPS
+    group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
+                  'Location', 'LocationSystem', 'Year']
+    fba_agg = aggregator(fba, group_cols)
+    fba_agg.rename(columns={'FlowAmount': 'FBA_amount'}, inplace=True)
+
+    # subset fbs df
+    fbs = fbs_load[['Class', 'SectorSourceName', 'Flowable', 'Unit', 'FlowType', 'SectorProducedBy', 'SectorConsumedBy',
+                    'ActivityProducedBy', 'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
+                    'FlowAmount']].drop_duplicates().reset_index(drop=True)
+
+    fbs['SectorProducedBy'] = fbs['SectorProducedBy'].replace({'nan': ''})
+    fbs['SectorConsumedBy'] = fbs['SectorConsumedBy'].replace({'nan': ''})
+    fbs['ActivityProducedBy'] = fbs['ActivityProducedBy'].replace({'nan': None})
+    fbs['ActivityConsumedBy'] = fbs['ActivityConsumedBy'].replace({'nan': None})
+    fbs['ProducedLength'] = fbs['SectorProducedBy'].apply(lambda x: len(x))
+    fbs['ConsumedLength'] = fbs['SectorConsumedBy'].apply(lambda x: len(x))
+    fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
+    fbs.loc[:, 'Location'] = US_FIPS
+    group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
+                  'Location', 'LocationSystem', 'Year', 'SectorLength']
+    fbs_agg = aggregator(fbs, group_cols)
+    fbs_agg.rename(columns={'FlowAmount': 'FBS_amount'}, inplace=True)
+
+    # merge compare 1 and compare 2
+    comparison = fba_agg.merge(fbs_agg,
+                               left_on=['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
+                                        'FlowType', 'Context', 'Location','LocationSystem', 'Year'],
+                               right_on=['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
+                                         'FlowType', 'Context', 'Location', 'LocationSystem', 'Year'],
+                               how='left')
+    comparison['Ratio'] = comparison['FBS_amount'] / comparison['FBA_amount']
+
+    # reorder
+    comparison = comparison[['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
+                             'Location', 'LocationSystem', 'Year', 'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
+
+    ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
+    log.info('There are ' + str(ua_count1) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.95')
+    ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
+    log.info('There are ' + str(ua_count2) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.99')
+    oa_count1 = len(comparison[comparison['Ratio'] > 1])
+    log.info('There are ' + str(oa_count1) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.0')
+    oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
+    log.info('There are ' + str(oa_count2) +
+             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.01')
+
+    # save csv to output folder
+    log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
+             activity_set + ' in output folder')
+    comparison.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + "FBA_load_to_FBS_comparision_" +
+                      activity_set + ".csv", index=False)
+
+    return None
 
 
 # def geoscale_summation(flowclass, years, datasource):

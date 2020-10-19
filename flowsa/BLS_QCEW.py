@@ -215,7 +215,7 @@ def estimate_suppressed_data(df):
         df_y = df.loc[df['Sector'].apply(lambda x: len(x) == i + 1)]
 
         # create temp sector columns in df y, that are i digits in length
-        df_y.loc[:, 's_tmp'] = df_y['Sector'].apply(lambda x: x[0:i])
+        df_y = df_y.assign(s_tmp=df_y['Sector'].apply(lambda x: x[0:i]))
 
         # create list of location and temp activity combos that contain a 0
         missing_sectors_df = df_y[df_y['FlowAmount'] == 0]
@@ -236,7 +236,7 @@ def estimate_suppressed_data(df):
             # subset further so only keep rows of 0 value
             suppressed_sectors_sub = suppressed_sectors[suppressed_sectors['FlowAmount'] == 0]
             # add count
-            suppressed_sectors_sub['sector_count'] = suppressed_sectors_sub.groupby(['Location', 's_tmp'])['s_tmp'].transform('count')
+            suppressed_sectors_sub = suppressed_sectors_sub.assign(sector_count=suppressed_sectors_sub.groupby(['Location', 's_tmp'])['s_tmp'].transform('count'))
 
             # merge suppressed sector subset with df x
             df_m = pd.merge(df_x,

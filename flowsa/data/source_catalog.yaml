@@ -4,7 +4,7 @@ Blackhurst_IO:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
-BEA_GDP_GrossOutput_IO:
+BEA_GDP:
   class:
     - Money
   sector-like_activities: False
