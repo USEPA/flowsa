@@ -184,81 +184,8 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :param method:
     :return:
     """
+    from flowsa.flowbyfunctions import estimate_suppressed_data
 
     df = estimate_suppressed_data(df_w_sec)
 
     return df
-
-
-def estimate_suppressed_data(df):
-    """
-    Estimate data suppressions
-    :param df:
-    :return:
-    """
-
-    # exclude nonsectors
-    df = df.replace({'nan': '',
-                     'None': ''})
-    df = df.replace({None: '',
-                     np.nan: ''})
-
-    # can be changed to expand range - takes a long time and at national level, only missing suppresed \
-    # 6 digit for industrial
-    estimate_range = [5]
-    for i in estimate_range:
-
-        # create df of i length
-        df_x = df.loc[df['Sector'].apply(lambda x: len(x) == i)]
-
-        # create df of i + 1 length
-        df_y = df.loc[df['Sector'].apply(lambda x: len(x) == i + 1)]
-
-        # create temp sector columns in df y, that are i digits in length
-        df_y = df_y.assign(s_tmp=df_y['Sector'].apply(lambda x: x[0:i]))
-
-        # create list of location and temp activity combos that contain a 0
-        missing_sectors_df = df_y[df_y['FlowAmount'] == 0]
-        missing_sectors_list = missing_sectors_df[['Location', 's_tmp']].drop_duplicates().values.tolist()
-        # subset the y df
-        if len(missing_sectors_list) != 0:
-            # new df of sectors that start with missing sectors. drop last digit of the sector and sum flows
-            # set conditions
-            suppressed_list = []
-            for q, r, in missing_sectors_list:
-                c1 = df_y['Location'] == q
-                c2 = df_y['s_tmp'] == r
-                # subset data
-                suppressed_list.append(df_y.loc[c1 & c2])
-            suppressed_sectors = pd.concat(suppressed_list, sort=False)
-            # add column of existing allocated data for length of i
-            suppressed_sectors['alloc_flow'] = suppressed_sectors.groupby(['Location', 's_tmp'])['FlowAmount'].transform('sum')
-            # subset further so only keep rows of 0 value
-            suppressed_sectors_sub = suppressed_sectors[suppressed_sectors['FlowAmount'] == 0]
-            # add count
-            suppressed_sectors_sub = suppressed_sectors_sub.assign(sector_count=suppressed_sectors_sub.groupby(['Location', 's_tmp'])['s_tmp'].transform('count'))
-
-            # merge suppressed sector subset with df x
-            df_m = pd.merge(df_x,
-                            suppressed_sectors_sub[['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
-                                                    'Year', 'Sector', 's_tmp', 'alloc_flow', 'sector_count']],
-                            how='right',
-                            left_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
-                                     'Year', 'Sector'],
-                            right_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
-                                      'Year', 's_tmp'])
-            # calculate estimated flows by subtracting the flow amount already allocated from total flow of \
-            # sector one level up and divide by number of sectors with suppresed data
-            df_m.loc[:, 'FlowAmount'] = (df_m['FlowAmount'] - df_m['alloc_flow']) / df_m['sector_count']
-            # only keep the suppressed sector subset activity columns
-            df_m2 = df_m.drop(columns = ['Sector_x', 's_tmp', 'alloc_flow', 'sector_count'])
-            df_m2 = df_m2.rename(columns={'Sector_y': 'Sector'})
-
-            # drop the existing rows with suppressed data and append the new estimates from fba df
-            modified_df = pd.merge(df, suppressed_sectors_sub, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
-            df = pd.concat([modified_df, df_m2], ignore_index=True, sort=True)
-
-    df_w_estimated_data = df.replace({'': None})
-
-    return df_w_estimated_data
-

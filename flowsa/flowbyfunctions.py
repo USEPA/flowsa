@@ -645,6 +645,8 @@ def sector_disaggregation(sector_disaggregation, groupby_dict):
     :return: A FBS df with missing naics5 and naics6
     """
 
+    # todo: modify by adding count column - only want to keep the 1:1 parent:child relationship
+
     sector_disaggregation = clean_df(sector_disaggregation, groupby_dict, fbs_fill_na_dict)
 
     # ensure None values are not strings
@@ -653,30 +655,21 @@ def sector_disaggregation(sector_disaggregation, groupby_dict):
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk_w_nonnaics()
-    cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
 
-    # subset the naics 4 and 5 columsn
-    cw4 = cw_load[['NAICS_4', 'NAICS_5']]
-    cw4 = cw4.drop_duplicates(subset=['NAICS_4'], keep=False).reset_index(drop=True)
-    naics4 = cw4['NAICS_4'].values.tolist()
-
-    # subset the naics 5 and 6 columsn
-    cw5 = cw_load[['NAICS_5', 'NAICS_6']]
-    cw5 = cw5.drop_duplicates(subset=['NAICS_5'], keep=False).reset_index(drop=True)
-    naics5 = cw5['NAICS_5'].values.tolist()
-
-    # for loop in reverse order longest length naics minus 1 to 2
+    # for loop min length to 6 digits
+    length = sector_disaggregation[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
+        lambda x: x.str.len()).min().min()
     # appends missing naics levels to df
-    for i in range(4, 6):
+    for i in range(length, 6):
 
-        if i == 4:
-            sector_list = naics4
-            sector_merge = "NAICS_4"
-            sector_add = "NAICS_5"
-        elif i == 5:
-            sector_list = naics5
-            sector_merge = "NAICS_5"
-            sector_add = "NAICS_6"
+        sector_merge = 'NAICS_' + str(i)
+        sector_add = 'NAICS_' + str(i+1)
+
+        # subset the df by naics length
+        cw = cw_load[[sector_merge, sector_add]]
+        # only keep the rows where there is only one value in sector_add for a value in sector_merge
+        cw = cw.drop_duplicates(subset=[sector_merge], keep=False).reset_index(drop=True)
+        sector_list = cw[sector_merge].values.tolist()
 
         # subset df to sectors with length = i and length = i + 1
         df_subset = sector_disaggregation.loc[sector_disaggregation[fbs_activity_fields[0]].apply(lambda x: i + 1 >= len(x) >= i) |
@@ -696,6 +689,7 @@ def sector_disaggregation(sector_disaggregation, groupby_dict):
         # drop all rows with duplicate temp values, as a less aggregated naics exists
         df_subset = df_subset.drop_duplicates(subset=['Flowable', 'Context', 'Location', 'SectorProduced_tmp',
                                                       'SectorConsumed_tmp'], keep=False).reset_index(drop=True)
+
         # merge the naics cw
         new_naics = pd.merge(df_subset, cw[[sector_merge, sector_add]],
                              how='left', left_on=['SectorProduced_tmp'], right_on=[sector_merge])
@@ -740,7 +734,7 @@ def sector_disaggregation_generalized(fbs, group_cols):
         sector_merge = 'NAICS_' + str(i)
         sector_add = 'NAICS_' + str(i+1)
 
-        # subset the naics 4 and 5 columsn
+        # subset the df by naics length
         cw = cw_load[[sector_merge, sector_add]]
         # only keep the rows where there is only one value in sector_add for a value in sector_merge
         cw = cw.drop_duplicates(subset=[sector_merge], keep=False).reset_index(drop=True)
@@ -760,13 +754,25 @@ def sector_disaggregation_generalized(fbs, group_cols):
         # merge the naics cw
         new_naics = pd.merge(df_subset, cw[[sector_merge, sector_add]],
                              how='left', left_on=['Sector_tmp'], right_on=[sector_merge])
-        new_naics = new_naics.rename(columns={sector_add: "ST"})
-        new_naics = new_naics.drop(columns=[sector_merge])
+        # add column counting the number of child naics associated with a parent
+        new_naics = new_naics.assign(sector_count=new_naics.groupby(['Location', 'Sector_tmp'])['Sector_tmp'].transform('count'))
+        # only keep the rows where the count is 1
+        new_naics2 = new_naics[new_naics['sector_count'] == 1]
+        del new_naics2['sector_count']
+        # issue warning if rows with more than one child naics that get dropped - will need method of estimation
+        missing_naics = new_naics[new_naics['sector_count'] > 1]
+        if len(missing_naics) > 0:
+            missing_naics = missing_naics[['Location', 'Sector']].values.tolist()
+            log.warning('There is data at sector length ' + str(i) + ' that is lost at sector length ' + str(i+1) +
+                        ' for ' + str(missing_naics))
+        new_naics2 = new_naics2.rename(columns={sector_add: "ST"})
+        new_naics2 = new_naics2.drop(columns=[sector_merge])
         # drop columns and rename new sector columns
-        new_naics = new_naics.drop(columns=["Sector", "Sector_tmp"])
-        new_naics = new_naics.rename(columns={"ST": "Sector"})
+        new_naics2 = new_naics2.drop(columns=["Sector", "Sector_tmp"])
+        new_naics2 = new_naics2.rename(columns={"ST": "Sector"})
         # append new naics to df
-        fbs = pd.concat([fbs, new_naics], sort=True)
+        if len(new_naics2) > 1:
+            fbs = pd.concat([fbs, new_naics2], sort=True)
 
     return fbs
 
@@ -958,3 +964,76 @@ def dataframe_difference(df1, df2, which=None):
         diff_df = comparison_df[comparison_df['_merge'] == which]
 
     return diff_df
+
+
+def estimate_suppressed_data(df):
+    """
+    Estimate data suppressions
+    :param df:
+    :return:
+    """
+
+    # exclude nonsectors
+    df = df.replace({'nan': '',
+                     'None': ''})
+    df = df.replace({None: '',
+                     np.nan: ''})
+
+    # can be changed to expand range - takes a long time and at national level, only missing suppresed \
+    # 6 digit for industrial
+    estimate_range = [5]
+    for i in estimate_range:
+
+        # create df of i length
+        df_x = df.loc[df['Sector'].apply(lambda x: len(x) == i)]
+
+        # create df of i + 1 length
+        df_y = df.loc[df['Sector'].apply(lambda x: len(x) == i + 1)]
+
+        # create temp sector columns in df y, that are i digits in length
+        df_y = df_y.assign(s_tmp=df_y['Sector'].apply(lambda x: x[0:i]))
+
+        # create list of location and temp activity combos that contain a 0
+        missing_sectors_df = df_y[df_y['FlowAmount'] == 0]
+        missing_sectors_list = missing_sectors_df[['Location', 's_tmp']].drop_duplicates().values.tolist()
+        # subset the y df
+        if len(missing_sectors_list) != 0:
+            # new df of sectors that start with missing sectors. drop last digit of the sector and sum flows
+            # set conditions
+            suppressed_list = []
+            for q, r, in missing_sectors_list:
+                c1 = df_y['Location'] == q
+                c2 = df_y['s_tmp'] == r
+                # subset data
+                suppressed_list.append(df_y.loc[c1 & c2])
+            suppressed_sectors = pd.concat(suppressed_list, sort=False)
+            # add column of existing allocated data for length of i
+            suppressed_sectors['alloc_flow'] = suppressed_sectors.groupby(['Location', 's_tmp'])['FlowAmount'].transform('sum')
+            # subset further so only keep rows of 0 value
+            suppressed_sectors_sub = suppressed_sectors[suppressed_sectors['FlowAmount'] == 0]
+            # add count
+            suppressed_sectors_sub = suppressed_sectors_sub.assign(sector_count=suppressed_sectors_sub.groupby(['Location', 's_tmp'])['s_tmp'].transform('count'))
+
+            # merge suppressed sector subset with df x
+            df_m = pd.merge(df_x,
+                            suppressed_sectors_sub[['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
+                                                    'Year', 'Sector', 's_tmp', 'alloc_flow', 'sector_count']],
+                            how='right',
+                            left_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
+                                     'Year', 'Sector'],
+                            right_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
+                                      'Year', 's_tmp'])
+            # calculate estimated flows by subtracting the flow amount already allocated from total flow of \
+            # sector one level up and divide by number of sectors with suppresed data
+            df_m.loc[:, 'FlowAmount'] = (df_m['FlowAmount'] - df_m['alloc_flow']) / df_m['sector_count']
+            # only keep the suppressed sector subset activity columns
+            df_m2 = df_m.drop(columns = ['Sector_x', 's_tmp', 'alloc_flow', 'sector_count'])
+            df_m2 = df_m2.rename(columns={'Sector_y': 'Sector'})
+
+            # drop the existing rows with suppressed data and append the new estimates from fba df
+            modified_df = pd.merge(df, suppressed_sectors_sub, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
+            df = pd.concat([modified_df, df_m2], ignore_index=True, sort=True)
+
+    df_w_estimated_data = df.replace({'': None})
+
+    return df_w_estimated_data
