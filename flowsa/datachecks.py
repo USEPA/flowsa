@@ -489,7 +489,7 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     return df_w_lost_data
 
 
-def check_allocation_ratios(flow_alloc_df, activity_set):
+def check_allocation_ratios(flow_alloc_df, activity_set, source_name):
     """
     Check for issues with the flow allocation ratios
     :param df:
@@ -522,13 +522,13 @@ def check_allocation_ratios(flow_alloc_df, activity_set):
     # save csv to output folder
     log.info('Save the summary table of flow allocation ratios for each sector length for ' +
              activity_set + ' in output folder')
-    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + "allocation_ratios_" +
+    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name + "_allocation_ratios_" +
                           activity_set + ".csv", index=False)
 
     return None
 
 
-def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, activity_set):
+def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, activity_set, source_name):
     """
     Function to compare the loaded flowbyactivity with the final flowbysector output, checking for data loss
     :param df:
@@ -592,7 +592,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     # save csv to output folder
     log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
              activity_set + ' in output folder')
-    comparison.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + "FBA_load_to_FBS_comparision_" +
+    comparison.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name + "_FBA_load_to_FBS_comparision_" +
                       activity_set + ".csv", index=False)
 
     return None
