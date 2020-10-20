@@ -256,7 +256,7 @@ def main(method_name):
                     flow_allocation = pd.concat(flow_alloc_list)
 
                     # check for issues with allocation ratios
-                    check_allocation_ratios(flow_allocation, aset)
+                    check_allocation_ratios(flow_allocation, aset, k)
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
@@ -328,7 +328,7 @@ def main(method_name):
                 fbs_agg = sector_disaggregation(fbs_sec_agg, flow_by_sector_fields_w_activity)
 
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset)
+                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset, k)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
