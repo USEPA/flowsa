@@ -808,13 +808,16 @@ def collapse_fbs_sectors(fbs):
 
     # ensure correct datatypes and order
     fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
+    # ensure datatypes are correct
+    fbs = fbs.replace({'nan': None,
+                       'None': None})
 
     # collapse the FBS sector columns into one column based on FlowType
     fbs.loc[fbs["FlowType"] == 'TECHNOSPHERE_FLOW', 'Sector'] = fbs["SectorConsumedBy"]
     fbs.loc[fbs["FlowType"] == 'WASTE_FLOW', 'Sector'] = fbs["SectorProducedBy"]
-    fbs.loc[(fbs["FlowType"] == 'WASTE_FLOW') & (fbs['SectorProducedBy'] == 'None'), 'Sector'] = fbs["SectorConsumedBy"]
-    fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorProducedBy'] == 'None'), 'Sector'] = fbs["SectorConsumedBy"]
-    fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'] == 'None'), 'Sector'] = fbs["SectorProducedBy"]
+    fbs.loc[(fbs["FlowType"] == 'WASTE_FLOW') & (fbs['SectorProducedBy'].isnull()), 'Sector'] = fbs["SectorConsumedBy"]
+    fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorProducedBy'].isnull()), 'Sector'] = fbs["SectorConsumedBy"]
+    fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'].isnull()), 'Sector'] = fbs["SectorProducedBy"]
     fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') & (fbs['SectorConsumedBy'].isin(['F010', 'F0100', 'F01000'])) &
             (fbs['SectorProducedBy'].isin(['22', '221', '2213', '22131', '221310'])), 'Sector'] = fbs["SectorConsumedBy"]
 
