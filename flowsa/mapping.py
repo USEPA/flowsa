@@ -169,17 +169,18 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     return fba_allocation_subset
 
 
-def map_elementary_flows(fba, from_fba_source):
+def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
     """
     Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
     :param fba: df flow-by-activity or flow-by-sector with 'Flowable', 'Context', and 'Unit' fields
     :param from_fba_source: str Source name of fba list to look for mappings
+    :param keep_unmapped_rows: False if want unmapped rows dropped, True if want to retain
     :return:
     """
 
     from fedelemflowlist import get_flowmapping
 
-    # rename flow name to flowable - remove this once elementary flows are mapped
+    # rename columns to match FBS formatting
     fba = fba.rename(columns={"FlowName": 'Flowable',
                               "Compartment": "Context"})
 
@@ -199,11 +200,17 @@ def map_elementary_flows(fba, from_fba_source):
     else:
         flowmapping = flowmapping[mapping_fields]
 
+        # define merge type based on keeping or dropping unmapped data
+        if keep_unmapped_rows is False:
+            merge_type = 'inner'
+        else:
+            merge_type = 'left'
+
         # merge fba with flows
         fba_mapped_df = pd.merge(fba, flowmapping,
                                  left_on=["Flowable", "Context"],
                                  right_on=["SourceFlowName", "SourceFlowContext"],
-                                 how="left")
+                                 how=merge_type)
         fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] = fba_mapped_df["TargetFlowName"]
         fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] = fba_mapped_df["TargetFlowContext"]
         fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] = fba_mapped_df["TargetUnit"]
@@ -222,14 +229,3 @@ def get_sector_list(sector_level):
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list
-
-
-# def add_non_naics_sectors(sector_list, sector_level):
-#
-#     # load non-NAICS sectors used with NAICS
-#     household = load_household_sector_codes()
-#     household = household.loc[household['NAICS_Level_to_Use_For'] == sector_level]
-#     # add household sector to sector list
-#     sector_list.extend(household['Code'].tolist())
-#
-#     return sector_list
