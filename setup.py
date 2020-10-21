@@ -10,7 +10,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List',
-        'pandas>=1.0',
+        'pandas>=1.1.0',
         'pip>=9',
         'setuptools>=41',
         'pyyaml>=5.3',
