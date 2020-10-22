@@ -135,204 +135,6 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
             return new_geoscale_to_use
 
 
-# def check_if_data_exists_at_geoscale(df, provided_from_scale):
-#     """
-#     Check if an activity or a sector exists at the specified geoscale
-#     :param df: flowbyactivity dataframe
-#     :param activitynames: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-#     :param geoscale: national, state, or county
-#     :return:
-#     """
-#     from flowsa.flowbyfunctions import unique_activity_names, dataframe_difference
-#
-#     # test
-#     # df = flows_subset.copy()
-#     # provided_from_scale = v['geoscale_to_use']
-#
-#     # determine the unique combinations of activityproduced/consumedby
-#     unique_activities = unique_activity_names(df)
-#     # filter by geoscale
-#     fips = create_geoscale_list(df, provided_from_scale)
-#     df_sub = df[df['Location'].isin(fips)]
-#     # determine unique activities after subsetting by geoscale
-#     unique_activities_sub = unique_activity_names(df_sub)
-#
-#     # return df of the difference between unique_activities and unique_activities2
-#     df_missing = dataframe_difference(unique_activities, unique_activities_sub, which='left_only')
-#     # return df of the similarities between unique_activities and unique_activities2
-#     df_existing = dataframe_difference(unique_activities, unique_activities_sub, which='both')
-#     df_existing = df_existing.drop(columns='_merge')
-#     df_existing['activity_from_scale'] = provided_from_scale
-#
-#     # for loop through geoscales until find data for each activity combo
-#     if provided_from_scale == 'national':
-#         geoscales = ['state', 'county']
-#     elif provided_from_scale == 'state':
-#         geoscales = ['county']
-#     elif provided_from_scale == 'county':
-#         log.info('No data - skipping')
-#
-#     if len(df_missing) > 0:
-#         for i in geoscales:
-#             # test
-#             # i = 'state'
-#             # filter by geoscale
-#             fips_i = create_geoscale_list(df, i)
-#             df_i = df[df['Location'].isin(fips_i)]
-#
-#             # determine unique activities after subsetting by geoscale
-#             unique_activities_i = unique_activity_names(df_i)
-#
-#             # return df of the difference between unique_activities subset and unique_activities for geoscale
-#             df_missing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='right_only')
-#             df_missing_i = df_missing_i.drop(columns='_merge')
-#             df_missing_i['activity_from_scale'] = i
-#             # return df of the similarities between unique_activities and unique_activities2
-#             df_existing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='both')
-#
-#             # append unique activities and df with defined activity_from_scale
-#             unique_activities_sub = unique_activities_sub.append(df_missing_i[[fba_activity_fields[0],
-#                                                                                fba_activity_fields[1]]])
-#             df_existing = df_existing.append(df_missing_i)
-#             df_missing = dataframe_difference(df_missing[[fba_activity_fields[0],fba_activity_fields[1]]],
-#                                               df_existing_i[[fba_activity_fields[0],fba_activity_fields[1]]],
-#                                               which=None)
-#
-#     return df_existing
-
-
-
-    # from flowsa.flowbyfunctions import unique_activity_names, dataframe_difference
-    #
-    # # test
-    # df = flows_subset.copy()
-    # geoscale = v['geoscale_to_use']
-    #
-    # # determine the unique combinations of activityproduced/consumedby
-    # unique_activities = unique_activity_names(df)
-    #
-    # # filter by geoscale
-    # fips = create_geoscale_list(df, geoscale)
-    # df2 = df[df['Location'].isin(fips)]
-    #
-    # # determine unique activities after subsetting by geoscale
-    # unique_activities2 = unique_activity_names(df2)
-    #
-    # # return df of the difference between unique_activities and unique_activities2
-    # df_diff = dataframe_difference(unique_activities, unique_activities2, which='left_only')
-    # # create a list of the activities lost by subsetting df
-    # rl_list = df_diff[[fba_activity_fields[0], fba_activity_fields[1]]].drop_duplicates().values.tolist()
-    # # add column stating activity combos do not exist
-    # df_diff['exists'] = 'No'
-    #
-    # # return df of the similarities between unique_activities and unique_activities2
-    # df_sim = dataframe_difference(unique_activities, unique_activities2, which='both')
-    # # create a list of the activities lost by subsetting df
-    # sim_list = df_sim[[fba_activity_fields[0], fba_activity_fields[1]]].drop_duplicates().values.tolist()
-    # # add column stating activity combos do not exist
-    # df_sim['exists'] = 'Yes'
-    #
-    # if (len(df_diff) == 0) & (len(df_sim) != 0):
-    #     log.info("Flows found for activities {}".format(' '.join(map(str, sim_list))) + ' at the ' + geoscale + " scale.")
-    # else:
-    #     log.info("No flows found for activities {}".format(' '.join(map(str, rl_list))) +
-    #              ' at the ' + geoscale + " scale.")
-    #     if len(df_sim) != 0:
-    #         log.info("Flows found for activities {}".format(' '.join(map(str, sim_list))) + ' at the ' + geoscale + " scale.")
-    #
-    # # concat the df of differences and similarities and turn into a dictionary
-    # df_comb = pd.concat([df_diff, df_sim])
-    # df_comb = df_comb.drop(columns='_merge')
-
-    # return df_comb
-
-
-# def check_if_data_exists_at_less_aggregated_geoscale(df_to_check, activiites_to_check, provided_from_scale):
-#     """
-#     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
-#
-#     :param df: Either flowbyactivity or flowbysector dataframe
-#     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-#     :param geoscale: national, state, or county
-#     :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
-#     :return:
-#     """
-#     # test
-#     # df_to_check = df.copy()
-#     # activiites_to_check = missing_data.copy()
-#
-#     # ensure only have the activity combos want to check
-#     df = pd.merge(activiites_to_check, df_to_check)
-#
-#     # fips_number_key
-#     # for loop through geoscales until find data for each activity combo
-#     if provided_from_scale == 'national':
-#         geoscales = ['state', 'county']
-#     elif provided_from_scale == 'state':
-#         geoscales = ['county']
-#     else:
-#         log.info("No data - skipping")
-#
-#     for i in geoscales:
-#         fips = create_geoscale_list(df, i)
-#         df = df[df['Location'].isin(fips)]
-#         if len(df) == 0:
-#             log.info("No flows found at the" + i + " geoscale.")
-#             fips = create_geoscale_list(df, 'county')
-#             df2 = df[df['Location'].isin(fips)]
-#             if len(df2) == 0:
-#                 log.info("No flows found at the " + i + " scale.")
-#             else:
-#                 log.info("Flowbyactivity data exists at the " + i + " scale.")
-#                 new_geoscale_to_use = 'county'
-#                 return new_geoscale_to_use
-
-
-
-
-# def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname):
-#     """
-#     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
-#
-#     :param df: Either flowbyactivity or flowbysector dataframe
-#     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-#     :param geoscale: national, state, or county
-#     :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
-#     :return:
-#     """
-#
-#     if geoscale == 'national':
-#         df = df[(df[fba_activity_fields[0]] == activityname) | (
-#              df[fba_activity_fields[1]] == activityname)]
-#         fips = create_geoscale_list(df, 'state')
-#         df = df[df['Location'].isin(fips)]
-#         if len(df) == 0:
-#             log.info("No flows found for " + activityname + "  at the state scale.")
-#             fips = create_geoscale_list(df, 'county')
-#             df = df[df['Location'].isin(fips)]
-#             if len(df) == 0:
-#                 log.info("No flows found for " + activityname + "  at the county scale.")
-#             else:
-#                 log.info("Flowbyactivity data exists for " + activityname + " at the county level")
-#                 new_geoscale_to_use = 'county'
-#                 return new_geoscale_to_use
-#         else:
-#             log.info("Flowbyactivity data exists for " + activityname + " at the state level")
-#             new_geoscale_to_use = 'state'
-#             return new_geoscale_to_use
-#     if geoscale == 'state':
-#         df = df[(df[fba_activity_fields[0]] == activityname) | (
-#              df[fba_activity_fields[1]] == activityname)]
-#         fips = create_geoscale_list(df, 'county')
-#         df = df[df['Location'].isin(fips)]
-#         if len(df) == 0:
-#             log.info("No flows found for " + activityname + "  at the county scale.")
-#         else:
-#             log.info("Flowbyactivity data exists for " + activityname + " at the county level")
-#             new_geoscale_to_use = 'county'
-#             return new_geoscale_to_use
-
-
 def check_if_location_systems_match(df1, df2):
     """
     Check if two dataframes share the same location system
@@ -504,7 +306,7 @@ def check_allocation_ratios(flow_alloc_df, activity_set, source_name):
     flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'slength'],
                                             as_index=False)[["FlowAmountRatio"]].agg("sum")
     # not interested in sector length > 6
-    flow_alloc_df3 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
+    # flow_alloc_df3 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
 
     ua_count1 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 1])
     log.info('There are ' + str(ua_count1) +
@@ -534,6 +336,12 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     :param df:
     :return:
     """
+
+    # test
+    # fba_load = flow_subset_mapped.copy()
+    # fbs_load = fbs_agg.copy()
+    # activity_set = aset
+    # source_name = k
 
     # subset fba df
     fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
@@ -576,6 +384,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     comparison = comparison[['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
                              'Location', 'LocationSystem', 'Year', 'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
 
+    # todo: address the duplicated rows/data that occur for non-naics household sector length
+
     ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
     log.info('There are ' + str(ua_count1) +
              ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.95')
@@ -591,11 +401,211 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
 
     # save csv to output folder
     log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
-             activity_set + ' in output folder')
-    comparison.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name + "_FBA_load_to_FBS_comparision_" +
-                      activity_set + ".csv", index=False)
+              activity_set + ' in output folder')
+    comparison.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name +
+                                "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
 
     return None
+
+
+
+# def check_if_data_exists_at_geoscale(df, provided_from_scale):
+#     """
+#     Check if an activity or a sector exists at the specified geoscale
+#     :param df: flowbyactivity dataframe
+#     :param activitynames: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
+#     :param geoscale: national, state, or county
+#     :return:
+#     """
+#     from flowsa.flowbyfunctions import unique_activity_names, dataframe_difference
+#
+#     # test
+#     # df = flows_subset.copy()
+#     # provided_from_scale = v['geoscale_to_use']
+#
+#     # determine the unique combinations of activityproduced/consumedby
+#     unique_activities = unique_activity_names(df)
+#     # filter by geoscale
+#     fips = create_geoscale_list(df, provided_from_scale)
+#     df_sub = df[df['Location'].isin(fips)]
+#     # determine unique activities after subsetting by geoscale
+#     unique_activities_sub = unique_activity_names(df_sub)
+#
+#     # return df of the difference between unique_activities and unique_activities2
+#     df_missing = dataframe_difference(unique_activities, unique_activities_sub, which='left_only')
+#     # return df of the similarities between unique_activities and unique_activities2
+#     df_existing = dataframe_difference(unique_activities, unique_activities_sub, which='both')
+#     df_existing = df_existing.drop(columns='_merge')
+#     df_existing['activity_from_scale'] = provided_from_scale
+#
+#     # for loop through geoscales until find data for each activity combo
+#     if provided_from_scale == 'national':
+#         geoscales = ['state', 'county']
+#     elif provided_from_scale == 'state':
+#         geoscales = ['county']
+#     elif provided_from_scale == 'county':
+#         log.info('No data - skipping')
+#
+#     if len(df_missing) > 0:
+#         for i in geoscales:
+#             # test
+#             # i = 'state'
+#             # filter by geoscale
+#             fips_i = create_geoscale_list(df, i)
+#             df_i = df[df['Location'].isin(fips_i)]
+#
+#             # determine unique activities after subsetting by geoscale
+#             unique_activities_i = unique_activity_names(df_i)
+#
+#             # return df of the difference between unique_activities subset and unique_activities for geoscale
+#             df_missing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='right_only')
+#             df_missing_i = df_missing_i.drop(columns='_merge')
+#             df_missing_i['activity_from_scale'] = i
+#             # return df of the similarities between unique_activities and unique_activities2
+#             df_existing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='both')
+#
+#             # append unique activities and df with defined activity_from_scale
+#             unique_activities_sub = unique_activities_sub.append(df_missing_i[[fba_activity_fields[0],
+#                                                                                fba_activity_fields[1]]])
+#             df_existing = df_existing.append(df_missing_i)
+#             df_missing = dataframe_difference(df_missing[[fba_activity_fields[0],fba_activity_fields[1]]],
+#                                               df_existing_i[[fba_activity_fields[0],fba_activity_fields[1]]],
+#                                               which=None)
+#
+#     return df_existing
+
+
+
+# from flowsa.flowbyfunctions import unique_activity_names, dataframe_difference
+#
+# # test
+# df = flows_subset.copy()
+# geoscale = v['geoscale_to_use']
+#
+# # determine the unique combinations of activityproduced/consumedby
+# unique_activities = unique_activity_names(df)
+#
+# # filter by geoscale
+# fips = create_geoscale_list(df, geoscale)
+# df2 = df[df['Location'].isin(fips)]
+#
+# # determine unique activities after subsetting by geoscale
+# unique_activities2 = unique_activity_names(df2)
+#
+# # return df of the difference between unique_activities and unique_activities2
+# df_diff = dataframe_difference(unique_activities, unique_activities2, which='left_only')
+# # create a list of the activities lost by subsetting df
+# rl_list = df_diff[[fba_activity_fields[0], fba_activity_fields[1]]].drop_duplicates().values.tolist()
+# # add column stating activity combos do not exist
+# df_diff['exists'] = 'No'
+#
+# # return df of the similarities between unique_activities and unique_activities2
+# df_sim = dataframe_difference(unique_activities, unique_activities2, which='both')
+# # create a list of the activities lost by subsetting df
+# sim_list = df_sim[[fba_activity_fields[0], fba_activity_fields[1]]].drop_duplicates().values.tolist()
+# # add column stating activity combos do not exist
+# df_sim['exists'] = 'Yes'
+#
+# if (len(df_diff) == 0) & (len(df_sim) != 0):
+#     log.info("Flows found for activities {}".format(' '.join(map(str, sim_list))) + ' at the ' + geoscale + " scale.")
+# else:
+#     log.info("No flows found for activities {}".format(' '.join(map(str, rl_list))) +
+#              ' at the ' + geoscale + " scale.")
+#     if len(df_sim) != 0:
+#         log.info("Flows found for activities {}".format(' '.join(map(str, sim_list))) + ' at the ' + geoscale + " scale.")
+#
+# # concat the df of differences and similarities and turn into a dictionary
+# df_comb = pd.concat([df_diff, df_sim])
+# df_comb = df_comb.drop(columns='_merge')
+
+# return df_comb
+
+
+# def check_if_data_exists_at_less_aggregated_geoscale(df_to_check, activiites_to_check, provided_from_scale):
+#     """
+#     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
+#
+#     :param df: Either flowbyactivity or flowbysector dataframe
+#     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
+#     :param geoscale: national, state, or county
+#     :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
+#     :return:
+#     """
+#     # test
+#     # df_to_check = df.copy()
+#     # activiites_to_check = missing_data.copy()
+#
+#     # ensure only have the activity combos want to check
+#     df = pd.merge(activiites_to_check, df_to_check)
+#
+#     # fips_number_key
+#     # for loop through geoscales until find data for each activity combo
+#     if provided_from_scale == 'national':
+#         geoscales = ['state', 'county']
+#     elif provided_from_scale == 'state':
+#         geoscales = ['county']
+#     else:
+#         log.info("No data - skipping")
+#
+#     for i in geoscales:
+#         fips = create_geoscale_list(df, i)
+#         df = df[df['Location'].isin(fips)]
+#         if len(df) == 0:
+#             log.info("No flows found at the" + i + " geoscale.")
+#             fips = create_geoscale_list(df, 'county')
+#             df2 = df[df['Location'].isin(fips)]
+#             if len(df2) == 0:
+#                 log.info("No flows found at the " + i + " scale.")
+#             else:
+#                 log.info("Flowbyactivity data exists at the " + i + " scale.")
+#                 new_geoscale_to_use = 'county'
+#                 return new_geoscale_to_use
+
+
+
+
+# def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname):
+#     """
+#     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
+#
+#     :param df: Either flowbyactivity or flowbysector dataframe
+#     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
+#     :param geoscale: national, state, or county
+#     :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
+#     :return:
+#     """
+#
+#     if geoscale == 'national':
+#         df = df[(df[fba_activity_fields[0]] == activityname) | (
+#              df[fba_activity_fields[1]] == activityname)]
+#         fips = create_geoscale_list(df, 'state')
+#         df = df[df['Location'].isin(fips)]
+#         if len(df) == 0:
+#             log.info("No flows found for " + activityname + "  at the state scale.")
+#             fips = create_geoscale_list(df, 'county')
+#             df = df[df['Location'].isin(fips)]
+#             if len(df) == 0:
+#                 log.info("No flows found for " + activityname + "  at the county scale.")
+#             else:
+#                 log.info("Flowbyactivity data exists for " + activityname + " at the county level")
+#                 new_geoscale_to_use = 'county'
+#                 return new_geoscale_to_use
+#         else:
+#             log.info("Flowbyactivity data exists for " + activityname + " at the state level")
+#             new_geoscale_to_use = 'state'
+#             return new_geoscale_to_use
+#     if geoscale == 'state':
+#         df = df[(df[fba_activity_fields[0]] == activityname) | (
+#              df[fba_activity_fields[1]] == activityname)]
+#         fips = create_geoscale_list(df, 'county')
+#         df = df[df['Location'].isin(fips)]
+#         if len(df) == 0:
+#             log.info("No flows found for " + activityname + "  at the county scale.")
+#         else:
+#             log.info("Flowbyactivity data exists for " + activityname + " at the county level")
+#             new_geoscale_to_use = 'county'
+#             return new_geoscale_to_use
+
 
 
 # def geoscale_summation(flowclass, years, datasource):
