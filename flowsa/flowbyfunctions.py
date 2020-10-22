@@ -111,6 +111,34 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     return fba_agg
 
 
+def weighted_average(df, data_col, weight_col, by_col):
+    """
+    Generates a weighted average result based on passed columns
+    Parameters
+    ----------
+    df : DataFrame
+        Dataframe prior to aggregating from which a weighted average is calculated
+    data_col : str
+        Name of column to be averaged.
+    weight_col : str
+        Name of column to serve as the weighting.
+    by_col : list
+        List of columns on which the dataframe is aggregated.
+    Returns
+    -------
+    result : series
+        Series reflecting the weighted average values for the data_col,
+        at length consistent with the aggregated dataframe, to be reapplied
+        to the data_col in the aggregated dataframe.
+    """
+    df['_data_times_weight'] = df[data_col] * df[weight_col]
+    df['_weight_where_notnull'] = df[weight_col] * pd.notnull(df[data_col])
+    g = df.groupby(by_col)
+    result = g['_data_times_weight'].sum() / g['_weight_where_notnull'].sum()
+    del df['_data_times_weight'], df['_weight_where_notnull']
+    return result
+
+
 def aggregator(df, groupbycols):
     """
     Aggregates flowbyactivity or flowbysector df by given groupbycols
@@ -151,34 +179,6 @@ def aggregator(df, groupbycols):
                              'None': None})
 
     return df_dfg
-
-
-def weighted_average(df, data_col, weight_col, by_col):
-    """
-    Generates a weighted average result based on passed columns
-    Parameters
-    ----------
-    df : DataFrame
-        Dataframe prior to aggregating from which a weighted average is calculated
-    data_col : str
-        Name of column to be averaged.
-    weight_col : str
-        Name of column to serve as the weighting.
-    by_col : list
-        List of columns on which the dataframe is aggregated.
-    Returns
-    -------
-    result : series
-        Series reflecting the weighted average values for the data_col,
-        at length consistent with the aggregated dataframe, to be reapplied
-        to the data_col in the aggregated dataframe.
-    """
-    df['_data_times_weight'] = df[data_col] * df[weight_col]
-    df['_weight_where_notnull'] = df[weight_col] * pd.notnull(df[data_col])
-    g = df.groupby(by_col)
-    result = g['_data_times_weight'].sum() / g['_weight_where_notnull'].sum()
-    del df['_data_times_weight'], df['_weight_where_notnull']
-    return result
 
 
 def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
@@ -243,7 +243,7 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     # by them returns incorrect allocation ratios
     group_cols = fba_default_grouping_fields
     group_cols = [e for e in group_cols if
-                  e not in ('ActivityProducedBy', 'ActivityConsumedBy', 'FlowName')]
+                  e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
     group_cols.append('Sector')
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
@@ -498,7 +498,6 @@ def sector_aggregation_generalized(df, group_cols):
     :return: A df with sector levels summed from the least aggregated level
     """
 
-
     # ensure None values are not strings
     df['Sector'] = df['Sector'].replace({'nan': ""})
     df['Sector'] = df['Sector'].replace({'None': ""})
@@ -508,6 +507,7 @@ def sector_aggregation_generalized(df, group_cols):
     # for loop in reverse order longest length naics minus 1 to 2
     # appends missing naics levels to df
     for i in range(length - 1, 1, -1):
+
         # subset df to sectors with length = i and length = i + 1
         df_subset = df.loc[df['Sector'].apply(lambda x: i + 1 >= len(x) >= i)]
         # create a list of i digit sectors in df subset
@@ -534,10 +534,8 @@ def sector_aggregation_generalized(df, group_cols):
             agg_sectors = agg_sectors.loc[
                 (agg_sectors['Sector'].apply(lambda x: len(x) > i))]
             agg_sectors.loc[:, 'Sector'] = agg_sectors['Sector'].apply(lambda x: x[0:i])
-            agg_sectors = agg_sectors.fillna(0).reset_index()
             # aggregate the new sector flow amounts
             agg_sectors2 = aggregator(agg_sectors, group_cols)
-            agg_sectors2 = agg_sectors2.fillna(0).reset_index(drop=True)
             # append to df
             agg_sectors2['Sector'] = agg_sectors2['Sector'].replace({'nan': ""})
             df = df.append(agg_sectors2, sort=False).reset_index(drop=True)
@@ -548,7 +546,8 @@ def sector_aggregation_generalized(df, group_cols):
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
     # replace null values
-    df = df.replace({'': None})
+    df = df.replace({'': None,
+                     'None': None})
 
     return df
 
@@ -749,10 +748,10 @@ def sector_disaggregation_generalized(fbs, group_cols):
         # drop all rows with duplicate temp values, as a less aggregated naics exists
         group_cols = [e for e in group_cols if e not in ('Sector')]
         group_cols.append('Sector_tmp')
-        df_subset = df_subset.drop_duplicates(subset=group_cols,
-                                              keep=False).reset_index(drop=True)
+        df_subset2 = df_subset.drop_duplicates(subset=group_cols,
+                                               keep=False).reset_index(drop=True)
         # merge the naics cw
-        new_naics = pd.merge(df_subset, cw[[sector_merge, sector_add]],
+        new_naics = pd.merge(df_subset2, cw[[sector_merge, sector_add]],
                              how='left', left_on=['Sector_tmp'], right_on=[sector_merge])
         # add column counting the number of child naics associated with a parent
         new_naics = new_naics.assign(sector_count=new_naics.groupby(['Location', 'Sector_tmp'])['Sector_tmp'].transform('count'))
@@ -903,8 +902,7 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
     :return:
     """
 
-    # determine 'activity_from_scale' for use in df geoscale subset,  by activity
-    log.info('Check if data exists at ' + activity_from_scale + ' level')
+    # determine 'activity_from_scale' for use in df geoscale subset, by activity
     modified_from_scale = return_activity_from_scale(df, activity_from_scale)
     # add 'activity_from_scale' column to df
     df2 = pd.merge(df, modified_from_scale)
