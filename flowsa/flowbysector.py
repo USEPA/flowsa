@@ -165,7 +165,9 @@ def main(method_name):
                 log.info("Mapping flows in " + k + ' to federal elementary flow list')
                 if 'fedefl_mapping' in v:
                     mapping_files = v['fedefl_mapping']
-                else: mapping_files = k
+                else:
+                    mapping_files = k
+
                 flow_subset_mapped = map_elementary_flows(flow_subset_wsec, mapping_files)
 
                 # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
