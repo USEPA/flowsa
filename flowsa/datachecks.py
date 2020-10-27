@@ -202,7 +202,8 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     df = df.fillna(fbs_fill_na_dict)
     # exclude nonsectors
     df = df.replace({'nan': '',
-                     'None': ''})
+                     'None': '',
+                     None: ''})
 
     rows_lost = pd.DataFrame()
     for i in range(2, sector_level_key[target_sector_level]):
@@ -358,8 +359,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
                     'ActivityProducedBy', 'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
                     'FlowAmount']].drop_duplicates().reset_index(drop=True)
 
-    fbs['SectorProducedBy'] = fbs['SectorProducedBy'].replace({'nan': ''})
-    fbs['SectorConsumedBy'] = fbs['SectorConsumedBy'].replace({'nan': ''})
+    fbs['SectorProducedBy'] = fbs['SectorProducedBy'].replace({None: ''})
+    fbs['SectorConsumedBy'] = fbs['SectorConsumedBy'].replace({None: ''})
     fbs['ActivityProducedBy'] = fbs['ActivityProducedBy'].replace({'nan': None})
     fbs['ActivityConsumedBy'] = fbs['ActivityConsumedBy'].replace({'nan': None})
     fbs['ProducedLength'] = fbs['SectorProducedBy'].apply(lambda x: len(x))
