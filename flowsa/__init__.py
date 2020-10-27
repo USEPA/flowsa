@@ -21,15 +21,12 @@ def getFlowByActivity(flowclass, years, datasource):
     :return: a pandas DataFrame in FlowByActivity format
     """
     fbas = pd.DataFrame()
-    # for assigning dtypes
-    fields = {'ActivityProducedBy': 'str'}
     for y in years:
         # first try reading parquet from your local repo
         try:
             log.info('Loading ' + datasource + ' ' + str(y) +' parquet from local repository')
             fba = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet")
             fba = fba[fba['Class'].isin(flowclass)]
-            fba = fba.astype(fields)
             fbas = pd.concat([fbas, fba], sort=False)
         except (OSError, FileNotFoundError):
             # if parquet does not exist in local repo, read file from Data Commons
@@ -38,7 +35,6 @@ def getFlowByActivity(flowclass, years, datasource):
                 fba = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' +
                                       datasource + "_" + str(y) + '.parquet')
                 fba = fba[fba['Class'].isin(flowclass)]
-                fba = fba.astype(fields)
                 fbas = pd.concat([fbas, fba], sort=False)
             except FileNotFoundError:
                 log.error("No parquet file found for datasource " + datasource + "and year " + str(
