@@ -819,9 +819,6 @@ def collapse_fbs_sectors(fbs):
     :return:
     """
 
-    # test
-    fbs = fbs_water.copy()
-
     # ensure correct datatypes and order
     fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
     # ensure datatypes are correct
