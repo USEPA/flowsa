@@ -244,10 +244,10 @@ def generalize_activity_field_names(df):
     :return:
     """
 
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None})
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None})
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'nan': None})
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'nan': None})
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None,
+                                                                 'nan': None})
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None,
+                                                                 'nan': None})
 
     activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
     activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
