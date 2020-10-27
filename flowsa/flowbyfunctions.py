@@ -47,13 +47,40 @@ def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
         # harmonize units across dfs
         df = harmonize_units(df)
     # if datatypes are strings, ensure that Null values remain NoneType
+    df = replace_strings_with_NoneType(df)
+
+    return df
+
+
+def replace_strings_with_NoneType(df):
+    """
+    Ensure that cell values in columns with datatype = string remain NoneType
+    :param df: df with columns where datatype = object
+    :return: A df where values are NoneType if they are supposed to be
+    """
+    # if datatypes are strings, ensure that Null values remain NoneType
     for y in df.columns:
         if df[y].dtype == object:
             df[y] = df[y].replace({'nan': None,
                                    'None': None,
                                    np.nan: None,
                                    '': None})
+    return df
 
+
+def replace_NoneType_with_empty_cells(df):
+    """
+    Replace all NoneType in columns where datatype = string with empty cells
+    :param df: df with columns where datatype = object
+    :return: A df where values are '' when previously they were NoneType
+    """
+    # if datatypes are strings, change NoneType to empty cells
+    for y in df.columns:
+        if df[y].dtype == object:
+            df[y] = df[y].replace({'nan': '',
+                                   'None': '',
+                                   np.nan: '',
+                                   None: ''})
     return df
 
 
@@ -157,6 +184,9 @@ def aggregator(df, groupbycols):
     :return:
     """
 
+    # tmp replace null values with empty cells
+    df = replace_NoneType_with_empty_cells(df)
+
     # weighted average function
     try:
         wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
@@ -182,10 +212,11 @@ def aggregator(df, groupbycols):
     df = df[df['FlowAmount'] != 0]
 
     # aggregate df by groupby columns, either summing or creating weighted averages
-    df_dfg = df.groupby(groupbycols, as_index=False, dropna=False).agg(agg_funx)
+    df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
+    # df_dfg = df.groupby(groupbycols, as_index=False, dropna=False).agg(agg_funx)
 
-    df_dfg = df_dfg.replace({np.nan: None,
-                             'None': None})
+    # if datatypes are strings, ensure that Null values remain NoneType
+    df_dfg = replace_strings_with_NoneType(df_dfg)
 
     return df_dfg
 
@@ -571,12 +602,7 @@ def sector_aggregation(df, group_cols):
     """
 
     # ensure None values are not strings
-    df['SectorConsumedBy'] = df['SectorConsumedBy'].replace({'nan': "",
-                                                             'None': "",
-                                                             None: ""})
-    df['SectorProducedBy'] = df['SectorProducedBy'].replace({'nan': "",
-                                                             'None': "",
-                                                             None: ""})
+    df = replace_NoneType_with_empty_cells(df)
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -631,8 +657,8 @@ def sector_aggregation(df, group_cols):
             agg_sectors = aggregator(agg_sectors, group_cols)
             # agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
             # append to df
-            agg_sectors['SectorConsumedBy'] = agg_sectors['SectorConsumedBy'].replace({'nan': ""})
-            agg_sectors['SectorProducedBy'] = agg_sectors['SectorProducedBy'].replace({'nan': ""})
+            agg_sectors['SectorConsumedBy'] = agg_sectors['SectorConsumedBy'].replace({np.nan: ""})
+            agg_sectors['SectorProducedBy'] = agg_sectors['SectorProducedBy'].replace({np.nan: ""})
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
 
     # manually modify non-NAICS codes that might exist in sector
@@ -643,7 +669,7 @@ def sector_aggregation(df, group_cols):
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
     # replace null values
-    df = df.replace({'': None})
+    df = replace_strings_with_NoneType(df)
 
     return df
 
