@@ -26,12 +26,13 @@ fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_
 fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
 
 
-def clean_df(df, flowbyfields, fill_na_dict):
+def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
     """
 
     :param df:
     :param flowbyfields: flow_by_activity_fields or flow_by_sector_fields
     :param fill_na_dict: fba_fill_na_dict or fbs_fill_na_dict
+    :param drop_description: specify if want the Description column dropped, defaults to true
     :return:
     """
 
@@ -40,10 +41,18 @@ def clean_df(df, flowbyfields, fill_na_dict):
     # fill null values
     df = df.fillna(value=fill_na_dict)
     # drop description field, if exists
-    if 'Description' in df.columns:
+    if 'Description' in df.columns and drop_description is True:
         df = df.drop(columns='Description')
-    # harmonize units across dfs
-    df = harmonize_units(df)
+    if flowbyfields == 'flow_by_sector_fields':
+        # harmonize units across dfs
+        df = harmonize_units(df)
+    # if datatypes are strings, ensure that Null values remain NoneType
+    for y in df.columns:
+        if df[y].dtype == object:
+            df[y] = df[y].replace({'nan': None,
+                                   'None': None,
+                                   np.nan: None,
+                                   '': None})
 
     return df
 
@@ -499,8 +508,9 @@ def sector_aggregation_generalized(df, group_cols):
     """
 
     # ensure None values are not strings
-    df['Sector'] = df['Sector'].replace({'nan': ""})
-    df['Sector'] = df['Sector'].replace({'None': ""})
+    df['Sector'] = df['Sector'].replace({'nan': "",
+                                         'None': "",
+                                         None: ""})
 
     # find the longest length sector
     length = max(df['Sector'].apply(lambda x: len(x)).unique())
@@ -561,10 +571,12 @@ def sector_aggregation(df, group_cols):
     """
 
     # ensure None values are not strings
-    df['SectorConsumedBy'] = df['SectorConsumedBy'].replace({'nan': ""})
-    df['SectorProducedBy'] = df['SectorProducedBy'].replace({'nan': ""})
-    df['SectorConsumedBy'] = df['SectorConsumedBy'].replace({'None': ""})
-    df['SectorProducedBy'] = df['SectorProducedBy'].replace({'None': ""})
+    df['SectorConsumedBy'] = df['SectorConsumedBy'].replace({'nan': "",
+                                                             'None': "",
+                                                             None: ""})
+    df['SectorProducedBy'] = df['SectorProducedBy'].replace({'nan': "",
+                                                             'None': "",
+                                                             None: ""})
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -614,10 +626,10 @@ def sector_aggregation(df, group_cols):
                 lambda x: x[0:i])
             agg_sectors.loc[:, fbs_activity_fields[1]] = agg_sectors[fbs_activity_fields[1]].apply(
                 lambda x: x[0:i])
-            agg_sectors = agg_sectors.fillna(0).reset_index()
+            # agg_sectors = agg_sectors.fillna(0).reset_index()
             # aggregate the new sector flow amounts
             agg_sectors = aggregator(agg_sectors, group_cols)
-            agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
+            # agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
             # append to df
             agg_sectors['SectorConsumedBy'] = agg_sectors['SectorConsumedBy'].replace({'nan': ""})
             agg_sectors['SectorProducedBy'] = agg_sectors['SectorProducedBy'].replace({'nan': ""})
@@ -649,15 +661,17 @@ def sector_disaggregation(sector_disaggregation, groupby_dict):
     sector_disaggregation = clean_df(sector_disaggregation, groupby_dict, fbs_fill_na_dict)
 
     # ensure None values are not strings
-    sector_disaggregation['SectorConsumedBy'] = sector_disaggregation['SectorConsumedBy'].replace({'None': ""})
-    sector_disaggregation['SectorProducedBy'] = sector_disaggregation['SectorProducedBy'].replace({'None': ""})
+    sector_disaggregation['SectorConsumedBy'] = sector_disaggregation['SectorConsumedBy'].replace({None: ""})
+    sector_disaggregation['SectorProducedBy'] = sector_disaggregation['SectorProducedBy'].replace({None: ""})
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk_w_nonnaics()
 
-    # for loop min length to 6 digits
+    # for loop min length to 6 digits, where min length cannot be less than 2
     length = sector_disaggregation[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
         lambda x: x.str.len()).min().min()
+    if length < 2:
+        length = 2
     # appends missing naics levels to df
     for i in range(length, 6):
 
