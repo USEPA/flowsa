@@ -9,7 +9,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 
 import argparse
 from flowsa.common import *
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.flowbyfunctions import add_missing_flow_by_fields, clean_df, fba_fill_na_dict
 from flowsa.Blackhurst_IO import *
 from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     # log that data was retrieved
     log.info("Retrieved data for " + args['source'])
     # add any missing columns of data and cast to appropriate data type
-    flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
+    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
     # modify flow units
     flow_df = convert_fba_unit(flow_df)
     # sort df and reset index
