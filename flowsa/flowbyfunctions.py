@@ -539,9 +539,7 @@ def sector_aggregation_generalized(df, group_cols):
     """
 
     # ensure None values are not strings
-    df['Sector'] = df['Sector'].replace({'nan': "",
-                                         'None': "",
-                                         None: ""})
+    df = replace_NoneType_with_empty_cells(df)
 
     # find the longest length sector
     length = max(df['Sector'].apply(lambda x: len(x)).unique())
@@ -587,8 +585,7 @@ def sector_aggregation_generalized(df, group_cols):
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
     # replace null values
-    df = df.replace({'': None,
-                     'None': None})
+    df = replace_strings_with_NoneType(df)
 
     return df
 
@@ -652,10 +649,8 @@ def sector_aggregation(df, group_cols):
                 lambda x: x[0:i])
             agg_sectors.loc[:, fbs_activity_fields[1]] = agg_sectors[fbs_activity_fields[1]].apply(
                 lambda x: x[0:i])
-            # agg_sectors = agg_sectors.fillna(0).reset_index()
             # aggregate the new sector flow amounts
             agg_sectors = aggregator(agg_sectors, group_cols)
-            # agg_sectors = agg_sectors.fillna(0).reset_index(drop=True)
             # append to df
             agg_sectors['SectorConsumedBy'] = agg_sectors['SectorConsumedBy'].replace({np.nan: ""})
             agg_sectors['SectorProducedBy'] = agg_sectors['SectorProducedBy'].replace({np.nan: ""})
@@ -687,8 +682,7 @@ def sector_disaggregation(sector_disaggregation, groupby_dict):
     sector_disaggregation = clean_df(sector_disaggregation, groupby_dict, fbs_fill_na_dict)
 
     # ensure None values are not strings
-    sector_disaggregation['SectorConsumedBy'] = sector_disaggregation['SectorConsumedBy'].replace({None: ""})
-    sector_disaggregation['SectorProducedBy'] = sector_disaggregation['SectorProducedBy'].replace({None: ""})
+    sector_disaggregation = replace_NoneType_with_empty_cells(sector_disaggregation)
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk_w_nonnaics()
@@ -748,8 +742,7 @@ def sector_disaggregation(sector_disaggregation, groupby_dict):
         new_naics['SectorProducedBy'] = new_naics['SectorProducedBy'].replace({np.nan: ""})
         sector_disaggregation = pd.concat([sector_disaggregation, new_naics], sort=True)
     # replace blank strings with None
-    sector_disaggregation = sector_disaggregation.replace({'': None,
-                                                           np.nan: None})
+    sector_disaggregation = replace_strings_with_NoneType(sector_disaggregation)
 
     return sector_disaggregation
 
@@ -1012,10 +1005,7 @@ def estimate_suppressed_data(df):
     """
 
     # exclude nonsectors
-    df = df.replace({'nan': '',
-                     'None': ''})
-    df = df.replace({None: '',
-                     np.nan: ''})
+    df = replace_NoneType_with_empty_cells(df)
 
     # can be changed to expand range - takes a long time and at national level, only missing suppresed \
     # 6 digit for industrial
@@ -1072,6 +1062,6 @@ def estimate_suppressed_data(df):
             modified_df = pd.merge(df, suppressed_sectors_sub, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
             df = pd.concat([modified_df, df_m2], ignore_index=True, sort=True)
 
-    df_w_estimated_data = df.replace({'': None})
+    df_w_estimated_data = replace_strings_with_NoneType(df)
 
     return df_w_estimated_data
