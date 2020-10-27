@@ -718,12 +718,12 @@ def sector_disaggregation(sector_disaggregation, groupby_dict):
         new_naics = new_naics.rename(columns={"SPB": "SectorProducedBy",
                                               "SCB": "SectorConsumedBy"})
         # append new naics to df
-        new_naics['SectorConsumedBy'] = new_naics['SectorConsumedBy'].replace({'nan': ""})
-        new_naics['SectorProducedBy'] = new_naics['SectorProducedBy'].replace({'nan': ""})
+        new_naics['SectorConsumedBy'] = new_naics['SectorConsumedBy'].replace({np.nan: ""})
+        new_naics['SectorProducedBy'] = new_naics['SectorProducedBy'].replace({np.nan: ""})
         sector_disaggregation = pd.concat([sector_disaggregation, new_naics], sort=True)
     # replace blank strings with None
-    sector_disaggregation = sector_disaggregation.replace({'': None})
-    sector_disaggregation = sector_disaggregation.replace({np.nan: None})
+    sector_disaggregation = sector_disaggregation.replace({'': None,
+                                                           np.nan: None})
 
     return sector_disaggregation
 
@@ -818,6 +818,9 @@ def collapse_fbs_sectors(fbs):
     :param fbs: a standard FlowBySector (format)
     :return:
     """
+
+    # test
+    fbs = fbs_water.copy()
 
     # ensure correct datatypes and order
     fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
