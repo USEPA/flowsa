@@ -820,10 +820,7 @@ def collapse_fbs_sectors(fbs):
     """
 
     # ensure correct datatypes and order
-    fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
-    # ensure datatypes are correct
-    fbs = fbs.replace({'nan': None,
-                       'None': None})
+    fbs = clean_df(fbs, flow_by_sector_fields, fbs_fill_na_dict)
 
     # collapse the FBS sector columns into one column based on FlowType
     fbs.loc[fbs["FlowType"] == 'TECHNOSPHERE_FLOW', 'Sector'] = fbs["SectorConsumedBy"]
