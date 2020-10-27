@@ -338,12 +338,6 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     :return:
     """
 
-    # test
-    # fba_load = flow_subset_mapped.copy()
-    # fbs_load = fbs_agg.copy()
-    # activity_set = aset
-    # source_name = k
-
     # subset fba df
     fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
                     'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
@@ -361,8 +355,6 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
 
     fbs['SectorProducedBy'] = fbs['SectorProducedBy'].replace({None: ''})
     fbs['SectorConsumedBy'] = fbs['SectorConsumedBy'].replace({None: ''})
-    fbs['ActivityProducedBy'] = fbs['ActivityProducedBy'].replace({'nan': None})
-    fbs['ActivityConsumedBy'] = fbs['ActivityConsumedBy'].replace({'nan': None})
     fbs['ProducedLength'] = fbs['SectorProducedBy'].apply(lambda x: len(x))
     fbs['ConsumedLength'] = fbs['SectorConsumedBy'].apply(lambda x: len(x))
     fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
