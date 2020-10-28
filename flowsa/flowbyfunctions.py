@@ -167,8 +167,9 @@ def weighted_average(df, data_col, weight_col, by_col):
         at length consistent with the aggregated dataframe, to be reapplied
         to the data_col in the aggregated dataframe.
     """
-    df['_data_times_weight'] = df[data_col] * df[weight_col]
-    df['_weight_where_notnull'] = df[weight_col] * pd.notnull(df[data_col])
+
+    df = df.assign(_data_times_weight=df[data_col] * df[weight_col])
+    df = df.assign(_weight_where_notnull=df[weight_col] * pd.notnull(df[data_col]))
     g = df.groupby(by_col)
     result = g['_data_times_weight'].sum() / g['_weight_where_notnull'].sum()
     del df['_data_times_weight'], df['_weight_where_notnull']
@@ -187,11 +188,8 @@ def aggregator(df, groupbycols):
     # tmp replace null values with empty cells
     df = replace_NoneType_with_empty_cells(df)
 
-    # weighted average function
-    try:
-        wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "FlowAmount"])
-    except ZeroDivisionError:
-        wm = 0
+    # drop columns with flowamount = 0
+    df = df[df['FlowAmount'] != 0]
 
     # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
     possible_column_headers = ('Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
@@ -201,19 +199,14 @@ def aggregator(df, groupbycols):
     # list of column headers that do exist in the df being aggregated
     column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
 
-    # initial dictionary of how a column should be aggregated
-    agg_funx = {"FlowAmount": "sum"}
+    df_dfg = df.groupby(groupbycols).agg({'FlowAmount': ['sum']})
 
-    # add columns to the aggregation dictionary that should be aggregated using a weighted avg
+    # run through other columns creating weighted average
     for e in column_headers:
-        agg_funx.update({e: wm})
+        df_dfg[e] = weighted_average(df, e, 'FlowAmount', groupbycols)
 
-    # drop columns with flowamount = 0
-    df = df[df['FlowAmount'] != 0]
-
-    # aggregate df by groupby columns, either summing or creating weighted averages
-    df_dfg = df.groupby(groupbycols, as_index=False).agg(agg_funx)
-    # df_dfg = df.groupby(groupbycols, as_index=False, dropna=False).agg(agg_funx)
+    df_dfg = df_dfg.reset_index()
+    df_dfg.columns = df_dfg.columns.droplevel(level=1)
 
     # if datatypes are strings, ensure that Null values remain NoneType
     df_dfg = replace_strings_with_NoneType(df_dfg)
