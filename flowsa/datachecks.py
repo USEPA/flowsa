@@ -307,24 +307,25 @@ def check_allocation_ratios(flow_alloc_df, activity_set, source_name):
     flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'slength'],
                                             as_index=False)[["FlowAmountRatio"]].agg("sum")
     # not interested in sector length > 6
-    # flow_alloc_df3 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
+    flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
 
-    ua_count1 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 1])
+    ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
     log.info('There are ' + str(ua_count1) +
              ' instances where the allocation ratio for a location and sector length is < 1')
-    ua_count2 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] < 0.99])
+    ua_count2 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 0.99])
     log.info('There are ' + str(ua_count2) +
              ' instances where the allocation ratio for a location and sector length is < 0.99')
-    ua_count3 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1])
+    ua_count3 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1])
     log.info('There are ' + str(ua_count3) +
              ' instances where the allocation ratio for a location and sector length is > 1')
-    ua_count4 = len(flow_alloc_df3[flow_alloc_df3['FlowAmountRatio'] > 1.01])
+    ua_count4 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1.01])
     log.info('There are ' + str(ua_count4) +
              ' instances where the allocation ratio for a location and sector length is > 1.01')
 
     # save csv to output folder
     log.info('Save the summary table of flow allocation ratios for each sector length for ' +
              activity_set + ' in output folder')
+    # output data for all sector lengths
     flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name + "_allocation_ratios_" +
                           activity_set + ".csv", index=False)
 
