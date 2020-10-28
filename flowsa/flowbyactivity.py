@@ -116,6 +116,7 @@ if __name__ == '__main__':
     args = parse_args()
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(args['source'])
+    log.info("Creating dataframe list")
     # build the base url with strings that will be replaced
     build_url = build_url_for_query(config['url'])
     # replace parts of urls with specific instructions from source.py
@@ -123,10 +124,12 @@ if __name__ == '__main__':
     # create a list with data from all source urls
     dataframe_list = call_urls(urls, args)
     # concat the dataframes and parse data with specific instructions from source.py
+    log.info("Concat dataframe list and parse data")
     df = parse_data(dataframe_list, args)
     # log that data was retrieved
-    log.info("Retrieved data for " + args['source'])
+    log.info("Retrieved data for " + args['source'] + ' ' + args['year'])
     # add any missing columns of data and cast to appropriate data type
+    log.info("Add any missing columns and check field datatypes")
     flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
     # modify flow units
     flow_df = convert_fba_unit(flow_df)
@@ -134,6 +137,7 @@ if __name__ == '__main__':
     flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
                                    'FlowName', 'Compartment']).reset_index(drop=True)
     # save as parquet file
+    log.info('Save dataframe as parquet')
     parquet_name = args['source'] + '_' + args['year']
     store_flowbyactivity(flow_df, parquet_name)
 
