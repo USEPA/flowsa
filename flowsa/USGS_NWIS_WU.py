@@ -295,7 +295,7 @@ def usgs_fba_data_cleanup(df):
     df2 = df[df['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
     c1 = df2['Location'] != US_FIPS
-    c2 = (df2['ActivityProducedBy'] is not None) & (df2['ActivityConsumedBy'] is not None)
+    c2 = (~df2['ActivityProducedBy'].isnull()) & (~df2['ActivityConsumedBy'].isnull())
     # subset data
     df2 = df2[c1 & c2].reset_index(drop=True)
 
@@ -545,12 +545,14 @@ def modify_thermo_and_aqua_sector_assignments(df):
     :return:
     """
 
+    from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
+
     activities_to_modify = ("Aquaculture", "Thermoelectric Power")
     max_sector_length = 4
 
     # if activities are in the activities to modify length and if sector length is greater than max specified, drop rows
     # tmp set None to "" so len(x) fxn woks
-    df = df.replace({None: ''})
+    df = replace_NoneType_with_empty_cells(df)
     # set conditions
     c1 = df[fba_activity_fields[0]].isin(activities_to_modify)
     c2 = df[fba_activity_fields[1]].isin(activities_to_modify)
@@ -559,6 +561,6 @@ def modify_thermo_and_aqua_sector_assignments(df):
     # subset data
     df_modified = df.loc[~((c1 | c2) & (c3 | c4))].reset_index(drop=True)
     # set '' back to None
-    df_modified = df_modified.replace({'': None})
+    df_modified = replace_strings_with_NoneType(df_modified)
 
     return df_modified
