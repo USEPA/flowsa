@@ -366,17 +366,20 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     fbs_agg.rename(columns={'FlowAmount': 'FBS_amount'}, inplace=True)
 
     # merge compare 1 and compare 2
-    comparison = fba_agg.merge(fbs_agg,
+    df_merge = fba_agg.merge(fbs_agg,
                                left_on=['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
                                         'FlowType', 'Context', 'Location','LocationSystem', 'Year'],
                                right_on=['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
                                          'FlowType', 'Context', 'Location', 'LocationSystem', 'Year'],
                                how='left')
-    comparison['Ratio'] = comparison['FBS_amount'] / comparison['FBA_amount']
+    df_merge['Ratio'] = df_merge['FBS_amount'] / df_merge['FBA_amount']
 
     # reorder
-    comparison = comparison[['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
+    df_merge = df_merge[['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit', 'FlowType', 'Context',
                              'Location', 'LocationSystem', 'Year', 'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
+
+    # only report difference at sector length <= 6
+    comparison = df_merge[df_merge['SectorLength'] <= 6]
 
     # todo: address the duplicated rows/data that occur for non-naics household sector length
 
@@ -396,7 +399,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     # save csv to output folder
     log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
               activity_set + ' in output folder')
-    comparison.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name +
+    # output data at all sector lengths
+    df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name +
                                 "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
 
     return None
