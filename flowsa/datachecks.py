@@ -2,17 +2,14 @@
 Functions to check data is loaded correctly
 """
 
-import flowsa
-from functools import reduce
-import numpy as np
 import pandas as pd
-from flowsa.mapping import get_activitytosector_mapping
 from flowsa.flowbyfunctions import fba_fill_na_dict, harmonize_units, fba_activity_fields, filter_by_geoscale, \
     fba_default_grouping_fields, fbs_default_grouping_fields, aggregator, sector_aggregation, fbs_fill_na_dict, \
-    fbs_activity_fields, clean_df, create_geoscale_list, sector_disaggregation
+    fbs_activity_fields, clean_df, create_geoscale_list, sector_disaggregation, replace_strings_with_NoneType, \
+    replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk_w_nonnaics, \
     load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath
-from flowsa.USGS_NWIS_WU import standardize_usgs_nwis_names
+
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -199,11 +196,8 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     :return:
     """
 
-    df = df.fillna(fbs_fill_na_dict)
     # exclude nonsectors
-    df = df.replace({'nan': '',
-                     'None': '',
-                     None: ''})
+    df = replace_NoneType_with_empty_cells(df)
 
     rows_lost = pd.DataFrame()
     for i in range(2, sector_level_key[target_sector_level]):
@@ -287,7 +281,7 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
 
     # add rows of missing data to the fbs sector subset
     df_w_lost_data = pd.concat([df_subset, rows_lost], ignore_index=True, sort=True)
-    df_w_lost_data = df_w_lost_data.replace({'': None})
+    df_w_lost_data = replace_strings_with_NoneType(df_w_lost_data)
 
     return df_w_lost_data
 
