@@ -125,5 +125,9 @@ def eia_cbecs_parse(dataframe_list, args):
     df['FlowName'] = "Total Floorspace"
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
+
+    # trim whitespace associated with Activity
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
+
     return df
 
