@@ -120,13 +120,13 @@ def main(method_name):
         # pull fba data for allocation
         flows = load_source_dataframe(k, v)
 
+        flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+
         if v['data_format'] == 'FBA':
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
                 log.info("Cleaning up " + k + " FlowByActivity")
                 flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
-
-            flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict)
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
@@ -313,6 +313,7 @@ def main(method_name):
                 fbs = clean_df(fbs, flow_by_sector_fields_w_activity, fbs_fill_na_dict)
 
                 # aggregate df geographically, if necessary
+                # todo: replace with fxn return_from_scale
                 log.info("Aggregating flowbysector to " + method['target_geoscale'] + " level")
                 if fips_number_key[v['geoscale_to_use']] < fips_number_key[attr['allocation_from_scale']]:
                     from_scale = v['geoscale_to_use']
