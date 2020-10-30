@@ -1,4 +1,4 @@
-# write_FBA_USGS_WU_Coef.py (scripts)
+# write_Crosswalk_USGS_WU_Coef.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 # ingwersen.wesley@epa.gov
@@ -87,7 +87,11 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select unique activity names from file
     years = ['2005']
-    df = unique_activity_names('USGS_WU_Coef', years)
+    # flowclass
+    flowclass = ['Water']
+    # datasource
+    datasource = 'USGS_WU_Coef'
+    df = unique_activity_names(flowclass, years, datasource)
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
@@ -97,4 +101,4 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USGS_WU_Coef_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
