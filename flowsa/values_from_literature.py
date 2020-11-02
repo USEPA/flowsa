@@ -135,3 +135,19 @@ def get_fraction_of_urban_local_road_area_for_parking():
     value = 0.25
 
     return value
+
+
+def get_transportation_sectors_based_on_FHA_fees():
+    """
+    Values from https://www.fhwa.dot.gov/policy/hcas/addendum.cfm
+    Website accessed 11/02/2020
+    Data from 1997
+
+    :return:
+    """
+
+    FHA_dict = ({'Truck': 0.329,
+                 'Transit and ground passenger transportation': 0.001,
+                 'State/local government passenger transit': 0.001,
+                 'Personal consumption expenditures': 0.669})
+    return FHA_dict
