@@ -77,3 +77,61 @@ def get_Canadian_to_USD_exchange_rate(year):
     exchange_rate = er.get(year)
     return exchange_rate
 
+
+def get_land_area_to_commercial_and_manufacturing_floorspace_ratio():
+    """
+    The additional land area associated with commercial and manufacturing buildings (parking, sinage, landscaping)
+
+    Based on original USEEIO assumption
+    :return: ratio of land area to total floorspace assumption
+    """
+
+    value = 3
+
+    return value
+
+
+def get_open_space_fraction_of_urban_area():
+    """
+    Assumption on the fraction of urban areas that is open space
+
+    Based on Lin Zeng's 2020 paper
+    :return: fraction of open space in urban areas
+    """
+
+    value = 0.1
+
+    return value
+
+
+def get_urban_land_use_for_airports():
+    """
+    Based on Lin Zeng's 2020 paper
+    :return:
+    """
+
+    value = 0.05
+
+    return value
+
+
+def get_urban_land_use_for_railroads():
+    """
+    Based on Lin Zeng's 2020 paper
+    :return:
+    """
+
+    value = 0.05
+
+    return value
+
+
+def get_fraction_of_urban_local_road_area_for_parking():
+    """
+    Based on Lin Zeng's 2020 paper
+    :return:
+    """
+
+    value = 0.25
+
+    return value
