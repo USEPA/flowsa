@@ -170,5 +170,21 @@ def assign_nonpoint_dqi(args):
 
     #TODO compare counts across NAICS depending on granularity of fbs method
 
+def clean_NEI_fba(fba):
+    
+    fba = remove_duplicate_NEI_flows(fba)
+    return fba
 
+def remove_duplicate_NEI_flows(fba):
+    """ 
+    These flows for PM will get mapped to the primary PM flowable in FEDEFL
+    resulting in duplicate emissions
+    """
+    flowlist = [
+                'PM10-Primary from certain diesel engines',
+                'PM25-Primary from certain diesel engines',
+                ]
+    
+    fba = fba.loc[~fba['FlowName'].isin(flowlist)]
+    return fba
     

@@ -44,6 +44,7 @@ from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggre
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
 from flowsa.stewicombo_to_sector import stewicombo_to_sector
 from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec
+from flowsa.EPA_NEI import clean_NEI_fba
 from flowsa.BEA import subset_BEA_Use
 
 
