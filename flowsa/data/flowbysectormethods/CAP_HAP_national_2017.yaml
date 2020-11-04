@@ -7,7 +7,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: state
     year: 2017
-    clean_fba_df_fxn: None
+    clean_fba_df_fxn: clean_NEI_fba
     clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
@@ -57,14 +57,7 @@ source_names:
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
-        allocation_helper: 'yes'
-        helper_source: "USGS_WU_Coef"
-        helper_method: multiplication
-        helper_source_class: "Water"
-        helper_sector_aggregation: 'disagg'
-        helper_source_year: 2005
-        helper_flow: None
-        helper_from_scale: national        
+        allocation_helper: no
       activity_set_5: # mobile sources and fuel storage
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
@@ -101,7 +94,6 @@ source_names:
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
-        helper_sector_aggregation: 'agg'
         helper_source_year: 2012
         helper_flow:
           - "Number of employees"
@@ -121,7 +113,6 @@ source_names:
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
-        helper_sector_aggregation: 'agg'
         helper_source_year: 2012
         helper_flow:
           - "Number of employees"
@@ -133,7 +124,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2017
-    clean_fba_df_fxn: None
+    clean_fba_df_fxn: clean_NEI_fba
     clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
@@ -173,7 +164,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2017
-    clean_fba_df_fxn: None
+    clean_fba_df_fxn: clean_NEI_fba
     clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Onroad_2017_asets.csv'
