@@ -335,7 +335,8 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
                              right_on=['Location', 'LocationSystem', 'Year', 'Activity'])
     # calculate ratio
     allocation_df.loc[:, 'FlowAmountRatio'] = allocation_df['HelperFlow'] / allocation_df['Denominator']
-    allocation_df = allocation_df.drop(columns=['Denominator', 'HelperFlow']).reset_index(drop=True)
+    allocation_df = allocation_df.drop(columns=['Denominator']).reset_index(drop=True)
+
 
     return allocation_df
 
@@ -480,7 +481,7 @@ def allocation_helper(df_w_sector, method, attr, v):
 
     # rename column
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
-    merge_columns = [e for e in ['Location','Sector', 'HelperFlow'] if e in   # , 'FlowAmountRatio'
+    merge_columns = [e for e in ['Location', 'Sector', 'HelperFlow'] if e in
                      helper_allocation.columns.values.tolist()]
 
     # merge allocation df with helper df based on sectors, depending on geo scales of dfs
@@ -522,7 +523,7 @@ def allocation_helper(df_w_sector, method, attr, v):
         modified_fba_allocation['FlowAmountRatio'] = modified_fba_allocation['FlowAmountRatio'].fillna(0)
         modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
                                                        modified_fba_allocation['FlowAmountRatio']
-        modified_fba_allocation = modified_fba_allocation.drop(columns=['FlowAmountRatio'])
+        modified_fba_allocation = modified_fba_allocation.drop(columns=['FlowAmountRatio', 'HelperFlow'])
 
     # drop rows of 0
     modified_fba_allocation = modified_fba_allocation[modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
