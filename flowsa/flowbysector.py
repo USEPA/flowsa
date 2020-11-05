@@ -237,13 +237,13 @@ def main(method_name):
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
                     fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
 
-                    # drop columns
-                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
-
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
                         log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
+
+                    # drop columns
+                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
                     # create flow allocation ratios for each activity
                     flow_alloc_list = []
