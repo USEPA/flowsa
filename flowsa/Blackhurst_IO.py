@@ -75,11 +75,18 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
 
 
 def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
+    """
+
+    :param df_wsec:
+    :param attr:
+    :param method:
+    :return:
+    """
 
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
-    from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict, agg_by_geoscale, fba_default_grouping_fields, \
-        sector_ratios, proportional_allocation_by_location_and_sector, filter_by_geoscale
+    from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict,  proportional_allocation_by_location_and_activity, \
+        filter_by_geoscale
     from flowsa.BLS_QCEW import clean_bls_qcew_fba
 
     bls = flowsa.getFlowByActivity(flowclass=['Employment'], datasource='BLS_QCEW', years=[2002])
@@ -94,30 +101,34 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     bls_wsec = add_sectors_to_flowbyactivity(bls_agg, sectorsourcename=method['target_sector_source'])
     # drop rows where sector = None ( does not occur with mining)
     bls_wsec = bls_wsec[~bls_wsec['SectorProducedBy'].isnull()]
-    bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector'})
-
-    # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
-    # aren't in list
-    sector_list = df_wsec['Sector'].unique().tolist()
-    # subset fba allocation table to the values in the activity list, based on overlapping sectors
-    bls_wsec = bls_wsec.loc[bls_wsec['Sector'].isin(sector_list)]
-    # calculate proportional ratios
-    bls_wsec = proportional_allocation_by_location_and_sector(bls_wsec, 'Sector') #, 'agg')
-    bls_wsec = bls_wsec.rename(columns = {'FlowAmountRatio': 'EmployeeRatio',
-                                          'FlowAmount': 'Employees'})
+    bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector',
+                                        'FlowAmount': 'HelperFlow'})
 
     # merge the two dfs
-    df = pd.merge(df_wsec, bls_wsec[['Sector', 'EmployeeRatio', 'Employees']], how='left',
-                  left_on='Sector', right_on='Sector')
-    df['EmployeeRatio'] = df['EmployeeRatio'].fillna(0)
+    df = pd.merge(df_wsec, bls_wsec[['Location', 'Sector', 'HelperFlow']], how='left',
+                  left_on=['Location', 'Sector'], right_on=['Location', 'Sector'])
+    # drop any rows where sector is None
+    df = df[~df['Sector'].isnull()]
+    # fill helperflow values with 0
+    df['HelperFlow'] = df['HelperFlow'].fillna(0)
+
+    # calculate proportional ratios
+    df_wratio = proportional_allocation_by_location_and_activity(df, 'Sector')
+
+    df_wratio = df_wratio.rename(columns={'FlowAmountRatio': 'EmployeeRatio',
+                                          'HelperFlow': 'Employees'})
+
+    # drop rows where helperflow = 0
+    df_wratio = df_wratio[df_wratio['Employees'] != 0]
+
     # calculate gal/employee in 2002
-    df.loc[:, 'FlowAmount'] = (df['FlowAmount'] * df['EmployeeRatio'])/df['Employees']
-    df.loc[:, 'Unit'] = 'gal/employee'
+    df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] * df_wratio['EmployeeRatio'])/df_wratio['Employees']
+    df_wratio.loc[:, 'Unit'] = 'gal/employee'
 
     # drop cols
-    df = df.drop(columns=['Employees', 'EmployeeRatio'])
+    df_wratio = df_wratio.drop(columns=['Employees', 'EmployeeRatio'])
 
-    return df
+    return df_wratio
 
 
 def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
