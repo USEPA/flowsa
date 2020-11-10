@@ -78,7 +78,7 @@ def get_Canadian_to_USD_exchange_rate(year):
     return exchange_rate
 
 
-def get_land_area_to_commercial_and_manufacturing_floorspace_ratio():
+def get_commercial_and_manufacturing_floorspace_to_land_area_ratio():
     """
     The additional land area associated with commercial and manufacturing buildings (parking, sinage, landscaping)
 
@@ -86,9 +86,9 @@ def get_land_area_to_commercial_and_manufacturing_floorspace_ratio():
     :return: ratio of land area to total floorspace assumption
     """
 
-    value = 3
+    floor_space_to_land_area_ratio = 0.25
 
-    return value
+    return floor_space_to_land_area_ratio
 
 
 def get_open_space_fraction_of_urban_area():
