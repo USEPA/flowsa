@@ -3,61 +3,52 @@
 # coding=utf-8
 
 """
-Create a crosswalk linking the downloaded EIA_CBECS_Land to NAICS_12. Created by selecting unique Activity Names and
-manually assigning to NAICS
+Download the crosswalk from CBECS to NAICS that CBECS publishes and reshape
 
 """
-
-from flowsa.common import datapath
-from scripts.common_scripts import unique_activity_names, order_crosswalk
-
-def assign_naics(df):
-    """manually assign each ERS activity to a NAICS_2012 code"""
-
-    # assign sector source name
-    df['SectorSourceName'] = 'NAICS_2012_Code'
-
-    df.loc[df['Activity'] == 'All buildings', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Education', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Enclosed and strip malls', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Food sales', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Food service', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Health care', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Health care In-Patient', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Health care Out-Patient', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Inpatient', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Lodging', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Mercantile', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Office', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Other', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Outpatient', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Public assembly', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Public order and safety', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Religious worship', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Retail (other than mall)', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Service', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Vacant', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Warehouse and storage', 'Sector'] = ''
-
-    return df
-
+import pandas as pd
+import io
+from flowsa.common import datapath, make_http_request
 
 if __name__ == '__main__':
-    # select years to pull unique activity names
-    years = ['2012']
-    # assign flowclass
-    flowcass = ['Land']
-    # assign datasource
-    datasource = 'EIA_CBECS_Land'
-    # df of unique ers activity names
-    df = unique_activity_names(flowcass, years, datasource)
-    # add manual naics 2012 assignments
-    df = assign_naics(df)
-    # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
-    df.dropna(subset=["Sector"], inplace=True)
-    # assign sector type
-    df['SectorType'] = None
+    # url for excel crosswalk
+    url = 'http://www.eia.gov/consumption/commercial/data/archive/cbecs/PBAvsNAICS.xls'
+    # make url requestl, as defined in common.py
+    r = make_http_request(url)
+    # Convert response to dataframe, skipping first three rows
+    df_raw = pd.io.excel.read_excel(io.BytesIO(r.content), skiprows=3)
+
+    # Rename first column to sector (naics 2002)
+    df = df_raw.rename(columns={df_raw.columns[0]: "Sector"})
+
+    # remove row of just NAs
+    df = df[df['Sector'].notna()]
+
+    # remove description in first column
+    df['Sector'] = df['Sector'].str.split('/').str[0]
+
+    # reshape data to long format and name columns
+    df = pd.melt(df, id_vars=['Sector'])
+    df.columns = ['Sector', 'Activity', 'value']
+
+    # remove all rows where the crosswalk is null
+    df = df[df['value'].notna()]
+
+    # Add additional columns
+    df['ActivitySourceName'] = "EIA_CBECS_Land"
+    # the original dataset is for NAICS 2002, but 3 digit NAICS have not changed between 2002 and 2012, so labeling 2012
+    df['SectorSourceName'] = "NAICS_2012_Code"
+    df['SectorType'] = "I"
+
+    # reorder and drop columns
+    df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
+
     # sort df
-    df = order_crosswalk(df)
+    df = df.sort_values(['Activity'])
+
+    # reset index
+    df.reset_index(drop=True, inplace=True)
+
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_EIA_CBECS_Land_toNAICS.csv", index=False)
+
