@@ -131,3 +131,20 @@ def eia_cbecs_parse(dataframe_list, args):
 
     return df
 
+
+def calculate_total_land_area(df):
+    """
+    In land use calculations, in addition to the provided floor area of buildings, estimate other related land area
+    associated with commercial facilities (parking, signage, and landscaped area)
+    :param df:
+    :return:
+    """
+
+    from flowsa.values_from_literature import get_commercial_and_manufacturing_floorspace_to_land_area_ratio
+
+    floor_space_to_land_area_ratio = get_commercial_and_manufacturing_floorspace_to_land_area_ratio()
+
+    df['FlowAmount'] = df['FlowAmount']/floor_space_to_land_area_ratio - df['FlowAmount']
+
+    return df
+
