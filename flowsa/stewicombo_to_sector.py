@@ -36,6 +36,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
     from facilitymatcher import output_dir as fm_output_dir
+    from flowsa.EPA_NEI import drop_GHGs
 
     NAICS_level_value=sector_level_key[NAICS_level]
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
@@ -45,6 +46,10 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     facility_mapping = pd.DataFrame()
     # load facility data from stewi output directory, keeping only the facility IDs, and geographic information
     inventory_list = list(inventory_dict.keys())
+
+    if 'NEI' in inventory_list and not 'GHGRP' in inventory_list:
+        df = drop_GHGs(df)
+
     for i in range(len(inventory_dict)):
         # define inventory name as inventory type + inventory year (e.g., NEI_2017)
         inventory_name = inventory_list[i] + '_' + list(inventory_dict.values())[i]
@@ -208,3 +213,5 @@ def naics_expansion(facility_NAICS):
         facility_NAICS = pd.concat([facility_NAICS, new_naics], sort=True)
 
     return facility_NAICS
+
+
