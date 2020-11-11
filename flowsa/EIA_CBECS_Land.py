@@ -132,7 +132,15 @@ def eia_cbecs_parse(dataframe_list, args):
     return df
 
 
-def calculate_total_land_area(df):
+def cbecs_land_fba_cleanup(fba, attr):
+
+    # calculate the land area in addition to building footprint
+    fba = calculate_total_facility_land_area(fba)
+
+    return fba
+
+
+def calculate_total_facility_land_area(df):
     """
     In land use calculations, in addition to the provided floor area of buildings, estimate other related land area
     associated with commercial facilities (parking, signage, and landscaped area)

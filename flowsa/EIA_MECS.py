@@ -325,6 +325,16 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     df = estimate_missing_data(df_w_sec, [3,4,5])
 
     return df
+
+def mecs_land_fba_cleanup(fba, attr):
+
+    from flowsa.EIA_CBECS_Land import calculate_total_facility_land_area
+
+    fba = fba[fba['FlowName'] == 'Approximate Enclosed Floorspace of All Buildings Onsite']
+
+    # calculate the land area in addition to building footprint
+    fba = calculate_total_facility_land_area(fba)
+    return fba
     
 def estimate_missing_data(df, sector_lengths):
     """

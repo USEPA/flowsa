@@ -92,7 +92,7 @@ source_names:
     class: Land
     geoscale_to_use: national
     year: 2012
-    clean_fba_df_fxn: calculate_total_land_area # want total land area, not just building footprint
+    clean_fba_df_fxn: cbecs_land_fba_cleanup
     clean_fba_w_sec_df_fxn: None
     activity_sets:
     activity_set_1: # all activities in eia cbecs land crosswalk
@@ -112,7 +112,7 @@ source_names:
     class: Land
     geoscale_to_use: national
     year: 2014
-    clean_fba_df_fxn: None #calculate_total_land_area # want total land area, not just building footprint
+    clean_fba_df_fxn: mecs_land_fba_cleanup
     clean_fba_w_sec_df_fxn: None
     activity_sets:
     activity_set_1: # all activities in eia cbecs land crosswalk
