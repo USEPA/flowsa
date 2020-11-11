@@ -235,28 +235,38 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
 def harmonize_units(df):
     """
     Convert unit to standard
+    Timeframe is over one year
     :param df: Either flowbyactivity or flowbysector
     :return: Df with standarized units
     """
+
+    days_in_year = 365
+    sq_ft_to_sq_m_multiplier = 0.092903
+
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
-    # class = land, unit = m2/yr
+    # class = land, unit = m2
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * 4046.8564224,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRES', 'm2.yr', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRES', 'm2', df['Unit'])
 
-    # class = money, unit = USD/yr
-
-    # class = water, unit = m3/yr
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day',
-                                       (df['FlowAmount'] / 264.172052) * 365,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
+                                       df['FlowAmount'] * sq_ft_to_sq_m_multiplier * 1000000,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3.p.yr', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']), 'm2', df['Unit'])
+
+    # class = money, unit = USD
+
+    # class = water, unit = m3
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day',
+                                       (df['FlowAmount'] / 264.172052) * days_in_year,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE',
                                        (df['FlowAmount'] / 4046.856422) * 1233.481837,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'm3.m2.yr', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'm3', df['Unit'])
 
     # class = other, unit varies
 
