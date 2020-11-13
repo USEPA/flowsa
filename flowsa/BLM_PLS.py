@@ -492,7 +492,7 @@ def blm_pls_parse(dataframe_list, args):
         # replace withdrawn code
         df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
         df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
-        df['FlowName'] = "Leases"
+        df['FlowName'] = df['ActivityConsumedBy'].copy()
         df['Location'] = Location
         df["Class"] = 'Land'
         df['Compartment'] = "ground"
@@ -514,8 +514,6 @@ def standardize_blm_pls_activity_names(df):
     :return: BLM PLS df with standaridized activity names
     """
 
-    from flowsa.common import capitalize_first_letter
-
     standardize_column = 'ActivityConsumedBy'
 
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(' & ', ' and ', x))
@@ -523,9 +521,9 @@ def standardize_blm_pls_activity_names(df):
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('\bLease\b', 'Leases', x))
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(':  ', ': ', x))
 
-    # df[standardize_column] = df.apply(lambda x: capitalize_first_letter(x[standardize_column]), axis=1)
-    #
-    # df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('Iii', 'III', x))
+    # standardize dashes so do not corrupt in csvs
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('–', '-', x))
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('—', '-', x))
 
     return df
 
