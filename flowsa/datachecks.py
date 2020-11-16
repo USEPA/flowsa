@@ -401,6 +401,39 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
 
 
 
+def check_summation_at_sector_lengths(df):
+
+    # # test
+    #df = fba_allocation_wsec.copy()
+
+    # columns to keep
+    df_cols = [e for e in df.columns if e not in ('MeasureofSpread', 'Spread', 'DistributionType', 'Min', 'Max',
+                                                  'DataReliability', 'DataCollection', 'FlowType', 'Compartment',
+                                                  'Description', 'Activity')]
+    # subset df
+    df2 = df[df_cols]
+
+    # rename columns and clean up df
+    df2 = df2[~df2['Sector'].isnull()]
+
+    df2 = df2.assign(slength=df2['Sector'].apply(lambda x: len(x)))
+
+    # sum flowamounts by sector length
+    denom_df = df2.copy()
+    denom_df.loc[:, 'Denominator'] = denom_df.groupby(['Location', 'slength'])['FlowAmount'].transform('sum')
+
+    summed_df = denom_df.drop(columns=['Sector', 'FlowAmount']).drop_duplicates().reset_index(drop=True)
+
+    # max value
+    maxv = max(summed_df['Denominator'].apply(lambda x: x))
+
+    # percent of total accounted for
+    summed_df = summed_df.assign(percentOfTot=summed_df['Denominator']/maxv)
+
+    summed_df = summed_df.sort_values(['slength']).reset_index(drop=True)
+
+    return summed_df
+
 # def check_if_data_exists_at_geoscale(df, provided_from_scale):
 #     """
 #     Check if an activity or a sector exists at the specified geoscale
