@@ -23,7 +23,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Coal Licenses, Licenses To Mine', 'Sector'] = '21111'
     df.loc[df['Activity'] == 'Combined Hydrocarbon Leases', 'Sector'] = '211112'
     df.loc[df['Activity'] == 'Competitive General Services Administration (GSA) Oil and Gas Leases, Public Domain', 'Sector'] = '211112'
-    df.loc[df['Activity'] == 'Competitive National Petroleum Reserve—Alaska Leases, Public Domain', 'Sector'] = '211112'
+    df.loc[df['Activity'] == 'Competitive National Petroleum Reserve-Alaska Leases, Public Domain', 'Sector'] = '211112'
     df.loc[df['Activity'] == 'Competitive Naval Oil Shale Reserve Leases, Public Domain', 'Sector'] = '211112'
     df.loc[df['Activity'] == 'Competitive Protective Leases, Public Domain and Acquired Lands', 'Sector'] = ''
     df.loc[df['Activity'] == 'Competitive Reform Act Leases, Acquired Lands', 'Sector'] = ''
@@ -39,7 +39,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Gilsonite Leases, Gilsonite Competitive Leases', 'Sector'] = ''
     df.loc[df['Activity'] == 'Gilsonite Leases, Gilsonite Fringe Acreage Noncompetitive Leases', 'Sector'] = ''
     df.loc[df['Activity'] == 'Gilsonite Leases, Gilsonite Preference Right Leases', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Hardrock – Acquired Lands Leases, Hardrock Preference Right Leases', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases', 'Sector'] = ''
     df.loc[df['Activity'] == 'Logical Mining Units', 'Sector'] = ''
     df.loc[df['Activity'] == 'Noncompetitive Pre-Reform Act Future Interest Leases, Public Domain and Acquired Lands', 'Sector'] = ''
     df.loc[df['Activity'] == 'Noncompetitive Reform Act Future Interest Leases, Acquired Lands', 'Sector'] = ''
@@ -52,9 +52,9 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Oil and Gas Pre-Reform Act Leases, Public Domain', 'Sector'] = '211112'
     df.loc[df['Activity'] == 'Oil and Gas Pre-Reform Act Over-the-Counter Leases, Acquired Lands', 'Sector'] = '211112'
     df.loc[df['Activity'] == 'Oil and Gas Pre-Reform Act Over-the-Counter Leases, Public Domain', 'Sector'] = '211112'
-    df.loc[df['Activity'] == 'Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934, Acquired Lands', 'Sector'] = '211112'
-    df.loc[df['Activity'] == 'Oil and Gas Special Act – Rights-of-Way of 1930, Public Domain', 'Sector'] = '211112'
-    df.loc[df['Activity'] == 'Oil and Gas Special Act – Texas Relinquishment Act of 1919, Acquired Lands', 'Sector'] = '211112'
+    df.loc[df['Activity'] == 'Oil and Gas Special Act - Federal Farm Mortgage Corporation Act of 1934, Acquired Lands', 'Sector'] = '211112'
+    df.loc[df['Activity'] == 'Oil and Gas Special Act - Rights-of-Way of 1930, Public Domain', 'Sector'] = '211112'
+    df.loc[df['Activity'] == 'Oil and Gas Special Act - Texas Relinquishment Act of 1919, Acquired Lands', 'Sector'] = '211112'
     df.loc[df['Activity'] == 'Phosphate Leases, Phosphate Competitive Leases', 'Sector'] = ''
     df.loc[df['Activity'] == 'Phosphate Leases, Phosphate Fringe Acreage Noncompetitive Leases', 'Sector'] = ''
     df.loc[df['Activity'] == 'Phosphate Leases, Phosphate Preference Right Leases', 'Sector'] = ''
@@ -72,7 +72,6 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Sodium Leases, Sodium Preference Right Leases', 'Sector'] = ''
     df.loc[df['Activity'] == 'Sodium Use Permit', 'Sector'] = ''
     df.loc[df['Activity'] == 'Summary: Pre-Reform Act Simultaneous Leases, Public Domain and Acquired Lands', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Summary:  Pre-Reform Act Simultaneous Leases, Public Domain and Acquired Lands', 'Sector'] = ''
 
     return df
 
