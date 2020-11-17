@@ -60,16 +60,16 @@ def eia_cbecs_land_call(url, cbesc_response, args):
         df_data = pd.DataFrame(df_raw_data.loc[46:50]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[46:50]).reindex()
 
-        df_data.columns = ["FlowName", "All buildings", "Office", "Warehouse and storage", "Service",
+        df_data.columns = ["Description", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
                            "Education", "Public assembly"]
-        df_rse.columns = ["FlowName", "All buildings", "Office", "Warehouse and storage", "Service",
+        df_rse.columns = ["Description", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
                            "Education", "Public assembly"]
-        df_rse = df_rse.melt(id_vars=["FlowName"],
+        df_rse = df_rse.melt(id_vars=["Description"],
                     var_name="Name",
                     value_name="Spread")
-        df_data =df_data.melt(id_vars=["FlowName"],
+        df_data =df_data.melt(id_vars=["Description"],
                     var_name="Name",
                     value_name="FlowAmount")
     elif ("b14.xlsx" in url):
@@ -77,16 +77,16 @@ def eia_cbecs_land_call(url, cbesc_response, args):
         df_data = pd.DataFrame(df_raw_data.loc[27:31]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[27:31]).reindex()
 
-        df_data.columns = ["FlowName", "All buildings", "Food service", "Food sales", "Lodging",
+        df_data.columns = ["Description", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
                            "Public order and safety"]
-        df_rse.columns = ["FlowName", "All buildings", "Food service", "Food sales", "Lodging",
+        df_rse.columns = ["Description", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
                            "Public order and safety"]
-        df_rse = df_rse.melt(id_vars=["FlowName"],
+        df_rse = df_rse.melt(id_vars=["Description"],
                              var_name="Name",
                              value_name="Spread")
-        df_data = df_data.melt(id_vars=["FlowName"],
+        df_data = df_data.melt(id_vars=["Description"],
                                var_name="Name",
                                value_name="FlowAmount")
 
@@ -103,13 +103,13 @@ def eia_cbecs_land_parse(dataframe_list, args):
         if "Location" not in list(dataframes):
             dataframes["Location"] = "00000"
             dataframes["LocationSystem"] = "FIPS_2010"
-            dataframes = dataframes.drop(dataframes[dataframes.FlowName == "Any elevators"].index)
-            dataframes["FlowName"] = dataframes["FlowName"] + " floors"
+            dataframes = dataframes.drop(dataframes[dataframes.Description == "Any elevators"].index)
+            dataframes["Description"] = dataframes["Description"] + " floors"
         else:
             dataframes = dataframes.drop(dataframes[dataframes.ActivityConsumedBy == "Before 1920"].index)
             dataframes["Location"] = get_region_and_division_codes()["Division"]
             dataframes['LocationSystem'] = "Census_Division"
-            dataframes["FlowName"] = "All Buildings"
+            dataframes["Description"] = "All Buildings"
             dataframes['Location'] = dataframes['Location'].replace(float("NaN"), '00000')
 
             dataframes.loc[dataframes.Location == "00000", "LocationSystem"] = "FIPS_2010"
@@ -126,7 +126,7 @@ def eia_cbecs_land_parse(dataframe_list, args):
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
     df['Year'] = args["year"]
-    df['FlowName'] = "Commercial " + df["ActivityConsumedBy"] + ' ' + df['FlowName'] + " Total Floorspace"
+    df['FlowName'] = "Commercial, " + df["ActivityConsumedBy"] + ", Total floorspace"
     df['Compartment'] = 'ground'
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
