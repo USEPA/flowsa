@@ -271,7 +271,9 @@ def eia_mecs_energy_call(url, mecs_response, args):
 
 
 def eia_mecs_energy_parse(dataframe_list, args):
-    
+
+    from flowsa.common import assign_census_regions
+
     # concatenate dataframe list into single dataframe
     df = pd.concat(dataframe_list, sort=True)
     
@@ -285,12 +287,12 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df['FlowType'] = 'TECHNOSPHERE_FLOWS'
     df['Year'] = args["year"]
     df['MeasureofSpread'] = "RSE"
-    # df['LocationSystem'] = 'Census_Region'
+    # assign location codes and location system
     df.loc[df['Location']=='Total United States','Location'] = US_FIPS
-    # todo: modify other 'Locations' so it is a code get_region_and_division_codes (get_region_and_division_codes)
-    df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
-    # todo: modify the location and location system so if 00000 then fips based
     df = assign_fips_location_system(df, args['year'])
+    df = assign_census_regions(df)
+    df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
+
     
     # drop rows that reflect subtotals (only necessary in 2014)
     df.dropna(subset=['ActivityConsumedBy'], inplace=True)
