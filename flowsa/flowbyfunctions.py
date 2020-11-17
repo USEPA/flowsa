@@ -122,7 +122,7 @@ def filter_by_geoscale(df, geoscale):
     df = df[df['Location'].isin(fips)]
 
     if len(df) == 0:
-        log.error("No flows found in the "  + " flow dataset at the " + geoscale + " scale.")
+        log.error("No flows found in the " + " flow dataset at the " + geoscale + " scale.")
     else:
         return df
 
@@ -292,13 +292,15 @@ def allocate_by_sector(df_w_sectors, allocation_method):
     # run sector aggregation fxn to determine total flowamount for each level of sector
     df = sector_aggregation_generalized(df_w_sectors, group_cols)
     # run sector disaggregation to capture one-to-one naics4/5/6 relationships
-    df = sector_disaggregation_generalized(df, group_cols)
+    df2 = sector_disaggregation_generalized(df, group_cols)
 
     # if statements for method of allocation
     if allocation_method == 'proportional':
-        allocation_df = proportional_allocation_by_location(df, 'Sector')
+        allocation_df = proportional_allocation_by_location(df2, 'Sector')
+    else:
+        log.error('Must create function for specified method of allocation')
 
-        return allocation_df
+    return allocation_df
 
 
 def proportional_allocation_by_location(df, sectorcolumn):
@@ -850,6 +852,7 @@ def assign_fips_location_system(df, year_of_data):
         log.warning(
             "Missing FIPS codes from crosswalk for " + year_of_data + ". Temporarily assigning to FIPS_2010")
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
+
     return df
 
 
