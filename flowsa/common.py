@@ -494,6 +494,30 @@ def get_region_and_division_codes():
     return df
 
 
+def assign_census_regions(df_load):
+
+    # load census codes
+    census_codes_load = get_region_and_division_codes()
+    census_codes = census_codes_load[census_codes_load['LocationSystem'] == 'Census_Region']
+
+    # merge df with census codes
+    df = df_load.merge(census_codes[['Name', 'Region']], left_on=['Location'], right_on=['Name'], how='left')
+    # replace Location value
+    df['Location'] = np.where(~df['Region'].isnull(), df['Region'], df['Location'])
+
+    # modify LocationSystem
+    # merge df with census codes
+    df = df.merge(census_codes[['Region', 'LocationSystem']], left_on=['Region'], right_on=['Region'], how='left')
+    # replace Location value
+    df['LocationSystem_x'] = np.where(~df['LocationSystem_y'].isnull(), df['LocationSystem_y'], df['LocationSystem_x'])
+
+    # drop census columns
+    df = df.drop(columns=['Name', 'Region', 'LocationSystem_y'])
+    df = df.rename(columns={'LocationSystem_x': 'LocationSystem'})
+
+    return df
+
+
 def call_country_code(country):
     """use pycountry to call on 3 digit iso country code"""
     country_info = pycountry.countries.get(name=country)
