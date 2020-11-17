@@ -121,9 +121,10 @@ def main(method_name):
         # pull fba data for allocation
         flows = load_source_dataframe(k, v)
 
-        flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-
         if v['data_format'] == 'FBA':
+            # ensure correct datatypes and that all fields exist
+            flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
                 log.info("Cleaning up " + k + " FlowByActivity")
@@ -362,6 +363,8 @@ def main(method_name):
         else:
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append " + k + " to FBS list")
+            # ensure correct field datatypes and add any missing fields
+            flows = clean_df(flows, flow_by_sector_fields, fbs_fill_na_dict)
             fbs_list.append(flows)
     # create single df of all activities
     log.info("Concat data for all activities")
