@@ -28,6 +28,7 @@ from flowsa.USDA_IWMS import *
 from flowsa.USGS_NWIS_WU import *
 from flowsa.USDA_ERS_MLU import *
 from flowsa.EIA_CBECS_Land import *
+from flowsa.EIA_CBECS_Water import *
 from flowsa.EIA_MECS import *
 from flowsa.BLM_PLS import *
 from flowsa.EIA_MER import *

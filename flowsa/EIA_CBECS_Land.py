@@ -14,7 +14,7 @@ https://www.eia.gov/consumption/commercial/reports/2012/energyusage/index.php
 Last updated: Monday, August 17, 2020
 """
 
-def eia_cbecs_URL_helper(build_url, config, args):
+def eia_cbecs_land_URL_helper(build_url, config, args):
     """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
     This function does not parse the data, only modifies the urls from which data is obtained. """
@@ -30,7 +30,7 @@ def eia_cbecs_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_cbecs_call(url, cbesc_response, args):
+def eia_cbecs_land_call(url, cbesc_response, args):
     # Convert response to dataframe
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='data').dropna()
     df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='rse').dropna()
@@ -93,7 +93,7 @@ def eia_cbecs_call(url, cbesc_response, args):
     df = pd.merge(df_rse, df_data)
     return df
 
-def eia_cbecs_parse(dataframe_list, args):
+def eia_cbecs_land_parse(dataframe_list, args):
 
     # concat dataframes
     df_array = []
