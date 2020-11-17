@@ -160,7 +160,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     df['Year'] = args["year"]
     df["Compartment"] = None
     df['MeasureofSpread'] = "RSE"
-    df['Location'] = "US_FIPS"
+    df['Location'] = US_FIPS
     df['Unit'] = unit
     df = assign_fips_location_system(df, args['year'])
 
