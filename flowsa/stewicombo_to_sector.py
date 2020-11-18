@@ -224,6 +224,12 @@ def check_for_missing_sector_data(df, target_sector_level):
     :param target_sector_level:
     :return:
     """
+
+    from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
+
+    # temporarily replace null values with empty cells
+    df = replace_NoneType_with_empty_cells(df)
+
     activity_field = "SectorProducedBy"
     rows_lost = pd.DataFrame()
     cw_load = load_sector_length_crosswalk_w_nonnaics()
@@ -246,6 +252,8 @@ def check_for_missing_sector_data(df, target_sector_level):
         # calculate new flow amounts, based on sector count, allocating equally to the new sector length codes
         df_x['FlowAmount'] = df_x['FlowAmount'] / df_x['sector_count']
         df_x = df_x.drop(columns=['sector_count'])
+        # replace null values with empty cells
+        df_x = replace_NoneType_with_empty_cells(df_x)
 
         # append to df
         sector_list = df_subset[activity_field].drop_duplicates()
@@ -263,5 +271,8 @@ def check_for_missing_sector_data(df, target_sector_level):
     df_allocated = pd.concat([df, rows_lost], ignore_index=True, sort=True)
     df_allocated = df_allocated.loc[df_allocated[activity_field].apply(lambda x: len(x)==sector_level_key[target_sector_level])]
     df_allocated.reset_index(inplace=True)
+
+    # replace empty cells with NoneType (if dtype is object)
+    df_allocated = replace_strings_with_NoneType(df_allocated)
 
     return df_allocated
