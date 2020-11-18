@@ -43,7 +43,8 @@ from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
 from flowsa.stewicombo_to_sector import stewicombo_to_sector
-from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec
+from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec, \
+    mecs_land_fba_cleanup, eia_mecs_land_clean_allocation_fba_w_sec
 from flowsa.EPA_NEI import clean_NEI_fba
 from flowsa.BEA import subset_BEA_Use
 
@@ -219,7 +220,6 @@ def main(method_name):
                         fba_allocation = filter_by_geoscale(fba_allocation, from_scale)
 
                     # assign sector to allocation dataset
-                    # todo: add sectorsourcename col value
                     log.info("Adding sectors to " + attr['allocation_source'])
                     fba_allocation_wsec = add_sectors_to_flowbyactivity(fba_allocation,
                                                                         sectorsourcename=method['target_sector_source'])
