@@ -113,20 +113,21 @@ source_names:
     geoscale_to_use: national
     year: 2014
     clean_fba_df_fxn: mecs_land_fba_cleanup
-    clean_fba_w_sec_df_fxn: None
+    clean_fba_w_sec_df_fxn: eia_mecs_land_clean_allocation_fba_w_sec
+    activity_set_file: 'EIA_MECS_Land_asets.csv'
     activity_sets:
-    activity_set_1: # all activities in eia cbecs land crosswalk
-      allocation_method: proportional
-      allocation_source: "BLS_QCEW"
-      allocation_source_class: "Employment"
-      allocation_source_year: 2014
-      allocation_flow:
-        - "Number of employees"
-      allocation_compartment: None
-      allocation_from_scale: national
-      clean_allocation_fba: clean_bls_qcew_fba
-      clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-      allocation_helper: 'no'
+      activity_set_1: # all activities in eia mecs land crosswalk
+        allocation_method: proportional
+        allocation_source: "BLS_QCEW"
+        allocation_source_class: "Employment"
+        allocation_source_year: 2014
+        allocation_flow:
+          - "Number of employees"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        allocation_helper: 'no'
 
 
 
