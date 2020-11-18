@@ -156,6 +156,8 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     # add missing flow by sector fields
     fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
     
+    fbs = check_for_missing_sector_data(fbs, NAICS_level)
+
     # sort dataframe and reset index
     fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
 
@@ -214,4 +216,52 @@ def naics_expansion(facility_NAICS):
 
     return facility_NAICS
 
+def check_for_missing_sector_data(df, target_sector_level):
+    """
+    Modeled after datachecks.py check_if_losing_sector_data
+    Allocates flow amount equally across child NAICS when parent NAICS is not target_level
+    :param df:
+    :param target_sector_level:
+    :return:
+    """
+    activity_field = "SectorProducedBy"
+    rows_lost = pd.DataFrame()
+    cw_load = load_sector_length_crosswalk_w_nonnaics()
+    for i in range(3, sector_level_key[target_sector_level]):
+        # create df of i length
+        df_subset = df.loc[df[activity_field].apply(lambda x: len(x) == i)]
 
+        # import cw and subset to current sector length and target sector length
+
+        nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
+        cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
+        # add column with counts
+        cw['sector_count'] = cw.groupby(nlength)[nlength].transform('count')
+
+        # merge df & replace sector produced columns
+        df_x = pd.merge(df_subset, cw, how='left', left_on=[activity_field], right_on=[nlength])
+        df_x[activity_field]=df_x[target_sector_level]
+        df_x= df_x.drop(columns=[nlength, target_sector_level])
+
+        # calculate new flow amounts, based on sector count, allocating equally to the new sector length codes
+        df_x['FlowAmount'] = df_x['FlowAmount'] / df_x['sector_count']
+        df_x = df_x.drop(columns=['sector_count'])
+
+        # append to df
+        sector_list = df_subset[activity_field].drop_duplicates()
+        if len(df_x) != 0:
+            log.warning('Data found at ' + str(i) + ' digit NAICS to be allocated'
+                                                    ': {}'.format(' '.join(map(str, sector_list))))
+            rows_lost = rows_lost.append(df_x, ignore_index=True, sort=True)
+
+    if len(rows_lost) == 0:
+        log.info('No data loss from NAICS in dataframe')
+    else:
+        log.info('Allocating FlowAmounts equally to each ' + target_sector_level)
+
+    # add rows of missing data to the fbs sector subset
+    df_allocated = pd.concat([df, rows_lost], ignore_index=True, sort=True)
+    df_allocated = df_allocated.loc[df_allocated[activity_field].apply(lambda x: len(x)==sector_level_key[target_sector_level])]
+    df_allocated.reset_index(inplace=True)
+
+    return df_allocated
