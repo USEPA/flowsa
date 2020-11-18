@@ -156,7 +156,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
     df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
     df["Class"] = 'Land'
-    df["SourceName"] = 'EIA_MBECS_Land'
+    df["SourceName"] = 'EIA_MECS_Land'
     df['Year'] = args["year"]
     df["Compartment"] = None
     df['MeasureofSpread'] = "RSE"
@@ -353,15 +353,41 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
 
     return df
 
-def mecs_land_fba_cleanup(fba, attr):
+
+def mecs_land_fba_cleanup(fba):
 
     from flowsa.EIA_CBECS_Land import calculate_total_facility_land_area
 
-    fba = fba[fba['FlowName'] == 'Approximate Enclosed Floorspace of All Buildings Onsite']
+    fba = fba[fba['FlowName'].str.contains('Approximate Enclosed Floorspace of All Buildings Onsite')]
 
     # calculate the land area in addition to building footprint
     fba = calculate_total_facility_land_area(fba)
+
     return fba
+
+
+def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
+    """
+    clean up eia_mecs_energy df with sectors by estimating missing data
+    :param df_w_sec:
+    :param attr:
+    :param method:
+    :return:
+    """
+
+    from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
+
+    # first aggregate existing data to higher naics
+    group_cols = fba_mapped_default_grouping_fields
+    df_w_sec = sector_aggregation(df_w_sec, group_cols)
+    # replace value in Activity cols for created rows
+    df_w_sec['ActivityProducedBy'] = df_w_sec['SectorProducedBy'].copy()
+    df_w_sec['ActivityConsumedBy'] = df_w_sec['SectorConsumedBy'].copy()
+
+    # then estimate missing data
+    df = estimate_missing_data(df_w_sec, [3, 4, 5])
+
+    return df
 
 
 def estimate_missing_data(df, sector_lengths):
