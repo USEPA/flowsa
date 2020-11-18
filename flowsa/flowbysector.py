@@ -224,15 +224,15 @@ def main(method_name):
                     fba_allocation_wsec = add_sectors_to_flowbyactivity(fba_allocation,
                                                                         sectorsourcename=method['target_sector_source'])
 
-                    # generalize activity field names to enable link to main fba source
-                    log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
-                    fba_allocation_wsec = generalize_activity_field_names(fba_allocation_wsec)
-
                     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Further disaggregating sectors in " + attr['allocation_source'])
                         fba_allocation_wsec = getattr(sys.modules[__name__],
                                                       attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr, method)
+
+                    # generalize activity field names to enable link to main fba source
+                    log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
+                    fba_allocation_wsec = generalize_activity_field_names(fba_allocation_wsec)
 
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
