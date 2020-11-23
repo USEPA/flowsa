@@ -22,16 +22,16 @@ import yaml
 import argparse
 import sys
 import pandas as pd
-from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields,  \
-    generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields, \
+from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
+    fbsoutputpath, fips_number_key, flow_by_activity_fields, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
-    filter_by_geoscale, aggregator, clean_df,subset_df_by_geoscale, \
-    sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities
+    filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, \
+    sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities, generalize_activity_field_names
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
     check_if_data_exists_for_same_geoscales, check_allocation_ratios,\
@@ -230,10 +230,6 @@ def main(method_name):
                         fba_allocation_wsec = getattr(sys.modules[__name__],
                                                       attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr, method)
 
-                    # generalize activity field names to enable link to main fba source
-                    log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
-                    fba_allocation_wsec = generalize_activity_field_names(fba_allocation_wsec)
-
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
                     fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
@@ -244,20 +240,27 @@ def main(method_name):
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
 
                     # drop columns
-                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
+                    # fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
 
                     # create flow allocation ratios for each activity
                     flow_alloc_list = []
+                    group_cols = fba_default_grouping_fields
+                    group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+                    group_cols = group_cols.append('Sector')
                     for n in names:
                         log.info("Creating allocation ratios for " + n)
                         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
                         if len(fba_allocation_subset_2)==0:
                             log.info("No data found to allocate " + n)
                         else:
-                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
+                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'], group_cols)
                             flow_alloc = flow_alloc.assign(FBA_Activity=n)
                             flow_alloc_list.append(flow_alloc)
                     flow_allocation = pd.concat(flow_alloc_list)
+
+                    # generalize activity field names to enable link to main fba source
+                    log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
+                    flow_allocation = generalize_activity_field_names(flow_allocation)
 
                     # check for issues with allocation ratios
                     check_allocation_ratios(flow_allocation, aset, k)
