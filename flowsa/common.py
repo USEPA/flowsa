@@ -237,37 +237,6 @@ activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
                    }
 
 
-def generalize_activity_field_names(df):
-    """
-    The 'activityconsumedby' and 'activityproducedby' columns from the allocation dataset do not always align with
-    the water use dataframe. Generalize the allocation activity column.
-    :param fba_df:
-    :return:
-    """
-
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None,
-                                                                 'nan': None})
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None,
-                                                                 'nan': None})
-
-    activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
-    activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
-
-    # if an activity field column is all 'none', drop the column and rename renaming activity columns to generalize
-    if all(v is None for v in activity_consumed_list):
-        df = df.drop(columns=['ActivityConsumedBy', 'SectorConsumedBy'])
-        df = df.rename(columns={'ActivityProducedBy': 'Activity',
-                                'SectorProducedBy': 'Sector'})
-    elif all(v is None for v in activity_produced_list):
-        df = df.drop(columns=['ActivityProducedBy', 'SectorProducedBy'])
-        df = df.rename(columns={'ActivityConsumedBy': 'Activity',
-                                'SectorConsumedBy': 'Sector'})
-    else:
-        log.error('Cannot generalize dataframe')
-
-    return df
-
-
 def create_fill_na_dict(flow_by_fields):
     fill_na_dict = {}
     for k,v in flow_by_fields.items():
