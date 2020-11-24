@@ -246,7 +246,8 @@ def main(method_name):
                     flow_alloc_list = []
                     group_cols = fba_default_grouping_fields
                     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-                    group_cols = group_cols.append('Sector')
+                    group_cols.append('SectorProducedBy')
+                    group_cols.append('SectorConsumedBy')
                     for n in names:
                         log.info("Creating allocation ratios for " + n)
                         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
@@ -263,7 +264,7 @@ def main(method_name):
                     flow_allocation = collapse_activity_fields(flow_allocation)
 
                     # check for issues with allocation ratios
-                    check_allocation_ratios(flow_allocation, aset, k)
+                    check_allocation_ratios(flow_allocation, aset, k, method_name)
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
@@ -336,7 +337,7 @@ def main(method_name):
                 fbs_agg = sector_disaggregation(fbs_sec_agg, flow_by_sector_fields_w_activity)
 
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset, k)
+                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset, k, method_name)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
