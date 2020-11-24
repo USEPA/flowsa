@@ -182,9 +182,6 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     :return:
     """
 
-    # test
-    # fba_w_sector = fba_allocation_wsec.copy()
-
     # define the activity and sector columns to base modifications on
     # these definitions will vary dependent on class type
     activity_col = 'ActivityConsumedBy'
@@ -239,10 +236,6 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
         fba_fill_na_dict, replace_strings_with_NoneType, replace_NoneType_with_empty_cells, \
         fba_mapped_default_grouping_fields
     from flowsa.mapping import add_sectors_to_flowbyactivity
-
-    # test
-    # fba_w_sector_tmp = fba_w_sector.copy()
-    # fba_w_sector = fba_w_sector_tmp.copy()
 
     # tmp drop NoneTypes
     fba_w_sector = replace_NoneType_with_empty_cells(fba_w_sector)
@@ -314,11 +307,6 @@ def disaggregate_cropland(fba_w_sector, attr, method, years_list, sector_column)
         fbs_default_grouping_fields, clean_df, fba_fill_na_dict, fbs_fill_na_dict, add_missing_flow_by_fields,\
         sector_disaggregation, sector_ratios, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
     from flowsa.mapping import add_sectors_to_flowbyactivity
-
-    # test
-    # fba_w_sector_tmp = fba_w_sector.copy()
-    #
-    # fba_w_sector = fba_w_sector_tmp.copy()
 
     # tmp drop NoneTypes
     fba_w_sector = replace_NoneType_with_empty_cells(fba_w_sector)
