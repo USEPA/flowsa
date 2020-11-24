@@ -493,7 +493,7 @@ def allocation_helper(df_w_sector, method, attr, v):
                                                       sectorsourcename=method['target_sector_source'])
 
     # generalize activity field names to enable link to water withdrawal table
-    helper_allocation = generalize_activity_field_names(helper_allocation)
+    helper_allocation = collapse_activity_fields(helper_allocation)
     # clean up helper fba with sec
     if 'clean_helper_fba_wsec' in attr:
         log.info("Cleaning " + attr['helper_source'] + ' FBA with sectors')
@@ -1122,7 +1122,7 @@ def estimate_suppressed_data(df, sector_column):
     return df_w_estimated_data
 
 
-def generalize_activity_field_names(df):
+def collapse_activity_fields(df):
     """
     The 'activityconsumedby' and 'activityproducedby' columns from the allocation dataset do not always align with
     the water use dataframe. Generalize the allocation activity column.

@@ -6,7 +6,7 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system, generalize_activity_field_names
+from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields
 
 
 def CoA_Cropland_URL_helper(build_url, config, args):

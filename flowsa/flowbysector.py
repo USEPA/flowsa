@@ -31,7 +31,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, \
-    sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities, generalize_activity_field_names
+    sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities, collapse_activity_fields
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
     check_if_data_exists_for_same_geoscales, check_allocation_ratios,\
@@ -260,7 +260,7 @@ def main(method_name):
 
                     # generalize activity field names to enable link to main fba source
                     log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
-                    flow_allocation = generalize_activity_field_names(flow_allocation)
+                    flow_allocation = collapse_activity_fields(flow_allocation)
 
                     # check for issues with allocation ratios
                     check_allocation_ratios(flow_allocation, aset, k)
