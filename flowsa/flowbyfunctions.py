@@ -1,8 +1,8 @@
 """
 Helper functions for flowbyactivity and flowbysector data
 """
-import logging as log
 
+import logging as log
 import flowsa
 import pandas as pd
 import numpy as np
@@ -494,8 +494,6 @@ def allocation_helper(df_w_sector, method, attr, v):
 
     # rename column
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
-    merge_columns = [e for e in ['Location', 'Sector', 'HelperFlow'] if e in
-                     helper_allocation.columns.values.tolist()]
 
     # determine the df_w_sector column to merge on
     df_w_sector = replace_strings_with_NoneType(df_w_sector)
@@ -513,14 +511,19 @@ def allocation_helper(df_w_sector, method, attr, v):
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
         helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(lambda x: x[0:2])
         df_w_sector.loc[:, 'Location_tmp'] = df_w_sector['Location'].apply(lambda x: x[0:2])
-        merge_columns.append('Location_tmp')
-        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns],
+        # merge_columns.append('Location_tmp')
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Location_tmp', 'Sector', 'HelperFlow']],
                                                     how='left',
                                                     left_on=['Location_tmp', sector_col_to_merge],
                                                     right_on=['Location_tmp', 'Sector'])
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
+    elif (attr['helper_from_scale'] == 'national') and (attr['allocation_from_scale'] != 'national'):
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']],
+                                                    how='left',
+                                                    left_on=[sector_col_to_merge],
+                                                    right_on=['Sector'])
     else:
-        modified_fba_allocation = df_w_sector.merge(helper_allocation[merge_columns],
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Location', 'Sector', 'HelperFlow']],
                                                     how='left',
                                                     left_on=['Location', sector_col_to_merge],
                                                     right_on=['Location', 'Sector'])
