@@ -186,6 +186,8 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     """
     from flowsa.flowbyfunctions import estimate_suppressed_data
 
-    df = estimate_suppressed_data(df_w_sec)
+    sector_column = 'SectorProducedBy'
+
+    df = estimate_suppressed_data(df_w_sec, sector_column)
 
     return df
