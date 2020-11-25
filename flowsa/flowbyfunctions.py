@@ -335,21 +335,38 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     :return:
     """
 
+    # tmp replace NoneTypes with empty cells
+    df = replace_NoneType_with_empty_cells(df)
+
     # denominator summed from highest level of sector grouped by location
     short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
     # want to create denominator based on short_length
-    denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == short_length)]
-    denom_df.loc[:, 'Denominator'] = denom_df.groupby(['Location', 'Activity'])['HelperFlow'].transform('sum')
+    denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) == short_length)].reset_index(drop=True)
+    grouping_cols = [e for e in ['Location', 'Activity', 'ActivityConsumedBy', 'ActivityProducedBy']
+                     if e in denom_df.columns.values.tolist()]
+    denom_df.loc[:, 'Denominator'] = denom_df.groupby(grouping_cols)['HelperFlow'].transform('sum')
 
+    # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
+    possible_column_headers = ('Location', 'LocationSystem', 'Year', 'Activity', 'ActivityConsumedBy', 'ActivityProducedBy')
+    # list of column headers that do exist in the df being aggregated
+    column_headers = [e for e in possible_column_headers if e in denom_df.columns.values.tolist()]
+    merge_headers = column_headers.copy()
+    column_headers.append('Denominator')
     # create subset of denominator values based on Locations and Activities
-    denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year',
-                           'Activity', 'Denominator']].drop_duplicates().reset_index(drop=True)
+    denom_df_2 = denom_df[column_headers].drop_duplicates().reset_index(drop=True)
     # merge the denominator column with fba_w_sector df
-    allocation_df = df.merge(denom_df_2, how='left', left_on=['Location', 'LocationSystem', 'Year', 'Activity'],
-                             right_on=['Location', 'LocationSystem', 'Year', 'Activity'])
+    allocation_df = df.merge(denom_df_2,
+                             how='left',
+                             left_on=merge_headers,
+                             right_on=merge_headers)
     # calculate ratio
     allocation_df.loc[:, 'FlowAmountRatio'] = allocation_df['HelperFlow'] / allocation_df['Denominator']
     allocation_df = allocation_df.drop(columns=['Denominator']).reset_index(drop=True)
+
+    # fill empty cols with NoneType
+    allocation_df = replace_strings_with_NoneType(allocation_df)
+    # fill na values with 0
+    allocation_df['HelperFlow'] = allocation_df['HelperFlow'].fillna(0)
 
     return allocation_df
 
@@ -479,9 +496,6 @@ def allocation_helper(df_w_sector, method, attr, v):
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
                                                       sectorsourcename=method['target_sector_source'])
-
-    # generalize activity field names to enable link to water withdrawal table
-    helper_allocation = collapse_activity_fields(helper_allocation)
     # clean up helper fba with sec
     if 'clean_helper_fba_wsec' in attr:
         log.info("Cleaning " + attr['helper_source'] + ' FBA with sectors')
@@ -489,6 +503,14 @@ def allocation_helper(df_w_sector, method, attr, v):
         if attr['helper_source'] == 'BLS_QCEW':
             helper_allocation = bls_clean_allocation_fba_w_sec(helper_allocation, attr, method)
             # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba_wsec"])(helper_allocation, attr, method)
+
+    # run sector disagg to capture any missing lower level naics
+    helper_allocation = sector_disaggregation(helper_allocation, fba_mapped_default_grouping_fields)
+
+    # generalize activity field names to enable link to water withdrawal table
+    helper_allocation = collapse_activity_fields(helper_allocation)
+    # drop any rows not mapped
+    helper_allocation = helper_allocation[helper_allocation['Sector'].notnull()]
     # drop columns
     helper_allocation = helper_allocation.drop(columns=['Activity', 'Min', 'Max'])
 
@@ -553,7 +575,8 @@ def allocation_helper(df_w_sector, method, attr, v):
         modified_fba_allocation = modified_fba_allocation.drop(columns=["HelperFlow", 'ReplacementValue', 'Sector'])
 
     elif attr['helper_method'] == 'proportional':
-        modified_fba_allocation = proportional_allocation_by_location_and_activity(modified_fba_allocation, 'Sector')
+        modified_fba_allocation = proportional_allocation_by_location_and_activity(modified_fba_allocation,
+                                                                                   sector_col_to_merge)
         modified_fba_allocation['FlowAmountRatio'] = modified_fba_allocation['FlowAmountRatio'].fillna(0)
         modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
                                                        modified_fba_allocation['FlowAmountRatio']
