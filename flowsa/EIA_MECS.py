@@ -382,15 +382,18 @@ def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
 
     from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
 
+    # define the activity/sector columns to base modifications
+    activity_column = 'ActivityConsumedBy'
+    sector_column = 'SectorConsumedBy'
+
     # first aggregate existing data to higher naics
     group_cols = fba_mapped_default_grouping_fields
     df_w_sec = sector_aggregation(df_w_sec, group_cols)
     # replace value in Activity cols for created rows
-    df_w_sec['ActivityProducedBy'] = df_w_sec['SectorProducedBy'].copy()
-    df_w_sec['ActivityConsumedBy'] = df_w_sec['SectorConsumedBy'].copy()
+    df_w_sec[activity_column] = df_w_sec[sector_column].copy()
 
     # then estimate missing data
-    df = estimate_missing_data(df_w_sec, [3, 4, 5])
+    df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
 
     return df
 
