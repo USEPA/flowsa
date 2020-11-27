@@ -35,6 +35,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :return: a df with activity fields mapped to 'sectors'
     """
 
+    # todo: add sectorsourcename col value
+
     mappings = []
 
     # First check if source activities are NAICS like - if so make it into a mapping file
@@ -150,21 +152,28 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     :return:
     """
 
-    # read in source crosswalk
-    df = get_activitytosector_mapping(source)
-    sector_source_name = df['SectorSourceName'].all()
-    df = expand_naics_list(df, sector_source_name)
-    # subset source crosswalk to only contain values pertaining to list of activity names
-    df = df.loc[df['Activity'].isin(activitynames)]
-    # turn column of sectors related to activity names into list
-    sector_list = pd.unique(df['Sector']).tolist()
-    # subset fba allocation table to the values in the activity list, based on overlapping sectors
-    if 'Sector' in fba_allocation:
-        fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(sector_list)].reset_index(drop=True)
+    # load the source catalog
+    cat = load_source_catalog()
+    src_info = cat[source]
+    if src_info['sector-like_activities'] is False:
+        # read in source crosswalk
+        df = get_activitytosector_mapping(source)
+        sector_source_name = df['SectorSourceName'].all()
+        df = expand_naics_list(df, sector_source_name)
+        # subset source crosswalk to only contain values pertaining to list of activity names
+        df = df.loc[df['Activity'].isin(activitynames)]
+        # turn column of sectors related to activity names into list
+        sector_list = pd.unique(df['Sector']).tolist()
+        # subset fba allocation table to the values in the activity list, based on overlapping sectors
+        if 'Sector' in fba_allocation:
+            fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(sector_list)].reset_index(drop=True)
+        else:
+            fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
+                                                       (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
+                                                       ].reset_index(drop=True)
     else:
-        fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
-                                                   (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
-                                                   ].reset_index(drop=True)
+        # if activities are sector-like and there is not a crosswalk, do not subset
+        fba_allocation_subset = fba_allocation.copy()
 
     return fba_allocation_subset
 
