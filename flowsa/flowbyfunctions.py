@@ -527,7 +527,7 @@ def allocation_helper(df_w_sector, method, attr, v):
     elif all(v is None for v in sec_produced_list):
         sector_col_to_merge = 'SectorConsumedBy'
     else:
-        log.error('Ambiguous FBA with sector columns to merge with helper allocation dataset')
+        log.error('There is not a clear sector column to base merge with helper allocation dataset')
 
     # merge allocation df with helper df based on sectors, depending on geo scales of dfs
     if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
