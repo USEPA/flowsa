@@ -380,7 +380,10 @@ def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
     :return:
     """
 
-    from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
+    from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation, fba_mapped_default_grouping_fields
+
+    # test
+    # df_w_sec = flow_subset_wsec.copy()
 
     # define the activity/sector columns to base modifications
     activity_column = 'ActivityConsumedBy'
@@ -389,6 +392,10 @@ def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
     # first aggregate existing data to higher naics
     group_cols = fba_mapped_default_grouping_fields
     df_w_sec = sector_aggregation(df_w_sec, group_cols)
+    # replace value in Activity cols for created rows
+    df_w_sec[activity_column] = df_w_sec[sector_column].copy()
+    # sector disaggregation
+    df_w_sec = sector_disaggregation(df_w_sec, group_cols)
     # replace value in Activity cols for created rows
     df_w_sec[activity_column] = df_w_sec[sector_column].copy()
 
