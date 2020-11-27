@@ -27,7 +27,7 @@ from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
-from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
+from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, fba_mapped_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, \
@@ -244,10 +244,8 @@ def main(method_name):
 
                     # create flow allocation ratios for each activity
                     flow_alloc_list = []
-                    group_cols = fba_default_grouping_fields
+                    group_cols = fba_mapped_default_grouping_fields
                     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-                    group_cols.append('SectorProducedBy')
-                    group_cols.append('SectorConsumedBy')
                     for n in names:
                         log.info("Creating allocation ratios for " + n)
                         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
