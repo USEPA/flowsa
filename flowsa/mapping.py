@@ -172,8 +172,12 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
                                                        (fba_allocation[fbs_activity_fields[1]].isin(sector_list))
                                                        ].reset_index(drop=True)
     else:
-        # if activities are sector-like and there is not a crosswalk, do not subset
-        fba_allocation_subset = fba_allocation.copy()
+        if 'Sector' in fba_allocation:
+            fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(activitynames)].reset_index(drop=True)
+        else:
+            fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
+                                                       (fba_allocation[fbs_activity_fields[1]].isin(activitynames))
+                                                       ].reset_index(drop=True)
 
     return fba_allocation_subset
 
