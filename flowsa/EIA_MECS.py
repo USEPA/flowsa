@@ -158,7 +158,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_MECS_Land'
     df['Year'] = args["year"]
-    df["Compartment"] = None
+    df["Compartment"] = 'ground'
     df['MeasureofSpread'] = "RSE"
     df['Location'] = US_FIPS
     df['Unit'] = unit
