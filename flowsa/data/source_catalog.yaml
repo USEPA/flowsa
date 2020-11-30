@@ -16,11 +16,23 @@ BEA_GDP:
   sector-like_activities: False
   #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
+BEA_GDP_GrossOutput:
+  class:
+    - Money
+  sector-like_activities: False
+  #  activity_schema: BEA_2012_Detail_Code
+  sector_aggregation_level: "disaggregated"
 BEA_Use:
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
+  sector_aggregation_level: "disaggregated"
+BEA_Use_Detail_PRO_BeforeRedef:
+  class:
+    - Money
+  sector-like_activities: False #update to true once alternate activity_schema in place
+  #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_Make_Detail_BeforeRedef:
   class:
