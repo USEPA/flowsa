@@ -134,7 +134,7 @@ def eia_cbecs_land_parse(dataframe_list, args):
     return df
 
 
-def cbecs_land_fba_cleanup(fba, attr):
+def cbecs_land_fba_cleanup(fba):
 
     # calculate the land area in addition to building footprint
     fba = calculate_total_facility_land_area(fba)
