@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
-    create_fill_na_dict, fips_number_key, \
+    create_fill_na_dict, fips_number_key, load_source_catalog, \
     load_sector_length_crosswalk_w_nonnaics, update_geoscale, flow_by_activity_wsec_mapped_fields
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
@@ -274,26 +274,32 @@ def harmonize_units(df):
     return df
 
 
-def allocate_by_sector(df_w_sectors, allocation_method, group_cols):
+def allocate_by_sector(df_w_sectors, source_name, allocation_method, group_cols):
     """
-    Create an allocation ratio, after generalizing df so only one sector column
+    Create an allocation ratio for df
 
     :param df_w_sectors: df with column of sectors
+    :param source_name: need source name to determine if activiites are sector-like
     :param allocation_method: currently written for 'proportional'
-    :param sector_column: the column to base allocation ratios on (SectorProducedBy or SectorConsumedBy)
+    :param group_cols: columns on which to base aggregation and disaggregation
     :return: df with FlowAmountRatio for each sector
     """
 
-    # run sector aggregation fxn to determine total flowamount for each level of sector
-    df1 = sector_aggregation(df_w_sectors, group_cols)
-    # run sector disaggregation to capture one-to-one naics4/5/6 relationships
-    df2 = sector_disaggregation(df1, group_cols)
+    cat = load_source_catalog()
+    src_info = cat[source_name]
+    if src_info['sector-like_activities'] is False:
+        # run sector aggregation fxn to determine total flowamount for each level of sector
+        df1 = sector_aggregation(df_w_sectors, group_cols)
+        # run sector disaggregation to capture one-to-one naics4/5/6 relationships
+        df2 = sector_disaggregation(df1, group_cols)
 
-    # if statements for method of allocation
-    if allocation_method == 'proportional':
-        allocation_df = proportional_allocation_by_location(df2)
+        # if statements for method of allocation
+        if allocation_method == 'proportional':
+            allocation_df = proportional_allocation_by_location(df2)
+        else:
+            log.error('Must create function for specified method of allocation')
     else:
-        log.error('Must create function for specified method of allocation')
+        allocation_df = df_w_sectors.assign(FlowAmountRatio=1)
 
     return allocation_df
 
@@ -1006,14 +1012,16 @@ def estimate_suppressed_data(df, sector_column):
             # sector one level up and divide by number of sectors with suppresed data
             df_m.loc[:, 'FlowAmount'] = (df_m['FlowAmount'] - df_m['alloc_flow']) / df_m['sector_count']
             # only keep the suppressed sector subset activity columns
-            df_m2 = df_m.drop(columns = [sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
-            df_m2 = df_m2.rename(columns={sector_column + '_y': sector_column})
+            df_m = df_m.drop(columns=[sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
+            df_m = df_m.rename(columns={sector_column + '_y': sector_column})
 
             # drop the existing rows with suppressed data and append the new estimates from fba df
             modified_df = pd.merge(df, suppressed_sectors_sub, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
-            df = pd.concat([modified_df, df_m2], ignore_index=True, sort=True)
+            df = pd.concat([modified_df, df_m], ignore_index=True, sort=True)
 
     df_w_estimated_data = replace_strings_with_NoneType(df)
+    # drop cols
+    # df_w_estimated_data = df_w_estimated_data.drop(columns=['s_tmp', 'alloc_flow', 'sector_count'])
 
     return df_w_estimated_data
 
