@@ -239,9 +239,6 @@ def main(method_name):
                         log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
 
-                    # drop columns
-                    # fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
-
                     # create flow allocation ratios for each activity
                     flow_alloc_list = []
                     group_cols = fba_mapped_default_grouping_fields
@@ -249,10 +246,11 @@ def main(method_name):
                     for n in names:
                         log.info("Creating allocation ratios for " + n)
                         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
-                        if len(fba_allocation_subset_2)==0:
+                        if len(fba_allocation_subset_2) == 0:
                             log.info("No data found to allocate " + n)
                         else:
-                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'], group_cols)
+                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_source'],
+                                                            attr['allocation_method'], group_cols)
                             flow_alloc = flow_alloc.assign(FBA_Activity=n)
                             flow_alloc_list.append(flow_alloc)
                     flow_allocation = pd.concat(flow_alloc_list)
