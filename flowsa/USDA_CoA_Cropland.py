@@ -246,9 +246,10 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
     p = p.assign(Location_tmp=p['Location'].apply(lambda x: x[0:2]))
 
     # load usda coa cropland naics
-    df_f = flowsa.getFlowByActivity(flowclass=['Land'],
-                                    years=years_list,
-                                    datasource='USDA_CoA_Cropland_NAICS')
+    df_class = ['Land']
+    df_years = years_list
+    df_datasource = 'USDA_CoA_Cropland_NAICS'
+    df_f = flowsa.getFlowByActivity(flowclass=df_class, years=df_years, datasource=df_datasource)
     df_f = clean_df(df_f, flow_by_activity_fields, fba_fill_na_dict)
     # subset to land in farms data
     df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
@@ -262,7 +263,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
     group_cols = fba_mapped_default_grouping_fields
     group_cols = [e for e in group_cols if
                   e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-    df_f = allocate_by_sector(df_f, 'proportional', group_cols)
+    df_f = allocate_by_sector(df_f, df_datasource, 'proportional', group_cols)
     # tmp drop NoneTypes
     df_f = replace_NoneType_with_empty_cells(df_f)
     # drop naics = '11
