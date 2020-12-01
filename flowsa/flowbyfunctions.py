@@ -274,20 +274,31 @@ def harmonize_units(df):
     return df
 
 
-def allocate_by_sector(df_w_sectors, source_name, allocation_method, group_cols):
+def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_method, group_cols):
     """
     Create an allocation ratio for df
 
+    There are four scenarios to address:
+    1. FBA being allocated = non-sector-like activites & FBA doing the allocating = non-sector-like activities
+    2. FBA being allocated = non-sector-like activites & FBA doing the allocating = sector-like activities
+    3. FBA being allocated = sector-like activites & FBA doing the allocating = non-sector-like activities
+    4. FBA being allocated = sector-like activites & FBA doing the allocating = sector-like activities
+
     :param df_w_sectors: df with column of sectors
-    :param source_name: need source name to determine if activiites are sector-like
+    :param source_name: the name of the FBA df being allocated
+    :param allocation_source: The name of the FBA allocation dataframe
     :param allocation_method: currently written for 'proportional'
     :param group_cols: columns on which to base aggregation and disaggregation
     :return: df with FlowAmountRatio for each sector
     """
 
     cat = load_source_catalog()
-    src_info = cat[source_name]
-    if src_info['sector-like_activities'] is False:
+    source_df = cat[source_name]
+    allocation_df = cat[allocation_source]
+
+    if source_df['sector-like_activities'] is True & allocation_df['sector-like_activities'] is True:
+        allocation_df = df_w_sectors.assign(FlowAmountRatio=1)
+    else:
         # run sector aggregation fxn to determine total flowamount for each level of sector
         df1 = sector_aggregation(df_w_sectors, group_cols)
         # run sector disaggregation to capture one-to-one naics4/5/6 relationships
@@ -298,8 +309,7 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_method, group_cols)
             allocation_df = proportional_allocation_by_location(df2)
         else:
             log.error('Must create function for specified method of allocation')
-    else:
-        allocation_df = df_w_sectors.assign(FlowAmountRatio=1)
+
 
     return allocation_df
 
