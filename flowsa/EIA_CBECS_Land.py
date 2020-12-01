@@ -136,6 +136,10 @@ def eia_cbecs_land_parse(dataframe_list, args):
 
 def cbecs_land_fba_cleanup(fba):
 
+    # want 'All Buildings'
+    # todo: create additional fxn to modify land area based on number of floors in the buildings
+    fba = fba[fba['Description'] == 'All Buildings']
+
     # calculate the land area in addition to building footprint
     fba = calculate_total_facility_land_area(fba)
 
