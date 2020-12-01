@@ -71,7 +71,7 @@ EIA_CBECS_Land:
   class: Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_aggregation_level: "aggregated"
 EIA_CBECS_Water:
   class: Water
   sector-like_activities: False
