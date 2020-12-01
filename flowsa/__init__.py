@@ -7,7 +7,8 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 
 import pandas as pd
-from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
+from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log, fba_remote_path, \
+    fbs_remote_path
 from flowsa.flowbyfunctions import collapse_fbs_sectors
 
 
@@ -32,8 +33,7 @@ def getFlowByActivity(flowclass, years, datasource):
             # if parquet does not exist in local repo, read file from Data Commons
             try:
                 log.info(datasource + ' parquet not found in local repo, loading from Data Commons')
-                fba = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' +
-                                      datasource + "_" + str(y) + '.parquet')
+                fba = pd.read_parquet(fba_remote_path + datasource + "_" + str(y) + '.parquet')
                 fba = fba[fba['Class'].isin(flowclass)]
                 fbas = pd.concat([fbas, fba], sort=False)
             except FileNotFoundError:
@@ -57,8 +57,7 @@ def getFlowBySector(methodname):
         # if parquet does not exist in local repo, read file from Data Commons
         try:
             log.info(methodname + ' parquet not found in local repo, loading from Data Commons')
-            fbs = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/' +
-                                  methodname + ".parquet")
+            fbs = pd.read_parquet(fbs_remote_path + methodname + ".parquet")
         except FileNotFoundError:
             log.error("No parquet file found for datasource " + methodname + " in flowsa or Data Commons")
 
