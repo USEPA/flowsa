@@ -15,6 +15,7 @@ import numpy as np
 import logging as log
 import appdirs
 import pycountry
+import datetime as dt
 
 log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -39,6 +40,8 @@ flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 
+fba_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/"
+fbs_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/"
 local_storage_path = appdirs.user_data_dir()
 
 US_FIPS = "00000"
@@ -576,4 +579,19 @@ def convert_fba_unit(df):
                                  'kg', df['Unit'])
     
     return df
+
+def get_file_update_time_from_DataCommons(datafile):
+    """
+    Gets a datetime object for the file on the DataCommons server
+    :param datafile:
+    :return:
+    """
+    base_url = "https://xri9ebky5b.execute-api.us-east-1.amazonaws.com/api/?"
+    search_param = "searchvalue"
+    url = base_url + search_param + "=" + datafile + "&place=&searchfields=filename"
+    r = make_http_request(url)
+    date_str = r.json()[0]["LastModified"]
+    file_upload_dt = dt.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S%z')
+    return file_upload_dt
+
 
