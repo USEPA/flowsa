@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     # reorder dataframe
     df = df[['activity_set', 'name', 'note']]
-    df = df.sort_values(['activity_set', 'name']).reset_index(drop=True)
+    df = df.sort_values(['activity_set', 'name']).drop_duplicates().reset_index(drop=True)
 
     # save df
     df.to_csv(flowbysectoractivitysetspath + datasource + "_asets.csv", index=False)
