@@ -250,7 +250,7 @@ def main(method_name):
                         if len(fba_allocation_subset_2) == 0:
                             log.info("No data found to allocate " + n)
                         else:
-                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_source'],
+                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, k, attr['allocation_source'],
                                                             attr['allocation_method'], group_cols)
                             flow_alloc = flow_alloc.assign(FBA_Activity=n)
                             flow_alloc_list.append(flow_alloc)
