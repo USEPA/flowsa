@@ -64,3 +64,98 @@ def mlu_parse(dataframe_list, args):
     output = assign_fips_location_system(output, args['year'])
 
     return output
+
+
+def allocate_usda_ers_mlu_land_in_urban_areas(df_load, attr, fbs_list):
+    """
+    This function is used to allocate the USDA_ERS_MLU activity 'land in urban areas' to NAICS 2012 sectors. Allocation
+    is dependent on assumptions defined in 'values_from_literature.py' as well as results from allocating
+    'EIA_CBECS_Land' and 'EIA_MECS_Land' to land based sectors.
+
+    Methodology is based on the manuscript:
+    Lin Zeng and Anu Ramaswami
+    Impact of Locational Choices and Consumer Behaviors on Personal Land Footprints:
+    An Exploration Across the Urban–Rural Continuum in the United States
+    Environmental Science & Technology 2020 54 (6), 3091-3102
+    DOI: 10.1021/acs.est.9b06024
+
+    :param df_load:
+    :return:
+    """
+
+    # todo: need to group everything by location and total value because likely need to have state version
+
+    from flowsa.values_from_literature import get_urban_land_use_for_airports, get_urban_land_use_for_railroads
+
+    # tmp to test if method works
+    # allocated_urban_areas_df = df_load.copy()
+
+    # test
+    df_load = flow_subset_mapped.copy()
+
+    # define sector column to base calculations
+    sector_col = 'SectorConsumedBy'
+    # create allocations at the 6 digit NAICS (aggregate later if necessary)
+    df = df_load[df_load[sector_col].apply(lambda x: len(x) == 6)].reset_index(drop=True)
+
+    # read in the cbecs and mecs df from df_list
+    for df_i in fbs_list:
+        if df_i['Context'].all() == 'resource/ground/human-dominated/Commercial':
+            cbecs = df_i
+        elif df_i['Context'].all() == 'resource/ground/human-dominated/industrial':
+            mecs = df_i
+
+    # calculate total residential area from the American Housing Survey
+    # todo: base calculation off AHS df, not tmp assumption
+    df_residential = df[df[sector_col] == 'F01000']
+    # temp residential multiplier
+    residential_multiplier = 0.6
+    df_residential = df_residential.assign(FlowAmount=df_residential['FlowAmount'] * residential_multiplier)
+
+    # make an assumption about the percent of urban area that is open space
+
+    # determine commercial land area from prior calculation
+
+    # calculate total urban transportation by subtrating calculated areas from total urban land (including land for
+    # commercial and manufactured buildings
+    # df_tut
+
+    # make an assumption about the percent of urban area used by airports
+    airport_multiplier = get_urban_land_use_for_airports()
+    df_airport = df[df[sector_col] == '488119']
+    df_airport.loc[:, 'FlowAmount'] = df_airport['FlowAmount'] * airport_multiplier
+
+    # make an assumption about the percent of urban area used by railroads
+    railroad_multiplier = get_urban_land_use_for_railroads()
+    df_railroad = df[df[sector_col] == '482112']
+    df_railroad.loc[:, 'FlowAmount'] = df_railroad['FlowAmount'] * railroad_multiplier
+
+    # further allocate the remaining urban transportation area using Federal Highway Administration fees
+
+    # concat all df subsets
+    allocated_urban_areas_df = pd.concat([df_airport, df_railroad], sort=False).reset_index(drop=True)
+
+    return allocated_urban_areas_df
+
+
+def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df_load, attr):
+    """
+    This function is used to allocate the USDA_ERS_MLU activity 'land in urban areas' to NAICS 2012 sectors. Allocation
+    is dependent on assumptions defined in 'values_from_literature.py' as well as results from allocating
+    'EIA_CBECS_Land' and 'EIA_MECS_Land' to land based sectors.
+
+    Methodology is based on the manuscript:
+    Lin Zeng and Anu Ramaswami
+    Impact of Locational Choices and Consumer Behaviors on Personal Land Footprints:
+    An Exploration Across the Urban–Rural Continuum in the United States
+    Environmental Science & Technology 2020 54 (6), 3091-3102
+    DOI: 10.1021/acs.est.9b06024
+
+    :param df_load:
+    :return:
+    """
+
+    # tmp to test if method works
+    allocated_urban_areas_df = df_load.copy()
+
+    return allocated_urban_areas_df
