@@ -36,18 +36,21 @@ from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
     check_if_data_exists_for_same_geoscales, check_allocation_ratios,\
     check_for_differences_between_fba_load_and_fbs_output
-from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
+
+# import specific functions
+from flowsa.BEA import subset_BEA_Use
 from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
-from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
-from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
-from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
-from flowsa.stewicombo_to_sector import stewicombo_to_sector
+from flowsa.EIA_CBECS_Land import cbecs_land_fba_cleanup
 from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec, \
     mecs_land_fba_cleanup, eia_mecs_land_clean_allocation_fba_w_sec
-from flowsa.EIA_CBECS_Land import cbecs_land_fba_cleanup
 from flowsa.EPA_NEI import clean_NEI_fba
-from flowsa.BEA import subset_BEA_Use
+from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
+from flowsa.stewicombo_to_sector import stewicombo_to_sector
+from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
+from flowsa.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas
+from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
+from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 
 
 def parse_args():
@@ -179,6 +182,13 @@ def main(method_name):
                 if attr['allocation_method'] == 'direct':
                     log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
                     fbs = flow_subset_mapped.copy()
+
+                # if allocation method for an activity set requires a specific function due to the complicated nature
+                # of the allocation, call on function here
+                elif attr['allocation_method'] == 'unique_function':
+                    log.info('Calling on function specified in method yaml to allocate ' +
+                             ', '.join(map(str, names)) + ' to sectors')
+                    fbs = getattr(sys.modules[__name__], attr['allocation_source'])(flow_subset_mapped, attr)
 
                 else:
                     # determine appropriate allocation dataset
