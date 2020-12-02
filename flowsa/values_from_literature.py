@@ -145,9 +145,10 @@ def get_transportation_sectors_based_on_FHA_fees():
 
     :return:
     """
+    fha_dict = ({'Truck transportation': {'NAICS_2012_Code': '484', 'ShareOfFees': 0.329},
+                 'Transit and ground passenger transportation': {'NAICS_2012_Code': '485', 'ShareOfFees': 0.001},
+                 'State and local government passenger transit': {'NAICS_2012_Code': 'S00201', 'ShareOfFees': 0.001},
+                 'Personal consumption expenditures': {'NAICS_2012_Code': 'F01000', 'ShareOfFees': 0.669}
+                 })
 
-    FHA_dict = ({'Truck': 0.329,
-                 'Transit and ground passenger transportation': 0.001,
-                 'State/local government passenger transit': 0.001,
-                 'Personal consumption expenditures': 0.669})
-    return FHA_dict
+    return fha_dict
