@@ -1,7 +1,5 @@
 %YAML 1.2
-"""
-'EIA_CBECS_Land' and 'EIA_MECS_Land' must be listed prior to 'USDA_ERS_MLU' for FBS creating
-"""
+# 'EIA_CBECS_Land' and 'EIA_MECS_Land' must be listed prior to 'USDA_ERS_MLU' for FBS creation
 ---
 
 target_sector_level: NAICS_6
@@ -134,7 +132,7 @@ source_names:
       activity_set_4:
         names:
           - 'Land in urban areas'
-        allocation_method: unique_function
+        allocation_method: allocation_function
         allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
         allocation_source_class: None
         allocation_source_year: None
@@ -185,4 +183,4 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: 'no
+        allocation_helper: 'no'
