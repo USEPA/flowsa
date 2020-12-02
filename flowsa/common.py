@@ -602,6 +602,11 @@ def get_file_update_time_from_DataCommons(datafile):
     file_upload_dt = dt.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S%z')
     return file_upload_dt
 
+def get_file_update_time_from_local(datafile,path):
+    meta = read_datafile_meta(datafile,path)
+    file_upload_dt = dt.datetime.strptime(meta["LastUpdated"], '%Y-%m-%d %H:%M:%S%z')
+    return file_upload_dt
+
 def write_datafile_meta(datafile,path):
     file_upload_dt = get_file_update_time_from_DataCommons(datafile)
     d = {}
@@ -609,6 +614,16 @@ def write_datafile_meta(datafile,path):
     data = strip_file_extension(datafile)
     with open(path + data + '_metadata.json', 'w') as file:
         file.write(json.dumps(d))
+
+def read_datafile_meta(datafile,path):
+    data = strip_file_extension(datafile)
+    try:
+        with open(path + data + '_metadata.json', 'r') as file:
+            file_contents = file.read()
+            metadata = json.loads(file_contents)
+    except FileNotFoundError:
+        log.error("Local metadata file for " + datafile + " is missing.")
+    return metadata
 
 def strip_file_extension(filename):
     return(filename.rsplit(".", 1)[0])
