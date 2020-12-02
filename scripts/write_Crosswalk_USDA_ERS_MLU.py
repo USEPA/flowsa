@@ -45,8 +45,7 @@ def assign_naics(df):
 
     # Land owned by Department of Defense and Department of Energy and used for airfields, research and development, /
     # housing, and miscellaneous military uses.
-    # todo: Federal general government (defense) S00500
-    df.loc[df['Activity'] == 'Land in defense and industrial areas', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Land in defense and industrial areas', 'Sector'] = '928110'
 
     # Federal and State parks, wilderness areas, and wildlife refuges.
     df.loc[df['Activity'] == 'Land in rural parks and wildlife areas', 'Sector'] = '71219'
@@ -87,9 +86,6 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', 'S00201']],    # state/local gov't passenger transit
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
-
-
-
 
     # categories not included to prevent double counting
 
