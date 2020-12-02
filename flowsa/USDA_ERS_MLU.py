@@ -158,7 +158,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     return allocated_urban_areas_df
 
 
-def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df_load, attr):
+def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list):
     """
     This function is used to allocate the USDA_ERS_MLU activity 'land in urban areas' to NAICS 2012 sectors. Allocation
     is dependent on assumptions defined in 'values_from_literature.py' as well as results from allocating
@@ -175,7 +175,19 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df_load, attr):
     :return:
     """
 
-    # tmp to test if method works
-    allocated_urban_areas_df = df_load.copy()
+    from flowsa.values_from_literature import get_transportation_sectors_based_on_FHA_fees
 
-    return allocated_urban_areas_df
+    # define sector column to base calculations
+    sector_col = 'SectorConsumedBy'
+
+    # load the federal highway administration fees dictionary
+    fha_dict = get_transportation_sectors_based_on_FHA_fees()
+    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(columns={'NAICS_2012_Code': sector_col})
+
+    # add fed highway administration fees as multiplier to loaded df
+    df_highway = df.merge(df_fha, how='left')
+    df_highway = df_highway[df_highway['ShareOfFees'].notna()]
+    df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] * df_highway['ShareOfFees'])
+    df_highway.drop(columns=['ShareOfFees'], inplace=True)
+
+    return df_highway
