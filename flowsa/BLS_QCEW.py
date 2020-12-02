@@ -25,7 +25,6 @@ def BLS_QCEW_URL_helper(build_url, config, args):
     us = pd.Series(['US'])
     FIPS_2 = FIPS_2.append(us, ignore_index=True)
 
-
     # the url for 2013 earlier is different than the base url (and is a zip file)
     if args["year"] < '2014':
         url = build_url
@@ -184,10 +183,14 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :param method:
     :return:
     """
-    from flowsa.flowbyfunctions import estimate_suppressed_data
+    from flowsa.flowbyfunctions import estimate_suppressed_data, sector_disaggregation, sector_aggregation, \
+        fba_mapped_default_grouping_fields
 
     sector_column = 'SectorProducedBy'
 
     df = estimate_suppressed_data(df_w_sec, sector_column)
+
+    # df = sector_aggregation(df, fba_mapped_default_grouping_fields)
+    # df = sector_disaggregation(df, fba_mapped_default_grouping_fields)
 
     return df

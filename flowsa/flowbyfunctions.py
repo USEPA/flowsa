@@ -310,7 +310,6 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
         else:
             log.error('Must create function for specified method of allocation')
 
-
     return allocation_df
 
 
