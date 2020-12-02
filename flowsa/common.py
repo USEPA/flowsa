@@ -45,12 +45,12 @@ fba_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByA
 fbs_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/"
 
 local_storage_path = os.path.realpath(appdirs.user_data_dir()+"/flowsa")
-fba_local_store_path = os.path.realpath(local_storage_path + "/FlowByActivity")
-fbs_local_store_path = os.path.realpath(local_storage_path + "/FlowBySector")
-if not os.path.exists(fba_local_store_path):
+fba_local_path = os.path.realpath(local_storage_path + "/FlowByActivity")
+fbs_local_path = os.path.realpath(local_storage_path + "/FlowBySector")
+if not os.path.exists(fba_local_path):
     os.mkdir(local_storage_path)
-    os.mkdir(fba_local_store_path)
-    os.mkdir(fbs_local_store_path)
+    os.mkdir(fba_local_path)
+    os.mkdir(fbs_local_path)
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
