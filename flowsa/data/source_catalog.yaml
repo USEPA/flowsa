@@ -9,7 +9,7 @@ BLM_PLS:
     - Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_aggregation_level: "aggregated"
 BEA_GDP:
   class:
     - Money
