@@ -185,10 +185,10 @@ def main(method_name):
 
                 # if allocation method for an activity set requires a specific function due to the complicated nature
                 # of the allocation, call on function here
-                elif attr['allocation_method'] == 'unique_function':
+                elif attr['allocation_method'] == 'allocation_function':
                     log.info('Calling on function specified in method yaml to allocate ' +
                              ', '.join(map(str, names)) + ' to sectors')
-                    fbs = getattr(sys.modules[__name__], attr['allocation_source'])(flow_subset_mapped, attr)
+                    fbs = getattr(sys.modules[__name__], attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
 
                 else:
                     # determine appropriate allocation dataset
