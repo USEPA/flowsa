@@ -52,22 +52,19 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Land in rural parks and wildlife areas', 'Sector'] = '71219'
 
     # Highways, roads, and railroad rights-of-way, plus airport facilities outside of urban areas.
-    # todo: want to add State and local government passenger transit S00201
-    df.loc[df['Activity'] == 'Land in rural transportation facilities', 'Sector'] = '481'
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '482']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '484']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
-    # todo: modify - 485 includes urban transportation
+    df.loc[df['Activity'] == 'Land in rural transportation facilities', 'Sector'] = '484'
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '485']],
+                                columns=['ActivitySourceName', 'Activity', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', 'F010']],  # personal consumption expenditures
+                                columns=['ActivitySourceName', 'Activity', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', 'S00201']],    # state/local gov't passenger transit
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
 
     # Densely-populated areas with at least 50,000 people (urbanized areas) and densely-populated areas with /
     # 2,500 to 50,000 people (urban clusters).
-    # todo: want to add State and local government passenger transit S00201
     df.loc[df['Activity'] == 'Land in urban areas', 'Sector'] = '481'
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '482']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
