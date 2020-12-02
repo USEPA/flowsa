@@ -83,9 +83,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df_load, attr, fbs_list):
     :return:
     """
 
-    # todo: need to group everything by location and total value because likely need to have state version
-
-    from flowsa.values_from_literature import get_urban_land_use_for_airports, get_urban_land_use_for_railroads
+    from flowsa.values_from_literature import get_urban_land_use_for_airports, get_urban_land_use_for_railroads, \
+        get_open_space_fraction_of_urban_area
 
     # tmp to test if method works
     # allocated_urban_areas_df = df_load.copy()
@@ -107,33 +106,43 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df_load, attr, fbs_list):
 
     # calculate total residential area from the American Housing Survey
     # todo: base calculation off AHS df, not tmp assumption
-    df_residential = df[df[sector_col] == 'F01000']
     # temp residential multiplier
     residential_multiplier = 0.6
+    df_residential = df[df[sector_col] == 'F01000']
     df_residential = df_residential.assign(FlowAmount=df_residential['FlowAmount'] * residential_multiplier)
 
     # make an assumption about the percent of urban area that is open space
+    openspace_multiplier = get_open_space_fraction_of_urban_area()
+    df_openspace = df[df[sector_col] == '712190']
+    df_openspace = df_openspace.assign(FlowAmount=df_openspace['FlowAmount'] * openspace_multiplier)
 
-    # determine commercial land area from prior calculation
+    # sum all uses of urban area that are NOT transportation
+    # first concat dfs for residential, openspace, commercial, and manufacturing land use
+    df_non_urban_transport_area = pd.concat([df_residential, df_openspace, cbecs, mecs], sort=False)
+    df_non_urban_transport_area = df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
+    non_urban_transport_area_sum = df_non_urban_transport_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount']\
+        .sum().rename(columns={'FlowAmount': 'NonTransport'})
 
-    # calculate total urban transportation by subtrating calculated areas from total urban land (including land for
-    # commercial and manufactured buildings
-    # df_tut
+    # calculate total urban transportation by subtracting calculated areas from total urban land
+    df_transport = df.merge(non_urban_transport_area_sum, how='left')
+    df_transport = df_transport.assign(FlowAmount=df_transport['FlowAmount'] - df_transport['NonTransport'])
+    df_transport.drop(columns=['NonTransport'], inplace=True)
 
-    # make an assumption about the percent of urban area used by airports
+    # make an assumption about the percent of urban transport area used by airports
     airport_multiplier = get_urban_land_use_for_airports()
-    df_airport = df[df[sector_col] == '488119']
-    df_airport.loc[:, 'FlowAmount'] = df_airport['FlowAmount'] * airport_multiplier
+    df_airport = df_transport[df_transport[sector_col] == '488119']
+    df_airport = df_airport.assign(FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
 
-    # make an assumption about the percent of urban area used by railroads
+    # make an assumption about the percent of urban transport area used by railroads
     railroad_multiplier = get_urban_land_use_for_railroads()
-    df_railroad = df[df[sector_col] == '482112']
-    df_railroad.loc[:, 'FlowAmount'] = df_railroad['FlowAmount'] * railroad_multiplier
+    df_railroad = df_transport[df_transport[sector_col] == '482112']
+    df_railroad = df_railroad.assign(FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
 
     # further allocate the remaining urban transportation area using Federal Highway Administration fees
 
     # concat all df subsets
-    allocated_urban_areas_df = pd.concat([df_airport, df_railroad], sort=False).reset_index(drop=True)
+    allocated_urban_areas_df = pd.concat([df_residential, df_openspace, df_airport, df_railroad],
+                                         sort=False).reset_index(drop=True)
 
     return allocated_urban_areas_df
 
