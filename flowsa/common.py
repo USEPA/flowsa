@@ -16,6 +16,7 @@ import logging as log
 import appdirs
 import pycountry
 import datetime as dt
+import json
 
 log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -42,7 +43,14 @@ fbsoutputpath = outputpath + 'FlowBySector/'
 
 fba_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/"
 fbs_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/"
-local_storage_path = appdirs.user_data_dir()
+
+local_storage_path = os.path.realpath(appdirs.user_data_dir()+"/flowsa")
+fba_local_store_path = os.path.realpath(local_storage_path + "/FlowByActivity")
+fbs_local_store_path = os.path.realpath(local_storage_path + "/FlowBySector")
+if not os.path.exists(fba_local_store_path):
+    os.mkdir(local_storage_path)
+    os.mkdir(fba_local_store_path)
+    os.mkdir(fbs_local_store_path)
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -594,4 +602,13 @@ def get_file_update_time_from_DataCommons(datafile):
     file_upload_dt = dt.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S%z')
     return file_upload_dt
 
+def write_datafile_meta(datafile,path):
+    file_upload_dt = get_file_update_time_from_DataCommons(datafile)
+    d = {}
+    d["LastUpdated"] = format(file_upload_dt)
+    data = strip_file_extension(datafile)
+    with open(path + data + '_metadata.json', 'w') as file:
+        file.write(json.dumps(d))
 
+def strip_file_extension(filename):
+    return(filename.rsplit(".", 1)[0])
