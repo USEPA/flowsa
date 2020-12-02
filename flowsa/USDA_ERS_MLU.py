@@ -66,7 +66,7 @@ def mlu_parse(dataframe_list, args):
     return output
 
 
-def allocate_usda_ers_mlu_land_in_urban_areas(df_load, attr, fbs_list):
+def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     """
     This function is used to allocate the USDA_ERS_MLU activity 'land in urban areas' to NAICS 2012 sectors. Allocation
     is dependent on assumptions defined in 'values_from_literature.py' as well as results from allocating
@@ -83,19 +83,11 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df_load, attr, fbs_list):
     :return:
     """
 
-    from flowsa.values_from_literature import get_urban_land_use_for_airports, get_urban_land_use_for_railroads, \
-        get_open_space_fraction_of_urban_area
-
-    # tmp to test if method works
-    # allocated_urban_areas_df = df_load.copy()
-
-    # test
-    df_load = flow_subset_mapped.copy()
+    from flowsa.values_from_literature import get_transportation_sectors_based_on_FHA_fees, \
+        get_urban_land_use_for_airports, get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
 
     # define sector column to base calculations
     sector_col = 'SectorConsumedBy'
-    # create allocations at the 6 digit NAICS (aggregate later if necessary)
-    df = df_load[df_load[sector_col].apply(lambda x: len(x) == 6)].reset_index(drop=True)
 
     # read in the cbecs and mecs df from df_list
     for df_i in fbs_list:
@@ -103,6 +95,10 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df_load, attr, fbs_list):
             cbecs = df_i
         elif df_i['Context'].all() == 'resource/ground/human-dominated/industrial':
             mecs = df_i
+
+    # load the federal highway administration fees dictionary
+    fha_dict = get_transportation_sectors_based_on_FHA_fees()
+    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(columns={'NAICS_2012_Code': sector_col})
 
     # calculate total residential area from the American Housing Survey
     # todo: base calculation off AHS df, not tmp assumption
@@ -139,10 +135,25 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df_load, attr, fbs_list):
     df_railroad = df_railroad.assign(FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
 
     # further allocate the remaining urban transportation area using Federal Highway Administration fees
+    # first subtract area for airports and railroads
+    air_rail_area = pd.concat([df_airport, df_railroad], sort=False)
+    air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
+    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount'] \
+        .sum().rename(columns={'FlowAmount': 'AirRail'})
+
+    df_highway = df_transport.merge(air_rail_area_sum, how='left')
+    df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
+    df_highway.drop(columns=['AirRail'], inplace=True)
+
+    # add fed highway administration fees
+    df_highway2 = df_highway.merge(df_fha, how='left')
+    df_highway2 = df_highway2[df_highway2['ShareOfFees'].notna()]
+    df_highway2 = df_highway2.assign(FlowAmount=df_highway2['FlowAmount'] * df_highway2['ShareOfFees'])
+    df_highway2.drop(columns=['ShareOfFees'], inplace=True)
 
     # concat all df subsets
-    allocated_urban_areas_df = pd.concat([df_residential, df_openspace, df_airport, df_railroad],
-                                         sort=False).reset_index(drop=True)
+    allocated_urban_areas_df = pd.concat([df_residential, df_openspace, df_airport, df_railroad, df_highway2],
+                                         ignore_index=True, sort=False).reset_index(drop=True)
 
     return allocated_urban_areas_df
 
