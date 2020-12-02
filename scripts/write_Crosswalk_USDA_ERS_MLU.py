@@ -84,6 +84,11 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '488119']],    # airports
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '712190']],    # city parks/open space
+                                columns=['ActivitySourceName', 'Activity', 'Sector']
+                                ), ignore_index=True, sort=True)
+
+
 
     # categories not included to prevent double counting
 
