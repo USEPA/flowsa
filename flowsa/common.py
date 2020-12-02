@@ -45,8 +45,8 @@ fba_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByA
 fbs_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/"
 
 local_storage_path = os.path.realpath(appdirs.user_data_dir()+"/flowsa")
-fba_local_path = os.path.realpath(local_storage_path + "/FlowByActivity")
-fbs_local_path = os.path.realpath(local_storage_path + "/FlowBySector")
+fba_local_path = os.path.realpath(local_storage_path + "/FlowByActivity/")
+fbs_local_path = os.path.realpath(local_storage_path + "/FlowBySector/")
 if not os.path.exists(fba_local_path):
     os.mkdir(local_storage_path)
     os.mkdir(fba_local_path)
@@ -612,13 +612,13 @@ def write_datafile_meta(datafile,path):
     d = {}
     d["LastUpdated"] = format(file_upload_dt)
     data = strip_file_extension(datafile)
-    with open(path + data + '_metadata.json', 'w') as file:
+    with open(path + "/" + data + '_metadata.json', 'w') as file:
         file.write(json.dumps(d))
 
 def read_datafile_meta(datafile,path):
     data = strip_file_extension(datafile)
     try:
-        with open(path + data + '_metadata.json', 'r') as file:
+        with open(path + "/" + data + '_metadata.json', 'r') as file:
             file_contents = file.read()
             metadata = json.loads(file_contents)
     except FileNotFoundError:
