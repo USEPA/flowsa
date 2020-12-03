@@ -149,3 +149,48 @@ def ahs_parse(dataframe_list, args):
     df["DistributionType"] = "None"
     df["FlowType"] = "None"
     return df
+
+# test
+ahs = flowsa.getFlowByActivity(flowclass=['Land'], years=[2013], datasource="Census_AHS")
+def calculate_urban_and_rural_residential_land_area(ahs_fba):
+    """
+    Read in an American Housing Survey FlowByActivity and calculate the land area in the US occupied by
+    urban and rural housing
+    :param ahs_fba: American Housing Survey FlowByActivity
+    :return:
+    """
+    from flowsa.flowbyfunctions import weighted_average
+
+    # test
+    ahs_fba = ahs.copy()
+    # test
+    test = ahs_fba[(ahs_fba['FlowName'] == 'CROPSL') & (ahs_fba['FlowAmount'] != 0)].reset_index(drop=True)
+
+    # assumption on lot size where missing (assumption duplicates USDA Major Land Use report)
+    fill_missing_lot_value = 200
+    convert_square_ft_to_acres = 43560
+
+    # pivot table
+    df = ahs_fba.pivot(index='ActivityConsumedBy', columns='FlowName', values = 'FlowAmount')
+
+    # replace any missing lot size values with assumption defined above
+    df2 = df.assign(LOT=df.apply(lambda x: fill_missing_lot_value if x['LOT'] == 0 else x['LOT'], axis=1))
+    # convert lot data from square feet to square acres
+    df2 = df2.assign(LOT = df2['LOT']/convert_square_ft_to_acres)
+
+    # label rows as urban or rural
+    # df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in [1, 2, 4] else 'rural', axis=1))
+    df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in [1, 2, 4] else '', axis=1))
+    # df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5]) else x['loc_label'], axis=1))
+    df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5]) & (x['CROPSL'] not in [-6, 2]) else x['loc_label'], axis=1))
+
+    # We then weighted the lot sizes (‘lot’) with the AHS survey weights, summed, and converted to acres (dividing by 43560)
+
+    # weight_calc = weighted_average(df2, 'LOT', 'WEIGHT', 'loc_label')
+    df3 = df2.assign(FlowAmount=df2['LOT'] * df2['WEIGHT'])
+    # test
+    test2 = df3[df3['CROPSL'] != 0].reset_index(drop=True)
+
+    calculated_area = df3.groupby(df3['loc_label']).agg({'FlowAmount': ['sum']})
+
+    return calculated_area
