@@ -158,7 +158,7 @@ def calculate_total_facility_land_area(df):
 
     floor_space_to_land_area_ratio = get_commercial_and_manufacturing_floorspace_to_land_area_ratio()
 
-    df['FlowAmount'] = df['FlowAmount']/floor_space_to_land_area_ratio - df['FlowAmount']
+    df = df.assign(FlowAmount=(df['FlowAmount']/floor_space_to_land_area_ratio) - df['FlowAmount'])
 
     return df
 
