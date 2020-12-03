@@ -17,7 +17,7 @@ from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level
 
 def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     """
-    Returns emissions from stewicombo in fbs format
+    Returns emissions from stewicombo in fbs format, requires stewi > 0.9.4
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
     :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
@@ -36,6 +36,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
     from facilitymatcher import output_dir as fm_output_dir
+    from flowsa.EPA_NEI import drop_GHGs
 
     NAICS_level_value=sector_level_key[NAICS_level]
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
@@ -45,6 +46,10 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     facility_mapping = pd.DataFrame()
     # load facility data from stewi output directory, keeping only the facility IDs, and geographic information
     inventory_list = list(inventory_dict.keys())
+
+    if 'NEI' in inventory_list and not 'GHGRP' in inventory_list:
+        df = drop_GHGs(df)
+
     for i in range(len(inventory_dict)):
         # define inventory name as inventory type + inventory year (e.g., NEI_2017)
         inventory_name = inventory_list[i] + '_' + list(inventory_dict.values())[i]
@@ -131,7 +136,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
                                          'Unit':'first'})
   
     # add reliability score
-    fbs['DataReliability']=weighted_average(df, 'ReliabilityScore', 'FlowAmount', grouping_vars)
+    fbs['DataReliability']=weighted_average(df, 'DataReliability', 'FlowAmount', grouping_vars)
     fbs.reset_index(inplace=True)
     
     # apply flow mapping
@@ -151,6 +156,8 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     # add missing flow by sector fields
     fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
     
+    fbs = check_for_missing_sector_data(fbs, NAICS_level)
+
     # sort dataframe and reset index
     fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
 
@@ -208,3 +215,64 @@ def naics_expansion(facility_NAICS):
         facility_NAICS = pd.concat([facility_NAICS, new_naics], sort=True)
 
     return facility_NAICS
+
+def check_for_missing_sector_data(df, target_sector_level):
+    """
+    Modeled after datachecks.py check_if_losing_sector_data
+    Allocates flow amount equally across child NAICS when parent NAICS is not target_level
+    :param df:
+    :param target_sector_level:
+    :return:
+    """
+
+    from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
+
+    # temporarily replace null values with empty cells
+    df = replace_NoneType_with_empty_cells(df)
+
+    activity_field = "SectorProducedBy"
+    rows_lost = pd.DataFrame()
+    cw_load = load_sector_length_crosswalk_w_nonnaics()
+    for i in range(3, sector_level_key[target_sector_level]):
+        # create df of i length
+        df_subset = df.loc[df[activity_field].apply(lambda x: len(x) == i)]
+
+        # import cw and subset to current sector length and target sector length
+
+        nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
+        cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
+        # add column with counts
+        cw['sector_count'] = cw.groupby(nlength)[nlength].transform('count')
+
+        # merge df & replace sector produced columns
+        df_x = pd.merge(df_subset, cw, how='left', left_on=[activity_field], right_on=[nlength])
+        df_x[activity_field]=df_x[target_sector_level]
+        df_x= df_x.drop(columns=[nlength, target_sector_level])
+
+        # calculate new flow amounts, based on sector count, allocating equally to the new sector length codes
+        df_x['FlowAmount'] = df_x['FlowAmount'] / df_x['sector_count']
+        df_x = df_x.drop(columns=['sector_count'])
+        # replace null values with empty cells
+        df_x = replace_NoneType_with_empty_cells(df_x)
+
+        # append to df
+        sector_list = df_subset[activity_field].drop_duplicates()
+        if len(df_x) != 0:
+            log.warning('Data found at ' + str(i) + ' digit NAICS to be allocated'
+                                                    ': {}'.format(' '.join(map(str, sector_list))))
+            rows_lost = rows_lost.append(df_x, ignore_index=True, sort=True)
+
+    if len(rows_lost) == 0:
+        log.info('No data loss from NAICS in dataframe')
+    else:
+        log.info('Allocating FlowAmounts equally to each ' + target_sector_level)
+
+    # add rows of missing data to the fbs sector subset
+    df_allocated = pd.concat([df, rows_lost], ignore_index=True, sort=True)
+    df_allocated = df_allocated.loc[df_allocated[activity_field].apply(lambda x: len(x)==sector_level_key[target_sector_level])]
+    df_allocated.reset_index(inplace=True)
+
+    # replace empty cells with NoneType (if dtype is object)
+    df_allocated = replace_strings_with_NoneType(df_allocated)
+
+    return df_allocated

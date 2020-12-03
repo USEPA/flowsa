@@ -29,8 +29,12 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2002']
+    # flowclass
+    flowclass = ['Money']
+    # datasource
+    datasource = 'BEA_Make_Table'
     # df of unique ers activity names
-    df = unique_activity_names('BEA_Make_Table', years)
+    df = unique_activity_names(flowclass, years, datasource)
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
@@ -40,4 +44,4 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_BEA_Make_Table_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

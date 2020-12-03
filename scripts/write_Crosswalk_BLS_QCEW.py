@@ -41,8 +41,12 @@ def link_non_bls_naics_to_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2002', '2010', '2011', '2012', '2015']
+    # flowclass
+    flowclass = ['Employment', 'Money', 'Other']
+    # datasource
+    datasource = 'BLS_QCEW'
     # df of unique ers activity names
-    df = unique_activity_names('BLS_QCEW', years)
+    df = unique_activity_names(flowclass, years, datasource)
     # Activity and Sector are the same
     df['Sector'] = df['Activity'].copy()
     # modify the sector for activity = '31-33'
@@ -58,4 +62,4 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_BLS_QCEW_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

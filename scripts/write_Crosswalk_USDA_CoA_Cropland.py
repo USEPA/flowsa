@@ -1,4 +1,4 @@
-# write_UDSA_ERS_FIWS_xwalk.py (scripts)
+# write_Crosswalk_UDSA_CoA_Cropland.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 # ingwersen.wesley@epa.gov
@@ -163,8 +163,12 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2012', '2017']
+    # flowclass
+    flowclass = ['Land', 'Other']
+    # datasource
+    datasource = 'USDA_CoA_Cropland'
     # df of unique ers activity names
-    df = unique_activity_names('USDA_CoA_Cropland', years)
+    df = unique_activity_names(flowclass, years, datasource)
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
@@ -174,4 +178,4 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USDA_CoA_Cropland_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

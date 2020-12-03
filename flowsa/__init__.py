@@ -21,22 +21,20 @@ def getFlowByActivity(flowclass, years, datasource):
     :return: a pandas DataFrame in FlowByActivity format
     """
     fbas = pd.DataFrame()
-    # for assigning dtypes
-    fields = {'ActivityProducedBy': 'str'}
     for y in years:
         # first try reading parquet from your local repo
         try:
+            log.info('Loading ' + datasource + ' ' + str(y) +' parquet from local repository')
             fba = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet")
             fba = fba[fba['Class'].isin(flowclass)]
-            fba = fba.astype(fields)
             fbas = pd.concat([fbas, fba], sort=False)
         except (OSError, FileNotFoundError):
             # if parquet does not exist in local repo, read file from Data Commons
             try:
+                log.info(datasource + ' parquet not found in local repo, loading from Data Commons')
                 fba = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' +
                                       datasource + "_" + str(y) + '.parquet')
                 fba = fba[fba['Class'].isin(flowclass)]
-                fba = fba.astype(fields)
                 fbas = pd.concat([fbas, fba], sort=False)
             except FileNotFoundError:
                 log.error("No parquet file found for datasource " + datasource + "and year " + str(
@@ -53,10 +51,12 @@ def getFlowBySector(methodname):
     fbs = pd.DataFrame()
     # first try reading parquet from your local repo
     try:
+        log.info('Loading ' + methodname +' parquet from local repository')
         fbs = pd.read_parquet(fbsoutputpath + methodname + ".parquet")
     except (OSError, FileNotFoundError):
         # if parquet does not exist in local repo, read file from Data Commons
         try:
+            log.info(methodname + ' parquet not found in local repo, loading from Data Commons')
             fbs = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/' +
                                   methodname + ".parquet")
         except FileNotFoundError:

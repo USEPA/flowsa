@@ -4,6 +4,12 @@ Blackhurst_IO:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
+BLM_PLS:
+  class:
+    - Land
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "disaggregated"
 BEA_GDP:
   class:
     - Money
@@ -29,6 +35,12 @@ BLS_QCEW:
     - Other
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
+  sector_aggregation_level: "disaggregated"
+Census_AHS:
+  class:
+    - Land
+  sector-like_activities: False
+  activity_schema:
   sector_aggregation_level: "disaggregated"
 Census_CBP:
   class:
@@ -61,39 +73,65 @@ EIA_MECS_Energy:
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 EIA_MECS_Land:
-  class: Land
+  class:
+  - Land
+  sector-like_activities: True
+  activity_schema:
+  sector_aggregation_level: "disaggregated"
+EIA_MER:
+  class:
+  - Energy
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "disaggregated"
+EIA_GHG_Inventory:
+  class:
+    - Chemicals
+    - Other
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
 EPA_NEI_Nonpoint:
-  class: Chemicals
+  class:
+  - Chemicals
   sector-like_activities: False
   activity_schema: SCC
   sector_aggregation_level: "aggregated"
 EPA_NEI_Nonroad:
-  class: Chemicals
+  class:
+  - Chemicals
   sector-like_activities: False
   activity_schema: SCC
   sector_aggregation_level: "aggregated"
 EPA_NEI_Onroad:
-  class: Chemicals
+  class:
+  - Chemicals
   sector-like_activities: False
   activity_schema: SCC
   sector_aggregation_level: "aggregated"
 NOAA_FisheryLandings:
-  class: Money
+  class:
+  - Money
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: ""
 StatCan_GDP:
-  class: Money
+  class:
+  - Money
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 StatCan_IWS_MI:
-  class: Water
+  class:
+  - Water
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
+  sector_aggregation_level: "aggregated"
+StatCan_LFS:
+  class:
+    - Employment
+  sector-like_activities: False
+  activity_schema:
   sector_aggregation_level: "aggregated"
 USDA_CoA_Cropland:
   class:
@@ -109,32 +147,38 @@ USDA_CoA_Cropland_NAICS:
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 USDA_CoA_Livestock:
-  class: Other
+  class:
+  - Other
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
 USDA_ERS_FIWS:
-  class: Money
+  class:
+  - Money
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: ""
 USDA_ERS_MLU:
-  class: Land
+  class:
+  - Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_aggregation_level: "aggregated"
 USDA_IWMS:
-  class: Water
+  class:
+  - Water
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 USGS_NWIS_WU:
-  class: Water
+  class:
+  - Water
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 USGS_WU_Coef:
-  class: Water
+  class:
+  - Water
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"

@@ -10,7 +10,7 @@ import io
 from flowsa.common import US_FIPS, withdrawn_keyword
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-def eia_cbecs_call(url, response_load, args):
+def eia_cbecs_water_call(url, response_load, args):
     # Convert response to dataframe
     df_raw = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
     # skip rows and remove extra rows at end of dataframe
@@ -23,7 +23,7 @@ def eia_cbecs_call(url, response_load, args):
     return df
 
 
-def eia_cbecs_parse(dataframe_list, args):
+def eia_cbecs_water_parse(dataframe_list, args):
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False).dropna()
     # drop columns

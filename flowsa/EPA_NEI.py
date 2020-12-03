@@ -170,5 +170,36 @@ def assign_nonpoint_dqi(args):
 
     #TODO compare counts across NAICS depending on granularity of fbs method
 
-
+def clean_NEI_fba(fba):
     
+    fba = remove_duplicate_NEI_flows(fba)
+    fba = drop_GHGs(fba)
+    return fba
+
+def remove_duplicate_NEI_flows(df):
+    """ 
+    These flows for PM will get mapped to the primary PM flowable in FEDEFL
+    resulting in duplicate emissions
+    """
+    flowlist = [
+                'PM10-Primary from certain diesel engines',
+                'PM25-Primary from certain diesel engines',
+                ]
+    
+    df = df.loc[~df['FlowName'].isin(flowlist)]
+    return df
+
+def drop_GHGs(df):
+    """
+    GHGs are included in some NEI datasets. If these data are not compiled together 
+    with GHGRP, need to remove them as they will be tracked from a different source
+    """
+    flowlist = [
+                'Carbon Dioxide',
+                'Methane',
+                'Nitrous Oxide'
+                ]
+    
+    df = df.loc[~df['FlowName'].isin(flowlist)]
+    
+    return df    

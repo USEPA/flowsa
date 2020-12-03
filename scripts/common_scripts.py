@@ -4,19 +4,15 @@
 # ingwersen.wesley@epa.gov
 
 """Common variables and functions used across flowsa"""
+
+import flowsa
 import pandas as pd
-from flowsa.common import fbaoutputpath
 
 
-def unique_activity_names(datasource, years):
+def unique_activity_names(flowclass, years, datasource):
     """read in the ers parquet files, select the unique activity names, return df with one column """
     # create single df representing all selected years
-
-    df_u = []
-    for y in years:
-        df_load = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet", engine="pyarrow")
-        df_u.append(df_load)
-    df = pd.concat(df_u, ignore_index=True)
+    df = flowsa.getFlowByActivity(flowclass, years, datasource)
 
     column_activities = df[["ActivityConsumedBy", "ActivityProducedBy"]].values.ravel()
     unique_activities = pd.unique(column_activities)
@@ -24,7 +20,7 @@ def unique_activity_names(datasource, years):
     df_unique = pd.DataFrame({'Activity': df_unique[:, 0]})
     df_unique = df_unique.loc[df_unique['Activity'].notnull()]
     df_unique = df_unique.loc[df_unique['Activity'] != 'None']
-    df_unique.loc[:, 'ActivitySourceName'] = df['SourceName'].unique()
+    df_unique = df_unique.assign(ActivitySourceName=datasource)
 
     # sort df
     df_unique = df_unique.sort_values(['Activity']).reset_index(drop=True)

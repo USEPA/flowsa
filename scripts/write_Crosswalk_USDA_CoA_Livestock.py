@@ -1,10 +1,10 @@
-# write_UDSA_ERS_FIWS_xwalk.py (scripts)
+# write_Crosswalk_USDA_CoA_Livestock.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 # ingwersen.wesley@epa.gov
 
 """
-Create a crosswalk linking the downloaded USDA_CoA_Cropland to NAICS_12. Created by selecting unique Activity Names and
+Create a crosswalk linking the downloaded USDA_CoA_Livestock to NAICS_12. Created by selecting unique Activity Names and
 manually assigning to NAICS
 
 NAICS8 are unofficial and are not used again after initial aggregation to NAICS6. NAICS8 are based
@@ -118,8 +118,12 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2012', '2017']
+    # flowclass
+    flowclass = ['Other']
+    # datasource
+    datasource = 'USDA_CoA_Livestock'
     # df of unique ers activity names
-    df = unique_activity_names('USDA_CoA_Livestock', years)
+    df = unique_activity_names(flowclass, years, datasource)
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
@@ -129,4 +133,4 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_USDA_CoA_Livestock_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

@@ -146,17 +146,26 @@ def eia_mecs_land_parse(dataframe_list, args):
         df_array.append(dataframes)
     df = pd.concat(df_array, sort=False)
 
+    # trim whitespace associated with Activity
+    df['Description'] = df['Description'].str.strip()
+
+    # add manufacturing to end of description if missing
+    df['Description'] = df['Description'].apply(lambda x: x + ' Manufacturing' if not x.endswith('Manufacturing') else x)
+
     # replace withdrawn code
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
     df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
     df["Class"] = 'Land'
-    df["SourceName"] = 'EIA_MBECS_Land'
+    df["SourceName"] = 'EIA_MECS_Land'
     df['Year'] = args["year"]
     df["Compartment"] = None
     df['MeasureofSpread'] = "RSE"
-    df['Location'] = "US_FIPS"
+    df['Location'] = US_FIPS
     df['Unit'] = unit
     df = assign_fips_location_system(df, args['year'])
+
+    # modify flowname
+    df['FlowName'] = df['Description'] + ', ' + df['FlowName']
 
     return df
 
@@ -262,7 +271,9 @@ def eia_mecs_energy_call(url, mecs_response, args):
 
 
 def eia_mecs_energy_parse(dataframe_list, args):
-    
+
+    from flowsa.common import assign_census_regions
+
     # concatenate dataframe list into single dataframe
     df = pd.concat(dataframe_list, sort=True)
     
@@ -276,9 +287,12 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df['FlowType'] = 'TECHNOSPHERE_FLOWS'
     df['Year'] = args["year"]
     df['MeasureofSpread'] = "RSE"
-    df['LocationSystem'] = 'Census_Region'
+    # assign location codes and location system
     df.loc[df['Location']=='Total United States','Location'] = US_FIPS
+    df = assign_fips_location_system(df, args['year'])
+    df = assign_census_regions(df)
     df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
+
     
     # drop rows that reflect subtotals (only necessary in 2014)
     df.dropna(subset=['ActivityConsumedBy'], inplace=True)
@@ -310,7 +324,8 @@ def eia_mecs_energy_parse(dataframe_list, args):
 
 def mecs_energy_fba_cleanup(fba, attr):
     
-    fba = fba.loc[fba['Unit']=='MJ']
+    fba = fba.loc[fba['Unit'] == 'MJ']
+
     return fba
 
 def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
@@ -322,47 +337,96 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :return:
     """
 
-    df = estimate_missing_data(df_w_sec, [3,4,5])
+    from flowsa.flowbyfunctions import sector_aggregation_generalized, fba_default_grouping_fields
+
+    # first aggregate existing data to higher naics
+    group_cols = fba_default_grouping_fields
+    group_cols = [e for e in group_cols if
+                  e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+    group_cols.append('Sector')
+    df_w_sec = sector_aggregation_generalized(df_w_sec, group_cols)
+    # replace value in Activity col for created rows
+    df_w_sec.loc[:, 'Activity'] = np.where(df_w_sec['Activity'].isnull(), df_w_sec['Sector'], df_w_sec['Activity'])
+
+    # then estimate missing data
+    df = estimate_missing_data(df_w_sec, [3, 4, 5])
 
     return df
-    
+
+
+def mecs_land_fba_cleanup(fba):
+
+    from flowsa.EIA_CBECS_Land import calculate_total_facility_land_area
+
+    fba = fba[fba['FlowName'].str.contains('Approximate Enclosed Floorspace of All Buildings Onsite')]
+
+    # calculate the land area in addition to building footprint
+    fba = calculate_total_facility_land_area(fba)
+
+    return fba
+
+
+def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
+    """
+    clean up eia_mecs_energy df with sectors by estimating missing data
+    :param df_w_sec:
+    :param attr:
+    :param method:
+    :return:
+    """
+
+    from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
+
+    # first aggregate existing data to higher naics
+    group_cols = fba_mapped_default_grouping_fields
+    df_w_sec = sector_aggregation(df_w_sec, group_cols)
+    # replace value in Activity cols for created rows
+    df_w_sec['ActivityProducedBy'] = df_w_sec['SectorProducedBy'].copy()
+    df_w_sec['ActivityConsumedBy'] = df_w_sec['SectorConsumedBy'].copy()
+
+    # then estimate missing data
+    df = estimate_missing_data(df_w_sec, [3, 4, 5])
+
+    return df
+
+
 def estimate_missing_data(df, sector_lengths):
     """
     For a given dataframe where data is reported by NAICS, but not all nested NAICS are listed,
     this function applies the unaccounted for amounts equally across unreported children
     """
+
     df.dropna(subset=['Sector'], inplace=True)
     cw = load_sector_length_crosswalk()
-    suppressed_list = []
-    for i in sector_lengths:
 
+    for i in sector_lengths:
         # create df with sectors of i length, need to disaggregate to i+1
         df_parent = df.loc[df['Activity'].apply(lambda x: len(x) == i)]
         parentlist = df_parent['Activity'].drop_duplicates().tolist()
 
-        # create df with sectors of length > i (i.e. children)
-        df_child = df.loc[df['Activity'].apply(lambda x: len(x) > i)]
-        df_child.loc[:, 's_tmp'] = df_child['Activity'].apply(lambda x: x[0:i])
-        
-        cw2 = cw[['NAICS_'+str(i),'NAICS_'+str(i+1)]]
-        new_df = pd.DataFrame(columns=df.columns)
-        
+        # create df with sectors of length > i + 1 (i.e. children)
+        df_child = df.loc[df['Activity'].apply(lambda x: len(x) == i + 1)]
+        df_child = df_child.assign(s_tmp=df_child['Activity'].apply(lambda x: x[0:i]))
+
+        cw2 = cw[['NAICS_'+str(i), 'NAICS_'+str(i+1)]].drop_duplicates()
+
         for sector in parentlist:
-            df_temp_parent = df_parent[df_parent['Activity']==sector]
+            df_temp_parent = df_parent[df_parent['Activity'] == sector]
             # extract the children of the given sector of level i that exist in the dataframe
             df_temp_child = df_child[df_child['s_tmp'] == sector]
             childlist = df_temp_child['Activity'].tolist()
-            df_temp_child['s_tmp'] = df_child['Activity'].apply(lambda x: x[0:i+1])
-            df_temp_child['length'] = df_child['Activity'].str.len()
+            df_temp_child = df_temp_child.assign(s_tmp=df_child['Activity'].apply(lambda x: x[0:i+1]))
+            df_temp_child = df_temp_child.assign(length=df_child['Activity'].str.len())
 
-            # drop children that have the same sector of i+1 (because these are double counting), as long as they are not the same length
-            net_flow = df_temp_child.groupby(['length','s_tmp']).agg({'FlowAmount':['sum']}).reset_index()
-            net_flow.columns=['length','s_tmp','FlowAmount']
+            # drop children that have the same sector of i+1 (because these are double counting), /
+            # as long as they are not the same length
+            net_flow = df_temp_child.groupby(['length', 's_tmp']).agg({'FlowAmount': ['sum']}).reset_index()
+            net_flow.columns = ['length', 's_tmp', 'FlowAmount']
             # calculate the amount supplied by existing sectors
             net_flow = net_flow.drop_duplicates(subset=['s_tmp'])
-            
-            cw_temp = cw2[cw2['NAICS_'+str(i)]==sector]
-            cw_childlist = cw_temp['NAICS_'+str(i+1)].drop_duplicates().tolist()
+
+            cw_temp = cw2[cw2['NAICS_' + str(i)] == sector]
+            cw_childlist = cw_temp['NAICS_' + str(i+1)].drop_duplicates().tolist()
             sectors_to_add = list(set(cw_childlist).difference(childlist))
 
             if len(sectors_to_add) != 0:
@@ -370,16 +434,14 @@ def estimate_missing_data(df, sector_lengths):
                 # Add new children to dataframe as new Activities, and assign flow amount,
                 # all other data remains the same as the parent (update DQI?)
                 new_child = pd.DataFrame(sectors_to_add, columns=['Sector'])
-                new_child['Activity']= sector
+                new_child['Activity'] = sector
                 new_child = df_temp_parent.merge(new_child, how='left', on='Activity')
-                new_child['Sector']=new_child['Sector_y']
-                new_child.drop(columns=['Sector_x','Sector_y'], inplace=True)
-                new_child['FlowAmount']=new_flow_amount
-                new_df = pd.concat([new_df,new_child],axis=0, ignore_index=True)
-                suppressed_list.extend(sectors_to_add)
-        
-        df = pd.concat([df,new_df],axis=0, ignore_index=True)
-        # drop the parent list from original df
-        df = df[~df['Sector'].isin(parentlist)]
-  
+                new_child['Sector'] = new_child['Sector_y']
+                new_child.drop(columns=['Sector_x', 'Sector_y'], inplace=True)
+                new_child['FlowAmount'] = new_flow_amount
+                # reset the activity col value
+                new_child['Activity'] = new_child['Sector'].copy()
+                # then concat new data to original df
+                df = pd.concat([df, new_child], axis=0, ignore_index=True)
+
     return df

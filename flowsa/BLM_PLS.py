@@ -492,7 +492,7 @@ def blm_pls_parse(dataframe_list, args):
         # replace withdrawn code
         df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
         df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
-        df['FlowName'] = "Leases"
+        df['FlowName'] = df['ActivityConsumedBy'].copy()
         df['Location'] = Location
         df["Class"] = 'Land'
         df['Compartment'] = "ground"
@@ -500,5 +500,30 @@ def blm_pls_parse(dataframe_list, args):
         df["SourceName"] = 'BLM_PLS'
         df['Year'] = args["year"]
         df['Unit'] = "Acres"
+
+        # standardize activity names
+        df = standardize_blm_pls_activity_names(df)
+
+    return df
+
+
+def standardize_blm_pls_activity_names(df):
+    """
+    Over the years, BLM PLS activities have minor syntax differences. Standardize the names over the years
+    :param df: BLM PLS df
+    :return: BLM PLS df with standaridized activity names
+    """
+
+    standardize_column = 'ActivityConsumedBy'
+
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(' & ', ' and ', x))
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(' to ', ' To ', x))
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('\bLease\b', 'Leases', x))
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(':  ', ': ', x))
+
+    # standardize dashes so do not corrupt in csvs
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('–', '-', x))
+    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('—', '-', x))
+
     return df
 

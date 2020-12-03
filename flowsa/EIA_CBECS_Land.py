@@ -14,7 +14,7 @@ https://www.eia.gov/consumption/commercial/reports/2012/energyusage/index.php
 Last updated: Monday, August 17, 2020
 """
 
-def eia_cbecs_URL_helper(build_url, config, args):
+def eia_cbecs_land_URL_helper(build_url, config, args):
     """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
     This function does not parse the data, only modifies the urls from which data is obtained. """
@@ -30,7 +30,7 @@ def eia_cbecs_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_cbecs_call(url, cbesc_response, args):
+def eia_cbecs_land_call(url, cbesc_response, args):
     # Convert response to dataframe
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='data').dropna()
     df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='rse').dropna()
@@ -60,16 +60,16 @@ def eia_cbecs_call(url, cbesc_response, args):
         df_data = pd.DataFrame(df_raw_data.loc[46:50]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[46:50]).reindex()
 
-        df_data.columns = ["Compartment", "All buildings", "Office", "Warehouse and storage", "Service",
+        df_data.columns = ["Description", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
                            "Education", "Public assembly"]
-        df_rse.columns = ["Compartment", "All buildings", "Office", "Warehouse and storage", "Service",
+        df_rse.columns = ["Description", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
                            "Education", "Public assembly"]
-        df_rse = df_rse.melt(id_vars=["Compartment"],
+        df_rse = df_rse.melt(id_vars=["Description"],
                     var_name="Name",
                     value_name="Spread")
-        df_data =df_data.melt(id_vars=["Compartment"],
+        df_data =df_data.melt(id_vars=["Description"],
                     var_name="Name",
                     value_name="FlowAmount")
     elif ("b14.xlsx" in url):
@@ -77,23 +77,24 @@ def eia_cbecs_call(url, cbesc_response, args):
         df_data = pd.DataFrame(df_raw_data.loc[27:31]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[27:31]).reindex()
 
-        df_data.columns = ["Compartment", "All buildings", "Food service", "Food sales", "Lodging",
+        df_data.columns = ["Description", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
                            "Public order and safety"]
-        df_rse.columns = ["Compartment", "All buildings", "Food service", "Food sales", "Lodging",
+        df_rse.columns = ["Description", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
                            "Public order and safety"]
-        df_rse = df_rse.melt(id_vars=["Compartment"],
+        df_rse = df_rse.melt(id_vars=["Description"],
                              var_name="Name",
                              value_name="Spread")
-        df_data = df_data.melt(id_vars=["Compartment"],
+        df_data = df_data.melt(id_vars=["Description"],
                                var_name="Name",
                                value_name="FlowAmount")
 
     df = pd.merge(df_rse, df_data)
     return df
 
-def eia_cbecs_parse(dataframe_list, args):
+def eia_cbecs_land_parse(dataframe_list, args):
+
     # concat dataframes
     df_array = []
     for dataframes in dataframe_list:
@@ -102,13 +103,13 @@ def eia_cbecs_parse(dataframe_list, args):
         if "Location" not in list(dataframes):
             dataframes["Location"] = "00000"
             dataframes["LocationSystem"] = "FIPS_2010"
-            dataframes = dataframes.drop(dataframes[dataframes.Compartment == "Any elevators"].index)
-            dataframes["Compartment"] = dataframes["Compartment"] + " floors"
+            dataframes = dataframes.drop(dataframes[dataframes.Description == "Any elevators"].index)
+            dataframes["Description"] = dataframes["Description"] + " floors"
         else:
             dataframes = dataframes.drop(dataframes[dataframes.ActivityConsumedBy == "Before 1920"].index)
             dataframes["Location"] = get_region_and_division_codes()["Division"]
             dataframes['LocationSystem'] = "Census_Division"
-            dataframes["Compartment"] = "All Buildings"
+            dataframes["Description"] = "All Buildings"
             dataframes['Location'] = dataframes['Location'].replace(float("NaN"), '00000')
 
             dataframes.loc[dataframes.Location == "00000", "LocationSystem"] = "FIPS_2010"
@@ -116,14 +117,44 @@ def eia_cbecs_parse(dataframe_list, args):
         df_array.append(dataframes)
     df = pd.concat(df_array, sort=False)
 
+    # trim whitespace associated with Activity
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
+
     # replace withdrawn code
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
     df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
     df['Year'] = args["year"]
-    df['FlowName'] = "Total Floorspace"
+    df['FlowName'] = "Commercial, " + df["ActivityConsumedBy"] + ", Total floorspace"
+    df['Compartment'] = 'ground'
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
+
+    return df
+
+
+def cbecs_land_fba_cleanup(fba, attr):
+
+    # calculate the land area in addition to building footprint
+    fba = calculate_total_facility_land_area(fba)
+
+    return fba
+
+
+def calculate_total_facility_land_area(df):
+    """
+    In land use calculations, in addition to the provided floor area of buildings, estimate other related land area
+    associated with commercial facilities (parking, signage, and landscaped area)
+    :param df:
+    :return:
+    """
+
+    from flowsa.values_from_literature import get_commercial_and_manufacturing_floorspace_to_land_area_ratio
+
+    floor_space_to_land_area_ratio = get_commercial_and_manufacturing_floorspace_to_land_area_ratio()
+
+    df['FlowAmount'] = df['FlowAmount']/floor_space_to_land_area_ratio - df['FlowAmount']
+
     return df
 

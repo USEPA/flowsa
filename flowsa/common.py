@@ -32,7 +32,8 @@ outputpath = modulepath + 'output/'
 # datapath = (modulepath + 'data/').replace('flowsa/flowsa/', 'flowsa/tests/')
 # outputpath = (modulepath + 'output/').replace('flowsa/flowsa/', 'flowsa/tests/')
 
-sourceconfigpath = datapath + 'sourceconfig/'
+sourceconfigpath = datapath + 'flowbyactivitymethods/'
+crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
@@ -204,13 +205,13 @@ flow_by_sector_collapsed_fields = {'Flowable': [{'dtype': 'str'}, {'required': T
 
 flow_by_activity_wsec_mapped_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                                        'SourceName': [{'dtype': 'str'}, {'required': True}],
-                                       'Flowable': [{'dtype': 'str'}, {'required': True}],
+                                       'FlowName': [{'dtype': 'str'}, {'required': True}],
                                        'FlowAmount': [{'dtype': 'float'}, {'required': True}],
                                        'Unit': [{'dtype': 'str'}, {'required': True}],
                                        'FlowType': [{'dtype': 'str'}, {'required': True}],
                                        'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
                                        'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
-                                       'Context': [{'dtype': 'str'}, {'required': False}],
+                                       'Compartment': [{'dtype': 'str'}, {'required': False}],
                                        'Location': [{'dtype': 'str'}, {'required': True}],
                                        'LocationSystem': [{'dtype': 'str'}, {'required': True}],
                                        'Year': [{'dtype': 'int'}, {'required': True}],
@@ -244,10 +245,10 @@ def generalize_activity_field_names(df):
     :return:
     """
 
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None})
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None})
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'nan': None})
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'nan': None})
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None,
+                                                                 'nan': None})
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None,
+                                                                 'nan': None})
 
     activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
     activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
@@ -490,6 +491,30 @@ abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
 
 def get_region_and_division_codes():
     df = pd.read_csv(datapath + "Census_Regions_and_Divisions.csv", dtype="str")
+    return df
+
+
+def assign_census_regions(df_load):
+
+    # load census codes
+    census_codes_load = get_region_and_division_codes()
+    census_codes = census_codes_load[census_codes_load['LocationSystem'] == 'Census_Region']
+
+    # merge df with census codes
+    df = df_load.merge(census_codes[['Name', 'Region']], left_on=['Location'], right_on=['Name'], how='left')
+    # replace Location value
+    df['Location'] = np.where(~df['Region'].isnull(), df['Region'], df['Location'])
+
+    # modify LocationSystem
+    # merge df with census codes
+    df = df.merge(census_codes[['Region', 'LocationSystem']], left_on=['Region'], right_on=['Region'], how='left')
+    # replace Location value
+    df['LocationSystem_x'] = np.where(~df['LocationSystem_y'].isnull(), df['LocationSystem_y'], df['LocationSystem_x'])
+
+    # drop census columns
+    df = df.drop(columns=['Name', 'Region', 'LocationSystem_y'])
+    df = df.rename(columns={'LocationSystem_x': 'LocationSystem'})
+
     return df
 
 

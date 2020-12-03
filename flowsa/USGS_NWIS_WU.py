@@ -70,11 +70,11 @@ def usgs_parse(dataframe_list, args):
         if 'state_cd' not in df:
             df['state_cd'] = '00'
         if 'state_name' not in df:
-            df['state_name'] = 'None'
+            df['state_name'] = ''
         if 'county_cd' not in df:
             df['county_cd'] = '000'
         if 'county_nm' not in df:
-            df['county_nm'] = 'None'
+            df['county_nm'] = ''
         if 'year' not in df:
             df['year'] = args["year"]
     # concat data frame list based on geography and then parse data
@@ -162,7 +162,7 @@ def usgs_parse(dataframe_list, args):
                      np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
                      np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
                      np.where(df["Description"].str.contains('deliveries'), "ELEMENTARY_FLOW", # is really a "TECHNOSPHERE_FLOW"
-                                                              "None"))))))
+                                                              None))))))
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -255,7 +255,7 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     flowbyactivity_df['FlowName'].loc[
         (flowbyactivity_df['Location'] == '00000') & (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
     flowbyactivity_df['Compartment'].loc[
-        (flowbyactivity_df['Compartment'] == 'None') & (flowbyactivity_df['Location'] == '00000')] = 'total'
+        (flowbyactivity_df['Compartment'] is None) & (flowbyactivity_df['Location'] == '00000')] = 'total'
 
     # standardize activity names across geoscales
     for f in fba_activity_fields:
@@ -295,7 +295,7 @@ def usgs_fba_data_cleanup(df):
     df2 = df[df['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
     c1 = df2['Location'] != US_FIPS
-    c2 = (df2['ActivityProducedBy'] != 'None') & (df2['ActivityConsumedBy'] != 'None')
+    c2 = (~df2['ActivityProducedBy'].isnull()) & (~df2['ActivityConsumedBy'].isnull())
     # subset data
     df2 = df2[c1 & c2].reset_index(drop=True)
 
@@ -351,8 +351,7 @@ def calculate_net_public_supply(df):
     # merge the deliveries to domestic
     df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
     df_w_modified = df_w_modified.rename(columns={"FlowAmount_x": "FlowAmount",
-                                  "FlowAmount_y": "DomesticDeliveries"
-                                  })
+                                         "FlowAmount_y": "DomesticDeliveries"})
 
     # create flowratio for ground/surface
     df_w_modified.loc[:, 'FlowRatio'] = df_w_modified['FlowAmount'] / df_w_modified['FlowTotal']
@@ -364,7 +363,8 @@ def calculate_net_public_supply(df):
     net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
 
     # because assumiming domestic is all fresh, change flow name. also allocate to ground/surface from state ratios
-    df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']], how='left', left_on='Location', right_on='Location')
+    df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']], how='left', left_on='Location',
+                             right_on='Location')
     df_d_modified.loc[:, 'FlowAmount'] = df_d_modified['FlowAmount'] * df_d_modified['FlowRatio']
     df_d_modified.loc[:, 'FlowName'] = 'fresh'
     df_d_modified = df_d_modified.rename(columns={"Compartment_y": "Compartment"})
@@ -425,7 +425,7 @@ def check_golf_and_crop_irrigation_totals(df_load):
                                   })
 
     # fill na and sum crop and golf
-    df_m2 = df_m2.fillna(0)
+    # df_m2 = df_m2.fillna(0)
     df_m2['subset_sum'] = df_m2['Crop_Amount'] + df_m2['Golf_Amount']
     df_m2['Diff'] = df_m2['FlowAmount'] - df_m2['subset_sum']
 
@@ -545,12 +545,14 @@ def modify_thermo_and_aqua_sector_assignments(df):
     :return:
     """
 
+    from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
+
     activities_to_modify = ("Aquaculture", "Thermoelectric Power")
     max_sector_length = 4
 
     # if activities are in the activities to modify length and if sector length is greater than max specified, drop rows
     # tmp set None to "" so len(x) fxn woks
-    df = df.replace({None: 'None'})
+    df = replace_NoneType_with_empty_cells(df)
     # set conditions
     c1 = df[fba_activity_fields[0]].isin(activities_to_modify)
     c2 = df[fba_activity_fields[1]].isin(activities_to_modify)
@@ -558,7 +560,7 @@ def modify_thermo_and_aqua_sector_assignments(df):
     c4 = df[fbs_activity_fields[1]].apply(lambda x: len(x) > max_sector_length)
     # subset data
     df_modified = df.loc[~((c1 | c2) & (c3 | c4))].reset_index(drop=True)
-    # set 'None' back to None
-    df_modified = df_modified.replace({'None': None})
+    # set '' back to None
+    df_modified = replace_strings_with_NoneType(df_modified)
 
     return df_modified

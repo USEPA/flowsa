@@ -246,7 +246,7 @@ def disaggregate_pastureland(fba_w_sector, attr, years_list):
     # drop naics = '11
     df_f = df_f[df_f['Sector'] != '11']
     # drop 000 in location
-    df_f = df_f.assign(Location=df_f['Location'].apply(lambda x: x[0:2]))\
+    df_f = df_f.assign(Location=df_f['Location'].apply(lambda x: x[0:2]))
 
     # merge the coa pastureland data with land in farm data
     df = p.merge(df_f[['Sector', 'Location', 'FlowAmountRatio']], how='left',

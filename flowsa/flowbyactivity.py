@@ -9,7 +9,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 
 import argparse
 from flowsa.common import *
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.flowbyfunctions import add_missing_flow_by_fields, clean_df, fba_fill_na_dict
 from flowsa.Blackhurst_IO import *
 from flowsa.BLS_QCEW import *
 from flowsa.Census_CBP import *
@@ -28,6 +28,7 @@ from flowsa.USDA_IWMS import *
 from flowsa.USGS_NWIS_WU import *
 from flowsa.USDA_ERS_MLU import *
 from flowsa.EIA_CBECS_Land import *
+from flowsa.EIA_CBECS_Water import *
 from flowsa.EIA_MECS import *
 from flowsa.BLM_PLS import *
 from flowsa.EIA_MER import *
@@ -120,6 +121,7 @@ if __name__ == '__main__':
     args = parse_args()
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(args['source'])
+    log.info("Creating dataframe list")
     # build the base url with strings that will be replaced
     build_url = build_url_for_query(config['url'])
     # replace parts of urls with specific instructions from source.py
@@ -127,17 +129,20 @@ if __name__ == '__main__':
     # create a list with data from all source urls
     dataframe_list = call_urls(urls, args)
     # concat the dataframes and parse data with specific instructions from source.py
+    log.info("Concat dataframe list and parse data")
     df = parse_data(dataframe_list, args)
     # log that data was retrieved
-    log.info("Retrieved data for " + args['source'])
+    log.info("Retrieved data for " + args['source'] + ' ' + args['year'])
     # add any missing columns of data and cast to appropriate data type
-    flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
+    log.info("Add any missing columns and check field datatypes")
+    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
     # modify flow units
     flow_df = convert_fba_unit(flow_df)
     # sort df and reset index
     flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
                                    'FlowName', 'Compartment']).reset_index(drop=True)
     # save as parquet file
+    log.info('Save dataframe as parquet')
     parquet_name = args['source'] + '_' + args['year']
     store_flowbyactivity(flow_df, parquet_name)
 
