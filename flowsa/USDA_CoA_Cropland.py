@@ -241,52 +241,53 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
 
     # subset the coa data so only pastureland
     p = fba_w_sector.loc[fba_w_sector[sector_column].apply(lambda x: x[0:3]) == '112'].reset_index(drop=True)
-    # add temp loc column for state fips
-    p = p.assign(Location_tmp=p['Location'].apply(lambda x: x[0:2]))
-    df_sourcename = pd.unique(p['SourceName'])[0]
+    if len(p) != 0:
+        # add temp loc column for state fips
+        p = p.assign(Location_tmp=p['Location'].apply(lambda x: x[0:2]))
+        df_sourcename = pd.unique(p['SourceName'])[0]
 
-    # load usda coa cropland naics
-    df_class = ['Land']
-    df_years = years_list
-    df_allocation = 'USDA_CoA_Cropland_NAICS'
-    df_f = flowsa.getFlowByActivity(flowclass=df_class, years=df_years, datasource=df_allocation)
-    df_f = clean_df(df_f, flow_by_activity_fields, fba_fill_na_dict)
-    # subset to land in farms data
-    df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
-    # subset to rows related to pastureland
-    df_f = df_f.loc[df_f['ActivityConsumedBy'].apply(lambda x: x[0:3]) == '112']
-    # drop rows with "&'
-    df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
-    # create sector columns
-    df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
-    # create proportional ratios
-    group_cols = fba_mapped_default_grouping_fields
-    group_cols = [e for e in group_cols if
-                  e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-    df_f = allocate_by_sector(df_f, df_sourcename, df_allocation, 'proportional', group_cols)
-    # tmp drop NoneTypes
-    df_f = replace_NoneType_with_empty_cells(df_f)
-    # drop naics = '11
-    df_f = df_f[df_f[sector_column] != '11']
-    # drop 000 in location
-    df_f = df_f.assign(Location=df_f['Location'].apply(lambda x: x[0:2]))
+        # load usda coa cropland naics
+        df_class = ['Land']
+        df_years = years_list
+        df_allocation = 'USDA_CoA_Cropland_NAICS'
+        df_f = flowsa.getFlowByActivity(flowclass=df_class, years=df_years, datasource=df_allocation)
+        df_f = clean_df(df_f, flow_by_activity_fields, fba_fill_na_dict)
+        # subset to land in farms data
+        df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
+        # subset to rows related to pastureland
+        df_f = df_f.loc[df_f['ActivityConsumedBy'].apply(lambda x: x[0:3]) == '112']
+        # drop rows with "&'
+        df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
+        # create sector columns
+        df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
+        # create proportional ratios
+        group_cols = fba_mapped_default_grouping_fields
+        group_cols = [e for e in group_cols if
+                      e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+        df_f = allocate_by_sector(df_f, df_sourcename, df_allocation, 'proportional', group_cols)
+        # tmp drop NoneTypes
+        df_f = replace_NoneType_with_empty_cells(df_f)
+        # drop naics = '11
+        df_f = df_f[df_f[sector_column] != '11']
+        # drop 000 in location
+        df_f = df_f.assign(Location=df_f['Location'].apply(lambda x: x[0:2]))
 
-    # merge the coa pastureland data with land in farm data
-    df = p.merge(df_f[[sector_column, 'Location', 'FlowAmountRatio']], how='left',
-                 left_on="Location_tmp", right_on="Location")
-    # multiply the flowamount by the flowratio
-    df.loc[:, 'FlowAmount'] = df['FlowAmount'] * df['FlowAmountRatio']
-    # drop columns and rename
-    df = df.drop(columns=['Location_tmp', sector_column + '_x', 'Location_y', 'FlowAmountRatio'])
-    df = df.rename(columns={sector_column + '_y': sector_column,
-                            "Location_x": 'Location'})
+        # merge the coa pastureland data with land in farm data
+        df = p.merge(df_f[[sector_column, 'Location', 'FlowAmountRatio']], how='left',
+                     left_on="Location_tmp", right_on="Location")
+        # multiply the flowamount by the flowratio
+        df.loc[:, 'FlowAmount'] = df['FlowAmount'] * df['FlowAmountRatio']
+        # drop columns and rename
+        df = df.drop(columns=['Location_tmp', sector_column + '_x', 'Location_y', 'FlowAmountRatio'])
+        df = df.rename(columns={sector_column + '_y': sector_column,
+                                "Location_x": 'Location'})
 
-    # drop rows where sector = 112 and then concat with original fba_w_sector
-    fba_w_sector = fba_w_sector[fba_w_sector[sector_column].apply(lambda x: x[0:3]) != '112'].reset_index(drop=True)
-    fba_w_sector = pd.concat([fba_w_sector, df], sort=True).reset_index(drop=True)
+        # drop rows where sector = 112 and then concat with original fba_w_sector
+        fba_w_sector = fba_w_sector[fba_w_sector[sector_column].apply(lambda x: x[0:3]) != '112'].reset_index(drop=True)
+        fba_w_sector = pd.concat([fba_w_sector, df], sort=True).reset_index(drop=True)
 
-    # fill empty cells with NoneType
-    fba_w_sector = replace_strings_with_NoneType(fba_w_sector)
+        # fill empty cells with NoneType
+        fba_w_sector = replace_strings_with_NoneType(fba_w_sector)
 
     return fba_w_sector
 
