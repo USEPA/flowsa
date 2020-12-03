@@ -18,21 +18,21 @@ DEFAULT_YEAR = 9999
 
 # Decided to add tables as a constant in the source code because the YML config isn't available in the ghg_call method.
 # Only keeping years 2010-2018 for the following tables:
-# TABLES = {
-#     "Ch 2 - Trends": ["2-1"],
-#     # "Ch 3 - Energy": ["3-22"],
-#     # "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59"],
-#     "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
-#     # "Ch 4 - Industrial Processes": ["4-43", "4-80"],
-#     # "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101"],
-#     "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101", "4-43", "4-80"],
-#     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
-# }
-
 TABLES = {
-    "Ch 3 - Energy": ["3-22"],
+    "Ch 2 - Trends": ["2-1"],
+    # "Ch 3 - Energy": ["3-22"],
+    # "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59"],
+    "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
     # "Ch 4 - Industrial Processes": ["4-43", "4-80"],
+    # "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101"],
+    "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101", "4-43", "4-80"],
+    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
 }
+
+# TABLES = {
+#     "Ch 3 - Energy": ["3-22"],
+#     # "Ch 4 - Industrial Processes": ["4-43", "4-80"],
+# }
 
 # NOTE: 3-22, 4-43, 4-80 are completely different formats...
 # Table 3-22 has TOTAL data, and not YEARLY data, so the format varies drastically.
@@ -158,13 +158,14 @@ def ghg_url_helper(build_url, config, args):
     return [build_url]
 
 
-def ghg_call(url, response, args):
+def ghg_call(url, response, args, **kwargs):
     """
     Callback function for the US GHG Emissions download. Open the downloaded zip file and
     read the contained CSV(s) into pandas dataframe(s).
     """
     with zipfile.ZipFile(io.BytesIO(response.content), "r") as f:
         frames = []
+        # TODO: replace this TABLES constant with kwarg['tables']
         for chapter, tables in TABLES.items():
             for table in tables:
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
@@ -212,7 +213,7 @@ def ghg_call(url, response, args):
         return frames
 
 
-def ghg_parse(dataframe_list, args):
+def ghg_parse(dataframe_list, args, **kwargs):
     """ TODO. """
     cleaned_list = []
     for df in dataframe_list:
@@ -262,6 +263,7 @@ def ghg_parse(dataframe_list, args):
         df["Description"] = "None"
         df["Unit"] = "Other"
         # Update classes:
+        # TODO: replace this TBL_META constant with kwarg['tbl_meta']
         meta = TBL_META[source_name]
         df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
         df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
