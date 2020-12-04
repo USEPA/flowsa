@@ -18,10 +18,8 @@ import pycountry
 import datetime as dt
 import json
 
-log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
+log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
-# Silence all but warnings from requests
-log.getLogger("requests").setLevel(log.WARNING)
 
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -94,6 +92,11 @@ def load_api_key(api_source):
 
 
 def make_http_request(url):
+    """
+    Makes http request using requests library
+    :param url: URL to query
+    :return: request Object
+    """
     r = []
     try:
         r = requests.get(url)
