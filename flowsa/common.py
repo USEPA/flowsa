@@ -13,10 +13,10 @@ import requests_ftp
 import pandas as pd
 import numpy as np
 import logging as log
-import appdirs
 import pycountry
-import datetime as dt
-import json
+
+from flowsa import fba_local_path, fbs_local_path
+from flowsa.processed_data_mgmt import local_storage_path
 
 log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -41,12 +41,6 @@ flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 
-fba_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/"
-fbs_remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/"
-
-local_storage_path = os.path.realpath(appdirs.user_data_dir()+"/flowsa")
-fba_local_path = os.path.realpath(local_storage_path + "/FlowByActivity/")
-fbs_local_path = os.path.realpath(local_storage_path + "/FlowBySector/")
 if not os.path.exists(fba_local_path):
     os.mkdir(local_storage_path)
     os.mkdir(fba_local_path)
@@ -593,42 +587,6 @@ def convert_fba_unit(df):
     
     return df
 
-def get_file_update_time_from_DataCommons(datafile):
-    """
-    Gets a datetime object for the file on the DataCommons server
-    :param datafile:
-    :return:
-    """
-    base_url = "https://xri9ebky5b.execute-api.us-east-1.amazonaws.com/api/?"
-    search_param = "searchvalue"
-    url = base_url + search_param + "=" + datafile + "&place=&searchfields=filename"
-    r = make_http_request(url)
-    date_str = r.json()[0]["LastModified"]
-    file_upload_dt = dt.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S%z')
-    return file_upload_dt
-
-def get_file_update_time_from_local(datafile,path):
-    meta = read_datafile_meta(datafile,path)
-    file_upload_dt = dt.datetime.strptime(meta["LastUpdated"], '%Y-%m-%d %H:%M:%S%z')
-    return file_upload_dt
-
-def write_datafile_meta(datafile,path):
-    file_upload_dt = get_file_update_time_from_DataCommons(datafile)
-    d = {}
-    d["LastUpdated"] = format(file_upload_dt)
-    data = strip_file_extension(datafile)
-    with open(path + "/" + data + '_metadata.json', 'w') as file:
-        file.write(json.dumps(d))
-
-def read_datafile_meta(datafile,path):
-    data = strip_file_extension(datafile)
-    try:
-        with open(path + "/" + data + '_metadata.json', 'r') as file:
-            file_contents = file.read()
-            metadata = json.loads(file_contents)
-    except FileNotFoundError:
-        log.error("Local metadata file for " + datafile + " is missing.")
-    return metadata
-
 def strip_file_extension(filename):
     return(filename.rsplit(".", 1)[0])
+
