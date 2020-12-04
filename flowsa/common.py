@@ -7,6 +7,8 @@
 
 import sys
 import os
+
+import appdirs
 import yaml
 import requests
 import requests_ftp
@@ -14,9 +16,6 @@ import pandas as pd
 import numpy as np
 import logging as log
 import pycountry
-
-from flowsa import fba_local_path, fbs_local_path
-from flowsa.processed_data_mgmt import local_storage_path
 
 log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -41,10 +40,9 @@ flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 
-if not os.path.exists(fba_local_path):
-    os.mkdir(local_storage_path)
-    os.mkdir(fba_local_path)
-    os.mkdir(fbs_local_path)
+local_path = os.path.realpath(appdirs.user_data_dir() + "/flowsa")
+if not os.path.exists(local_path):
+    os.mkdir(local_path)
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -71,11 +69,11 @@ def load_api_key(api_source):
     in the form of the host name and '_API_KEY.txt' like 'BEA_API_KEY.txt'
     containing the users personal API key. The user must register with this
     API and get the key and save it to a .txt file in the user directory specified
-    by local_storage_path (see common.py for definition)
+    by local_path (see common.py for definition)
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
-    keyfile = local_storage_path + '/' + api_source + '_API_KEY.txt'
+    keyfile = local_path + '/' + api_source + '_API_KEY.txt'
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
@@ -251,7 +249,7 @@ def generalize_activity_field_names(df):
     """
     The 'activityconsumedby' and 'activityproducedby' columns from the allocation dataset do not always align with
     the water use dataframe. Generalize the allocation activity column.
-    :param fba_df:
+    :param df:
     :return:
     """
 
@@ -590,3 +588,5 @@ def convert_fba_unit(df):
 def strip_file_extension(filename):
     return(filename.rsplit(".", 1)[0])
 
+
+remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/"
