@@ -256,6 +256,11 @@ def harmonize_units(df):
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']), 'm2', df['Unit'])
 
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['square feet']),
+                                       df['FlowAmount'] * sq_ft_to_sq_m_multiplier,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['square feet']), 'm2', df['Unit'])
+
     # class = money, unit = USD
 
     # class = water, unit = m3
