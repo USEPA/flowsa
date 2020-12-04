@@ -22,31 +22,35 @@ import yaml
 import argparse
 import sys
 import pandas as pd
-from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields,  \
-    generalize_activity_field_names, fbsoutputpath, fips_number_key, flow_by_activity_fields, \
+from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
+    fbsoutputpath, fips_number_key, flow_by_activity_fields, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
-from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, agg_by_geoscale, \
+from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, fba_mapped_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
-    filter_by_geoscale, aggregator, clean_df,subset_df_by_geoscale, \
-    sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities
+    filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, \
+    sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities, collapse_activity_fields
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
     check_if_data_exists_for_same_geoscales, check_allocation_ratios,\
     check_for_differences_between_fba_load_and_fbs_output
-from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
+
+# import specific functions
+from flowsa.BEA import subset_BEA_Use
 from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
-from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
-from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
-from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
-from flowsa.stewicombo_to_sector import stewicombo_to_sector
+from flowsa.EIA_CBECS_Land import cbecs_land_fba_cleanup
 from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec, \
     mecs_land_fba_cleanup, eia_mecs_land_clean_allocation_fba_w_sec
 from flowsa.EPA_NEI import clean_NEI_fba
-from flowsa.BEA import subset_BEA_Use
+from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
+from flowsa.stewicombo_to_sector import stewicombo_to_sector
+from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
+from flowsa.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas
+from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
+from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 
 
 def parse_args():
@@ -179,6 +183,13 @@ def main(method_name):
                     log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
                     fbs = flow_subset_mapped.copy()
 
+                # if allocation method for an activity set requires a specific function due to the complicated nature
+                # of the allocation, call on function here
+                elif attr['allocation_method'] == 'allocation_function':
+                    log.info('Calling on function specified in method yaml to allocate ' +
+                             ', '.join(map(str, names)) + ' to sectors')
+                    fbs = getattr(sys.modules[__name__], attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
+
                 else:
                     # determine appropriate allocation dataset
                     log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " +
@@ -224,10 +235,6 @@ def main(method_name):
                     fba_allocation_wsec = add_sectors_to_flowbyactivity(fba_allocation,
                                                                         sectorsourcename=method['target_sector_source'])
 
-                    # generalize activity field names to enable link to main fba source
-                    log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
-                    fba_allocation_wsec = generalize_activity_field_names(fba_allocation_wsec)
-
                     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Further disaggregating sectors in " + attr['allocation_source'])
@@ -243,24 +250,28 @@ def main(method_name):
                         log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
 
-                    # drop columns
-                    fba_allocation_subset = fba_allocation_subset.drop(columns=['Activity'])
-
                     # create flow allocation ratios for each activity
                     flow_alloc_list = []
+                    group_cols = fba_mapped_default_grouping_fields
+                    group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
                     for n in names:
                         log.info("Creating allocation ratios for " + n)
                         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
-                        if len(fba_allocation_subset_2)==0:
+                        if len(fba_allocation_subset_2) == 0:
                             log.info("No data found to allocate " + n)
                         else:
-                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr['allocation_method'])
+                            flow_alloc = allocate_by_sector(fba_allocation_subset_2, k, attr['allocation_source'],
+                                                            attr['allocation_method'], group_cols)
                             flow_alloc = flow_alloc.assign(FBA_Activity=n)
                             flow_alloc_list.append(flow_alloc)
                     flow_allocation = pd.concat(flow_alloc_list)
 
+                    # generalize activity field names to enable link to main fba source
+                    log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
+                    flow_allocation = collapse_activity_fields(flow_allocation)
+
                     # check for issues with allocation ratios
-                    check_allocation_ratios(flow_allocation, aset, k)
+                    check_allocation_ratios(flow_allocation, aset, k, method_name)
 
                     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
                     # aren't in list
@@ -333,7 +344,7 @@ def main(method_name):
                 fbs_agg = sector_disaggregation(fbs_sec_agg, flow_by_sector_fields_w_activity)
 
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset, k)
+                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset, k, method_name)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths

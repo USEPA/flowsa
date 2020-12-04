@@ -117,8 +117,8 @@ def eia_cbecs_land_parse(dataframe_list, args):
         df_array.append(dataframes)
     df = pd.concat(df_array, sort=False)
 
-    # trim whitespace associated with Activity
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
+    # standardize Activity names
+    df = standardize_eia_cbecs_land_activity_names(df, 'ActivityConsumedBy')
 
     # replace withdrawn code
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
@@ -134,7 +134,37 @@ def eia_cbecs_land_parse(dataframe_list, args):
     return df
 
 
-def cbecs_land_fba_cleanup(fba, attr):
+def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
+    """
+    Activity names vary across csvs. Standardize
+    :param df:
+    :return:
+    """
+
+    from flowsa.common import clean_str_and_capitalize
+
+    # standardize strings in provided column
+    df[column_to_standardize] = df[column_to_standardize].replace({'Public Order/ Safety': 'Public order and safety',
+                                                                   'Retail (mall)': 'Enclosed and strip malls',
+                                                                   'Inpatient': 'Health care In-Patient',
+                                                                   'Outpatient': 'Health care In-Patient',
+                                                                   'Inpatient Health Care': 'Health care In-Patient',
+                                                                   'Outpatient Health Care': 'Health care In-Patient',
+                                                                   'Retail (non - mall)': 'Retail (other than mall)',
+                                                                   'Warehouse/ Storage': 'Warehouse and storage'
+                                                                   })
+
+    # first modify capitalization
+    df[column_to_standardize] = df.apply(lambda x: clean_str_and_capitalize(x[column_to_standardize]), axis=1)
+
+    return df
+
+
+def cbecs_land_fba_cleanup(fba):
+
+    # want 'All Buildings'
+    # todo: create additional fxn to modify land area based on number of floors in the buildings
+    fba = fba[fba['Description'] == 'All Buildings']
 
     # calculate the land area in addition to building footprint
     fba = calculate_total_facility_land_area(fba)
@@ -154,7 +184,7 @@ def calculate_total_facility_land_area(df):
 
     floor_space_to_land_area_ratio = get_commercial_and_manufacturing_floorspace_to_land_area_ratio()
 
-    df['FlowAmount'] = df['FlowAmount']/floor_space_to_land_area_ratio - df['FlowAmount']
+    df = df.assign(FlowAmount=(df['FlowAmount']/floor_space_to_land_area_ratio) - df['FlowAmount'])
 
     return df
 

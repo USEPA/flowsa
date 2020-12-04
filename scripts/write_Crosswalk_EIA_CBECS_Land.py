@@ -9,6 +9,7 @@ Download the crosswalk from CBECS to NAICS that CBECS publishes and reshape
 import pandas as pd
 import io
 from flowsa.common import datapath, make_http_request
+from flowsa.EIA_CBECS_Land import standardize_eia_cbecs_land_activity_names
 
 if __name__ == '__main__':
     # url for excel crosswalk
@@ -40,6 +41,9 @@ if __name__ == '__main__':
     df['SectorSourceName'] = "NAICS_2012_Code"
     df['SectorType'] = "I"
 
+    # standarize activity names to match those in FBA
+    df = standardize_eia_cbecs_land_activity_names(df, 'Activity')
+
     # reorder and drop columns
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
 
@@ -48,6 +52,9 @@ if __name__ == '__main__':
 
     # reset index
     df.reset_index(drop=True, inplace=True)
+
+
+
 
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_EIA_CBECS_Land_toNAICS.csv", index=False)

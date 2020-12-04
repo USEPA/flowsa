@@ -9,8 +9,14 @@ BLM_PLS:
     - Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_aggregation_level: "aggregated"
 BEA_GDP:
+  class:
+    - Money
+  sector-like_activities: False
+  #  activity_schema: BEA_2012_Detail_Code
+  sector_aggregation_level: "disaggregated"
+BEA_GDP_GrossOutput:
   class:
     - Money
   sector-like_activities: False
@@ -21,6 +27,12 @@ BEA_Use:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
+  sector_aggregation_level: "disaggregated"
+BEA_Use_Detail_PRO_BeforeRedef:
+  class:
+    - Money
+  sector-like_activities: False #update to true once alternate activity_schema in place
+  #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_Make_Detail_BeforeRedef:
   class:
@@ -59,7 +71,7 @@ EIA_CBECS_Land:
   class: Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_aggregation_level: "aggregated"
 EIA_CBECS_Water:
   class: Water
   sector-like_activities: False

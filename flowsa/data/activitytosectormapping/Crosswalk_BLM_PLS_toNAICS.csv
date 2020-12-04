@@ -1,5 +1,4 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
-BLM_PLS,"Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases",NAICS_2012_Code,,
 BLM_PLS,"Class III Reinstatement Leases, Public Domain",NAICS_2012_Code,21111,
 BLM_PLS,"Competitive General Services Administration (GSA) Oil and Gas Leases, Public Domain",NAICS_2012_Code,21111,
 BLM_PLS,"Competitive Protective Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,
@@ -35,6 +34,8 @@ BLM_PLS,"Federal Coal Leases, Competitive Regional Leases",NAICS_2012_Code,21211
 BLM_PLS,"Federal Coal Leases, Exchange Leases",NAICS_2012_Code,21211,
 BLM_PLS,"Federal Coal Leases, Preference Right Leases",NAICS_2012_Code,21211,
 BLM_PLS,Logical Mining Units,NAICS_2012_Code,21211,
+BLM_PLS,"Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases",NAICS_2012_Code,2122,
+BLM_PLS,"Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases",NAICS_2012_Code,2123,
 BLM_PLS,"Potassium Leases, Potassium Competitive Leases",NAICS_2012_Code,212391,
 BLM_PLS,"Potassium Leases, Potassium Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212391,
 BLM_PLS,"Potassium Leases, Potassium Preference Right Leases",NAICS_2012_Code,212391,
