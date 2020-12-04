@@ -83,8 +83,9 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     :return:
     """
 
-    from flowsa.values_from_literature import get_transportation_sectors_based_on_FHA_fees, \
-        get_urban_land_use_for_airports, get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
+    from flowsa.values_from_literature import get_area_of_urban_land_occupied_by_houses_2013, \
+        get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
+        get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
 
     # define sector column to base calculations
     sector_col = 'SectorConsumedBy'
@@ -101,11 +102,10 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(columns={'NAICS_2012_Code': sector_col})
 
     # calculate total residential area from the American Housing Survey
-    # todo: base calculation off AHS df, not tmp assumption
-    # temp residential multiplier
-    residential_multiplier = 0.6
+    # todo: base calculation off AHS FBA, not USDA ERS MLU calculations
+    residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
     df_residential = df[df[sector_col] == 'F01000']
-    df_residential = df_residential.assign(FlowAmount=df_residential['FlowAmount'] * residential_multiplier)
+    df_residential = df_residential.assign(FlowAmount=df_residential['FlowAmount'] - residential_land_area)
 
     # make an assumption about the percent of urban area that is open space
     openspace_multiplier = get_open_space_fraction_of_urban_area()
@@ -175,7 +175,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     :return:
     """
 
-    from flowsa.values_from_literature import get_transportation_sectors_based_on_FHA_fees
+    from flowsa.values_from_literature import get_urban_land_use_for_airports, get_urban_land_use_for_railroads, \
+        get_transportation_sectors_based_on_FHA_fees
 
     # define sector column to base calculations
     sector_col = 'SectorConsumedBy'
@@ -184,10 +185,31 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     fha_dict = get_transportation_sectors_based_on_FHA_fees()
     df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(columns={'NAICS_2012_Code': sector_col})
 
-    # add fed highway administration fees as multiplier to loaded df
-    df_highway = df.merge(df_fha, how='left')
-    df_highway = df_highway[df_highway['ShareOfFees'].notna()]
-    df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] * df_highway['ShareOfFees'])
-    df_highway.drop(columns=['ShareOfFees'], inplace=True)
+    # make an assumption about the percent of urban transport area used by airports
+    airport_multiplier = get_urban_land_use_for_airports()
+    df_airport = df[df[sector_col] == '488119']
+    df_airport = df_airport.assign(FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
+
+    # make an assumption about the percent of urban transport area used by railroads
+    railroad_multiplier = get_urban_land_use_for_railroads()
+    df_railroad = df[df[sector_col] == '482112']
+    df_railroad = df_railroad.assign(FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
+
+    # further allocate the remaining urban transportation area using Federal Highway Administration fees
+    # first subtract area for airports and railroads
+    air_rail_area = pd.concat([df_airport, df_railroad], sort=False)
+    air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
+    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount'] \
+        .sum().rename(columns={'FlowAmount': 'AirRail'})
+
+    df_highway = df.merge(air_rail_area_sum, how='left')
+    df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
+    df_highway.drop(columns=['AirRail'], inplace=True)
+
+    # add fed highway administration fees
+    df_highway2 = df_highway.merge(df_fha, how='left')
+    df_highway2 = df_highway2[df_highway2['ShareOfFees'].notna()]
+    df_highway2 = df_highway2.assign(FlowAmount=df_highway2['FlowAmount'] * df_highway2['ShareOfFees'])
+    df_highway2.drop(columns=['ShareOfFees'], inplace=True)
 
     return df_highway
