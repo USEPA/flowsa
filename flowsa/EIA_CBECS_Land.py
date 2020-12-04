@@ -117,8 +117,8 @@ def eia_cbecs_land_parse(dataframe_list, args):
         df_array.append(dataframes)
     df = pd.concat(df_array, sort=False)
 
-    # trim whitespace associated with Activity
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
+    # standardize Activity names
+    df = standardize_eia_cbecs_land_activity_names(df, 'ActivityConsumedBy')
 
     # replace withdrawn code
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
@@ -130,6 +130,32 @@ def eia_cbecs_land_parse(dataframe_list, args):
     df['Compartment'] = 'ground'
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
+
+    return df
+
+
+def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
+    """
+    Activity names vary across csvs. Standardize
+    :param df:
+    :return:
+    """
+
+    from flowsa.common import clean_str_and_capitalize
+
+    # standardize strings in provided column
+    df[column_to_standardize] = df[column_to_standardize].replace({'Public Order/ Safety': 'Public order and safety',
+                                                                   'Retail (mall)': 'Enclosed and strip malls',
+                                                                   'Inpatient': 'Health care In-Patient',
+                                                                   'Outpatient': 'Health care In-Patient',
+                                                                   'Inpatient Health Care': 'Health care In-Patient',
+                                                                   'Outpatient Health Care': 'Health care In-Patient',
+                                                                   'Retail (non - mall)': 'Retail (other than mall)',
+                                                                   'Warehouse/ Storage': 'Warehouse and storage'
+                                                                   })
+
+    # first modify capitalization
+    df[column_to_standardize] = df.apply(lambda x: clean_str_and_capitalize(x[column_to_standardize]), axis=1)
 
     return df
 
