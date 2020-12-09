@@ -17,7 +17,7 @@ from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level
 
 def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     """
-    Returns emissions from stewicombo in fbs format, requires stewi > 0.9.4
+    Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
     :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
