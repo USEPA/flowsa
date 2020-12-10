@@ -589,3 +589,6 @@ activity_set_1,2680001000,Waste Treatment
 activity_set_1,2680002000,Waste Treatment
 activity_set_1,2680003000,Waste Treatment
 activity_set_1,2680003010,Waste Treatment
+activity_set_8,2461800001,Pesticide application
+activity_set_8,2461800002,Pesticide application
+activity_set_8,2461850000,Pesticide application

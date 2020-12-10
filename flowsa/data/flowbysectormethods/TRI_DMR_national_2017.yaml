@@ -9,5 +9,5 @@ source_names:
      - {"TRI":"2017", "DMR":"2017"}   # inventory_dict
      - 'NAICS_6'            # NAICS_level
      - 'national'           # geo_scale
-     - ['water','ground']   # compartments
+     - ['water']     # compartments
    

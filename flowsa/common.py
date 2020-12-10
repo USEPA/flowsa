@@ -107,11 +107,17 @@ def load_sector_length_crosswalk_w_nonnaics():
     cw = load_sector_length_crosswalk()
     # append household codes
     cw = cw.append(pd.DataFrame([["F010", "F010", "F010", "F0100", "F01000"]], columns=cw.columns), ignore_index=True)
+    # append government transportation codes
+    cw = cw.append(pd.DataFrame([["S00201", "S00201", "S00201", "S00201", "S00201"]], columns=cw.columns), ignore_index=True)
     return cw
 
 def load_household_sector_codes():
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
+
+def load_government_sector_codes():
+    government = pd.read_csv(datapath + 'Government_SectorCodes.csv', dtype='str')
+    return government
 
 def load_bea_crosswalk():
     cw = pd.read_csv(datapath + "BEA_Crosswalk.csv", dtype="str")
@@ -235,37 +241,6 @@ activity_fields = {'ProducedBy': [{'flowbyactivity':'ActivityProducedBy'},
                    'ConsumedBy': [{'flowbyactivity':'ActivityConsumedBy'},
                                   {'flowbysector': 'SectorConsumedBy'}]
                    }
-
-
-def generalize_activity_field_names(df):
-    """
-    The 'activityconsumedby' and 'activityproducedby' columns from the allocation dataset do not always align with
-    the water use dataframe. Generalize the allocation activity column.
-    :param fba_df:
-    :return:
-    """
-
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].replace({'None': None,
-                                                                 'nan': None})
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].replace({'None': None,
-                                                                 'nan': None})
-
-    activity_consumed_list = df['ActivityConsumedBy'].drop_duplicates().values.tolist()
-    activity_produced_list = df['ActivityProducedBy'].drop_duplicates().values.tolist()
-
-    # if an activity field column is all 'none', drop the column and rename renaming activity columns to generalize
-    if all(v is None for v in activity_consumed_list):
-        df = df.drop(columns=['ActivityConsumedBy', 'SectorConsumedBy'])
-        df = df.rename(columns={'ActivityProducedBy': 'Activity',
-                                'SectorProducedBy': 'Sector'})
-    elif all(v is None for v in activity_produced_list):
-        df = df.drop(columns=['ActivityProducedBy', 'SectorProducedBy'])
-        df = df.rename(columns={'ActivityConsumedBy': 'Activity',
-                                'SectorConsumedBy': 'Sector'})
-    else:
-        log.error('Cannot generalize dataframe')
-
-    return df
 
 
 def create_fill_na_dict(flow_by_fields):
