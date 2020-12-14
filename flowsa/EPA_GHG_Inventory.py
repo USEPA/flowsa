@@ -20,25 +20,14 @@ DEFAULT_YEAR = 9999
 # Only keeping years 2010-2018 for the following tables:
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
-    # "Ch 3 - Energy": ["3-22"],
-    # "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59"],
     "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
-    # "Ch 4 - Industrial Processes": ["4-43", "4-80"],
-    # "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101"],
     "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101", "4-43", "4-80"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
+    "Executive Summary": ["ES-5"]
 }
 
-# TABLES = {
-#     "Ch 3 - Energy": ["3-22"],
-#     # "Ch 4 - Industrial Processes": ["4-43", "4-80"],
-# }
-
-# NOTE: 3-22, 4-43, 4-80 are completely different formats...
-# Table 3-22 has TOTAL data, and not YEARLY data, so the format varies drastically.
-# Consider splitting the calls by YEARLY and TOTAL to facilitate data gathering.
 SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
-SRC_NAME_SPECIAL_FORMAT = ["T_3_22"]
+SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80"]
 
 DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
@@ -93,10 +82,14 @@ TBL_META = {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table 3-59:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
     },
-    # TODO: This is a different format!
-    # "EPA_GHG_Inventory_T_4_43"
-    # TODO: This is a different format!
-    # "EPA_GHG_Inventory_T_4_80"
+    "EPA_GHG_Inventory_T_4_43": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 4-43:  CO2 Emissions from Soda Ash Production"
+    },
+    "EPA_GHG_Inventory_T_4_80": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
+    },
     "EPA_GHG_Inventory_T_4_48": {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
@@ -150,6 +143,11 @@ TBL_META = {
     #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
     #     "desc": ""
     # },
+    "EPA_GHG_Inventory_T_ES_5": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "Table ES-5:  U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
+                "from Land Use, Land-Use Change, and Forestry (MMT CO2 Eq.)"
+    },
 }
 
 
@@ -195,7 +193,7 @@ def ghg_call(url, response, args, **kwargs):
                     df.columns = new_headers
                     print('break')
                 elif '4-' in table:
-                    break
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1")
                 elif 'A-' in table:
                     break
                 elif 'ES-' in table:
@@ -213,6 +211,11 @@ def ghg_call(url, response, args, **kwargs):
         return frames
 
 
+def get_unnamed_cols(df):
+    """Get a list of all unnamed columns, used to drop them."""
+    return [col for col in df.columns if "Unnamed" in col]
+
+
 def ghg_parse(dataframe_list, args, **kwargs):
     """ TODO. """
     cleaned_list = []
@@ -224,24 +227,35 @@ def ghg_parse(dataframe_list, args, **kwargs):
                 special_format = True
 
         # Specify to ignore errors in case one of the drop_cols is missing.
-        df = df.drop(columns=DROP_COLS, errors='ignore')
+        drop_cols = get_unnamed_cols(df)
+        df = df.drop(columns=(DROP_COLS + drop_cols), errors='ignore')
 
-        # Rename the PK column from data_type to "ActivityProducedBy":
-        df = df.rename(columns={df.columns[0]: "ActivityProducedBy"})
+        if not special_format or "T_4_" not in source_name:
+            # Rename the PK column from data_type to "ActivityProducedBy":
+            df = df.rename(columns={df.columns[0]: "ActivityProducedBy"})
+        else:
+            df["ActivityProducedBy"] = "None"
 
-        # df["ActivityProducedBy"] = "None"
         df["ActivityConsumedBy"] = "None"
         df["Compartment"] = "None"
         # df["FlowType"] = "ELEMENTARY_FLOW"
         df["Location"] = "00000"
 
         id_vars = ["SourceName", "ActivityConsumedBy", "ActivityProducedBy", "Compartment", "Location"]
+        if special_format and df.columns[0] == "Year":
+            id_vars.append("Year")
+            # Cast Year column to numeric and delete any years <= 2009:
+            df = df[pd.to_numeric(df["Year"], errors="coerce") > 2009]
+
         # Set index on the df:
         df.set_index(id_vars)
 
-        # If Table 3-22:
         if special_format:
-            df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
+            if "T_4_" in source_name:
+                df.drop(columns=["ActivityProducedBy"], errors="ignore")
+                df = df.melt(id_vars=id_vars, var_name="ActivityProducedBy", value_name="FlowAmount")
+            else:
+                df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
 
@@ -269,6 +283,7 @@ def ghg_parse(dataframe_list, args, **kwargs):
         df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
         df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
         df.loc[df["SourceName"] == source_name, "Compartment"] = meta["compartment"]
+        # if not special_format or "T_4_" not in source_name or "T_4_80" in source_name:
         df.loc[df["SourceName"] == source_name, "FlowName"] = meta["flow_name"]
         if 'Year' not in df.columns:
             df['Year'] = meta.get("year", DEFAULT_YEAR)
@@ -277,7 +292,7 @@ def ghg_parse(dataframe_list, args, **kwargs):
         df["DataReliability"] = 5
         df["DataCollection"] = 5
         df["Compartment"] = "None"
-        # Fill in the rest of the Flow by fields so they show "None" instead of nan.
+        # Fill in the rest of the Flow by fields so they show "None" instead of nan.76i
         df["MeasureofSpread"] = "None"
         df["DistributionType"] = "None"
         df["FlowType"] = "None"
@@ -286,8 +301,11 @@ def ghg_parse(dataframe_list, args, **kwargs):
         # add missing flow by sector fields
         # df = add_missing_flow_by_fields(df, flow_by_activity_fields)
 
+        df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
 
     df = pd.concat(cleaned_list)
+    # Remove commas from numbers again in case any were missed:
+    df["FlowAmount"].replace(',', '', regex=True, inplace=True)
 
     return df
