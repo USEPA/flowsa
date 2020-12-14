@@ -7,7 +7,8 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 
 import pandas as pd
-from flowsa.processed_data_mgmt import load_preprocessed_output
+from esupy.processed_data_mgmt import load_preprocessed_output
+from flowsa.common import paths
 from flowsa.flowbyfunctions import collapse_fbs_sectors
 
 def getFlowByActivity(flowclass, years, datasource):
@@ -22,11 +23,10 @@ def getFlowByActivity(flowclass, years, datasource):
     fbas = pd.DataFrame()
     for y in years:
         fba_file = "FlowByActivity/"+ datasource + "_" + str(y) + ".parquet"
-        fba = load_preprocessed_output(fba_file)
+        fba = load_preprocessed_output(fba_file, paths)
         fba = fba[fba['Class'].isin(flowclass)]
         fbas = pd.concat([fbas, fba], sort=False)
     return fbas
-
 
 def getFlowBySector(methodname):
     """
