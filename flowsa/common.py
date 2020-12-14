@@ -1,14 +1,10 @@
 # common.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """Common variables and functions used across flowsa"""
-
 import sys
 import os
-
-import appdirs
 import yaml
 import requests
 import requests_ftp
@@ -16,6 +12,7 @@ import pandas as pd
 import numpy as np
 import logging as log
 import pycountry
+from esupy.processed_data_mgmt import Paths
 
 log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -40,9 +37,15 @@ flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 
-local_path = os.path.realpath(appdirs.user_data_dir() + "/flowsa")
-if not os.path.exists(local_path):
-    os.mkdir(local_path)
+paths = Paths
+paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
+paths.remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/"
+
+# if not os.path.exists(local_path):
+#     os.mkdir(local_path)
+#     os.mkdir(local_path + '/FlowByActivity')
+#     os.mkdir(local_path + '/FlowBySector')
+
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -585,8 +588,3 @@ def convert_fba_unit(df):
     
     return df
 
-def strip_file_extension(filename):
-    return(filename.rsplit(".", 1)[0])
-
-
-remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/"
