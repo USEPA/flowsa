@@ -35,7 +35,7 @@ def getFlowBySector(methodname):
     :return: dataframe in flow by sector format
     """
     fbs_file = "FlowBySector/" + methodname + ".parquet"
-    fbs = load_preprocessed_output(fbs_file)
+    fbs = load_preprocessed_output(fbs_file, paths)
     return fbs
 
 
