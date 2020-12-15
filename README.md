@@ -62,6 +62,18 @@ parquets contain multiple class types, meaning the Class type should be specifie
 USDA_CoA_Cropland dataframe includes acreage information for crops (Class = Land) and the number of farms that grow a
 particular crop (Class = Other). 
 
+## FlowBySector Datasets
+
+Environmental data attributed to North American Industrial Classification (NAICS) Codes, formatted into standard 
+FlowBySector datasets. 
+ 
+Code | Years | Description | Number of methods of sector allocation |
+--- | --- | --- | --- |
+CAP_HAP_national |  2017 | Air emissions | 1 |
+Land_national |  2012 | Land use | 1 |
+Water_national |  2010, 2015 | Water withdrawal | 2 |
+Water_state |  2015 | Water withdrawal | 1 |
+
 ## Disclaimer
 
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis
