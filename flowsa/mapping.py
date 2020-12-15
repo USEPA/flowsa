@@ -207,7 +207,7 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
                       "TargetFlowContext",
                       "TargetUnit"]
     if flowmapping.empty:
-        log.warning("No mapping file in fedelemflowlist found for " + from_fba_source)
+        log.warning("No mapping file in fedelemflowlist found for " + ' '.join(from_fba_source))
         # return the original df but with columns renamed so can continue working on the FBS
         fba_mapped_df = fba.copy()
     else:
