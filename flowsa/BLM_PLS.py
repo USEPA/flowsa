@@ -489,6 +489,9 @@ def blm_pls_parse(dataframe_list, args):
                         Location.append(fips_row["FIPS_2"] + "000")
         df = df.drop(columns=["LocationStr"])
 
+        # standardize activity names
+        df = standardize_blm_pls_activity_names(df)
+
         # replace withdrawn code
         df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
         df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
@@ -500,9 +503,6 @@ def blm_pls_parse(dataframe_list, args):
         df["SourceName"] = 'BLM_PLS'
         df['Year'] = args["year"]
         df['Unit'] = "Acres"
-
-        # standardize activity names
-        df = standardize_blm_pls_activity_names(df)
 
     return df
 

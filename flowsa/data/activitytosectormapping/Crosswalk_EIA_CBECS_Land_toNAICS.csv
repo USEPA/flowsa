@@ -2,191 +2,191 @@ ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
 EIA_CBECS_Land,Education,NAICS_2012_Code,611,I
 EIA_CBECS_Land,Education,NAICS_2012_Code,624,I
 EIA_CBECS_Land,Education,NAICS_2012_Code,928,I
-EIA_CBECS_Land,Food Sales,NAICS_2012_Code,424,I
-EIA_CBECS_Land,Food Sales,NAICS_2012_Code,445,I
-EIA_CBECS_Land,Food Sales,NAICS_2012_Code,447,I
-EIA_CBECS_Land,Food Sales,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Food Sales,NAICS_2012_Code,712,I
-EIA_CBECS_Land,Food Sales,NAICS_2012_Code,713,I
-EIA_CBECS_Land,Food Sales,NAICS_2012_Code,928,I
-EIA_CBECS_Land,Food Service,NAICS_2012_Code,722,I
-EIA_CBECS_Land,Food Service,NAICS_2012_Code,721,I
-EIA_CBECS_Land,Food Service,NAICS_2012_Code,713,I
-EIA_CBECS_Land,Food Service,NAICS_2012_Code,928,I
-EIA_CBECS_Land,Food Service,NAICS_2012_Code,624,I
-EIA_CBECS_Land,Food Service,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Food Service,NAICS_2012_Code,712,I
-EIA_CBECS_Land,Inpatient Health Care,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Inpatient Health Care,NAICS_2012_Code,621,I
-EIA_CBECS_Land,Inpatient Health Care,NAICS_2012_Code,622,I
-EIA_CBECS_Land,Lodging,NAICS_2012_Code,721,I
-EIA_CBECS_Land,Lodging,NAICS_2012_Code,713,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,452,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,451,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,448,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,446,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,444,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,443,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,442,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,441,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,453,I
+EIA_CBECS_Land,Enclosed and strip malls,NAICS_2012_Code,517,I
+EIA_CBECS_Land,Food sales,NAICS_2012_Code,928,I
+EIA_CBECS_Land,Food sales,NAICS_2012_Code,713,I
+EIA_CBECS_Land,Food sales,NAICS_2012_Code,712,I
+EIA_CBECS_Land,Food sales,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Food sales,NAICS_2012_Code,447,I
+EIA_CBECS_Land,Food sales,NAICS_2012_Code,445,I
+EIA_CBECS_Land,Food sales,NAICS_2012_Code,424,I
+EIA_CBECS_Land,Food service,NAICS_2012_Code,713,I
+EIA_CBECS_Land,Food service,NAICS_2012_Code,624,I
+EIA_CBECS_Land,Food service,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Food service,NAICS_2012_Code,712,I
+EIA_CBECS_Land,Food service,NAICS_2012_Code,928,I
+EIA_CBECS_Land,Food service,NAICS_2012_Code,722,I
+EIA_CBECS_Land,Food service,NAICS_2012_Code,721,I
+EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,621,I
+EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,622,I
+EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,621,I
+EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,624,I
+EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,928,I
+EIA_CBECS_Land,Lodging,NAICS_2012_Code,624,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,611,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,623,I
-EIA_CBECS_Land,Lodging,NAICS_2012_Code,624,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,522,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,523,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,524,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,531,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,532,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,521,I
+EIA_CBECS_Land,Lodging,NAICS_2012_Code,713,I
+EIA_CBECS_Land,Lodging,NAICS_2012_Code,721,I
 EIA_CBECS_Land,Office,NAICS_2012_Code,525,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,519,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,493,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,517,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,516,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,515,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,512,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,511,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,533,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,492,I
 EIA_CBECS_Land,Office,NAICS_2012_Code,518,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,541,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,922,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,561,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,928,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,927,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,926,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,925,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,924,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,923,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,488,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,921,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,812,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,811,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,713,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,712,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,711,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,624,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,621,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,519,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,521,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,524,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,522,I
 EIA_CBECS_Land,Office,NAICS_2012_Code,562,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,561,I
 EIA_CBECS_Land,Office,NAICS_2012_Code,551,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,487,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,541,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,533,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,532,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,531,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,523,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,922,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,624,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,711,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,712,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,713,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,811,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,812,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,921,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,517,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,923,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,924,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,925,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,926,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,927,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,928,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,621,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,516,I
 EIA_CBECS_Land,Office,NAICS_2012_Code,813,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,485,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,484,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,483,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,482,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,481,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,454,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,441,I
-EIA_CBECS_Land,Office,NAICS_2012_Code,424,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,512,I
 EIA_CBECS_Land,Office,NAICS_2012_Code,423,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,424,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,454,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,481,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,482,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,483,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,484,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,441,I
 EIA_CBECS_Land,Office,NAICS_2012_Code,486,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,454,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,481,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,488,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,512,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,562,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,517,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,518,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,541,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,485,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,511,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,493,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,515,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,492,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,488,I
+EIA_CBECS_Land,Office,NAICS_2012_Code,487,I
 EIA_CBECS_Land,Other,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,541,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,518,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,517,I
 EIA_CBECS_Land,Other,NAICS_2012_Code,515,I
-EIA_CBECS_Land,Other,NAICS_2012_Code,927,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,512,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,488,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,481,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,454,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,562,I
 EIA_CBECS_Land,Other,NAICS_2012_Code,928,I
-EIA_CBECS_Land,Outpatient Health Care,NAICS_2012_Code,621,I
-EIA_CBECS_Land,Outpatient Health Care,NAICS_2012_Code,624,I
-EIA_CBECS_Land,Outpatient Health Care,NAICS_2012_Code,928,I
-EIA_CBECS_Land,Outpatient Health Care,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,485,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,487,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,488,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,512,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,515,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,711,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,712,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,713,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,721,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,812,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,921,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,519,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,483,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,482,I
-EIA_CBECS_Land,Public Assembly,NAICS_2012_Code,481,I
-EIA_CBECS_Land,Public Order/ Safety,NAICS_2012_Code,921,I
-EIA_CBECS_Land,Public Order/ Safety,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Public Order/ Safety,NAICS_2012_Code,922,I
-EIA_CBECS_Land,Religious Worship,NAICS_2012_Code,813,I
-EIA_CBECS_Land,Religious Worship,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,448,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,452,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,444,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,443,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,442,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,441,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,453,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,517,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,451,I
-EIA_CBECS_Land,Retail (mall),NAICS_2012_Code,446,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,713,I
+EIA_CBECS_Land,Other,NAICS_2012_Code,927,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,711,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,713,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,712,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,921,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,519,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,515,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,512,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,488,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,487,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,485,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,483,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,482,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,481,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,721,I
+EIA_CBECS_Land,Public assembly,NAICS_2012_Code,812,I
+EIA_CBECS_Land,Public order and safety,NAICS_2012_Code,921,I
+EIA_CBECS_Land,Public order and safety,NAICS_2012_Code,922,I
+EIA_CBECS_Land,Public order and safety,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Religious worship,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Religious worship,NAICS_2012_Code,813,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,452,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,451,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,446,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,453,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,448,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,517,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,518,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,444,I
 EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,611,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,532,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,712,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,713,I
 EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,441,I
 EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,442,I
 EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,443,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,444,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,712,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,446,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,448,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,451,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,452,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,453,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,517,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,518,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,812,I
+EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,532,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,562,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,811,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,562,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,517,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,532,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,541,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,812,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,518,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,441,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,447,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,481,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,482,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,483,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,484,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,485,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,486,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,487,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,488,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,491,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,541,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,481,I
-EIA_CBECS_Land,Service,NAICS_2012_Code,518,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,532,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,485,I
+EIA_CBECS_Land,Service,NAICS_2012_Code,517,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,516,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,492,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,482,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,811,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,921,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,927,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,928,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,453,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,443,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,442,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,441,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,424,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,423,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,444,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,562,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,532,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,531,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,483,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,484,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,485,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,486,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,487,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,488,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,492,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,493,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,511,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,512,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,454,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,517,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,518,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,519,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,521,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,481,I
-EIA_CBECS_Land,Warehouse/ Storage,NAICS_2012_Code,516,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,482,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,811,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,921,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,927,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,928,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,453,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,443,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,442,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,441,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,424,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,423,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,444,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,562,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,532,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,531,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,483,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,484,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,485,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,486,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,487,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,488,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,492,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,493,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,511,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,512,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,454,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,517,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,518,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,519,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,521,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,481,I
+EIA_CBECS_Land,Warehouse and storage,NAICS_2012_Code,516,I

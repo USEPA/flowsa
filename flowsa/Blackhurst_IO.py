@@ -105,8 +105,11 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
                                         'FlowAmount': 'HelperFlow'})
 
     # merge the two dfs
-    df = pd.merge(df_wsec, bls_wsec[['Location', 'Sector', 'HelperFlow']], how='left',
-                  left_on=['Location', 'Sector'], right_on=['Location', 'Sector'])
+    df = pd.merge(df_wsec,
+                  bls_wsec[['Location', 'Sector', 'HelperFlow']],
+                  how='left',
+                  left_on=['Location', 'SectorConsumedBy'],
+                  right_on=['Location', 'Sector'])
     # drop any rows where sector is None
     df = df[~df['Sector'].isnull()]
     # fill helperflow values with 0
@@ -126,7 +129,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     df_wratio.loc[:, 'Unit'] = 'gal/employee'
 
     # drop cols
-    df_wratio = df_wratio.drop(columns=['Employees', 'EmployeeRatio'])
+    df_wratio = df_wratio.drop(columns=['Sector', 'Employees', 'EmployeeRatio'])
 
     return df_wratio
 
@@ -156,7 +159,7 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     vd = pv - av
 
     # subset df to scale into oil and non-oil sectors
-    df_to_scale['sector_label'] = np.where(df_to_scale['Sector'].apply(lambda x: x[0:5] == '21111'), 'oil', 'nonoil')
+    df_to_scale['sector_label'] = np.where(df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil', 'nonoil')
     df_to_scale['ratio'] = np.where(df_to_scale['sector_label'] == 'oil', 2/3, 1/3)
     df_to_scale['label_sum'] = df_to_scale.groupby(['Location', 'sector_label'])['FlowAmount'].transform('sum')
     df_to_scale.loc[:, 'value_difference'] = vd.astype(float)

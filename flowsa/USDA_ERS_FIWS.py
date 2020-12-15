@@ -29,13 +29,17 @@ def fiws_parse(dataframe_list, args):
     df = pd.concat(dataframe_list, sort=False)
     # select data for chosen year, cast year as string to match argument
     df['Year'] = df['Year'].astype(str)
-    df = df[df['Year'] == args['year']]
+    df = df[df['Year'] == args['year']].reset_index(drop=True)
     # add state fips codes, reading in datasets from common.py
-    fips = get_all_state_FIPS_2()
+    fips = get_all_state_FIPS_2().reset_index(drop=True)
+    # ensure capitalization of state names
+    fips['State'] = fips['State'].apply(lambda x: x.title())
     fips['StateAbbrev'] = fips['State'].map(us_state_abbrev)
+    # pad zeroes
+    fips['FIPS_2'] = fips['FIPS_2'].apply(lambda x: x.ljust(3 + len(x), '0'))
     df = pd.merge(df, fips, how='left', left_on='State', right_on='StateAbbrev')
     # set us location code
-    df.loc[df['State_x'] == 'US', 'FIPS_2'] = '00'
+    df.loc[df['State_x'] == 'US', 'FIPS_2'] = US_FIPS
     # drop "All" in variabledescription2
     df.loc[df['VariableDescriptionPart2'] == 'All', 'VariableDescriptionPart2'] = 'drop'
     # combine variable descriptions to create Activity name and remove ", drop"
@@ -69,12 +73,13 @@ def fiws_parse(dataframe_list, args):
     df['SourceName'] = 'USDA_ERS_FIWS'
     df['Unit'] = 'USD'
     # Add tmp DQ scores
-    # df['DataReliability'] = 5
-    # df['DataCollection'] = 5
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
     # sort df
     df = df.sort_values(['Location', 'FlowName'])
     # reset index
     df.reset_index(drop=True, inplace=True)
+
     return df
 
 

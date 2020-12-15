@@ -87,12 +87,15 @@ def disaggregate_iwms_to_6_digit_naics(df, attr, method):
 
     from flowsa.USDA_CoA_Cropland import disaggregate_pastureland, disaggregate_cropland
 
+    # define sector column to base df modifications
+    sector_column = 'SectorConsumedBy'
+
     # address double counting brought on by iwms categories applying to multiply NAICS
     df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment', 'Location'], keep = 'first', inplace = True)
     years = [attr['allocation_source_year'] - 1]
     # todo: print list of activities that are dropped because unmapped
-    df = df[~df['Sector'].isna()]
-    df = disaggregate_pastureland(df, attr, years)
-    df = disaggregate_cropland(df, attr, years)
+    df = df[~df[sector_column].isna()]
+    df = disaggregate_pastureland(df, attr, method, years, sector_column)
+    df = disaggregate_cropland(df, attr, method, years, sector_column)
 
     return df

@@ -176,6 +176,12 @@ def clean_NEI_fba(fba):
     fba = drop_GHGs(fba)
     return fba
 
+def clean_NEI_fba_no_pesticides(fba):
+    
+    fba = drop_pesticides(fba)
+    fba = clean_NEI_fba(fba)
+    return fba
+
 def remove_duplicate_NEI_flows(df):
     """ 
     These flows for PM will get mapped to the primary PM flowable in FEDEFL
@@ -201,5 +207,31 @@ def drop_GHGs(df):
                 ]
     
     df = df.loc[~df['FlowName'].isin(flowlist)]
+    
+    return df    
+
+def drop_pesticides(df):
+    """
+    To avoid overlap with other datasets, emissions of pesticides from pesticide
+    application are removed. 
+    """
+    flowlist = [
+                '2,4-Dichlorophenoxy Acetic Acid',
+                'Captan',
+                'Carbaryl',
+                'Methyl Bromide',
+                'Methyl Iodide',
+                'Parathion',
+                'Trifluralin',
+                ]
+    
+    activity_list = [
+                    '2461800001',
+                    '2461800002',
+                    '2461850000',
+                    ]
+    
+    df = df.loc[~(df['FlowName'].isin(flowlist) &
+                df['ActivityProducedBy'].isin(activity_list))]
     
     return df    

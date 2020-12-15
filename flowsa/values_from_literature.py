@@ -78,6 +78,22 @@ def get_Canadian_to_USD_exchange_rate(year):
     return exchange_rate
 
 
+def get_area_of_urban_land_occupied_by_houses_2013():
+    """
+    Reported area of urban land occupied by houses in 2013 from the USDA ERS Major Land Uses Report
+
+    :return:
+    """
+
+    acres_to_sq_m_conversion = 4046.86
+    # value originally reported in million acres
+    area_urban_residence = 32.8
+
+    # convert to square meters
+    area_urban_residence = area_urban_residence * 1000000 * acres_to_sq_m_conversion
+
+    return area_urban_residence
+
 def get_commercial_and_manufacturing_floorspace_to_land_area_ratio():
     """
     The additional land area associated with commercial and manufacturing buildings (parking, sinage, landscaping)
@@ -145,9 +161,10 @@ def get_transportation_sectors_based_on_FHA_fees():
 
     :return:
     """
+    fha_dict = ({'Truck transportation': {'NAICS_2012_Code': '484', 'ShareOfFees': 0.329},
+                 'Transit and ground passenger transportation': {'NAICS_2012_Code': '485', 'ShareOfFees': 0.001},
+                 'State and local government passenger transit': {'NAICS_2012_Code': 'S00201', 'ShareOfFees': 0.001},
+                 'Personal consumption expenditures': {'NAICS_2012_Code': 'F01000', 'ShareOfFees': 0.669}
+                 })
 
-    FHA_dict = ({'Truck': 0.329,
-                 'Transit and ground passenger transportation': 0.001,
-                 'State/local government passenger transit': 0.001,
-                 'Personal consumption expenditures': 0.669})
-    return FHA_dict
+    return fha_dict
