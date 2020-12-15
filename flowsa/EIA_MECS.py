@@ -20,10 +20,10 @@ def eia_mecs_URL_helper(build_url, config, args):
     Takes the build url and performs substitutions based on the EIA MECS year 
     and data tables of interest. Returns the finished url.
     """
-    
+
     # initiate url list
     urls = []
-    
+
     # for all tables listed in the source config file...
     for table in config['tables']:
         # start with build url
@@ -37,7 +37,7 @@ def eia_mecs_URL_helper(build_url, config, args):
         url = url.replace('__table__', table)
         # add to list of urls
         urls.append(url)
-        
+
     return urls
 
 
@@ -52,11 +52,11 @@ def eia_mecs_land_call(url, cbesc_response, args):
         # skip rows and remove extra rows at end of dataframe
 
         df_description.columns = ["NAICS Code(a)", "Subsector and Industry",
-                           "Approximate Enclosed Floorspace of All Buildings Onsite (million sq ft)",
-                           "Establishments(b) (counts)", "Average Enclosed Floorspace per Establishment (sq ft)",
-                           "Approximate Number of All Buildings Onsite (counts)",
-                           "Average Number of Buildings Onsite per Establishment (counts)",
-                           "n8", "n9", "n10", "n11", "n12"]
+                                  "Approximate Enclosed Floorspace of All Buildings Onsite (million sq ft)",
+                                  "Establishments(b) (counts)", "Average Enclosed Floorspace per Establishment (sq ft)",
+                                  "Approximate Number of All Buildings Onsite (counts)",
+                                  "Average Number of Buildings Onsite per Establishment (counts)",
+                                  "n8", "n9", "n10", "n11", "n12"]
         df_data.columns = ["NAICS Code(a)", "Subsector and Industry",
                            "Approximate Enclosed Floorspace of All Buildings Onsite (million sq ft)",
                            "Establishments(b) (counts)", "Average Enclosed Floorspace per Establishment (sq ft)",
@@ -72,10 +72,10 @@ def eia_mecs_land_call(url, cbesc_response, args):
 
         #Drop unused columns
         df_description = df_description.drop(columns=["Approximate Enclosed Floorspace of All Buildings Onsite (million sq ft)",
-                       "Establishments(b) (counts)", "Average Enclosed Floorspace per Establishment (sq ft)",
-                       "Approximate Number of All Buildings Onsite (counts)",
-                       "Average Number of Buildings Onsite per Establishment (counts)",
-                       "n8", "n9", "n10", "n11", "n12"])
+                                                      "Establishments(b) (counts)", "Average Enclosed Floorspace per Establishment (sq ft)",
+                                                      "Approximate Number of All Buildings Onsite (counts)",
+                                                      "Average Number of Buildings Onsite per Establishment (counts)",
+                                                      "n8", "n9", "n10", "n11", "n12"])
 
         df_data = df_data.drop(columns=["Subsector and Industry", "n8", "n9", "n10", "n11", "n12"])
         df_rse = df_rse.drop(columns=["Subsector and Industry", "n8", "n9", "n10", "n11", "n12"])
@@ -111,15 +111,15 @@ def eia_mecs_land_call(url, cbesc_response, args):
                            var_name="FlowName",
                            value_name="FlowAmount")
     df_rse = df_rse.melt(id_vars=["NAICS Code(a)"],
-                           var_name="FlowName",
-                           value_name="Spread")
+                         var_name="FlowName",
+                         value_name="Spread")
 
     df = pd.merge(df_data, df_rse)
     df = pd.merge(df, df_description)
-    
+
     return df
 
- 
+
 def eia_mecs_land_parse(dataframe_list, args):
     df_array = []
     for dataframes in dataframe_list:
@@ -158,7 +158,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_MECS_Land'
     df['Year'] = args["year"]
-    df["Compartment"] = None
+    df["Compartment"] = 'ground'
     df['MeasureofSpread'] = "RSE"
     df['Location'] = US_FIPS
     df['Unit'] = unit
@@ -178,24 +178,24 @@ def eia_mecs_energy_call(url, mecs_response, args):
     Concatenates census region data into master dataframe.
     Returns master dataframe containing data for all 4 census regions, plus U.S. totals.
     """
-    
+
     ## load .yaml file containing information about each energy table
     ## (the .yaml includes information such as column names, units, and which rows to grab)
     filename = 'EIA_MECS_energy tables'
     sourcefile = datapath + filename + '.yaml'
     with open(sourcefile, 'r') as f:
         table_dict = yaml.safe_load(f)
-    
+
     ## read raw data into dataframe
     ## (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(mecs_response.content), sheet_name=0, header=None)
     df_raw_rse = pd.io.excel.read_excel(io.BytesIO(mecs_response.content), sheet_name=1, header=None)
-    
+
     ## retrieve table name from cell A3 of Excel file
     table = df_raw_data.iloc[2][0]
     # drop the table description (retain only table name)
     table = table.split('    ')[0]
-    
+
     ## for each of the census regions...
     ## - grab the appropriate rows and columns
     ## - add column names
@@ -204,7 +204,7 @@ def eia_mecs_energy_call(url, mecs_response, args):
     ## - concatenate census region data into master dataframe
     df_data = pd.DataFrame()
     for region in table_dict[args['year']][table]['regions']:
-        
+
         ## grab relevant columns
         ## (this is a necessary step because code was retaining some seemingly blank columns)
         # determine number of columns in table, based on number of column names
@@ -212,7 +212,7 @@ def eia_mecs_energy_call(url, mecs_response, args):
         # keep only relevant columns
         df_raw_data = df_raw_data.iloc[:,0:num_cols]
         df_raw_rse = df_raw_rse.iloc[:,0:num_cols]
-        
+
         ## grab relevant rows
         # get indices for relevant rows
         grab_rows = table_dict[args['year']][table]['regions'][region]
@@ -220,53 +220,53 @@ def eia_mecs_energy_call(url, mecs_response, args):
         # keep only relevant rows
         df_data_region = pd.DataFrame(df_raw_data.loc[grab_rows[0]-1:grab_rows[1]-1]).reindex()
         df_rse_region = pd.DataFrame(df_raw_rse.loc[grab_rows_rse[0]-1:grab_rows_rse[1]-1]).reindex()
-        
+
         # assign column names
         df_data_region.columns = table_dict[args['year']][table]['col_names']
         df_rse_region.columns = table_dict[args['year']][table]['col_names']
-        
+
         # "unpivot" dataframe from wide format to long format
         # ('NAICS code' and 'Subsector and Industry' are identifier variables)
         # (all other columns are value variables)
-        df_data_region = pd.melt(df_data_region, 
-                                 id_vars = table_dict[args['year']][table]['col_names'][0:2], 
+        df_data_region = pd.melt(df_data_region,
+                                 id_vars = table_dict[args['year']][table]['col_names'][0:2],
                                  value_vars = table_dict[args['year']][table]['col_names'][2:],
                                  var_name = 'FlowName',
                                  value_name = 'FlowAmount')
-        df_rse_region = pd.melt(df_rse_region, 
-                                 id_vars = table_dict[args['year']][table]['col_names'][0:2], 
-                                 value_vars = table_dict[args['year']][table]['col_names'][2:],
-                                 var_name = 'FlowName',
-                                 value_name = 'Spread')
+        df_rse_region = pd.melt(df_rse_region,
+                                id_vars = table_dict[args['year']][table]['col_names'][0:2],
+                                value_vars = table_dict[args['year']][table]['col_names'][2:],
+                                var_name = 'FlowName',
+                                value_name = 'Spread')
 
         # add census region
         df_data_region['Location'] = region
-        
+
         # add relative standard error data
         df_data_region = pd.merge(df_data_region, df_rse_region)
-        
+
         ## add units
         # if table name ends in 1, units must be extracted from flow names
         if table[-1] == '1':
             flow_name_array = df_data_region['FlowName'].str.split('\s+\|+\s')
-            df_data_region['FlowName'] = flow_name_array.str[0] 
+            df_data_region['FlowName'] = flow_name_array.str[0]
             df_data_region['Unit'] = flow_name_array.str[1]
         # if table name ends in 2, units are 'trillion Btu'
         elif table[-1] == '2':
             df_data_region['Unit'] = 'Trillion Btu'
             df_data_region['FlowName'] = df_data_region['FlowName']
-        
+
         data_type = table_dict[args['year']][table]['data_type']
         if data_type == 'nonfuel consumption':
-            df_data_region['Class']='Other'    
+            df_data_region['Class']='Other'
         elif data_type == 'fuel consumption':
             df_data_region['Class']='Energy'
         # remove extra spaces before 'Subsector and Industry' descriptions
         df_data_region['Subsector and Industry'] = df_data_region['Subsector and Industry'].str.lstrip(' ')
-        
+
         # concatenate census region data with master dataframe
         df_data = pd.concat([df_data, df_data_region])
-        
+
     return df_data
 
 
@@ -276,7 +276,7 @@ def eia_mecs_energy_parse(dataframe_list, args):
 
     # concatenate dataframe list into single dataframe
     df = pd.concat(dataframe_list, sort=True)
-    
+
     # rename columns to match standard flowbyactivity format
     df = df.rename(columns={'NAICS Code' : 'ActivityConsumedBy',
                             'Subsector and Industry' : 'Description'})
@@ -293,11 +293,11 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df = assign_census_regions(df)
     df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
 
-    
+
     # drop rows that reflect subtotals (only necessary in 2014)
     df.dropna(subset=['ActivityConsumedBy'], inplace=True)
-        
-        
+
+
     ## replace withheld/unavailable data
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
@@ -323,7 +323,7 @@ def eia_mecs_energy_parse(dataframe_list, args):
     return df
 
 def mecs_energy_fba_cleanup(fba, attr):
-    
+
     fba = fba.loc[fba['Unit'] == 'MJ']
 
     return fba
@@ -337,22 +337,27 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :return:
     """
 
-    from flowsa.flowbyfunctions import sector_aggregation_generalized, fba_default_grouping_fields
+    from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
+
+    # define activity/sector columns to base df modifications on
+    activity_column = 'ActivityConsumedBy'
+    sector_column = 'SectorConsumedBy'
 
     # first aggregate existing data to higher naics
-    group_cols = fba_default_grouping_fields
+    group_cols = fba_mapped_default_grouping_fields
     group_cols = [e for e in group_cols if
                   e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-    group_cols.append('Sector')
-    df_w_sec = sector_aggregation_generalized(df_w_sec, group_cols)
+    # group_cols.append('Sector')
+    df_w_sec = sector_aggregation(df_w_sec, group_cols)
     # replace value in Activity col for created rows
-    df_w_sec.loc[:, 'Activity'] = np.where(df_w_sec['Activity'].isnull(), df_w_sec['Sector'], df_w_sec['Activity'])
+    df_w_sec.loc[:, activity_column] = np.where(df_w_sec[activity_column].isnull(),
+                                                df_w_sec[sector_column],
+                                                df_w_sec[activity_column])
 
     # then estimate missing data
-    df = estimate_missing_data(df_w_sec, [3, 4, 5])
+    df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
 
     return df
-
 
 def mecs_land_fba_cleanup(fba):
 
@@ -375,48 +380,58 @@ def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
     :return:
     """
 
-    from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
+    from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation, fba_mapped_default_grouping_fields
+
+    # test
+    # df_w_sec = flow_subset_wsec.copy()
+
+    # define the activity/sector columns to base modifications
+    activity_column = 'ActivityConsumedBy'
+    sector_column = 'SectorConsumedBy'
 
     # first aggregate existing data to higher naics
     group_cols = fba_mapped_default_grouping_fields
     df_w_sec = sector_aggregation(df_w_sec, group_cols)
     # replace value in Activity cols for created rows
-    df_w_sec['ActivityProducedBy'] = df_w_sec['SectorProducedBy'].copy()
-    df_w_sec['ActivityConsumedBy'] = df_w_sec['SectorConsumedBy'].copy()
+    df_w_sec[activity_column] = df_w_sec[sector_column].copy()
+    # sector disaggregation
+    df_w_sec = sector_disaggregation(df_w_sec, group_cols)
+    # replace value in Activity cols for created rows
+    df_w_sec[activity_column] = df_w_sec[sector_column].copy()
 
     # then estimate missing data
-    df = estimate_missing_data(df_w_sec, [3, 4, 5])
+    df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
 
     return df
 
 
-def estimate_missing_data(df, sector_lengths):
+def estimate_missing_data(df, activity_col, sector_col, sector_lengths):
     """
     For a given dataframe where data is reported by NAICS, but not all nested NAICS are listed,
     this function applies the unaccounted for amounts equally across unreported children
     """
 
-    df.dropna(subset=['Sector'], inplace=True)
+    df.dropna(subset=[sector_col], inplace=True)
     cw = load_sector_length_crosswalk()
 
     for i in sector_lengths:
         # create df with sectors of i length, need to disaggregate to i+1
-        df_parent = df.loc[df['Activity'].apply(lambda x: len(x) == i)]
-        parentlist = df_parent['Activity'].drop_duplicates().tolist()
+        df_parent = df.loc[df[activity_col].apply(lambda x: len(x) == i)]
+        parentlist = df_parent[activity_col].drop_duplicates().tolist()
 
         # create df with sectors of length > i + 1 (i.e. children)
-        df_child = df.loc[df['Activity'].apply(lambda x: len(x) == i + 1)]
-        df_child = df_child.assign(s_tmp=df_child['Activity'].apply(lambda x: x[0:i]))
+        df_child = df.loc[df[activity_col].apply(lambda x: len(x) == i + 1)]
+        df_child = df_child.assign(s_tmp=df_child[activity_col].apply(lambda x: x[0:i]))
 
         cw2 = cw[['NAICS_'+str(i), 'NAICS_'+str(i+1)]].drop_duplicates()
 
         for sector in parentlist:
-            df_temp_parent = df_parent[df_parent['Activity'] == sector]
+            df_temp_parent = df_parent[df_parent[activity_col] == sector]
             # extract the children of the given sector of level i that exist in the dataframe
             df_temp_child = df_child[df_child['s_tmp'] == sector]
-            childlist = df_temp_child['Activity'].tolist()
-            df_temp_child = df_temp_child.assign(s_tmp=df_child['Activity'].apply(lambda x: x[0:i+1]))
-            df_temp_child = df_temp_child.assign(length=df_child['Activity'].str.len())
+            childlist = df_temp_child[activity_col].tolist()
+            df_temp_child = df_temp_child.assign(s_tmp=df_child[activity_col].apply(lambda x: x[0:i+1]))
+            df_temp_child = df_temp_child.assign(length=df_child[activity_col].str.len())
 
             # drop children that have the same sector of i+1 (because these are double counting), /
             # as long as they are not the same length
@@ -433,14 +448,14 @@ def estimate_missing_data(df, sector_lengths):
                 new_flow_amount = (df_temp_parent['FlowAmount'].sum()-net_flow['FlowAmount'].sum())/len(sectors_to_add)
                 # Add new children to dataframe as new Activities, and assign flow amount,
                 # all other data remains the same as the parent (update DQI?)
-                new_child = pd.DataFrame(sectors_to_add, columns=['Sector'])
-                new_child['Activity'] = sector
-                new_child = df_temp_parent.merge(new_child, how='left', on='Activity')
-                new_child['Sector'] = new_child['Sector_y']
-                new_child.drop(columns=['Sector_x', 'Sector_y'], inplace=True)
+                new_child = pd.DataFrame(sectors_to_add, columns=[sector_col])
+                new_child[activity_col] = sector
+                new_child = df_temp_parent.merge(new_child, how='left', on=activity_col)
+                new_child[sector_col] = new_child[sector_col + '_y']
+                new_child.drop(columns=[sector_col + '_x', sector_col + '_y'], inplace=True)
                 new_child['FlowAmount'] = new_flow_amount
                 # reset the activity col value
-                new_child['Activity'] = new_child['Sector'].copy()
+                new_child[activity_col] = new_child[sector_col].copy()
                 # then concat new data to original df
                 df = pd.concat([df, new_child], axis=0, ignore_index=True)
 

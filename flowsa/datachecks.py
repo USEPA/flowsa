@@ -286,7 +286,7 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
     return df_w_lost_data
 
 
-def check_allocation_ratios(flow_alloc_df, activity_set, source_name):
+def check_allocation_ratios(flow_alloc_df, activity_set, source_name, method_name):
     """
     Check for issues with the flow allocation ratios
     :param df:
@@ -320,13 +320,13 @@ def check_allocation_ratios(flow_alloc_df, activity_set, source_name):
     log.info('Save the summary table of flow allocation ratios for each sector length for ' +
              activity_set + ' in output folder')
     # output data for all sector lengths
-    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name + "_allocation_ratios_" +
-                          activity_set + ".csv", index=False)
+    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
+                          "_allocation_ratios_" + activity_set + ".csv", index=False)
 
     return None
 
 
-def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, activity_set, source_name):
+def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, activity_set, source_name, method_name):
     """
     Function to compare the loaded flowbyactivity with the final flowbysector output, checking for data loss
     :param df:
@@ -394,7 +394,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
               activity_set + ' in output folder')
     # output data at all sector lengths
-    df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + source_name +
+    df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
                                 "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
 
     return None
@@ -402,9 +402,6 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
 
 
 def check_summation_at_sector_lengths(df):
-
-    # # test
-    #df = fba_allocation_wsec.copy()
 
     # columns to keep
     df_cols = [e for e in df.columns if e not in ('MeasureofSpread', 'Spread', 'DistributionType', 'Min', 'Max',

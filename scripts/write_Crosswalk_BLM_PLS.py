@@ -7,15 +7,12 @@ Create a crosswalk linking the downloaded BLM_PLS to NAICS_12. Created by select
 manually assigning to NAICS
 
 """
-
+import pandas as pd
 from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):
     """manually assign each ERS activity to a NAICS_2012 code"""
-
-    # assign sector source name
-    df['SectorSourceName'] = 'NAICS_2012_Code'
 
     df.loc[df['Activity'] == 'Asphalt Competitive Leases', 'Sector'] = '212399' # All Other Nonmetallic Mineral Mining
 
@@ -49,8 +46,10 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Gilsonite Leases, Gilsonite Fringe Acreage Noncompetitive Leases', 'Sector'] = '212399'  # Gilsonite mining and/or beneficiating
     df.loc[df['Activity'] == 'Gilsonite Leases, Gilsonite Preference Right Leases', 'Sector'] = '212399'  # Gilsonite mining and/or beneficiating
 
-    # todo: check logic on hardrock allocation
-    df.loc[df['Activity'] == 'Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases', 'Sector'] = '2122'  # Metal Ore Mining
+    df = df.append(pd.DataFrame([['BLM_PLS', 'Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases', '2123']],  # Nonmetallic Mineral Mining and Quarrying
+                                columns=['ActivitySourceName', 'Activity', 'Sector']
+                                ), ignore_index=True, sort=True)
     # todo: check definition
     df.loc[df['Activity'] == 'Logical Mining Units', 'Sector'] = '21211'  # Coal Mining
 
@@ -107,6 +106,8 @@ if __name__ == '__main__':
     df = unique_activity_names(flowcass, years, datasource)
     # add manual naics 2012 assignments
     df = assign_naics(df)
+    # assign sector source name
+    df['SectorSourceName'] = 'NAICS_2012_Code'
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
     df.dropna(subset=["Sector"], inplace=True)
     # assign sector type

@@ -21,7 +21,7 @@ if __name__ == '__main__':
     df_import = pd.read_csv(crosswalkpath + "Crosswalk_" + datasource + "_toNAICS.csv")
 
     # drop unused crosswalk columns
-    df = df_import[['Activity']]
+    df = df_import[['Activity']].drop_duplicates().reset_index(drop=True)
 
     # rename columns
     df = df.rename(columns={"Activity": "name"})

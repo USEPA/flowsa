@@ -32,6 +32,7 @@ from flowsa.EIA_CBECS_Water import *
 from flowsa.EIA_MECS import *
 from flowsa.BLM_PLS import *
 from flowsa.EIA_MER import *
+from flowsa.EPA_GHG_Inventory import *
 
 
 
@@ -100,7 +101,10 @@ def call_urls(url_list, args):
         r = make_http_request(url)
         if hasattr(sys.modules[__name__], config["call_response_fxn"]):
             df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r, args)
-        data_frames_list.append(df)
+        if isinstance(df, pd.DataFrame):
+            data_frames_list.append(df)
+        elif isinstance(df, list):
+            data_frames_list.extend(df)
 
     return data_frames_list
 

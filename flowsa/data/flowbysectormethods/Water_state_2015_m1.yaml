@@ -1,0 +1,100 @@
+%YAML 1.1
+
+---
+
+target_sector_level: NAICS_6
+target_sector_source: NAICS_2012_Code
+target_geoscale: state
+source_names:
+  "USGS_NWIS_WU":
+    data_format: 'FBA'
+    class: Water
+    geoscale_to_use: state
+    year: 2015
+    clean_fba_df_fxn: usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
+    activity_sets:
+      activity_set_1:
+        names:
+          - "Aquaculture"
+          - "Irrigation Golf Courses"
+          - "Public Supply"
+          - "Thermoelectric Power"
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: state
+        allocation_helper: 'no'
+      activity_set_2:
+        names:
+          - "Domestic"
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: state
+        allocation_helper: 'no'
+      activity_set_3:
+        names:
+          - "Industrial"
+          - "Mining"
+        allocation_method: proportional
+        allocation_source: "BLS_QCEW"
+        allocation_source_class: "Employment"
+        allocation_source_year: 2015
+        allocation_flow:
+          - "Number of employees"
+        allocation_compartment: None
+        allocation_from_scale: state
+        clean_allocation_fba: clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        allocation_helper: 'no'
+      activity_set_4:
+        names:
+          - "Irrigation Crop"
+        allocation_method: proportional
+        allocation_source: "USDA_CoA_Cropland"
+        allocation_source_class: "Land"
+        allocation_source_year: 2017
+        allocation_flow:
+          - "AREA HARVESTED, IRRIGATED"
+          - "AREA IN PRODUCTION, IRRIGATED"
+          - "AREA, IRRIGATED"
+          - 'AREA BEARING & NON-BEARING, IRRIGATED'
+        allocation_compartment: None
+        allocation_from_scale: state
+        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        allocation_helper: 'yes'
+        helper_source: "USDA_IWMS"
+        helper_method: multiplication
+        helper_source_class: "Water"
+        helper_source_year: 2018
+        helper_flow: None
+        helper_from_scale: state
+      activity_set_5:
+        names:
+          - "Livestock"
+        allocation_method: proportional
+        allocation_source: "USDA_CoA_Livestock"
+        allocation_source_class: "Other"
+        allocation_source_year: 2017
+        allocation_flow:
+          - "HEAD"
+          - "NUMBER"
+          - "COLONIES"
+        allocation_compartment:
+          - "NOT SPECIFIED"
+        allocation_from_scale: state
+        allocation_helper: 'yes'
+        helper_source: "USGS_WU_Coef"
+        helper_method: multiplication
+        helper_source_class: "Water"
+        helper_source_year: 2005
+        helper_flow: None
+        helper_from_scale: national
