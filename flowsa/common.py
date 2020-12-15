@@ -41,12 +41,6 @@ paths = Paths
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 paths.remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/"
 
-# if not os.path.exists(local_path):
-#     os.mkdir(local_path)
-#     os.mkdir(local_path + '/FlowByActivity')
-#     os.mkdir(local_path + '/FlowBySector')
-
-
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
                    "state": 2,
