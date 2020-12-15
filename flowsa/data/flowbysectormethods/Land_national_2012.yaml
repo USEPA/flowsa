@@ -107,16 +107,13 @@ source_names:
           - 'Cropland used for pasture'
           - 'Grassland pasture and range'
         allocation_method: proportional
-        allocation_source: "USDA_CoA_Cropland"
+        allocation_source: "USDA_CoA_Cropland_NAICS"
         allocation_source_class: "Land"
         allocation_source_year: 2012
         allocation_flow:
-          - "AREA HARVESTED"
-          - "AREA"
+          - "FARM OPERATIONS"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'no'
       activity_set_3:
         names:
