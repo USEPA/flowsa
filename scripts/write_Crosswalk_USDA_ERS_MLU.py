@@ -61,6 +61,14 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', 'S00201']],    # state/local gov't passenger transit
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '482112']],  # railroads
+                                columns=['ActivitySourceName', 'Activity', 'Sector']
+                                ), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '488119']],    # airports
+                                columns=['ActivitySourceName', 'Activity', 'Sector']
+                                ), ignore_index=True, sort=True)
+
+
 
     # Densely-populated areas with at least 50,000 people (urbanized areas) and densely-populated areas with /
     # 2,500 to 50,000 people (urban clusters).
