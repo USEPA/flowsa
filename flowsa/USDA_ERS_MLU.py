@@ -2,17 +2,18 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
+"""
+USDA Economic Research Service (ERS) Major Land Uses (MLU)
+https://www.ers.usda.gov/data-products/major-land-uses/
+Last updated: Thursday, April 16, 2020
+"""
+
 import pandas as pd
 import numpy as np
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-"""
-USDA Economic Research Service (ERS) Major Land Uses (MLU)
-https://www.ers.usda.gov/data-products/major-land-uses/
-Last updated: Thursday, April 16, 2020
-"""
 
 def mlu_call(url, mlu_response, args):
     with io.StringIO(mlu_response.text) as fp:
@@ -21,6 +22,7 @@ def mlu_call(url, mlu_response, args):
          #       if "16s" not in line:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
+
 
 def mlu_parse(dataframe_list, args):
     output = pd.DataFrame()
