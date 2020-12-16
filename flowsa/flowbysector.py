@@ -343,34 +343,35 @@ def main(method_name):
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
                 fbs_agg = sector_disaggregation(fbs_sec_agg, flow_by_sector_fields_w_activity)
 
+                # check if any sector information is lost before reaching the target sector length, if so,
+                # allocate values equally to disaggregated sectors
+                log.info('Checking if losing data by subsetting dataframe')
+                fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
+
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg, aset, k, method_name)
+                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg_2, aset, k, method_name)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
                 sector_list = get_sector_list(method['target_sector_level'])
 
                 # subset df, necessary because not all of the sectors are NAICS and can get duplicate rows
-                fbs_1 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) &
-                                    (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
-                fbs_2 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isin(sector_list)) &
-                                    (fbs_agg[fbs_activity_fields[1]].isnull())].reset_index(drop=True)
-                fbs_3 = fbs_agg.loc[(fbs_agg[fbs_activity_fields[0]].isnull()) &
-                                    (fbs_agg[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
+                fbs_1 = fbs_agg_2.loc[(fbs_agg_2[fbs_activity_fields[0]].isin(sector_list)) &
+                                      (fbs_agg_2[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
+                fbs_2 = fbs_agg_2.loc[(fbs_agg_2[fbs_activity_fields[0]].isin(sector_list)) &
+                                      (fbs_agg_2[fbs_activity_fields[1]].isnull())].reset_index(drop=True)
+                fbs_3 = fbs_agg_2.loc[(fbs_agg_2[fbs_activity_fields[0]].isnull()) &
+                                      (fbs_agg_2[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
 
-                # check if losing data by subsetting at specified sector length
-                log.info('Checking if losing data by subsetting dataframe')
-                fbs_sector_subset_2 = check_if_losing_sector_data(fbs_agg, fbs_sector_subset, method['target_sector_level'])
-
                 # set source name
-                fbs_sector_subset_2.loc[:, 'SectorSourceName'] = method['target_sector_source']
+                fbs_sector_subset.loc[:, 'SectorSourceName'] = method['target_sector_source']
 
                 # drop activity columns
-                del fbs_sector_subset_2['ActivityProducedBy'], fbs_sector_subset_2['ActivityConsumedBy']
+                del fbs_sector_subset['ActivityProducedBy'], fbs_sector_subset['ActivityConsumedBy']
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
-                fbs_list.append(fbs_sector_subset_2)
+                fbs_list.append(fbs_sector_subset)
         else:
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append " + k + " to FBS list")

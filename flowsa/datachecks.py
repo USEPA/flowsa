@@ -188,7 +188,7 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
     return None
 
 
-def check_if_losing_sector_data(df, df_subset, target_sector_level):
+def check_if_losing_sector_data(df, target_sector_level):
     """
     Determine rows of data that will be lost if subset data at target sector level
     In some instances, not all
@@ -280,7 +280,7 @@ def check_if_losing_sector_data(df, df_subset, target_sector_level):
                  ' associated with the sectors previously being dropped')
 
     # add rows of missing data to the fbs sector subset
-    df_w_lost_data = pd.concat([df_subset, rows_lost], ignore_index=True, sort=True)
+    df_w_lost_data = pd.concat([df, rows_lost], ignore_index=True, sort=True)
     df_w_lost_data = replace_strings_with_NoneType(df_w_lost_data)
 
     return df_w_lost_data
