@@ -70,7 +70,7 @@ FlowBySector datasets.
 Description | Code | Years | Number of methods of sector allocation |
 --- | --- | --- | --- |
 Air emissions | CAP_HAP_national |  2017 | 1 |
-Employment | Employmnet_national | 2017 | 1 |
+Employment | Employment_national | 2017 | 1 |
 Land use | Land_national |  2012 | 1 |
 Water withdrawal | Water_national |  2010, 2015 | 2 |
 Water withdrawal | Water_state |  2015 | 1 |
