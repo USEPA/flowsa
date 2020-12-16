@@ -92,7 +92,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     bls = flowsa.getFlowByActivity(flowclass=['Employment'], datasource='BLS_QCEW', years=[2002])
     # clean df
     bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
-    bls = clean_bls_qcew_fba(bls, attr)
+    bls = clean_bls_qcew_fba(bls, attr=attr)
 
     # bls_agg = agg_by_geoscale(bls, 'state', 'national', fba_default_grouping_fields)
     bls_agg = filter_by_geoscale(bls, 'national')

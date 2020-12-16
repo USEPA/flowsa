@@ -475,7 +475,7 @@ def sector_ratios(df, sectorcolumn):
     return df_w_ratios
 
 
-def allocation_helper(df_w_sector, method, attr, v):
+def allocation_helper(df_w_sector, attr, method, v):
     """
     Used when two df required to create allocation ratio
     :param df_w_sector:
@@ -495,7 +495,7 @@ def allocation_helper(df_w_sector, method, attr, v):
         log.info("Cleaning " + attr['helper_source'] + ' FBA')
         # tmp hard coded - need to generalize
         if attr['helper_source'] == 'BLS_QCEW':
-            helper_allocation = clean_bls_qcew_fba(helper_allocation, attr)
+            helper_allocation = clean_bls_qcew_fba(helper_allocation, attr=attr)
             # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
     # clean df
     helper_allocation = clean_df(helper_allocation, flow_by_activity_fields, fba_fill_na_dict)
@@ -521,7 +521,7 @@ def allocation_helper(df_w_sector, method, attr, v):
         log.info("Cleaning " + attr['helper_source'] + ' FBA with sectors')
         # tmp hard coded - need to generalize
         if attr['helper_source'] == 'BLS_QCEW':
-            helper_allocation = bls_clean_allocation_fba_w_sec(helper_allocation, attr, method)
+            helper_allocation = bls_clean_allocation_fba_w_sec(helper_allocation, attr=attr, method=method)
             # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba_wsec"])(helper_allocation, attr, method)
 
     # run sector disagg to capture any missing lower level naics

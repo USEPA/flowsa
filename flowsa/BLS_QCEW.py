@@ -105,7 +105,7 @@ def bls_qcew_parse(dataframe_list, args):
     return df
 
 
-def clean_bls_qcew_fba(fba_df, attr):
+def clean_bls_qcew_fba(fba_df, **kwargs):
 
     fba_df = replace_missing_2_digit_sector_values(fba_df)
     fba_df = remove_2_digit_sector_ranges(fba_df)
@@ -175,7 +175,7 @@ def remove_2_digit_sector_ranges(fba_df):
 
 
 
-def bls_clean_allocation_fba_w_sec(df_w_sec, attr, method):
+def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     clean up bls df with sectors by estimating suppresed data
     :param df_w_sec:

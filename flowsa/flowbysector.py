@@ -166,7 +166,7 @@ def main(method_name):
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
-                    flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec, attr)
+                    flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec, attr=attr)
 
                 # map df to elementary flows
                 log.info("Mapping flows in " + k + ' to federal elementary flow list')
@@ -211,7 +211,7 @@ def main(method_name):
                     if 'clean_allocation_fba' in attr:
                         log.info("Cleaning " + attr['allocation_source'])
                         fba_allocation = getattr(sys.modules[__name__],
-                                                 attr["clean_allocation_fba"])(fba_allocation, attr)
+                                                 attr["clean_allocation_fba"])(fba_allocation, attr=attr)
                     # reset index
                     fba_allocation = fba_allocation.reset_index(drop=True)
 
@@ -239,7 +239,7 @@ def main(method_name):
                     if 'clean_allocation_fba_w_sec' in attr:
                         log.info("Further disaggregating sectors in " + attr['allocation_source'])
                         fba_allocation_wsec = getattr(sys.modules[__name__],
-                                                      attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr, method)
+                                                      attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr=attr, method=method)
 
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
@@ -248,7 +248,7 @@ def main(method_name):
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
                         log.info("Using the specified allocation help for subset of " + attr['allocation_source'])
-                        fba_allocation_subset = allocation_helper(fba_allocation_subset, method, attr, v)
+                        fba_allocation_subset = allocation_helper(fba_allocation_subset, attr, method, v)
 
                     # create flow allocation ratios for each activity
                     flow_alloc_list = []
