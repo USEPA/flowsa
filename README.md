@@ -67,12 +67,13 @@ particular crop (Class = Other).
 Environmental data attributed to North American Industrial Classification (NAICS) Codes, formatted into standard 
 FlowBySector datasets. 
  
-Code | Years | Description | Number of methods of sector allocation |
+Description | Code | Years | Number of methods of sector allocation |
 --- | --- | --- | --- |
-CAP_HAP_national |  2017 | Air emissions | 1 |
-Land_national |  2012 | Land use | 1 |
-Water_national |  2010, 2015 | Water withdrawal | 2 |
-Water_state |  2015 | Water withdrawal | 1 |
+Air emissions | CAP_HAP_national |  2017 | 1 |
+Employment | Employmnet_national | 2017 | 1 |
+Land use | Land_national |  2012 | 1 |
+Water withdrawal | Water_national |  2010, 2015 | 2 |
+Water withdrawal | Water_state |  2015 | 1 |
 
 ## Disclaimer
 
