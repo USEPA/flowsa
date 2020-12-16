@@ -305,16 +305,16 @@ def check_allocation_ratios(flow_alloc_df, activity_set, source_name, method_nam
 
     ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
     log.info('There are ' + str(ua_count1) +
-             ' instances where the allocation ratio for a location and sector length is < 1')
+             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is < 1')
     ua_count2 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 0.99])
     log.info('There are ' + str(ua_count2) +
-             ' instances where the allocation ratio for a location and sector length is < 0.99')
+             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is < 0.99')
     ua_count3 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1])
     log.info('There are ' + str(ua_count3) +
-             ' instances where the allocation ratio for a location and sector length is > 1')
+             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is > 1')
     ua_count4 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1.01])
     log.info('There are ' + str(ua_count4) +
-             ' instances where the allocation ratio for a location and sector length is > 1.01')
+             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is > 1.01')
 
     # save csv to output folder
     log.info('Save the summary table of flow allocation ratios for each sector length for ' +
