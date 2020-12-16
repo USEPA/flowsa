@@ -10,7 +10,7 @@ source_names:
     data_format: 'FBA'
     class: Employment
     geoscale_to_use: national
-    year: 2012
+    year: 2017
     clean_fba_df_fxn: clean_bls_qcew_fba
     clean_fba_w_sec_df_fxn: bls_clean_allocation_fba_w_sec
     activity_set_file: 'BLS_QCEW_asets.csv'
