@@ -110,6 +110,9 @@ def clean_bls_qcew_fba(fba_df, **kwargs):
     fba_df = replace_missing_2_digit_sector_values(fba_df)
     fba_df = remove_2_digit_sector_ranges(fba_df)
 
+    # rename flowname value
+    fba_df['FlowName'] = fba_df['FlowName'].replace({'Number of employees': 'Jobs'})
+
     return fba_df
 
 
