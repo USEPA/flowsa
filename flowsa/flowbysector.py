@@ -28,7 +28,7 @@ from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, fba_mapped_default_grouping_fields, agg_by_geoscale, \
-    fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, \
+    fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, harmonize_units, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
     filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, \
     sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities, collapse_activity_fields
@@ -131,6 +131,8 @@ def main(method_name):
         if v['data_format'] == 'FBA':
             # ensure correct datatypes and that all fields exist
             flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+            # modify the FBA units if necessary
+            flows = harmonize_units(flows)
 
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
@@ -200,7 +202,10 @@ def main(method_name):
                                                               datasource=attr['allocation_source'],
                                                               years=[attr['allocation_source_year']]).reset_index(drop=True)
 
+                    # clean df and harmonize unites
                     fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
+                    fba_allocation = harmonize_units(fba_allocation)
+
 
                     # subset based on yaml settings
                     if attr['allocation_flow'] != 'None':
