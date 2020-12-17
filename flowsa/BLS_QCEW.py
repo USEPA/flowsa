@@ -124,6 +124,13 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
 
 
 def clean_bls_qcew_fba(fba_df, **kwargs):
+    """
+    Function to clean BLS QCEW data when FBA is not used for employment satellite table
+
+    :param fba_df:
+    :param kwargs:
+    :return:
+    """
 
     fba_df = replace_missing_2_digit_sector_values(fba_df)
     fba_df = remove_2_digit_sector_ranges(fba_df)
