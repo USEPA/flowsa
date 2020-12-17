@@ -40,7 +40,8 @@ from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_
 # import specific functions
 from flowsa.BEA import subset_BEA_Use
 from flowsa.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
-from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
+from flowsa.BLS_QCEW import clean_bls_qcew_fba, clean_bls_qcew_fba_for_employment_sat_table, \
+    bls_clean_allocation_fba_w_sec
 from flowsa.EIA_CBECS_Land import cbecs_land_fba_cleanup
 from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec, \
     mecs_land_fba_cleanup, eia_mecs_land_clean_allocation_fba_w_sec
@@ -75,6 +76,7 @@ def load_method(method_name):
     except IOError:
         log.error("FlowBySector method file not found.")
     return method
+
 
 def load_source_dataframe(k, v):
     """
