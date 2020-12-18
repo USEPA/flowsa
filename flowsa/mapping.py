@@ -26,12 +26,13 @@ def get_activitytosector_mapping(source):
     return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name):
+def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name, **kwargs):
     """
     Add Sectors from the Activity fields and mapped them to Sector from the crosswalk.
     No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
     :param sectorsourcename: A sector source name, using package default
+    :param allocationmethod: the allocation method specified in the FBS yaml
     :return: a df with activity fields mapped to 'sectors'
     """
 
@@ -47,6 +48,11 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
         src_info = cat[s]
         # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
         levelofSectoragg = src_info['sector_aggregation_level']
+        # if the FBS activity set is 'direct', overwrite the levelofsectoragg
+        if kwargs != {}:
+            if 'allocationmethod' in kwargs:
+                if kwargs['allocationmethod'] == 'direct':
+                    levelofSectoragg = 'disaggregated'
         # if data are provided in NAICS format, use the mastercrosswalk
         if src_info['sector-like_activities']:
             cw = load_sector_crosswalk()
@@ -83,9 +89,9 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
         flowbyactivity_field = v[0]["flowbyactivity"]
         flowbysector_field = v[1]["flowbysector"]
         sector_type_field = sector_direction+'SectorType'
-        mappings_df_tmp = mappings_df.rename(columns={'Activity':flowbyactivity_field,
-                                                      'Sector':flowbysector_field,
-                                                      'SectorType':sector_type_field})
+        mappings_df_tmp = mappings_df.rename(columns={'Activity': flowbyactivity_field,
+                                                      'Sector': flowbysector_field,
+                                                      'SectorType': sector_type_field})
         # column doesn't exist for sector-like activities, so ignore if error occurs
         mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
