@@ -167,7 +167,7 @@ def main(method_name):
                 log.info("Adding sectors to " + k)
                 flow_subset_wsec = add_sectors_to_flowbyactivity(flows_subset_geo,
                                                                  sectorsourcename=method['target_sector_source'],
-                                                                 allocationmethod= attr['allocation_method'])
+                                                                 allocationmethod=attr['allocation_method'])
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
@@ -365,7 +365,7 @@ def main(method_name):
 
                 # check if any sector information is lost before reaching the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                log.info('Checking for ' + n + ' at ' + method['target_sector_level'])
+                log.info('Checking for data at ' + method['target_sector_level'])
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
@@ -385,7 +385,7 @@ def main(method_name):
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
 
                 # set source name
-                fbs_sector_subset.loc[:, 'SectorSourceName'] = method['target_sector_source']
+                # fbs_sector_subset.loc[:, 'SectorSourceName'] = method['target_sector_source']
 
                 # drop activity columns
                 del fbs_sector_subset['ActivityProducedBy'], fbs_sector_subset['ActivityConsumedBy']
