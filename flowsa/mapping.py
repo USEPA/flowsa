@@ -32,11 +32,9 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
     :param sectorsourcename: A sector source name, using package default
-    :param allocationmethod: the allocation method specified in the FBS yaml
+    :param kwargs: option to include the parameter 'allocationmethod', which modifies function behavoir if = 'direct'
     :return: a df with activity fields mapped to 'sectors'
     """
-
-    # todo: add sectorsourcename col value
 
     mappings = []
 
@@ -45,7 +43,13 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     cat = load_source_catalog()
 
     for s in pd.unique(flowbyactivity_df['SourceName']):
+        # load catalog info for source
         src_info = cat[s]
+        # if activities are sector-like, check if need to modify mapping
+        if 'modify_sector-like_activities' in src_info:
+            modify_sector_like_activities = src_info['modify_sector-like_activities']
+        else:
+            modify_sector_like_activities = False
         # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
         levelofSectoragg = src_info['sector_aggregation_level']
         # if the FBS activity set is 'direct', overwrite the levelofsectoragg
@@ -54,7 +58,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
                 if kwargs['allocationmethod'] == 'direct':
                     levelofSectoragg = 'disaggregated'
         # if data are provided in NAICS format, use the mastercrosswalk
-        if src_info['sector-like_activities']:
+        if src_info['sector-like_activities'] and modify_sector_like_activities is False:
             cw = load_sector_crosswalk()
             sectors = cw.loc[:, [sector_source_name]]
             # Create mapping df that's just the sectors at first
@@ -71,7 +75,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             if levelofSectoragg == 'aggregated':
                 mapping = expand_naics_list(mapping, sectorsourcename)
         else:
-            # if source data activities are text strings, call on the manually created source crosswalks
+            # if source data activities are text strings, or sector-like activities should be modified, \
+            # call on the manually created source crosswalks
             mapping = get_activitytosector_mapping(s)
             # filter by SectorSourceName of interest
             mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
@@ -98,6 +103,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
         flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.replace({np.nan: None})
+    # add sector source name
+    flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
 
     return flowbyactivity_wsector_df
 
