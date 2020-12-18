@@ -23,7 +23,7 @@ import argparse
 import sys
 import pandas as pd
 from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
-    fbsoutputpath, fips_number_key, flow_by_activity_fields, \
+    fbsoutputpath, fips_number_key, flow_by_activity_fields, load_source_catalog, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
@@ -187,17 +187,18 @@ def main(method_name):
                 if attr['allocation_method'] == 'direct':
                     log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
                     fbs = flow_subset_mapped.copy()
-                    # for each activity, check that there is no data loss
-                    activity_list = []
-                    for n in names:
-                        log.info('Checking for ' + n + ' at ' + method['target_sector_level'])
-                        fbs_subset = fbs[((fbs[fba_activity_fields[0]] == n) &
-                                         (fbs[fba_activity_fields[1]] == n)) |
-                                         (fbs[fba_activity_fields[0]] == n) |
-                                         (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
-                        fbs_subset = check_if_losing_sector_data(fbs_subset, method['target_sector_level'])
-                        activity_list.append(fbs_subset)
-                    fbs = pd.concat(activity_list, ignore_index=True)
+                    # for each activity, if activities are not sector like, check that there is no data loss
+                    if load_source_catalog()[k]['sector-like_activities'] is False:
+                        activity_list = []
+                        for n in names:
+                            log.info('Checking for ' + n + ' at ' + method['target_sector_level'])
+                            fbs_subset = fbs[((fbs[fba_activity_fields[0]] == n) &
+                                             (fbs[fba_activity_fields[1]] == n)) |
+                                             (fbs[fba_activity_fields[0]] == n) |
+                                             (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
+                            fbs_subset = check_if_losing_sector_data(fbs_subset, method['target_sector_level'])
+                            activity_list.append(fbs_subset)
+                        fbs = pd.concat(activity_list, ignore_index=True)
 
                 # if allocation method for an activity set requires a specific function due to the complicated nature
                 # of the allocation, call on function here
