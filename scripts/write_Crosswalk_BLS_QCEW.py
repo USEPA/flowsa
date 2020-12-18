@@ -40,7 +40,7 @@ def link_non_bls_naics_to_naics(df):
 
 if __name__ == '__main__':
     # select years to pull unique activity names
-    years = ['2002', '2010', '2011', '2012', '2015']
+    years = ['2002', '2010', '2011', '2012', '2015', '2017']
     # flowclass
     flowclass = ['Employment', 'Money', 'Other']
     # datasource
@@ -49,12 +49,16 @@ if __name__ == '__main__':
     df = unique_activity_names(flowclass, years, datasource)
     # Activity and Sector are the same
     df['Sector'] = df['Activity'].copy()
+    # drop activity '31-33', the three digit naics will be aggregated to 2 digits
+    df = df[df['Activity'] != '31-33']
+
     # modify the sector for activity = '31-33'
-    df.loc[df['Activity'] == '31-33', 'Sector'] = '31'
-    df = df.append(pd.DataFrame([['BLS_QCEW', '31-33', '32']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['BLS_QCEW', '31-33', '33']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
+    # df.loc[df['Activity'] == '31-33', 'Sector'] = '31'
+    # df = df.append(pd.DataFrame([['BLS_QCEW', '31-33', '32']],
+    #                             columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
+    # df = df.append(pd.DataFrame([['BLS_QCEW', '31-33', '33']],
+    #                             columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
+
     df = link_non_bls_naics_to_naics(df)
     # Add additional columns
     df['SectorSourceName'] = "NAICS_2012_Code"
