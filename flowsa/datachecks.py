@@ -11,7 +11,6 @@ from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load
     load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath
 
 
-
 def check_flow_by_fields(flowby_df, flowbyfields):
     """
     Add in missing fields to have a complete and ordered
@@ -333,6 +332,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     :return:
     """
 
+    from flowsa.flowbyfunctions import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+
     # subset fba df
     fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
                     'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
@@ -348,8 +349,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
                     'ActivityProducedBy', 'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
                     'FlowAmount']].drop_duplicates().reset_index(drop=True)
 
-    fbs['SectorProducedBy'] = fbs['SectorProducedBy'].replace({None: ''})
-    fbs['SectorConsumedBy'] = fbs['SectorConsumedBy'].replace({None: ''})
+    fbs = replace_NoneType_with_empty_cells(fbs)
+
     fbs['ProducedLength'] = fbs['SectorProducedBy'].apply(lambda x: len(x))
     fbs['ConsumedLength'] = fbs['SectorConsumedBy'].apply(lambda x: len(x))
     fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
