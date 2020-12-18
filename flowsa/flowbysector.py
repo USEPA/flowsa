@@ -166,7 +166,8 @@ def main(method_name):
                 # Add sectors to df activity, depending on level of specified sector aggregation
                 log.info("Adding sectors to " + k)
                 flow_subset_wsec = add_sectors_to_flowbyactivity(flows_subset_geo,
-                                                                 sectorsourcename=method['target_sector_source'])
+                                                                 sectorsourcename=method['target_sector_source'],
+                                                                 allocationmethod= attr['allocation_method'])
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
@@ -186,6 +187,17 @@ def main(method_name):
                 if attr['allocation_method'] == 'direct':
                     log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
                     fbs = flow_subset_mapped.copy()
+                    # for each activity, check that there is no data loss
+                    activity_list = []
+                    for n in names:
+                        log.info('Checking for ' + n + ' at ' + method['target_sector_level'])
+                        fbs_subset = fbs[((fbs[fba_activity_fields[0]] == n) &
+                                         (fbs[fba_activity_fields[1]] == n)) |
+                                         (fbs[fba_activity_fields[0]] == n) |
+                                         (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
+                        fbs_subset = check_if_losing_sector_data(fbs_subset, method['target_sector_level'])
+                        activity_list.append(fbs_subset)
+                    fbs = pd.concat(activity_list, ignore_index=True)
 
                 # if allocation method for an activity set requires a specific function due to the complicated nature
                 # of the allocation, call on function here
@@ -352,7 +364,7 @@ def main(method_name):
 
                 # check if any sector information is lost before reaching the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                log.info('Checking if losing data by subsetting dataframe')
+                log.info('Checking for ' + n + ' at ' + method['target_sector_level'])
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
