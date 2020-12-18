@@ -456,7 +456,7 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
 
     df = modify_sector_length(df_wsec)
     df = filter_out_activities(df, attr)
-    df = modify_thermo_and_aqua_sector_assignments(df)
+    # df = modify_thermo_and_aqua_sector_assignments(df)
 
     return df
 
@@ -537,30 +537,30 @@ def filter_out_activities(df, attr):
     return df
 
 
-def modify_thermo_and_aqua_sector_assignments(df):
-    """
-    Currently, do not have a method to allocate water withdrawal beyond four digits for Thermoelectric and Aquaculture.
-    Therefore, after mapping these 2 activities to sectors, drop associated sectors > 4 digits.
-    :param df:
-    :return:
-    """
-
-    from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
-
-    activities_to_modify = ("Aquaculture", "Thermoelectric Power")
-    max_sector_length = 4
-
-    # if activities are in the activities to modify length and if sector length is greater than max specified, drop rows
-    # tmp set None to "" so len(x) fxn woks
-    df = replace_NoneType_with_empty_cells(df)
-    # set conditions
-    c1 = df[fba_activity_fields[0]].isin(activities_to_modify)
-    c2 = df[fba_activity_fields[1]].isin(activities_to_modify)
-    c3 = df[fbs_activity_fields[0]].apply(lambda x: len(x) > max_sector_length)
-    c4 = df[fbs_activity_fields[1]].apply(lambda x: len(x) > max_sector_length)
-    # subset data
-    df_modified = df.loc[~((c1 | c2) & (c3 | c4))].reset_index(drop=True)
-    # set '' back to None
-    df_modified = replace_strings_with_NoneType(df_modified)
-
-    return df_modified
+# def modify_thermo_and_aqua_sector_assignments(df):
+#     """
+#     Currently, do not have a method to allocate water withdrawal beyond four digits for Thermoelectric and Aquaculture.
+#     Therefore, after mapping these 2 activities to sectors, drop associated sectors > 4 digits.
+#     :param df:
+#     :return:
+#     """
+#
+#     from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
+#
+#     activities_to_modify = ("Aquaculture", "Thermoelectric Power")
+#     max_sector_length = 4
+#
+#     # if activities are in the activities to modify length and if sector length is greater than max specified, drop rows
+#     # tmp set None to "" so len(x) fxn woks
+#     df = replace_NoneType_with_empty_cells(df)
+#     # set conditions
+#     c1 = df[fba_activity_fields[0]].isin(activities_to_modify)
+#     c2 = df[fba_activity_fields[1]].isin(activities_to_modify)
+#     c3 = df[fbs_activity_fields[0]].apply(lambda x: len(x) > max_sector_length)
+#     c4 = df[fbs_activity_fields[1]].apply(lambda x: len(x) > max_sector_length)
+#     # subset data
+#     df_modified = df.loc[~((c1 | c2) & (c3 | c4))].reset_index(drop=True)
+#     # set '' back to None
+#     df_modified = replace_strings_with_NoneType(df_modified)
+#
+#     return df_modified
