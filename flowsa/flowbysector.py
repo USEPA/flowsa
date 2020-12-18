@@ -219,7 +219,6 @@ def main(method_name):
                     fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
                     fba_allocation = harmonize_units(fba_allocation)
 
-
                     # subset based on yaml settings
                     if attr['allocation_flow'] != 'None':
                         fba_allocation = fba_allocation.loc[fba_allocation['FlowName'].isin(attr['allocation_flow'])]
@@ -271,6 +270,7 @@ def main(method_name):
                         fba_allocation_subset = allocation_helper(fba_allocation_subset, attr, method, v)
 
                     # create flow allocation ratios for each activity
+                    # if load_source_catalog()[k]['sector-like_activities']
                     flow_alloc_list = []
                     group_cols = fba_mapped_default_grouping_fields
                     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
@@ -342,8 +342,16 @@ def main(method_name):
                 # drop rows where flowamount = 0 (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
 
+                # define grouping columns dependent on sectors being activity-like or not
+                if load_source_catalog()[k]['sector-like_activities'] is False:
+                    groupingcols = fbs_grouping_fields_w_activities
+                    groupingdict = flow_by_sector_fields_w_activity
+                else:
+                    groupingcols = fbs_default_grouping_fields
+                    groupingdict = flow_by_sector_fields
+
                 # clean df
-                fbs = clean_df(fbs, flow_by_sector_fields_w_activity, fbs_fill_na_dict)
+                fbs = clean_df(fbs, groupingdict, fbs_fill_na_dict)
 
                 # aggregate df geographically, if necessary
                 # todo: replace with fxn return_from_scale
@@ -355,13 +363,13 @@ def main(method_name):
 
                 to_scale = method['target_geoscale']
 
-                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, fbs_grouping_fields_w_activities)
+                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, groupingcols)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
-                fbs_sec_agg = sector_aggregation(fbs_geo_agg, fbs_grouping_fields_w_activities)
+                fbs_sec_agg = sector_aggregation(fbs_geo_agg, groupingcols)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
-                fbs_agg = sector_disaggregation(fbs_sec_agg, flow_by_sector_fields_w_activity)
+                fbs_agg = sector_disaggregation(fbs_sec_agg, groupingdict)
 
                 # check if any sector information is lost before reaching the target sector length, if so,
                 # allocate values equally to disaggregated sectors
@@ -369,7 +377,9 @@ def main(method_name):
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg_2, aset, k, method_name)
+                # todo: modify fxn to work if activities are sector like in df being allocated
+                if load_source_catalog()[k]['sector-like_activities'] is False:
+                    check_for_differences_between_fba_load_and_fbs_output(flow_subset_mapped, fbs_agg_2, aset, k, method_name)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
@@ -384,11 +394,9 @@ def main(method_name):
                                       (fbs_agg_2[fbs_activity_fields[1]].isin(sector_list))].reset_index(drop=True)
                 fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
 
-                # set source name
-                # fbs_sector_subset.loc[:, 'SectorSourceName'] = method['target_sector_source']
-
                 # drop activity columns
-                del fbs_sector_subset['ActivityProducedBy'], fbs_sector_subset['ActivityConsumedBy']
+                fbs_sector_subset = fbs_sector_subset.drop(['ActivityProducedBy', 'ActivityConsumedBy'],
+                                                           axis=1, errors='ignore')
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
                 fbs_list.append(fbs_sector_subset)
