@@ -45,7 +45,8 @@ BLS_QCEW:
     - Employment
     - Money
     - Other
-  sector-like_activities: False # is actually True but need to use the crosswalk due to sector changes
+  sector-like_activities: True
+  modfify_sector-like_activities: True # Not all of the sector-like activities exist, so create mapping file
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 Census_AHS:
