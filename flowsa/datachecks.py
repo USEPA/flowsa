@@ -274,10 +274,10 @@ def check_if_losing_sector_data(df, target_sector_level):
             rows_lost = rows_lost.append(rl_m3, ignore_index=True, sort=True)
 
     if len(rows_lost) == 0:
-        log.info('No data loss from subsetting the dataframe by specified sector length')
+        log.info('Data exists at ' + target_sector_level)
     else:
         log.info('Allocating FlowAmounts equally to each ' + target_sector_level +
-                 ' associated with the sectors previously being dropped')
+                 ' associated with the sectors previously dropped')
 
     # add rows of missing data to the fbs sector subset
     df_w_lost_data = pd.concat([df, rows_lost], ignore_index=True, sort=True)
