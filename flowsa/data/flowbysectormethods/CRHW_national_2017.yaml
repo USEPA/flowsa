@@ -6,7 +6,7 @@ source_names:
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: stewicombo_to_sector
     parameters:
-     - {"RCRAInfo":"2015"}  # inventory_dict
+     - {"RCRAInfo":"2017"}  # inventory_dict
      - 'NAICS_6'            # NAICS_level
      - 'national'           # geo_scale
      - ['waste']            # compartments
