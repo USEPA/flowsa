@@ -38,6 +38,7 @@ def BLS_QCEW_URL_helper(build_url, config, args):
             urls.append(url)
     return urls
 
+
 def bls_qcew_call(url, qcew_response, args):
     if args["year"] < '2014':
         # initiate dataframes list
@@ -102,6 +103,8 @@ def bls_qcew_parse(dataframe_list, args):
     df['DataReliability'] = 5
     df['DataCollection'] = 5
     df['Compartment'] = None
+    df['FlowType'] = "ELEMENTARY_FLOW"
+
     return df
 
 

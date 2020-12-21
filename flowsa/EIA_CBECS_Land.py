@@ -141,6 +141,7 @@ def eia_cbecs_land_parse(dataframe_list, args):
     df['Compartment'] = 'ground'
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
+    df['FlowType'] = 'ELEMENTARY_FLOW'
 
     # drop any duplicates that arise from joining multiple excel files
     df = df.drop_duplicates()

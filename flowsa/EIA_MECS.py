@@ -163,6 +163,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     df['Location'] = US_FIPS
     df['Unit'] = unit
     df = assign_fips_location_system(df, args['year'])
+    df['FlowType'] = "ELEMENTARY_FLOW"
 
     # modify flowname
     df['FlowName'] = df['Description'] + ', ' + df['FlowName']
