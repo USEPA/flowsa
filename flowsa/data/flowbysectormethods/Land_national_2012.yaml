@@ -52,7 +52,7 @@ source_names:
     data_format: 'FBA'
     class: Land
     geoscale_to_use: state # national?
-    year: 2011 # todo: modify to 2012 when done with FBA parse
+    year: 2012
     clean_fba_df_fxn: None #usgs_fba_data_cleanup
     clean_fba_w_sec_df_fxn: None #usgs_fba_w_sectors_data_cleanup
     activity_set_file: 'BLM_PLS_asets.csv'
@@ -70,7 +70,7 @@ source_names:
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
-        allocation_source_year: 2011 # todo: modify to 2012
+        allocation_source_year: 2012
         allocation_flow:
           - "Number of employees"
         allocation_compartment: None
