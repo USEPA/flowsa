@@ -432,6 +432,29 @@ def check_summation_at_sector_lengths(df):
 
     return summed_df
 
+
+def check_for_nonetypes(df):
+    """
+    Check for NoneType in columns where datatype = string
+    :param df: df with columns where datatype = object
+    :return: warning message if there are NoneTypes
+    """
+    # if datatypes are strings, return warning message
+    for y in df.columns:
+        if df[y].dtype == object:
+            if df[y].isnull().any():
+                log.warning('There are NoneType values in ' + y)
+    return df
+
+
+def check_for_negative_flowamounts(df):
+
+    if (df['FlowAmount'].values < 0).any():
+        log.warning('There are negative FlowAmounts')
+
+    return df
+
+
 # def check_if_data_exists_at_geoscale(df, provided_from_scale):
 #     """
 #     Check if an activity or a sector exists at the specified geoscale
