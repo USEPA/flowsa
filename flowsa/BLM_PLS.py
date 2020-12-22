@@ -379,70 +379,72 @@ def blm_pls_call(url, response_load, args):
         no_header_page_numbers = [136]
     elif args["year"] == "2012":
         sub_headers = {
-    #         # "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [108], "Acquired Lands": [108, 109]} }#,
-            "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [110, 119]} } #,
-    #         # "Reform Act Leases": {"Public Domain": [110. 120], "Acquired Lands": [110]} } #,
-    #         # "Reform Act Leases—continued": {"Acquired Lands": [111]} } #,
-    #         # "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [113]} } #,
-    #         # "Competitive Protective Leases": {"Public Domain and Acquired Lands": [113]} } #,
-    #         # "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [116]},
-    #         # "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [116]},
-    #         # "Pre-EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
-    #         # "EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
-    #         # "Oil and Gas Pre-Reform Act Over-the-Counter Leases": {"Public Domain": [119],
-    #         #                                                        "Acquired Lands": [119]},
-    #         # "Pre-Reform Act Simultaneous Leases—continued": {"Acquired Lands": [120, 121]},
-    #         # "Summary:  Pre-Reform Act Simultaneous Leases": {"Public Domain and Acquired Lands": [122]},
-    #         # "Reform Act Future Interest Leases": {"Acquired Lands": [125]},
-    #         # "Geothermal Leases": {"Public Domain and Acquired Lands": [125]},
-    #         # "Private Leases": {"Acquired Lands": [126]},
-    #         # "Exchange Leases": {"Public Domain": [126]},
-    #         # "Renewal Leases": {"Public Domain": [126, 127]},
-    #         # "Class III Reinstatement Leases": {"Public Domain": [127]},
-    #         # "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [127, 128]},
-    #         # "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [128]},
-    #         # "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [128]},
-    #         # "Federal Coal Leases": {
-    #         #     "Competitive Nonregional Lease-by-Application Leases": [135],
-    #         #     "Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases": [135],
-    #         #     "Competitive Regional Emergency/Bypass Leases": [135],
-    #         #     "Competitive Regional Leases": [136],
-    #         #     "Exchange Leases": [136],
-    #         #     "Preference Right Leases": [136]
-    #         #                         },
-    #         # "Coal Licenses": {
-    #         #     "Exploration Licenses": [137],
-    #         #     "Licenses To Mine": [137]
-    #         #                   },
-    #         # "Logical Mining Units": {"None": [137]},
-    #         # "Combined Hydrocarbon Leases": {"None": [139]},
-    #         # "Phosphate Leases": {
-    #         #     "Phosphate Competitive Leases": [139],
-    #         #     "Phosphate Fringe Acreage Noncompetitive Leases": [139],
-    #         #     "Phosphate Preference Right Leases": [139]
-    #         #     },
-    #         # "Phosphate Use Permits": {"None": [139]},
-    #         # "Sodium Leases": {
-    #         #     "Sodium Competitive Leases": [140],
-    #         #     "Sodium Fringe Acreage Noncompetitive Leases": [140],
-    #         #     "Sodium Preference Right Leases": [140]
-    #         #     },
-    #         # "Sodium Use Permit": {"None": [140]},
-    #         # "Potassium Leases": {
-    #         #     "Potassium Competitive Leases": [141],
-    #         #     "Potassium Fringe Acreage Noncompetitive Leases": [141],
-    #         #    "Potassium Preference Right Leases": [141]
-    #         #            },
-    #         # "Gilsonite Leases": {
-    #         #     "Gilsonite Competitive Leases": [142],
-    #         #     "Gilsonite Fringe Acreage Noncompetitive Leases": [142],
-    #         #      "Gilsonite Preference Right Leases": [142]
-    #         #                              },
-    #         # "Oil Shale RD&D Leases": {"None": [142]},
-    #         # "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [143]}
-    #     # } #todo comment in
+            "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [108], "Acquired Lands": [108, 109]},
+            "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [110, 119]},
+            "Reform Act Leases": {"Public Domain": [110, 120], "Acquired Lands": [110]},
+            "Reform Act Leases—continued": {"Acquired Lands": [111]},
+            "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [113]},
+            "Competitive Protective Leases": {"Public Domain and Acquired Lands": [113]},
+            "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [113]},
+            "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [113]},
+            "Pre-EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [114]},
+            "EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [114]},
+            "Oil and Gas Pre-Reform Act Over-the-Counter Leases": {"Public Domain": [116],
+                                                                   "Acquired Lands": [116]},
+            "Pre-Reform Act Simultaneous Leases": {"Public Domain": [117]},
+            "Pre-Reform Act Simultaneous Leases—continued": {"Public Domain": [118],
+                                                             "Acquired Lands": [118]},
+            "Summary: Pre-Reform Act Simultaneous Leases": {"Public Domain and Acquired Lands": [119]},
+            "Reform Act Future Interest Leases": {"Acquired Lands": [122]},
+            "Geothermal Leases": {"Public Domain and Acquired Lands": [122]},
+            "Private Leases": {"Acquired Lands": [124]},
+            "Exchange Leases": {"Public Domain": [124]},
+            "Renewal Leases": {"Public Domain": [124, 125]},
+            "Class III Reinstatement Leases": {"Public Domain": [125]},
+            "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [125, 126]},
+            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [126]},
+            "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [126]},
+            "Federal Coal Leases": {
+                "Competitive Nonregional Lease-by-Application Leases": [133],
+                "Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases": [133],
+                "Competitive Regional Emergency/Bypass Leases": [133],
+                "Competitive Regional Leases": [134],
+                "Exchange Leases": [134],
+                "Preference Right Leases": [134]
+                                    },
+            "Coal Licenses": {
+                "Exploration Licenses": [135],
+                "Licenses To Mine": [135]
+                              },
+            "Logical Mining Units": {"None": [135]},
+            "Combined Hydrocarbon Leases": {"None": [137]},
+            "Phosphate Leases": {
+                "Phosphate Competitive Leases": [137],
+                "Phosphate Fringe Acreage Noncompetitive Leases": [137],
+                "Phosphate Preference Right Leases": [137]
+                },
+            "Phosphate Use Permits": {"None": [137]},
+            "Sodium Leases": {
+                "Sodium Competitive Leases": [138],
+                "Sodium Fringe Acreage Noncompetitive Leases": [138],
+                "Sodium Preference Right Leases": [138]
+                },
+            "Sodium Use Permit": {"None": [138]},
+            "Potassium Leases": {
+                "Potassium Competitive Leases": [139],
+                "Potassium Fringe Acreage Noncompetitive Leases": [139],
+                "Potassium Preference Right Leases": [139]
+                       },
+            "Gilsonite Leases": {
+                "Gilsonite Competitive Leases": [140],
+                "Gilsonite Fringe Acreage Noncompetitive Leases": [140],
+                "Gilsonite Preference Right Leases": [140]
+                                         },
+            "Oil Shale RD&D Leases": {"None": [140]},
+            "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [141]}
+        }
         competitive_page_numbers = [110, 111]
-        no_header_page_numbers = [136]
+        no_header_page_numbers = [134]
     else:
         # provide reasoning for failure of parsing data
         log.error('Missing code specifying sub-headers, add code to blm_pls_call()')
