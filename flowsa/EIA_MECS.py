@@ -371,6 +371,19 @@ def mecs_land_fba_cleanup(fba):
 
     return fba
 
+def mecs_land_fba_cleanup_for_land_2012_fbs(fba):
+    """
+    The 'land_national_2012' FlowBySector uses MECS 2014 data, set MECS year to 2012
+    :param fba:
+    :return:
+    """
+
+    fba = mecs_land_fba_cleanup(fba)
+
+    fba['Year'] = 2012
+
+    return fba
+
 
 def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
     """
