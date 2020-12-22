@@ -313,74 +313,74 @@ def blm_pls_call(url, response_load, args):
         no_header_page_numbers = [123, 129]
     elif args["year"] == "2011":
         sub_headers = {
-            # "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [111], "Acquired Lands": [111, 112]},
-            "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [113, 122]}} #,
-        #     "Reform Act Leases": {"Public Domain": [113, 123], "Acquired Lands": [123, 124]},
-        #     "Reform Act Leases—continued": {"Acquired Lands": [114]},
-        #     "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [116]},
-        #     "Competitive Protective Leases": {"Public Domain and Acquired Lands": [116]},
-        #     "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [116]},
-        #     "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [116]},
-        #     "Pre-EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
-        #     "EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
-        #     "Oil and Gas Pre-Reform Act Over-the-Counter Leases": {"Public Domain": [119],
-        #                                                            "Acquired Lands": [119]},
-        #     "Pre-Reform Act Simultaneous Leases—continued": {"Acquired Lands": [120, 121]},
-        #     "Summary:  Pre-Reform Act Simultaneous Leases": {"Public Domain and Acquired Lands": [122]},
-        #     "Reform Act Future Interest Leases": {"Acquired Lands": [125]},
-        #     "Geothermal Leases": {"Public Domain and Acquired Lands": [125]},
-        #     "Private Leases": {"Acquired Lands": [126]},
-        #     "Exchange Leases": {"Public Domain": [126]},
-        #     "Renewal Leases": {"Public Domain": [126, 127]},
-        #     "Class III Reinstatement Leases": {"Public Domain": [127]},
-        #     "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [127, 128]},
-        #     "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [128]},
-        #     "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [128]},
-        #     "Federal Coal Leases": {
-        #         "Competitive Nonregional Lease-by-Application Leases": [135],
-        #         "Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases": [135],
-        #         "Competitive Regional Emergency/Bypass Leases": [135],
-        #         "Competitive Regional Leases": [136],
-        #         "Exchange Leases": [136],
-        #         "Preference Right Leases": [136]
-        #                             },
-        #     "Coal Licenses": {
-        #         "Exploration Licenses": [137],
-        #         "Licenses To Mine": [137]
-        #                       },
-        #     "Logical Mining Units": {"None": [137]},
-        #     "Combined Hydrocarbon Leases": {"None": [139]},
-        #     "Phosphate Leases": {
-        #         "Phosphate Competitive Leases": [139],
-        #         "Phosphate Fringe Acreage Noncompetitive Leases": [139],
-        #         "Phosphate Preference Right Leases": [139]
-        #         },
-        #     "Phosphate Use Permits": {"None": [139]},
-        #     "Sodium Leases": {
-        #         "Sodium Competitive Leases": [140],
-        #         "Sodium Fringe Acreage Noncompetitive Leases": [140],
-        #         "Sodium Preference Right Leases": [140]
-        #         },
-        #     "Sodium Use Permit": {"None": [140]},
-        #     "Potassium Leases": {
-        #         "Potassium Competitive Leases": [141],
-        #         "Potassium Fringe Acreage Noncompetitive Leases": [141],
-        #        "Potassium Preference Right Leases": [141]
-        #                },
-        #     "Gilsonite Leases": {
-        #         "Gilsonite Competitive Leases": [142],
-        #         "Gilsonite Fringe Acreage Noncompetitive Leases": [142],
-        #          "Gilsonite Preference Right Leases": [142]
-        #                                  },
-        #     "Oil Shale RD&D Leases": {"None": [142]},
-        #     "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [143]}
-        # }
+            "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [111], "Acquired Lands": [111, 112]},
+            "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [113, 122]},
+            "Reform Act Leases": {"Public Domain": [113, 123], "Acquired Lands": [123, 124]},
+            "Reform Act Leases—continued": {"Acquired Lands": [114]},
+            "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [116]},
+            "Competitive Protective Leases": {"Public Domain and Acquired Lands": [116]},
+            "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [116]},
+            "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [116]},
+            "Pre-EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
+            "EPAct Competitive Geothermal Leases": {"Public Domain and Acquired Lands": [117]},
+            "Oil and Gas Pre-Reform Act Over-the-Counter Leases": {"Public Domain": [119],
+                                                                   "Acquired Lands": [119]},
+            "Pre-Reform Act Simultaneous Leases—continued": {"Acquired Lands": [120, 121]},
+            "Summary:  Pre-Reform Act Simultaneous Leases": {"Public Domain and Acquired Lands": [122]},
+            "Reform Act Future Interest Leases": {"Acquired Lands": [125]},
+            "Geothermal Leases": {"Public Domain and Acquired Lands": [125]},
+            "Private Leases": {"Acquired Lands": [126]},
+            "Exchange Leases": {"Public Domain": [126]},
+            "Renewal Leases": {"Public Domain": [126, 127]},
+            "Class III Reinstatement Leases": {"Public Domain": [127]},
+            "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [127, 128]},
+            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [128]},
+            "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [128]},
+            "Federal Coal Leases": {
+                "Competitive Nonregional Lease-by-Application Leases": [135],
+                "Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases": [135],
+                "Competitive Regional Emergency/Bypass Leases": [135],
+                "Competitive Regional Leases": [136],
+                "Exchange Leases": [136],
+                "Preference Right Leases": [136]
+                                    },
+            "Coal Licenses": {
+                "Exploration Licenses": [137],
+                "Licenses To Mine": [137]
+                              },
+            "Logical Mining Units": {"None": [137]},
+            "Combined Hydrocarbon Leases": {"None": [139]},
+            "Phosphate Leases": {
+                "Phosphate Competitive Leases": [139],
+                "Phosphate Fringe Acreage Noncompetitive Leases": [139],
+                "Phosphate Preference Right Leases": [139]
+                },
+            "Phosphate Use Permits": {"None": [139]},
+            "Sodium Leases": {
+                "Sodium Competitive Leases": [140],
+                "Sodium Fringe Acreage Noncompetitive Leases": [140],
+                "Sodium Preference Right Leases": [140]
+                },
+            "Sodium Use Permit": {"None": [140]},
+            "Potassium Leases": {
+                "Potassium Competitive Leases": [141],
+                "Potassium Fringe Acreage Noncompetitive Leases": [141],
+               "Potassium Preference Right Leases": [141]
+                       },
+            "Gilsonite Leases": {
+                "Gilsonite Competitive Leases": [142],
+                "Gilsonite Fringe Acreage Noncompetitive Leases": [142],
+                 "Gilsonite Preference Right Leases": [142]
+                                         },
+            "Oil Shale RD&D Leases": {"None": [142]},
+            "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [143]}
+        }
         competitive_page_numbers = [113, 114]
         no_header_page_numbers = [136]
-    # elif args["year"] == "2012":
-    #     sub_headers = {
+    elif args["year"] == "2012":
+        sub_headers = {
     #         # "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [108], "Acquired Lands": [108, 109]} }#,
-    #         "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [110, 119]} } #,
+            "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [110, 119]} } #,
     #         # "Reform Act Leases": {"Public Domain": [110. 120], "Acquired Lands": [110]} } #,
     #         # "Reform Act Leases—continued": {"Acquired Lands": [111]} } #,
     #         # "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [113]} } #,
@@ -441,18 +441,15 @@ def blm_pls_call(url, response_load, args):
     #         # "Oil Shale RD&D Leases": {"None": [142]},
     #         # "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [143]}
     #     # } #todo comment in
-    #     competitive_page_numbers = [110, 111]
-    #     no_header_page_numbers = [136]
+        competitive_page_numbers = [110, 111]
+        no_header_page_numbers = [136]
     else:
         # provide reasoning for failure of parsing data
         log.error('Missing code specifying sub-headers, add code to blm_pls_call()')
 
     for header in sub_headers:
         for sub_header in sub_headers[header]:
-            # print(header, sub_header)
-            pg = sub_headers[header][sub_header] # todo: comment back in
-            # test
-            # pg = [113] #todo:commetn out
+            pg = sub_headers[header][sub_header]
             pdf_pages = []
             for page_number in pg:
                 found_header = False
@@ -466,6 +463,8 @@ def blm_pls_call(url, response_load, args):
                     pdf_page.columns = ["one", "two"]
 
                 pdf_page.dropna(subset=["one"], inplace=True)
+                # add col of page number
+                pdf_page['page_no'] = page_number
                 pdf_pages.append(pdf_page)
 
             for page in pdf_pages:
@@ -475,7 +474,9 @@ def blm_pls_call(url, response_load, args):
                         split_row = split_header[0].strip()
                     else:
                         split_row = row["one"]
-                    if page_number in no_header_page_numbers:
+                    # if page_number in no_header_page_numbers:
+                    if row['page_no'] in no_header_page_numbers:
+                    # if pages in no_header_page_numbers:
                         found_header = True
                     if split_row == header:
                         found_header = True
@@ -487,7 +488,6 @@ def blm_pls_call(url, response_load, args):
 
                     if copy and split_row != sub_header and split_row != header and found_header:
                         if "FISCAL" in row["one"] or row["one"].isdigit():
-                            print('skip')
                             skip = True
 
                         if not skip:
@@ -495,7 +495,8 @@ def blm_pls_call(url, response_load, args):
                                 sub_header = ""
                             lists = split(row, header, sub_header, next_line)
                             if header in duplicate_headers:
-                                if page_number in competitive_page_numbers:
+                                # if page_number in competitive_page_numbers:
+                                if row['page_no'] in competitive_page_numbers:
                                     flow_name.append("Competitive " + lists[1])
                                 else:
                                     flow_name.append("Noncompetitive " + lists[1])
@@ -571,6 +572,7 @@ def blm_pls_parse(dataframe_list, args):
         df["SourceName"] = 'BLM_PLS'
         df['Year'] = args["year"]
         df['Unit'] = "Acres"
+        df['FlowType'] = 'ELEMENTARY_FLOW'
 
     return df
 
