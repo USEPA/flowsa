@@ -28,7 +28,7 @@ def split(row, header, sub_header, next_line):
     num_in_state = False
     split_str_one = row["one"].split(" ")
     split_str_two = ""
-    if len(row) >= 2:
+    if len(row) >= 3:
         if isinstance(row["two"], float):
             split_str_two = row["two"]
         else:
