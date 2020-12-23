@@ -44,7 +44,7 @@ from flowsa.BLS_QCEW import clean_bls_qcew_fba, clean_bls_qcew_fba_for_employmen
     bls_clean_allocation_fba_w_sec
 from flowsa.EIA_CBECS_Land import cbecs_land_fba_cleanup
 from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec, \
-    mecs_land_fba_cleanup, eia_mecs_land_clean_allocation_fba_w_sec
+    mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs, eia_mecs_land_clean_allocation_fba_w_sec
 from flowsa.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
 from flowsa.stewicombo_to_sector import stewicombo_to_sector
