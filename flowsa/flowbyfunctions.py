@@ -279,7 +279,7 @@ def harmonize_units(df):
     return df
 
 
-def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_method, group_cols):
+def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_method, group_cols, **kwargs):
     """
     Create an allocation ratio for df
 
@@ -294,32 +294,64 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
     from flowsa.mapping import get_fba_allocation_subset
 
     # test
-    # df_w_sectors = fba_allocation_wsec.copy()
+    # df_w_sectors = fba_allocation_subset_2.copy()
     # source_name = k
     # allocation_source = attr['allocation_source']
     # allocation_method = attr['allocation_method']
+    # fsm =flow_subset_mapped
 
-    cat = load_source_catalog()
-    source_df = cat[source_name]
-    allocation_df = cat[allocation_source]
+    # first determine if there is a special case with how the allocation ratios are created
+    if allocation_method == 'proportional-flagged':
+        # if the allocation method is flagged, subset sectors that are flagged/notflagged, where nonflagged sectors \
+        # have flowamountratio=1
+        if kwargs != {}:
+            if 'flowSubsetMapped' in kwargs:
+                fsm = kwargs['flowSubsetMapped']
+                flagged = fsm[fsm['disaggregate_flag'] == 1]
+                flagged_names = flagged['SectorConsumedBy'].tolist()
 
-    # if allocation_method == 'proportional-flagged':
-    #     # if the allocation method is iterative, subtract out the published values at disaggregated sector levels
-    #     # then create proportional allocation ratios
-    #     allocation_df = df_w_sectors.copy()
-    if source_df['sector-like_activities'] is True & allocation_df['sector-like_activities'] is True:
-        allocation_df = df_w_sectors.assign(FlowAmountRatio=1)
+                nonflagged = fsm[fsm['disaggregate_flag'] == 0]
+                nonflagged_names = nonflagged['SectorConsumedBy'].tolist()
+
+                # subset the original df so rows of data that run through the proportioanl allocation process are
+                # sectors included in the flagged list
+                df_w_sectors_nonflagged = df_w_sectors.loc[
+                    (df_w_sectors[fbs_activity_fields[0]].isin(nonflagged_names)) |
+                    (df_w_sectors[fbs_activity_fields[1]].isin(nonflagged_names))
+                    ].reset_index(drop=True)
+                df_w_sectors_nonflagged = df_w_sectors_nonflagged.assign(FlowAmountRatio=1)
+
+                df_w_sectors = df_w_sectors.loc[(df_w_sectors[fbs_activity_fields[0]].isin(flagged_names)) |
+                                                (df_w_sectors[fbs_activity_fields[1]].isin(flagged_names))
+                                                ].reset_index(drop=True)
+            else:
+                log.error('The proportional-flagged allocation method requires a column "disaggregate_flag" in the'
+                          'flow_subset_mapped df')
+
+    # run sector aggregation fxn to determine total flowamount for each level of sector
+    if len(df_w_sectors) == 0:
+        allocation_df = df_w_sectors_nonflagged.copy()
     else:
-        # run sector aggregation fxn to determine total flowamount for each level of sector
         df1 = sector_aggregation(df_w_sectors, group_cols)
         # run sector disaggregation to capture one-to-one naics4/5/6 relationships
         df2 = sector_disaggregation(df1, group_cols)
 
         # if statements for method of allocation
-        if allocation_method == 'proportional':
+        # either 'proportional' or 'proportional-flagged'
+        allocation_df = []
+        if allocation_method == 'proportional' or allocation_method == 'proportional-flagged':
             allocation_df = proportional_allocation_by_location(df2)
         else:
             log.error('Must create function for specified method of allocation')
+
+        if allocation_method == 'proportional-flagged':
+            # drop rows where values are not in flagged names
+            allocation_df = allocation_df.loc[(allocation_df[fbs_activity_fields[0]].isin(flagged_names)) |
+                                              (allocation_df[fbs_activity_fields[1]].isin(flagged_names))
+                                              ].reset_index(drop=True)
+            # concat the flagged and nonflagged dfs
+            allocation_df = pd.concat([allocation_df, df_w_sectors_nonflagged],
+                                      ignore_index=True).sort_values(['SectorProducedBy', 'SectorConsumedBy'])
 
     return allocation_df
 
@@ -327,6 +359,7 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
 def proportional_allocation_by_location(df):
     """
     Creates a proportional allocation based on all the most aggregated sectors within a location
+    Ensure that sectors are at 2 digit level - can run sector_aggregation() prior to using this function
     :param df:
     :param sectorcolumn:
     :return:
@@ -334,6 +367,8 @@ def proportional_allocation_by_location(df):
 
     # tmp drop NoneType
     df = replace_NoneType_with_empty_cells(df)
+
+    # find the shortest length sector
 
     denom_df = df.loc[(df['SectorProducedBy'].apply(lambda x: len(x) == 2)) |
                       (df['SectorConsumedBy'].apply(lambda x: len(x) == 2))]
