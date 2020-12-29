@@ -385,36 +385,71 @@ def mecs_land_fba_cleanup_for_land_2012_fbs(fba):
     return fba
 
 
-def eia_mecs_land_clean_allocation_fba_w_sec(df_w_sec, attr):
+def mecs_land_clean_allocation_mapped_fba_w_sec(df_load, attr):
     """
-    clean up eia_mecs_energy df with sectors by estimating missing data
+
+    The mecs land dataset has varying levels of information for naics3-6. Iteratively determine which activities need allocated
+
     :param df_w_sec:
     :param attr:
     :param method:
     :return:
     """
 
-    from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation, fba_mapped_default_grouping_fields
+    from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation, \
+        fbs_grouping_fields_w_activities, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 
     # test
-    # df_w_sec = flow_subset_wsec.copy()
+    # df_load = flow_subset_mapped.copy()
 
-    # define the activity/sector columns to base modifications
-    activity_column = 'ActivityConsumedBy'
-    sector_column = 'SectorConsumedBy'
+    # add column of activity length
+    df = df_load.assign(SectorLength=df_load['ActivityConsumedBy'].apply(lambda x: len(x)))
 
-    # first aggregate existing data to higher naics
-    group_cols = fba_mapped_default_grouping_fields
-    df_w_sec = sector_aggregation(df_w_sec, group_cols)
-    # replace value in Activity cols for created rows
-    df_w_sec[activity_column] = df_w_sec[sector_column].copy()
-    # sector disaggregation
-    df_w_sec = sector_disaggregation(df_w_sec, group_cols)
-    # replace value in Activity cols for created rows
-    df_w_sec[activity_column] = df_w_sec[sector_column].copy()
+    # add cols
+    for i in range(5, 2, -1):
+        df.loc[df['SectorLength'] > i, 'NAICS'+str(i)] = df['ActivityConsumedBy'].apply(lambda x: x[0:i])
 
-    # then estimate missing data
-    df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
+    # tmp replace NoneTypes with empty cells
+    df = replace_NoneType_with_empty_cells(df)
+
+    # subset data to sum and subtract from original df
+    df_sub = df[['FlowAmount', 'NAICS3', 'NAICS4', 'NAICS5']]
+    df_melt = df_sub.melt(id_vars='FlowAmount', var_name='NAICS', value_name="ActivityConsumedBy")
+    # drop empty rows and sum by activity
+    df_melt = df_melt[df_melt['ActivityConsumedBy'] != '']
+    df_subtract = df_melt.groupby(['ActivityConsumedBy'])['FlowAmount'].sum().reset_index()
+    df_subtract = df_subtract.rename(columns={'FlowAmount': 'fAmount'})
+    # merge and subtract
+    df_m = pd.merge(df, df_subtract, how='left')
+    df_m['fAmount'] = df_m['fAmount'].fillna(0)
+    df_m['FlowAmount'] = df_m['FlowAmount'] - df_m['fAmount']
+
+
+
+
+
+            # # drop descrip col
+    # df_w_sec = df_w_sec.drop(columns='Description')
+    #
+    # # define the activity/sector columns to base modifications
+    # activity_column = 'ActivityConsumedBy'
+    # sector_column = 'SectorConsumedBy'
+    #
+    # # first aggregate existing data to higher naics
+    # group_cols = [e for e in fbs_grouping_fields_w_activities if
+    #               e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+    # group_cols.append('SourceName')
+    # # group_cols = fbs_grouping_fields_w_activities
+    # df_w_sec = sector_aggregation(df_w_sec, group_cols).reset_index(drop=True)
+    # # replace value in Activity cols for created rows
+    # df_w_sec[activity_column] = df_w_sec[sector_column].copy()
+    # # sector disaggregation
+    # df_w_sec = sector_disaggregation(df_w_sec, group_cols).reset_index(drop=True)
+    # # replace value in Activity cols for created rows
+    # df_w_sec[activity_column] = df_w_sec[sector_column].copy()
+    #
+    # # then estimate missing data
+    # df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
 
     return df
 
