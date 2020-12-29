@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
-from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk_w_nonnaics
+from flowsa.flowbyfunctions import fbs_activity_fields, fba_activity_fields, load_sector_length_crosswalk_w_nonnaics
 
 def get_activitytosector_mapping(source):
     """
@@ -158,14 +158,35 @@ def expand_naics_list(df, sectorsourcename):
     return naics_expanded
 
 
-def get_fba_allocation_subset(fba_allocation, source, activitynames):
+def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     """
     Subset the fba allocation data based on NAICS associated with activity
     :param fba_allocation:
     :param sourcename:
     :param activitynames:
+    :param kwargs: can be the mapping file and method of allocation
     :return:
     """
+    # test
+    # fba_alloction = fba_allocation_subset.copy()
+    # source = k
+    # activitynames = [n]
+    # fsm = flow_subset_mapped
+    # am = attr['allocation_method']
+
+    # first determine if there are special cases that would modify the typical method of subset
+    # an example of a special case is when the allocation method is 'proportional-flagged'
+    if kwargs != {}:
+        special_case = False
+        if 'flowSubsetMapped' in kwargs:
+            fsm = kwargs['flowSubsetMapped']
+        if 'allocMethod' in kwargs:
+            am = kwargs['allocMethod']
+            if am == 'proportional-flagged':
+                special_case = True
+    else:
+        special_case = False
+
 
     # load the source catalog
     cat = load_source_catalog()
@@ -189,6 +210,22 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames):
     else:
         if 'Sector' in fba_allocation:
             fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(activitynames)].reset_index(drop=True)
+        elif special_case:
+            # if it is a special case, then base the subset of data on sectors in the sector columns, not on activitynames
+            fsm_sub = fsm.loc[(fsm[fba_activity_fields[0]].isin(activitynames)) |
+                              (fsm[fba_activity_fields[1]].isin(activitynames))
+                              ].reset_index(drop=True)
+            part1 = fsm_sub[['SectorConsumedBy']]
+            part2 = fsm_sub[['SectorProducedBy']]
+            part1.columns = ['Sector']
+            part2.columns = ['Sector']
+            modified_activitynames = pd.concat([part1, part2], ignore_index=True).drop_duplicates()
+            modified_activitynames = modified_activitynames[modified_activitynames['Sector'].notnull()]
+            modified_activitynames = modified_activitynames['Sector'].tolist()
+            fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(modified_activitynames)) |
+                                                       (fba_allocation[fbs_activity_fields[1]].isin(modified_activitynames))
+                                                       ].reset_index(drop=True)
+
         else:
             fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
                                                        (fba_allocation[fbs_activity_fields[1]].isin(activitynames))
