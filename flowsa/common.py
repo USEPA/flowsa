@@ -231,6 +231,7 @@ flow_by_activity_wsec_mapped_fields = {'Class': [{'dtype': 'str'}, {'required': 
                                        #'Description': [{'dtype': 'str'}, {'required': True}],
                                        'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
                                        'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
+                                       'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
                                        'ProducedBySectorType': [{'dtype': 'str'}, {'required': False}],
                                        'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}]
                                        }
