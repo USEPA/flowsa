@@ -299,15 +299,16 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
     # allocation_source = attr['allocation_source']
     # allocation_method = attr['allocation_method']
 
+    cat = load_source_catalog()
+    source_df = cat[source_name]
+    allocation_df = cat[allocation_source]
 
-    # cat = load_source_catalog()
-    # source_df = cat[source_name]
-    # allocation_df = cat[allocation_source]
-
-    if allocation_method == 'proportional-iterative':
-        # if the allocation method is iterative, subtract out the published values at disaggregated sector levels
-        # then create proportional allocation ratios
-        allocation_df = df_w_sectors.copy()
+    # if allocation_method == 'proportional-flagged':
+    #     # if the allocation method is iterative, subtract out the published values at disaggregated sector levels
+    #     # then create proportional allocation ratios
+    #     allocation_df = df_w_sectors.copy()
+    if source_df['sector-like_activities'] is True & allocation_df['sector-like_activities'] is True:
+        allocation_df = df_w_sectors.assign(FlowAmountRatio=1)
     else:
         # run sector aggregation fxn to determine total flowamount for each level of sector
         df1 = sector_aggregation(df_w_sectors, group_cols)
