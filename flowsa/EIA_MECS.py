@@ -385,29 +385,38 @@ def mecs_land_fba_cleanup_for_land_2012_fbs(fba):
     return fba
 
 
-def mecs_land_clean_allocation_mapped_fba_w_sec(df_load, attr):
+def mecs_land_clean_allocation_mapped_fba_w_sec(df):
     """
 
     The mecs land dataset has varying levels of information for naics3-6. Iteratively determine which activities need allocated
 
-    :param df_w_sec:
+    :param df: The mecs df with sectors after mapped to FEDEFL
     :param attr:
-    :param method:
     :return:
     """
 
-    from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation, \
-        fbs_grouping_fields_w_activities, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+    df = iteratively_determine_flows_requiring_disaggregation(df)
 
-    # test
-    # df_load = flow_subset_mapped.copy()
+    return df
+
+
+def iteratively_determine_flows_requiring_disaggregation(df_load):
+    """
+
+    :param df_load:
+    :return: A dataframe with a column 'disaggregate_flag', if '1', row requires secondary source to calculate
+             FlowAmount, if '0' FlowAmount does not require modifications
+    """
+
+    from flowsa.flowbyfunctions import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+    from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # add column of activity length
     df = df_load.assign(SectorLength=df_load['ActivityConsumedBy'].apply(lambda x: len(x)))
 
     # add cols
     for i in range(5, 2, -1):
-        df.loc[df['SectorLength'] > i, 'NAICS'+str(i)] = df['ActivityConsumedBy'].apply(lambda x: x[0:i])
+        df.loc[df['SectorLength'] > i, 'NAICS' + str(i)] = df['ActivityConsumedBy'].apply(lambda x: x[0:i])
 
     # tmp replace NoneTypes with empty cells
     df = replace_NoneType_with_empty_cells(df)
@@ -424,34 +433,35 @@ def mecs_land_clean_allocation_mapped_fba_w_sec(df_load, attr):
     df_m['fAmount'] = df_m['fAmount'].fillna(0)
     df_m['FlowAmount'] = df_m['FlowAmount'] - df_m['fAmount']
 
+    # drop the added columns and re-add sectors, this time with sectors = 'aggregated'
+    df_m2 = df_m.drop(columns=['SectorProducedBy', 'ProducedBySectorType', 'SectorConsumedBy', 'ConsumedBySectorType',
+                               'SectorSourceName', 'SectorLength', 'NAICS5', 'NAICS4', 'NAICS3', 'fAmount'])
 
+    df2 = add_sectors_to_flowbyactivity(df_m2, sectorsourcename=sector_source_name, overwrite_sectorlevel='aggregated')
 
+    # add column noting that these columns require an allocation ratio
+    df2 = df2.assign(disaggregate_flag=1)
 
+    # create lists of sectors to drop
+    list_original = df_load['ActivityConsumedBy'].drop_duplicates().tolist()
 
-            # # drop descrip col
-    # df_w_sec = df_w_sec.drop(columns='Description')
-    #
-    # # define the activity/sector columns to base modifications
-    # activity_column = 'ActivityConsumedBy'
-    # sector_column = 'SectorConsumedBy'
-    #
-    # # first aggregate existing data to higher naics
-    # group_cols = [e for e in fbs_grouping_fields_w_activities if
-    #               e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-    # group_cols.append('SourceName')
-    # # group_cols = fbs_grouping_fields_w_activities
-    # df_w_sec = sector_aggregation(df_w_sec, group_cols).reset_index(drop=True)
-    # # replace value in Activity cols for created rows
-    # df_w_sec[activity_column] = df_w_sec[sector_column].copy()
-    # # sector disaggregation
-    # df_w_sec = sector_disaggregation(df_w_sec, group_cols).reset_index(drop=True)
-    # # replace value in Activity cols for created rows
-    # df_w_sec[activity_column] = df_w_sec[sector_column].copy()
-    #
-    # # then estimate missing data
-    # df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
+    # drop values in original df
+    df3 = df2[~df2['SectorConsumedBy'].isin(list_original)].reset_index(drop=True)
 
-    return df
+    # sort the df by 'ActivityConsumedBy' and drop duplicated rows of SectorconsumedBy, keeping the second entry \
+    # (where ActivityConsumedBy has greater sector length)
+    df3 = df3.sort_values(['ActivityConsumedBy', 'SectorConsumedBy'])
+    df4 = df3.drop_duplicates('SectorConsumedBy', keep='last').reset_index(drop=True)
+
+    # add column to original df for disaggregate_flag
+    df_load = df_load.assign(disaggregate_flag=0)
+
+    # concat the two dfs and sort
+    df_c = pd.concat([df_load, df4], ignore_index=True).sort_values(['SectorConsumedBy']).reset_index(drop=True)
+
+    df_c = replace_strings_with_NoneType(df_c)
+
+    return df_c
 
 
 def estimate_missing_data(df, activity_col, sector_col, sector_lengths):
