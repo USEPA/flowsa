@@ -52,11 +52,13 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             modify_sector_like_activities = False
         # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
         levelofSectoragg = src_info['sector_aggregation_level']
-        # if the FBS activity set is 'direct', overwrite the levelofsectoragg
+        # if the FBS activity set is 'direct', overwrite the levelofsectoragg, or if specified in fxn call
         if kwargs != {}:
             if 'allocationmethod' in kwargs:
                 if kwargs['allocationmethod'] == 'direct':
                     levelofSectoragg = 'disaggregated'
+            if 'overwrite_sectorlevel' in kwargs:
+                levelofSectoragg = kwargs['overwrite_sectorlevel']
         # if data are provided in NAICS format, use the mastercrosswalk
         if src_info['sector-like_activities'] and modify_sector_like_activities is False:
             cw = load_sector_crosswalk()
