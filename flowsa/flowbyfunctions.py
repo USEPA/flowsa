@@ -283,12 +283,6 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
     """
     Create an allocation ratio for df
 
-    There are four scenarios to address:
-    1. FBA being allocated = non-sector-like activites & FBA doing the allocating = non-sector-like activities
-    2. FBA being allocated = non-sector-like activites & FBA doing the allocating = sector-like activities
-    3. FBA being allocated = sector-like activites & FBA doing the allocating = non-sector-like activities
-    4. FBA being allocated = sector-like activites & FBA doing the allocating = sector-like activities
-
     :param df_w_sectors: df with column of sectors
     :param source_name: the name of the FBA df being allocated
     :param allocation_source: The name of the FBA allocation dataframe
@@ -297,12 +291,23 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
     :return: df with FlowAmountRatio for each sector
     """
 
-    cat = load_source_catalog()
-    source_df = cat[source_name]
-    allocation_df = cat[allocation_source]
+    from flowsa.mapping import get_fba_allocation_subset
 
-    if source_df['sector-like_activities'] is True & allocation_df['sector-like_activities'] is True:
-        allocation_df = df_w_sectors.assign(FlowAmountRatio=1)
+    # test
+    # df_w_sectors = fba_allocation_wsec.copy()
+    # source_name = k
+    # allocation_source = attr['allocation_source']
+    # allocation_method = attr['allocation_method']
+
+
+    # cat = load_source_catalog()
+    # source_df = cat[source_name]
+    # allocation_df = cat[allocation_source]
+
+    if allocation_method == 'proportional-iterative':
+        # if the allocation method is iterative, subtract out the published values at disaggregated sector levels
+        # then create proportional allocation ratios
+        allocation_df = df_w_sectors.copy()
     else:
         # run sector aggregation fxn to determine total flowamount for each level of sector
         df1 = sector_aggregation(df_w_sectors, group_cols)
@@ -933,6 +938,9 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
         df_subset_list.append(df_sub)
     df_subset = pd.concat(df_subset_list)
 
+    # only keep cols associated with FBA
+    df_subset = clean_df(df_subset, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+
     return df_subset
 
 
@@ -1036,6 +1044,8 @@ def estimate_suppressed_data(df, sector_column):
     df_w_estimated_data = replace_strings_with_NoneType(df)
     # drop cols
     # df_w_estimated_data = df_w_estimated_data.drop(columns=['s_tmp', 'alloc_flow', 'sector_count'])
+    # reorder cols
+    # df_w_estimated_data = df = add_missing_flow_by_fields(df_w_estimated_data, fba_mapped_default_grouping_fields)
 
     return df_w_estimated_data
 
