@@ -212,11 +212,14 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     :return:
     """
     from flowsa.flowbyfunctions import estimate_suppressed_data, sector_disaggregation, sector_aggregation, \
-        fba_mapped_default_grouping_fields
+        flow_by_activity_wsec_mapped_fields, add_missing_flow_by_fields, replace_strings_with_NoneType
 
     sector_column = 'SectorProducedBy'
 
     df = estimate_suppressed_data(df_w_sec, sector_column)
+
+    df = add_missing_flow_by_fields(df, flow_by_activity_wsec_mapped_fields)
+    df = replace_strings_with_NoneType(df)
 
     # df = sector_aggregation(df, fba_mapped_default_grouping_fields)
     # df = sector_disaggregation(df, fba_mapped_default_grouping_fields)
