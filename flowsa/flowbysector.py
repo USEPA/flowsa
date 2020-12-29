@@ -267,10 +267,9 @@ def main(method_name):
 
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
-                    if attr['allocation_method'] != 'proportional-flagged':
-                        fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
-                    else:
-                        fba_allocation_subset = fba_allocation_wsec.copy()
+                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names,
+                                                                      flowSubsetMapped=flow_subset_mapped,
+                                                                      allocMethod=attr['allocation_method'])
 
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
@@ -284,15 +283,18 @@ def main(method_name):
                     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
                     for n in names:
                         log.info("Creating allocation ratios for " + n)
-                        fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n])
+                        fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n],
+                                                                            flowSubsetMapped=flow_subset_mapped,
+                                                                            allocMethod=attr['allocation_method'])
                         if len(fba_allocation_subset_2) == 0:
                             log.info("No data found to allocate " + n)
                         else:
                             flow_alloc = allocate_by_sector(fba_allocation_subset_2, k, attr['allocation_source'],
-                                                            attr['allocation_method'], group_cols)
+                                                            attr['allocation_method'], group_cols,
+                                                            flowSubsetMapped=flow_subset_mapped)
                             flow_alloc = flow_alloc.assign(FBA_Activity=n)
                             flow_alloc_list.append(flow_alloc)
-                    flow_allocation = pd.concat(flow_alloc_list)
+                    flow_allocation = pd.concat(flow_alloc_list, ignore_index=True)
 
                     # generalize activity field names to enable link to main fba source
                     log.info("Generalizing activity columns in subset of " + attr['allocation_source'])
