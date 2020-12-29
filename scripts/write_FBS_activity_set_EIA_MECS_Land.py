@@ -11,11 +11,14 @@ import flowsa
 from flowsa.common import flowbysectoractivitysetspath
 
 
+# as_year = '2010'
+as_year = '2014'
+
 if __name__ == '__main__':
 
     # define mecs land fba parameters
     land_flowclass = ['Land']
-    land_years = [2010, 2014]
+    land_years = [as_year]
     datasource = 'EIA_MECS_Land'
 
     # Read BLM PLS crosswalk
@@ -37,4 +40,4 @@ if __name__ == '__main__':
     df = df.sort_values(['activity_set', 'name']).reset_index(drop=True)
 
     # save df
-    df.to_csv(flowbysectoractivitysetspath + datasource + "_asets.csv", index=False)
+    df.to_csv(flowbysectoractivitysetspath + datasource + '_' + as_year + "_asets.csv", index=False)
