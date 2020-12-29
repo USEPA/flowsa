@@ -183,7 +183,7 @@ def main(method_name):
                 flow_subset_mapped = map_elementary_flows(flow_subset_wsec, mapping_files)
 
                 # clean up mapped fba with sectors, if specified in yaml
-                if v["clean_mapped_fba_w_sec_df_fxn"] != 'None':
+                if "clean_mapped_fba_w_sec_df_fxn" in v:
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
                     flow_subset_mapped = getattr(sys.modules[__name__], v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped)
 
@@ -267,7 +267,10 @@ def main(method_name):
 
                     # subset fba datasets to only keep the sectors associated with activity subset
                     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
-                    fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
+                    if attr['allocation_method'] != 'proportional-flagged':
+                        fba_allocation_subset = get_fba_allocation_subset(fba_allocation_wsec, k, names)
+                    else:
+                        fba_allocation_subset = fba_allocation_wsec.copy()
 
                     # if there is an allocation helper dataset, modify allocation df
                     if attr['allocation_helper'] == 'yes':
