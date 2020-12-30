@@ -28,14 +28,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
                 'soil'), use None to include all compartments
     """
 
-    from stewi.globals import output_dir as stw_output_dir
-    from stewi.globals import weighted_average
-    import stewi
     import stewicombo
-    import facilitymatcher
-    from stewicombo.overlaphandler import remove_default_flow_overlaps
-    from stewicombo.globals import addChemicalMatches
-    from facilitymatcher import output_dir as fm_output_dir
     from flowsa.EPA_NEI import drop_GHGs
 
     NAICS_level_value=sector_level_key[NAICS_level]
@@ -43,32 +36,138 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True, compartments=compartments)
     df.drop(columns = ['SRS_CAS','SRS_ID','FacilityIDs_Combined'], inplace=True)
 
-    facility_mapping = pd.DataFrame()
-    # load facility data from stewi output directory, keeping only the facility IDs, and geographic information
     inventory_list = list(inventory_dict.keys())
 
     if 'NEI' in inventory_list and not 'GHGRP' in inventory_list:
         df = drop_GHGs(df)
+    facility_mapping = extract_facility_data(inventory_dict)
+    # use NAICS from facility matcher so drop them here
+    facility_mapping.drop(columns = ['NAICS'], inplace = True)
+    # merge dataframes to assign facility information based on facility IDs
+    df = pd.merge(df, facility_mapping, how = 'left',
+                  on= 'FacilityID')
+    
+    all_NAICS = obtain_NAICS_from_facility_matcher(inventory_list)
+    df = pd.merge(df, all_NAICS, how = 'left', on = ['FRS_ID','Source'])
+
+    # add levelized NAICS code prior to aggregation
+    df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
+
+    if 'NEI' in inventory_list:
+        df = reassign_airplane_emissions(df, inventory_dict['NEI'], NAICS_level_value)
+        
+    fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
+
+    return fbs
+
+def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None):
+    """
+    Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
+    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+                {'NEI':'2017', 'TRI':'2017'})
+    :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
+                should match target_sector_level
+    :param geo_scale: desired geographic aggregation level ('national', 'state',
+                'county'), should match target_geoscale
+    :param compartments: list of compartments to include (e.g., 'water', 'air',
+                'soil'), use None to include all compartments
+    """
+    import stewi
+
+    NAICS_level_value=sector_level_key[NAICS_level]
+    # run stewicombo to combine inventories, filter for LCI, remove overlap
+    df = pd.DataFrame()
+    for database, year in inventory_dict.items():
+        inv = stewi.getInventory(database, year, filter_for_LCI=True, US_States_Only=True)
+        inv['Year'] = year
+        df = df.append(inv)
+    if compartments != None:
+        df = df[df['Compartment'].isin(compartments)]
+    facility_mapping = extract_facility_data(inventory_dict)
+    facility_mapping['NAICS'] =  facility_mapping['NAICS'].astype(str)
+    facility_mapping = naics_expansion(facility_mapping)
+
+    # merge dataframes to assign facility information based on facility IDs
+    df = pd.merge(df, facility_mapping, how = 'left',
+                  on= 'FacilityID')
+
+    # add levelized NAICS code prior to aggregation
+    df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
+    
+    fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
+
+    return fbs    
+
+def reassign_airplane_emissions(df, year, NAICS_level_value):
+    import stewi
+    from stewicombo.overlaphandler import remove_default_flow_overlaps
+    from stewicombo.globals import addChemicalMatches
+    
+    ## subtract emissions for air transportation from airports in NEI
+    airport_NAICS = '4881'
+    air_transportation_SCC = '2275020000'
+    air_transportation_naics = '481111'
+    log.info('Reassigning emissions from air transportation from airports')
+
+    # obtain and prepare SCC dataset
+    df_airplanes = stewi.getInventory('NEI', year,
+                                      stewiformat='flowbySCC')
+    df_airplanes = df_airplanes[df_airplanes['SCC']==air_transportation_SCC]
+    df_airplanes['Source']='NEI'
+    df_airplanes = addChemicalMatches(df_airplanes)
+    df_airplanes = remove_default_flow_overlaps(df_airplanes, SCC=True)
+    df_airplanes.drop(columns=['SCC'], inplace=True)
+    
+    facility_mapping_air = df[['FacilityID','NAICS']]
+    facility_mapping_air.drop_duplicates(keep = 'first', inplace = True)
+    df_airplanes = df_airplanes.merge(facility_mapping_air, how = 'left',
+                                      on='FacilityID')
+
+    df_airplanes['Year']=year
+    df_airplanes = df_airplanes[
+        df_airplanes['NAICS'].str[0:len(airport_NAICS)]==airport_NAICS]
+
+    # subtract airplane emissions from airport NAICS at individual facilities
+    df_planeemissions = df_airplanes[['FacilityID','FlowName','FlowAmount']] 
+    df_planeemissions.rename(columns={'FlowAmount':'PlaneEmissions'}, inplace=True)
+    df = df.merge(df_planeemissions, how = 'left',
+                                    on = ['FacilityID','FlowName'])
+    df[['PlaneEmissions']] = df[['PlaneEmissions']].fillna(value=0)       
+    df['FlowAmount']=df['FlowAmount']-df['PlaneEmissions']
+    df.drop(columns=['PlaneEmissions'], inplace=True)
+    
+    # add airplane emissions under air transport NAICS
+    df_airplanes.loc[:,'NAICS_lvl']=air_transportation_naics[0:NAICS_level_value]
+    df = pd.concat([df, df_airplanes], ignore_index=True)
+    
+    return df
+
+def extract_facility_data(inventory_dict):
+    import stewi
+    facility_mapping = pd.DataFrame()
+    # load facility data from stewi output directory, keeping only the facility IDs, and geographic information
+    inventory_list = list(inventory_dict.keys())
 
     for i in range(len(inventory_dict)):
         # define inventory name as inventory type + inventory year (e.g., NEI_2017)
-        inventory_name = inventory_list[i] + '_' + list(inventory_dict.values())[i]
-        facilities = pd.read_csv(stw_output_dir + 'facility/' + inventory_name + '.csv',
-                                 usecols=['FacilityID', 'State', 'County'],
-                                 dtype={'FacilityID':str})
+        database = inventory_list[i]
+        year = list(inventory_dict.values())[i]
+        inventory_name = database + '_' + year
+        facilities = stewi.getInventoryFacilities(database, year)
+        facilities = facilities[['FacilityID', 'State', 'County','NAICS']]
         if len(facilities[facilities.duplicated(subset='FacilityID',keep=False)])>0:
             log.info('Duplicate facilities in '+ inventory_name +' - keeping first listed')
             facilities.drop_duplicates(subset='FacilityID',
                                        keep='first', inplace = True)
         facility_mapping = facility_mapping.append(facilities)
-
+    
     # Apply FIPS to facility locations
     facility_mapping = apply_county_FIPS(facility_mapping)
-         
-    ## merge dataframes to assign facility information based on facility IDs
-    df = pd.merge(df, facility_mapping, how = 'left',
-                  on= 'FacilityID')
     
+    return facility_mapping
+
+def obtain_NAICS_from_facility_matcher(inventory_list):
+    import facilitymatcher
     ## Access NAICS From facility matcher and assign based on FRS_ID
     all_NAICS = facilitymatcher.get_FRS_NAICSInfo_for_facility_list(frs_id_list = None,
         inventories_of_interest_list=inventory_list)
@@ -79,49 +178,11 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
         log.info('Duplicate primary NAICS reported - keeping first')
         all_NAICS.drop_duplicates(subset = ['FRS_ID','Source'], 
                                   keep = 'first', inplace = True)
-    df = pd.merge(df, all_NAICS, how = 'left', on = ['FRS_ID','Source'])
+    return all_NAICS
 
-    # add levelized NAICS code prior to aggregation
-    df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
+def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
+    from stewi.globals import weighted_average    
 
-    ## subtract emissions for air transportation from airports in NEI
-    airport_NAICS = '4881'
-    air_transportation_SCC = '2275020000'
-    air_transportation_naics = '481111'
-    if 'NEI' in inventory_list:
-        log.info('Reassigning emissions from air transportation from airports')
-
-        # obtain and prepare SCC dataset
-        df_airplanes = stewi.getInventory('NEI', inventory_dict['NEI'],
-                                          stewiformat='flowbySCC')
-        df_airplanes = df_airplanes[df_airplanes['SCC']==air_transportation_SCC]
-        df_airplanes['Source']='NEI'
-        df_airplanes = addChemicalMatches(df_airplanes)
-        df_airplanes = remove_default_flow_overlaps(df_airplanes, SCC=True)
-        df_airplanes.drop(columns=['SCC'], inplace=True)
-        
-        facility_mapping_air = df[['FacilityID','NAICS']]
-        facility_mapping_air.drop_duplicates(keep = 'first', inplace = True)
-        df_airplanes = df_airplanes.merge(facility_mapping_air, how = 'left',
-                                          on='FacilityID')
-
-        df_airplanes['Year']=inventory_dict['NEI']
-        df_airplanes = df_airplanes[
-            df_airplanes['NAICS'].str[0:len(airport_NAICS)]==airport_NAICS]
-
-        # subtract airplane emissions from airport NAICS at individual facilities
-        df_planeemissions = df_airplanes[['FacilityID','FlowName','FlowAmount']] 
-        df_planeemissions.rename(columns={'FlowAmount':'PlaneEmissions'}, inplace=True)
-        df = df.merge(df_planeemissions, how = 'left',
-                                        on = ['FacilityID','FlowName'])
-        df[['PlaneEmissions']] = df[['PlaneEmissions']].fillna(value=0)       
-        df['FlowAmount']=df['FlowAmount']-df['PlaneEmissions']
-        df.drop(columns=['PlaneEmissions'], inplace=True)
-        
-        # add airplane emissions under air transport NAICS
-        df_airplanes.loc[:,'NAICS_lvl']=air_transportation_naics[0:NAICS_level_value]
-        df = pd.concat([df, df_airplanes], ignore_index=True)
-        
     # update location to appropriate geoscale prior to aggregating
     df.dropna(subset=['Location'], inplace=True)
     df['Location']=df['Location'].astype(str)
@@ -140,7 +201,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     fbs.reset_index(inplace=True)
     
     # apply flow mapping
-    fbs = map_elementary_flows(fbs, inventory_list)
+    fbs = map_elementary_flows(fbs, list(inventory_dict.keys()))
     
     # rename columns to match flowbysector format
     fbs = fbs.rename(columns={"NAICS_lvl": "SectorProducedBy"})
@@ -161,7 +222,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     # sort dataframe and reset index
     fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
 
-    return fbs
+    return fbs 
 
 def naics_expansion(facility_NAICS):
     """ modeled after sector_disaggregation in flowbyfunctions, updates NAICS 
