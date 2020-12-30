@@ -131,8 +131,6 @@ def main(method_name):
         if v['data_format'] == 'FBA':
             # ensure correct datatypes and that all fields exist
             flows = clean_df(flows, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-            # modify the FBA units if necessary
-            flows = harmonize_units(flows)
 
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
