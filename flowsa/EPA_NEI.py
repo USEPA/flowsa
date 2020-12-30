@@ -200,10 +200,12 @@ def drop_GHGs(df):
     GHGs are included in some NEI datasets. If these data are not compiled together 
     with GHGRP, need to remove them as they will be tracked from a different source
     """
+    # Flow names reflect source data prior to FEDEFL mapping
     flowlist = [
                 'Carbon Dioxide',
                 'Methane',
-                'Nitrous Oxide'
+                'Nitrous Oxide',
+                'Sulfur Hexafluoride',
                 ]
     
     df = df.loc[~df['FlowName'].isin(flowlist)]
@@ -215,6 +217,7 @@ def drop_pesticides(df):
     To avoid overlap with other datasets, emissions of pesticides from pesticide
     application are removed. 
     """
+    # Flow names reflect source data prior to FEDEFL mapping
     flowlist = [
                 '2,4-Dichlorophenoxy Acetic Acid',
                 'Captan',
