@@ -60,9 +60,9 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
 
     return fbs
 
-def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
+def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None):
     """
-    Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
+    Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
     :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
@@ -81,6 +81,8 @@ def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
         inv = stewi.getInventory(database, year, filter_for_LCI=True, US_States_Only=True)
         inv['Year'] = year
         df = df.append(inv)
+    if compartments != None:
+        df = df[df['Compartment'].isin(compartments)]
     facility_mapping = extract_facility_data(inventory_dict)
     facility_mapping['NAICS'] =  facility_mapping['NAICS'].astype(str)
     facility_mapping = naics_expansion(facility_mapping)
