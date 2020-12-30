@@ -139,6 +139,8 @@ def reassign_airplane_emissions(df, year, NAICS_level_value):
     # add airplane emissions under air transport NAICS
     df_airplanes.loc[:,'NAICS_lvl']=air_transportation_naics[0:NAICS_level_value]
     df = pd.concat([df, df_airplanes], ignore_index=True)
+    
+    return df
 
 def extract_facility_data(inventory_dict):
     import stewi
