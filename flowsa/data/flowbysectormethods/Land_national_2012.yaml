@@ -38,7 +38,7 @@ source_names:
     activity_set_file: 'EIA_MECS_Land_2014_asets.csv'
     activity_sets:
       activity_set_1: # all activities in eia mecs land crosswalk
-        allocation_method: proportional
+        allocation_method: proportional-flagged
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2014
