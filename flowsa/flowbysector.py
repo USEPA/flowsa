@@ -169,7 +169,8 @@ def main(method_name):
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
-                    flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec, attr=attr)
+                    flow_subset_wsec = getattr(sys.modules[__name__], v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
+                                                                                                   attr=attr)
 
                 # map df to elementary flows
                 log.info("Mapping flows in " + k + ' to federal elementary flow list')
@@ -183,7 +184,8 @@ def main(method_name):
                 # clean up mapped fba with sectors, if specified in yaml
                 if "clean_mapped_fba_w_sec_df_fxn" in v:
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
-                    flow_subset_mapped = getattr(sys.modules[__name__], v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped)
+                    flow_subset_mapped = getattr(sys.modules[__name__],
+                                                 v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped, attr, method)
 
                 # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
                 # dataframe to create sector allocation ratios
