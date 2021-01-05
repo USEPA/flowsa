@@ -401,6 +401,73 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     return None
 
 
+def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, source_name, method_name, attr, method):
+    """
+    Function to compare the loaded flowbyactivity total with the final flowbysector output total
+    :param df:
+    :return:
+    """
+
+    from flowsa.flowbyfunctions import harmonize_units, subset_df_by_geoscale
+
+    log.info('Comparing loaded FlowByActivity FlowAmount total to subset FlowBySector FlowAmount total')
+
+    # harmonize units
+    fba = harmonize_units(fba_load)
+    # subset/agg dfs
+    col_subset = ['Class', 'FlowAmount', 'Unit', 'Location', 'LocationSystem']
+    group_cols = ['Class', 'Unit', 'Location', 'LocationSystem']
+    # fba
+    # extract relevant geoscale data or aggregate existing data
+    fba = subset_df_by_geoscale(fba, attr['allocation_from_scale'], method['target_geoscale'])
+    fba = fba[col_subset]
+    fba_agg = aggregator(fba, group_cols)
+    fba_agg.rename(columns={'FlowAmount': 'FBA_amount',
+                            'Unit': 'FBA_unit'}, inplace=True)
+
+    # fbs
+    fbs = fbs_load[col_subset]
+    fbs_agg = aggregator(fbs, group_cols)
+    fbs_agg.rename(columns={'FlowAmount': 'FBS_amount',
+                            'Unit': 'FBS_unit'}, inplace=True)
+
+    try:
+        # merge FBA and FBS totals
+        df_merge = fba_agg.merge(fbs_agg, how='left')
+        df_merge['FlowAmount_difference'] = df_merge['FBA_amount'] - df_merge['FBS_amount']
+        df_merge['Percent_difference'] = (df_merge['FlowAmount_difference']/df_merge['FBA_amount']) * 100
+
+        # reorder
+        df_merge = df_merge[['Class', 'Location', 'LocationSystem', 'FBA_amount', 'FBA_unit',
+                             'FBS_amount', 'FBS_unit', 'FlowAmount_difference', 'Percent_difference']]
+
+        diff_per = df_merge['Percent_difference'][0]
+        # make reporting more manageable
+        if abs(diff_per) > 0.001:
+            diff_per = round(diff_per, 2)
+        else:
+            diff_per = round(diff_per, 6)
+
+        diff_units = df_merge['FBS_unit'][0]
+        if diff_per > 0:
+            log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
+                     ' is ' + str(abs(diff_per)) + '% less than the total FlowByActivity FlowAmount')
+        else:
+            log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
+                     ' is ' + str(abs(diff_per)) + '% more than the total FlowByActivity FlowAmount')
+
+        # save csv to output folder
+        log.info('Save the comparision of FlowByActivity load to FlowBySector total FlowAmounts for ' +
+                  activity_set + ' in output folder')
+        # output data at all sector lengths
+        df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
+                                    "_FBA_total_to_FBS_total_FlowAmount_comparision_" + activity_set + ".csv", index=False)
+
+    except:
+        log.info('Error occured when comparing total FlowAmounts for FlowByActivity and FlowBySector')
+
+    return None
+
 
 def check_summation_at_sector_lengths(df):
 

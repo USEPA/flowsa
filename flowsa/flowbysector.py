@@ -35,7 +35,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fie
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
     check_if_data_exists_for_same_geoscales, check_allocation_ratios,\
-    check_for_differences_between_fba_load_and_fbs_output
+    check_for_differences_between_fba_load_and_fbs_output, compare_fba_load_and_fbs_output_totals
 
 # import specific functions
 from flowsa.BEA import subset_BEA_Use
@@ -407,6 +407,10 @@ def main(method_name):
                 # drop activity columns
                 fbs_sector_subset = fbs_sector_subset.drop(['ActivityProducedBy', 'ActivityConsumedBy'],
                                                            axis=1, errors='ignore')
+
+                # save comparision of FBA total to FBS total for an activity set
+                compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
+                                                       method_name, attr, method)
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
                 fbs_list.append(fbs_sector_subset)
