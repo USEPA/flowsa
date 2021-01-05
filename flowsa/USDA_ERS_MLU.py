@@ -116,7 +116,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
 
     # sum all uses of urban area that are NOT transportation
     # first concat dfs for residential, openspace, commercial, and manufacturing land use
-    df_non_urban_transport_area = pd.concat([df_residential, df_openspace, cbecs, mecs], sort=False)
+    df_non_urban_transport_area = pd.concat([df_residential, df_openspace, cbecs, mecs], sort=False, ignore_index=True)
     df_non_urban_transport_area = df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
     non_urban_transport_area_sum = df_non_urban_transport_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount']\
         .sum().rename(columns={'FlowAmount': 'NonTransport'})
@@ -163,8 +163,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
 def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list):
     """
     This function is used to allocate the USDA_ERS_MLU activity 'land in urban areas' to NAICS 2012 sectors. Allocation
-    is dependent on assumptions defined in 'values_from_literature.py' as well as results from allocating
-    'EIA_CBECS_Land' and 'EIA_MECS_Land' to land based sectors.
+    is dependent on assumptions defined in 'values_from_literature.py'.
 
     Methodology is based on the manuscript:
     Lin Zeng and Anu Ramaswami
@@ -214,4 +213,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     df_highway2 = df_highway2.assign(FlowAmount=df_highway2['FlowAmount'] * df_highway2['ShareOfFees'])
     df_highway2.drop(columns=['ShareOfFees'], inplace=True)
 
-    return df_highway
+    # concat airport, railroad, highway
+    allocated_rural_trans = pd.concat([df_airport, df_railroad, df_highway2], sort=False, ignore_index=True)
+
+    return allocated_rural_trans
