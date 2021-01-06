@@ -9,7 +9,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 import pandas as pd
 from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
 from flowsa.flowbyfunctions import collapse_fbs_sectors
-from flowsa.datachecks import check_for_nonetypes, check_for_negative_flowamounts
+from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 
 
 def getFlowByActivity(flowclass, years, datasource):
@@ -78,7 +78,7 @@ def getFlowBySector_collapsed(methodname):
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
     # check data
-    fbs_collapsed = check_for_nonetypes(fbs_collapsed)
+    fbs_collapsed = check_for_nonetypes_in_sector_col(fbs_collapsed)
     fbs_collapsed = check_for_negative_flowamounts(fbs_collapsed)
 
     return fbs_collapsed
