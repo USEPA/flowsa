@@ -296,13 +296,6 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
 
     from flowsa.mapping import get_fba_allocation_subset
 
-    # test
-    # df_w_sectors = fba_allocation_subset_2.copy()
-    # source_name = k
-    # allocation_source = attr['allocation_source']
-    # allocation_method = attr['allocation_method']
-    # fsm =flow_subset_mapped
-
     # first determine if there is a special case with how the allocation ratios are created
     if allocation_method == 'proportional-flagged':
         # if the allocation method is flagged, subset sectors that are flagged/notflagged, where nonflagged sectors \
