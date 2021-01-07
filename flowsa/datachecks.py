@@ -408,18 +408,35 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
     :return:
     """
 
-    from flowsa.flowbyfunctions import harmonize_units, subset_df_by_geoscale
+    from flowsa.flowbyfunctions import harmonize_units, subset_df_by_geoscale, sector_aggregation
+    from flowsa.common import load_source_catalog
 
     log.info('Comparing loaded FlowByActivity FlowAmount total to subset FlowBySector FlowAmount total')
 
+    # load source catalog
+    cat = load_source_catalog()
+    src_info = cat[source_name]
+
     # harmonize units
     fba = harmonize_units(fba_load)
+    # extract relevant geoscale data or aggregate existing data
+    fba = subset_df_by_geoscale(fba, attr['allocation_from_scale'], method['target_geoscale'])
+    if src_info['sector-like_activities']:
+        # if activities are sector-like, run sector aggregation and then subset df to only keep NAICS2
+        fba = fba[['Class', 'FlowAmount', 'Unit', 'ActivityProducedBy', 'ActivityConsumedBy', 'Location', 'LocationSystem']]
+        # rename the activity cols to sector cols for purposes of aggregation
+        fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
+                                    'ActivityConsumedBy': 'SectorConsumedBy'})
+        group_cols_agg = ['Class', 'Unit', 'Location', 'LocationSystem', 'SectorProducedBy', 'SectorConsumedBy']
+        fba = sector_aggregation(fba, group_cols_agg)
+        # subset fba to only include NAICS2
+        fba = replace_NoneType_with_empty_cells(fba)
+        fba = fba[fba['SectorConsumedBy'].apply(lambda x: len(x) == 2) |
+                  fba['SectorProducedBy'].apply(lambda x: len(x) == 2)]
     # subset/agg dfs
     col_subset = ['Class', 'FlowAmount', 'Unit', 'Location', 'LocationSystem']
     group_cols = ['Class', 'Unit', 'Location', 'LocationSystem']
     # fba
-    # extract relevant geoscale data or aggregate existing data
-    fba = subset_df_by_geoscale(fba, attr['allocation_from_scale'], method['target_geoscale'])
     fba = fba[col_subset]
     fba_agg = aggregator(fba, group_cols)
     fba_agg.rename(columns={'FlowAmount': 'FBA_amount',
