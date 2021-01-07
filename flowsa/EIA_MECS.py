@@ -166,7 +166,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     df['FlowType'] = "ELEMENTARY_FLOW"
 
     # modify flowname
-    df['FlowName'] = df['Description'] + ', ' + df['FlowName']
+    df['FlowName'] = df['Description'] + ', ' + df['FlowName'].str.strip()
 
     return df
 
