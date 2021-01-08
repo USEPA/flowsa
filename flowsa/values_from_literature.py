@@ -94,6 +94,23 @@ def get_area_of_urban_land_occupied_by_houses_2013():
 
     return area_urban_residence
 
+
+def get_area_of_rural_land_occupied_by_houses_2013():
+    """
+    Reported area of urban land occupied by houses in 2013 from the USDA ERS Major Land Uses Report
+
+    :return:
+    """
+
+    acres_to_sq_m_conversion = 4046.86
+    # value originally reported in million acres
+    area_rural_residence = 106.3
+    # convert to square meters
+    area_rural_residence = area_rural_residence * 1000000 * acres_to_sq_m_conversion
+
+    return area_rural_residence
+
+
 def get_commercial_and_manufacturing_floorspace_to_land_area_ratio():
     """
     The additional land area associated with commercial and manufacturing buildings (parking, sinage, landscaping)
