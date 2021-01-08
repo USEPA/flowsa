@@ -217,3 +217,34 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     allocated_rural_trans = pd.concat([df_airport, df_railroad, df_highway2], sort=False, ignore_index=True)
 
     return allocated_rural_trans
+
+
+def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
+    """
+    From the USDA ERS MLU 2012 report:
+    "Includes miscellaneous other uses, such as industrial and commercial sites in rural areas, cemeteries,
+    golf courses, mining areas, quarry sites, marshes, swamps, sand dunes, bare rocks, deserts, tundra,
+    rural residential, and other unclassified land. In this report, urban land is reported as a separate category."
+
+    Mining data is calculated using a separate source = BLM PLS.
+    Want to extract rural residential land area from total value of 'Other Land'
+    :param df:
+    :param attr:
+    :param fbs_list:
+    :return:
+    """
+
+    from flowsa.values_from_literature import get_area_of_rural_land_occupied_by_houses_2013
+    from flowsa.common import load_household_sector_codes
+
+    # land in rural residential lots
+    rural_res = get_area_of_rural_land_occupied_by_houses_2013()
+
+    # household codes
+    household = load_household_sector_codes()
+    household = household['Code'].drop_duplicates().tolist()
+
+    # in df, where sector is a personal expenditure value, and location = 00000, replace with rural res value
+    df['FlowAmount'] = np.where(df['SectorConsumedBy'].isin(household), rural_res, df['FlowAmount'])
+
+    return df
