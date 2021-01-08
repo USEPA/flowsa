@@ -104,8 +104,23 @@ source_names:
         allocation_helper: 'no'
       activity_set_2:
         names:
-          - 'Forest-use land grazed'
+          - 'Cropland idled'
+        allocation_method: proportional
+        allocation_source: "USDA_CoA_Cropland"
+        allocation_source_class: "Land"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "AREA HARVESTED"    # todo: modify allocation flows to use unharvested data
+          - "AREA"
+        allocation_compartment: None
+        allocation_from_scale: state
+        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        allocation_helper: 'no'
+      activity_set_3:
+        names:
           - 'Cropland used for pasture'
+          - 'Forest-use land grazed'
           - 'Grassland pasture and range'
         allocation_method: proportional
         allocation_source: "USDA_CoA_Cropland_NAICS"
@@ -116,9 +131,9 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         allocation_helper: 'no'
-      activity_set_3:
+      activity_set_4:
         names:
-          - 'Land in rural parks and wildlife areas'
+          - 'Forest-use land not grazed'
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -127,40 +142,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         allocation_helper: 'no'
-      activity_set_4:
-        names:
-          - 'Land in urban areas'
-        allocation_method: allocation_function
-        allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_5:
-        names:
-          - 'Land in rural transportation facilities'
-        allocation_method: allocation_function
-        allocation_source: allocate_usda_ers_mlu_land_in_rural_transportation_areas
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: 'no'
-#      activity_set_6:
-#        names:
-#          - 'Farmsteads, roads, and miscellaneous farmland'
-#        allocation_method: direct
-#        allocation_source: None
-#        allocation_source_class: None
-#        allocation_source_year: None
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: state
-#        allocation_helper: 'no'
-      activity_set_7:
         names:
           - 'Land in defense and industrial areas'
         allocation_method: direct
@@ -171,9 +153,9 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         allocation_helper: 'no'
-      activity_set_8:
+      activity_set_6:
         names:
-          - 'Forest-use land not grazed'
+          - 'Land in rural parks and wildlife areas'
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -181,4 +163,37 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
+        allocation_helper: 'no'
+      activity_set_7:
+        names:
+          - 'Land in rural transportation facilities'
+        allocation_method: allocation_function
+        allocation_source: allocate_usda_ers_mlu_land_in_rural_transportation_areas
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: national
+        allocation_helper: 'no'
+      activity_set_8:
+        names:
+          - 'Land in urban areas'
+        allocation_method: allocation_function
+        allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: national
+        allocation_helper: 'no'
+      activity_set_9:
+        names:
+          - 'Other land'
+        allocation_method: allocation_function
+        allocation_source: allocate_usda_ers_mlu_other_land
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: national
         allocation_helper: 'no'
