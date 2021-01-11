@@ -51,7 +51,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
 
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
-    from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict
+    from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict, harmonize_units
 
     # load the bea make table
     bmt = flowsa.getFlowByActivity(flowclass=['Money'],
@@ -59,6 +59,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
                                    years=[2002])
     # clean df
     bmt = clean_df(bmt, flow_by_activity_fields, fba_fill_na_dict)
+    bmt = harmonize_units(bmt)
     # drop rows with flowamount = 0
     bmt = bmt[bmt['FlowAmount'] != 0]
 
@@ -86,12 +87,13 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
     from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict,  proportional_allocation_by_location_and_activity, \
-        filter_by_geoscale
+        filter_by_geoscale, harmonize_units
     from flowsa.BLS_QCEW import clean_bls_qcew_fba
 
     bls = flowsa.getFlowByActivity(flowclass=['Employment'], datasource='BLS_QCEW', years=[2002])
     # clean df
     bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
+    bls = harmonize_units(bls)
     bls = clean_bls_qcew_fba(bls, attr=attr)
 
     # bls_agg = agg_by_geoscale(bls, 'state', 'national', fba_default_grouping_fields)
@@ -146,9 +148,11 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     """
 
     import flowsa
+    from flowsa.flowbyfunctions import harmonize_units
 
     # determine national level published withdrawal data for usgs mining in FBS method year
     pv_load = flowsa.getFlowByActivity(flowclass=['Water'], years=[str(attr['helper_source_year'])], datasource="USGS_NWIS_WU")
+    pv_load = harmonize_units(pv_load)
     pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) & (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
     pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
 

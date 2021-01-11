@@ -243,14 +243,17 @@ def harmonize_units(df):
 
     days_in_year = 365
     sq_ft_to_sq_m_multiplier = 0.092903
+    gallon_water_to_kg = 3.79  # rounded to match USGS_NWIS_WU mapping file on FEDEFL
+    ac_ft_water_to_kg = 1233481.84
+    acre_to_m2 = 4046.8564224
 
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * 4046.8564224,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * acre_to_m2,
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRES', 'm2', df['Unit'])
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Acres', df['FlowAmount'] * 4046.8564224,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Acres', df['FlowAmount'] * acre_to_m2,
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Acres', 'm2', df['Unit'])
 
@@ -266,16 +269,21 @@ def harmonize_units(df):
 
     # class = money, unit = USD
 
-    # class = water, unit = m3
+    # class = water, unit = kg
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day',
-                                       (df['FlowAmount'] / 264.172052) * days_in_year,
+                                       (df['FlowAmount'] * gallon_water_to_kg) * days_in_year,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'm3', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'kg', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE',
-                                       (df['FlowAmount'] / 4046.856422) * 1233.481837,
+                                       (df['FlowAmount'] / acre_to_m2) * ac_ft_water_to_kg,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'm3', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'kg/m2', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal',
+                                       df['FlowAmount'] * 1000000 * gallon_water_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal', 'kg', df['Unit'])
 
     # class = other, unit varies
 
@@ -536,6 +544,7 @@ def allocation_helper(df_w_sector, attr, method, v):
             # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
     # clean df
     helper_allocation = clean_df(helper_allocation, flow_by_activity_fields, fba_fill_na_dict)
+    helper_allocation = harmonize_units(helper_allocation)
     # drop rows with flowamount = 0
     helper_allocation = helper_allocation[helper_allocation['FlowAmount'] != 0]
 
