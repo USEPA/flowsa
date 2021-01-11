@@ -411,7 +411,7 @@ def main(method_name):
 
                 # save comparision of FBA total to FBS total for an activity set
                 compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
-                                                       method_name, attr, method)
+                                                       method_name, attr, method, mapping_files)
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
                 fbs_list.append(fbs_sector_subset)
