@@ -401,7 +401,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     return None
 
 
-def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, source_name, method_name, attr, method):
+def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, source_name, method_name, attr, method, mapping_files):
     """
     Function to compare the loaded flowbyactivity total with the final flowbysector output total
     :param df:
@@ -410,6 +410,13 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
 
     from flowsa.flowbyfunctions import harmonize_units, subset_df_by_geoscale, sector_aggregation
     from flowsa.common import load_source_catalog
+    from flowsa.mapping import map_elementary_flows
+
+    # test
+    # fba_load = flows_subset_geo.copy()
+    # fbs_load = fbs_sector_subset.copy()
+    # activity_set = aset
+    # source_name = k
 
     log.info('Comparing loaded FlowByActivity FlowAmount total to subset FlowBySector FlowAmount total')
 
@@ -418,24 +425,26 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
     src_info = cat[source_name]
 
     # harmonize units
-    fba = harmonize_units(fba_load)
+    # fba = harmonize_units(fba_load)
     # extract relevant geoscale data or aggregate existing data
-    fba = subset_df_by_geoscale(fba, attr['allocation_from_scale'], method['target_geoscale'])
+    fba = subset_df_by_geoscale(fba_load, attr['allocation_from_scale'], method['target_geoscale'])
+    # map loaded fba
+    fba = map_elementary_flows(fba, mapping_files)
     if src_info['sector-like_activities']:
         # if activities are sector-like, run sector aggregation and then subset df to only keep NAICS2
-        fba = fba[['Class', 'FlowAmount', 'Unit', 'ActivityProducedBy', 'ActivityConsumedBy', 'Location', 'LocationSystem']]
+        fba = fba[['Class', 'FlowAmount', 'Unit', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Location', 'LocationSystem']]
         # rename the activity cols to sector cols for purposes of aggregation
         fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
                                     'ActivityConsumedBy': 'SectorConsumedBy'})
-        group_cols_agg = ['Class', 'Unit', 'Location', 'LocationSystem', 'SectorProducedBy', 'SectorConsumedBy']
+        group_cols_agg = ['Class', 'Context', 'Unit', 'Location', 'LocationSystem', 'SectorProducedBy', 'SectorConsumedBy']
         fba = sector_aggregation(fba, group_cols_agg)
         # subset fba to only include NAICS2
         fba = replace_NoneType_with_empty_cells(fba)
         fba = fba[fba['SectorConsumedBy'].apply(lambda x: len(x) == 2) |
                   fba['SectorProducedBy'].apply(lambda x: len(x) == 2)]
     # subset/agg dfs
-    col_subset = ['Class', 'FlowAmount', 'Unit', 'Location', 'LocationSystem']
-    group_cols = ['Class', 'Unit', 'Location', 'LocationSystem']
+    col_subset = ['Class', 'FlowAmount', 'Unit', 'Context', 'Location', 'LocationSystem']
+    group_cols = ['Class', 'Unit', 'Context', 'Location', 'LocationSystem']
     # fba
     fba = fba[col_subset]
     fba_agg = aggregator(fba, group_cols)
@@ -455,23 +464,29 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
         df_merge['Percent_difference'] = (df_merge['FlowAmount_difference']/df_merge['FBA_amount']) * 100
 
         # reorder
-        df_merge = df_merge[['Class', 'Location', 'LocationSystem', 'FBA_amount', 'FBA_unit',
+        df_merge = df_merge[['Class', 'Context', 'Location', 'LocationSystem', 'FBA_amount', 'FBA_unit',
                              'FBS_amount', 'FBS_unit', 'FlowAmount_difference', 'Percent_difference']]
 
-        diff_per = df_merge['Percent_difference'][0]
-        # make reporting more manageable
-        if abs(diff_per) > 0.001:
-            diff_per = round(diff_per, 2)
-        else:
-            diff_per = round(diff_per, 6)
+        # list of contexts
+        context_list = df_merge['Context'].to_list()
 
-        diff_units = df_merge['FBS_unit'][0]
-        if diff_per > 0:
-            log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
-                     ' is ' + str(abs(diff_per)) + '% less than the total FlowByActivity FlowAmount')
-        else:
-            log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
-                     ' is ' + str(abs(diff_per)) + '% more than the total FlowByActivity FlowAmount')
+        # loop through the contexts and print results of comparision
+        for i in context_list:
+            df_merge_subset = df_merge[df_merge['Context'] == i].reset_index(drop=True)
+            diff_per = df_merge_subset['Percent_difference'][0]
+            # make reporting more manageable
+            if abs(diff_per) > 0.001:
+                diff_per = round(diff_per, 2)
+            else:
+                diff_per = round(diff_per, 6)
+
+            diff_units = df_merge_subset['FBS_unit'][0]
+            if diff_per > 0:
+                log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
+                         ' ' + i + ' is ' + str(abs(diff_per)) + '% less than the total FlowByActivity FlowAmount')
+            else:
+                log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
+                         ' ' + i + ' is ' + str(abs(diff_per)) + '% more than the total FlowByActivity FlowAmount')
 
         # save csv to output folder
         log.info('Save the comparision of FlowByActivity load to FlowBySector total FlowAmounts for ' +
