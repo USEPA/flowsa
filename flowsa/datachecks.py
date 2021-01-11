@@ -412,12 +412,6 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
     from flowsa.common import load_source_catalog
     from flowsa.mapping import map_elementary_flows
 
-    # test
-    # fba_load = flows_subset_geo.copy()
-    # fbs_load = fbs_sector_subset.copy()
-    # activity_set = aset
-    # source_name = k
-
     log.info('Comparing loaded FlowByActivity FlowAmount total to subset FlowBySector FlowAmount total')
 
     # load source catalog
@@ -540,7 +534,7 @@ def check_for_nonetypes_in_sector_col(df):
     """
     # if datatypes are strings, return warning message
     if df['Sector'].isnull().any():
-                log.warning('There are NoneType values in ' + y)
+        log.warning("There are NoneType values in the 'Sector' column")
     return df
 
 
