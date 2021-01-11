@@ -20,7 +20,7 @@ def assign_naics(df):
 
     # df.loc[df['Activity'] == 'Commercial', 'Sector'] = ''
 
-    df.loc[df['Activity'] == 'Domestic', 'Sector'] = 'F010'
+    df.loc[df['Activity'] == 'Domestic', 'Sector'] = 'F01000'
 
     df.loc[df['Activity'] == 'Hydroelectric Power', 'Sector'] = '221111'
 
