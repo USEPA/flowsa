@@ -5,7 +5,7 @@ api_name: BLS
 api_key_required: false
 format: csv  # comma delineated data
 url:
-  base_url: "http://data.bls.gov/cew/data/api/__year__/a/area/__areaFIPS__.csv"
+  base_url: "https://data.bls.gov/cew/data/files/__year__/csv/__year___annual_singlefile.zip"
 url_replace_fxn: BLS_QCEW_URL_helper
 call_response_fxn: bls_qcew_call
 parse_response_fxn: bls_qcew_parse
@@ -17,4 +17,3 @@ years:
   - 2016
   - 2017
   - 2018
-
