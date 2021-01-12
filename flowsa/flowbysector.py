@@ -221,6 +221,21 @@ def main(method_name):
                                                               datasource=attr['allocation_source'],
                                                               years=[attr['allocation_source_year']]).reset_index(drop=True)
 
+                    # check if allocation data exists at specified geoscale to use
+                    log.info("Checking if allocation data exists at the " + attr['allocation_from_scale'] + " level")
+                    check_if_data_exists_at_geoscale(fba_allocation, attr['allocation_from_scale'])
+
+                    # aggregate geographically to the scale of the flowbyactivty source, if necessary
+                    from_scale = attr['allocation_from_scale']
+                    to_scale = v['geoscale_to_use']
+                    # if allocation df is less aggregated than FBA df, aggregate allocation df to target scale
+                    if fips_number_key[from_scale] > fips_number_key[to_scale]:
+                        fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale,
+                                                         fba_default_grouping_fields)
+                    # else, if fba is more aggregated than allocation table, use fba as both to and from scale
+                    else:
+                        fba_allocation = filter_by_geoscale(fba_allocation, from_scale)
+
                     # clean df and harmonize unites
                     fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
                     fba_allocation = harmonize_units(fba_allocation)
@@ -239,21 +254,6 @@ def main(method_name):
                                                  attr["clean_allocation_fba"])(fba_allocation, attr=attr)
                     # reset index
                     fba_allocation = fba_allocation.reset_index(drop=True)
-
-                    # check if allocation data exists at specified geoscale to use
-                    log.info("Checking if allocation data exists at the " + attr['allocation_from_scale'] + " level")
-                    check_if_data_exists_at_geoscale(fba_allocation, attr['allocation_from_scale'])
-
-                    # aggregate geographically to the scale of the flowbyactivty source, if necessary
-                    from_scale = attr['allocation_from_scale']
-                    to_scale = v['geoscale_to_use']
-                    # if allocation df is less aggregated than FBA df, aggregate allocation df to target scale
-                    if fips_number_key[from_scale] > fips_number_key[to_scale]:
-                        fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale,
-                                                         fba_default_grouping_fields)
-                    # else, if fba is more aggregated than allocation table, use fba as both to and from scale
-                    else:
-                        fba_allocation = filter_by_geoscale(fba_allocation, from_scale)
 
                     # assign sector to allocation dataset
                     log.info("Adding sectors to " + attr['allocation_source'])
