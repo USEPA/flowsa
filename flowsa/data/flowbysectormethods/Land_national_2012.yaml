@@ -183,7 +183,7 @@ source_names:
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national
         allocation_helper: 'no'
       activity_set_2: # hardrock leases
         allocation_method: proportional
