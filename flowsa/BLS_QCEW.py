@@ -140,9 +140,6 @@ def replace_missing_2_digit_sector_values(df):
     """
     from flowsa.flowbyfunctions import aggregator, fba_default_grouping_fields
 
-    # drop '31-33' and sum to create individual 31, 32, 33
-    df = df[df['ActivityProducedBy'] != '31-33']
-
     # check for 2 digit 0 values
     df_missing = df[(df['ActivityProducedBy'].apply(lambda x: len(x) == 2)) & (df['FlowAmount'] == 0)]
     # create list of location/activityproduced by combos
