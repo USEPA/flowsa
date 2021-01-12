@@ -536,17 +536,10 @@ def allocation_helper(df_w_sector, attr, method, v):
     helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
                                                  datasource=attr['helper_source'],
                                                  years=[attr['helper_source_year']])
-    if 'clean_helper_fba' in attr:
-        log.info("Cleaning " + attr['helper_source'] + ' FBA')
-        # tmp hard coded - need to generalize
-        if attr['helper_source'] == 'BLS_QCEW':
-            helper_allocation = clean_bls_qcew_fba(helper_allocation, attr=attr)
-            # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
+
     # clean df
     helper_allocation = clean_df(helper_allocation, flow_by_activity_fields, fba_fill_na_dict)
     helper_allocation = harmonize_units(helper_allocation)
-    # drop rows with flowamount = 0
-    helper_allocation = helper_allocation[helper_allocation['FlowAmount'] != 0]
 
     # agg data if necessary or filter
     # determine to scale
@@ -558,6 +551,16 @@ def allocation_helper(df_w_sector, attr, method, v):
                                             fba_default_grouping_fields)
     else:
         helper_allocation = filter_by_geoscale(helper_allocation, attr['helper_from_scale'])
+
+    if 'clean_helper_fba' in attr:
+        log.info("Cleaning " + attr['helper_source'] + ' FBA')
+        # tmp hard coded - need to generalize
+        if attr['helper_source'] == 'BLS_QCEW':
+            helper_allocation = clean_bls_qcew_fba(helper_allocation, attr=attr)
+            # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
+
+    # drop rows with flowamount = 0
+    helper_allocation = helper_allocation[helper_allocation['FlowAmount'] != 0]
 
     # assign naics to allocation dataset
     helper_allocation = add_sectors_to_flowbyactivity(helper_allocation,
@@ -949,38 +952,44 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
     :return:
     """
 
-    # determine 'activity_from_scale' for use in df geoscale subset, by activity
-    modified_from_scale = return_activity_from_scale(df, activity_from_scale)
-    # add 'activity_from_scale' column to df
-    df2 = pd.merge(df, modified_from_scale)
+    # method of subset dependent on LocationSystem
+    if df['LocationSystem'].str.contains('FIPS').all():
+        # determine 'activity_from_scale' for use in df geoscale subset, by activity
+        modified_from_scale = return_activity_from_scale(df, activity_from_scale)
+        # add 'activity_from_scale' column to df
+        df2 = pd.merge(df, modified_from_scale)
 
-    # list of unique 'from' geoscales
-    unique_geoscales = modified_from_scale['activity_from_scale'].drop_duplicates().values.tolist()
+        # list of unique 'from' geoscales
+        unique_geoscales = modified_from_scale['activity_from_scale'].drop_duplicates().values.tolist()
 
-    # to scale
-    if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
-        to_scale = activity_to_scale
-    else:
-        to_scale = activity_from_scale
-
-    df_subset_list = []
-    # subset df based on activity 'from' scale
-    for i in unique_geoscales:
-        df3 = df2[df2['activity_from_scale'] == i]
-        # if desired geoscale doesn't exist, aggregate existing data
-        # if df is less aggregated than allocation df, aggregate fba activity to allocation geoscale
-        if fips_number_key[i] > fips_number_key[to_scale]:
-            log.info("Aggregating subset from " + i + " to " + to_scale)
-            df_sub = agg_by_geoscale(df3, i, to_scale, fba_default_grouping_fields)
-        # else filter relevant rows
+        # to scale
+        if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
+            to_scale = activity_to_scale
         else:
-            log.info("Subsetting " + i + " data")
-            df_sub = filter_by_geoscale(df3, i)
-        df_subset_list.append(df_sub)
-    df_subset = pd.concat(df_subset_list)
+            to_scale = activity_from_scale
 
-    # only keep cols associated with FBA
-    df_subset = clean_df(df_subset, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+        df_subset_list = []
+        # subset df based on activity 'from' scale
+        for i in unique_geoscales:
+            df3 = df2[df2['activity_from_scale'] == i]
+            # if desired geoscale doesn't exist, aggregate existing data
+            # if df is less aggregated than allocation df, aggregate fba activity to allocation geoscale
+            if fips_number_key[i] > fips_number_key[to_scale]:
+                log.info("Aggregating subset from " + i + " to " + to_scale)
+                df_sub = agg_by_geoscale(df3, i, to_scale, fba_default_grouping_fields)
+            # else filter relevant rows
+            else:
+                log.info("Subsetting " + i + " data")
+                df_sub = filter_by_geoscale(df3, i)
+            df_subset_list.append(df_sub)
+        df_subset = pd.concat(df_subset_list)
+
+        # only keep cols associated with FBA
+        df_subset = clean_df(df_subset, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+
+    # right now, the only other location system is for Statistics Canada data
+    else:
+        df_subset = df.copy()
 
     return df_subset
 
