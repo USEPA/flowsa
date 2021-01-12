@@ -91,16 +91,16 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     from flowsa.BLS_QCEW import clean_bls_qcew_fba
 
     bls = flowsa.getFlowByActivity(flowclass=['Employment'], datasource='BLS_QCEW', years=[2002])
+
+    bls = filter_by_geoscale(bls, 'national')
+
     # clean df
     bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
     bls = harmonize_units(bls)
     bls = clean_bls_qcew_fba(bls, attr=attr)
 
-    # bls_agg = agg_by_geoscale(bls, 'state', 'national', fba_default_grouping_fields)
-    bls_agg = filter_by_geoscale(bls, 'national')
-
     # assign naics to allocation dataset
-    bls_wsec = add_sectors_to_flowbyactivity(bls_agg, sectorsourcename=method['target_sector_source'])
+    bls_wsec = add_sectors_to_flowbyactivity(bls, sectorsourcename=method['target_sector_source'])
     # drop rows where sector = None ( does not occur with mining)
     bls_wsec = bls_wsec[~bls_wsec['SectorProducedBy'].isnull()]
     bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector',
