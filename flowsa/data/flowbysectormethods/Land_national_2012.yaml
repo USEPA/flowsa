@@ -170,11 +170,11 @@ source_names:
   "BLM_PLS": # used for mining data
     data_format: 'FBA'
     class: Land
-    geoscale_to_use: state # national?
+    geoscale_to_use: national
     year: 2012
-    clean_fba_df_fxn: None #usgs_fba_data_cleanup
-    clean_fba_w_sec_df_fxn: None #usgs_fba_w_sectors_data_cleanup
-    activity_set_file: 'BLM_PLS_asets.csv'
+    clean_fba_df_fxn: None
+    clean_fba_w_sec_df_fxn: None
+    activity_set_file: 'BLM_PLS_2012_asets.csv'
     activity_sets:
       activity_set_1: # all blm pls activities other than hardrock
         allocation_method: direct
