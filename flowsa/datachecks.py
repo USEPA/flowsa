@@ -487,7 +487,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
                   activity_set + ' in output folder')
         # output data at all sector lengths
         df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
-                                    "_FBA_total_to_FBS_total_FlowAmount_comparision_" + activity_set + ".csv", index=False)
+                        "_FBA_total_to_FBS_total_FlowAmount_comparison_" + activity_set + ".csv", index=False)
 
     except:
         log.info('Error occured when comparing total FlowAmounts for FlowByActivity and FlowBySector')
