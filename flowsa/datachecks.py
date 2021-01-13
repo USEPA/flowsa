@@ -80,10 +80,10 @@ def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
 
     if len(df) == 0:
         log.info(
-            "No flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
+            "No flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale")
         exists = "No"
     else:
-        log.info("Flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
+        log.info("Flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale")
         exists = "Yes"
 
     return exists
@@ -105,11 +105,11 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
         fips = create_geoscale_list(df, 'state')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            log.info("No flows found for " + activityname + "  at the state scale.")
+            log.info("No flows found for " + activityname + "  at the state scale")
             fips = create_geoscale_list(df, 'county')
             df = df[df['Location'].isin(fips)]
             if len(df) == 0:
-                log.info("No flows found for " + activityname + "  at the county scale.")
+                log.info("No flows found for " + activityname + "  at the county scale")
             else:
                 log.info("Flowbyactivity data exists for " + activityname + " at the county level")
                 new_geoscale_to_use = 'county'
@@ -124,7 +124,7 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
         fips = create_geoscale_list(df, 'county')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            log.info("No flows found for " + activityname + "  at the county scale.")
+            log.info("No flows found for " + activityname + "  at the county scale")
         else:
             log.info("Flowbyactivity data exists for " + activityname + " at the county level")
             new_geoscale_to_use = 'county'
