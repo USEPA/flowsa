@@ -961,6 +961,8 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
 
         # list of unique 'from' geoscales
         unique_geoscales = modified_from_scale['activity_from_scale'].drop_duplicates().values.tolist()
+        if len(unique_geoscales) > 1:
+            log.info('Dataframe has a mix of geographic levels: ' + ', '.join(unique_geoscales))
 
         # to scale
         if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
@@ -982,7 +984,7 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
                 log.info("Subsetting " + i + " data")
                 df_sub = filter_by_geoscale(df3, i)
             df_subset_list.append(df_sub)
-        df_subset = pd.concat(df_subset_list)
+        df_subset = pd.concat(df_subset_list, ignore_index=True)
 
         # only keep cols associated with FBA
         df_subset = clean_df(df_subset, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
