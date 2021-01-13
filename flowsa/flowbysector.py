@@ -401,7 +401,7 @@ def main(method_name):
                 fbs_sector_subset = fbs_sector_subset.drop(['ActivityProducedBy', 'ActivityConsumedBy'],
                                                            axis=1, errors='ignore')
 
-                # save comparision of FBA total to FBS total for an activity set
+                # save comparison of FBA total to FBS total for an activity set
                 compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
                                                        method_name, attr, method, mapping_files)
 

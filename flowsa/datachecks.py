@@ -392,11 +392,11 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
              ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.01')
 
     # save csv to output folder
-    log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
+    log.info('Save the comparison of FlowByActivity load to FlowBySector ratios for ' +
               activity_set + ' in output folder')
     # output data at all sector lengths
     df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
-                                "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
+                                "_FBA_load_to_FBS_comparison_" + activity_set + ".csv", index=False)
 
     return None
 
@@ -464,7 +464,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
         # list of contexts
         context_list = df_merge['Context'].to_list()
 
-        # loop through the contexts and print results of comparision
+        # loop through the contexts and print results of comparison
         for i in context_list:
             df_merge_subset = df_merge[df_merge['Context'] == i].reset_index(drop=True)
             diff_per = df_merge_subset['Percent_difference'][0]
@@ -483,7 +483,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
                          ' ' + i + ' is ' + str(abs(diff_per)) + '% more than the total FlowByActivity FlowAmount')
 
         # save csv to output folder
-        log.info('Save the comparision of FlowByActivity load to FlowBySector total FlowAmounts for ' +
+        log.info('Save the comparison of FlowByActivity load to FlowBySector total FlowAmounts for ' +
                   activity_set + ' in output folder')
         # output data at all sector lengths
         df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
