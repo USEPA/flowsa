@@ -13,7 +13,7 @@ source_names:
     year: 2012
     clean_fba_df_fxn: cbecs_land_fba_cleanup
     clean_fba_w_sec_df_fxn: None
-    activity_set_file: 'EIA_CBECS_Land_asets.csv'
+    activity_set_file: 'EIA_CBECS_Land_2012_asets.csv'
     activity_sets:
       activity_set_1: # all activities in eia cbecs land crosswalk
         allocation_method: proportional
@@ -52,7 +52,7 @@ source_names:
   "USDA_ERS_MLU":
     data_format: 'FBA'
     class: Land
-    geoscale_to_use: state
+    geoscale_to_use: national # state
     year: 2012
     clean_fba_df_fxn: None #usgs_fba_data_cleanup
     clean_fba_w_sec_df_fxn: None #usgs_fba_w_sectors_data_cleanup
@@ -79,7 +79,7 @@ source_names:
           - "AREA HARVESTED"
           - "AREA"
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national #state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'no'
@@ -94,7 +94,7 @@ source_names:
           - "AREA HARVESTED"    # todo: modify allocation flows to use unharvested data
           - "AREA"
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national #state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'no'
@@ -110,7 +110,7 @@ source_names:
         allocation_flow:
           - "FARM OPERATIONS"
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national #state
         allocation_helper: 'no'
       activity_set_4:
         names:
@@ -121,7 +121,7 @@ source_names:
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national #state
         allocation_helper: 'no'
       activity_set_5:
         names:
@@ -132,7 +132,7 @@ source_names:
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national #state
         allocation_helper: 'no'
       activity_set_6:
         names:
@@ -143,7 +143,7 @@ source_names:
         allocation_source_year: None
         allocation_flow: None
         allocation_compartment: None
-        allocation_from_scale: state
+        allocation_from_scale: national #state
         allocation_helper: 'no'
       activity_set_7:
         names:
