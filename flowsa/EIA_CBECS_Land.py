@@ -162,15 +162,20 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
     df[column_to_standardize] = df[column_to_standardize].replace({'Public Order/ Safety': 'Public order and safety',
                                                                    'Retail (mall)': 'Enclosed and strip malls',
                                                                    'Inpatient': 'Health care In-Patient',
-                                                                   'Outpatient': 'Health care In-Patient',
+                                                                   'Outpatient': 'Health care Out-Patient',
                                                                    'Inpatient Health Care': 'Health care In-Patient',
-                                                                   'Outpatient Health Care': 'Health care In-Patient',
+                                                                   'Outpatient Health Care': 'Health care Out-Patient',
                                                                    'Retail (non - mall)': 'Retail (other than mall)',
                                                                    'Warehouse/ Storage': 'Warehouse and storage'
                                                                    })
 
     # first modify capitalization
     df[column_to_standardize] = df.apply(lambda x: clean_str_and_capitalize(x[column_to_standardize]), axis=1)
+
+    # exception to capitalization rule is health care
+    df[column_to_standardize] = df[column_to_standardize].replace({'Health care in-patient': 'Health care In-Patient',
+                                                                   'Health care out-patient': 'Health care Out-Patient'
+                                                                   })
 
     return df
 

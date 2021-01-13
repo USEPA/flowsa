@@ -26,13 +26,13 @@ EIA_CBECS_Land,Food service,NAICS_2012_Code,712,I
 EIA_CBECS_Land,Food service,NAICS_2012_Code,928,I
 EIA_CBECS_Land,Food service,NAICS_2012_Code,722,I
 EIA_CBECS_Land,Food service,NAICS_2012_Code,721,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,621,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,622,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,621,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,624,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,928,I
+EIA_CBECS_Land,Health care In-Patient,NAICS_2012_Code,622,I
+EIA_CBECS_Land,Health care In-Patient,NAICS_2012_Code,621,I
+EIA_CBECS_Land,Health care In-Patient,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,621,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,624,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,928,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,624,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,611,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,623,I
