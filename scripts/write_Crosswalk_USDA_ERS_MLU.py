@@ -58,7 +58,7 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '485']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', 'F010']],  # personal consumption expenditures
+    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', 'F01000']],  # personal consumption expenditures
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', 'S00201']],    # state/local gov't passenger transit
@@ -83,7 +83,7 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '485']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', 'F010']],  # personal consumption expenditures
+    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', 'F01000']],  # personal consumption expenditures
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '488119']],    # airports
@@ -98,7 +98,7 @@ def assign_naics(df):
 
     # Unclassified uses such as marshes, swamps, bare rock, deserts, tundra plus other uses not estimated, /
     # classified, or inventoried.
-    df.loc[df['Activity'] == 'Other land', 'Sector'] = 'F010' # only want partial value for residential rural land
+    df.loc[df['Activity'] == 'Other land', 'Sector'] = 'F01000' # only want partial value for residential rural land
 
     # categories not included to prevent double counting
 
