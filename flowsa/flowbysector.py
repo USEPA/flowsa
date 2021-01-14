@@ -88,8 +88,14 @@ def load_source_dataframe(k, v):
     :return:
     """
     if v['data_format'] == 'FBA':
+        # if yaml specifies a geoscale to load, use parameter to filter dataframe
+        if 'source_fba_load_scale' in v:
+            geo_level = v['source_fba_load_scale']
+        else:
+            geo_level = 'all'
         log.info("Retrieving flowbyactivity for datasource " + k + " in year " + str(v['year']))
-        flows_df = flowsa.getFlowByActivity(flowclass=[v['class']], years=[v['year']], datasource=k)
+        flows_df = flowsa.getFlowByActivity(flowclass=[v['class']], years=[v['year']],
+                                            datasource=k, geographic_level=geo_level)
     elif v['data_format'] == 'FBS':
         log.info("Retrieving flowbysector for datasource " + k)
         flows_df = flowsa.getFlowBySector(k)
