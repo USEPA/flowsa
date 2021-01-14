@@ -24,6 +24,7 @@ source_names:
           - "Number of employees"
         allocation_compartment: None
         allocation_from_scale: national
+        allocation_fba_load_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
         allocation_helper: 'no'
@@ -46,6 +47,7 @@ source_names:
           - "Number of employees"
         allocation_compartment: None
         allocation_from_scale: national
+        allocation_fba_load_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
         allocation_helper: 'no'
@@ -194,6 +196,7 @@ source_names:
           - "Number of employees"
         allocation_compartment: None
         allocation_from_scale: national
+        allocation_fba_load_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
         allocation_helper: 'no'
