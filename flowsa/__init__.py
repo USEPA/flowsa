@@ -8,19 +8,22 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 
 import pandas as pd
 from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
-from flowsa.flowbyfunctions import collapse_fbs_sectors
+from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 
 
-def getFlowByActivity(flowclass, years, datasource):
+def getFlowByActivity(flowclass, years, datasource, geographic_level='all'):
     """
     Retrieves stored data in the FlowByActivity format
     :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or
      ['Land', 'Other']
     :param year: list, a list of years [2015], or [2010,2011,2012]
     :param datasource: str, the code of the datasource.
+    :param geographic_level: default set to 'all', which will load all geographic scales in the FlowByActivity, can \
+    specify 'national', 'state', 'county'
     :return: a pandas DataFrame in FlowByActivity format
     """
+
     fbas = pd.DataFrame()
     for y in years:
         # first try reading parquet from your local repo
@@ -40,6 +43,11 @@ def getFlowByActivity(flowclass, years, datasource):
             except FileNotFoundError:
                 log.error("No parquet file found for datasource " + datasource + "and year " + str(
                     y) + " in flowsa or Data Commons")
+
+    # if geographic level specified, only load rows in geo level
+    if geographic_level != 'all':
+        fbas = filter_by_geoscale(fbas, geographic_level)
+
     return fbas
 
 
