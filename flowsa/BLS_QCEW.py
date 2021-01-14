@@ -20,55 +20,46 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def BLS_QCEW_URL_helper(build_url, config, args):
-    urls = []
-    FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
-    us = pd.Series(['US'])
-    FIPS_2 = FIPS_2.append(us, ignore_index=True)
 
-    # the url for 2013 earlier is different than the base url (and is a zip file)
-    if args["year"] < '2014':
-        url = build_url
-        url = url.replace('api', 'files')
-        url = url.replace('a/area/__areaFIPS__.csv', 'csv/' + args["year"] + '_annual_by_area.zip')
-        urls.append(url)
-    else:
-        for c in FIPS_2:
-            url = build_url
-            url = url.replace('__areaFIPS__', c + '000')
-            urls.append(url)
+    urls = []
+
+    url = build_url
+    url = url.replace('__year__', str(args['year']))
+    urls.append(url)
+
     return urls
 
 
 def bls_qcew_call(url, qcew_response, args):
-    if args["year"] < '2014':
-        # initiate dataframes list
-        df_list = []
-        # unzip folder that contains bls data in ~4000 csv files
-        with zipfile.ZipFile(io.BytesIO(qcew_response.content), "r") as f:
-            # read in file names
-            for name in f.namelist():
-                # Only want state info
-                if "Statewide" in name or "US000" in name:
-                    data = f.open(name)
-                    df_state = pd.read_csv(data, header=0)
-                    df_list.append(df_state)
-                    # concat data into single dataframe
-                    df = pd.concat(df_list, sort=False)
-                    df = df[['area_fips', 'own_code', 'industry_code', 'year',
-                             'annual_avg_estabs_count', 'annual_avg_emplvl', 'total_annual_wages']]
-                    # change column name to match format for 2014+
-                    df = df.rename(columns={'annual_avg_estabs_count': 'annual_avg_estabs'})
-            return df
-    else:
-        df = pd.read_csv(io.StringIO(qcew_response.content.decode('utf-8')))
-        df = df[['area_fips', 'own_code', 'industry_code', 'year',
-                 'annual_avg_estabs', 'annual_avg_emplvl', 'total_annual_wages']]
+
+    # initiate dataframes list
+    df_list = []
+    # unzip folder that contains bls data in ~4000 csv files
+    with zipfile.ZipFile(io.BytesIO(qcew_response.content), "r") as f:
+        # read in file names
+        for name in f.namelist():
+            # Only want state info
+            if "singlefile" in name:
+                data = f.open(name)
+                df_state = pd.read_csv(data, header=0, dtype=str)
+                df_list.append(df_state)
+                # concat data into single dataframe
+                df = pd.concat(df_list, sort=False)
+                df = df[['area_fips', 'own_code', 'industry_code', 'year',
+                         'annual_avg_estabs', 'annual_avg_emplvl', 'total_annual_wages']]
         return df
 
 
 def bls_qcew_parse(dataframe_list, args):
     # Concat dataframes
     df = pd.concat(dataframe_list, sort=False)
+    # drop rows don't need
+    df = df[~df['area_fips'].str.contains('C|USCMS|USMSA|USNMS')].reset_index(drop=True)
+    df.loc[df['area_fips'] == 'US000', 'area_fips'] = US_FIPS
+    # set datatypes
+    float_cols = [col for col in df.columns if col not in ['area_fips', 'industry_code', 'year']]
+    for col in float_cols:
+        df[col] = df[col].astype('float')
     # Keep owner_code = 1, 2, 3, 5
     df = df[df.own_code.isin([1, 2, 3, 5])]
     # Aggregate annual_avg_estabs and annual_avg_emplvl by area_fips, industry_code, year, flag
@@ -79,11 +70,10 @@ def bls_qcew_parse(dataframe_list, args):
     df = df.rename(columns={'area_fips': 'Location',
                             'industry_code': 'ActivityProducedBy',
                             'year': 'Year',
-                            'annual_avg_estabs': 'Number of establishments',
                             'annual_avg_emplvl': 'Number of employees',
+                            'annual_avg_estabs': 'Number of establishments',
                             'total_annual_wages': 'Annual payroll'})
     # Reformat FIPs to 5-digit
-    df.loc[df['Location'] == 'US000', 'Location'] = US_FIPS
     df['Location'] = df['Location'].apply('{:0>5}'.format)
     # use "melt" fxn to convert colummns into rows
     df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year"],
@@ -163,28 +153,30 @@ def replace_missing_2_digit_sector_values(df):
         c2 = df_subset['ActivityProducedBy'].apply(lambda x: x[0:2] == r)
         # subset data
         new_sectors_list.append(df_subset[c1 & c2])
-    new_sectors = pd.concat(new_sectors_list, sort=False, ignore_index=True)
+    if len(new_sectors_list) != 0:
+        new_sectors = pd.concat(new_sectors_list, sort=False, ignore_index=True)
 
-    # drop last digit of naics and aggregate
-    new_sectors.loc[:, 'ActivityProducedBy'] = new_sectors['ActivityProducedBy'].apply(lambda x: x[0:2])
-    new_sectors = aggregator(new_sectors, fba_default_grouping_fields)
+        # drop last digit of naics and aggregate
+        new_sectors.loc[:, 'ActivityProducedBy'] = new_sectors['ActivityProducedBy'].apply(lambda x: x[0:2])
+        new_sectors = aggregator(new_sectors, fba_default_grouping_fields)
 
-    # drop the old location/activity columns in the bls df and add new sector values
-    new_sectors_list = new_sectors[['Location', 'ActivityProducedBy']].drop_duplicates().values.tolist()
+        # drop the old location/activity columns in the bls df and add new sector values
+        new_sectors_list = new_sectors[['Location', 'ActivityProducedBy']].drop_duplicates().values.tolist()
 
-    # rows to drop
-    rows_list = []
-    for q, r in new_sectors_list:
-        c1 = df['Location'] == q
-        c2 = df['ActivityProducedBy'].apply(lambda x: x == r)
-        # subset data
-        rows_list.append(df[(c1 & c2)])
-    rows_to_drop = pd.concat(rows_list, ignore_index=True)
-
-    # drop rows from df
-    modified_df = pd.merge(df, rows_to_drop, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
-    # add new rows
-    modified_df = modified_df.append(new_sectors, sort=False)
+        # rows to drop
+        rows_list = []
+        for q, r in new_sectors_list:
+            c1 = df['Location'] == q
+            c2 = df['ActivityProducedBy'].apply(lambda x: x == r)
+            # subset data
+            rows_list.append(df[(c1 & c2)])
+        rows_to_drop = pd.concat(rows_list, ignore_index=True)
+        # drop rows from df
+        modified_df = pd.merge(df, rows_to_drop, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
+        # add new rows
+        modified_df = modified_df.append(new_sectors, sort=False)
+    else:
+        modified_df = df.copy()
 
     return modified_df
 

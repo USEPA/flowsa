@@ -1,56 +1,59 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
-BLM_PLS,"Class III Reinstatement Leases, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Competitive General Services Administration (GSA) Oil and Gas Leases, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Competitive Protective Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Competitive Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Exchange Leases, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Noncompetitive Pre-Reform Act Future Interest Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Noncompetitive Reform Act Future Interest Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Noncompetitive Reform Act Future Interest Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Noncompetitive Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Noncompetitive Reform Act Leases, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Oil Shale Leases, Oil Shale R, D&D Leases",NAICS_2012_Code,21111,
-BLM_PLS,Oil Shale RD&D Leases,NAICS_2012_Code,21111,
-BLM_PLS,"Oil and Gas Pre-Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Oil and Gas Pre-Reform Act Leases, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Oil and Gas Pre-Reform Act Over-the-Counter Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Oil and Gas Pre-Reform Act Over-the-Counter Leases, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Oil and Gas Special Act - Federal Farm Mortgage Corporation Act of 1934, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Oil and Gas Special Act - Rights-of-Way of 1930, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Oil and Gas Special Act - Texas Relinquishment Act of 1919, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Pre-Reform Act Simultaneous Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Private Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,
-BLM_PLS,"Renewal Leases, Public Domain",NAICS_2012_Code,21111,
-BLM_PLS,"Competitive National Petroleum Reserve-Alaska Leases, Public Domain",NAICS_2012_Code,211111,
-BLM_PLS,"Competitive Naval Oil Shale Reserve Leases, Public Domain",NAICS_2012_Code,211111,
-BLM_PLS,Combined Hydrocarbon Leases,NAICS_2012_Code,211112,
-BLM_PLS,"Coal Licenses, Exploration Licenses",NAICS_2012_Code,21211,
-BLM_PLS,"Coal Licenses, Licenses To Mine",NAICS_2012_Code,21211,
-BLM_PLS,"Federal Coal Leases, Competitive Nonregional Lease-by-Application Leases",NAICS_2012_Code,21211,
-BLM_PLS,"Federal Coal Leases, Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases",NAICS_2012_Code,21211,
-BLM_PLS,"Federal Coal Leases, Competitive Regional Emergency/Bypass Leases",NAICS_2012_Code,21211,
-BLM_PLS,"Federal Coal Leases, Competitive Regional Leases",NAICS_2012_Code,21211,
-BLM_PLS,"Federal Coal Leases, Exchange Leases",NAICS_2012_Code,21211,
-BLM_PLS,"Federal Coal Leases, Preference Right Leases",NAICS_2012_Code,21211,
-BLM_PLS,Logical Mining Units,NAICS_2012_Code,21211,
-BLM_PLS,"Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases",NAICS_2012_Code,2122,
-BLM_PLS,"Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases",NAICS_2012_Code,2123,
-BLM_PLS,"Potassium Leases, Potassium Competitive Leases",NAICS_2012_Code,212391,
-BLM_PLS,"Potassium Leases, Potassium Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212391,
-BLM_PLS,"Potassium Leases, Potassium Preference Right Leases",NAICS_2012_Code,212391,
-BLM_PLS,"Sodium Leases, Sodium Competitive Leases",NAICS_2012_Code,212391,
-BLM_PLS,"Sodium Leases, Sodium Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212391,
-BLM_PLS,"Sodium Leases, Sodium Preference Right Leases",NAICS_2012_Code,212391,
-BLM_PLS,Sodium Use Permit,NAICS_2012_Code,212391,
-BLM_PLS,"Phosphate Leases, Phosphate Competitive Leases",NAICS_2012_Code,212392,
-BLM_PLS,"Phosphate Leases, Phosphate Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212392,
-BLM_PLS,"Phosphate Leases, Phosphate Preference Right Leases",NAICS_2012_Code,212392,
-BLM_PLS,Phosphate Use Permits,NAICS_2012_Code,212392,
-BLM_PLS,Asphalt Competitive Leases,NAICS_2012_Code,212399,
-BLM_PLS,"Gilsonite Leases, Gilsonite Competitive Leases",NAICS_2012_Code,212399,
-BLM_PLS,"Gilsonite Leases, Gilsonite Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212399,
-BLM_PLS,"Gilsonite Leases, Gilsonite Preference Right Leases",NAICS_2012_Code,212399,
-BLM_PLS,"EPAct Competitive Geothermal Leases, Public Domain and Acquired Lands",NAICS_2012_Code,221116,
-BLM_PLS,"Geothermal Leases, Public Domain and Acquired Lands",NAICS_2012_Code,221116,
-BLM_PLS,"Pre-EPAct Competitive Geothermal Leases, Public Domain and Acquired Lands",NAICS_2012_Code,221116,
+BLM_PLS,"Class III Reinstatement Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Competitive General Services Administration (GSA) Oil and Gas Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Competitive Pre-Reform Act Future Interest Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Competitive Protective Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Competitive Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Competitive Reform Act Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Exchange Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Noncompetitive Pre-Reform Act Future Interest Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Noncompetitive Reform Act Future Interest Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Noncompetitive Reform Act Future Interest Leases, Public Domain and Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Noncompetitive Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Noncompetitive Reform Act Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Oil Shale Leases, Oil Shale R, D&D Leases",NAICS_2012_Code,21111,I
+BLM_PLS,Oil Shale RD&D Leases,NAICS_2012_Code,21111,I
+BLM_PLS,"Oil and Gas Pre-Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Oil and Gas Pre-Reform Act Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Oil and Gas Pre-Reform Act Over-the-Counter Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Oil and Gas Pre-Reform Act Over-the-Counter Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Oil and Gas Special Act - Federal Farm Mortgage Corporation Act of 1934, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Oil and Gas Special Act - Rights-of-Way of 1930, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Oil and Gas Special Act - Texas Relinquishment Act of 1919, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Pre-Reform Act Simultaneous Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Pre-Reform Act Simultaneous Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Private Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Reform Act Leases, Acquired Lands",NAICS_2012_Code,21111,I
+BLM_PLS,"Renewal Leases, Public Domain",NAICS_2012_Code,21111,I
+BLM_PLS,"Competitive National Petroleum Reserve-Alaska Leases, Public Domain",NAICS_2012_Code,211111,I
+BLM_PLS,"Competitive Naval Oil Shale Reserve Leases, Public Domain",NAICS_2012_Code,211111,I
+BLM_PLS,Combined Hydrocarbon Leases,NAICS_2012_Code,211112,I
+BLM_PLS,"Coal Licenses, Exploration Licenses",NAICS_2012_Code,21211,I
+BLM_PLS,"Coal Licenses, Licenses To Mine",NAICS_2012_Code,21211,I
+BLM_PLS,"Federal Coal Leases, Competitive Nonregional Lease-by-Application Leases",NAICS_2012_Code,21211,I
+BLM_PLS,"Federal Coal Leases, Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases",NAICS_2012_Code,21211,I
+BLM_PLS,"Federal Coal Leases, Competitive Regional Emergency/Bypass Leases",NAICS_2012_Code,21211,I
+BLM_PLS,"Federal Coal Leases, Competitive Regional Leases",NAICS_2012_Code,21211,I
+BLM_PLS,"Federal Coal Leases, Exchange Leases",NAICS_2012_Code,21211,I
+BLM_PLS,"Federal Coal Leases, Preference Right Leases",NAICS_2012_Code,21211,I
+BLM_PLS,Logical Mining Units,NAICS_2012_Code,21211,I
+BLM_PLS,"Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases",NAICS_2012_Code,2122,I
+BLM_PLS,"Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases",NAICS_2012_Code,2123,I
+BLM_PLS,"Potassium Leases, Potassium Competitive Leases",NAICS_2012_Code,212391,I
+BLM_PLS,"Potassium Leases, Potassium Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212391,I
+BLM_PLS,"Potassium Leases, Potassium Preference Right Leases",NAICS_2012_Code,212391,I
+BLM_PLS,"Sodium Leases, Sodium Competitive Leases",NAICS_2012_Code,212391,I
+BLM_PLS,"Sodium Leases, Sodium Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212391,I
+BLM_PLS,"Sodium Leases, Sodium Preference Right Leases",NAICS_2012_Code,212391,I
+BLM_PLS,Sodium Use Permit,NAICS_2012_Code,212391,I
+BLM_PLS,"Phosphate Leases, Phosphate Competitive Leases",NAICS_2012_Code,212392,I
+BLM_PLS,"Phosphate Leases, Phosphate Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212392,I
+BLM_PLS,"Phosphate Leases, Phosphate Preference Right Leases",NAICS_2012_Code,212392,I
+BLM_PLS,Phosphate Use Permits,NAICS_2012_Code,212392,I
+BLM_PLS,Asphalt Competitive Leases,NAICS_2012_Code,212399,I
+BLM_PLS,"Gilsonite Leases, Gilsonite Competitive Leases",NAICS_2012_Code,212399,I
+BLM_PLS,"Gilsonite Leases, Gilsonite Fringe Acreage Noncompetitive Leases",NAICS_2012_Code,212399,I
+BLM_PLS,"Gilsonite Leases, Gilsonite Preference Right Leases",NAICS_2012_Code,212399,I
+BLM_PLS,"EPAct Competitive Geothermal Leases, Public Domain and Acquired Lands",NAICS_2012_Code,221116,I
+BLM_PLS,"Geothermal Leases, Public Domain and Acquired Lands",NAICS_2012_Code,221116,I
+BLM_PLS,"Pre-EPAct Competitive Geothermal Leases, Public Domain and Acquired Lands",NAICS_2012_Code,221116,I

@@ -26,13 +26,16 @@ def assign_naics(df):
     # Cropland harvested, crop failure, and cultivated summer fallow.
     df.loc[df['Activity'] == 'Cropland used for crops', 'Sector'] = '111'
 
+    # Land completely idled and lands seeded to soil improvement crops but not harvested or pastured.
+    df.loc[df['Activity'] == 'Cropland idled', 'Sector'] = '111'
+
     # Pasture considered to be in long-term crop rotation. Includes some land used for pasture that could have been /
     # cropped without additional improvement.
     df.loc[df['Activity'] == 'Cropland used for pasture', 'Sector'] = '112'
 
     #  Farmsteads, farm roads, and lanes plus other miscellaneous farmland. (part of special uses of land)
-    # todo: determine naics associated with farmsteeads
-    df.loc[df['Activity'] == 'Farmsteads, roads, and miscellaneous farmland', 'Sector'] = ''
+    # will include value in 'unaccounted' land in us
+    # df.loc[df['Activity'] == 'Farmsteads, roads, and miscellaneous farmland', 'Sector'] = ''
 
     # Woodland grazed in farms plus estimates of forested grazing land not in farms.
     df.loc[df['Activity'] == 'Forest-use land grazed', 'Sector'] = '112'
@@ -68,8 +71,6 @@ def assign_naics(df):
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
 
-
-
     # Densely-populated areas with at least 50,000 people (urbanized areas) and densely-populated areas with /
     # 2,500 to 50,000 people (urban clusters).
     df.loc[df['Activity'] == 'Land in urban areas', 'Sector'] = '481'
@@ -95,6 +96,10 @@ def assign_naics(df):
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
                                 ), ignore_index=True, sort=True)
 
+    # Unclassified uses such as marshes, swamps, bare rock, deserts, tundra plus other uses not estimated, /
+    # classified, or inventoried.
+    df.loc[df['Activity'] == 'Other land', 'Sector'] = 'F010' # only want partial value for residential rural land
+
     # categories not included to prevent double counting
 
     # Forest-use land grazed and forest-use land not grazed.
@@ -104,19 +109,11 @@ def assign_naics(df):
     # special uses.
     # df.loc[df['Activity'] == 'All special uses of land', 'Sector'] = ''
 
-    # Land completely idled and lands seeded to soil improvement crops but not harvested or pastured.
-    # df.loc[df['Activity'] == 'Cropland idled', 'Sector'] = ''
-
     # The sum of cropland used for crops, cropland idled, and cropland used for pasture.
     # df.loc[df['Activity'] == 'Total cropland', 'Sector'] = '11'
 
     # The sum of cropland, pasture/range, forest-use land, special uses, urban area, and other land.
     # df.loc[df['Activity'] == 'Total land', 'Sector'] = ''
-
-    # Unclassified uses such as marshes, swamps, bare rock, deserts, tundra plus other uses not estimated, /
-    # classified, or inventoried.
-    # todo: determine how to incorporate other land
-    # df.loc[df['Activity'] == 'Other land', 'Sector'] = ''
 
     return df
 

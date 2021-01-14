@@ -28,6 +28,7 @@ def assign_naics(df):
 
     df.loc[df['Activity'] == 'Competitive Protective Leases, Public Domain and Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
     df.loc[df['Activity'] == 'Competitive Reform Act Leases, Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
+    df.loc[df['Activity'] == 'Competitive Reform Act Leases, Public Domain', 'Sector'] = '21111'  # Oil and Gas Extraction # todo: added 1/13 - check on results
 
     df.loc[df['Activity'] == 'EPAct Competitive Geothermal Leases, Public Domain and Acquired Lands', 'Sector'] = '221116'  # Power generation, geothermal
 
@@ -54,6 +55,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Logical Mining Units', 'Sector'] = '21211'  # Coal Mining
 
     df.loc[df['Activity'] == 'Noncompetitive Pre-Reform Act Future Interest Leases, Public Domain and Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
+    df.loc[df['Activity'] == 'Competitive Pre-Reform Act Future Interest Leases, Public Domain and Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction #todo: added 1/13 - check on output
     df.loc[df['Activity'] == 'Noncompetitive Reform Act Future Interest Leases, Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
     df.loc[df['Activity'] == 'Noncompetitive Reform Act Future Interest Leases, Public Domain and Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
     df.loc[df['Activity'] == 'Noncompetitive Reform Act Leases, Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
@@ -80,6 +82,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Pre-EPAct Competitive Geothermal Leases, Public Domain and Acquired Lands', 'Sector'] = '221116'  # Power generation, geothermal
 
     df.loc[df['Activity'] == 'Pre-Reform Act Simultaneous Leases, Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
+    df.loc[df['Activity'] == 'Pre-Reform Act Simultaneous Leases, Public Domain', 'Sector'] = '21111'  # Oil and Gas Extraction #todo: added 1/13 check if needed
     df.loc[df['Activity'] == 'Private Leases, Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
     df.loc[df['Activity'] == 'Reform Act Leases, Acquired Lands', 'Sector'] = '21111'  # Oil and Gas Extraction
     df.loc[df['Activity'] == 'Renewal Leases, Public Domain', 'Sector'] = '21111'  # Oil and Gas Extraction
@@ -97,7 +100,7 @@ def assign_naics(df):
 
 if __name__ == '__main__':
     # select years to pull unique activity names
-    years = ['2007', '2011']
+    years = ['2007', '2011', '2012']
     # assign flowclass
     flowcass = ['Land']
     # assign datasource
@@ -111,7 +114,7 @@ if __name__ == '__main__':
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
     df.dropna(subset=["Sector"], inplace=True)
     # assign sector type
-    df['SectorType'] = None
+    df['SectorType'] = "I"
     # sort df
     df = order_crosswalk(df)
     # save as csv

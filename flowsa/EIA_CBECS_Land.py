@@ -14,6 +14,7 @@ https://www.eia.gov/consumption/commercial/reports/2012/energyusage/index.php
 Last updated: Monday, August 17, 2020
 """
 
+
 def eia_cbecs_land_URL_helper(build_url, config, args):
     """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
@@ -97,6 +98,7 @@ def eia_cbecs_land_call(url, cbesc_response, args):
     df = pd.merge(df_rse, df_data)
     return df
 
+
 def eia_cbecs_land_parse(dataframe_list, args):
     """
 
@@ -126,10 +128,11 @@ def eia_cbecs_land_parse(dataframe_list, args):
             dataframes.loc[dataframes.Location == US_FIPS, "LocationSystem"] = "FIPS_2010"
             dataframes = dataframes.drop(columns=['Division', 'Name'])
         df_array.append(dataframes)
-    df = pd.concat(df_array, sort=False)
+    df = pd.concat(df_array, sort=False, ignore_index=True)
 
-    # standardize Activity names
-    df = standardize_eia_cbecs_land_activity_names(df, 'ActivityConsumedBy')
+    # trim whitespace and standardize Activity names
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
+    df = standardize_eia_cbecs_land_activity_names(df, column_to_standardize='ActivityConsumedBy')
 
     # replace withdrawn code
     df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
@@ -162,15 +165,21 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
     df[column_to_standardize] = df[column_to_standardize].replace({'Public Order/ Safety': 'Public order and safety',
                                                                    'Retail (mall)': 'Enclosed and strip malls',
                                                                    'Inpatient': 'Health care In-Patient',
-                                                                   'Outpatient': 'Health care In-Patient',
+                                                                   'Outpatient': 'Health care Out-Patient',
                                                                    'Inpatient Health Care': 'Health care In-Patient',
-                                                                   'Outpatient Health Care': 'Health care In-Patient',
+                                                                   'Outpatient Health Care': 'Health care Out-Patient',
                                                                    'Retail (non - mall)': 'Retail (other than mall)',
+                                                                   'Retail (non-mall)': 'Retail (other than mall)',
                                                                    'Warehouse/ Storage': 'Warehouse and storage'
                                                                    })
 
-    # first modify capitalization
+    # modify capitalization
     df[column_to_standardize] = df.apply(lambda x: clean_str_and_capitalize(x[column_to_standardize]), axis=1)
+
+    # exception to capitalization rule is health care
+    df[column_to_standardize] = df[column_to_standardize].replace({'Health care in-patient': 'Health care In-Patient',
+                                                                   'Health care out-patient': 'Health care Out-Patient'
+                                                                   })
 
     return df
 

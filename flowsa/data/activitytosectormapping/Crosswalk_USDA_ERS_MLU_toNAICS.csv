@@ -1,5 +1,5 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
-USDA_ERS_MLU,"Farmsteads, roads, and miscellaneous farmland",NAICS_2012_Code,,
+USDA_ERS_MLU,Cropland idled,NAICS_2012_Code,111,
 USDA_ERS_MLU,Cropland used for crops,NAICS_2012_Code,111,
 USDA_ERS_MLU,Cropland used for pasture,NAICS_2012_Code,112,
 USDA_ERS_MLU,Forest-use land grazed,NAICS_2012_Code,112,
@@ -19,5 +19,6 @@ USDA_ERS_MLU,Land in urban areas,NAICS_2012_Code,712190,
 USDA_ERS_MLU,Land in defense and industrial areas,NAICS_2012_Code,928110,
 USDA_ERS_MLU,Land in rural transportation facilities,NAICS_2012_Code,F010,
 USDA_ERS_MLU,Land in urban areas,NAICS_2012_Code,F010,
+USDA_ERS_MLU,Other land,NAICS_2012_Code,F010,
 USDA_ERS_MLU,Land in rural transportation facilities,NAICS_2012_Code,S00201,
 USDA_ERS_MLU,Land in urban areas,NAICS_2012_Code,S00201,

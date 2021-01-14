@@ -8,23 +8,28 @@ Write the csv called on in flowbysectormethods yaml files for land use related t
 Public Land Statistics
 """
 
+import flowsa
 import pandas as pd
 import numpy as np
 from flowsa.common import crosswalkpath, flowbysectoractivitysetspath
 
+as_year = '2012'
 
 if __name__ == '__main__':
-    # assign datasource
+
+    # define mecs land fba parameters
+    land_flowclass = ['Land']
+    land_years = [as_year]
     datasource = 'BLM_PLS'
 
     # Read BLM PLS crosswalk
-    df_import = pd.read_csv(crosswalkpath + "Crosswalk_" + datasource + "_toNAICS.csv")
+    df_import = flowsa.getFlowByActivity(land_flowclass, land_years, datasource)
 
-    # drop unused crosswalk columns
-    df = df_import[['Activity']].drop_duplicates().reset_index(drop=True)
+    # drop unused columns
+    df = df_import[['ActivityConsumedBy']].drop_duplicates().reset_index(drop=True)
 
     # rename columns
-    df = df.rename(columns={"Activity": "name"})
+    df = df.rename(columns={"ActivityConsumedBy": "name"})
 
     # assign column values
     # hardrock is only value in activity set 2
@@ -36,4 +41,4 @@ if __name__ == '__main__':
     df = df.sort_values(['activity_set', 'name']).reset_index(drop=True)
 
     # save df
-    df.to_csv(flowbysectoractivitysetspath + datasource + "_asets.csv", index=False)
+    df.to_csv(flowbysectoractivitysetspath + datasource + '_' + as_year + "_asets.csv", index=False)

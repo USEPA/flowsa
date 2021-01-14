@@ -47,9 +47,10 @@ from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_alloc
     mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs, mecs_land_clean_allocation_mapped_fba_w_sec
 from flowsa.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
-from flowsa.stewicombo_to_sector import stewicombo_to_sector, stewi_to_sector
+from flowsa.stewi import stewicombo_to_sector, stewi_to_sector
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
-from flowsa.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas, allocate_usda_ers_mlu_land_in_rural_transportation_areas
+from flowsa.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas, allocate_usda_ers_mlu_other_land,\
+    allocate_usda_ers_mlu_land_in_rural_transportation_areas
 from flowsa.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
 from flowsa.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_fba_w_sectors_data_cleanup
 
@@ -224,6 +225,13 @@ def main(method_name):
                     fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
                     fba_allocation = harmonize_units(fba_allocation)
 
+                    # check if allocation data exists at specified geoscale to use
+                    log.info("Checking if allocation data exists at the " + attr['allocation_from_scale'] + " level")
+                    check_if_data_exists_at_geoscale(fba_allocation, attr['allocation_from_scale'])
+
+                    # aggregate geographically to the scale of the flowbyactivty source, if necessary
+                    fba_allocation = subset_df_by_geoscale(fba_allocation, attr['allocation_from_scale'], v['geoscale_to_use'])
+
                     # subset based on yaml settings
                     if attr['allocation_flow'] != 'None':
                         fba_allocation = fba_allocation.loc[fba_allocation['FlowName'].isin(attr['allocation_flow'])]
@@ -238,21 +246,6 @@ def main(method_name):
                                                  attr["clean_allocation_fba"])(fba_allocation, attr=attr)
                     # reset index
                     fba_allocation = fba_allocation.reset_index(drop=True)
-
-                    # check if allocation data exists at specified geoscale to use
-                    log.info("Checking if allocation data exists at the " + attr['allocation_from_scale'] + " level")
-                    check_if_data_exists_at_geoscale(fba_allocation, attr['allocation_from_scale'])
-
-                    # aggregate geographically to the scale of the flowbyactivty source, if necessary
-                    from_scale = attr['allocation_from_scale']
-                    to_scale = v['geoscale_to_use']
-                    # if allocation df is less aggregated than FBA df, aggregate allocation df to target scale
-                    if fips_number_key[from_scale] > fips_number_key[to_scale]:
-                        fba_allocation = agg_by_geoscale(fba_allocation, from_scale, to_scale,
-                                                         fba_default_grouping_fields)
-                    # else, if fba is more aggregated than allocation table, use fba as both to and from scale
-                    else:
-                        fba_allocation = filter_by_geoscale(fba_allocation, from_scale)
 
                     # assign sector to allocation dataset
                     log.info("Adding sectors to " + attr['allocation_source'])
@@ -408,9 +401,9 @@ def main(method_name):
                 fbs_sector_subset = fbs_sector_subset.drop(['ActivityProducedBy', 'ActivityConsumedBy'],
                                                            axis=1, errors='ignore')
 
-                # save comparision of FBA total to FBS total for an activity set
+                # save comparison of FBA total to FBS total for an activity set
                 compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
-                                                       method_name, attr, method)
+                                                       method_name, attr, method, mapping_files)
 
                 log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
                 fbs_list.append(fbs_sector_subset)

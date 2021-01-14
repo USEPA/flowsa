@@ -26,13 +26,13 @@ EIA_CBECS_Land,Food service,NAICS_2012_Code,712,I
 EIA_CBECS_Land,Food service,NAICS_2012_Code,928,I
 EIA_CBECS_Land,Food service,NAICS_2012_Code,722,I
 EIA_CBECS_Land,Food service,NAICS_2012_Code,721,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,621,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,622,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,621,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,611,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,624,I
-EIA_CBECS_Land,Health care in-patient,NAICS_2012_Code,928,I
+EIA_CBECS_Land,Health care In-Patient,NAICS_2012_Code,622,I
+EIA_CBECS_Land,Health care In-Patient,NAICS_2012_Code,621,I
+EIA_CBECS_Land,Health care In-Patient,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,621,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,611,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,624,I
+EIA_CBECS_Land,Health care Out-Patient,NAICS_2012_Code,928,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,624,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,611,I
 EIA_CBECS_Land,Lodging,NAICS_2012_Code,623,I
@@ -121,21 +121,21 @@ EIA_CBECS_Land,Public order and safety,NAICS_2012_Code,922,I
 EIA_CBECS_Land,Public order and safety,NAICS_2012_Code,611,I
 EIA_CBECS_Land,Religious worship,NAICS_2012_Code,611,I
 EIA_CBECS_Land,Religious worship,NAICS_2012_Code,813,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,452,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,451,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,446,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,453,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,448,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,517,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,518,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,444,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,611,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,712,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,713,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,441,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,442,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,443,I
-EIA_CBECS_Land,Retail (non-mall),NAICS_2012_Code,532,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,452,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,451,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,446,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,453,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,448,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,517,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,518,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,444,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,611,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,712,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,713,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,441,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,442,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,443,I
+EIA_CBECS_Land,Retail (other than mall),NAICS_2012_Code,532,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,562,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,811,I
 EIA_CBECS_Land,Service,NAICS_2012_Code,611,I

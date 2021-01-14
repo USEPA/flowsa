@@ -53,9 +53,6 @@ if __name__ == '__main__':
     # reset index
     df.reset_index(drop=True, inplace=True)
 
-
-
-
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_EIA_CBECS_Land_toNAICS.csv", index=False)
 

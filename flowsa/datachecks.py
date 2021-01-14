@@ -80,10 +80,10 @@ def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
 
     if len(df) == 0:
         log.info(
-            "No flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
+            "No flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale")
         exists = "No"
     else:
-        log.info("Flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale.")
+        log.info("Flows found for " + ', '.join(activity_list) + " at the " + geoscale + " scale")
         exists = "Yes"
 
     return exists
@@ -105,11 +105,11 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
         fips = create_geoscale_list(df, 'state')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            log.info("No flows found for " + activityname + "  at the state scale.")
+            log.info("No flows found for " + activityname + "  at the state scale")
             fips = create_geoscale_list(df, 'county')
             df = df[df['Location'].isin(fips)]
             if len(df) == 0:
-                log.info("No flows found for " + activityname + "  at the county scale.")
+                log.info("No flows found for " + activityname + "  at the county scale")
             else:
                 log.info("Flowbyactivity data exists for " + activityname + " at the county level")
                 new_geoscale_to_use = 'county'
@@ -124,7 +124,7 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
         fips = create_geoscale_list(df, 'county')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            log.info("No flows found for " + activityname + "  at the county scale.")
+            log.info("No flows found for " + activityname + "  at the county scale")
         else:
             log.info("Flowbyactivity data exists for " + activityname + " at the county level")
             new_geoscale_to_use = 'county'
@@ -392,34 +392,54 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
              ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.01')
 
     # save csv to output folder
-    log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
+    log.info('Save the comparison of FlowByActivity load to FlowBySector ratios for ' +
               activity_set + ' in output folder')
     # output data at all sector lengths
     df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
-                                "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
+                                "_FBA_load_to_FBS_comparison_" + activity_set + ".csv", index=False)
 
     return None
 
 
-def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, source_name, method_name, attr, method):
+def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, source_name, method_name, attr, method, mapping_files):
     """
     Function to compare the loaded flowbyactivity total with the final flowbysector output total
     :param df:
     :return:
     """
 
-    from flowsa.flowbyfunctions import harmonize_units, subset_df_by_geoscale
+    from flowsa.flowbyfunctions import harmonize_units, subset_df_by_geoscale, sector_aggregation
+    from flowsa.common import load_source_catalog
+    from flowsa.mapping import map_elementary_flows
 
     log.info('Comparing loaded FlowByActivity FlowAmount total to subset FlowBySector FlowAmount total')
 
+    # load source catalog
+    cat = load_source_catalog()
+    src_info = cat[source_name]
+
     # harmonize units
-    fba = harmonize_units(fba_load)
-    # subset/agg dfs
-    col_subset = ['Class', 'FlowAmount', 'Unit', 'Location', 'LocationSystem']
-    group_cols = ['Class', 'Unit', 'Location', 'LocationSystem']
-    # fba
+    # fba = harmonize_units(fba_load)
     # extract relevant geoscale data or aggregate existing data
-    fba = subset_df_by_geoscale(fba, attr['allocation_from_scale'], method['target_geoscale'])
+    fba = subset_df_by_geoscale(fba_load, attr['allocation_from_scale'], method['target_geoscale'])
+    # map loaded fba
+    fba = map_elementary_flows(fba, mapping_files, keep_unmapped_rows=True)
+    if src_info['sector-like_activities']:
+        # if activities are sector-like, run sector aggregation and then subset df to only keep NAICS2
+        fba = fba[['Class', 'FlowAmount', 'Unit', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Location', 'LocationSystem']]
+        # rename the activity cols to sector cols for purposes of aggregation
+        fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
+                                    'ActivityConsumedBy': 'SectorConsumedBy'})
+        group_cols_agg = ['Class', 'Context', 'Unit', 'Location', 'LocationSystem', 'SectorProducedBy', 'SectorConsumedBy']
+        fba = sector_aggregation(fba, group_cols_agg)
+        # subset fba to only include NAICS2
+        fba = replace_NoneType_with_empty_cells(fba)
+        fba = fba[fba['SectorConsumedBy'].apply(lambda x: len(x) == 2) |
+                  fba['SectorProducedBy'].apply(lambda x: len(x) == 2)]
+    # subset/agg dfs
+    col_subset = ['Class', 'FlowAmount', 'Unit', 'Context', 'Location', 'LocationSystem']
+    group_cols = ['Class', 'Unit', 'Context', 'Location', 'LocationSystem']
+    # fba
     fba = fba[col_subset]
     fba_agg = aggregator(fba, group_cols)
     fba_agg.rename(columns={'FlowAmount': 'FBA_amount',
@@ -438,30 +458,36 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
         df_merge['Percent_difference'] = (df_merge['FlowAmount_difference']/df_merge['FBA_amount']) * 100
 
         # reorder
-        df_merge = df_merge[['Class', 'Location', 'LocationSystem', 'FBA_amount', 'FBA_unit',
+        df_merge = df_merge[['Class', 'Context', 'Location', 'LocationSystem', 'FBA_amount', 'FBA_unit',
                              'FBS_amount', 'FBS_unit', 'FlowAmount_difference', 'Percent_difference']]
 
-        diff_per = df_merge['Percent_difference'][0]
-        # make reporting more manageable
-        if abs(diff_per) > 0.001:
-            diff_per = round(diff_per, 2)
-        else:
-            diff_per = round(diff_per, 6)
+        # list of contexts
+        context_list = df_merge['Context'].to_list()
 
-        diff_units = df_merge['FBS_unit'][0]
-        if diff_per > 0:
-            log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
-                     ' is ' + str(abs(diff_per)) + '% less than the total FlowByActivity FlowAmount')
-        else:
-            log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
-                     ' is ' + str(abs(diff_per)) + '% more than the total FlowByActivity FlowAmount')
+        # loop through the contexts and print results of comparison
+        for i in context_list:
+            df_merge_subset = df_merge[df_merge['Context'] == i].reset_index(drop=True)
+            diff_per = df_merge_subset['Percent_difference'][0]
+            # make reporting more manageable
+            if abs(diff_per) > 0.001:
+                diff_per = round(diff_per, 2)
+            else:
+                diff_per = round(diff_per, 6)
+
+            diff_units = df_merge_subset['FBS_unit'][0]
+            if diff_per > 0:
+                log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
+                         ' ' + i + ' is ' + str(abs(diff_per)) + '% less than the total FlowByActivity FlowAmount')
+            else:
+                log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
+                         ' ' + i + ' is ' + str(abs(diff_per)) + '% more than the total FlowByActivity FlowAmount')
 
         # save csv to output folder
-        log.info('Save the comparision of FlowByActivity load to FlowBySector total FlowAmounts for ' +
+        log.info('Save the comparison of FlowByActivity load to FlowBySector total FlowAmounts for ' +
                   activity_set + ' in output folder')
         # output data at all sector lengths
         df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
-                                    "_FBA_total_to_FBS_total_FlowAmount_comparision_" + activity_set + ".csv", index=False)
+                        "_FBA_total_to_FBS_total_FlowAmount_comparison_" + activity_set + ".csv", index=False)
 
     except:
         log.info('Error occured when comparing total FlowAmounts for FlowByActivity and FlowBySector')
@@ -500,17 +526,15 @@ def check_summation_at_sector_lengths(df):
     return summed_df
 
 
-def check_for_nonetypes(df):
+def check_for_nonetypes_in_sector_col(df):
     """
     Check for NoneType in columns where datatype = string
     :param df: df with columns where datatype = object
     :return: warning message if there are NoneTypes
     """
     # if datatypes are strings, return warning message
-    for y in df.columns:
-        if df[y].dtype == object:
-            if df[y].isnull().any():
-                log.warning('There are NoneType values in ' + y)
+    if df['Sector'].isnull().any():
+        log.warning("There are NoneType values in the 'Sector' column")
     return df
 
 
@@ -520,443 +544,3 @@ def check_for_negative_flowamounts(df):
         log.warning('There are negative FlowAmounts')
 
     return df
-
-
-# def check_if_data_exists_at_geoscale(df, provided_from_scale):
-#     """
-#     Check if an activity or a sector exists at the specified geoscale
-#     :param df: flowbyactivity dataframe
-#     :param activitynames: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-#     :param geoscale: national, state, or county
-#     :return:
-#     """
-#     from flowsa.flowbyfunctions import unique_activity_names, dataframe_difference
-#
-#     # test
-#     # df = flows_subset.copy()
-#     # provided_from_scale = v['geoscale_to_use']
-#
-#     # determine the unique combinations of activityproduced/consumedby
-#     unique_activities = unique_activity_names(df)
-#     # filter by geoscale
-#     fips = create_geoscale_list(df, provided_from_scale)
-#     df_sub = df[df['Location'].isin(fips)]
-#     # determine unique activities after subsetting by geoscale
-#     unique_activities_sub = unique_activity_names(df_sub)
-#
-#     # return df of the difference between unique_activities and unique_activities2
-#     df_missing = dataframe_difference(unique_activities, unique_activities_sub, which='left_only')
-#     # return df of the similarities between unique_activities and unique_activities2
-#     df_existing = dataframe_difference(unique_activities, unique_activities_sub, which='both')
-#     df_existing = df_existing.drop(columns='_merge')
-#     df_existing['activity_from_scale'] = provided_from_scale
-#
-#     # for loop through geoscales until find data for each activity combo
-#     if provided_from_scale == 'national':
-#         geoscales = ['state', 'county']
-#     elif provided_from_scale == 'state':
-#         geoscales = ['county']
-#     elif provided_from_scale == 'county':
-#         log.info('No data - skipping')
-#
-#     if len(df_missing) > 0:
-#         for i in geoscales:
-#             # test
-#             # i = 'state'
-#             # filter by geoscale
-#             fips_i = create_geoscale_list(df, i)
-#             df_i = df[df['Location'].isin(fips_i)]
-#
-#             # determine unique activities after subsetting by geoscale
-#             unique_activities_i = unique_activity_names(df_i)
-#
-#             # return df of the difference between unique_activities subset and unique_activities for geoscale
-#             df_missing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='right_only')
-#             df_missing_i = df_missing_i.drop(columns='_merge')
-#             df_missing_i['activity_from_scale'] = i
-#             # return df of the similarities between unique_activities and unique_activities2
-#             df_existing_i = dataframe_difference(unique_activities_sub, unique_activities_i, which='both')
-#
-#             # append unique activities and df with defined activity_from_scale
-#             unique_activities_sub = unique_activities_sub.append(df_missing_i[[fba_activity_fields[0],
-#                                                                                fba_activity_fields[1]]])
-#             df_existing = df_existing.append(df_missing_i)
-#             df_missing = dataframe_difference(df_missing[[fba_activity_fields[0],fba_activity_fields[1]]],
-#                                               df_existing_i[[fba_activity_fields[0],fba_activity_fields[1]]],
-#                                               which=None)
-#
-#     return df_existing
-
-
-
-# from flowsa.flowbyfunctions import unique_activity_names, dataframe_difference
-#
-# # test
-# df = flows_subset.copy()
-# geoscale = v['geoscale_to_use']
-#
-# # determine the unique combinations of activityproduced/consumedby
-# unique_activities = unique_activity_names(df)
-#
-# # filter by geoscale
-# fips = create_geoscale_list(df, geoscale)
-# df2 = df[df['Location'].isin(fips)]
-#
-# # determine unique activities after subsetting by geoscale
-# unique_activities2 = unique_activity_names(df2)
-#
-# # return df of the difference between unique_activities and unique_activities2
-# df_diff = dataframe_difference(unique_activities, unique_activities2, which='left_only')
-# # create a list of the activities lost by subsetting df
-# rl_list = df_diff[[fba_activity_fields[0], fba_activity_fields[1]]].drop_duplicates().values.tolist()
-# # add column stating activity combos do not exist
-# df_diff['exists'] = 'No'
-#
-# # return df of the similarities between unique_activities and unique_activities2
-# df_sim = dataframe_difference(unique_activities, unique_activities2, which='both')
-# # create a list of the activities lost by subsetting df
-# sim_list = df_sim[[fba_activity_fields[0], fba_activity_fields[1]]].drop_duplicates().values.tolist()
-# # add column stating activity combos do not exist
-# df_sim['exists'] = 'Yes'
-#
-# if (len(df_diff) == 0) & (len(df_sim) != 0):
-#     log.info("Flows found for activities {}".format(' '.join(map(str, sim_list))) + ' at the ' + geoscale + " scale.")
-# else:
-#     log.info("No flows found for activities {}".format(' '.join(map(str, rl_list))) +
-#              ' at the ' + geoscale + " scale.")
-#     if len(df_sim) != 0:
-#         log.info("Flows found for activities {}".format(' '.join(map(str, sim_list))) + ' at the ' + geoscale + " scale.")
-#
-# # concat the df of differences and similarities and turn into a dictionary
-# df_comb = pd.concat([df_diff, df_sim])
-# df_comb = df_comb.drop(columns='_merge')
-
-# return df_comb
-
-
-# def check_if_data_exists_at_less_aggregated_geoscale(df_to_check, activiites_to_check, provided_from_scale):
-#     """
-#     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
-#
-#     :param df: Either flowbyactivity or flowbysector dataframe
-#     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-#     :param geoscale: national, state, or county
-#     :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
-#     :return:
-#     """
-#     # test
-#     # df_to_check = df.copy()
-#     # activiites_to_check = missing_data.copy()
-#
-#     # ensure only have the activity combos want to check
-#     df = pd.merge(activiites_to_check, df_to_check)
-#
-#     # fips_number_key
-#     # for loop through geoscales until find data for each activity combo
-#     if provided_from_scale == 'national':
-#         geoscales = ['state', 'county']
-#     elif provided_from_scale == 'state':
-#         geoscales = ['county']
-#     else:
-#         log.info("No data - skipping")
-#
-#     for i in geoscales:
-#         fips = create_geoscale_list(df, i)
-#         df = df[df['Location'].isin(fips)]
-#         if len(df) == 0:
-#             log.info("No flows found at the" + i + " geoscale.")
-#             fips = create_geoscale_list(df, 'county')
-#             df2 = df[df['Location'].isin(fips)]
-#             if len(df2) == 0:
-#                 log.info("No flows found at the " + i + " scale.")
-#             else:
-#                 log.info("Flowbyactivity data exists at the " + i + " scale.")
-#                 new_geoscale_to_use = 'county'
-#                 return new_geoscale_to_use
-
-
-
-
-# def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname):
-#     """
-#     In the event data does not exist at specified geoscale, check if data exists at less aggregated level
-#
-#     :param df: Either flowbyactivity or flowbysector dataframe
-#     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
-#     :param geoscale: national, state, or county
-#     :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
-#     :return:
-#     """
-#
-#     if geoscale == 'national':
-#         df = df[(df[fba_activity_fields[0]] == activityname) | (
-#              df[fba_activity_fields[1]] == activityname)]
-#         fips = create_geoscale_list(df, 'state')
-#         df = df[df['Location'].isin(fips)]
-#         if len(df) == 0:
-#             log.info("No flows found for " + activityname + "  at the state scale.")
-#             fips = create_geoscale_list(df, 'county')
-#             df = df[df['Location'].isin(fips)]
-#             if len(df) == 0:
-#                 log.info("No flows found for " + activityname + "  at the county scale.")
-#             else:
-#                 log.info("Flowbyactivity data exists for " + activityname + " at the county level")
-#                 new_geoscale_to_use = 'county'
-#                 return new_geoscale_to_use
-#         else:
-#             log.info("Flowbyactivity data exists for " + activityname + " at the state level")
-#             new_geoscale_to_use = 'state'
-#             return new_geoscale_to_use
-#     if geoscale == 'state':
-#         df = df[(df[fba_activity_fields[0]] == activityname) | (
-#              df[fba_activity_fields[1]] == activityname)]
-#         fips = create_geoscale_list(df, 'county')
-#         df = df[df['Location'].isin(fips)]
-#         if len(df) == 0:
-#             log.info("No flows found for " + activityname + "  at the county scale.")
-#         else:
-#             log.info("Flowbyactivity data exists for " + activityname + " at the county level")
-#             new_geoscale_to_use = 'county'
-#             return new_geoscale_to_use
-
-
-
-# def geoscale_summation(flowclass, years, datasource):
-#
-#     # test
-#     # flowclass = ['Water']
-#     # years = [2015]
-#     # datasource = 'USGS_NWIS_WU'
-#
-#     # load parquet file checking aggregation
-#     flows = flowsa.getFlowByActivity(flowclass=flowclass,
-#                                      years=years,
-#                                      datasource=datasource)
-#     # fill null values
-#     flows = flows.fillna(value=fba_fill_na_dict)
-#
-#
-#     return None
-
-
-# def geoscale_flow_comparison(flowclass, years, datasource, activitynames=['all'], to_scale='national'):
-#     """ Aggregates county data to state and national, and state data to national level, allowing for comparisons
-#         in flow totals for a given flowclass and industry. First assigns all flownames to NAICS and standardizes units.
-#
-#         Assigned to NAICS rather than using FlowNames for aggregation to negate any changes in flownames across
-#         time/geoscale
-#     """
-#
-#     # test
-#     flowclass = ['Land']
-#     years = ['2018']
-#     datasource = 'USDA_IWMS'
-#
-#     flows = flowsa.getFlowByActivity(flowclass=flowclass, years=years, datasource=datasource)
-#
-#
-#     # convert units
-#     flows = harmonize_units(flows)
-#
-#     # if activityname set to default, then compare aggregation for all activities. If looking at particular activity,
-#     # filter that activity out
-#     if activitynames == ['all']:
-#         flow_subset = flows.copy()
-#     else:
-#         flow_subset = flows[(flows[fba_activity_fields[0]].isin(activitynames)) |
-#                             (flows[fba_activity_fields[1]].isin(activitynames))]
-#
-#     # Reset index values after subset
-#     flow_subset = flow_subset.reset_index()
-#
-#     # pull naics crosswalk
-#     mapping = get_activitytosector_mapping(flow_subset['SourceName'].all())
-#
-#     # assign naics to activities
-#     # usgs datasource is not easily assigned to naics for checking totals, so instead standardize activity names
-#     if datasource == 'USGS_NWIS_WU':
-#         flow_subset = standardize_usgs_nwis_names(flow_subset)
-#     else:
-#         flow_subset = pd.merge(flow_subset, mapping[['Activity', 'Sector']], left_on='ActivityProducedBy',
-#                                right_on='Activity', how='left').rename({'Sector': 'SectorProducedBy'}, axis=1)
-#         flow_subset = pd.merge(flow_subset, mapping[['Activity', 'Sector']], left_on='ActivityConsumedBy',
-#                                right_on='Activity', how='left').rename({'Sector': 'SectorConsumedBy'}, axis=1)
-#     flow_subset = flow_subset.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy', 'Activity_x', 'Activity_y',
-#                                             'Description'], errors='ignore')
-#     flow_subset['SectorProducedBy'] = flow_subset['SectorProducedBy'].replace({np.nan: None})
-#     flow_subset['SectorConsumedBy'] = flow_subset['SectorConsumedBy'].replace({np.nan: None})
-#
-#     # create list of geoscales for aggregation
-#     if to_scale == 'national':
-#         geoscales = ['national', 'state', 'county']
-#     elif to_scale == 'state':
-#         geoscales = ['state', 'county']
-#
-#     # create empty df list
-#     flow_dfs = []
-#     for i in geoscales:
-#         # test
-#         #i = 'state'
-#         # filter by geoscale
-#         fba_from_scale = filter_by_geoscale(flow_subset, i)
-#
-#         if fba_from_scale is not None:
-#
-#             # remove/add column names as a column
-#             group_cols = fba_default_grouping_fields.copy()
-#             for j in ['Location', 'ActivityProducedBy', 'ActivityConsumedBy']:
-#                 group_cols.remove(j)
-#             for j in ['SectorProducedBy', 'SectorConsumedBy']:
-#                 group_cols.append(j)
-#
-#             # county sums to state and national, state sums to national
-#             if to_scale == 'state':
-#                 fba_from_scale['Location'] = fba_from_scale['Location'].apply(lambda x: x[0:2])
-#             elif to_scale == 'national':
-#                 fba_from_scale['Location'] = US_FIPS
-#
-#             # aggregate
-#             fba_from_scale = fba_from_scale.fillna(0)
-#             fba_agg = aggregator(fba_from_scale, group_cols)
-#
-#             # rename flowamount column, based on geoscale
-#             fba_agg = fba_agg.rename(columns={"FlowAmount": "FlowAmount_" + i})
-#
-#             # drop fields irrelevant to aggregated flow comparision
-#             drop_fields = flows[['MeasureofSpread', 'Spread', 'DistributionType', 'DataReliability','DataCollection']]
-#             fba_agg = fba_agg.drop(columns=drop_fields)
-#
-#             # reset index
-#             fba_agg = fba_agg.reset_index(drop=True)
-#
-#             flow_dfs.append(fba_agg)
-#
-#     # merge list of dfs by column
-#     flow_comparison = reduce(lambda left, right: pd.merge(left, right, on=['Class', 'SourceName', 'FlowName', 'Unit',
-#                                                                            'SectorProducedBy', 'SectorConsumedBy',
-#                                                                            'Compartment', 'Location',
-#                                                                            'LocationSystem', 'Year'], how='outer'), flow_dfs)
-#
-#     # sort df
-#     flow_comparison = flow_comparison.sort_values(['Year', 'Location', 'SectorProducedBy', 'SectorConsumedBy',
-#                                                    'FlowName', 'Compartment'])
-#
-#     return flow_comparison
-
-
-
-# def sector_flow_comparision(fbs_df):
-#     """
-#     Function that sums a flowbysector df to 2 digit sectors, from sectors of various lengths. Allows for comparision of
-#     sector totals
-#
-#     :param fbs: A flowbysector df
-#     :return:
-#     """
-#     # testing purposes
-#     #fbs_df = flowsa.getFlowBySector(methodname='Water_national_2015_m1', activity="Industrial")
-#
-#     # grouping columns
-#     group_cols = fbs_default_grouping_fields.copy()
-#
-#     # run  sector aggregation to sum flow amounts to each sector length
-#     fbs_agg = sector_aggregation(fbs_df, group_cols)
-#     # add missing naics5/6 when only one naics5/6 associated with a naics4
-#     fbs_agg = sector_disaggregation(fbs_agg)
-#
-#     # subset df into four df based on values in sector columns
-#     # df 1 where sector produced by = none
-#     df1 = fbs_agg.loc[fbs_agg['SectorProducedBy'].isnull()]
-#     # df 2 where sector consumed by = none
-#     df2 = fbs_agg.loc[fbs_agg['SectorConsumedBy'].isnull()]
-#     # df 3 where sector produced by = 221320 (public supply)
-#     df3 = fbs_agg.loc[
-#         (fbs_agg['SectorProducedBy'].isnull()) & (fbs_agg['SectorConsumedBy'] == '221310')]
-#     # df 3 where sector consumed by = 221320 (public supply)
-#     df4 = fbs_agg.loc[
-#         (fbs_agg['SectorProducedBy'] == '221310') & (fbs_agg['SectorConsumedBy'].isnull())]
-#
-#     sector_dfs = []
-#     for df in (df1, df2, df3, df4):
-#         # if the dataframe is not empty, run through sector aggregation code
-#         if len(df) != 0:
-#             # assign the sector column for aggregation
-#             if (df['SectorProducedBy'].all() == 'None') | (
-#                     (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() is None)):
-#                 sector = 'SectorConsumedBy'
-#             elif (df['SectorConsumedBy'].all() == 'None') | (
-#                     (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() is None)):
-#                 sector = 'SectorProducedBy'
-#
-#             # find max length of sector column
-#             df.loc[:, 'SectorLength'] = df[sector].apply(lambda x: len(x))
-#
-#             # reassign sector consumed/produced by to help wth grouping
-#             # assign the sector column for aggregation
-#             if df['SectorProducedBy'].all() == 'None':
-#                 df.loc[:, 'SectorConsumedBy'] = 'All'
-#             elif (df['SectorProducedBy'].all() == '221310') & (df['SectorConsumedBy'].all() != 'None'):
-#                 df.loc[:, 'SectorConsumedBy'] = 'All'
-#             elif df['SectorConsumedBy'].all() == 'None':
-#                 df.loc[:, 'SectorProducedBy'] = 'All'
-#             elif (df['SectorConsumedBy'].all() == '221310') & (df['SectorProducedBy'].all() != 'None'):
-#                 df.loc[:, 'SectorProducedBy'] = 'All'
-#
-#             # append to df
-#             sector_dfs.append(df)
-#
-#     # concat and sort df
-#     df_agg = pd.concat(sector_dfs, sort=False)
-#
-#     # sum df based on sector length
-#     grouping = fbs_default_grouping_fields.copy()
-#     grouping.append('SectorLength')
-#     sector_comparison = df_agg.groupby(grouping, as_index=False)[["FlowAmount"]].agg("sum")
-#
-#     # drop columns not needed for comparison
-#     sector_comparison = sector_comparison.drop(columns=['DistributionType', 'MeasureofSpread'])
-#
-#     # sort df
-#     sector_comparison = sector_comparison.sort_values(['Flowable', 'Context', 'FlowType', 'SectorLength'])
-#
-#     return sector_comparison
-
-
-# def fba_to_fbs_summation_check(fba_source, fbs_methodname):
-#     """
-#     Temporary code - need to update
-#     :param fba_source:
-#     :param fbs_methodname:
-#     :return:
-#     """
-#
-#     import flowsa
-#
-#     # testing
-#     # df = fbss.copy()
-#     # test1 = df[df['SectorConsumedBy'].isnull()]
-#     # test2 = df[df['SectorProducedBy'].isnull()]
-#     # test3 = df[df['SectorConsumedBy'] == 'None']
-#     # test4 = df[df['SectorProducedBy'] == 'None']
-#
-#
-#
-#     fbs_methodname = 'Water_total_2015'
-#
-#     fbs = flowsa.getFlowBySector(fbs_methodname)
-#     fbs_c = flowsa.getFlowBySector_collapsed(fbs_methodname)
-#
-#     return None
-
-
-# def flowname_summation_check(df, flownames_to_sum, flownames_published):
-#     """
-#     Check if rows with specified flowname values sum to another specified flowname (do fresh + saline = total?)
-#
-#     :param df: fba or fbs
-#     :param flownames_to_sum: list of strings
-#     :param flownames_published: string
-#     :return:
-#     """
-#
-#     return None

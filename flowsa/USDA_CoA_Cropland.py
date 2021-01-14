@@ -234,7 +234,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
     import flowsa
     from flowsa.flowbyfunctions import allocate_by_sector, clean_df, flow_by_activity_fields, \
         fba_fill_na_dict, replace_strings_with_NoneType, replace_NoneType_with_empty_cells, \
-        fba_mapped_default_grouping_fields
+        fba_mapped_default_grouping_fields, harmonize_units
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # tmp drop NoneTypes
@@ -253,6 +253,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
         df_allocation = 'USDA_CoA_Cropland_NAICS'
         df_f = flowsa.getFlowByActivity(flowclass=df_class, years=df_years, datasource=df_allocation)
         df_f = clean_df(df_f, flow_by_activity_fields, fba_fill_na_dict)
+        df_f = harmonize_units(df_f)
         # subset to land in farms data
         df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
         # subset to rows related to pastureland
@@ -308,7 +309,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, years_list, sector_column)
     import flowsa
     from flowsa.flowbyfunctions import sector_aggregation,\
         fbs_default_grouping_fields, clean_df, fba_fill_na_dict, fbs_fill_na_dict, add_missing_flow_by_fields,\
-        sector_disaggregation, sector_ratios, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+        sector_disaggregation, sector_ratios, replace_strings_with_NoneType, replace_NoneType_with_empty_cells,\
+        harmonize_units
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # tmp drop NoneTypes
@@ -327,6 +329,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, years_list, sector_column)
                                           datasource="USDA_CoA_Cropland_NAICS").reset_index(drop=True)
     # clean df
     naics = clean_df(naics_load, flow_by_activity_fields, fba_fill_na_dict)
+    naics = harmonize_units(naics)
     # subset the harvested cropland by naics
     naics = naics[naics['FlowName'] == 'AG LAND, CROPLAND, HARVESTED'].reset_index(drop=True)
     # drop the activities that include '&'

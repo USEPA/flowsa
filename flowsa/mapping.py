@@ -167,12 +167,6 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     :param kwargs: can be the mapping file and method of allocation
     :return:
     """
-    # test
-    # fba_alloction = fba_allocation_subset.copy()
-    # source = k
-    # activitynames = [n]
-    # fsm = flow_subset_mapped
-    # am = attr['allocation_method']
 
     # first determine if there are special cases that would modify the typical method of subset
     # an example of a special case is when the allocation method is 'proportional-flagged'
