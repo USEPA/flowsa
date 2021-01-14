@@ -10,6 +10,7 @@ source_names:
     data_format: 'FBA'
     class: Employment
     geoscale_to_use: national
+    source_fba_load_scale: national
     year: 2017
     clean_fba_df_fxn: clean_bls_qcew_fba_for_employment_sat_table
     clean_fba_w_sec_df_fxn: bls_clean_allocation_fba_w_sec
