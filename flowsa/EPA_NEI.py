@@ -174,6 +174,9 @@ def clean_NEI_fba(fba):
     
     fba = remove_duplicate_NEI_flows(fba)
     fba = drop_GHGs(fba)
+    # Remove the portion of PM10 that is PM2.5 to eliminate double counting and rename flow
+    fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)', ['PM2.5 Primary (Filt + Cond)'])
+    fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'), 'FlowName'] = 'PM10-PM2.5'
     return fba
 
 def clean_NEI_fba_no_pesticides(fba):
@@ -238,3 +241,26 @@ def drop_pesticides(df):
                 df['ActivityProducedBy'].isin(activity_list))]
     
     return df    
+
+def remove_flow_overlap(df, aggregate_flow, contributing_flows):
+    """
+    Quantity of contributing flows is subtracted from aggregate flow and the
+    aggregate flow quantity is updated. Modeled after function of same name in
+    stewicombo.overlaphandler.py
+    """
+    match_conditions = ['ActivityProducedBy','Compartment','Location','Year']
+
+    df_contributing_flows = df.loc[df['FlowName'].isin(contributing_flows)]
+    df_contributing_flows = df_contributing_flows.groupby(match_conditions, as_index=False)['FlowAmount'].sum()
+
+    df_contributing_flows['FlowName']=aggregate_flow
+    df_contributing_flows['ContributingAmount'] = df_contributing_flows['FlowAmount']
+    df_contributing_flows.drop(columns=['FlowAmount'], inplace=True)
+    df = df.merge(df_contributing_flows, how='left', on=match_conditions.append('FlowName'))
+    df[['ContributingAmount']] = df[['ContributingAmount']].fillna(value=0)
+    df['FlowAmount']=df['FlowAmount']-df['ContributingAmount']
+    df.drop(columns=['ContributingAmount'], inplace=True)
+
+    # Make sure the aggregate flow is non-negative
+    df.loc[((df.FlowName == aggregate_flow) & (df.FlowAmount <= 0)), "FlowAmount"] = 0    
+    return df
