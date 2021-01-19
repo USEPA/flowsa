@@ -5,6 +5,7 @@
 format: csv
 url:
   base_url: "https://www.epa.gov/sites/production/files/2020-08/chapter_0.zip"
+  annex_url: "https://www.epa.gov/sites/production/files/2020-07/annex_1.zip"
 url_replace_fxn: ghg_url_helper
 call_response_fxn: ghg_call
 parse_response_fxn: ghg_parse

@@ -33,6 +33,7 @@ from flowsa.EIA_MECS import *
 from flowsa.BLM_PLS import *
 from flowsa.EIA_MER import *
 from flowsa.EPA_GHG_Inventory import *
+from flowsa.USGS_NMIC_SodaAsh import *
 
 
 
@@ -57,7 +58,7 @@ def store_flowbyactivity(result, source, year=None):
         log.error('Failed to save '+source + "_" + str(year) +' file.')
 
 
-def build_url_for_query(urlinfo):
+def build_url_for_query(urlinfo, args):
     """Creates a base url which requires string substitutions that depend on data source"""
     # if there are url parameters defined in the yaml, then build a url, else use "base_url"
     if 'url_params' in urlinfo:
@@ -122,27 +123,40 @@ if __name__ == '__main__':
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(args['source'])
     log.info("Creating dataframe list")
-    # build the base url with strings that will be replaced
-    build_url = build_url_for_query(config['url'])
-    # replace parts of urls with specific instructions from source.py
-    urls = assemble_urls_for_query(build_url, config, args)
-    # create a list with data from all source urls
-    dataframe_list = call_urls(urls, args)
-    # concat the dataframes and parse data with specific instructions from source.py
-    log.info("Concat dataframe list and parse data")
-    df = parse_data(dataframe_list, args)
-    # log that data was retrieved
-    log.info("Retrieved data for " + args['source'] + ' ' + args['year'])
-    # add any missing columns of data and cast to appropriate data type
-    log.info("Add any missing columns and check field datatypes")
-    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-    # modify flow units
-    flow_df = convert_fba_unit(flow_df)
-    # sort df and reset index
-    flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
-                                   'FlowName', 'Compartment']).reset_index(drop=True)
-    # save as parquet file
-    log.info('Save dataframe as parquet')
-    parquet_name = args['source'] + '_' + args['year']
-    store_flowbyactivity(flow_df, parquet_name)
+
+    # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
+    if '-' in str(args['year']):
+        years = str(args['year']).split('-')
+        min_year = int(years[0])
+        max_year = int(years[1]) + 1
+        year_iter = list(range(min_year, max_year))
+    else:
+        # Else only a single year defined, create an array of one:
+        year_iter = [args['year']]
+
+    for p_year in year_iter:
+        args['year'] = str(p_year)
+        # build the base url with strings that will be replaced
+        build_url = build_url_for_query(config['url'], args)
+        # replace parts of urls with specific instructions from source.py
+        urls = assemble_urls_for_query(build_url, config, args)
+        # create a list with data from all source urls
+        dataframe_list = call_urls(urls, args)
+        # concat the dataframes and parse data with specific instructions from source.py
+        log.info("Concat dataframe list and parse data")
+        df = parse_data(dataframe_list, args)
+        # log that data was retrieved
+        log.info("Retrieved data for " + args['source'] + ' ' + args['year'])
+        # add any missing columns of data and cast to appropriate data type
+        log.info("Add any missing columns and check field datatypes")
+        flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+        # modify flow units
+        flow_df = convert_fba_unit(flow_df)
+        # sort df and reset index
+        flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
+                                       'FlowName', 'Compartment']).reset_index(drop=True)
+        # save as parquet file
+        log.info('Save dataframe as parquet')
+        parquet_name = args['source'] + '_' + args['year']
+        store_flowbyactivity(flow_df, parquet_name)
 

@@ -7,12 +7,11 @@ https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 """
 
 
-import zipfile
 import io
+import zipfile
 import numpy as np
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow_by_fields
-from flowsa.common import flow_by_activity_fields
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 DEFAULT_YEAR = 9999
 
@@ -25,9 +24,16 @@ TABLES = {
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
     "Executive Summary": ["ES-5"]
 }
+ANNEX_TABLES = {
+    "Annex": ["A-17", "A-93", "A-94", "A-118"]
+}
+A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
+A_17_TBTU_HEADER = [
+    'Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
+A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use', 'Emissions (MMT CO2 Eq.) from Energy Use']
 
 SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
-SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80"]
+SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
 
 DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
@@ -57,7 +63,7 @@ TBL_META = {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "TBtu",
         "desc": "Table 3-21:  Adjusted Consumption of Fossil Fuels for Non-Energy Uses (TBtu)"
     },
-    "EPA_GHG_Inventory_T_3_22": {  # TODO: This is a different format!
+    "EPA_GHG_Inventory_T_3_22": {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions",
         "year": "2018"
@@ -127,22 +133,22 @@ TBL_META = {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field Burning of Agricultural Residues (kt)"
     },
-    # "A_17": {
-    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
-    #     "desc": ""
-    # },
-    # "A_93": {
-    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
-    #     "desc": ""
-    # },
-    # "A_94": {
-    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
-    #     "desc": ""
-    # },
-    # "A_118": {
-    #     "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
-    #     "desc": ""
-    # },
+    "EPA_GHG_Inventory_T_A_17": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "2012 Energy Consumption Data and CO2 Emissions from Fossil Fuel Combustion by Fuel Type"
+    },
+    "EPA_GHG_Inventory_T_A_93": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "NOx Emissions from Stationary Combustion (kt)"
+    },
+    "EPA_GHG_Inventory_T_A_94": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "CO Emissions from Stationary Combustion (kt)"
+    },
+    "EPA_GHG_Inventory_T_A_118": {
+        "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
+        "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
+    },
     "EPA_GHG_Inventory_T_ES_5": {
         "class": "Chemicals", "unit": "kg", "compartment": "air", "flow_name": "CO2 Eq",
         "desc": "Table ES-5:  U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
@@ -150,30 +156,44 @@ TBL_META = {
     },
 }
 
+YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
+
 
 def ghg_url_helper(build_url, config, args):
     """Only one URL is needed to retrieve the data for all tables for all years."""
-    return [build_url]
+    annex_url = config['url']['annex_url']
+    return [build_url, annex_url]
 
 
-def ghg_call(url, response, args, **kwargs):
+def ghg_call(url, response, args):
     """
     Callback function for the US GHG Emissions download. Open the downloaded zip file and
     read the contained CSV(s) into pandas dataframe(s).
     """
+    df = None
+    year = args['year']
     with zipfile.ZipFile(io.BytesIO(response.content), "r") as f:
         frames = []
         # TODO: replace this TABLES constant with kwarg['tables']
-        for chapter, tables in TABLES.items():
+        if 'annex' in url:
+            is_annex = True
+            t_tables = ANNEX_TABLES
+        else:
+            is_annex = False
+            t_tables = TABLES
+        for chapter, tables in t_tables.items():
             for table in tables:
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
-                path = f"Chapter Text/{chapter}/Table {table}.csv"
+                if is_annex:
+                    path = f"Annex/Table {table}.csv"
+                else:
+                    path = f"Chapter Text/{chapter}/Table {table}.csv"
                 data = f.open(path)
                 if table not in SPECIAL_FORMAT:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1")
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
                 elif '3-' in table:
                     # Skip first two rows, as usual, but make headers the next 3 rows:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1, 2])
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1, 2], thousands=",")
                     # The next two rows are headers and the third is units:
                     new_headers = []
                     for col in df.columns:
@@ -193,15 +213,36 @@ def ghg_call(url, response, args, **kwargs):
                     df.columns = new_headers
                     print('break')
                 elif '4-' in table:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1")
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",", decimal=".")
                 elif 'A-' in table:
-                    break
-                elif 'ES-' in table:
-                    break
-                else:
-                    break
+                    if table == 'A-17':
+                        # A-17  is similar to T 3-23, the entire table is 2012 and headings are completely different.
+                        if str(year) == '2012':
+                            df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1], thousands=",")
+                            new_headers = []
+                            header_grouping = ''
+                            for col in df.columns:
+                                if 'Unnamed' in col[0]:
+                                    # new_headers.append(f'{header_grouping}{col[1]}')
+                                    new_headers.append(f'{col[1].strip()}{header_grouping}')
+                                else:
+                                    if len(col) == 2:
+                                        # header_grouping = f'{col[0]}__'
+                                        if col[0] == A_17_TBTU_HEADER[0]:
+                                            header_grouping = f' {A_17_TBTU_HEADER[1].strip()}'
+                                        else:
+                                            header_grouping = f' {A_17_CO2_HEADER[0].strip()}'
+                                    # new_headers.append(f'{header_grouping}{col[1]}')
+                                    new_headers.append(f'{col[1].strip()}{header_grouping}')
+                            df.columns = new_headers
+                            df['Year'] = year
+                    else:
+                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1", thousands=",", decimal=".")
 
-                if len(df.columns) > 1:
+                if df is not None and len(df.columns) > 1:
+                    years = YEARS.copy()
+                    years.remove(str(year))
+                    df = df.drop(columns=(DROP_COLS + years), errors='ignore')
                     # Assign SourceName now while we still have access to the table name:
                     source_name = f"EPA_GHG_Inventory_T_{table.replace('-', '_')}"
                     df["SourceName"] = source_name
@@ -216,46 +257,48 @@ def get_unnamed_cols(df):
     return [col for col in df.columns if "Unnamed" in col]
 
 
-def ghg_parse(dataframe_list, args, **kwargs):
+def ghg_parse(dataframe_list, args):
     """ TODO. """
     cleaned_list = []
     for df in dataframe_list:
         special_format = False
         source_name = df["SourceName"][0]
+        print(f'Processing Source Name {source_name}')
         for src in SRC_NAME_SPECIAL_FORMAT:
             if src in source_name:
                 special_format = True
 
         # Specify to ignore errors in case one of the drop_cols is missing.
         drop_cols = get_unnamed_cols(df)
-        df = df.drop(columns=(DROP_COLS + drop_cols), errors='ignore')
+        df = df.drop(columns=drop_cols, errors='ignore')
 
         if not special_format or "T_4_" not in source_name:
             # Rename the PK column from data_type to "ActivityProducedBy":
             df = df.rename(columns={df.columns[0]: "ActivityProducedBy"})
         else:
-            df["ActivityProducedBy"] = "None"
+            df["ActivityProducedBy"] = 'None'
 
-        df["ActivityConsumedBy"] = "None"
-        df["Compartment"] = "None"
-        # df["FlowType"] = "ELEMENTARY_FLOW"
+        df["ActivityConsumedBy"] = 'None'
+        df["FlowType"] = "ELEMENTARY_FLOW"
         df["Location"] = "00000"
 
-        id_vars = ["SourceName", "ActivityConsumedBy", "ActivityProducedBy", "Compartment", "Location"]
-        if special_format and df.columns[0] == "Year":
+        id_vars = ["SourceName", "ActivityConsumedBy", "ActivityProducedBy", "FlowType", "Location"]
+        if special_format and "Year" in df.columns:
             id_vars.append("Year")
             # Cast Year column to numeric and delete any years <= 2009:
-            df = df[pd.to_numeric(df["Year"], errors="coerce") > 2009]
+            # df = df[pd.to_numeric(df["Year"], errors="coerce") > 2009]
+            # Cast Year column to numeric and delete any years != year
+            df = df[pd.to_numeric(df["Year"], errors="coerce") == int(args['year'])]
 
         # Set index on the df:
         df.set_index(id_vars)
 
         if special_format:
-            if "T_4_" in source_name:
+            if "T_4_" not in source_name:
+                df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
+            else:
                 df.drop(columns=["ActivityProducedBy"], errors="ignore")
                 df = df.melt(id_vars=id_vars, var_name="ActivityProducedBy", value_name="FlowAmount")
-            else:
-                df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
 
@@ -264,20 +307,31 @@ def ghg_parse(dataframe_list, args, **kwargs):
             df = df[~df["FlowAmount"].str.contains("\\+", na=False)]
         except AttributeError as ex:
             print(ex)
+        # Dropping all rows with value "NE"
+        try:
+            df = df[~df["FlowAmount"].str.contains("NE", na=False)]
+        except AttributeError as ex:
+            print(ex)
 
         # Convert all empty cells to nan cells
         df["FlowAmount"].replace("", np.nan, inplace=True)
         # Table 3-10 has some NO values, dropping these.
         df["FlowAmount"].replace("NO", np.nan, inplace=True)
+        # Table A-118 has some IE values, dropping these.
+        df["FlowAmount"].replace("IE", np.nan, inplace=True)
+
         # Drop any nan rows
         df.dropna(subset=['FlowAmount'], inplace=True)
-        # Remove commas from numbers:
-        df["FlowAmount"].replace(',', '', regex=True, inplace=True)
 
-        df["Description"] = "None"
+        df["Description"] = 'None'
         df["Unit"] = "Other"
+
+        # Special case for T_A_17: ActivityConsumedBy and FlowName based on that value.
+        if "T_A_17" in source_name:
+            df['ActivityConsumedBy'] = df['FlowName']
+
         # Update classes:
-        # TODO: replace this TBL_META constant with kwarg['tbl_meta']
+        # TODO: replace this TBL_META constant with kwargs['tbl_meta']
         meta = TBL_META[source_name]
         df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
         df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
@@ -288,24 +342,39 @@ def ghg_parse(dataframe_list, args, **kwargs):
         if 'Year' not in df.columns:
             df['Year'] = meta.get("year", DEFAULT_YEAR)
 
+        # Special case for T_A_17: ActivityConsumedBy and FlowName based on that value.
+        if "T_A_17" in source_name:
+            # Update FlowName based on the (x) contents.
+            for header in A_17_COMMON_HEADERS:
+                df.loc[df["ActivityConsumedBy"] == f'{header} {A_17_TBTU_HEADER[1]}', "FlowName"] = 'TBtu'
+            # df.loc['' in df["ActivityConsumedBy"], "FlowName"] = 'CO2 Eq'
+
+        # Some of the datasets, 4-43 and 4-80, still have years we don't want at this point.
+        # Remove rows matching the years we don't want:
+        try:
+            df = df[df['Year'].isin([args['year']])]
+        except AttributeError as ex:
+            print(ex)
+
         # Add tmp DQ scores
         df["DataReliability"] = 5
         df["DataCollection"] = 5
-        df["Compartment"] = "None"
         # Fill in the rest of the Flow by fields so they show "None" instead of nan.76i
-        df["MeasureofSpread"] = "None"
-        df["DistributionType"] = "None"
-        df["FlowType"] = "None"
+        df["MeasureofSpread"] = 'None'
+        df["DistributionType"] = 'None'
+        df["LocationSystem"] = 'None'
 
-        df = assign_fips_location_system(df, args["year"])
-        # add missing flow by sector fields
-        # df = add_missing_flow_by_fields(df, flow_by_activity_fields)
+        df = assign_fips_location_system(df, str(args['year']))
 
         df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
 
-    df = pd.concat(cleaned_list)
-    # Remove commas from numbers again in case any were missed:
-    df["FlowAmount"].replace(',', '', regex=True, inplace=True)
+    if cleaned_list:
+        df = pd.concat(cleaned_list)
+        # Remove commas from numbers again in case any were missed:
+        df["FlowAmount"].replace(',', '', regex=True, inplace=True)
+    else:
+        df = pd.DataFrame()
 
     return df
+
