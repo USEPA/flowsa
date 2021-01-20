@@ -120,10 +120,10 @@ def filter_by_geoscale(df, geoscale):
 
     fips = create_geoscale_list(df, geoscale)
 
-    df = df[df['Location'].isin(fips)]
+    df = df[df['Location'].isin(fips)].reset_index(drop=True)
 
     if len(df) == 0:
-        log.error("No flows found in the " + " flow dataset at the " + geoscale + " scale.")
+        log.error("No flows found in the " + " flow dataset at the " + geoscale + " scale")
     else:
         return df
 
