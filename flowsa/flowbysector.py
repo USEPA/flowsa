@@ -30,7 +30,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_sub
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, fba_mapped_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, harmonize_units, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
-    filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, \
+    filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, harmonize_FBS_columns, \
     sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities, collapse_activity_fields
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
@@ -427,6 +427,8 @@ def main(method_name):
     log.info("Clean final dataframe")
     # aggregate df as activities might have data for the same specified sector length
     fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
+    # prior to aggregating, replace MetaSources string with all sources that share context/flowable/sector values
+    fbss = harmonize_FBS_columns(fbss)
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     log.info("Sort and store dataframe")
