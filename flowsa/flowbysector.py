@@ -193,6 +193,8 @@ def main(method_name):
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
                     flow_subset_mapped = getattr(sys.modules[__name__],
                                                  v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped, attr, method)
+                # rename SourceName to MetaSources
+                flow_subset_mapped = flow_subset_mapped.rename(columns={'SourceName': 'MetaSources'})
 
                 # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
                 # dataframe to create sector allocation ratios
