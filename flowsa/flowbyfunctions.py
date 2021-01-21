@@ -1180,4 +1180,7 @@ def harmonize_FBS_columns(df):
     harmonized_df = df.merge(df_sub, how='left')
     harmonized_df = replace_strings_with_NoneType(harmonized_df)
 
+    # ensure correct order of df
+    harmonized_df = clean_df(harmonized_df, flow_by_sector_fields, fbs_fill_na_dict)
+
     return harmonized_df
