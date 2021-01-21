@@ -100,6 +100,7 @@ EIA_MER:
 EIA_GHG_Inventory:
   class:
     - Chemicals
+    - Energy
     - Other
   sector-like_activities: False
   activity_schema:
