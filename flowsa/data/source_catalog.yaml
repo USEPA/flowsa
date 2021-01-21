@@ -97,9 +97,10 @@ EIA_MER:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
-EIA_GHG_Inventory:
+EPA_GHG_Inventory:
   class:
     - Chemicals
+    - Energy
     - Other
   sector-like_activities: False
   activity_schema:

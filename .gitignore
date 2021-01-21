@@ -1,1 +1,4 @@
 *.parquet
+.idea
+venv
+.venv
