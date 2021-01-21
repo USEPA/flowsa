@@ -1145,9 +1145,6 @@ def harmonize_FBS_columns(df):
     :return: FBS df with harmonized values/strings in columns
     """
 
-    # test
-    # df = fbss.copy()
-
     # harmonize LocationSystem column
     log.info('Drop year in LocationSystem')
     if df['LocationSystem'].str.contains('FIPS').all():
@@ -1177,6 +1174,7 @@ def harmonize_FBS_columns(df):
     # combine/sum columns that share the same data other than Metasources, combining MetaSources string in process
     df_sub = df_sub.groupby(group_no_meta)['MetaSources'].apply(', '.join).reset_index()
     # drop the MetaSources col in original df and replace with the MetaSources col in df_sub
+    df = df.drop('MetaSources', 1)
     harmonized_df = df.merge(df_sub, how='left')
     harmonized_df = replace_strings_with_NoneType(harmonized_df)
 
