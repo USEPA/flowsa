@@ -56,9 +56,9 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     if 'NEI' in inventory_list:
         df = reassign_airplane_emissions(df, inventory_dict['NEI'], NAICS_level_value)
         
+    df['MetaSources'] = df['Source']
+    
     fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
-
-    fbs['MetaSources'] = "/".join(inventory_list)
 
     return fbs
 
