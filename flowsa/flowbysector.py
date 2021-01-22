@@ -425,7 +425,7 @@ def main(method_name):
     log.info("Concat data for all activities")
     fbss = pd.concat(fbs_list, ignore_index=True, sort=False)
     log.info("Clean final dataframe")
-    # add missing fields, ensure correct data type, reorder columns
+    # add missing fields, ensure correct data type, add missing columns, reorder columns
     fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     # prior to aggregating, replace MetaSources string with all sources that share context/flowable/sector values
     fbss = harmonize_FBS_columns(fbss)
@@ -433,6 +433,8 @@ def main(method_name):
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     log.info("Sort and store dataframe")
+    # ensure correct data types/order of columns
+    fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file

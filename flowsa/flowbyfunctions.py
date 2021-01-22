@@ -19,6 +19,7 @@ fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
 
 fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
+fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
 
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
@@ -857,7 +858,6 @@ def collapse_fbs_sectors(fbs):
     :param fbs: a standard FlowBySector (format)
     :return:
     """
-
     # ensure correct datatypes and order
     fbs = clean_df(fbs, flow_by_sector_fields, fbs_fill_na_dict)
 
@@ -872,13 +872,11 @@ def collapse_fbs_sectors(fbs):
 
     # drop sector consumed/produced by columns
     fbs_collapsed = fbs.drop(columns=['SectorProducedBy', 'SectorConsumedBy'])
-    # reorder df columns and ensure correct datatype
-    fbs_collapsed = add_missing_flow_by_fields(fbs_collapsed, flow_by_sector_collapsed_fields)
     # aggregate
     fbs_collapsed = aggregator(fbs_collapsed, fbs_collapsed_default_grouping_fields)
     # sort dataframe
-    fbs_collapsed = fbs_collapsed.sort_values(
-        ['Location', 'Flowable', 'Context', 'Sector']).reset_index(drop=True)
+    fbs_collapsed = clean_df(fbs_collapsed, flow_by_sector_collapsed_fields, fbs_collapsed_fill_na_dict)
+    fbs_collapsed = fbs_collapsed.sort_values(['Sector', 'Flowable', 'Context', 'Location']).reset_index(drop=True)
 
     return fbs_collapsed
 
@@ -1177,8 +1175,5 @@ def harmonize_FBS_columns(df):
     df = df.drop('MetaSources', 1)
     harmonized_df = df.merge(df_sub, how='left')
     harmonized_df = replace_strings_with_NoneType(harmonized_df)
-
-    # ensure correct order of df
-    harmonized_df = clean_df(harmonized_df, flow_by_sector_fields, fbs_fill_na_dict)
 
     return harmonized_df
