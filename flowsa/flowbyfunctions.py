@@ -1165,6 +1165,8 @@ def harmonize_FBS_columns(df):
     string_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',  'SectorSourceName', 'Context',
                    'Location', 'LocationSystem', 'Unit', 'FlowType', 'Year', 'MeasureofSpread', 'MetaSources']
     df_sub = df[string_cols].drop_duplicates().reset_index(drop=True)
+    # sort df
+    df_sub = df_sub.sort_values(['MetaSources', 'SectorProducedBy', 'SectorConsumedBy']).reset_index(drop=True)
 
     # new group cols
     group_no_meta = [e for e in string_cols if e not in ('MetaSources')]
