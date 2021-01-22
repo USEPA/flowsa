@@ -117,6 +117,29 @@ def parse_data(dataframe_list, args):
         return df
 
 
+def process_data_frame(df, source, year):
+    """
+    Process the given dataframe, cleaning, converting data, and writing the final parquet.
+
+    This method was written to move code into a shared method, which was necessary to support
+    the processing of a list of dataframes instead of a single dataframe.
+    """
+    # log that data was retrieved
+    log.info("Retrieved data for " + source + ' ' + year)
+    # add any missing columns of data and cast to appropriate data type
+    log.info("Add any missing columns and check field datatypes")
+    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+    # modify flow units
+    flow_df = convert_fba_unit(flow_df)
+    # sort df and reset index
+    flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
+                                   'FlowName', 'Compartment']).reset_index(drop=True)
+    # save as parquet file
+    log.info('Save dataframe as parquet')
+    parquet_name = source + '_' + year
+    store_flowbyactivity(flow_df, parquet_name)
+
+
 if __name__ == '__main__':
     # assign arguments
     args = parse_args()
@@ -145,18 +168,14 @@ if __name__ == '__main__':
         # concat the dataframes and parse data with specific instructions from source.py
         log.info("Concat dataframe list and parse data")
         df = parse_data(dataframe_list, args)
-        # log that data was retrieved
-        log.info("Retrieved data for " + args['source'] + ' ' + args['year'])
-        # add any missing columns of data and cast to appropriate data type
-        log.info("Add any missing columns and check field datatypes")
-        flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-        # modify flow units
-        flow_df = convert_fba_unit(flow_df)
-        # sort df and reset index
-        flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
-                                       'FlowName', 'Compartment']).reset_index(drop=True)
-        # save as parquet file
-        log.info('Save dataframe as parquet')
-        parquet_name = args['source'] + '_' + args['year']
-        store_flowbyactivity(flow_df, parquet_name)
-
+        if isinstance(df, list):
+            for frame in df:
+                if not len(frame.index) == 0:
+                    try:
+                        source_names = frame['SourceName']
+                        source_name = source_names.iloc[0]
+                    except KeyError as err:
+                        source_name = args['source']
+                    process_data_frame(frame, source_name, args['year'])
+        else:
+            process_data_frame(df, args['source'], args['year'])
