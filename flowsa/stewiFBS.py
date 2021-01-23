@@ -87,7 +87,8 @@ def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None)
     if compartments != None:
         df = df[df['Compartment'].isin(compartments)]
     facility_mapping = extract_facility_data(inventory_dict)
-    facility_mapping['NAICS'] =  facility_mapping['NAICS'].astype(str)
+    # Convert NAICS to string (first to int to avoid decimals)
+    facility_mapping['NAICS'] =  facility_mapping['NAICS'].astype(int).astype(str)
     facility_mapping = naics_expansion(facility_mapping)
 
     # merge dataframes to assign facility information based on facility IDs
