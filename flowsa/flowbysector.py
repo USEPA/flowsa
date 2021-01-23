@@ -30,7 +30,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_sub
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, fba_mapped_default_grouping_fields, agg_by_geoscale, \
     fba_fill_na_dict, fbs_fill_na_dict, fba_default_grouping_fields, harmonize_units, \
     fbs_activity_fields, allocate_by_sector, allocation_helper, sector_aggregation, \
-    filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, \
+    filter_by_geoscale, aggregator, clean_df, subset_df_by_geoscale, harmonize_FBS_columns, \
     sector_disaggregation, return_activity_from_scale, fbs_grouping_fields_w_activities, collapse_activity_fields
 from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, \
     check_if_data_exists_at_less_aggregated_geoscale, check_if_location_systems_match, \
@@ -47,7 +47,7 @@ from flowsa.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_alloc
     mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs, mecs_land_clean_allocation_mapped_fba_w_sec
 from flowsa.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
 from flowsa.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
-from flowsa.stewi import stewicombo_to_sector, stewi_to_sector
+from flowsa.stewiFBS import stewicombo_to_sector, stewi_to_sector
 from flowsa.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas, allocate_usda_ers_mlu_other_land,\
     allocate_usda_ers_mlu_land_in_rural_transportation_areas
@@ -193,6 +193,8 @@ def main(method_name):
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
                     flow_subset_mapped = getattr(sys.modules[__name__],
                                                  v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped, attr, method)
+                # rename SourceName to MetaSources
+                flow_subset_mapped = flow_subset_mapped.rename(columns={'SourceName': 'MetaSources'})
 
                 # if allocation method is "direct", then no need to create alloc ratios, else need to use allocation
                 # dataframe to create sector allocation ratios
@@ -423,12 +425,16 @@ def main(method_name):
     log.info("Concat data for all activities")
     fbss = pd.concat(fbs_list, ignore_index=True, sort=False)
     log.info("Clean final dataframe")
-    # aggregate df as activities might have data for the same specified sector length
+    # add missing fields, ensure correct data type, add missing columns, reorder columns
     fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
+    # prior to aggregating, replace MetaSources string with all sources that share context/flowable/sector values
+    fbss = harmonize_FBS_columns(fbss)
+    # aggregate df as activities might have data for the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     # sort df
     log.info("Sort and store dataframe")
-    # add missing fields, ensure correct data type, reorder columns
+    # ensure correct data types/order of columns
+    fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file

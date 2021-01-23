@@ -179,7 +179,8 @@ flow_by_sector_fields = {'Flowable': [{'dtype': 'str'}, {'required': True}],
                          'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                          'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
-                         'DataCollection': [{'dtype': 'float'}, {'required': True}]
+                         'DataCollection': [{'dtype': 'float'}, {'required': True}],
+                         'MetaSources': [{'dtype': 'str'}, {'required': True}]
                          }
 
 flow_by_sector_fields_w_activity = flow_by_sector_fields.copy()
@@ -206,7 +207,8 @@ flow_by_sector_collapsed_fields = {'Flowable': [{'dtype': 'str'}, {'required': T
                                    'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
                                    'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
                                    'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
-                                   'DataCollection': [{'dtype': 'float'}, {'required': True}]
+                                   'DataCollection': [{'dtype': 'float'}, {'required': True}],
+                                   'MetaSources': [{'dtype': 'str'}, {'required': True}]
                                    }
 
 flow_by_activity_wsec_mapped_fields = {'Class': [{'dtype': 'str'}, {'required': True}],

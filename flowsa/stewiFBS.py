@@ -56,6 +56,8 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     if 'NEI' in inventory_list:
         df = reassign_airplane_emissions(df, inventory_dict['NEI'], NAICS_level_value)
         
+    df['MetaSources'] = df['Source']
+    
     fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
 
     return fbs
@@ -80,6 +82,7 @@ def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None)
     for database, year in inventory_dict.items():
         inv = stewi.getInventory(database, year, filter_for_LCI=True, US_States_Only=True)
         inv['Year'] = year
+        inv['MetaSources'] = database
         df = df.append(inv)
     if compartments != None:
         df = df[df['Compartment'].isin(compartments)]
@@ -190,6 +193,8 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
 
     # assign grouping variables based on desired geographic aggregation level
     grouping_vars = ['NAICS_lvl', 'FlowName', 'Compartment', 'Location']
+    if 'MetaSources' in df:
+        grouping_vars.append('MetaSources')
 
     # aggregate by NAICS code, FlowName, compartment, and geographic level
     fbs = df.groupby(grouping_vars).agg({'FlowAmount':'sum', 
