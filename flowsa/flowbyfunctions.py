@@ -19,6 +19,7 @@ fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
 
 fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
+fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
 
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
@@ -120,10 +121,10 @@ def filter_by_geoscale(df, geoscale):
 
     fips = create_geoscale_list(df, geoscale)
 
-    df = df[df['Location'].isin(fips)]
+    df = df[df['Location'].isin(fips)].reset_index(drop=True)
 
     if len(df) == 0:
-        log.error("No flows found in the " + " flow dataset at the " + geoscale + " scale.")
+        log.error("No flows found in the " + " flow dataset at the " + geoscale + " scale")
     else:
         return df
 
@@ -857,7 +858,6 @@ def collapse_fbs_sectors(fbs):
     :param fbs: a standard FlowBySector (format)
     :return:
     """
-
     # ensure correct datatypes and order
     fbs = clean_df(fbs, flow_by_sector_fields, fbs_fill_na_dict)
 
@@ -872,13 +872,11 @@ def collapse_fbs_sectors(fbs):
 
     # drop sector consumed/produced by columns
     fbs_collapsed = fbs.drop(columns=['SectorProducedBy', 'SectorConsumedBy'])
-    # reorder df columns and ensure correct datatype
-    fbs_collapsed = add_missing_flow_by_fields(fbs_collapsed, flow_by_sector_collapsed_fields)
     # aggregate
     fbs_collapsed = aggregator(fbs_collapsed, fbs_collapsed_default_grouping_fields)
     # sort dataframe
-    fbs_collapsed = fbs_collapsed.sort_values(
-        ['Location', 'Flowable', 'Context', 'Sector']).reset_index(drop=True)
+    fbs_collapsed = clean_df(fbs_collapsed, flow_by_sector_collapsed_fields, fbs_collapsed_fill_na_dict)
+    fbs_collapsed = fbs_collapsed.sort_values(['Sector', 'Flowable', 'Context', 'Location']).reset_index(drop=True)
 
     return fbs_collapsed
 
@@ -1131,3 +1129,53 @@ def collapse_activity_fields(df):
     df = df.drop(columns=['ProducedBySectorType', 'ConsumedBySectorType'])
 
     return df
+
+
+def harmonize_FBS_columns(df):
+    """
+    For FBS use in USEEIOR, harmonize the values in the columns
+    - LocationSystem: drop the year, so just 'FIPS'
+    - MeasureofSpread: tmp set to NoneType as values currently misleading
+    - Spread: tmp set to 0 as values currently misleading
+    - DistributionType: tmp set to NoneType as values currently misleading
+    - MetaSources: Combine strings for rows where class/context/flowtype/flowable/etc. are equal
+    :param df: FBS dataframe with mixed values/strings in columns
+    :return: FBS df with harmonized values/strings in columns
+    """
+
+    # harmonize LocationSystem column
+    log.info('Drop year in LocationSystem')
+    if df['LocationSystem'].str.contains('FIPS').all():
+        df = df.assign(LocationSystem='FIPS')
+    # harmonize MeasureofSpread
+    log.info('Reset MeasureofSpread to NoneType')
+    df = df.assign(MeasureofSpread=None)
+    # reset spread, as current values are misleading
+    log.info('Reset Spread to 0')
+    df = df.assign(Spread=0)
+    # harmonize Distributiontype
+    log.info('Reset DistributionType to NoneType')
+    df = df.assign(DistributionType=None)
+
+    # harmonize metasources
+    log.info('Harmonize MetaSources')
+    df = replace_NoneType_with_empty_cells(df)
+
+    # subset all string cols of the df and drop duplicates
+    string_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',  'SectorSourceName', 'Context',
+                   'Location', 'LocationSystem', 'Unit', 'FlowType', 'Year', 'MeasureofSpread', 'MetaSources']
+    df_sub = df[string_cols].drop_duplicates().reset_index(drop=True)
+    # sort df
+    df_sub = df_sub.sort_values(['MetaSources', 'SectorProducedBy', 'SectorConsumedBy']).reset_index(drop=True)
+
+    # new group cols
+    group_no_meta = [e for e in string_cols if e not in ('MetaSources')]
+
+    # combine/sum columns that share the same data other than Metasources, combining MetaSources string in process
+    df_sub = df_sub.groupby(group_no_meta)['MetaSources'].apply(', '.join).reset_index()
+    # drop the MetaSources col in original df and replace with the MetaSources col in df_sub
+    df = df.drop('MetaSources', 1)
+    harmonized_df = df.merge(df_sub, how='left')
+    harmonized_df = replace_strings_with_NoneType(harmonized_df)
+
+    return harmonized_df

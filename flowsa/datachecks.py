@@ -335,7 +335,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     from flowsa.flowbyfunctions import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 
     # subset fba df
-    fba = fba_load[['Class', 'SourceName', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
+    fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
                     'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
                     'FlowAmount']].drop_duplicates().reset_index(drop=True)
     fba.loc[:, 'Location'] = US_FIPS
