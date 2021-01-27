@@ -8,7 +8,7 @@ from flowsa.flowbyfunctions import fba_fill_na_dict, harmonize_units, fba_activi
     fbs_activity_fields, clean_df, create_geoscale_list, sector_disaggregation, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk_w_nonnaics, \
-    load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath
+    load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath, activity_fields
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -544,3 +544,48 @@ def check_for_negative_flowamounts(df):
         log.warning('There are negative FlowAmounts')
 
     return df
+
+
+def check_if_sectors_are_naics(df, sectorsourcename):
+    """
+    Check if activity-like sectors are in fact sectors. Also works for the Sector column
+    :return:
+    """
+    # test
+    # df = fbs.copy()
+    # sectorsourcename = 'NAICS_2012_Code'
+
+    # drop NoneType
+    df = replace_NoneType_with_empty_cells(df)
+
+    # load the mastercroswalk and subset by sectorsourcename, save values to list
+    cw_load = load_sector_crosswalk()
+    cw = cw_load[sectorsourcename].drop_duplicates().tolist()
+
+    # determine which headers are in the df
+    possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
+    # # list of column headers that do exist in the df being aggregated
+    column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
+
+    # create a df of non-sectors to export
+    non_sectors_df = pd.DataFrame()
+    # create a df of just the non-sectors column
+    non_sectors_list = pd.DataFrame()
+    # loop through the df headers and determine if value is not in crosswalk list
+    for c in column_headers:
+        non_sectors = df[~df[c].isin(cw)]
+        # drop rows where c is empty
+        non_sectors = non_sectors[non_sectors[c] != '']
+        non_sectors_df.append(non_sectors)
+        # subset to just the sector column
+        if len(non_sectors) != 0:
+            sectors = non_sectors[[c]].rename(columns={c: 'NonSectors'})
+            non_sectors_list.append(sectors)
+
+    if len(non_sectors_df) != 0:
+        # print the NonSectors
+        non_sectors = non_sectors_list['NonSectors'].drop_duplicates().tolist()
+        log.info('There are sectors that are not NAICS')
+        print(non_sectors)
+
+    return None

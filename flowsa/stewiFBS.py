@@ -14,6 +14,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow
 from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk_w_nonnaics
+from flowsa.datachecks import check_if_sectors_are_naics
 
 def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     """
@@ -30,6 +31,12 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
 
     import stewicombo
     from flowsa.EPA_NEI import drop_GHGs
+
+    # test
+    # inventory_dict ={"TRI":"2017"}       # inventory_dict
+    # NAICS_level = 'NAICS_6'            # NAICS_level
+    # geo_scale = 'national'           # geo_scale
+    # compartments = ['soil']             # compartments
 
     NAICS_level_value=sector_level_key[NAICS_level]
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
@@ -185,7 +192,7 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     return all_NAICS
 
 def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
-    from stewi.globals import weighted_average    
+    from stewi.globals import weighted_average
 
     # update location to appropriate geoscale prior to aggregating
     df.dropna(subset=['Location'], inplace=True)
@@ -227,6 +234,9 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
 
     # sort dataframe and reset index
     fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
+
+    log.info('check sectors')
+    check_if_sectors_are_naics(fbs, 'NAICS_2012_Code')
 
     return fbs 
 

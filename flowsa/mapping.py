@@ -9,6 +9,7 @@ import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
 from flowsa.flowbyfunctions import fbs_activity_fields, fba_activity_fields, load_sector_length_crosswalk_w_nonnaics
+from flowsa.datachecks import check_if_sectors_are_naics
 
 def get_activitytosector_mapping(source):
     """
@@ -35,6 +36,9 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :param kwargs: option to include the parameter 'allocationmethod', which modifies function behavoir if = 'direct'
     :return: a df with activity fields mapped to 'sectors'
     """
+
+    # test
+    # flowbyactivity_df = flows_subset_geo.copy()
 
     mappings = []
 
@@ -87,6 +91,9 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
             # Include all digits of naics in mapping, if levelofNAICSagg is specified as "aggregated"
             if levelofSectoragg == 'aggregated':
                 mapping = expand_naics_list(mapping, sectorsourcename)
+        # if activities are sector-like check that the sectors are in the crosswalk
+        if src_info['sector-like_activities']:
+            check_if_sectors_are_naics(mapping, sectorsourcename)
         mappings.append(mapping)
     mappings_df = pd.concat(mappings, sort=False)
     # Merge in with flowbyactivity by
