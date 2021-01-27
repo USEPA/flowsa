@@ -24,6 +24,7 @@ TemporalCorrelation |  Numeric | Y | A 1-5 score of data collection based on rep
 GeographicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
 TechnologicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
 DataCollection | Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
+MetaSources | String | Y | The major data source(s) value is based on, usually a FlowByActivity set.
 
 * At minimum, either SectorProducedBy or SectorConsumedBy must be present. 
 If there is a transfer between sectors, both must be present.
