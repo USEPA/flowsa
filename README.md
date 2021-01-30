@@ -3,6 +3,9 @@
 flowsa attributes resource use, waste, emissions, and loss to economic sectors. It produces standard tabular formats with
 sector attribution data using pandas dataframes.
 
+## Installation, Examples, Detailed Documentation
+For installation instructions, example code, and further explanation of the code, see the [wiki](https://github.com/USEPA/flowsa/wiki).
+
 ## Terms
 
 _flows_: represent the physical movement of material, energy, entities or money as input or output to or between activities.
