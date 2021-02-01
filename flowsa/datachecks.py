@@ -546,55 +546,40 @@ def check_for_negative_flowamounts(df):
     return df
 
 
-def check_if_sector_are_naics(df, sectorsourcename):
+def check_if_sectors_are_naics(df, crosswalk_list, column_headers):
     """
     Check if activity-like sectors are in fact sectors. Also works for the Sector column
     :return:
     """
-    # test
-    # df = fbs.copy()
-    # sectorsourcename = 'NAICS_2012_Code'
-
-    # drop NoneType
-    df = replace_NoneType_with_empty_cells(df)
-
-    # load the mastercroswalk and subset by sectorsourcename, save values to list
-    cw_load = load_sector_crosswalk()
-    cw = cw_load[sectorsourcename].drop_duplicates().tolist()
-
-    # determine which headers are in the df
-    possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
-    # # list of column headers that do exist in the df being aggregated
-    column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
 
     # create a df of non-sectors to export
     non_sectors_df = []
-    # create a df of sectors to export
-    sectors_df = []
     # create a df of just the non-sectors column
     non_sectors_list = []
     # loop through the df headers and determine if value is not in crosswalk list
     for c in column_headers:
-        # create df where
-        non_sectors = df[~df[c].isin(cw)]
+        # create df where sectors do not exist in master crosswalk
+        non_sectors = df[~df[c].isin(crosswalk_list)]
         # drop rows where c is empty
         non_sectors = non_sectors[non_sectors[c] != '']
-        non_sectors_df.append(non_sectors)
         # subset to just the sector column
         if len(non_sectors) != 0:
             sectors = non_sectors[[c]].rename(columns={c: 'NonSectors'})
+            non_sectors_df.append(non_sectors)
             non_sectors_list.append(sectors)
 
     if len(non_sectors_df) != 0:
         # concat the df and the df of sectors
-        ns_df = pd.concat(non_sectors_df, sort=False, ignore_index=True)
+        # ns_df = pd.concat(non_sectors_df, sort=False, ignore_index=True)
         ns_list = pd.concat(non_sectors_list, sort=False, ignore_index=True)
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
-        log.info('There are sectors that are not NAICS')
+        log.info('There are sectors that are not NAICS 2012 Codes')
         print(non_sectors)
+    else:
+        log.info('All sectors are NAICS 2012 Codes')
 
-    return ns_df
+    return non_sectors_df
 
 
 
@@ -629,57 +614,58 @@ def melt_naics_07_to_17_crosswalk():
 
 
 
+def replace_naics_w_naics_2012(df, sectorsourcename):
+    """
+    Check if activity-like sectors are in fact sectors. Also works for the Sector column
+    :return:
+    """
 
+    # drop NoneType
+    df = replace_NoneType_with_empty_cells(df)
 
-# def replace_naics_with_naics_2012(df):
-#     """
-#     If there are sectors that are not NAICS 2012, check if the NAICS exist for another NAICS year (2007 or 2017)
-#     and replace with NAICS 2012
-#
-#     Datafra
-#     :param df:
-#     :param sectorsourcename:
-#     :return:
-#     """
-#
-#     # test
-#     df = ns_df.copy()
-#
-#     # load the mastercroswalk and subset by sectorsourcename, save values to list
-#     cw_load = load_sector_crosswalk()
-#
-#     # create melt table of possible 2007 and 2017 naics that can be mapped to 2012
-#     cw_melt = cw_load.melt(id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
-#     # drop the naics year because not relevant for replacement purposes
-#     cw_replacement = cw_melt.dropna(how='any')
-#     cw_replacement = cw_replacement[['NAICS_2012_Code', 'NAICS']].drop_duplicates()
-#     # drop rows where contents are equal
-#     cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'] != cw_replacement['NAICS']]
-#     # drop rows where length > 6
-#     cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'].apply(lambda x: len(x) < 7)].reset_index(drop=True)
-#
-#     # determine which headers are in the df
-#     possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
-#     column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
-#
-#     # loop through column headers, determine if value represents a different NAICS year
-#     for c in column_headers:
-#         # test
-#         c = 'SectorProducedBy'
-#         # merge the df with the melt of cw
-#         df = df.merge(cw_replacement, left_on=[c], right_on=['NAICS'], how='left')
-#         # if the value in 'NAICS_2012_Code' exists, then replace value currently in c
-#         df = replace_NoneType_with_empty_cells(df)
-#         df[c] = df.apply(lambda x: x['NAICS_2012_Code'] if x['NAICS_2012_Code'] != '' else x[c], axis=1)
-#         # drop cols
-#         df = df.drop(columns=['NAICS_2012_Code', 'NAICS'])
-#
-#     return df
-#
-# def check_and_replace_naics_with_naics_2012():
-#
-#
-#     return None
+    # load the mastercroswalk and subset by sectorsourcename, save values to list
+    cw_load = load_sector_crosswalk()
+    cw = cw_load[sectorsourcename].drop_duplicates().tolist()
+
+    # load melted crosswalk
+    cw_melt = melt_naics_07_to_17_crosswalk()
+    # drop the count column
+    cw_melt = cw_melt.drop(columns='naics_count')
+
+    # determine which headers are in the df
+    possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
+    # # list of column headers that do exist in the df being aggregated
+    column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
+
+    # check if there are any sectors that are not in the naics 2012 crosswalk
+    non_naics2012 = check_if_sectors_are_naics(df, cw, column_headers)
+
+    # create a df of non-sectors to export
+    # non_sectors_df = []
+    # # create a df of just the non-sectors column
+    # non_sectors_list = []
+    # loop through the df headers and determine if value is not in crosswalk list
+    if len(non_naics2012) != 0:
+        log.info('Checking if sectors represent a different NAICS year, if so, replace with NAICS 2012')
+        for c in column_headers:
+            # merge df with the melted sector crosswalk
+            df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
+            # if there is a value in the 'NAICS_2012_Code' column, use that value to replace sector in column c
+            df.loc[df[c] == df['NAICS'], c] = df['NAICS_2012_Code']
+            # multiply the FlowAmount col by allocation_ratio
+            df.loc[df[c] == df['NAICS_2012_Code'], 'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
+            # drop columns
+            df = df.drop(columns=['NAICS_2012_Code', 'NAICS', 'allocation_ratio'])
+        log.info('Replaced NAICS with NAICS 2012 Codes')
+
+        # check if there are any sectors that are not in the naics 2012 crosswalk
+        log.info('Check again for non NAICS 2012 Codes')
+        check_if_sectors_are_naics(df, cw, column_headers)
+
+    else:
+        log.info('No sectors require substitution')
+
+    return df
 
 
 def compare_remote_to_local_parquet(DataCommonsParquetName, LocalParquetName, FileFormat):
