@@ -546,14 +546,14 @@ def check_for_negative_flowamounts(df):
     return df
 
 
-def check_if_sectors_are_naics(df, sectorsourcename):
+def check_if_sector_are_naics(df, sectorsourcename):
     """
     Check if activity-like sectors are in fact sectors. Also works for the Sector column
     :return:
     """
     # test
-    df = fbs.copy()
-    sectorsourcename = 'NAICS_2012_Code'
+    # df = fbs.copy()
+    # sectorsourcename = 'NAICS_2012_Code'
 
     # drop NoneType
     df = replace_NoneType_with_empty_cells(df)
@@ -575,6 +575,7 @@ def check_if_sectors_are_naics(df, sectorsourcename):
     non_sectors_list = []
     # loop through the df headers and determine if value is not in crosswalk list
     for c in column_headers:
+        # create df where
         non_sectors = df[~df[c].isin(cw)]
         # drop rows where c is empty
         non_sectors = non_sectors[non_sectors[c] != '']
@@ -593,22 +594,16 @@ def check_if_sectors_are_naics(df, sectorsourcename):
         log.info('There are sectors that are not NAICS')
         print(non_sectors)
 
-    return None
+    return ns_df
 
 
-def replace_naics_with_naics_2012(df):
+
+
+def melt_naics_07_to_17_crosswalk():
     """
-    If there are sectors that are not NAICS 2012, check if the NAICS exist for another NAICS year (2007 or 2017)
-    and replace with NAICS 2012
-
-    Datafra
-    :param df:
-    :param sectorsourcename:
+    Create a melt version of the naics 07 to 17 crosswalk to map naics to naics 2012
     :return:
     """
-
-    # test
-    # df = ns_df.copy()
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
     cw_load = load_sector_crosswalk()
@@ -622,30 +617,79 @@ def replace_naics_with_naics_2012(df):
     cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'] != cw_replacement['NAICS']]
     # drop rows where length > 6
     cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'].apply(lambda x: len(x) < 7)].reset_index(drop=True)
-
-    # determine which headers are in the df
-    possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
-    column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
-
-    # loop through column headers, determine if value represents a different NAICS year
-    for c in column_headers:
-        # test
-        # c = 'SectorProducedBy'
-        # merge the df with the melt of cw
-        df = df.merge(cw_replacement, left_on=[c], right_on=['NAICS'], how='left')
-        # if the value in 'NAICS_2012_Code' exists, then replace value currently in c
-        df = replace_NoneType_with_empty_cells(df)
-        df[c] = df.apply(lambda x: x['NAICS_2012_Code'] if x['NAICS_2012_Code'] != '' else x[c], axis=1)
-        # drop cols
-        df = df.drop(columns=['NAICS_2012_Code', 'NAICS'])
-
-    return df
+    # order by naics 2012
+    cw_replacement = cw_replacement.sort_values(['NAICS', 'NAICS_2012_Code']).reset_index(drop=True)
 
 
-def check_for_and_replace_naics_with_naics_2012():
+    # create allocation ratios by determining number of NAICS 2012 to other naics when not a 1:1 ratio
+    cw_replacement_2 = cw_replacement.assign(naics_count=cw_replacement.groupby(['NAICS'])['NAICS_2012_Code'].transform('count'))
+    cw_replacement_2 = cw_replacement_2.assign(allocation_ratio=1/cw_replacement_2['naics_count'])
+
+    return cw_replacement_2
+
+
+
+
+
+# def replace_naics_with_naics_2012(df):
+#     """
+#     If there are sectors that are not NAICS 2012, check if the NAICS exist for another NAICS year (2007 or 2017)
+#     and replace with NAICS 2012
+#
+#     Datafra
+#     :param df:
+#     :param sectorsourcename:
+#     :return:
+#     """
+#
+#     # test
+#     df = ns_df.copy()
+#
+#     # load the mastercroswalk and subset by sectorsourcename, save values to list
+#     cw_load = load_sector_crosswalk()
+#
+#     # create melt table of possible 2007 and 2017 naics that can be mapped to 2012
+#     cw_melt = cw_load.melt(id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
+#     # drop the naics year because not relevant for replacement purposes
+#     cw_replacement = cw_melt.dropna(how='any')
+#     cw_replacement = cw_replacement[['NAICS_2012_Code', 'NAICS']].drop_duplicates()
+#     # drop rows where contents are equal
+#     cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'] != cw_replacement['NAICS']]
+#     # drop rows where length > 6
+#     cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'].apply(lambda x: len(x) < 7)].reset_index(drop=True)
+#
+#     # determine which headers are in the df
+#     possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
+#     column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
+#
+#     # loop through column headers, determine if value represents a different NAICS year
+#     for c in column_headers:
+#         # test
+#         c = 'SectorProducedBy'
+#         # merge the df with the melt of cw
+#         df = df.merge(cw_replacement, left_on=[c], right_on=['NAICS'], how='left')
+#         # if the value in 'NAICS_2012_Code' exists, then replace value currently in c
+#         df = replace_NoneType_with_empty_cells(df)
+#         df[c] = df.apply(lambda x: x['NAICS_2012_Code'] if x['NAICS_2012_Code'] != '' else x[c], axis=1)
+#         # drop cols
+#         df = df.drop(columns=['NAICS_2012_Code', 'NAICS'])
+#
+#     return df
+#
+# def check_and_replace_naics_with_naics_2012():
+#
+#
+#     return None
+
+
+def compare_remote_to_local_parquet(DataCommonsParquetName, LocalParquetName, FileFormat):
     """
-
+    Compare a parquet on Data Commons to a parquet stored locally
+    :param DataCommonsParquetName:
+    :param LocalParquetName:
+    :param FileFormat: Either 'FlowByActivity' or 'FlowBySector'
     :return:
     """
+
 
     return None
