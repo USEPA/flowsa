@@ -668,7 +668,7 @@ def replace_naics_w_naics_2012(df, sectorsourcename):
     return df
 
 
-def compare_remote_to_local_parquet(DataCommonsParquetName, LocalParquetName, FileFormat):
+def compare_remote_to_local_FBS_parquet(DataCommonsParquetName, LocalParquetName):
     """
     Compare a parquet on Data Commons to a parquet stored locally
     :param DataCommonsParquetName:
@@ -676,6 +676,25 @@ def compare_remote_to_local_parquet(DataCommonsParquetName, LocalParquetName, Fi
     :param FileFormat: Either 'FlowByActivity' or 'FlowBySector'
     :return:
     """
+    import flowsa
+    from flowsa.flowbyfunctions import dataframe_difference
 
+    # test
+    # DataCommonsParquetName = 'Water_national_2015_m1'
+    # LocalParquetName = 'Water_national_2015_m1'
 
-    return None
+    # load remote file
+    df_remote = flowsa.getFlowBySector(DataCommonsParquetName, file_location='remote')
+    # load local file
+    df_local = flowsa.getFlowBySector((LocalParquetName))
+    # compare df
+    df_diff = dataframe_difference(df_remote, df_local)
+    # if no differences, print, if differences, provide df subset
+    if len(df_diff) == 0:
+        log.info('No differences between dataframes')
+    else:
+        log.info('Differences exist between dataframes')
+        df_diff = df_diff.sort_values(['Location', 'SectorProducedBy', 'SectorConsumedBy', 'Flowable',
+                                       'Context', ]).reset_index(drop=True)
+
+    return df_diff
