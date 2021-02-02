@@ -17,8 +17,10 @@ def getFlowByActivity(flowclass, years, datasource, geographic_level='all', file
     Retrieves stored data in the FlowByActivity format
     :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or
      ['Land', 'Other']
-    :param year: list, a list of years [2015], or [2010,20flowclass, years, datasource, geographic_level='all', file_location='local'11,2012]
+    :param year: list, a list of years [2015], or [2010,2011,2012]
     :param datasource: str, the code of the datasource.
+    :param geographic_level: 'all', 'national', 'state', 'county'. Default is 'all'
+    :param file_location: 'local' or 'remote'. Default is 'local'
     :return: a pandas DataFrame in FlowByActivity format
     """
     fbas = pd.DataFrame()
@@ -46,6 +48,7 @@ def getFlowBySector(methodname, file_location='local'):
     """
     Retrieves stored data in the FlowBySector format
     :param methodname: string, Name of an available method for the given class
+    :param file_location: 'local' or 'remote'. Default is 'local'
     :return: dataframe in flow by sector format
     """
 
