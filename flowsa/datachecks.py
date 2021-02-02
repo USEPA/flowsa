@@ -7,7 +7,7 @@ from flowsa.flowbyfunctions import fba_fill_na_dict, harmonize_units, fba_activi
     fba_default_grouping_fields, fbs_default_grouping_fields, aggregator, sector_aggregation, fbs_fill_na_dict, \
     fbs_activity_fields, clean_df, create_geoscale_list, sector_disaggregation, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
-from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk_w_nonnaics, \
+from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk, \
     load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath, activity_fields
 
 
@@ -242,7 +242,7 @@ def check_if_losing_sector_data(df, target_sector_level):
         # match sectors with target sector length sectors
 
         # import cw and subset to current sector length and target sector length
-        cw_load = load_sector_length_crosswalk_w_nonnaics()
+        cw_load = load_sector_length_crosswalk()
         nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
         cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
         # add column with counts
@@ -408,9 +408,10 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
     :return:
     """
 
-    from flowsa.flowbyfunctions import harmonize_units, subset_df_by_geoscale, sector_aggregation
+    from flowsa.flowbyfunctions import subset_df_by_geoscale, sector_aggregation
     from flowsa.common import load_source_catalog
     from flowsa.mapping import map_elementary_flows
+
 
     log.info('Comparing loaded FlowByActivity FlowAmount total to subset FlowBySector FlowAmount total')
 
@@ -418,8 +419,6 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
     cat = load_source_catalog()
     src_info = cat[source_name]
 
-    # harmonize units
-    # fba = harmonize_units(fba_load)
     # extract relevant geoscale data or aggregate existing data
     fba = subset_df_by_geoscale(fba_load, attr['allocation_from_scale'], method['target_geoscale'])
     # map loaded fba
@@ -441,7 +440,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
     group_cols = ['Class', 'Unit', 'Context', 'Location', 'LocationSystem']
     # fba
     fba = fba[col_subset]
-    fba_agg = aggregator(fba, group_cols)
+    fba_agg = aggregator(fba, group_cols).reset_index(drop=True)
     fba_agg.rename(columns={'FlowAmount': 'FBA_amount',
                             'Unit': 'FBA_unit'}, inplace=True)
 
@@ -460,6 +459,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
         # reorder
         df_merge = df_merge[['Class', 'Context', 'Location', 'LocationSystem', 'FBA_amount', 'FBA_unit',
                              'FBS_amount', 'FBS_unit', 'FlowAmount_difference', 'Percent_difference']]
+        df_merge = replace_NoneType_with_empty_cells(df_merge)
 
         # list of contexts
         context_list = df_merge['Context'].to_list()
@@ -619,7 +619,8 @@ def replace_naics_w_naics_2012(df, sectorsourcename):
     Check if activity-like sectors are in fact sectors. Also works for the Sector column
     :return:
     """
-
+    # test
+    # df = mapping.copy()
     # drop NoneType
     df = replace_NoneType_with_empty_cells(df)
 
@@ -640,10 +641,6 @@ def replace_naics_w_naics_2012(df, sectorsourcename):
     # check if there are any sectors that are not in the naics 2012 crosswalk
     non_naics2012 = check_if_sectors_are_naics(df, cw, column_headers)
 
-    # create a df of non-sectors to export
-    # non_sectors_df = []
-    # # create a df of just the non-sectors column
-    # non_sectors_list = []
     # loop through the df headers and determine if value is not in crosswalk list
     if len(non_naics2012) != 0:
         log.info('Checking if sectors represent a different NAICS year, if so, replace with NAICS 2012')
