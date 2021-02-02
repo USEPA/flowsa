@@ -7,71 +7,82 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 
 import pandas as pd
-from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log
+import os
+from flowsa.common import outputpath, fbaoutputpath, fbsoutputpath, datapath, log
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 
-
-def getFlowByActivity(flowclass, years, datasource, geographic_level='all'):
+def getFlowByActivity(flowclass, years, datasource, geographic_level='all', file_location='local'):
     """
     Retrieves stored data in the FlowByActivity format
     :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or
      ['Land', 'Other']
     :param year: list, a list of years [2015], or [2010,2011,2012]
     :param datasource: str, the code of the datasource.
-    :param geographic_level: default set to 'all', which will load all geographic scales in the FlowByActivity, can \
-    specify 'national', 'state', 'county'
+    :param geographic_level: 'all', 'national', 'state', 'county'. Default is 'all'
+    :param file_location: 'local' or 'remote'. Default is 'local'
     :return: a pandas DataFrame in FlowByActivity format
     """
-
     fbas = pd.DataFrame()
     for y in years:
-        # first try reading parquet from your local repo
-        try:
-            log.info('Loading ' + datasource + ' ' + str(y) +' parquet from local repository')
-            fba = pd.read_parquet(fbaoutputpath + datasource + "_" + str(y) + ".parquet")
-            fba = fba[fba['Class'].isin(flowclass)]
-            fbas = pd.concat([fbas, fba], sort=False)
-        except (OSError, FileNotFoundError):
-            # if parquet does not exist in local repo, read file from Data Commons
-            try:
-                log.info(datasource + ' parquet not found in local repo, loading from Data Commons')
-                fba = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' +
-                                      datasource + "_" + str(y) + '.parquet')
-                fba = fba[fba['Class'].isin(flowclass)]
-                fbas = pd.concat([fbas, fba], sort=False)
-            except FileNotFoundError:
-                log.error("No parquet file found for datasource " + datasource + "and year " + str(
-                    y) + " in flowsa or Data Commons")
-
-    # if geographic level specified, only load rows in geo level
-    if geographic_level != 'all':
-        fbas = filter_by_geoscale(fbas, geographic_level)
-
+        # definitions
+        fba_file = datasource + "_" + str(y) + ".parquet"
+        local_file_path = fbaoutputpath + fba_file
+        remote_file_path = 'https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' + fba_file
+        # load data
+        if file_location == 'local':
+            fba = load_file(fba_file, local_file_path, remote_file_path)
+        else:
+            log.info('Loading ' + datasource + ' from remote server')
+            fba = pd.read_parquet(remote_file_path)
+        fba = fba[fba['Class'].isin(flowclass)]
+        # if geographic level specified, only load rows in geo level
+        if geographic_level != 'all':
+            fba = filter_by_geoscale(fba, geographic_level)
+        # concat dfs
+        fbas = pd.concat([fbas, fba], sort=False)
     return fbas
 
 
-def getFlowBySector(methodname):
+def getFlowBySector(methodname, file_location='local'):
     """
     Retrieves stored data in the FlowBySector format
     :param methodname: string, Name of an available method for the given class
+    :param file_location: 'local' or 'remote'. Default is 'local'
     :return: dataframe in flow by sector format
     """
-    fbs = pd.DataFrame()
-    # first try reading parquet from your local repo
-    try:
-        log.info('Loading ' + methodname +' parquet from local repository')
-        fbs = pd.read_parquet(fbsoutputpath + methodname + ".parquet")
-    except (OSError, FileNotFoundError):
-        # if parquet does not exist in local repo, read file from Data Commons
-        try:
-            log.info(methodname + ' parquet not found in local repo, loading from Data Commons')
-            fbs = pd.read_parquet('https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/' +
-                                  methodname + ".parquet")
-        except FileNotFoundError:
-            log.error("No parquet file found for datasource " + methodname + " in flowsa or Data Commons")
+
+    # define fbs file
+    fbs_file = methodname + ".parquet"
+    local_file_path = fbsoutputpath + fbs_file
+    remote_file_path = 'https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/' + fbs_file
+
+    if file_location == 'local':
+        fbs = load_file(fbs_file, local_file_path, remote_file_path)
+    else:
+        log.info('Loading ' + methodname + ' from remote server')
+        fbs = pd.read_parquet(remote_file_path)
 
     return fbs
+
+
+def load_file(datafile, local_file, remote_file):
+    """
+    Loads a preprocessed file
+    :param datafile: a data file name with any preceeding relative file
+    :param paths: instance of class Paths
+    :return: a pandas dataframe of the datafile
+    """
+    if os.path.exists(local_file):
+        log.info('Loading ' + datafile + ' from local repository')
+        df = pd.read_parquet(local_file)
+    else:
+        try:
+            log.info(datafile + ' not found in local folder; loading from remote server...')
+            df = pd.read_parquet(remote_file)
+        except FileNotFoundError:
+            log.error("No file found for " + datafile)
+    return df
 
 
 def getFlowBySector_collapsed(methodname):

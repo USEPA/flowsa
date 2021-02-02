@@ -8,7 +8,8 @@ import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
-from flowsa.flowbyfunctions import fbs_activity_fields, fba_activity_fields, load_sector_length_crosswalk_w_nonnaics
+from flowsa.flowbyfunctions import fbs_activity_fields, fba_activity_fields, load_sector_length_crosswalk
+from flowsa.datachecks import replace_naics_w_naics_2012
 
 def get_activitytosector_mapping(source):
     """
@@ -35,60 +36,56 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :param kwargs: option to include the parameter 'allocationmethod', which modifies function behavoir if = 'direct'
     :return: a df with activity fields mapped to 'sectors'
     """
-
-    mappings = []
-
     # First check if source activities are NAICS like - if so make it into a mapping file
 
     cat = load_source_catalog()
 
-    for s in pd.unique(flowbyactivity_df['SourceName']):
-        # load catalog info for source
-        src_info = cat[s]
-        # if activities are sector-like, check if need to modify mapping
-        if 'modify_sector-like_activities' in src_info:
-            modify_sector_like_activities = src_info['modify_sector-like_activities']
-        else:
-            modify_sector_like_activities = False
-        # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
-        levelofSectoragg = src_info['sector_aggregation_level']
-        # if the FBS activity set is 'direct', overwrite the levelofsectoragg, or if specified in fxn call
-        if kwargs != {}:
-            if 'allocationmethod' in kwargs:
-                if kwargs['allocationmethod'] == 'direct':
-                    levelofSectoragg = 'disaggregated'
-            if 'overwrite_sectorlevel' in kwargs:
-                levelofSectoragg = kwargs['overwrite_sectorlevel']
-        # if data are provided in NAICS format, use the mastercrosswalk
-        if src_info['sector-like_activities'] and modify_sector_like_activities is False:
-            cw = load_sector_crosswalk()
-            sectors = cw.loc[:, [sector_source_name]]
-            # Create mapping df that's just the sectors at first
-            mapping = sectors.drop_duplicates()
-            # Add the sector twice as activities so mapping is identical
-            mapping = mapping.assign(Activity=sectors[sector_source_name])
-            mapping = mapping.rename(columns={sector_source_name: "Sector"})
-            # add columns so can run expand_naics_list_fxn
-            # if sector-like_activities = True, missing columns, so add
-            mapping['ActivitySourceName'] = s
-            # tmp assignment
-            mapping['SectorType'] = None
-            # Include all digits of naics in mapping, if levelofNAICSagg is specified as "aggregated"
-            if levelofSectoragg == 'aggregated':
-                mapping = expand_naics_list(mapping, sectorsourcename)
-        else:
-            # if source data activities are text strings, or sector-like activities should be modified, \
-            # call on the manually created source crosswalks
-            mapping = get_activitytosector_mapping(s)
-            # filter by SectorSourceName of interest
-            mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
-            # drop SectorSourceName
-            mapping = mapping.drop(columns=['SectorSourceName'])
-            # Include all digits of naics in mapping, if levelofNAICSagg is specified as "aggregated"
-            if levelofSectoragg == 'aggregated':
-                mapping = expand_naics_list(mapping, sectorsourcename)
-        mappings.append(mapping)
-    mappings_df = pd.concat(mappings, sort=False)
+    # for s in pd.unique(flowbyactivity_df['SourceName']):
+    s = pd.unique(flowbyactivity_df['SourceName'])[0]
+    # load catalog info for source
+    src_info = cat[s]
+    # if activities are sector-like, check if need to modify mapping
+    if 'modify_sector-like_activities' in src_info:
+        modify_sector_like_activities = src_info['modify_sector-like_activities']
+    else:
+        modify_sector_like_activities = False
+    # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
+    levelofSectoragg = src_info['sector_aggregation_level']
+    # if the FBS activity set is 'direct', overwrite the levelofsectoragg, or if specified in fxn call
+    if kwargs != {}:
+        if 'allocationmethod' in kwargs:
+            if kwargs['allocationmethod'] == 'direct':
+                levelofSectoragg = 'disaggregated'
+        if 'overwrite_sectorlevel' in kwargs:
+            levelofSectoragg = kwargs['overwrite_sectorlevel']
+    # if data are provided in NAICS format, use the mastercrosswalk
+    if src_info['sector-like_activities'] and modify_sector_like_activities is False:
+        cw = load_sector_crosswalk()
+        sectors = cw.loc[:, [sector_source_name]]
+        # Create mapping df that's just the sectors at first
+        mapping = sectors.drop_duplicates()
+        # Add the sector twice as activities so mapping is identical
+        mapping = mapping.assign(Activity=sectors[sector_source_name])
+        mapping = mapping.rename(columns={sector_source_name: "Sector"})
+        # add columns so can run expand_naics_list_fxn
+        # if sector-like_activities = True, missing columns, so add
+        mapping['ActivitySourceName'] = s
+        # tmp assignment
+        mapping['SectorType'] = None
+        # Include all digits of naics in mapping, if levelofNAICSagg is specified as "aggregated"
+        if levelofSectoragg == 'aggregated':
+            mapping = expand_naics_list(mapping, sectorsourcename)
+    else:
+        # if source data activities are text strings, or sector-like activities should be modified, \
+        # call on the manually created source crosswalks
+        mapping = get_activitytosector_mapping(s)
+        # filter by SectorSourceName of interest
+        mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
+        # drop SectorSourceName
+        mapping = mapping.drop(columns=['SectorSourceName'])
+        # Include all digits of naics in mapping, if levelofNAICSagg is specified as "aggregated"
+        if levelofSectoragg == 'aggregated':
+            mapping = expand_naics_list(mapping, sectorsourcename)
     # Merge in with flowbyactivity by
     flowbyactivity_wsector_df = flowbyactivity_df
     for k, v in activity_fields.items():
@@ -96,7 +93,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
         flowbyactivity_field = v[0]["flowbyactivity"]
         flowbysector_field = v[1]["flowbysector"]
         sector_type_field = sector_direction+'SectorType'
-        mappings_df_tmp = mappings_df.rename(columns={'Activity': flowbyactivity_field,
+        mappings_df_tmp = mapping.rename(columns={'Activity': flowbyactivity_field,
                                                       'Sector': flowbysector_field,
                                                       'SectorType': sector_type_field})
         # column doesn't exist for sector-like activities, so ignore if error occurs
@@ -107,6 +104,10 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.replace({np.nan: None})
     # add sector source name
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
+
+    # if activities are sector-like check that the sectors are in the crosswalk
+    if src_info['sector-like_activities']:
+        flowbyactivity_wsector_df = replace_naics_w_naics_2012(flowbyactivity_wsector_df, sectorsourcename)
 
     return flowbyactivity_wsector_df
 
@@ -124,11 +125,6 @@ def expand_naics_list(df, sectorsourcename):
     sectors = cw.loc[:, [sectorsourcename]]
     # drop duplicates
     sectors = sectors.drop_duplicates().dropna()
-    # add non-naics to sector list
-    household = load_household_sector_codes()
-    household = pd.DataFrame(household['Code'].drop_duplicates())
-    household.columns = [sectorsourcename]
-    sectors = sectors.append(household, sort=False).drop_duplicates().reset_index(drop=True)
     # drop rows that contain hyphenated sectors
     sectors = sectors[~sectors[sectorsourcename].str.contains("-")].reset_index(drop=True)
     # Ensure 'None' not added to sectors
@@ -284,7 +280,7 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
 
 def get_sector_list(sector_level):
 
-    cw = load_sector_length_crosswalk_w_nonnaics()
+    cw = load_sector_length_crosswalk()
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list

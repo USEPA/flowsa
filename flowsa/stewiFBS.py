@@ -13,7 +13,8 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow_by_fields
 from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
-    update_geoscale, log, load_sector_length_crosswalk_w_nonnaics
+    update_geoscale, log, load_sector_length_crosswalk
+from flowsa.datachecks import replace_naics_w_naics_2012
 
 def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     """
@@ -185,7 +186,7 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     return all_NAICS
 
 def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
-    from stewi.globals import weighted_average    
+    from stewi.globals import weighted_average
 
     # update location to appropriate geoscale prior to aggregating
     df.dropna(subset=['Location'], inplace=True)
@@ -228,6 +229,9 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     # sort dataframe and reset index
     fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
 
+    # check the sector codes to make sure NAICS 2012 codes
+    fbs = replace_naics_w_naics_2012(fbs, 'NAICS_2012_Code')
+
     return fbs 
 
 def naics_expansion(facility_NAICS):
@@ -237,7 +241,7 @@ def naics_expansion(facility_NAICS):
     """
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_sector_length_crosswalk_w_nonnaics()
+    cw_load = load_sector_length_crosswalk()
     cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
 
     # subset the naics 4 and 5 columns
@@ -299,7 +303,7 @@ def check_for_missing_sector_data(df, target_sector_level):
 
     activity_field = "SectorProducedBy"
     rows_lost = pd.DataFrame()
-    cw_load = load_sector_length_crosswalk_w_nonnaics()
+    cw_load = load_sector_length_crosswalk()
     for i in range(3, sector_level_key[target_sector_level]):
         # create df of i length
         df_subset = df.loc[df[activity_field].apply(lambda x: len(x) == i)]

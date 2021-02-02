@@ -9,7 +9,7 @@ import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
     create_fill_na_dict, fips_number_key, load_source_catalog, \
-    load_sector_length_crosswalk_w_nonnaics, update_geoscale, flow_by_activity_wsec_mapped_fields
+    load_sector_length_crosswalk, update_geoscale, flow_by_activity_wsec_mapped_fields
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -762,7 +762,7 @@ def sector_disaggregation(df, group_cols):
     df = replace_NoneType_with_empty_cells(df)
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_sector_length_crosswalk_w_nonnaics()
+    cw_load = load_sector_length_crosswalk()
 
     # for loop min length to 6 digits, where min length cannot be less than 2
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
