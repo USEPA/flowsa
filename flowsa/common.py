@@ -36,6 +36,7 @@ sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
+externaldatapath = datapath + 'external_data/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 

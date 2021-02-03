@@ -8,6 +8,7 @@ Animal Water Use coefficients data obtained from: USGS Publication (Lovelace, 20
 Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
 """
 
+
 from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
@@ -15,7 +16,7 @@ from flowsa.flowbyfunctions import add_missing_flow_by_fields
 
 
 # 2012--2018 fisheries data at state level
-csv_load = datapath + "USGS_WU_Coef_Raw.csv"
+csv_load = externaldatapath + "USGS_WU_Coef_Raw.csv"
 
 
 if __name__ == '__main__':
