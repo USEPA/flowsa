@@ -1,0 +1,28 @@
+# Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
+---
+# api_name: USGS_NMIC_SodaAsh
+# api_key_required: false
+format: xlsx
+url:
+  base_url: "https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-pubs/soda-ash/myb1-__year__-sodaa.__format__"
+url_replace_fxn: usgs_url_helper
+call_response_fxn: usgs_call
+parse_response_fxn: usgs_parse
+years:
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+formats:
+  "2010": xls
+  "2011": xls
+  "2012": xls
+  "2013": xls
+  "2014": xls
+  "2015": xlsx
+  "2016": xlsx
+  "2017": xls
