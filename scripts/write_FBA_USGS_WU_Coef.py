@@ -12,7 +12,7 @@ Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
 from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.flowbyfunctions import fba_fill_na_dict, clean_df
 
 
 # 2012--2018 fisheries data at state level
@@ -43,6 +43,6 @@ if __name__ == '__main__':
     df["Unit"] = "gallons/animal/day"
 
     # add missing dataframe fields (also converts columns to desired datatype)
-    flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
+    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
     parquet_name = 'USGS_WU_Coef_2005'
     store_flowbyactivity(flow_df, parquet_name)
