@@ -1,0 +1,69 @@
+Material,Disposed Percent,Disposed Tons,Recycle Percent,Recycle Tons,Organics Percent,Organics Tons,Other Percent,Other Tons,Generated Percent,Generated Tons
+Uncoated Corrugated Cardboard,0.01,6936,0.28,17663,0,0,0.11,2757,0.04,27356
+Paper Bags,0,1797,0.01,294,0,0,0,52,0,2144
+Newspaper,0.01,6930,0.02,1366,0,0,0.01,131,0.01,8427
+White Ledger Paper,0.04,19892,0.22,14336,0,0,0.09,2040,0.06,36268
+Other Office Paper,0.04,20791,0.1,6566,0,0,0.02,449,0.04,27806
+Magazines and Catalogs,0.01,5974,0.06,3952,0,0,0.03,624,0.02,10551
+Phone Books and Directories,0,0,0.01,317,0,0,0,0,0,317
+Other Miscellaneous Paper - Compostable,0,2036,0.07,4146,0.02,205,0.05,1105,0.01,7492
+Other Miscellaneous Paper - Other,0.04,22709,0.07,4454,0.04,375,0,93,0.04,27631
+Remainder/Composite Paper - Compostable,0.13,71730,0.01,471,0,0,0,0,0.11,72201
+Remainder/Composite Paper - Other,0.05,28275,0.02,1021,0,4,0,10,0.04,29309
+Clear Glass Bottles and Containers,0,1995,0,109,0,0,0,40,0,2145
+Green Glass Bottles and Containers,0,134,0,103,0,0,0,0,0,237
+Brown Glass Bottles and Containers,0,0,0,0,0,0,0,2,0,2
+Other Glass Colored Bottles and Containers,0,0,0,0,0,0,0,0,0,0
+Flat Glass,0,0,0,0,0,0,0,0,0,0
+Remainder/Composite Glass,0,649,0,7,0,0,0,0,0,656
+Tin/Steel Cans,0,2383,0,66,0,0,0.04,836,0.01,3285
+Major Appliances,0,0,0,0,0,0,0,0,0,0
+Used Oil Filters,0,84,0,0,0,0,0,0,0,84
+Other Ferrous,0,2245,0,54,0,0,0.32,7806,0.02,10106
+Aluminum Cans,0,924,0.01,371,0,0,0.06,1399,0,2694
+Other Non-Ferrous,0,1285,0,0,0,0,0,87,0,1372
+Remainder/Composite Metal,0,2211,0,10,0,0,0,0,0,2221
+Brown Goods,0,168,0,0,0,0,0,0,0,168
+Computer-related Electronics,0,102,0.02,1123,0,0,0.03,798,0,2023
+Other Small Consumer Electronics,0,0,0,0,0,0,0,0,0,0
+Video Display Devices,0,0,0,0,0,0,0.02,437,0,437
+PETE Plastic Containers,0.01,4108,0.02,1541,0,0,0.16,3767,0.01,9416
+HDPE Plastic Containers,0,1513,0,31,0,0,0.01,204,0,1748
+Miscellaneous Plastic Containers,0,2006,0.01,441,0,18,0,1,0,2465
+Plastic Trash Bags,0.03,18121,0,27,0,0,0,0,0.03,18147
+Plastic Grocery and Other Merchandise Bags,0,892,0,23,0,0,0,0,0,915
+Non-Bag Commercial and Industrial Packaging Film,0,783,0,52,0,0,0,0,0,835
+Film Products,0,0,0,252,0,0,0,0,0,252
+Other Film - Other,0.02,10991,0.01,767,0,0,0,0,0.02,11759
+Durable Plastic Items - #2 and #5 Bulky Rigids,0,320,0.01,594,0,0,0,0,0,914
+Durable Plastic Items - Other,0.01,4953,0,205,0,0,0,0,0.01,5158
+Remainder/Composite Plastics,0.05,30031,0,174,0,0,0,0,0.05,30205
+Food,0.34,189957,0,235,0.76,7521,0.02,485,0.3,198197
+Leaves and Grass,0.04,22109,0,0,0.09,893,0.04,971,0.04,23973
+Prunings and Trimmings,0,1663,0.04,2715,0.09,893,0,0,0.01,5271
+Branches and Stumps,0.01,6479,0,0,0,0,0,0,0.01,6479
+Manures,0,0,0,0,0,0,0,0,0,0
+Textiles,0.02,10550,0,0,0,0,0,0,0.02,10550
+Carpet,0.03,16788,0,0,0,0,0,0,0.03,16788
+Remainder/Composite Organics,0.04,23150,0,155,0,0,0,0,0.04,23305
+Concrete,0,1219,0,0,0,0,0,0,0,1219
+Asphalt Paving,0,0,0,0,0,0,0,0,0,0
+Asphalt Roofing,0,106,0,0,0,0,0,0,0,106
+Clean Dimensional Lumber,0,561,0,0,0,0,0,0,0,561
+Clean Engineered Wood,0,689,0,0,0,0,0,0,0,689
+Clean Pallets & Crates,0,2398,0,0,0,0,0,0,0,2398
+Other Wood Waste,0.01,7516,0,0,0,0,0,0,0.01,7516
+Gypsum Board,0,0,0,0,0,0,0,0,0,0
+"Rock, Soil, and Fines",0,1095,0,0,0,0,0,0,0,1095
+Remainder/Composite Inerts and Others,0,2339,0,249,0,0,0,0,0,2588
+Paint,0,62,0,0,0,0,0,0,0,62
+Vehicle and Equipment Fluids,0,102,0,0,0,0,0,0,0,102
+Used Oil,0,0,0,0,0,0,0,0,0,0
+Batteries,0,74,0,0,0,0,0,32,0,106
+Remainder/Composite Household Hazardous,0,1030,0,0,0,0,0,0,0,1030
+Ash,0,0,0,0,0,0,0,0,0,0
+Treated Medical Waste,0,0,0,0,0,0,0,0,0,0
+Bulky Items,0,0,0,0,0,0,0,0,0,0
+Tires,0,0,0,0,0,0,0,0,0,0
+Remainder/Composite Special Waste,0,185,0,0,0,0,0,0,0,185
+Mixed Residue,0,1404,0,0,0,0,0,0,0,1404
