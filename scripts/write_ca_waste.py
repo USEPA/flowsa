@@ -12,7 +12,7 @@ Last updated:
 
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.flowbyfunctions import add_missing_flow_by_fields, assign_fips_location_system
 from flowsa.common import *
 import os
 
@@ -72,6 +72,7 @@ if __name__ == '__main__':
             data["LocationSystem"] = "FIPS"
             data["SourceName"] = "California_Commercial_bySector"
             data["Year"] = 2014
+
             if "California_Commercial_bySector_2014" in entry and "Map" not in entry:
                 data["ActivityProducedBy"] = produced_by(entry)
                 data["ActivityConsumedBy"] = None
@@ -89,9 +90,9 @@ if __name__ == '__main__':
                             if dataframe.iloc[index][column] != "-":
                                 data["FlowAmount"] = int(dataframe.iloc[index][column])
                                 output = output.append(data, ignore_index=True)
+                                output = assign_fips_location_system(output, '2014')
     flow_df = add_missing_flow_by_fields(output, flow_by_activity_fields)
-    parquet_name = 'CA_Waste'
-    print(flow_df)
+    parquet_name = 'California_Commercial_bySector'
     store_flowbyactivity(flow_df, parquet_name, 2014)
 
 
