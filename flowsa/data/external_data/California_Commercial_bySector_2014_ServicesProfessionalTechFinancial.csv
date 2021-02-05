@@ -1,0 +1,69 @@
+Material,Disposed Percent,Disposed Tons,Recycle Percent,Recycle Tons,Organics Percent,Organics Tons,Other Percent,Other Tons,Generated Percent,Generated Tons
+Uncoated Corrugated Cardboard,0.04,161826,0.51,348608,0,57,0.18,16167,0.11,526659
+Paper Bags,0.01,18127,0.01,3124,0,30,0,90,0,21370
+Newspaper,0.03,98110,0.03,22136,0,107,0,382,0.02,120735
+White Ledger Paper,0.02,82352,0.08,54347,0,42,0.04,3983,0.03,140724
+Other Office Paper,0.02,95669,0.04,25540,0,413,0.08,7353,0.03,128974
+Magazines and Catalogs,0.01,37985,0.05,33581,0,0,0.01,625,0.02,72191
+Phone Books and Directories,0,1100,0,0,0,0,0,0,0,1100
+Other Miscellaneous Paper - Compostable,0.01,23243,0.04,27383,0,635,0,1,0.01,51262
+Other Miscellaneous Paper - Other,0.03,121279,0.1,69785,0,11,0.1,8734,0.04,199810
+Remainder/Composite Paper - Compostable,0.1,395521,0,1269,0,6,0,0,0.08,396796
+Remainder/Composite Paper - Other,0.03,127658,0,2747,0,0,0,72,0.03,130478
+Clear Glass Bottles and Containers,0.01,20340,0.03,16890,0,32,0,403,0.01,37665
+Green Glass Bottles and Containers,0,17581,0.01,3233,0,0,0,238,0,21052
+Brown Glass Bottles and Containers,0,3228,0.01,3691,0,0,0,373,0,7293
+Other Glass Colored Bottles and Containers,0,203,0,0,0,0,0,0,0,203
+Flat Glass,0,943,0,0,0,0,0,0,0,943
+Remainder/Composite Glass,0,13244,0,0,0,0,0,7,0,13251
+Tin/Steel Cans,0,8843,0,1061,0,0,0,18,0,9922
+Major Appliances,0,0,0,0,0,0,0,0,0,0
+Used Oil Filters,0,0,0,0,0,0,0,0,0,0
+Other Ferrous,0.01,46400,0,765,0,0,0.2,18258,0.01,65423
+Aluminum Cans,0,3860,0,1911,0,23,0.01,459,0,6253
+Other Non-Ferrous,0.01,37317,0,511,0,0,0.02,1657,0.01,39485
+Remainder/Composite Metal,0.02,65683,0,320,0,0,0.06,5193,0.01,71196
+Brown Goods,0.01,23189,0,0,0,0,0,0,0.01,23189
+Computer-related Electronics,0,0,0,254,0,0,0.01,1199,0,1453
+Other Small Consumer Electronics,0,60,0,125,0,13,0,6,0,204
+Video Display Devices,0.01,55210,0,0,0,0,0,40,0.01,55250
+PETE Plastic Containers,0,14736,0.01,6783,0,147,0.01,1225,0.01,22890
+HDPE Plastic Containers,0,15241,0,2043,0,2,0.01,412,0,17698
+Miscellaneous Plastic Containers,0,8521,0.03,18616,0,84,0,11,0.01,27232
+Plastic Trash Bags,0.02,75623,0,639,0,50,0,0,0.02,76313
+Plastic Grocery and Other Merchandise Bags,0,7788,0,313,0,0,0,0,0,8102
+Non-Bag Commercial and Industrial Packaging Film,0.01,33130,0.02,10680,0,0,0,0,0.01,43809
+Film Products,0,0,0,150,0,0,0,0,0,151
+Other Film - Other,0.02,86837,0,1358,0,54,0,0,0.02,88249
+Durable Plastic Items - #2 and #5 Bulky Rigids,0,15730,0,149,0,0,0,0,0,15879
+Durable Plastic Items - Other,0.01,45243,0,110,0,57,0,0,0.01,45410
+Remainder/Composite Plastics,0.06,225985,0.02,13584,0,2,0,0,0.05,239572
+Food,0.08,330452,0,483,0,203,0.05,4674,0.07,335811
+Leaves and Grass,0.03,136387,0,0,0.99,172743,0.03,2853,0.06,311983
+Prunings and Trimmings,0.03,127780,0,0,0,0,0,0,0.03,127780
+Branches and Stumps,0,9686,0,0,0,0,0,0,0,9686
+Manures,0,1478,0,0,0,0,0,0,0,1478
+Textiles,0.02,84487,0,514,0,117,0,0,0.02,85118
+Carpet,0.01,23797,0,0,0,0,0,0,0.01,23797
+Remainder/Composite Organics,0.05,208438,0,0,0,0,0,0,0.04,208438
+Concrete,0.02,79783,0,0,0,0,0,0,0.02,79783
+Asphalt Paving,0.01,40743,0,0,0,0,0,0,0.01,40743
+Asphalt Roofing,0.01,43328,0,0,0,0,0,0,0.01,43328
+Clean Dimensional Lumber,0.01,40020,0,0,0,0,0,329,0.01,40349
+Clean Engineered Wood,0.02,74531,0,0,0,0,0,0,0.02,74531
+Clean Pallets & Crates,0.08,332687,0.02,10908,0,0,0.14,13110,0.07,356706
+Other Wood Waste,0.03,124307,0,0,0,0,0,0,0.03,124307
+Gypsum Board,0.01,25730,0,0,0,0,0.01,642,0.01,26372
+"Rock, Soil, and Fines",0.02,89652,0,0,0,0,0.01,908,0.02,90560
+Remainder/Composite Inerts and Others,0.04,149929,0,0,0,0,0,0,0.03,149929
+Paint,0,0,0,0,0,0,0,0,0,0
+Vehicle and Equipment Fluids,0,174,0,0,0,0,0,0,0,174
+Used Oil,0,0,0,0,0,0,0,0,0,0
+Batteries,0,866,0,0,0,14,0.02,1570,0,2450
+Remainder/Composite Household Hazardous,0,6397,0,16,0,0,0,35,0,6447
+Ash,0,0,0,0,0,0,0,0,0,0
+Treated Medical Waste,0,174,0,0,0,0,0,0,0,174
+Bulky Items,0.02,70937,0,0,0,0,0,371,0.01,71308
+Tires,0,0,0,0,0,0,0,0,0,0
+Remainder/Composite Special Waste,0,174,0,0,0,0,0,0,0,174
+Mixed Residue,0,4898,0,0,0,0,0,0,0,4898
