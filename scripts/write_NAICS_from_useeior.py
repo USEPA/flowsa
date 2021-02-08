@@ -104,9 +104,33 @@ def write_naics_2012_crosswalk():
     return None
 
 
+def load_naics_02_to_07_crosswalk():
+    """
+    Load the 2002 to 2007 crosswalk from US Census
+    :return:
+    """
+    naics_url = 'https://www.census.gov/eos/www/naics/concordances/2002_to_2007_NAICS.xls'
+    df_load = pd.read_excel(naics_url)
+    # drop first rows
+    df = pd.DataFrame(df_load.loc[2:]).reset_index(drop=True)
+    # Assign the column titles
+    df.columns = df_load.loc[1, ]
+
+    # df subset columns
+    naics_02_to_07_cw = df[['2002 NAICS Code', '2007 NAICS Code']].rename(columns={'2002 NAICS Code': 'NAICS_2002_Code',
+                                                                                   '2007 NAICS Code': 'NAICS_2007_Code'})
+    # ensure datatype is string
+    naics_02_to_07_cw = naics_02_to_07_cw.astype(str)
+
+    naics_02_to_07_cw = naics_02_to_07_cw.apply(lambda x: x.str.strip() if isinstance(x, str) else x)
+
+    return naics_02_to_07_cw
+
 def update_naics_crosswalk():
     """
     update the useeior crosswalk with crosswalks created for flowsa datasets - want to add any NAICS > 6 digits
+
+    Add NAICS 2002
     :return:
     """
 
@@ -161,10 +185,21 @@ def update_naics_crosswalk():
     total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code']).drop_duplicates()
     total_naics = total_naics[~total_naics['NAICS_2012_Code'].isin(['None', 'unknown', 'nan',
                                                                     'Unknown', np.nan])].reset_index(drop=True)
+
+    # convert all columns to string
+    total_naics = total_naics.astype(str)
+
+    # add naics 2002
+    naics_02 = load_naics_02_to_07_crosswalk()
+    naics_cw = pd.merge(total_naics, naics_02, how='left')
+
     # ensure NoneType
-    total_naics = replace_strings_with_NoneType(total_naics)
+    naics_cw = replace_strings_with_NoneType(naics_cw)
+
+    # reorder
+    naics_cw = naics_cw[['NAICS_2002_Code', 'NAICS_2007_Code', 'NAICS_2012_Code', 'NAICS_2017_Code']]
 
     # save as csv
-    total_naics.to_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", index=False)
+    naics_cw.to_csv(datapath + "NAICS_Crosswalk.csv", index=False)
 
     return None

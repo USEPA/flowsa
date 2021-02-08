@@ -97,7 +97,7 @@ def make_http_request(url):
     return r
 
 def load_sector_crosswalk():
-    cw = pd.read_csv(datapath + "NAICS_07_to_17_Crosswalk.csv", dtype="str")
+    cw = pd.read_csv(datapath + "NAICS_Crosswalk.csv", dtype="str")
     return cw
 
 def load_sector_length_crosswalk():
