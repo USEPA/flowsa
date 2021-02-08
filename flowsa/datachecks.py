@@ -582,9 +582,7 @@ def check_if_sectors_are_naics(df, crosswalk_list, column_headers):
     return non_sectors_df
 
 
-
-
-def melt_naics_07_to_17_crosswalk():
+def melt_naics_crosswalk():
     """
     Create a melt version of the naics 07 to 17 crosswalk to map naics to naics 2012
     :return:
