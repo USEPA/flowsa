@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import io
 from flowsa.common import *
+from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system , fba_default_grouping_fields, aggregator
 import math
 
@@ -32,13 +33,15 @@ def description(value, code):
         if math.isnan(code):
             return_val = value
         if value == "Total":
-            return_val = "Glass Other " + value
+            return_val = "Glass " + value
     elif value in other_list:
         return_val = "Other " + value
     elif value in export_list:
         return_val = "Exports " + value
     else:
         return_val = value
+    remove_digits = str.maketrans('', '', digits)
+    return_val = return_val.translate(remove_digits)
     return return_val
 
 
@@ -66,14 +69,18 @@ def usgs_call(url, usgs_response, args):
             del df_data[col]
         elif "quarter" in str(col):
             del df_data[col]
+        elif "2009" in str(col):
+            del df_data[col]
     return df_data
 
 
 def usgs_parse(dataframe_list, args):
+    total_glass = 0
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
     dataframe = pd.DataFrame()
     for df in dataframe_list:
+
 
         data["Class"] = "Chemicals"
         data['FlowType'] = "Elementary Type"
@@ -85,13 +92,22 @@ def usgs_parse(dataframe_list, args):
         data['FlowName'] = "Soda Ash"
 
         for index, row in df.iterrows():
-            data['Description'] = description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
+            data["Description"] = ""
+            data['ActivityConsumedBy'] = description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
+
+            if df.iloc[index]["End use"].strip() == "Glass:":
+                total_glass = int(df.iloc[index]["NAICS code"])
+            elif data['ActivityConsumedBy'] == "Glass Total":
+                data["Description"] = total_glass
+
             if not math.isnan(df.iloc[index]["Total"]):
                 data["FlowAmount"] = int(df.iloc[index]["Total"])
                 data["ActivityProducedBy"] = None
                 if not math.isnan(df.iloc[index]["NAICS code"]):
-                    data["ActivityConsumedBy"] = int(df.iloc[index]["NAICS code"])
-            dataframe = dataframe.append(data, ignore_index=True)
-            dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                    des_str = str(df.iloc[index]["NAICS code"])
+                    data["Description"] = des_str
+            if df.iloc[index]["End use"].strip() != "Glass:":
+                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
 
