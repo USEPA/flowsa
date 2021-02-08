@@ -90,6 +90,7 @@ def usgs_parse(dataframe_list, args):
         data["Year"] = str(args["year"])
         data["Unit"] = "Thousand metric tons"
         data['FlowName'] = "Soda Ash"
+        data["Context"] = "air"
 
         for index, row in df.iterrows():
             data["Description"] = ""
