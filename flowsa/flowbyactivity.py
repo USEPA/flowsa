@@ -33,8 +33,7 @@ from flowsa.EIA_MECS import *
 from flowsa.BLM_PLS import *
 from flowsa.EIA_MER import *
 from flowsa.EPA_GHG_Inventory import *
-
-
+from flowsa.common import paths
 
 def parse_args():
     """Make year and source script parameters"""
@@ -48,9 +47,9 @@ def parse_args():
 def store_flowbyactivity(result, source, year=None):
     """Prints the data frame into a parquet file."""
     if year is not None:
-        f = fbaoutputpath + source + "_" + str(year) + '.parquet'
+        f = paths.local_path + "/" + source + "_" + str(year) + '.parquet'
     else:
-        f = fbaoutputpath + source + '.parquet'
+        f = paths.local_path "/" + source + '.parquet'
     try:
         result.to_parquet(f, engine="pyarrow")
     except:
@@ -115,24 +114,25 @@ def parse_data(dataframe_list, args):
         df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list, args)
         return df
 
+def main(**kwargs):
 
-if __name__ == '__main__':
     # assign arguments
-    args = parse_args()
+    if len(kwargs)==0:
+        kwargs = parse_args()
     # assign yaml parameters (common.py fxn)
-    config = load_sourceconfig(args['source'])
+    config = load_sourceconfig(kwargs['source'])
     log.info("Creating dataframe list")
     # build the base url with strings that will be replaced
     build_url = build_url_for_query(config['url'])
     # replace parts of urls with specific instructions from source.py
-    urls = assemble_urls_for_query(build_url, config, args)
+    urls = assemble_urls_for_query(build_url, config, kwargs)
     # create a list with data from all source urls
-    dataframe_list = call_urls(urls, args)
+    dataframe_list = call_urls(urls, kwargs)
     # concat the dataframes and parse data with specific instructions from source.py
     log.info("Concat dataframe list and parse data")
-    df = parse_data(dataframe_list, args)
+    df = parse_data(dataframe_list, kwargs)
     # log that data was retrieved
-    log.info("Retrieved data for " + args['source'] + ' ' + args['year'])
+    log.info("Retrieved data for " + kwargs['source'] + ' ' + kwargs['year'])
     # add any missing columns of data and cast to appropriate data type
     log.info("Add any missing columns and check field datatypes")
     flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
@@ -143,6 +143,10 @@ if __name__ == '__main__':
                                    'FlowName', 'Compartment']).reset_index(drop=True)
     # save as parquet file
     log.info('Save dataframe as parquet')
-    parquet_name = args['source'] + '_' + args['year']
+    parquet_name = kwargs['source'] + '_' + kwargs['year']
     store_flowbyactivity(flow_df, parquet_name)
 
+
+
+if __name__ == '__main__':
+    main()
