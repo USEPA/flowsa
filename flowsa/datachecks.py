@@ -627,7 +627,7 @@ def replace_naics_w_naics_2012(df, sectorsourcename):
     cw = cw_load[sectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
-    cw_melt = melt_naics_07_to_17_crosswalk()
+    cw_melt = melt_naics_crosswalk()
     # drop the count column
     cw_melt = cw_melt.drop(columns='naics_count')
 
