@@ -96,9 +96,8 @@ def usgs_parse(dataframe_list, args):
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = "Lead"
                 data["Context"] = ""
-                data["ActivityProducedBy"] = None
                 data["ActivityConsumedBy"] = None
-                data["Description"] = df.iloc[index]["Production"]
+                data["ActivityProducedBy"] = df.iloc[index]["Production"]
                 col_name = year_name(args["year"])
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)

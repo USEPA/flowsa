@@ -1,0 +1,34 @@
+# Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
+---
+# api_name: USGS_MYB_SodaAsh
+# api_key_required: false
+format: xlsx
+url:
+  base_url: "https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/__url_text__/myb1-__file_year__-abras.__format__"
+url_replace_fxn: usgs_url_helper
+call_response_fxn: usgs_call
+parse_response_fxn: usgs_parse
+url_texts:
+  "2011": "mineral-pubs/abrasives"
+  "2012": "mineral-pubs/abrasives"
+  "2013": "mineral-pubs/abrasives"
+  "2014": "mineral-pubs/abrasives"
+  "2015": "mineral-pubs/abrasives"
+  "2016": "mineral-pubs/abrasives"
+  "2017": "atoms/files"
+years:
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+formats:
+  "2011": xls
+  "2012": xls
+  "2013": xls
+  "2014": xlsx
+  "2015": xls
+  "2016": xlsx
+  "2017": xls

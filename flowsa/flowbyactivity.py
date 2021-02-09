@@ -35,6 +35,7 @@ from flowsa.EIA_MER import *
 from flowsa.EPA_GHG_Inventory import *
 from flowsa.USGS_MYB_SodaAsh import *
 from flowsa.USGS_MYB_Lead import *
+from flowsa.USGS_MYB_ManufacturedAbrasive import *
 
 
 
