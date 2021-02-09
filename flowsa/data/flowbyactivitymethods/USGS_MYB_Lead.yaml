@@ -1,0 +1,18 @@
+# Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
+---
+# api_name: USGS_MYB_SodaAsh
+# api_key_required: false
+format: xlsx
+url:
+  base_url: "https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/__url_text__/myb1-__file_year__-lead.xls"
+url_replace_fxn: usgs_url_helper
+call_response_fxn: usgs_call
+parse_response_fxn: usgs_parse
+url_texts:
+  "2014": "mineral-pubs/lead"
+  "2015": "mineral-pubs/lead"
+  "2016": "atoms/files"
+years:
+  - 2014
+  - 2015
+  - 2016
