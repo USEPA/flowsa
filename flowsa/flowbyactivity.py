@@ -49,16 +49,17 @@ def store_flowbyactivity(result, source, year=None):
     if year is not None:
         f = paths.local_path + "/" + source + "_" + str(year) + '.parquet'
     else:
-        f = paths.local_path "/" + source + '.parquet'
+        f = paths.local_path + "/" + source + '.parquet'
     try:
         result.to_parquet(f, engine="pyarrow")
     except:
         log.error('Failed to save '+source + "_" + str(year) +' file.')
 
 
-def build_url_for_query(urlinfo):
+def build_url_for_query(config,args):
     """Creates a base url which requires string substitutions that depend on data source"""
     # if there are url parameters defined in the yaml, then build a url, else use "base_url"
+    urlinfo = config["url"]
     if 'url_params' in urlinfo:
         params = ""
         for k, v in urlinfo['url_params'].items():
@@ -89,7 +90,7 @@ def assemble_urls_for_query(build_url, config, args):
     return urls
 
 
-def call_urls(url_list, args):
+def call_urls(url_list, args, config):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
@@ -108,14 +109,14 @@ def call_urls(url_list, args):
     return data_frames_list
 
 
-def parse_data(dataframe_list, args):
+def parse_data(dataframe_list, args, config):
     """Calls on functions defined in source.py files, as parsing rules are specific to the data source."""
     if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
         df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list, args)
         return df
 
-def main(**kwargs):
 
+def main(**kwargs):
     # assign arguments
     if len(kwargs)==0:
         kwargs = parse_args()
@@ -123,14 +124,14 @@ def main(**kwargs):
     config = load_sourceconfig(kwargs['source'])
     log.info("Creating dataframe list")
     # build the base url with strings that will be replaced
-    build_url = build_url_for_query(config['url'])
+    build_url = build_url_for_query(config,kwargs)
     # replace parts of urls with specific instructions from source.py
     urls = assemble_urls_for_query(build_url, config, kwargs)
     # create a list with data from all source urls
-    dataframe_list = call_urls(urls, kwargs)
+    dataframe_list = call_urls(urls, kwargs, config)
     # concat the dataframes and parse data with specific instructions from source.py
     log.info("Concat dataframe list and parse data")
-    df = parse_data(dataframe_list, kwargs)
+    df = parse_data(dataframe_list, kwargs, config)
     # log that data was retrieved
     log.info("Retrieved data for " + kwargs['source'] + ' ' + kwargs['year'])
     # add any missing columns of data and cast to appropriate data type
