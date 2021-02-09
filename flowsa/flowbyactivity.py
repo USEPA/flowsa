@@ -33,7 +33,7 @@ from flowsa.EIA_MECS import *
 from flowsa.BLM_PLS import *
 from flowsa.EIA_MER import *
 from flowsa.EPA_GHG_Inventory import *
-# from flowsa.USGS_NMIC_SodaAsh import *
+from flowsa.USGS_MYB_SodaAsh import *
 
 
 
