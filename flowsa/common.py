@@ -12,6 +12,8 @@ import pandas as pd
 import numpy as np
 import logging as log
 import pycountry
+import pkg_resources
+import subprocess
 from esupy.processed_data_mgmt import Paths
 
 log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
@@ -26,6 +28,10 @@ except NameError:
 datapath = modulepath + 'data/'
 outputpath = modulepath + 'output/'
 
+#Common declaration of write format for package data products
+write_format = "parquet"
+
+
 # comment in if running test data
 # datapath = (modulepath + 'data/').replace('flowsa/flowsa/', 'flowsa/tests/')
 # outputpath = (modulepath + 'output/').replace('flowsa/flowsa/', 'flowsa/tests/')
@@ -34,12 +40,17 @@ sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
-fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 
 paths = Paths
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
-paths.remote_path = "https://edap-ord-data-commons.s3.amazonaws.com/flowsa/"
+
+pkg = pkg_resources.get_distribution("flowsa")
+try:
+    git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+        'ascii')[0:7]
+except:
+    git_hash = None
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -70,7 +81,7 @@ def load_api_key(api_source):
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
-    keyfile = local_path + '/' + api_source + '_API_KEY.txt'
+    keyfile = paths.local_path + '/' + api_source + '_API_KEY.txt'
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
