@@ -5,9 +5,9 @@
 format: xlsx
 url:
   base_url: "https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/__url_text__/myb1-__file_year__-lead.xls"
-url_replace_fxn: usgs_url_helper
-call_response_fxn: usgs_call
-parse_response_fxn: usgs_parse
+url_replace_fxn: usgs_lead_url_helper
+call_response_fxn: usgs_lead_call
+parse_response_fxn: usgs_lead_parse
 url_texts:
   "2014": "mineral-pubs/lead"
   "2015": "mineral-pubs/lead"

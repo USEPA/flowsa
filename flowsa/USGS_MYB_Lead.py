@@ -2,13 +2,9 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import pandas as pd
-import numpy as np
 import io
 from flowsa.common import *
-from string import digits
-from flowsa.flowbyfunctions import assign_fips_location_system , fba_default_grouping_fields, aggregator
-import math
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
@@ -38,7 +34,7 @@ def year_name(year):
     return return_val
 
 
-def usgs_url_helper(build_url, config, args):
+def usgs_lead_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
     # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
@@ -56,7 +52,7 @@ def usgs_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_call(url, usgs_response, args):
+def usgs_lead_call(url, usgs_response, args):
     """TODO."""
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[5:25]).reindex()
@@ -79,7 +75,7 @@ def usgs_call(url, usgs_response, args):
     return df_data
 
 
-def usgs_parse(dataframe_list, args):
+def usgs_lead_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
     row_to_use = ["Primary lead, refined content, domestic ores and base bullion", "Secondary lead, lead content"]
