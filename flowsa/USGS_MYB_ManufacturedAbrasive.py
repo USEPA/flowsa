@@ -89,7 +89,6 @@ def usgs_call(url, usgs_response, args):
 
     col_to_use = ["Product"]
     col_to_use.append("quality_" + year_name(args["year"]))
-    col_to_use.append("value_" + year_name(args["year"]))
     for col in df_data.columns:
         if col not in col_to_use:
             del df_data[col]
@@ -107,7 +106,7 @@ def usgs_parse(dataframe_list, args):
             remove_digits = str.maketrans('', '', digits)
             product = df.iloc[index]["Product"].strip().translate(remove_digits)
             if product in row_to_use:
-                data["Class"] = "Chemicals"
+                data["Class"] = "Geological"
                 data['FlowType'] = "Elementary Flows"
                 data["Location"] = "00000"
                 data["Compartment"] = " "
@@ -115,23 +114,15 @@ def usgs_parse(dataframe_list, args):
                 data["Year"] = str(args["year"])
 
                 data['FlowName'] = "Silicon carbide"
-                data["Context"] = ""
+                data["Context"] = None
                 data["ActivityProducedBy"] = "Silicon carbide"
                 data["ActivityConsumedBy"] = None
-
-                for i in range(len(df. columns) - 1):
-                    if i == 0:
-                        data["Unit"] = "Metric Tons"
-                        col_name = "quality_" + year_name(args["year"])
-                    else:
-                        data["Unit"] = "Thousands"
-                        col_name = "value_" + year_name(args["year"])
-
-                    col_name_str = col_name.replace("_", " ")
-                    col_name_array = col_name.split("_")
-                    data["Description"] = product + " " + col_name_array[0]
-                    data["FlowAmount"] = str(df.iloc[index][col_name])
-                    dataframe = dataframe.append(data, ignore_index=True)
-                    dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                data["Unit"] = "Metric Tons"
+                col_name = "quality_" + year_name(args["year"])
+                col_name_array = col_name.split("_")
+                data["Description"] = product + " " + col_name_array[0]
+                data["FlowAmount"] = str(df.iloc[index][col_name])
+                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
 

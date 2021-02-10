@@ -87,7 +87,7 @@ def usgs_parse(dataframe_list, args):
     for df in dataframe_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() in row_to_use:
-                data["Class"] = "Chemicals"
+                data["Class"] = "Geological"
                 data['FlowType'] = "Elementary Flows"
                 data["Location"] = "00000"
                 data["Compartment"] = " "
@@ -95,7 +95,7 @@ def usgs_parse(dataframe_list, args):
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = "Lead"
-                data["Context"] = ""
+                data["Context"] = None
                 data["ActivityConsumedBy"] = None
                 data["ActivityProducedBy"] = df.iloc[index]["Production"]
                 col_name = year_name(args["year"])
