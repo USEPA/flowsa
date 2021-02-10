@@ -36,7 +36,7 @@ from flowsa.EPA_GHG_Inventory import *
 from flowsa.USGS_MYB_SodaAsh import *
 from flowsa.USGS_MYB_Lead import *
 from flowsa.USGS_MYB_ManufacturedAbrasive import *
-
+from flowsa.USGS_MYB_Copper import *
 
 
 def parse_args():
