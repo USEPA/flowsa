@@ -10,23 +10,31 @@ import pandas as pd
 from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths
 from flowsa.flowbyfunctions import collapse_fbs_sectors
+import flowsa.flowbyactivity
 
-def getFlowByActivity(flowclass, years, datasource):
+def getFlowByActivity(flowclass, year, datasource):
     """
     Retrieves stored data in the FlowByActivity format
     :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or
      ['Land', 'Other']
-    :param year: list, a list of years [2015], or [2010,2011,2012]
+    :param year: int, a year, e.g. 2012
     :param datasource: str, the code of the datasource.
     :return: a pandas DataFrame in FlowByActivity format
     """
-    fbas = pd.DataFrame()
-    for y in years:
-        fba_file = "FlowByActivity/"+ datasource + "_" + str(y) + ".parquet"
-        fba = load_preprocessed_output(fba_file, paths)
-        fba = fba[fba['Class'].isin(flowclass)]
-        fbas = pd.concat([fbas, fba], sort=False)
-    return fbas
+    #Set fba metadata
+    fba_meta = flowsa.flowbyactivity.set_fba_meta(datasource,year)
+
+    # Try to load a local version of fba; generate and load if missing
+    fba = load_preprocessed_output(fba_meta,paths)
+    if fba is None:
+        # Generate the fba
+        flowsa.flowbyactivity.main(year=year,source=datasource)
+        # Now load the fba
+        fba = load_preprocessed_output(fba_meta,paths)
+    # Filter fba by flow class
+    fba = fba[fba['Class'].isin(flowclass)]
+    return fba
+
 
 def getFlowBySector(methodname):
     """
