@@ -9,6 +9,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 
 import argparse
 from flowsa.common import *
+from esupy.processed_data_mgmt import FileMeta, write_df_to_file
 from flowsa.flowbyfunctions import add_missing_flow_by_fields, clean_df, fba_fill_na_dict
 from flowsa.Blackhurst_IO import *
 from flowsa.BLS_QCEW import *
@@ -33,7 +34,7 @@ from flowsa.EIA_MECS import *
 from flowsa.BLM_PLS import *
 from flowsa.EIA_MER import *
 from flowsa.EPA_GHG_Inventory import *
-from flowsa.common import paths
+
 
 def parse_args():
     """Make year and source script parameters"""
@@ -44,16 +45,23 @@ def parse_args():
     return args
 
 
-def store_flowbyactivity(result, source, year=None):
-    """Prints the data frame into a parquet file."""
+def set_fba_meta(datasource,year):
+    fba_meta = FileMeta
+    fba_meta.tool = pkg.project_name
+    fba_meta.tool_version = pkg.version
+    fba_meta.category = "FlowByActivity"
     if year is not None:
-        f = paths.local_path + "/" + source + "_" + str(year) + '.parquet'
+        fba_meta.name_data = datasource + "_" + str(year)
     else:
-        f = paths.local_path + "/" + source + '.parquet'
-    try:
-        result.to_parquet(f, engine="pyarrow")
-    except:
-        log.error('Failed to save '+source + "_" + str(year) +' file.')
+        fba_meta.name_data = datasource
+    fba_meta.ext = write_format
+    fba_meta.git_hash = git_hash
+    return fba_meta
+
+
+def store_flowbyactivity(result, paths, meta):
+    """Prints the data frame into a parquet file."""
+    write_df_to_file(result,paths,meta)
 
 
 def build_url_for_query(config,args):
@@ -72,7 +80,7 @@ def build_url_for_query(config,args):
 
     # substitute year from arguments and users api key into the url
     if "__year__" in build_url:
-        build_url = build_url.replace("__year__", args["year"])
+        build_url = build_url.replace("__year__", str(args["year"]))
     if "__apiKey__" in build_url:
         userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
         build_url = build_url.replace("__apiKey__", userAPIKey)
@@ -133,7 +141,7 @@ def main(**kwargs):
     log.info("Concat dataframe list and parse data")
     df = parse_data(dataframe_list, kwargs, config)
     # log that data was retrieved
-    log.info("Retrieved data for " + kwargs['source'] + ' ' + kwargs['year'])
+    log.info("Retrieved data for " + kwargs['source'] + ' ' + str(kwargs['year']))
     # add any missing columns of data and cast to appropriate data type
     log.info("Add any missing columns and check field datatypes")
     flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
@@ -142,11 +150,9 @@ def main(**kwargs):
     # sort df and reset index
     flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
                                    'FlowName', 'Compartment']).reset_index(drop=True)
-    # save as parquet file
-    log.info('Save dataframe as parquet')
-    parquet_name = kwargs['source'] + '_' + kwargs['year']
-    store_flowbyactivity(flow_df, parquet_name)
-
+    # save
+    meta = set_fba_meta(kwargs['source'],str(kwargs['year']))
+    store_flowbyactivity(flow_df,paths,meta)
 
 
 if __name__ == '__main__':
