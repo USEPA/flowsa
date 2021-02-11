@@ -33,11 +33,11 @@ Table T1
 Data for: Copper Mine
 
 
-SourceName: USGS_MYB_ManufacturedAbrasive
+SourceName: USGS_MYB_Copper
 https://www.usgs.gov/centers/nmic/copper-statistics-and-information
 
 Minerals Yearbook, xls file, tab T1: 
-ESTIMATED PRODUCTION OF CRUDE SILICON CARBIDE AND FUSED ALUMINUM OXIDE IN THE UNITED STATES AND CANADA
+
 
 Data for: Copper; mine
 

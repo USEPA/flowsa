@@ -38,6 +38,7 @@ from flowsa.USGS_MYB_Lead import *
 from flowsa.USGS_MYB_ManufacturedAbrasive import *
 from flowsa.USGS_MYB_Copper import *
 from flowsa.USGS_MYB_Nickel import *
+from flowsa.USGS_MYB_Zinc import *
 
 
 def parse_args():

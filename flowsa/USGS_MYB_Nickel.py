@@ -33,7 +33,7 @@ Table T1
 Data for: Copper Mine
 
 
-SourceName: USGS_MYB_ManufacturedAbrasive
+SourceName: USGS_MYB_Nickel
 https://www.usgs.gov/centers/nmic/nickel-statistics-and-information
 
 Minerals Yearbook, xls file, tab T10: 
