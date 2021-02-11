@@ -100,7 +100,6 @@ def usgs_copper_call(url, usgs_response, args):
 def usgs_copper_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["Silicon carbide"]
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
@@ -108,9 +107,9 @@ def usgs_copper_parse(dataframe_list, args):
             product = df.iloc[index]["Production"].strip().translate(remove_digits)
 
             data["Class"] = "Geological"
-            data['FlowType'] = "Elementary Flows"
+            data['FlowType'] = "ELEMENTARY_FLOWS"
             data["Location"] = "00000"
-            data["Compartment"] = " "
+            data["Compartment"] = "ground"
             data["SourceName"] = "USGS_MYB_Copper"
             data["Year"] = str(args["year"])
 

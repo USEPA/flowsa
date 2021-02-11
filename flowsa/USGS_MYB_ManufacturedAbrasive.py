@@ -104,9 +104,9 @@ def usgs_ma_parse(dataframe_list, args):
             product = df.iloc[index]["Product"].strip().translate(remove_digits)
             if product in row_to_use:
                 data["Class"] = "Geological"
-                data['FlowType'] = "Elementary Flows"
+                data['FlowType'] = "ELEMENTARY_FLOWS"
                 data["Location"] = "00000"
-                data["Compartment"] = " "
+                data["Compartment"] = "ground"
                 data["SourceName"] = "USGS_MYB_ManufacturedAbrasives"
                 data["Year"] = str(args["year"])
 

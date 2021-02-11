@@ -84,9 +84,9 @@ def usgs_lead_parse(dataframe_list, args):
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data["Class"] = "Geological"
-                data['FlowType'] = "Elementary Flows"
+                data['FlowType'] = "ELEMENTARY_FLOWS"
                 data["Location"] = "00000"
-                data["Compartment"] = " "
+                data["Compartment"] = "ground"
                 data["SourceName"] = "USGS_MYB_Lead"
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
