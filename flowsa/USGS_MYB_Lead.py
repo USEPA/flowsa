@@ -55,9 +55,10 @@ def usgs_lead_url_helper(build_url, config, args):
 def usgs_lead_call(url, usgs_response, args):
     """TODO."""
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
-    df_data = pd.DataFrame(df_raw_data.loc[5:25]).reindex()
+    df_data = pd.DataFrame(df_raw_data.loc[8:15]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
+
 
     if len(df_data. columns) == 12:
         df_data.columns = ["Production", "Units", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
@@ -78,10 +79,18 @@ def usgs_lead_call(url, usgs_response, args):
 def usgs_lead_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["Primary lead, refined content, domestic ores and base bullion", "Secondary lead, lead content"]
+    row_to_use = ["Primary lead, refined content, domestic ores and base bullion", "Secondary lead, lead content",
+                   "Lead ore and concentrates", "Lead in base bullion"]
+    import_export = ["Exports, lead content:","Imports for consumption, lead content:"]
     dataframe = pd.DataFrame()
+    product = "production"
     for df in dataframe_list:
         for index, row in df.iterrows():
+            if df.iloc[index]["Production"].strip() in import_export:
+                if df.iloc[index]["Production"].strip() == "Exports, lead content:":
+                    product = "exports"
+                elif df.iloc[index]["Production"].strip() == "Imports for consumption, lead content:":
+                    product = "imports"
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data["Class"] = "Geological"
                 data['FlowType'] = "ELEMENTARY_FLOWS"
@@ -90,7 +99,7 @@ def usgs_lead_parse(dataframe_list, args):
                 data["SourceName"] = "USGS_MYB_Lead"
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = "Lead"
+                data['FlowName'] = "Lead " + product
                 data["Context"] = None
                 data["ActivityConsumedBy"] = None
                 data["ActivityProducedBy"] = df.iloc[index]["Production"]

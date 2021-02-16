@@ -39,6 +39,8 @@ from flowsa.USGS_MYB_ManufacturedAbrasive import *
 from flowsa.USGS_MYB_Copper import *
 from flowsa.USGS_MYB_Nickel import *
 from flowsa.USGS_MYB_Zinc import *
+from flowsa.USGS_MYB_Lime import *
+from flowsa.USGS_MYB_SandGravelCon import *
 
 
 def parse_args():
