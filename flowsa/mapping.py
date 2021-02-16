@@ -9,7 +9,7 @@ import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
 from flowsa.flowbyfunctions import fbs_activity_fields, fba_activity_fields, load_sector_length_crosswalk
-from flowsa.datachecks import replace_naics_w_naics_2012
+from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
 def get_activitytosector_mapping(source):
     """
@@ -37,7 +37,6 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :return: a df with activity fields mapped to 'sectors'
     """
     # First check if source activities are NAICS like - if so make it into a mapping file
-
     cat = load_source_catalog()
 
     # for s in pd.unique(flowbyactivity_df['SourceName']):
@@ -107,7 +106,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
 
     # if activities are sector-like check that the sectors are in the crosswalk
     if src_info['sector-like_activities']:
-        flowbyactivity_wsector_df = replace_naics_w_naics_2012(flowbyactivity_wsector_df, sectorsourcename)
+        flowbyactivity_wsector_df = replace_naics_w_naics_from_another_year(flowbyactivity_wsector_df, sectorsourcename)
 
     return flowbyactivity_wsector_df
 

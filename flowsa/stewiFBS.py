@@ -14,7 +14,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow
 from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk
-from flowsa.datachecks import replace_naics_w_naics_2012
+from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
 def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     """
@@ -230,7 +230,7 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
 
     # check the sector codes to make sure NAICS 2012 codes
-    fbs = replace_naics_w_naics_2012(fbs, 'NAICS_2012_Code')
+    fbs = replace_naics_w_naics_from_another_year(fbs, 'NAICS_2012_Code')
 
     return fbs 
 
