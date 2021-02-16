@@ -42,6 +42,9 @@ from flowsa.USGS_MYB_Zinc import *
 from flowsa.USGS_MYB_Lime import *
 from flowsa.USGS_MYB_SandGravelCon import *
 from flowsa.USGS_MYB_SandGravelInd import *
+from flowsa.USGS_MYB_Stone_Dimension import *
+from flowsa.USGS_MYB_Stone_Crushed import *
+from flowsa.USGS_MYB_Beryllium import *
 
 
 def parse_args():
