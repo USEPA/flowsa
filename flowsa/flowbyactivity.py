@@ -45,7 +45,11 @@ from flowsa.USGS_MYB_SandGravelInd import *
 from flowsa.USGS_MYB_Stone_Dimension import *
 from flowsa.USGS_MYB_Stone_Crushed import *
 from flowsa.USGS_MYB_Beryllium import *
-
+from flowsa.USGS_MYB_Cobalt import *
+from flowsa.USGS_MYB_Gold import *
+from flowsa.USGS_MYB_Iron_Ore import *
+from flowsa.USGS_MYB_Magnesium import *
+from flowsa.USGS_MYB_Molybdenum import *
 
 def parse_args():
     """Make year and source script parameters"""

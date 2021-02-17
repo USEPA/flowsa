@@ -30,19 +30,17 @@ Description
 Table T1
 
 
-Data for: Copper Mine
+Data for: Stone Dimension 
 
 
 SourceName: USGS_MYB_Nickel
-https://www.usgs.gov/centers/nmic/lime-statistics-and-information
+https://www.usgs.gov/centers/nmic/dimension-stone-statistics-and-information
 
 Minerals Yearbook, xls file, tab T10: 
-United States, sulfide ore, concentrate
+Data for: Stone Dimension
 
-
-Data for: Lime; lime
-
-Years = 2014+
+Years = 2013+
+There was no data for import or export. 
 """
 def year_name_stonedis(year):
     if int(year) == 2013:
@@ -93,7 +91,7 @@ def usgs_stonedis_call(url, usgs_response, args):
 def usgs_stonedis_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["Quantity", "Exports, value", "Imports for consumption, value"]
+    row_to_use = ["Quantity", ]
     dataframe = pd.DataFrame()
     for df in dataframe_list:
 
