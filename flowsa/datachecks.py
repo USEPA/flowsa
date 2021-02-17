@@ -285,15 +285,21 @@ def check_if_losing_sector_data(df, target_sector_level):
     return df_w_lost_data
 
 
-def check_allocation_ratios(flow_alloc_df, activity_set, source_name, method_name):
+def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, method_name):
     """
     Check for issues with the flow allocation ratios
     :param df:
     :return:
     """
 
+    # test
+    flow_alloc_df_load = flow_allocation.copy()
+    activity_set = aset
+    source_name = k
+
     # create column of sector lengths
-    flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
+    flow_alloc_df = flow_alloc_df_load.assign(slength=flow_alloc_df_load['Sector'].apply(lambda x: len(x)))
+    # flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
     # subset df
     flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'slength', 'FlowAmountRatio']]
     # sum the flow amount ratios by location and sector length
@@ -321,6 +327,64 @@ def check_allocation_ratios(flow_alloc_df, activity_set, source_name, method_nam
     # output data for all sector lengths
     flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
                           "_allocation_ratios_" + activity_set + ".csv", index=False)
+
+    return None
+
+
+def identify_where_sector_data_loss_occurs(flow_alloc_df_load, activity_set, source_name, method_name):
+    """
+    Find the cause of data loss, in a df with a single sector column and an FBA_Activity column
+    :param flow_alloc_df_load:
+    :param activity_set:
+    :param source_name:
+    :param method_name:
+    :return:
+    """
+
+    # test
+    flow_alloc_df_load = flow_allocation.copy()
+    activity_set = aset
+    source_name = k
+
+    # test 2
+    df_test = flow_alloc_df_load[flow_alloc_df_load['Sector'].apply(lambda x: x[0:3] == '443')]
+
+    flow_alloc_df = flow_alloc_df_load[['FBA_Activity', 'Sector', 'Location', 'FlowAmount']]
+    # find the minimum/maximum sector length
+    min_length = min(flow_alloc_df['Sector'].apply(lambda x: len(str(x))).unique())
+    max_length = max(flow_alloc_df['Sector'].apply(lambda x: len(str(x))).unique())
+    #loop through the df comparing flowamount ratio differences between specific sectors
+    sector_ratios = []
+    for i in range(min_length, max_length):
+        # test
+        i = 3
+        # subset df to sectors with length = i and length = i + 1
+        df_sub1 = flow_alloc_df.loc[flow_alloc_df['Sector'].apply(lambda x: len(x) == i)].rename(columns={'FlowAmount': 'FlowAmount_NAICS_' + str(i)})
+        # df_sub = flow_alloc_df2.loc[flow_alloc_df2['Sector'].apply(lambda x: len(x) == i)]
+        df_sub2 = flow_alloc_df.loc[flow_alloc_df['Sector'].apply(lambda x: len(x) == i+1)] #.rename(columns={'FlowAmount': 'FlowAmount_NAICS_' + str(i+1)})
+        # aggregate df_sub2 based on sector length of i
+        df_sub2 = df_sub2.assign(Sector=df_sub2['Sector'].apply(lambda x: x[0:i]))
+        df_sub2 = df_sub2.groupby(['FBA_Activity', 'Location', 'Sector']).agg({'FlowAmount': ['sum']}).reset_index()
+        df_sub2.columns = ['FBA_Activity', 'Location', 'Sector', 'FlowAmount_NAICS_' + str(i+1)]
+        # merge df
+        df_m = df_sub1.merge(df_sub2, how='left')
+        df_m = df_m.assign(Data_Diff = df_m['FlowAmount_NAICS_3']/df_m['FlowAmount_NAICS_4'])
+
+
+        # create column for sector grouping
+        df_subset = df_subset.assign(Sector_group=df_subset[sectorcolumn].apply(lambda x: x[0:i - 1]))
+        # subset df to create denominator
+        df_denom = df_subset[['FlowAmount', 'Location', 'Sector_group']]
+        df_denom = df_denom.groupby(['Location', 'Sector_group'], as_index=False)[["FlowAmount"]].agg("sum")
+        df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
+        # merge the denominator column with fba_w_sector df
+        ratio_df = df_subset.merge(df_denom, how='left')
+        # calculate ratio
+        ratio_df.loc[:, 'FlowAmountRatio'] = ratio_df['FlowAmount'] / ratio_df['Denominator']
+        ratio_df = ratio_df.drop(columns=['Denominator', 'Sector_group']).reset_index()
+        sector_ratios.append(ratio_df)
+    # concat list of dataframes (info on each page)
+    df_w_ratios = pd.concat(sector_ratios, sort=True).reset_index(drop=True)
 
     return None
 
@@ -590,6 +654,9 @@ def melt_naics_crosswalk():
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
     cw_load = load_sector_crosswalk()
+
+    # test
+    # cw_load = cw_load[cw_load['NAICS_2012_Code'].apply(lambda x: x[0:3] == '443')].reset_index(drop=True)
 
     # create melt table of possible 2007 and 2017 naics that can be mapped to 2012
     cw_melt = cw_load.melt(id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
