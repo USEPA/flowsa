@@ -1,6 +1,6 @@
-# Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
+# Downloads and parses CSV from USGS Cobalt Statistics and Information on an annual basis.
 ---
-# api_name: USGS_MYB_SodaAsh
+# api_name: USGS_MYB_Cobalt
 # api_key_required: false
 format: xls
 url:

@@ -1,6 +1,6 @@
-# Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
+# Downloads and parses CSV from USGS Copper Statistics and Information on an annual basis.
 ---
-# api_name: USGS_MYB_SodaAsh
+# api_name: USGS_MYB_Copper
 # api_key_required: false
 format: xlsx
 url:

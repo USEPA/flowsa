@@ -8,19 +8,19 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
-SourceName: USGS_MYB_Lead
+SourceName: USGS_MYB_Rhenium 
 https://www.usgs.gov/centers/nmic/lead-statistics-and-information 
 
-Minerals Yearbook, xls file, tab T1: SALIENT LEAD STATISTICS
+Minerals Yearbook, xls file, tab T1: SALIENT RHENIUM STATISTICS
 data for:
 
-Primary lead, refined content, domestic ores and base bullion
-Secondary lead, lead content
 
-Years = 2010+
+Production, mine, rhenium conten, Total, rhenium content
+No export Data. 
+Years = 2014+
 """
 
-def year_name_iron_ore(year):
+def year_name_rhenium(year):
     if int(year) == 2014:
         return_val = "year_1"
     elif int(year) == 2015:
@@ -34,62 +34,59 @@ def year_name_iron_ore(year):
     return return_val
 
 
-def usgs_iron_ore_url_helper(build_url, config, args):
+def usgs_rhenium_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
     # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
 
-def usgs_iron_ore_call(url, usgs_response, args):
+def usgs_rhenium_call(url, usgs_response, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1 ')# .dropna()
-    df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_data = pd.DataFrame(df_raw_data.loc[5:13]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
 
+    if len(df_data. columns) == 15:
+        df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
+                           "space_4", "year_4", "space_5", "year_5", "space_6", "space_7", "space_8", "space_9"]
 
-    if len(df_data. columns) == 13:
-        df_data.columns = ["Production", "Units", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5", "space_6"]
-    col_to_use = ["Production", "Units"]
-    col_to_use.append(year_name_iron_ore(args["year"]))
+    col_to_use = ["Production"]
+    col_to_use.append(year_name_rhenium(args["year"]))
     for col in df_data.columns:
         if col not in col_to_use:
             del df_data[col]
-
     return df_data
 
 
-def usgs_iron_ore_parse(dataframe_list, args):
+def usgs_rhenium_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["Gross weight", "Quantity"]
+    row_to_use = ["Total, rhenium content", "Production, mine, rhenium content2"]
     dataframe = pd.DataFrame()
+
     for df in dataframe_list:
         for index, row in df.iterrows():
-
-            if df.iloc[index]["Production"].strip() == "Production:":
-                product = "production"
-            elif df.iloc[index]["Production"].strip() == "Exports:":
-                product = "exports"
-            elif df.iloc[index]["Production"].strip() == "Imports for consumption:":
+            if df.iloc[index]["Production"].strip() == "Total, rhenium content":
                 product = "imports"
+            elif df.iloc[index]["Production"].strip() == "Production, mine, rhenium content2":
+                product = "production"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data["Class"] = "Geological"
                 data['FlowType'] = "ELEMENTARY_FLOWS"
                 data["Location"] = "00000"
                 data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Iron_Ore"
+                data["SourceName"] = "USGS_MYB_Rhenium"
                 data["Year"] = str(args["year"])
-                data["Unit"] = "Thousand Metric Tons"
-                data['FlowName'] = "Iron Ore " + product
+                data["Unit"] = "kilograms"
+                data['FlowName'] = "Rhenium " + product
                 data["Context"] = None
                 data["ActivityConsumedBy"] = None
-                data["Description"] = "Iron Ore"
-                data["ActivityProducedBy"] = "Iron Ore"
-                col_name = year_name_iron_ore(args["year"])
+                data["Description"] = "Rhenium"
+                data["ActivityProducedBy"] = "Rhenium"
+                col_name = year_name_rhenium(args["year"])
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)
                 else:

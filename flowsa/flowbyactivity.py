@@ -50,6 +50,9 @@ from flowsa.USGS_MYB_Gold import *
 from flowsa.USGS_MYB_Iron_Ore import *
 from flowsa.USGS_MYB_Magnesium import *
 from flowsa.USGS_MYB_Molybdenum import *
+from flowsa.USGS_MYB_Platinum import *
+from flowsa.USGS_MYB_Rhenium import *
+from flowsa.USGS_MYB_Silver import *
 
 def parse_args():
     """Make year and source script parameters"""
