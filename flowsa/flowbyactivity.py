@@ -9,7 +9,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 
 import argparse
 from flowsa.common import *
-from esupy.processed_data_mgmt import FileMeta, write_df_to_file
+from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.flowbyfunctions import add_missing_flow_by_fields, clean_df, fba_fill_na_dict
 from flowsa.Blackhurst_IO import *
 from flowsa.BLS_QCEW import *
@@ -45,23 +45,12 @@ def parse_args():
     return args
 
 
-def set_fba_meta(datasource,year):
-    fba_meta = FileMeta
-    fba_meta.tool = pkg.project_name
-    fba_meta.tool_version = pkg.version
-    fba_meta.category = "FlowByActivity"
+def set_fba_name(datasource,year):
     if year is not None:
-        fba_meta.name_data = datasource + "_" + str(year)
+        name_data = datasource + "_" + str(year)
     else:
-        fba_meta.name_data = datasource
-    fba_meta.ext = write_format
-    fba_meta.git_hash = git_hash
-    return fba_meta
-
-
-def store_flowbyactivity(result, paths, meta):
-    """Prints the data frame into a parquet file."""
-    write_df_to_file(result,paths,meta)
+        name_data = datasource
+    return name_data
 
 
 def build_url_for_query(config,args):
@@ -151,8 +140,9 @@ def main(**kwargs):
     flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
                                    'FlowName', 'Compartment']).reset_index(drop=True)
     # save
-    meta = set_fba_meta(kwargs['source'],str(kwargs['year']))
-    store_flowbyactivity(flow_df,paths,meta)
+    name_data = set_fba_name(kwargs['source'],str(kwargs['year']))
+    meta = set_fb_meta(name_data, "FlowByActivity")
+    write_df_to_file(flow_df,paths,meta)
 
 
 if __name__ == '__main__':

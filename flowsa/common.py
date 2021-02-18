@@ -14,7 +14,7 @@ import logging as log
 import pycountry
 import pkg_resources
 import subprocess
-from esupy.processed_data_mgmt import Paths
+from esupy.processed_data_mgmt import Paths, FileMeta
 
 log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
@@ -568,3 +568,13 @@ def convert_fba_unit(df):
     
     return df
 
+
+def set_fb_meta(name_data, category):
+    fb_meta = FileMeta
+    fb_meta.name_data = name_data
+    fb_meta.tool = pkg.project_name
+    fb_meta.tool_version = pkg.version
+    fb_meta.category = category
+    fb_meta.ext = write_format
+    fb_meta.git_hash = git_hash
+    return fb_meta
