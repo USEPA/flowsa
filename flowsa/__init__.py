@@ -8,9 +8,11 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 
 import pandas as pd
 from esupy.processed_data_mgmt import load_preprocessed_output
-from flowsa.common import paths
+from flowsa.common import paths, set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors
 import flowsa.flowbyactivity
+import flowsa.flowbysector
+
 
 def getFlowByActivity(flowclass, year, datasource):
     """
@@ -22,7 +24,8 @@ def getFlowByActivity(flowclass, year, datasource):
     :return: a pandas DataFrame in FlowByActivity format
     """
     #Set fba metadata
-    fba_meta = flowsa.flowbyactivity.set_fba_meta(datasource,year)
+    name = flowsa.flowbyactivity.set_fba_name(datasource,year)
+    fba_meta = set_fb_meta(name,"FlowByActivity")
 
     # Try to load a local version of fba; generate and load if missing
     fba = load_preprocessed_output(fba_meta,paths)
@@ -38,24 +41,25 @@ def getFlowByActivity(flowclass, year, datasource):
 
 def getFlowBySector(methodname):
     """
-    Retrieves stored data in the FlowBySector format
+    Loads stored FlowBySector output or generates it if it doesn't exist, then loads
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-    fbs_file = "FlowBySector/" + methodname + ".parquet"
-    fbs = load_preprocessed_output(fbs_file, paths)
+    fbs_meta = set_fb_meta(methodname, "FlowBySector")
+    fbs = load_preprocessed_output(fbs_meta,paths)
+    if fbs is None:
+        # Generate the fba
+        flowsa.flowbysector.main(method=methodname)
+        # Now load the fba
+        fbs = load_preprocessed_output(fbs_meta,paths)
     return fbs
 
 
-def getFlowBySector_collapsed(methodname):
+def collapse_FlowBySector(fbs):
     """
-    Retrieves stored data in the FlowBySector format,
+    Returns fbs with one sector column in place of two
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-
-    # load saved FBS parquet
-    fbs = getFlowBySector(methodname)
     fbs_collapsed = collapse_fbs_sectors(fbs)
-
     return fbs_collapsed
