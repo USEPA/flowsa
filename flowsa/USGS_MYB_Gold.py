@@ -6,18 +6,29 @@ import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-
 """
-SourceName: USGS_MYB_Lead
-https://www.usgs.gov/centers/nmic/lead-statistics-and-information 
+Projects
+/
+FLOWSA
+/
 
-Minerals Yearbook, xls file, tab T1: SALIENT LEAD STATISTICS
+FLOWSA-314
+
+Import USGS Mineral Yearbook data
+
+Description
+
+Table T1
+
+SourceName: USGS_MYB_Gold
+https://www.usgs.gov/centers/nmic/gold-statistics-and-information
+
+Minerals Yearbook, xls file, tab T1: SALIENT GOLD STATISTICS
 data for:
 
-Primary lead, refined content, domestic ores and base bullion
-Secondary lead, lead content
+Gold; mine
 
-Years = 2010+
+Years = 2013+
 """
 
 def year_name_gold(year):

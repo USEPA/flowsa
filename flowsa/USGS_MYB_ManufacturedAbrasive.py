@@ -9,29 +9,18 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
-
-
 Projects
 /
 FLOWSA
 /
 
-FLOWSA-224
+FLOWSA-314
 
-USGS Silicon Carbide Statistics and Information
-
-
-
-
-
+Import USGS Mineral Yearbook data
 
 Description
 
-Table T2: ESTIMATED PRODUCTION OF CRUDE SILICON CARBIDE AND FUSED ALUMINUM OXIDE IN THE UNITED STATES AND CANAD
-
-
-Data for: Silicon carbid
-
+Table T2
 
 SourceName: USGS_MYB_ManufacturedAbrasive
 https://www.usgs.gov/centers/nmic/manufactured-abrasives-statistics-and-information 
@@ -39,7 +28,7 @@ https://www.usgs.gov/centers/nmic/manufactured-abrasives-statistics-and-informat
 Minerals Yearbook, xls file, tab T2: 
 ESTIMATED PRODUCTION OF CRUDE SILICON CARBIDE AND FUSED ALUMINUM OXIDE IN THE UNITED STATES AND CANADA
 
-Data for: Silicon carbid
+Data for: Manufactured Abrasive
 
 Years = 2010+
 """

@@ -54,6 +54,8 @@ from flowsa.USGS_MYB_Platinum import *
 from flowsa.USGS_MYB_Rhenium import *
 from flowsa.USGS_MYB_Silver import *
 from flowsa.USGS_MYB_Zirconium import *
+from flowsa.USGS_MYB_Titanium import *
+from flowsa.USGS_MYB_Barite import *
 
 def parse_args():
     """Make year and source script parameters"""
