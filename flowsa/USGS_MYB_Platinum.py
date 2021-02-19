@@ -8,8 +8,21 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
+Projects
+/
+FLOWSA
+/
+
+FLOWSA-314
+
+Import USGS Mineral Yearbook data
+
+Description
+
+Table T1
+
 SourceName: USGS_MYB_Platinum 
-https://www.usgs.gov/centers/nmic/lead-statistics-and-information 
+https://www.usgs.gov/centers/nmic/platinum-group-metals-statistics-and-information
 
 Minerals Yearbook, xls file, tab T1: SALIENT PLATINUM STATISTICS
 data for:

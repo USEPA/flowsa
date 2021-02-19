@@ -9,40 +9,27 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
-
-
 Projects
 /
 FLOWSA
 /
 
-FLOWSA-224
+FLOWSA-314
 
-USGS Silicon Carbide Statistics and Information
-
-
-
-
-
+Import USGS Mineral Yearbook data
 
 Description
 
 Table T1
 
+SourceName: USGS_MYB_SandGravelCon
+https://www.usgs.gov/centers/nmic/construction-sand-and-gravel-statistics-and-information
 
-Data for: Copper Mine
+Minerals Yearbook, xls file, tab T1: 
+Data for: 
+Sand and Gravel; sand and gravel (construction)
 
-
-SourceName: USGS_MYB_Nickel
-https://www.usgs.gov/centers/nmic/lime-statistics-and-information
-
-Minerals Yearbook, xls file, tab T10: 
-United States, sulfide ore, concentrate
-
-
-Data for: Lime; lime
-
-Years = 2014+
+Years = 2013+
 """
 def year_name_sgc(year):
     if int(year) == 2013:
@@ -66,7 +53,6 @@ def usgs_sgc_url_helper(build_url, config, args):
 
 def usgs_sgc_call(url, usgs_response, args):
     """Calls the excel sheet for nickel and removes extra columns"""
- #   df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T10')# .dropna()
 
 
     df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()

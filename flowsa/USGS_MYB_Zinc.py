@@ -9,36 +9,22 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
-
-
 Projects
 /
 FLOWSA
 /
 
-FLOWSA-224
+FLOWSA-314
 
-USGS Silicon Carbide Statistics and Information
-
-
-
-
-
+Import USGS Mineral Yearbook data
 
 Description
 
-Table T1
-
-
-Data for: Copper Mine
-
-
+Table T1 and T9
 SourceName: USGS_MYB_Zinc
 https://www.usgs.gov/centers/nmic/zinc-statistics-and-information
 
-Minerals Yearbook, xls file, tab T10: 
-
-
+Minerals Yearbook, xls file, tab T1 and T9: 
 
 Data for: Zinc; mine, zinc in concentrate
 
