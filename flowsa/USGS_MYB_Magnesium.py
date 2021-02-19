@@ -8,14 +8,21 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
-SourceName: USGS_MYB_Lead
-https://www.usgs.gov/centers/nmic/lead-statistics-and-information 
+FLOWSA-314
 
-Minerals Yearbook, xls file, tab T1: SALIENT LEAD STATISTICS
+Import USGS Mineral Yearbook data
+
+Description
+
+Table T1
+
+SourceName: USGS_MYB_Magnesium
+https://www.usgs.gov/centers/nmic/magnesium-statistics-and-information
+
+Minerals Yearbook, xls file, tab T1: SALIENT MAGNESIUM STATISTICS
 data for:
 
-Primary lead, refined content, domestic ores and base bullion
-Secondary lead, lead content
+Magnesium; magnesium compounds
 
 Years = 2010+
 """
@@ -44,7 +51,7 @@ def usgs_magnesium_url_helper(build_url, config, args):
 def usgs_magnesium_call(url, usgs_response, args):
     """TODO."""
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
-    df_data = pd.DataFrame(df_raw_data.loc[8:15]).reindex()
+    df_data = pd.DataFrame(df_raw_data.loc[7:15]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
 
@@ -65,7 +72,7 @@ def usgs_magnesium_call(url, usgs_response, args):
 def usgs_magnesium_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["Secondary", "Exports", "Imports for consumption"]
+    row_to_use = ["Secondary", "Primary", "Exports", "Imports for consumption"]
     dataframe = pd.DataFrame()
 
     for df in dataframe_list:
@@ -75,7 +82,7 @@ def usgs_magnesium_parse(dataframe_list, args):
                 product = "exports"
             elif df.iloc[index]["Production"].strip() == "Imports for consumption":
                 product = "imports"
-            elif df.iloc[index]["Production"].strip() == "Secondary":
+            elif df.iloc[index]["Production"].strip() == "Secondary" or df.iloc[index]["Production"].strip() == "Primary" :
                 product = "production"
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data["Class"] = "Geological"
@@ -93,6 +100,8 @@ def usgs_magnesium_parse(dataframe_list, args):
                 col_name = year_name_magnesium(args["year"])
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)
+                elif str(df.iloc[index][col_name]) == "W":
+                    data["FlowAmount"] = withdrawn_keyword
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)

@@ -16,28 +16,17 @@ Projects
 FLOWSA
 /
 
-FLOWSA-224
+FLOWSA-314
 
-USGS Silicon Carbide Statistics and Information
-
-
-
-
-
-
+Import USGS Mineral Yearbook data
 Description
 
 Table T1
-
-
-Data for: Copper Mine
-
 
 SourceName: USGS_MYB_Copper
 https://www.usgs.gov/centers/nmic/copper-statistics-and-information
 
 Minerals Yearbook, xls file, tab T1: 
-
 
 Data for: Copper; mine
 

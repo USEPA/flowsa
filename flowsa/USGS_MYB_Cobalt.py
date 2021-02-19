@@ -9,40 +9,27 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 """
-
-
 Projects
 /
 FLOWSA
 /
 
-FLOWSA-224
+FLOWSA-314
 
-USGS Silicon Carbide Statistics and Information
-
-
-
-
-
+Import USGS Mineral Yearbook data
 
 Description
+Table T1 and T8
 
-Table T1
+SourceName: USGS_MYB_Cobalt
+https://www.usgs.gov/centers/nmic/cobalt-statistics-and-information
 
-
-Data for: Copper Mine
-
-
-SourceName: USGS_MYB_Nickel
-https://www.usgs.gov/centers/nmic/lime-statistics-and-information
-
-Minerals Yearbook, xls file, tab T10: 
+Minerals Yearbook, xls file, tab T1 and T8: 
 United States, sulfide ore, concentrate
 
+Data for: Cobalt; cobalt content
 
-Data for: Beryllium; mine shipments
-
-Years = 2014+
+Years = 2013+
 """
 def year_name_cobalt(year):
     if int(year) == 2013:
@@ -129,16 +116,16 @@ def usgs_cobalt_parse(dataframe_list, args):
                 data['FlowType'] = "ELEMENTARY_FLOWS"
                 data["Location"] = "00000"
                 data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Colbalt"
+                data["SourceName"] = "USGS_MYB_Cobalt"
                 data["Year"] = str(args["year"])
 
                 data["Context"] = None
                 data["ActivityConsumedBy"] = None
                 data["Unit"] = "Thousand Metric Tons"
                 col_name = year_name_cobalt(args["year"])
-                data["Description"] = "Colbalt"
-                data["ActivityProducedBy"] = "Colbalt"
-                data['FlowName'] = "Colbalt " + prod
+                data["Description"] = "Cobalt"
+                data["ActivityProducedBy"] = "Cobalt"
+                data['FlowName'] = "Cobalt " + prod
 
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 remove_rows = ["(18)", "(2)"]
