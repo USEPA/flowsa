@@ -10,35 +10,27 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 """
 
-
 Projects
 /
 FLOWSA
 /
 
-FLOWSA-224
+FLOWSA-314
 
-USGS Silicon Carbide Statistics and Information
-
-
-
-
-
+Import USGS Mineral Yearbook data
 
 Description
 
-Table T1
+Table T1 and T4
 
 
-Data for: Copper Mine
+Data for: Beryllium Mine
 
 
-SourceName: USGS_MYB_Nickel
-https://www.usgs.gov/centers/nmic/lime-statistics-and-information
+SourceName: USGS_MYB_Beryllium
+https://www.usgs.gov/centers/nmic/beryllium-statistics-and-information
 
-Minerals Yearbook, xls file, tab T10: 
-United States, sulfide ore, concentrate
-
+Minerals Yearbook, xls file, tab T4 and T1 
 
 Data for: Beryllium; mine shipments
 
