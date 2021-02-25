@@ -292,11 +292,6 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
     :return:
     """
 
-    # test
-    flow_alloc_df_load = flow_allocation.copy()
-    activity_set = aset
-    source_name = k
-
     # create column of sector lengths
     flow_alloc_df = flow_alloc_df_load.assign(slength=flow_alloc_df_load['Sector'].apply(lambda x: len(x)))
     # flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
@@ -331,62 +326,52 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
     return None
 
 
-def identify_where_sector_data_loss_occurs(flow_alloc_df_load, activity_set, source_name, method_name):
-    """
-    Find the cause of data loss, in a df with a single sector column and an FBA_Activity column
-    :param flow_alloc_df_load:
-    :param activity_set:
-    :param source_name:
-    :param method_name:
-    :return:
-    """
-
-    # test
-    flow_alloc_df_load = flow_allocation.copy()
-    activity_set = aset
-    source_name = k
-
-    # test 2
-    df_test = flow_alloc_df_load[flow_alloc_df_load['Sector'].apply(lambda x: x[0:3] == '443')]
-
-    flow_alloc_df = flow_alloc_df_load[['FBA_Activity', 'Sector', 'Location', 'FlowAmount']]
-    # find the minimum/maximum sector length
-    min_length = min(flow_alloc_df['Sector'].apply(lambda x: len(str(x))).unique())
-    max_length = max(flow_alloc_df['Sector'].apply(lambda x: len(str(x))).unique())
-    #loop through the df comparing flowamount ratio differences between specific sectors
-    sector_ratios = []
-    for i in range(min_length, max_length):
-        # test
-        i = 3
-        # subset df to sectors with length = i and length = i + 1
-        df_sub1 = flow_alloc_df.loc[flow_alloc_df['Sector'].apply(lambda x: len(x) == i)].rename(columns={'FlowAmount': 'FlowAmount_NAICS_' + str(i)})
-        # df_sub = flow_alloc_df2.loc[flow_alloc_df2['Sector'].apply(lambda x: len(x) == i)]
-        df_sub2 = flow_alloc_df.loc[flow_alloc_df['Sector'].apply(lambda x: len(x) == i+1)] #.rename(columns={'FlowAmount': 'FlowAmount_NAICS_' + str(i+1)})
-        # aggregate df_sub2 based on sector length of i
-        df_sub2 = df_sub2.assign(Sector=df_sub2['Sector'].apply(lambda x: x[0:i]))
-        df_sub2 = df_sub2.groupby(['FBA_Activity', 'Location', 'Sector']).agg({'FlowAmount': ['sum']}).reset_index()
-        df_sub2.columns = ['FBA_Activity', 'Location', 'Sector', 'FlowAmount_NAICS_' + str(i+1)]
-        # merge df
-        df_m = df_sub1.merge(df_sub2, how='left')
-        df_m = df_m.assign(Data_Diff = df_m['FlowAmount_NAICS_3']/df_m['FlowAmount_NAICS_4'])
-
-
-        # create column for sector grouping
-        df_subset = df_subset.assign(Sector_group=df_subset[sectorcolumn].apply(lambda x: x[0:i - 1]))
-        # subset df to create denominator
-        df_denom = df_subset[['FlowAmount', 'Location', 'Sector_group']]
-        df_denom = df_denom.groupby(['Location', 'Sector_group'], as_index=False)[["FlowAmount"]].agg("sum")
-        df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
-        # merge the denominator column with fba_w_sector df
-        ratio_df = df_subset.merge(df_denom, how='left')
-        # calculate ratio
-        ratio_df.loc[:, 'FlowAmountRatio'] = ratio_df['FlowAmount'] / ratio_df['Denominator']
-        ratio_df = ratio_df.drop(columns=['Denominator', 'Sector_group']).reset_index()
-        sector_ratios.append(ratio_df)
-    # concat list of dataframes (info on each page)
-    df_w_ratios = pd.concat(sector_ratios, sort=True).reset_index(drop=True)
-
-    return None
+# def identify_where_sector_data_loss_occurs(flow_alloc_df_load, activity_set, source_name, method_name):
+#     """
+#     Find the cause of data loss, in a df with a single sector column and an FBA_Activity column
+#     :param flow_alloc_df_load:
+#     :param activity_set:
+#     :param source_name:
+#     :param method_name:
+#     :return:
+#     """
+#
+#     flow_alloc_df = flow_alloc_df_load[['FBA_Activity', 'Sector', 'Location', 'FlowAmount']]
+#     # find the minimum/maximum sector length
+#     min_length = min(flow_alloc_df['Sector'].apply(lambda x: len(str(x))).unique())
+#     max_length = max(flow_alloc_df['Sector'].apply(lambda x: len(str(x))).unique())
+#     #loop through the df comparing flowamount ratio differences between specific sectors
+#     sector_ratios = []
+#     for i in range(min_length, max_length):
+#         # subset df to sectors with length = i and length = i + 1
+#         df_sub1 = flow_alloc_df.loc[flow_alloc_df['Sector'].apply(lambda x: len(x) == i)].rename(columns={'FlowAmount': 'FlowAmount_NAICS_' + str(i)})
+#         # df_sub = flow_alloc_df2.loc[flow_alloc_df2['Sector'].apply(lambda x: len(x) == i)]
+#         df_sub2 = flow_alloc_df.loc[flow_alloc_df['Sector'].apply(lambda x: len(x) == i+1)] #.rename(columns={'FlowAmount': 'FlowAmount_NAICS_' + str(i+1)})
+#         # aggregate df_sub2 based on sector length of i
+#         df_sub2 = df_sub2.assign(Sector=df_sub2['Sector'].apply(lambda x: x[0:i]))
+#         df_sub2 = df_sub2.groupby(['FBA_Activity', 'Location', 'Sector']).agg({'FlowAmount': ['sum']}).reset_index()
+#         df_sub2.columns = ['FBA_Activity', 'Location', 'Sector', 'FlowAmount_NAICS_' + str(i+1)]
+#         # merge df
+#         df_m = df_sub1.merge(df_sub2, how='left')
+#         df_m = df_m.assign(Data_Diff = df_m['FlowAmount_NAICS_3']/df_m['FlowAmount_NAICS_4'])
+#
+#
+#         # create column for sector grouping
+#         df_subset = df_subset.assign(Sector_group=df_subset[sectorcolumn].apply(lambda x: x[0:i - 1]))
+#         # subset df to create denominator
+#         df_denom = df_subset[['FlowAmount', 'Location', 'Sector_group']]
+#         df_denom = df_denom.groupby(['Location', 'Sector_group'], as_index=False)[["FlowAmount"]].agg("sum")
+#         df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
+#         # merge the denominator column with fba_w_sector df
+#         ratio_df = df_subset.merge(df_denom, how='left')
+#         # calculate ratio
+#         ratio_df.loc[:, 'FlowAmountRatio'] = ratio_df['FlowAmount'] / ratio_df['Denominator']
+#         ratio_df = ratio_df.drop(columns=['Denominator', 'Sector_group']).reset_index()
+#         sector_ratios.append(ratio_df)
+#     # concat list of dataframes (info on each page)
+#     df_w_ratios = pd.concat(sector_ratios, sort=True).reset_index(drop=True)
+#
+#     return None
 
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, activity_set, source_name, method_name):
@@ -655,9 +640,6 @@ def melt_naics_crosswalk():
     # load the mastercroswalk and subset by sectorsourcename, save values to list
     cw_load = load_sector_crosswalk()
 
-    # test
-    # cw_load = cw_load[cw_load['NAICS_2012_Code'].apply(lambda x: x[0:3] == '443')].reset_index(drop=True)
-
     # create melt table of possible 2007 and 2017 naics that can be mapped to 2012
     cw_melt = cw_load.melt(id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
     # drop the naics year because not relevant for replacement purposes
@@ -670,7 +652,6 @@ def melt_naics_crosswalk():
     # order by naics 2012
     cw_replacement = cw_replacement.sort_values(['NAICS', 'NAICS_2012_Code']).reset_index(drop=True)
 
-
     # create allocation ratios by determining number of NAICS 2012 to other naics when not a 1:1 ratio
     cw_replacement_2 = cw_replacement.assign(naics_count=cw_replacement.groupby(['NAICS'])['NAICS_2012_Code'].transform('count'))
     cw_replacement_2 = cw_replacement_2.assign(allocation_ratio=1/cw_replacement_2['naics_count'])
@@ -678,12 +659,12 @@ def melt_naics_crosswalk():
     return cw_replacement_2
 
 
-
 def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     """
     Check if activity-like sectors are in fact sectors. Also works for the Sector column
     :return:
     """
+    from flowsa.flowbyfunctions import aggregator
 
     # drop NoneType
     df = replace_NoneType_with_empty_cells(df_load)
@@ -727,8 +708,16 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
             for c in column_headers:
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
-    else:
-        log.info('No sectors require substitution')
+        # aggregate data
+        possible_column_headers = ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
+                                   'GeographicalCorrelation', 'TechnologicalCorrelation',
+                                   'DataCollection')
+        # list of column headers to group aggregation by
+        groupby_cols = [e for e in df.columns.values.tolist() if e not in possible_column_headers]
+        # groupby_cols = list(df.select_dtypes(include=['object']).columns)
+        df = aggregator(df, groupby_cols)
+
+    df = replace_strings_with_NoneType(df)
 
     return df
 
