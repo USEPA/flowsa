@@ -205,23 +205,8 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     from flowsa.flowbyfunctions import estimate_suppressed_data, sector_disaggregation, sector_aggregation, \
         flow_by_activity_wsec_mapped_fields, add_missing_flow_by_fields, replace_strings_with_NoneType, fba_mapped_default_grouping_fields
-    from flowsa.EIA_MECS import estimate_missing_data
-
-    # test
-    # df_w_sec = fba_allocation_wsec.copy()
-
-    # replace the activity column with sector column values in the event there were non 2012 naics that were replaced
-    # df_w_sec['ActivityProducedBy'] = df_w_sec['SectorProducedBy'].copy()
-
-    sector_column = 'SectorProducedBy'
-
-    # df = estimate_suppressed_data(df_w_sec, sector_column)
 
     df2 = add_missing_flow_by_fields(df_w_sec, flow_by_activity_wsec_mapped_fields)
-    # df3 = estimate_missing_data(df2, 'ActivityProducedBy', 'SectorProducedBy', [4, 5])
     df3 = replace_strings_with_NoneType(df2)
-
-    # df4 = sector_aggregation(df3, fba_mapped_default_grouping_fields)
-    # df5 = sector_disaggregation(df3, fba_mapped_default_grouping_fields)
 
     return df3
