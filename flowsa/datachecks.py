@@ -323,7 +323,7 @@ def check_allocation_ratios(flow_alloc_df, activity_set, source_name, method_nam
     # create directory if missing
     os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
     # output data for all sector lengths
-    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
+    flow_alloc_df3.to_csv(outputpath + "/FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
                           "_allocation_ratios_" + activity_set + ".csv", index=False)
 
     return None
@@ -397,7 +397,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
               activity_set + ' in output folder')
     # output data at all sector lengths
-    df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
+    df_merge.to_csv(outputpath + "/FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
                                 "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
 
     return None
