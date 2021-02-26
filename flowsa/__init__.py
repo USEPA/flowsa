@@ -2,98 +2,69 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Public functions for flowsa
+Public API for flowsa
 For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/format%20specs
 """
 
-import pandas as pd
-import os
-from flowsa.common import outputpath, fbaoutputpath, fbsoutputpath, datapath, log
+from esupy.processed_data_mgmt import load_preprocessed_output
+from flowsa.common import paths, set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
-from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
+import flowsa.flowbyactivity
+import flowsa.flowbysector
 
-def getFlowByActivity(flowclass, years, datasource, geographic_level='all', file_location='local'):
+
+def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
     """
     Retrieves stored data in the FlowByActivity format
-    :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or
-     ['Land', 'Other']
-    :param year: list, a list of years [2015], or [2010,2011,2012]
     :param datasource: str, the code of the datasource.
-    :param geographic_level: 'all', 'national', 'state', 'county'. Default is 'all'
-    :param file_location: 'local' or 'remote'. Default is 'local'
+    :param year: int, a year, e.g. 2012
+    :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
+    :param geographic_level: str, a geographic level of the data. Optional. E.g. 'national', 'state', 'county'.
     :return: a pandas DataFrame in FlowByActivity format
     """
-    fbas = pd.DataFrame()
-    for y in years:
-        # definitions
-        fba_file = datasource + "_" + str(y) + ".parquet"
-        local_file_path = fbaoutputpath + fba_file
-        remote_file_path = 'https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowByActivity/' + fba_file
-        # load data
-        if file_location == 'local':
-            fba = load_file(fba_file, local_file_path, remote_file_path)
-        else:
-            log.info('Loading ' + datasource + ' from remote server')
-            fba = pd.read_parquet(remote_file_path)
-        fba = fba[fba['Class'].isin(flowclass)]
-        # if geographic level specified, only load rows in geo level
-        if geographic_level != 'all':
-            fba = filter_by_geoscale(fba, geographic_level)
-        # concat dfs
-        fbas = pd.concat([fbas, fba], sort=False)
-    return fbas
+    # Set fba metadata
+    name = flowsa.flowbyactivity.set_fba_name(datasource,year)
+    fba_meta = set_fb_meta(name, "FlowByActivity")
+
+    # Try to load a local version of fba; generate and load if missing
+    fba = load_preprocessed_output(fba_meta,paths)
+    if fba is None:
+        # Generate the fba
+        flowsa.flowbyactivity.main(year=year,source=datasource)
+        # Now load the fba
+        fba = load_preprocessed_output(fba_meta,paths)
+
+    # Address optional parameters
+    if flowclass is not None:
+        fba = fba[fba['Class'] == flowclass]
+    # if geographic level specified, only load rows in geo level
+    if geographic_level is not None:
+        fba = filter_by_geoscale(fba, geographic_level)
+    return fba
 
 
-def getFlowBySector(methodname, file_location='local'):
+def getFlowBySector(methodname):
     """
-    Retrieves stored data in the FlowBySector format
+    Loads stored FlowBySector output or generates it if it doesn't exist, then loads
     :param methodname: string, Name of an available method for the given class
-    :param file_location: 'local' or 'remote'. Default is 'local'
     :return: dataframe in flow by sector format
     """
-
-    # define fbs file
-    fbs_file = methodname + ".parquet"
-    local_file_path = fbsoutputpath + fbs_file
-    remote_file_path = 'https://edap-ord-data-commons.s3.amazonaws.com/flowsa/FlowBySector/' + fbs_file
-
-    if file_location == 'local':
-        fbs = load_file(fbs_file, local_file_path, remote_file_path)
-    else:
-        log.info('Loading ' + methodname + ' from remote server')
-        fbs = pd.read_parquet(remote_file_path)
-
+    fbs_meta = set_fb_meta(methodname, "FlowBySector")
+    fbs = load_preprocessed_output(fbs_meta,paths)
+    if fbs is None:
+        # Generate the fba
+        flowsa.flowbysector.main(method=methodname)
+        # Now load the fba
+        fbs = load_preprocessed_output(fbs_meta,paths)
     return fbs
 
 
-def load_file(datafile, local_file, remote_file):
+def collapse_FlowBySector(fbs):
     """
-    Loads a preprocessed file
-    :param datafile: a data file name with any preceeding relative file
-    :param paths: instance of class Paths
-    :return: a pandas dataframe of the datafile
-    """
-    if os.path.exists(local_file):
-        log.info('Loading ' + datafile + ' from local repository')
-        df = pd.read_parquet(local_file)
-    else:
-        try:
-            log.info(datafile + ' not found in local folder; loading from remote server...')
-            df = pd.read_parquet(remote_file)
-        except FileNotFoundError:
-            log.error("No file found for " + datafile)
-    return df
-
-
-def getFlowBySector_collapsed(methodname):
-    """
-    Retrieves stored data in the FlowBySector format,
+    Returns fbs with one sector column in place of two
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-
-    # load saved FBS parquet
-    fbs = getFlowBySector(methodname)
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
     # check data

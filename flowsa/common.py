@@ -1,10 +1,8 @@
 # common.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """Common variables and functions used across flowsa"""
-
 import sys
 import os
 import yaml
@@ -13,10 +11,12 @@ import requests_ftp
 import pandas as pd
 import numpy as np
 import logging as log
-import appdirs
 import pycountry
+import pkg_resources
+import subprocess
+from esupy.processed_data_mgmt import Paths, FileMeta
 
-log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
+log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
 
 try:
@@ -24,23 +24,29 @@ try:
 except NameError:
     modulepath = 'flowsa/'
 
-# comment out if running test data
+
 datapath = modulepath + 'data/'
-outputpath = modulepath + 'output/'
-
-# comment in if running test data
-# datapath = (modulepath + 'data/').replace('flowsa/flowsa/', 'flowsa/tests/')
-# outputpath = (modulepath + 'output/').replace('flowsa/flowsa/', 'flowsa/tests/')
-
 sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
+
+paths = Paths
+paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
+outputpath = paths.local_path
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 
-local_storage_path = appdirs.user_data_dir()
+pkg = pkg_resources.get_distribution("flowsa")
+try:
+    git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+        'ascii')[0:7]
+except:
+    git_hash = None
+
+#Common declaration of write format for package data products
+write_format = "parquet"
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -67,21 +73,29 @@ def load_api_key(api_source):
     in the form of the host name and '_API_KEY.txt' like 'BEA_API_KEY.txt'
     containing the users personal API key. The user must register with this
     API and get the key and save it to a .txt file in the user directory specified
-    by local_storage_path (see common.py for definition)
+    by local_path (see common.py for definition)
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
-    keyfile = local_storage_path + '/' + api_source + '_API_KEY.txt'
+    # create directory if missing
+    os.makedirs(outputpath + '/API_Keys', exist_ok=True)
+    # key path
+    keyfile = outputpath + '/API_Keys/' + api_source + '_API_KEY.txt'
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
             key = keyfilecontents.read()
     except IOError:
-        log.error("Key file not found.")
+        log.error("Key file not found in 'API_Keys' directory")
     return key
 
 
 def make_http_request(url):
+    """
+    Makes http request using requests library
+    :param url: URL to query
+    :return: request Object
+    """
     r = []
     try:
         r = requests.get(url)
@@ -556,3 +570,13 @@ def convert_fba_unit(df):
     
     return df
 
+
+def set_fb_meta(name_data, category):
+    fb_meta = FileMeta
+    fb_meta.name_data = name_data
+    fb_meta.tool = pkg.project_name
+    fb_meta.tool_version = pkg.version
+    fb_meta.category = category
+    fb_meta.ext = write_format
+    fb_meta.git_hash = git_hash
+    return fb_meta

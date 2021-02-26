@@ -9,6 +9,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 
 import argparse
 from flowsa.common import *
+from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.flowbyfunctions import add_missing_flow_by_fields, clean_df, fba_fill_na_dict
 from flowsa.Blackhurst_IO import *
 from flowsa.BLS_QCEW import *
@@ -36,7 +37,6 @@ from flowsa.EPA_GHG_Inventory import *
 from flowsa.USGS_MYB_SodaAsh import *
 
 
-
 def parse_args():
     """Make year and source script parameters"""
     ap = argparse.ArgumentParser()
@@ -46,21 +46,18 @@ def parse_args():
     return args
 
 
-def store_flowbyactivity(result, source, year=None):
-    """Prints the data frame into a parquet file."""
+def set_fba_name(datasource,year):
     if year is not None:
-        f = fbaoutputpath + source + "_" + str(year) + '.parquet'
+        name_data = datasource + "_" + str(year)
     else:
-        f = fbaoutputpath + source + '.parquet'
-    try:
-        result.to_parquet(f, engine="pyarrow")
-    except:
-        log.error('Failed to save '+source + "_" + str(year) +' file.')
+        name_data = datasource
+    return name_data
 
 
-def build_url_for_query(urlinfo, args):
+def build_url_for_query(config,args):
     """Creates a base url which requires string substitutions that depend on data source"""
     # if there are url parameters defined in the yaml, then build a url, else use "base_url"
+    urlinfo = config["url"]
     if 'url_params' in urlinfo:
         params = ""
         for k, v in urlinfo['url_params'].items():
@@ -73,7 +70,7 @@ def build_url_for_query(urlinfo, args):
 
     # substitute year from arguments and users api key into the url
     if "__year__" in build_url:
-        build_url = build_url.replace("__year__", args["year"])
+        build_url = build_url.replace("__year__", str(args["year"]))
     if "__apiKey__" in build_url:
         userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
         build_url = build_url.replace("__apiKey__", userAPIKey)
@@ -91,7 +88,7 @@ def assemble_urls_for_query(build_url, config, args):
     return urls
 
 
-def call_urls(url_list, args):
+def call_urls(url_list, args, config):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
@@ -110,7 +107,7 @@ def call_urls(url_list, args):
     return data_frames_list
 
 
-def parse_data(dataframe_list, args):
+def parse_data(dataframe_list, args, config):
     """Calls on functions defined in source.py files, as parsing rules are specific to the data source."""
     if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
         df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list, args)
@@ -135,16 +132,17 @@ def process_data_frame(df, source, year):
     flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
                                    'FlowName', 'Compartment']).reset_index(drop=True)
     # save as parquet file
-    log.info('Save dataframe as parquet')
-    parquet_name = source + '_' + year
-    store_flowbyactivity(flow_df, parquet_name)
+    name_data = set_fba_name(source, year)
+    meta = set_fb_meta(name_data, "FlowByActivity")
+    write_df_to_file(flow_df,paths,meta)
 
 
-if __name__ == '__main__':
+def main(**kwargs):
     # assign arguments
-    args = parse_args()
+    if len(kwargs)==0:
+        kwargs = parse_args()
     # assign yaml parameters (common.py fxn)
-    config = load_sourceconfig(args['source'])
+    config = load_sourceconfig(kwargs['source'])
     log.info("Creating dataframe list")
 
     # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
@@ -160,14 +158,14 @@ if __name__ == '__main__':
     for p_year in year_iter:
         args['year'] = str(p_year)
         # build the base url with strings that will be replaced
-        build_url = build_url_for_query(config['url'], args)
+        build_url = build_url_for_query(config, kwargs)
         # replace parts of urls with specific instructions from source.py
-        urls = assemble_urls_for_query(build_url, config, args)
+        urls = assemble_urls_for_query(build_url, config, kwargs)
         # create a list with data from all source urls
-        dataframe_list = call_urls(urls, args)
+        dataframe_list = call_urls(urls, kwargs, config)
         # concat the dataframes and parse data with specific instructions from source.py
         log.info("Concat dataframe list and parse data")
-        df = parse_data(dataframe_list, args)
+        df = parse_data(dataframe_list, kwargs, config)
         if isinstance(df, list):
             for frame in df:
                 if not len(frame.index) == 0:
@@ -175,7 +173,10 @@ if __name__ == '__main__':
                         source_names = frame['SourceName']
                         source_name = source_names.iloc[0]
                     except KeyError as err:
-                        source_name = args['source']
-                    process_data_frame(frame, source_name, args['year'])
+                        source_name = kwargs['source']
+                    process_data_frame(frame, source_name, kwargs['year'])
         else:
-            process_data_frame(df, args['source'], args['year'])
+            process_data_frame(df, kwargs['source'], kwargs['year'])
+
+if __name__ == '__main__':
+    main()

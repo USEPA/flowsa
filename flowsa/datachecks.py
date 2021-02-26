@@ -3,12 +3,12 @@ Functions to check data is loaded correctly
 """
 
 import pandas as pd
-from flowsa.flowbyfunctions import fba_fill_na_dict, harmonize_units, fba_activity_fields, filter_by_geoscale, \
-    fba_default_grouping_fields, fbs_default_grouping_fields, aggregator, sector_aggregation, fbs_fill_na_dict, \
-    fbs_activity_fields, clean_df, create_geoscale_list, sector_disaggregation, replace_strings_with_NoneType, \
+from flowsa.flowbyfunctions import fba_activity_fields, aggregator,  fbs_fill_na_dict, \
+    fbs_activity_fields, clean_df, create_geoscale_list, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk, \
     load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath, activity_fields
+import os
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -319,8 +319,10 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
     # save csv to output folder
     log.info('Save the summary table of flow allocation ratios for each sector length for ' +
              activity_set + ' in output folder')
+    # create directory if missing
+    os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
     # output data for all sector lengths
-    flow_alloc_df3.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
+    flow_alloc_df3.to_csv(outputpath + "/FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
                           "_allocation_ratios_" + activity_set + ".csv", index=False)
 
     return None
@@ -443,9 +445,11 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     # save csv to output folder
     log.info('Save the comparison of FlowByActivity load to FlowBySector ratios for ' +
               activity_set + ' in output folder')
+    # create directory if missing
+    os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
     # output data at all sector lengths
-    df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
-                                "_FBA_load_to_FBS_comparison_" + activity_set + ".csv", index=False)
+    df_merge.to_csv(outputpath + "/FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
+                                "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
 
     return None
 
