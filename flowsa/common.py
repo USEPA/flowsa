@@ -24,26 +24,18 @@ try:
 except NameError:
     modulepath = 'flowsa/'
 
-# comment out if running test data
+
 datapath = modulepath + 'data/'
-outputpath = modulepath + 'output/'
-
-#Common declaration of write format for package data products
-write_format = "parquet"
-
-
-# comment in if running test data
-# datapath = (modulepath + 'data/').replace('flowsa/flowsa/', 'flowsa/tests/')
-# outputpath = (modulepath + 'output/').replace('flowsa/flowsa/', 'flowsa/tests/')
-
 sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
-fbsoutputpath = outputpath + 'FlowBySector/'
 
 paths = Paths
-paths_local_path = os.path.realpath(paths.local_path + "/flowsa")
+paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
+outputpath = paths.local_path
+fbaoutputpath = outputpath + 'FlowByActivity/'
+fbsoutputpath = outputpath + 'FlowBySector/'
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
@@ -51,6 +43,9 @@ try:
         'ascii')[0:7]
 except:
     git_hash = None
+
+#Common declaration of write format for package data products
+write_format = "parquet"
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -82,9 +77,9 @@ def load_api_key(api_source):
     :return: the users API key as a string
     """
     # create directory if missing
-    os.makedirs(paths_local_path + '/API_Keys', exist_ok=True)
+    os.makedirs(outputpath + '/API_Keys', exist_ok=True)
     # key path
-    keyfile = paths_local_path + '/API_Keys/' + api_source + '_API_KEY.txt'
+    keyfile = outputpath + '/API_Keys/' + api_source + '_API_KEY.txt'
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
