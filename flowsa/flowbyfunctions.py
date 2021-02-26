@@ -488,9 +488,9 @@ def allocation_helper(df_w_sector, method, attr, v):
     from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
-    helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
-                                                 datasource=attr['helper_source'],
-                                                 years=[attr['helper_source_year']])
+    helper_allocation = flowsa.getFlowByActivity(datasource=attr['helper_source'],
+                                                 year=attr['helper_source_year'],
+                                                 flowclass=attr['helper_source_class'])
     if 'clean_helper_fba' in attr:
         log.info("Cleaning " + attr['helper_source'] + ' FBA')
         # tmp hard coded - need to generalize

@@ -54,9 +54,8 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict
 
     # load the bea make table
-    bmt = flowsa.getFlowByActivity(flowclass=['Money'],
-                                   datasource='BEA_Make_Table',
-                                   years=[2002])
+    bmt = flowsa.getFlowByActivity(datasource='BEA_Make_Table',
+                                   year=2002, flowclass='Money')
     # clean df
     bmt = clean_df(bmt, flow_by_activity_fields, fba_fill_na_dict)
     # drop rows with flowamount = 0
@@ -89,7 +88,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
         filter_by_geoscale
     from flowsa.BLS_QCEW import clean_bls_qcew_fba
 
-    bls = flowsa.getFlowByActivity(flowclass=['Employment'], datasource='BLS_QCEW', years=[2002])
+    bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
     # clean df
     bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
     bls = clean_bls_qcew_fba(bls, attr)
@@ -148,7 +147,8 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     import flowsa
 
     # determine national level published withdrawal data for usgs mining in FBS method year
-    pv_load = flowsa.getFlowByActivity(flowclass=['Water'], years=[str(attr['helper_source_year'])], datasource="USGS_NWIS_WU")
+    pv_load = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU", year=str(attr['helper_source_year']),
+                                       flowclass='Water')
     pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) & (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
     pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
 

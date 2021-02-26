@@ -14,12 +14,12 @@ from flowsa.common import flowbysectoractivitysetspath
 if __name__ == '__main__':
 
     # define mecs land fba parameters
-    land_flowclass = ['Land']
+    land_flowclass = 'Land'
     land_years = [2010, 2014]
     datasource = 'EIA_MECS_Land'
 
     # Read BLM PLS crosswalk
-    df_import = flowsa.getFlowByActivity(land_flowclass, land_years, datasource)
+    df_import = flowsa.getFlowByActivity(datasource, land_years, land_flowclass)
 
     # drop unused columns
     df = df_import[['ActivityConsumedBy']].drop_duplicates()

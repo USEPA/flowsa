@@ -87,7 +87,7 @@ def convert_statcan_data_to_US_water_use(df, attr):
     from flowsa.common import US_FIPS, load_bea_crosswalk
 
     # load Canadian GDP data
-    gdp = flowsa.getFlowByActivity(flowclass=['Money'], datasource='StatCan_GDP', years=[attr['allocation_source_year']])
+    gdp = flowsa.getFlowByActivity(datasource='StatCan_GDP', year=attr['allocation_source_year'], flowclass='Money')
     # drop 31-33
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
     gdp = gdp.rename(columns={"FlowAmount": "CanDollar"})
@@ -114,7 +114,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
 
     # load us gdp
     # load Canadian GDP data
-    us_gdp_load = flowsa.getFlowByActivity(flowclass=['Money'], datasource='BEA_GDP_GrossOutput_IO', years=[attr['allocation_source_year']])
+    us_gdp_load = flowsa.getFlowByActivity(datasource='BEA_GDP_GrossOutput_IO', year=attr['allocation_source_year'],
+                                           flowclass='Money')
     # load bea crosswalk
     cw_load = load_bea_crosswalk()
     cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates()

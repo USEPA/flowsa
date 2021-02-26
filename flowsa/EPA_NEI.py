@@ -163,8 +163,7 @@ def assign_nonpoint_dqi(args):
     import flowsa
     nei_facility_list = stewi.getInventoryFacilities('NEI',args['year'])
     nei_count = nei_facility_list.groupby('NAICS')['FacilityID'].count()
-    census = flowsa.getFlowByActivity(flowclass=['Other'], years=[args['year']],
-                                                           datasource="Census_CBP")
+    census = flowsa.getFlowByActivity(datasource="Census_CBP", year=args['year'], flowclass='Other')
     census = census[census['FlowName']=='Number of establishments']
     census_count = census.groupby('ActivityProducedBy')['FlowAmount'].sum()
 

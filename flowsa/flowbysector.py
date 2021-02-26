@@ -87,7 +87,7 @@ def load_source_dataframe(k, v):
     """
     if v['data_format'] == 'FBA':
         log.info("Retrieving flowbyactivity for datasource " + k + " in year " + str(v['year']))
-        flows_df = flowsa.getFlowByActivity(flowclass=[v['class']], year=v['year'], datasource=k)
+        flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'], flowclass=v['class'])
     elif v['data_format'] == 'FBS':
         log.info("Retrieving flowbysector for datasource " + k)
         flows_df = flowsa.getFlowBySector(k)
@@ -190,9 +190,9 @@ def main(**kwargs):
                     # determine appropriate allocation dataset
                     log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " +
                              str(attr['allocation_source_year']))
-                    fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
+                    fba_allocation = flowsa.getFlowByActivity(datasource=attr['allocation_source'],
                                                               year=attr['allocation_source_year'],
-                                                              datasource=attr['allocation_source'])
+                                                              flowclass=attr['allocation_source_class'])
                     fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
                     # subset based on yaml settings
                     if attr['allocation_flow'] != 'None':

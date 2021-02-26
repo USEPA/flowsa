@@ -194,11 +194,11 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     fba_w_sector = modify_orchard_flowamounts(fba_w_sector, activity_column=activity_col)
 
     # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
-    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, method, years_list=[attr['allocation_source_year']],
+    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, method, year=attr['allocation_source_year'],
                                             sector_column=sector_col)
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit naics
-    fba_w_sector = disaggregate_cropland(fba_w_sector, attr, method, years_list=[attr['allocation_source_year']],
+    fba_w_sector = disaggregate_cropland(fba_w_sector, attr, method, year=attr['allocation_source_year'],
                                          sector_column=sector_col)
 
     return fba_w_sector
@@ -219,13 +219,13 @@ def modify_orchard_flowamounts(fba, activity_column):
     return fba
 
 
-def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_column):
+def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
     """
     The USDA CoA Cropland irrigated pastureland data only links to the 3 digit NAICS '112'. This function uses state
     level CoA 'Land in Farms' to allocate the county level acreage data to 6 digit NAICS.
     :param fba_w_sector: The CoA Cropland dataframe after linked to sectors
     :param attr:
-    :param years_list:
+    :param year:
     :param sector_column: The sector column on which to make df modifications (SectorProducedBy or SectorConsumedBy)
     :return: The CoA cropland dataframe with disaggregated pastureland data
     """
@@ -247,10 +247,10 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
         df_sourcename = pd.unique(p['SourceName'])[0]
 
         # load usda coa cropland naics
-        df_class = ['Land']
-        df_years = years_list
+        df_class = 'Land'
+        df_year = year
         df_allocation = 'USDA_CoA_Cropland_NAICS'
-        df_f = flowsa.getFlowByActivity(flowclass=df_class, years=df_years, datasource=df_allocation)
+        df_f = flowsa.getFlowByActivity(datasource=df_allocation, year=df_year, flowclass=df_class)
         df_f = clean_df(df_f, flow_by_activity_fields, fba_fill_na_dict)
         # subset to land in farms data
         df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
@@ -292,13 +292,13 @@ def disaggregate_pastureland(fba_w_sector, attr, method, years_list, sector_colu
     return fba_w_sector
 
 
-def disaggregate_cropland(fba_w_sector, attr, method, years_list, sector_column):
+def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     """
     In the event there are 4 (or 5) digit naics for cropland at the county level, use state level harvested cropland to
     create ratios
     :param fba_w_sector:
     :param attr:
-    :param years_list:
+    :param year:
     :param sector_column: The sector column on which to make df modifications (SectorProducedBy or SectorConsumedBy)
     :param attr:
     :return:
@@ -321,9 +321,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, years_list, sector_column)
     crop = crop.assign(Location_tmp=crop['Location'].apply(lambda x: x[0:2]))\
 
     # load the relevant state level harvested cropland by naics
-    naics_load = flowsa.getFlowByActivity(flowclass=['Land'],
-                                          years=years_list,
-                                          datasource="USDA_CoA_Cropland_NAICS").reset_index(drop=True)
+    naics_load = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland_NAICS", year=year,
+                                          flowclass='Land').reset_index(drop=True)
     # clean df
     naics = clean_df(naics_load, flow_by_activity_fields, fba_fill_na_dict)
     # subset the harvested cropland by naics
