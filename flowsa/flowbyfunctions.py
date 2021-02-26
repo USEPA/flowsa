@@ -951,7 +951,8 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
     """
 
     # method of subset dependent on LocationSystem
-    if df['LocationSystem'].str.contains('FIPS').all():
+    if df['LocationSystem'].str.contains('FIPS').any():
+        df = df[df['LocationSystem'].str.contains('FIPS')].reset_index(drop=True)
         # determine 'activity_from_scale' for use in df geoscale subset, by activity
         modified_from_scale = return_activity_from_scale(df, activity_from_scale)
         # add 'activity_from_scale' column to df
