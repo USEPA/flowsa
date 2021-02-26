@@ -43,7 +43,7 @@ flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 
 paths = Paths
-paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
+paths_local_path = os.path.realpath(paths.local_path + "/flowsa")
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
@@ -81,13 +81,16 @@ def load_api_key(api_source):
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
-    keyfile = paths.local_path + '/' + api_source + '_API_KEY.txt'
+    # create directory if missing
+    os.makedirs(paths_local_path + '/API_Keys', exist_ok=True)
+    # key path
+    keyfile = paths_local_path + '/API_Keys/' + api_source + '_API_KEY.txt'
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
             key = keyfilecontents.read()
     except IOError:
-        log.error("Key file not found.")
+        log.error("Key file not found in 'API_Keys' directory")
     return key
 
 
