@@ -6,26 +6,25 @@ Public API for flowsa
 For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/format%20specs
 """
 
-import pandas as pd
 from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths, set_fb_meta
-from flowsa.flowbyfunctions import collapse_fbs_sectors
+from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 
 
-def getFlowByActivity(flowclass, year, datasource):
+def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
     """
     Retrieves stored data in the FlowByActivity format
-    :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or
-     ['Land', 'Other']
-    :param year: int, a year, e.g. 2012
     :param datasource: str, the code of the datasource.
+    :param year: int, a year, e.g. 2012
+    :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
+    :param geographic_level: str, a geographic level of the data. Optional. E.g. 'national', 'state', 'county'.
     :return: a pandas DataFrame in FlowByActivity format
     """
-    #Set fba metadata
+    # Set fba metadata
     name = flowsa.flowbyactivity.set_fba_name(datasource,year)
-    fba_meta = set_fb_meta(name,"FlowByActivity")
+    fba_meta = set_fb_meta(name, "FlowByActivity")
 
     # Try to load a local version of fba; generate and load if missing
     fba = load_preprocessed_output(fba_meta,paths)
@@ -34,8 +33,13 @@ def getFlowByActivity(flowclass, year, datasource):
         flowsa.flowbyactivity.main(year=year,source=datasource)
         # Now load the fba
         fba = load_preprocessed_output(fba_meta,paths)
-    # Filter fba by flow class
-    fba = fba[fba['Class'].isin(flowclass)]
+
+    # Address optional parameters
+    if flowclass is not None:
+        fba = fba[fba['Class'] == flowclass]
+    # if geographic level specified, only load rows in geo level
+    if geographic_level is not None:
+        fba = filter_by_geoscale(fba, geographic_level)
     return fba
 
 
