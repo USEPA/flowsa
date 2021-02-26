@@ -396,6 +396,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     # save csv to output folder
     log.info('Save the comparision of FlowByActivity load to FlowBySector ratios for ' +
               activity_set + ' in output folder')
+    # create directory if missing
+    os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
     # output data at all sector lengths
     df_merge.to_csv(outputpath + "/FlowBySectorMethodAnalysis/" + method_name + '_' + source_name +
                                 "_FBA_load_to_FBS_comparision_" + activity_set + ".csv", index=False)
