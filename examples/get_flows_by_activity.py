@@ -3,55 +3,29 @@
 # coding=utf-8
 # ingwersen.wesley@epa.gov
 """
+See source_catalog.yaml for available FlowByActivity datasets and available parameters for getFlowByActivity()
 Examples of use of flowsa. Read parquet files as dataframes.
-    :param flowclass: list, a list of`Class' of the flow. required. E.g. ['Water'] or ['Land', 'Other']
-    :param year: list, a list of years [2015], or [2010,2011,2012]
     :param datasource: str, the code of the datasource.
+    :param year: int, a year, e.g. 2012
+    :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
+    :param geographic_level: str, a geographic level of the data. Optional. E.g. 'national', 'state', 'county'.
     :return: a pandas DataFrame in FlowByActivity format
 """
+
 import flowsa
+from flowsa.common import fbaoutputpath
 
-# "employment" based datasets
-employ_bls_flowsbyactivity_2012 = flowsa.getFlowByActivity(flowclass=['Employment'], years=[2012],
-                                                           datasource="BLS_QCEW")
-employ_bls_flowsbyactivity_2015 = flowsa.getFlowByActivity(flowclass=['Employment', 'Money'], years=[2015],
-                                                           datasource="BLS_QCEW")
-employ_cpb_flowsbyactivity_2012 = flowsa.getFlowByActivity(flowclass=['Employment', 'Other'], years=[2012],
-                                                           datasource="Census_CBP")
+# single flowclass, year, datasource, geographic_level default = 'all', file_location default = 'local'
+usda_cropland_fba_2017 = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017, flowclass='Land')
 
-
-# "land" based datasets
-cropland_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Land'], years=[2017],
-                                                         datasource="USDA_CoA_Cropland")
-
-# "money" based datasets
-fisheries_noaa_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Money'], years=["2012-2018"],
-                                                          datasource="NOAA_FisheryLandings")
-
-
-# "other" based datasets
-census_pop_flowsbyactivity_2015 = flowsa.getFlowByActivity(flowclass=['Other'], years=[2015],
-                                                           datasource="Census_PEP_Population")
-livestock_flowsbyactivity_2017 = flowsa.getFlowByActivity(flowclass=['Other'], years=[2017],
-                                                          datasource="USDA_CoA_Livestock")
-
-
-# "water" based datasets
-eia_cbecs_flowsbyactivity_2012 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2012],
-                                                          datasource="EIA_CBECS_Water")
-stat_canada_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Water'], years=["2005-2015"],
-                                                       datasource="StatCan_IWS_MI")
-usda_iwms_flowsbyactivity_2013 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2013],
-                                                          datasource="USDA_IWMS")
-usgs_water_flowsbyactivity_2015 = flowsa.getFlowByActivity(flowclass=['Water'], years=[2015],
-                                                           datasource="USGS_NWIS_WU")
-usgs_water_flowsbyactivity = flowsa.getFlowByActivity(flowclass=['Water'], years=[2010, 2015],
-                                                      datasource="USGS_NWIS_WU")
-
-
-
-
-
-
-
-
+# only load state level data and save as csv
+# set parameters
+fc = 'Water'
+years_fba = 2015
+ds = "USGS_NWIS_WU"
+geo_level_fba = 'state'
+# load FBA
+usgs_water_fba_2015 = flowsa.getFlowByActivity(datasource=ds, year=years_fba, flowclass=fc,
+                                               geographic_level=geo_level_fba).reset_index(drop=True)
+# save output to csv
+usgs_water_fba_2015.to_csv(fbaoutputpath + ds + "_" + "_".join(map(str, years_fba)) + ".csv", index=False)
