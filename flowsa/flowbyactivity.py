@@ -92,7 +92,6 @@ def call_urls(url_list, args, config):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
-
     data_frames_list = []
     for url in url_list:
         log.info("Calling " + url)
@@ -146,17 +145,17 @@ def main(**kwargs):
     log.info("Creating dataframe list")
 
     # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
-    if '-' in str(args['year']):
-        years = str(args['year']).split('-')
+    if '-' in str(kwargs['year']):
+        years = str(kwargs['year']).split('-')
         min_year = int(years[0])
         max_year = int(years[1]) + 1
         year_iter = list(range(min_year, max_year))
     else:
         # Else only a single year defined, create an array of one:
-        year_iter = [args['year']]
+        year_iter = [kwargs['year']]
 
     for p_year in year_iter:
-        args['year'] = str(p_year)
+        kwargs['year'] = str(p_year)
         # build the base url with strings that will be replaced
         build_url = build_url_for_query(config, kwargs)
         # replace parts of urls with specific instructions from source.py
