@@ -93,7 +93,7 @@ def load_source_dataframe(k, v):
         if 'source_fba_load_scale' in v:
             geo_level = v['source_fba_load_scale']
         else:
-            geo_level = 'all'
+            geo_level = None
         log.info("Retrieving flowbyactivity for datasource " + k + " in year " + str(v['year']))
         flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'], flowclass=v['class'],
                                             geographic_level=geo_level)
