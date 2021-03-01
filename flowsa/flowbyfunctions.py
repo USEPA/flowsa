@@ -537,12 +537,6 @@ def allocation_helper(df_w_sector, attr, method, v):
     helper_allocation = flowsa.getFlowByActivity(datasource=attr['helper_source'],
                                                  year=attr['helper_source_year'],
                                                  flowclass=attr['helper_source_class'])
-    # if 'clean_helper_fba' in attr:
-    #     log.info("Cleaning " + attr['helper_source'] + ' FBA')
-    #     # tmp hard coded - need to generalize
-    #     if attr['helper_source'] == 'BLS_QCEW':
-    #         helper_allocation = clean_bls_qcew_fba(helper_allocation, attr)
-    #         # helper_allocation = getattr(sys.modules[__name__], attr["clean_helper_fba"])(helper_allocation, attr)
     # clean df
     helper_allocation = clean_df(helper_allocation, flow_by_activity_fields, fba_fill_na_dict)
     helper_allocation = harmonize_units(helper_allocation)
