@@ -15,17 +15,36 @@ Examples of use of flowsa. Read parquet files as dataframes.
 import flowsa
 from flowsa.common import fbaoutputpath
 
-# single flowclass, year, datasource, geographic_level default = 'all', file_location default = 'local'
-usda_cropland_fba_2017 = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017, flowclass='Land')
+# EXAMPLE 1
+# Import USDA_CoA_Cropland for 2017, specifying the flowclass and using the geographic_level default = None
+usda_cropland_2017_fba = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017, flowclass='Land')
 
-# only load state level data and save as csv
+
+# EXAMPLE 2
+# Load state level USGS water use data and save the dataframe as a csv
 # set parameters
-fc = 'Water'
-years_fba = 2015
-ds = "USGS_NWIS_WU"
-geo_level_fba = 'state'
-# load FBA
-usgs_water_fba_2015 = flowsa.getFlowByActivity(datasource=ds, year=years_fba, flowclass=fc,
+ds = "USGS_NWIS_WU" # name of the datasource
+years_fba = 2015  # year of data to load (can also be 2010 for this example)
+fc = 'Water'  # flowclass
+geo_level_fba = 'state' # geographic level to load
+# load FBA using specified parameters
+usgs_water_2015_fba = flowsa.getFlowByActivity(datasource=ds, year=years_fba, flowclass=fc,
                                                geographic_level=geo_level_fba).reset_index(drop=True)
 # save output to csv
-usgs_water_fba_2015.to_csv(fbaoutputpath + ds + "_" + "_".join(map(str, years_fba)) + ".csv", index=False)
+usgs_water_2015_fba.to_csv(fbaoutputpath + ds + "_" + "_".join(map(str, years_fba)) + ".csv", index=False)
+
+
+# EXAMPLE 3
+# loop through and read all USGS_MYB parquets for 2015
+# list of minerals
+minerals = ['Barite', 'Beryllium', 'Boron', 'Clay', 'Colbolt', 'Copper', 'Gold', 'Iron_Ore', 'Lead', 'Lime',
+            'Magnesium', 'ManufacturedAbrasive', 'Molybdenum', 'Nickel', 'Platinum', 'Rhenium', 'SandGravelCon',
+            'SandGravelInd', 'Silver', 'SodaAsh', 'Stone_Crushed', 'Stone_Dimension', 'Titanium', 'Zinc', 'Zirconium']
+for m in minerals:
+    try:
+        datasource_name = 'USGS_MYB_' + m
+        df_name = m + '_fba'
+        vars()[df_name] = flowsa.getFlowByActivity(datasource_name, year=2015)
+    except:
+        print('Skipping ' + m)
+        pass
