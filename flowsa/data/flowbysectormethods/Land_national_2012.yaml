@@ -51,6 +51,37 @@ source_names:
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
         allocation_helper: 'no'
+  "BLM_PLS": # used for mining data
+    data_format: 'FBA'
+    class: Land
+    geoscale_to_use: national
+    year: 2012
+    clean_fba_df_fxn: None
+    clean_fba_w_sec_df_fxn: None
+    activity_set_file: 'BLM_PLS_2012_asets.csv'
+    activity_sets:
+      activity_set_1: # all blm pls activities other than hardrock
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: national
+        allocation_helper: 'no'
+      activity_set_2: # hardrock leases
+        allocation_method: proportional
+        allocation_source: "BLS_QCEW"
+        allocation_source_class: "Employment"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "Number of employees"
+        allocation_compartment: None
+        allocation_from_scale: national
+        allocation_fba_load_scale: national
+        clean_allocation_fba: clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        allocation_helper: 'no'
   "USDA_ERS_MLU":
     data_format: 'FBA'
     class: Land
@@ -59,17 +90,6 @@ source_names:
     clean_fba_df_fxn: None #usgs_fba_data_cleanup
     clean_fba_w_sec_df_fxn: None #usgs_fba_w_sectors_data_cleanup
     activity_sets:
-      activity_set_8:
-        names:
-          - 'Land in urban areas'
-        allocation_method: allocation_function
-        allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_1:
         names:
           - 'Cropland used for crops'
@@ -158,6 +178,17 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_helper: 'no'
+      activity_set_8:
+        names:
+          - 'Land in urban areas'
+        allocation_method: allocation_function
+        allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: national
+        allocation_helper: 'no'
       activity_set_9:
         names:
           - 'Other land'
@@ -168,35 +199,4 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
-  "BLM_PLS": # used for mining data
-    data_format: 'FBA'
-    class: Land
-    geoscale_to_use: national
-    year: 2012
-    clean_fba_df_fxn: None
-    clean_fba_w_sec_df_fxn: None
-    activity_set_file: 'BLM_PLS_2012_asets.csv'
-    activity_sets:
-      activity_set_1: # all blm pls activities other than hardrock
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_helper: 'no'
-      activity_set_2: # hardrock leases
-        allocation_method: proportional
-        allocation_source: "BLS_QCEW"
-        allocation_source_class: "Employment"
-        allocation_source_year: 2012
-        allocation_flow:
-          - "Number of employees"
-        allocation_compartment: None
-        allocation_from_scale: national
-        allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
         allocation_helper: 'no'

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='flowsa',
-    version='0.0.1',
+    version='0.0.2',
     packages=['flowsa'],
     package_dir={'flowsa': 'flowsa'},
     package_data={'flowsa': [
@@ -10,6 +10,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List',
+        'esupy @ git+https://github.com/USEPA/esupy',
         'pandas>=1.1.0',
         'pip>=9',
         'setuptools>=41',

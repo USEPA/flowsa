@@ -22,9 +22,10 @@ import yaml
 import argparse
 import sys
 import pandas as pd
+from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
-    fbsoutputpath, fips_number_key, flow_by_activity_fields, load_source_catalog, \
-    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity
+    fips_number_key, flow_by_activity_fields, fbsoutputpath, load_source_catalog, \
+    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, set_fb_meta, paths
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, fba_mapped_default_grouping_fields, agg_by_geoscale, \
@@ -92,10 +93,10 @@ def load_source_dataframe(k, v):
         if 'source_fba_load_scale' in v:
             geo_level = v['source_fba_load_scale']
         else:
-            geo_level = 'all'
+            geo_level = None
         log.info("Retrieving flowbyactivity for datasource " + k + " in year " + str(v['year']))
-        flows_df = flowsa.getFlowByActivity(flowclass=[v['class']], years=[v['year']],
-                                            datasource=k, geographic_level=geo_level)
+        flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'], flowclass=v['class'],
+                                            geographic_level=geo_level)
     elif v['data_format'] == 'FBS':
         log.info("Retrieving flowbysector for datasource " + k)
         flows_df = flowsa.getFlowBySector(k)
@@ -108,22 +109,17 @@ def load_source_dataframe(k, v):
     return flows_df
 
 
-def store_flowbysector(fbs_df, parquet_name):
-    """Prints the data frame into a parquet file."""
-    f = fbsoutputpath + parquet_name + '.parquet'
-    try:
-        fbs_df.to_parquet(f)
-    except:
-        log.error('Failed to save ' + parquet_name + ' file.')
-
-
-def main(method_name):
+def main(**kwargs):
     """
     Creates a flowbysector dataset
     :param method_name: Name of method corresponding to flowbysector method yaml name
     :return: flowbysector
     """
+    if len(kwargs)==0:
+        kwargs = parse_args()
 
+    method_name = kwargs['method']
+    # assign arguments
     log.info("Initiating flowbysector creation for " + method_name)
     # call on method
     method = load_method(method_name)
@@ -225,11 +221,9 @@ def main(method_name):
                     # determine appropriate allocation dataset
                     log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " +
                              str(attr['allocation_source_year']))
-                    fba_allocation = flowsa.getFlowByActivity(flowclass=[attr['allocation_source_class']],
-                                                              datasource=attr['allocation_source'],
-                                                              years=[attr['allocation_source_year']]).reset_index(drop=True)
-
-                    # clean df and harmonize unites
+                    fba_allocation = flowsa.getFlowByActivity(datasource=attr['allocation_source'],
+                                                              year=attr['allocation_source_year'],
+                                                              flowclass=attr['allocation_source_class'])
                     fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
                     fba_allocation = harmonize_units(fba_allocation)
 
@@ -438,11 +432,10 @@ def main(method_name):
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
     # save parquet file
-    store_flowbysector(fbss, method_name)
+    meta = set_fb_meta(method_name, "FlowBySector")
+    write_df_to_file(fbss,paths,meta)
 
 
 if __name__ == '__main__':
-    # assign arguments
-    args = parse_args()
-    main(args["method"])
+    main()
 

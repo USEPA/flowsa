@@ -22,7 +22,7 @@ fbs_source = 'Air_NEI_national_2017'
 subset_activities = False
 
 def get_fba_subset(name, year, flowclass):
-    test_fba = flowsa.getFlowByActivity(flowclass=[flowclass], years=[year],datasource=name)
+    test_fba = flowsa.getFlowByActivity(datasource=name, year=year, flowclass=flowclass)
     
     if subset_activities:
         aset_names = pd.read_csv(flowbysectoractivitysetspath+asets_source,dtype=str)

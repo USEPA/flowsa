@@ -94,9 +94,9 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
 
     # read in the cbecs and mecs df from df_list
     for df_i in fbs_list:
-        if df_i['Context'].all() == 'resource/ground/human-dominated/Commercial':
+        if df_i['MetaSources'].all() == 'EIA_CBECS_Land':
             cbecs = df_i
-        elif df_i['Context'].all() == 'resource/ground/human-dominated/industrial':
+        elif df_i['MetaSources'].all() == 'EIA_MECS_Land':
             mecs = df_i
 
     # load the federal highway administration fees dictionary

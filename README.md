@@ -24,6 +24,7 @@ Class | Description | FlowBySector Reference Unit | [Flow Types](./formatspecs/F
 Chemicals | Chemicals and groups of chemicals as defined in the [Federal Elementary Flow List](https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List) | kg | Modeled as ELEMENTARY_FLOWS produced by sectors |
 Employment | Jobs | p | Modeled as ELEMENTARY_FLOWS produced by sectors |
 Energy | Energy consumption, transfer as electricity or waste heat  | MJ | All types |
+Geological | Mineral and metal use | kg | All types |
 Land | Land area occupied | m2 | Modeled as ELEMENTARY_FLOWS consumed by sectors |
 Money | Purchases | USDyear* | Modeled as TECHNOSPHERE_FLOWS with producing and consuming sectors | 
 Water | Water use and release data, including wastewater | kg | All types |

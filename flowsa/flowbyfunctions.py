@@ -534,10 +534,9 @@ def allocation_helper(df_w_sector, attr, method, v):
     from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
-    helper_allocation = flowsa.getFlowByActivity(flowclass=[attr['helper_source_class']],
-                                                 datasource=attr['helper_source'],
-                                                 years=[attr['helper_source_year']])
-
+    helper_allocation = flowsa.getFlowByActivity(datasource=attr['helper_source'],
+                                                 year=attr['helper_source_year'],
+                                                 flowclass=attr['helper_source_class'])
     # clean df
     helper_allocation = clean_df(helper_allocation, flow_by_activity_fields, fba_fill_na_dict)
     helper_allocation = harmonize_units(helper_allocation)
@@ -951,7 +950,8 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
     """
 
     # method of subset dependent on LocationSystem
-    if df['LocationSystem'].str.contains('FIPS').all():
+    if df['LocationSystem'].str.contains('FIPS').any():
+        df = df[df['LocationSystem'].str.contains('FIPS')].reset_index(drop=True)
         # determine 'activity_from_scale' for use in df geoscale subset, by activity
         modified_from_scale = return_activity_from_scale(df, activity_from_scale)
         # add 'activity_from_scale' column to df
