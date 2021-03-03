@@ -11,4 +11,4 @@ pycountry >= 19.8.18           # ISO country codes
 xlrd >= 1.2.0                  # Extract data from Excel spreadsheets
 requests_ftp == 0.3.1          # Requests implementation for FTP
 tabula-py >= 2.1.1             # PDF reader
-numpy==1.19.1                  # Library used for arrays
+numpy<=1.20                    # Library used for arrays
