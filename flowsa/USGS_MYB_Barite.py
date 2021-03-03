@@ -94,7 +94,7 @@ def usgs_barite_parse(dataframe_list, args):
                 data['FlowType'] = "ELEMENTARY_FLOWS"
                 data["Location"] = "00000"
                 data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Titanium"
+                data["SourceName"] = "USGS_MYB_Barite"
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = "Barite " + product

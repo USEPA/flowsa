@@ -114,12 +114,12 @@ def usgs_nickel_parse(dataframe_list, args):
                 col_name = year_name_nickel(args["year"])
                 if product.strip() == "United States, sulfide ore, concentrate":
                     data["Description"] = "United States, sulfide ore, concentrate Nickel"
-                    data["ActivityProducedBy"] = "United States, sulfide ore, concentrate"
-                    data['FlowName'] = "United States, sulfide ore, concentrate" + prod
+                    data["ActivityProducedBy"] = "Nickel"
+                    data['FlowName'] = "Nickel " + prod
                 elif product.strip() == "Ores and concentrates":
                     data["Description"] = "Ores and concentrates Nickel"
-                    data["ActivityProducedBy"] = "Ores and concentrates"
-                    data['FlowName'] = "Ores and concentrates" + prod
+                    data["ActivityProducedBy"] = "Nickel"
+                    data['FlowName'] = "Nickel " + prod
                 if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(4)":
                     data["FlowAmount"] = str(0)
                 else:

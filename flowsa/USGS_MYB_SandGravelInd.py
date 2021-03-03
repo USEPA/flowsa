@@ -56,14 +56,20 @@ def usgs_sgi_call(url, usgs_response, args):
 
     df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
 
-    df_data_1 = pd.DataFrame(df_raw_data_two.loc[6:19]).reindex()
+    df_data_1 = pd.DataFrame(df_raw_data_two.loc[6:10]).reindex()
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]
+
+    df_data_2 = pd.DataFrame(df_raw_data_two.loc[16:19]).reindex()
+    df_data_2 = df_data_2.reset_index()
+    del df_data_2["index"]
 
 
     if len(df_data_1. columns) == 13:
         df_data_1.columns = ["Production", "space_7", "space_1", "year_1", "space_2", "year_2", "space_3",
                            "year_3", "space_4", "year_4", "space_5", "year_5", "space_6"]
+        df_data_2.columns = ["Production", "space_7", "space_1", "year_1", "space_2", "year_2", "space_3",
+                             "year_3", "space_4", "year_4", "space_5", "year_5", "space_6"]
 
 
     col_to_use = ["Production"]
@@ -71,9 +77,14 @@ def usgs_sgi_call(url, usgs_response, args):
     for col in df_data_1.columns:
         if col not in col_to_use:
             del df_data_1[col]
+            del df_data_2[col]
 
-    return df_data_1
+    frames = [df_data_1, df_data_2]
+    df_data = pd.concat(frames)
+    df_data = df_data.reset_index()
+    del df_data["index"]
 
+    return df_data
 
 def usgs_sgi_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""

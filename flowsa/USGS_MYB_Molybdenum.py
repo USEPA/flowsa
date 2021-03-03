@@ -21,7 +21,7 @@ Description
 
 Table T1
 
-SourceName: USGS_MYB_MOLYBDENUM
+SourceName: USGS_MYB_Molybdenum
 https://www.usgs.gov/centers/nmic/molybdenum-statistics-and-information 
 
 Minerals Yearbook, xls file, tab T1: SALIENT MOLYBDENUM STATISTICS
@@ -95,7 +95,7 @@ def usgs_molybdenum_parse(dataframe_list, args):
                 data['FlowType'] = "ELEMENTARY_FLOWS"
                 data["Location"] = "00000"
                 data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_MOLYBDENUM"
+                data["SourceName"] = "USGS_MYB_Molybdenum"
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = "Molybdenum " + product

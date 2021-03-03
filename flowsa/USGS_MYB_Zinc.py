@@ -129,7 +129,6 @@ def usgs_zinc_parse(dataframe_list, args):
                 elif product.strip() == "United States":
                     data["Description"] = "Zinc; Mine"
                     data["ActivityProducedBy"] = "Zinc; Mine"
-                    data['FlowName'] = "Zinc; Mine"
 
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))

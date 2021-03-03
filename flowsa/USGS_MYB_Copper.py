@@ -111,11 +111,11 @@ def usgs_copper_parse(dataframe_list, args):
             data["SourceName"] = "USGS_MYB_Copper"
             data["Year"] = str(args["year"])
             if product == "Total":
-                data['FlowName'] = "production"
+                data['FlowName'] = "copper production"
             elif product == "Exports, refined":
-                data['FlowName'] = "exports"
+                data['FlowName'] = "copper exports"
             elif product == "Imports, refined":
-                data['FlowName'] = "imports"
+                data['FlowName'] = "copper imports"
             data["Context"] = None
             data["ActivityProducedBy"] = "Copper; Mine"
             data["ActivityConsumedBy"] = None

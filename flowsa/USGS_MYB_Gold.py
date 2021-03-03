@@ -83,7 +83,7 @@ def usgs_gold_parse(dataframe_list, args):
         for index, row in df.iterrows():
 
             if df.iloc[index]["Production"].strip() == "Quantity":
-                product = "exports"
+                product = "production"
             elif df.iloc[index]["Production"].strip() == "Exports, refined bullion":
                 product = "exports"
             elif df.iloc[index]["Production"].strip() == "Imports for consumption, refined bullion":
