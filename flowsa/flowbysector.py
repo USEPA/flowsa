@@ -25,7 +25,7 @@ import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, fbsoutputpath, load_source_catalog, \
-    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, set_fb_meta, paths
+    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, set_fb_meta, paths, activity_fields
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, fba_mapped_default_grouping_fields, agg_by_geoscale, \
@@ -230,27 +230,23 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, ase
 
     # merge fba df w/flow allocation dataset
     log.info("Merge " + k + " and subset of " + attr['allocation_source'])
-    fbs = flow_subset_mapped.merge(
-        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']],
-        left_on=['Location', 'SectorProducedBy', 'ActivityProducedBy'],
-        right_on=['Location', 'Sector', 'FBA_Activity'], how='left')
-
-    fbs = fbs.merge(
-        flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']],
-        left_on=['Location', 'SectorConsumedBy', 'ActivityConsumedBy'],
-        right_on=['Location', 'Sector', 'FBA_Activity'], how='left')
+    for i, j in activity_fields.items():
+        flow_subset_mapped = flow_subset_mapped.merge(
+            flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']],
+            left_on=['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]],
+            right_on=['Location', 'Sector', 'FBA_Activity'], how='left')
 
     # merge the flowamount columns
-    fbs.loc[:, 'FlowAmountRatio'] = fbs['FlowAmountRatio_x'].fillna(fbs['FlowAmountRatio_y'])
+    flow_subset_mapped.loc[:, 'FlowAmountRatio'] = flow_subset_mapped['FlowAmountRatio_x'].fillna(flow_subset_mapped['FlowAmountRatio_y'])
     # fill null rows with 0 because no allocation info
-    fbs['FlowAmountRatio'] = fbs['FlowAmountRatio'].fillna(0)
+    flow_subset_mapped['FlowAmountRatio'] = flow_subset_mapped['FlowAmountRatio'].fillna(0)
 
     # check if fba and alloc dfs have data for same geoscales - comment back in after address the 'todo'
     # log.info("Checking if flowbyactivity and allocation dataframes have data at the same locations")
     # check_if_data_exists_for_same_geoscales(fbs, k, attr['names'])
 
     # drop rows where there is no allocation data
-    fbs = fbs.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
+    fbs = flow_subset_mapped.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
 
     # calculate flow amounts for each sector
     log.info("Calculating new flow amounts using flow ratios")
@@ -269,11 +265,11 @@ def main(**kwargs):
     :param method_name: Name of method corresponding to flowbysector method yaml name
     :return: flowbysector
     """
-    if len(kwargs)==0:
-        kwargs = parse_args()
+    # if len(kwargs)==0:
+    #     kwargs = parse_args()
 
     # test
-    # kwargs = {'method': 'water_crop'}
+    kwargs = {'method': 'water_crop'}
 
     method_name = kwargs['method']
     # assign arguments
@@ -375,13 +371,12 @@ def main(**kwargs):
                 fbs = clean_df(fbs, groupingdict, fbs_fill_na_dict)
 
                 # aggregate df geographically, if necessary
-                # todo: replace with fxn return_from_scale
                 log.info("Aggregating flowbysector to " + method['target_geoscale'] + " level")
+                # determine from scale
                 if fips_number_key[v['geoscale_to_use']] < fips_number_key[attr['allocation_from_scale']]:
                     from_scale = v['geoscale_to_use']
                 else:
                     from_scale = attr['allocation_from_scale']
-
                 to_scale = method['target_geoscale']
 
                 fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, groupingcols)
