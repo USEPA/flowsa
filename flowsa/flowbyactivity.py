@@ -63,6 +63,8 @@ from flowsa.USGS_MYB_Diatomite import *
 from flowsa.USGS_MYB_Feldspar import *
 from flowsa.USGS_MYB_Fluorspar import *
 from flowsa.USGS_MYB_Garnet import *
+from flowsa.USGS_MYB_Gypsum import *
+from flowsa.USGS_MYB_Kyanite import *
 
 
 def parse_args():

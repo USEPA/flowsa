@@ -26,7 +26,7 @@ https://www.usgs.gov/centers/nmic/garnet-statistics-and-information
 
 Minerals Yearbook, xls file, tab T1: 
 
-Data for: Garnet; marketable
+Data for: Garnet (Industrial); crude
 
 Years = 2014+
 """
