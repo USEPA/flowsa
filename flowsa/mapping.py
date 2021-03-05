@@ -229,7 +229,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     if subset_by_column_value:
         if asn is not None:
             # create subset of activity names and allocation subset metrics
-            asn_subset = asn[asn['name'] == n].reset_index(drop=True)
+            asn_subset = asn[asn['name'].isin(activitynames)].reset_index(drop=True)
             col_to_subset = asn_subset['allocation_subset_col'][0]
             val_to_subset = asn_subset['allocation_subset'][0]
             # subset fba_allocation_subset further
