@@ -228,4 +228,5 @@ source_names:
      - 'NAICS_6'        # NAICS_level
      - 'national'       # geo_scale
      - ['air']          # compartments
+     - ['drop_GHGs', 'reassign_airplane_emissions'] # functions
    
