@@ -327,6 +327,8 @@ def mecs_energy_fba_cleanup(fba, attr):
 
     fba = fba.loc[fba['Unit'] == 'MJ']
 
+    # todo: subtract net elec from total
+
     return fba
 
 def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
@@ -338,25 +340,26 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :return:
     """
 
-    from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
-
-    # define activity/sector columns to base df modifications on
-    activity_column = 'ActivityConsumedBy'
-    sector_column = 'SectorConsumedBy'
-
-    # first aggregate existing data to higher naics
-    group_cols = fba_mapped_default_grouping_fields
-    group_cols = [e for e in group_cols if
-                  e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-    # group_cols.append('Sector')
-    df_w_sec = sector_aggregation(df_w_sec, group_cols)
-    # replace value in Activity col for created rows
-    df_w_sec.loc[:, activity_column] = np.where(df_w_sec[activity_column].isnull(),
-                                                df_w_sec[sector_column],
-                                                df_w_sec[activity_column])
-
-    # then estimate missing data
-    df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
+    df = iteratively_determine_flows_requiring_disaggregation(df_w_sec, attr, method)
+    # from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
+    #
+    # # define activity/sector columns to base df modifications on
+    # activity_column = 'ActivityConsumedBy'
+    # sector_column = 'SectorConsumedBy'
+    #
+    # # first aggregate existing data to higher naics
+    # group_cols = fba_mapped_default_grouping_fields
+    # group_cols = [e for e in group_cols if
+    #               e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+    # # group_cols.append('Sector')
+    # df_w_sec = sector_aggregation(df_w_sec, group_cols)
+    # # replace value in Activity col for created rows
+    # df_w_sec.loc[:, activity_column] = np.where(df_w_sec[activity_column].isnull(),
+    #                                             df_w_sec[sector_column],
+    #                                             df_w_sec[activity_column])
+    #
+    # # then estimate missing data
+    # df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
 
     return df
 
@@ -417,6 +420,7 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
     from flowsa.flowbyfunctions import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
+    df_load = replace_NoneType_with_empty_cells(df_load)
     # original df - subset
     # subset cols of original df
     dfo = df_load[['FlowAmount', 'Location', 'SectorConsumedBy']]
@@ -502,9 +506,16 @@ def estimate_missing_data(df, activity_col, sector_col, sector_lengths):
     For a given dataframe where data is reported by NAICS, but not all nested NAICS are listed,
     this function applies the unaccounted for amounts equally across unreported children
     """
+    from flowsa.flowbyfunctions import sector_aggregation
+    from flowsa.flowbyfunctions import fba_mapped_default_grouping_fields
 
     df.dropna(subset=[sector_col], inplace=True)
     cw = load_sector_length_crosswalk()
+
+    # replace the activity column with sector column values in the event there were non 2012 naics that were replaced
+    # df[activity_col] = df[sector_col].copy()
+    # then aggregate to address possible duplications (todo: think about this...should ther be dup?)
+    # df = sector_aggregation(df, fba_mapped_default_grouping_fields)
 
     for i in sector_lengths:
         # create df with sectors of i length, need to disaggregate to i+1
