@@ -166,16 +166,20 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     # first determine if there are special cases that would modify the typical method of subset
     # an example of a special case is when the allocation method is 'proportional-flagged'
     if kwargs != {}:
-        special_case = False
+        subset_by_sector_cols = False
+        subset_by_column_value = False
         if 'flowSubsetMapped' in kwargs:
             fsm = kwargs['flowSubsetMapped']
         if 'allocMethod' in kwargs:
             am = kwargs['allocMethod']
             if am == 'proportional-flagged':
-                special_case = True
+                subset_by_sector_cols = True
+        if 'activity_set_names' in kwargs:
+            asn = kwargs['activity_set_names']
+            subset_by_column_value = True
     else:
-        special_case = False
-
+        subset_by_sector_cols = False
+        subset_by_column_value = False
 
     # load the source catalog
     cat = load_source_catalog()
@@ -199,7 +203,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     else:
         if 'Sector' in fba_allocation:
             fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(activitynames)].reset_index(drop=True)
-        elif special_case:
+        elif subset_by_sector_cols:
             # if it is a special case, then base the subset of data on sectors in the sector columns, not on activitynames
             fsm_sub = fsm.loc[(fsm[fba_activity_fields[0]].isin(activitynames)) |
                               (fsm[fba_activity_fields[1]].isin(activitynames))
@@ -219,6 +223,18 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
             fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
                                                        (fba_allocation[fbs_activity_fields[1]].isin(activitynames))
                                                        ].reset_index(drop=True)
+
+    # if activity set names included in function call and activity set names is not null, \
+    # then subset data based on value and column specified
+    if subset_by_column_value:
+        if asn is not None:
+            # create subset of activity names and allocation subset metrics
+            asn_subset = asn[asn['name'] == n].reset_index(drop=True)
+            col_to_subset = asn_subset['allocation_subset_col'][0]
+            val_to_subset = asn_subset['allocation_subset'][0]
+            # subset fba_allocation_subset further
+            log.info('Subset the allocation dataseet where ' + col_to_subset + ' = ' + val_to_subset)
+            fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset] == val_to_subset]
 
     return fba_allocation_subset
 
