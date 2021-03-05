@@ -134,7 +134,7 @@ def function_allocation_method(flow_subset_mapped, names, attr, fbs_list):
     return fbs
 
 
-def dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, aset, method_name):
+def dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, aset, method_name, aset_names):
     # determine appropriate allocation dataset
     log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " +
              str(attr['allocation_source_year']))
@@ -197,7 +197,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, ase
         log.info("Creating allocation ratios for " + n)
         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n],
                                                             flowSubsetMapped=flow_subset_mapped,
-                                                            allocMethod=attr['allocation_method'])
+                                                            allocMethod=attr['allocation_method'],
+                                                            activity_set_names=aset_names)
         if len(fba_allocation_subset_2) == 0:
             log.info("No data found to allocate " + n)
         else:
@@ -265,11 +266,11 @@ def main(**kwargs):
     :param method_name: Name of method corresponding to flowbysector method yaml name
     :return: flowbysector
     """
-    # if len(kwargs)==0:
-    #     kwargs = parse_args()
+    if len(kwargs)==0:
+        kwargs = parse_args()
 
     # test
-    kwargs = {'method': 'water_crop'}
+    # kwargs = {'method': 'cap_mecs'}
 
     method_name = kwargs['method']
     # assign arguments
@@ -296,6 +297,8 @@ def main(**kwargs):
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
                 aset_names = pd.read_csv(flowbysectoractivitysetspath + v['activity_set_file'], dtype=str)
+            else:
+                aset_names = None
 
             # create dictionary of allocation datasets for different activities
             activities = v['activity_sets']
@@ -354,7 +357,7 @@ def main(**kwargs):
                 elif attr['allocation_method'] == 'allocation_function':
                     fbs = function_allocation_method(flow_subset_mapped, names, attr, fbs_list)
                 else:
-                    fbs = dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, aset, method_name)
+                    fbs = dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, aset, method_name, aset_names)
 
                 # drop rows where flowamount = 0 (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
