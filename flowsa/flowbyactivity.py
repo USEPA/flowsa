@@ -69,7 +69,13 @@ from flowsa.USGS_MYB_Mica import *
 from flowsa.USGS_MYB_Lithium import *
 from flowsa.USGS_MYB_Peat import *
 from flowsa.USGS_MYB_Perlite import *
-
+from flowsa.USGS_MYB_Phosphate import *
+from flowsa.USGS_MYB_Potash import *
+from flowsa.USGS_MYB_Pumice import *
+from flowsa.USGS_MYB_Salt import *
+from flowsa.USGS_MYB_Talc import *
+from flowsa.USGS_MYB_Vermiculite import *
+from flowsa.USGS_MYB_Zeolites import *
 
 def parse_args():
     """Make year and source script parameters"""

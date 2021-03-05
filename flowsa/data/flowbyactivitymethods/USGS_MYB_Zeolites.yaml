@@ -1,0 +1,11 @@
+# Downloads and parses CSV from USGS Zeolites Statistics and Information on an annual basis.
+---
+# api_name: USGS_MYB_Zeolites
+# api_key_required: false
+format: xls
+url:
+  base_url: "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb-2018--zeoli-adv.xlsx"
+url_replace_fxn: usgs_zeolites_url_helper
+call_response_fxn: usgs_zeolites_call
+parse_response_fxn: usgs_zeolites_parse
+
