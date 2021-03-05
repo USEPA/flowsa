@@ -41,14 +41,14 @@ from flowsa.USGS_MYB_Copper import *
 from flowsa.USGS_MYB_Nickel import *
 from flowsa.USGS_MYB_Zinc import *
 from flowsa.USGS_MYB_Lime import *
-from flowsa.USGS_MYB_SandGravelCon import *
-from flowsa.USGS_MYB_SandGravelInd import *
-from flowsa.USGS_MYB_Stone_Dimension import *
-from flowsa.USGS_MYB_Stone_Crushed import *
+from flowsa.USGS_MYB_SandGravelConstruction import *
+from flowsa.USGS_MYB_SandGravelIndustrial import *
+from flowsa.USGS_MYB_StoneDimension import *
+from flowsa.USGS_MYB_StoneCrushed import *
 from flowsa.USGS_MYB_Beryllium import *
 from flowsa.USGS_MYB_Cobalt import *
 from flowsa.USGS_MYB_Gold import *
-from flowsa.USGS_MYB_Iron_Ore import *
+from flowsa.USGS_MYB_IronOre import *
 from flowsa.USGS_MYB_Magnesium import *
 from flowsa.USGS_MYB_Molybdenum import *
 from flowsa.USGS_MYB_Platinum import *
@@ -67,7 +67,8 @@ from flowsa.USGS_MYB_Gypsum import *
 from flowsa.USGS_MYB_Kyanite import *
 from flowsa.USGS_MYB_Mica import *
 from flowsa.USGS_MYB_Lithium import *
-
+from flowsa.USGS_MYB_Peat import *
+from flowsa.USGS_MYB_Perlite import *
 
 
 def parse_args():

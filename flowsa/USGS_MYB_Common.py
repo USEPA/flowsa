@@ -1,4 +1,5 @@
 from string import digits
+from flowsa.common import *
 
 def usgs_myb_year(years, current_year_str):
     """Sets the column for the string based on the year.
@@ -18,10 +19,15 @@ def usgs_myb_name(USGS_Source):
     """Takes the USGS source name and parses it so it can be used in other parts of Flow by activity."""
     #USGS_MYB_Kyanite
     source_split = USGS_Source.split("_")
-    #if len(source_split) > 3:
-    #    for i in range(2-len(source_split)):
-    #        name = name + source_split
-    name = str(source_split[2]).lower()
+    name_cc = str(source_split[2])
+    name = ""
+    for char in name_cc:
+        if char.isupper():
+            name = name + " " + char
+        else:
+            name = name + char
+    name = name.lower()
+    name = name.strip()
     return name
 
 def usgs_myb_static_varaibles():
@@ -29,7 +35,7 @@ def usgs_myb_static_varaibles():
     data = {}
     data["Class"] = "Geological"
     data['FlowType'] = "ELEMENTARY_FLOWS"
-    data["Location"] = "00000"
+    data["Location"] = US_FIPS
     data["Compartment"] = "ground"
     data["Context"] = None
     data["ActivityConsumedBy"] = None
