@@ -421,6 +421,7 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     df_load = replace_NoneType_with_empty_cells(df_load)
+
     # original df - subset
     # subset cols of original df
     dfo = df_load[['FlowAmount', 'Location', 'SectorConsumedBy']]
@@ -437,6 +438,7 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
                                 'SectorSourceName'])
     dfn = add_sectors_to_flowbyactivity(dfn, sectorsourcename=method['target_sector_source'], overwrite_sectorlevel='aggregated')
     # add column of sector length
+    dfn = replace_NoneType_with_empty_cells(dfn)
     dfn = dfn.assign(SectorLength=dfn['SectorConsumedBy'].apply(lambda x: len(x)))
     # add column noting that these columns require an allocation ratio
     dfn = dfn.assign(disaggregate_flag=1)
