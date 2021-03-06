@@ -670,6 +670,9 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     """
     from flowsa.flowbyfunctions import aggregator
 
+    # test
+    # df_load = flowbyactivity_wsector_df.copy()
+
     # drop NoneType
     df = replace_NoneType_with_empty_cells(df_load)
 
@@ -721,6 +724,14 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
         # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
+    # drop rows where both SectorConsumedBy and SectorProducedBy are both empty
+    df_drop = df[(df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == '')]
+    if len(df_drop) != 0:
+        activities_dropped = pd.unique(df_drop[['ActivityConsumedBy', 'ActivityProducedBy']].values.ravel('K'))
+        activities_dropped = list(filter(lambda x: x != '', activities_dropped))
+        log.info('Dropping rows where the Activity columns contain ' + ', '.join(activities_dropped))
+
+    df = df[~(df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == '')].reset_index(drop=True)
     df = replace_strings_with_NoneType(df)
 
     return df
