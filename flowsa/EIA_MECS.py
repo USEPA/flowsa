@@ -339,9 +339,14 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :param method:
     :return:
     """
+    # test
+    df_w_sec = fba_allocation_wsec.copy()
+    df_w_sec = df_w_sec[df_w_sec['ActivityConsumedBy'].apply(lambda x: x[0:3] =='339')].reset_index(drop=True)
 
     # todo: ADDRESS PROBLEM OF TOO MANY 'TOTAL' ROWS
     df = iteratively_determine_flows_requiring_disaggregation(df_w_sec, attr, method)
+    # drop flag column
+    df = df.drop(columns=['disaggregate_flag'])
     # from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
     #
     # # define activity/sector columns to base df modifications on
@@ -425,11 +430,11 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
 
     # original df - subset
     # subset cols of original df
-    dfo = df_load[['FlowAmount', 'FlowName', 'Location', 'SectorConsumedBy']]
+    dfo = df_load[['FlowAmount', 'Location', 'SectorConsumedBy']]
     # add a column of the sector dropping last digit
     dfo = dfo.assign(SectorMatch=dfo['SectorConsumedBy'].apply(lambda x: x[:len(x) - 1]))
     # sum flowamounts based on sector match col
-    dfo2 = dfo.groupby(['Location', 'FlowName', 'SectorMatch'], as_index=False)['FlowAmount'] \
+    dfo2 = dfo.groupby(['Location', 'SectorMatch'], as_index=False)['FlowAmount'] \
         .sum().rename(columns={'FlowAmount': 'SubtractFlow'})
     dfo2 = dfo2.assign(SectorLengthMatch=dfo2['SectorMatch'].apply(lambda x: len(x)+1))
 
@@ -458,9 +463,9 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
 
     # merge the two dfs and create new flowamounts for allocation
     # first merge the new df with the subset original df where activity = sector match
-    df = pd.merge(dfn3, dfo2[['Location', 'FlowName', 'SectorMatch', 'SubtractFlow']],
-                  how='left', left_on=['Location', 'FlowName', 'ActivityConsumedBy'],
-                  right_on=['Location', 'FlowName', 'SectorMatch']
+    df = pd.merge(dfn3, dfo2[['Location', 'SectorMatch', 'SubtractFlow']],
+                  how='left', left_on=['Location', 'ActivityConsumedBy'],
+                  right_on=['Location', 'SectorMatch']
                   ).rename(columns={'SubtractFlow': 'SubtractFlow1'}).drop(columns='SectorMatch')
     # then merge new df with subset original df a second time, this time where sector - length 1 = sector match
 
