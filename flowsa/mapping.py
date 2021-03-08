@@ -36,6 +36,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :param kwargs: option to include the parameter 'allocationmethod', which modifies function behavoir if = 'direct'
     :return: a df with activity fields mapped to 'sectors'
     """
+
     # First check if source activities are NAICS like - if so make it into a mapping file
     cat = load_source_catalog()
 
@@ -176,7 +177,9 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
                 subset_by_sector_cols = True
         if 'activity_set_names' in kwargs:
             asn = kwargs['activity_set_names']
-            subset_by_column_value = True
+            if asn is not None:
+                if 'allocation_subset_col' in asn:
+                    subset_by_column_value = True
     else:
         subset_by_sector_cols = False
         subset_by_column_value = False
@@ -227,14 +230,13 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     # if activity set names included in function call and activity set names is not null, \
     # then subset data based on value and column specified
     if subset_by_column_value:
-        if asn is not None:
-            # create subset of activity names and allocation subset metrics
-            asn_subset = asn[asn['name'].isin(activitynames)].reset_index(drop=True)
-            col_to_subset = asn_subset['allocation_subset_col'][0]
-            val_to_subset = asn_subset['allocation_subset'][0]
-            # subset fba_allocation_subset further
-            log.info('Subset the allocation dataseet where ' + col_to_subset + ' = ' + val_to_subset)
-            fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset] == val_to_subset].reset_index(drop=True)
+        # create subset of activity names and allocation subset metrics
+        asn_subset = asn[asn['name'].isin(activitynames)].reset_index(drop=True)
+        col_to_subset = asn_subset['allocation_subset_col'][0]
+        val_to_subset = asn_subset['allocation_subset'][0]
+        # subset fba_allocation_subset further
+        log.info('Subset the allocation dataseet where ' + col_to_subset + ' = ' + val_to_subset)
+        fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset] == val_to_subset].reset_index(drop=True)
 
     return fba_allocation_subset
 
