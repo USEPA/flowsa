@@ -234,7 +234,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
             val_to_subset = asn_subset['allocation_subset'][0]
             # subset fba_allocation_subset further
             log.info('Subset the allocation dataseet where ' + col_to_subset + ' = ' + val_to_subset)
-            fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset] == val_to_subset]
+            fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset] == val_to_subset].reset_index(drop=True)
 
     return fba_allocation_subset
 

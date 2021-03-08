@@ -339,9 +339,6 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :param method:
     :return:
     """
-    # test
-    # df_w_sec = fba_allocation_wsec.copy()
-    # df_w_sec = df_w_sec[df_w_sec['ActivityConsumedBy'].apply(lambda x: x[0:3] =='339')].reset_index(drop=True)
 
     from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
 
@@ -515,12 +512,6 @@ def estimate_missing_data(df, activity_col, sector_col, sector_lengths):
     """
     from flowsa.flowbyfunctions import sector_aggregation
     from flowsa.flowbyfunctions import fba_mapped_default_grouping_fields
-
-    # test
-    # df = df_w_sec.copy()
-    # activity_col = activity_column
-    # sector_col = sector_column
-    # sector_lengths = [3, 4, 5]
 
     df.dropna(subset=[sector_col], inplace=True)
     cw = load_sector_length_crosswalk()
