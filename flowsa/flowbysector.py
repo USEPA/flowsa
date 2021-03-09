@@ -114,11 +114,11 @@ def main(**kwargs):
     :param method_name: Name of method corresponding to flowbysector method yaml name
     :return: flowbysector
     """
-    # if len(kwargs)==0:
-    #     kwargs = parse_args()
+    if len(kwargs)==0:
+        kwargs = parse_args()
 
     # test
-    kwargs = {'method': 'cap_crop'}
+    # kwargs = {'method': 'cap_crop'}
 
     method_name = kwargs['method']
     # assign arguments
