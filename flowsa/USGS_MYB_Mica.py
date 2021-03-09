@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.USGS_MYB_Common_File import *
+from flowsa.USGS_MYB_Common import *
 
 
 """

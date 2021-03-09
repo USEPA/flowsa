@@ -1,4 +1,4 @@
-# USGS_MYB_Copper.py (flowsa)
+# USGS_MYB_Garnet.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -20,7 +20,7 @@ Import USGS Mineral Yearbook data
 
 Description
 
-Table T1 and T9
+Table T1
 SourceName: USGS_MYB_Garnet
 https://www.usgs.gov/centers/nmic/garnet-statistics-and-information
 

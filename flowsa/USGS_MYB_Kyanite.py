@@ -1,4 +1,4 @@
-# USGS_MYB_Copper.py (flowsa)
+# USGS_MYB_Kyanite.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.USGS_MYB_Common_File import *
+from flowsa.USGS_MYB_Common import *
 
 
 """
@@ -91,6 +91,8 @@ def usgs_kyanite_parse(dataframe_list, args):
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
+                if str(df.iloc[index][col_name]) == "W":
+                    data["FlowAmount"] = withdrawn_keyword
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod

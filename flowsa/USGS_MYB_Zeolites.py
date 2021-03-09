@@ -28,7 +28,8 @@ https://www.usgs.gov/centers/nmic/zeolites-statistics-and-information
 Minerals Yearbook, xls file, tab T1: 
 
 Data for: Zeolites; zeolites, natural
-
+All of the Export and Import values were originally <1,000 
+The '<' has been striped for the Parquet files.  
 
 Years = 2014+
 """
@@ -89,6 +90,7 @@ def usgs_zeolites_parse(dataframe_list, args):
                 prod = "import"
             elif df.iloc[index]["Production"].strip() == "Exportse":
                 prod = "export"
+
             if df.iloc[index]["Production"].strip() in row_to_use:
                 product = df.iloc[index]["Production"].strip()
                 data = usgs_myb_static_varaibles()

@@ -46,3 +46,4 @@ def usgs_myb_remove_digits(value_string):
     remove_digits = str.maketrans('', '', digits)
     return_string = value_string.translate(remove_digits)
     return return_string
+

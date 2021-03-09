@@ -1,4 +1,4 @@
-# USGS_MYB_Copper.py (flowsa)
+# USGS_MYB_Beryllium.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -6,6 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.USGS_MYB_Common import *
 
 
 """
@@ -36,18 +37,8 @@ Data for: Beryllium; mine shipments
 
 Years = 2014+
 """
-def year_name_beryllium(year):
-    if int(year) == 2014:
-        return_val = "year_1"
-    elif int(year) == 2015:
-        return_val = "year_2"
-    elif int(year) == 2016:
-        return_val = "year_3"
-    elif int(year) == 2017:
-        return_val = "year_4"
-    elif int(year) == 2018:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2014-2018"
+
 
 def usgs_beryllium_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
@@ -79,7 +70,7 @@ def usgs_beryllium_call(url, usgs_response, args):
                            "year_3", "space_4", "year_4", "space_5", "year_5", "space_6", "space_7"]
 
     col_to_use = ["Production"]
-    col_to_use.append(year_name_beryllium(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data_1.columns:
         if col not in col_to_use:
             del df_data_1[col]
@@ -97,7 +88,11 @@ def usgs_beryllium_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
     row_to_use = ["United States6", "Mine shipments1", "Imports for consumption, beryl2"]
+    prod = ""
+    name = usgs_myb_name(args["source"])
+    des = name
     dataframe = pd.DataFrame()
+    col_name = usgs_myb_year(SPAN_YEARS, args["year"])
     for df in dataframe_list:
 
         for index, row in df.iterrows():
@@ -108,22 +103,13 @@ def usgs_beryllium_parse(dataframe_list, args):
             if df.iloc[index]["Production"].strip() in row_to_use:
                 remove_digits = str.maketrans('', '', digits)
                 product = df.iloc[index]["Production"].strip().translate(remove_digits)
-
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Beryllium"
+                data = usgs_myb_static_varaibles()
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
-
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
                 data["Unit"] = "Thousand Metric Tons"
-                col_name = year_name_beryllium(args["year"])
-                data["Description"] = "Beryllium"
-                data["ActivityProducedBy"] = "Beryllium"
-                data['FlowName'] = "Beryllium " + prod
-
+                data["Description"] = name
+                data["ActivityProducedBy"] = name
+                data['FlowName'] = name + " " + prod
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))

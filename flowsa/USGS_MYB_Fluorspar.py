@@ -1,4 +1,4 @@
-# USGS_MYB_Copper.py (flowsa)
+# USGS_MYB_Fluorspar.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 

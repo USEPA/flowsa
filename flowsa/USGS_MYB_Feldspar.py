@@ -1,4 +1,4 @@
-# USGS_MYB_Copper.py (flowsa)
+# USGS_MYB_Feldspar.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -20,7 +20,7 @@ Import USGS Mineral Yearbook data
 
 Description
 
-Table T1 and T9
+Table T1
 SourceName: USGS_MYB_Feldspar
 https://www.usgs.gov/centers/nmic/feldspar-statistics-and-information
 
@@ -57,7 +57,6 @@ def usgs_feldspar_call(url, usgs_response, args):
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
 
-  #  df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T9')  # .dropna()
     df_data_one = pd.DataFrame(df_raw_data_two.loc[10:15]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]

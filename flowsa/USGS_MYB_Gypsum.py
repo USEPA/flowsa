@@ -1,4 +1,4 @@
-# USGS_MYB_Copper.py (flowsa)
+# USGS_MYB_Gypsum.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.USGS_MYB_Common_File import *
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -20,7 +20,7 @@ Import USGS Mineral Yearbook data
 
 Description
 
-Table T1 and T9
+Table T1
 SourceName: USGS_MYB_Gypsum
 https://www.usgs.gov/centers/nmic/gypsum-statistics-and-information
 
@@ -94,6 +94,8 @@ def usgs_gypsum_parse(dataframe_list, args):
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
+                if str(df.iloc[index][col_name]) == "W":
+                    data["FlowAmount"] = withdrawn_keyword
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
