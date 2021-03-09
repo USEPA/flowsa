@@ -4,7 +4,8 @@
 
 import io
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, replace_strings_with_NoneType, \
+    replace_NoneType_with_empty_cells
 import yaml
 
 """
@@ -340,6 +341,9 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
 
     from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
 
+    # test
+    # df_w_sec = fba_allocation_wsec.copy()
+
     # define activity/sector columns to base df modifications on
     activity_column = 'ActivityConsumedBy'
     sector_column = 'SectorConsumedBy'
@@ -356,7 +360,8 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
                                                 df_w_sec[activity_column])
 
     # then estimate missing data
-    df = estimate_missing_data(df_w_sec, activity_column, sector_column, [3, 4, 5])
+    df = iteratively_determine_flows_requiring_disaggregation(df_w_sec, attr, method)
+    df = iteritively_estimate_missing_data(df)
 
     # drop rows where flowamount = 0
     df = df[df['FlowAmount'] != 0].reset_index(drop=True)
@@ -417,18 +422,22 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
              FlowAmount, if '0' FlowAmount does not require modifications
     """
 
-    from flowsa.flowbyfunctions import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     df_load = replace_NoneType_with_empty_cells(df_load)
 
+    # # determine which headers are in the df to subset/merge on
+    # possible_column_headers = ['FlowName', 'Compartment', 'Location']
+    # # list of column headers that exist in the df
+    # column_headers = [e for e in possible_column_headers if e in df_load.columns.values.tolist()]
+
     # original df - subset
     # subset cols of original df
-    dfo = df_load[['FlowAmount', 'Location', 'SectorConsumedBy']]
+    dfo = df_load[['FlowAmount', 'FlowName', 'Compartment', 'Location', 'SectorConsumedBy']]
     # add a column of the sector dropping last digit
     dfo = dfo.assign(SectorMatch=dfo['SectorConsumedBy'].apply(lambda x: x[:len(x) - 1]))
     # sum flowamounts based on sector match col
-    dfo2 = dfo.groupby(['Location', 'SectorMatch'], as_index=False)['FlowAmount'] \
+    dfo2 = dfo.groupby(['FlowName', 'Compartment', 'Location', 'SectorMatch'], as_index=False)['FlowAmount'] \
         .sum().rename(columns={'FlowAmount': 'SubtractFlow'})
     dfo2 = dfo2.assign(SectorLengthMatch=dfo2['SectorMatch'].apply(lambda x: len(x)+1))
 
@@ -457,9 +466,9 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
 
     # merge the two dfs and create new flowamounts for allocation
     # first merge the new df with the subset original df where activity = sector match
-    df = pd.merge(dfn3, dfo2[['Location', 'SectorMatch', 'SubtractFlow']],
-                  how='left', left_on=['Location', 'ActivityConsumedBy'],
-                  right_on=['Location', 'SectorMatch']
+    df = pd.merge(dfn3, dfo2[['FlowName', 'Compartment', 'Location', 'SectorMatch', 'SubtractFlow']],
+                  how='left', left_on=['FlowName', 'Compartment', 'Location', 'ActivityConsumedBy'],
+                  right_on=['FlowName', 'Compartment', 'Location', 'SectorMatch']
                   ).rename(columns={'SubtractFlow': 'SubtractFlow1'}).drop(columns='SectorMatch')
     # then merge new df with subset original df a second time, this time where sector - length 1 = sector match
 
@@ -467,13 +476,14 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
         # conditions
         # sector match != activity consumed by
         condition1 = dfo2['Location'] == row['Location']
-        condition2 = dfo2['SectorLengthMatch'] <= row['SectorLength']
-        condition3 = dfo2['SectorMatch'] != row['ActivityConsumedBy']
-        # condition4 = dfo2['SectorMatch'] == row['SectorConsumedBy'][:len(dfo2['SectorMatch'])]
-        condition4 = ((row['NAICS3'] == dfo2['SectorMatch']) |
+        condition2 = dfo2['FlowName'] == row['FlowName']
+        condition3 = dfo2['Compartment'] == row['Compartment']
+        condition4 = dfo2['SectorLengthMatch'] <= row['SectorLength']
+        condition5 = dfo2['SectorMatch'] != row['ActivityConsumedBy']
+        condition6 = ((row['NAICS3'] == dfo2['SectorMatch']) |
                       (row['NAICS4'] == dfo2['SectorMatch']) |
                       (row['NAICS5'] == dfo2['SectorMatch']))
-        curr_df = dfo2[condition1 & condition2 & condition3 & condition4]
+        curr_df = dfo2[condition1 & condition2 & condition3 & condition4 & condition5 & condition6]
 
         try:
             row['SubtractFlow2'] = curr_df['SubtractFlow'].iloc[0]
@@ -503,69 +513,33 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
     return df_c
 
 
-def estimate_missing_data(df, activity_col, sector_col, sector_lengths):
+def iteritively_estimate_missing_data(df_load): #, activity_col, sector_col, sector_lengths):
     """
     For a given dataframe where data is reported by NAICS, but not all nested NAICS are listed,
-    this function applies the unaccounted for amounts equally across unreported children
+    this function applies the unaccounted for amounts equally across unreported children.
+
+    First run iteratively_determine_flows_requiring_disaggregation()
     """
-    from flowsa.flowbyfunctions import sector_aggregation
-    from flowsa.flowbyfunctions import fba_mapped_default_grouping_fields
 
-    df.dropna(subset=[sector_col], inplace=True)
-    cw = load_sector_length_crosswalk()
+    # exclude nonsectors
+    df = replace_NoneType_with_empty_cells(df_load)
 
-    # replace the activity column with sector column values in the event there were non 2012 naics that were replaced
-    df[activity_col] = df[sector_col].copy()
-    # then aggregate to address possible duplications (todo: think about this...should ther be dup?)
-    df = sector_aggregation(df, fba_mapped_default_grouping_fields)
+    # drop rows where flowamount = 0
+    df = df[df['FlowAmount'] != 0].reset_index(drop=True)
+    # add column of sector length
+    df = df.assign(sectorLength=df['SectorConsumedBy'].apply(lambda x: len(x)))
+    # count number of times the sector length exists for an ActivityConsumedBy
+    df['sector_count'] = df.groupby(['ActivityConsumedBy', 'sectorLength'])['sectorLength'].transform('count')
 
-    # create list of flownames and loop through estimates
-    flowname_list = df['FlowName'].drop_duplicates().values.tolist()
-    for f in flowname_list:
-        df_sub = df[df['FlowName'] == f].reset_index(drop=True)
-        for i in sector_lengths:
-            # create df with sectors of i length, need to disaggregate to i+1
-            df_parent = df_sub.loc[df_sub[activity_col].apply(lambda x: len(x) == i)]
-            parentlist = df_parent[activity_col].drop_duplicates().tolist()
+    # divide flow amount by sector count to equally allocate remaining flow amount to all related sectors
+    df = df.assign(FlowAmount=df['FlowAmount']/df['sector_count'])
 
-            # create df with sectors of length > i + 1 (i.e. children)
-            df_child = df_sub.loc[df_sub[activity_col].apply(lambda x: len(x) == i + 1)]
-            df_child = df_child.assign(s_tmp=df_child[activity_col].apply(lambda x: x[0:i]))
+    # drop columns
+    df = df.drop(columns=['disaggregate_flag', 'sectorLength', 'sector_count'])
 
-            cw2 = cw[['NAICS_'+str(i), 'NAICS_'+str(i+1)]].drop_duplicates()
+    df = replace_strings_with_NoneType(df)
 
-            for sector in parentlist:
-                df_temp_parent = df_parent[df_parent[activity_col] == sector]
-                # extract the children of the given sector of level i that exist in the dataframe
-                df_temp_child = df_child[df_child['s_tmp'] == sector]
-                childlist = df_temp_child[activity_col].tolist()
-                df_temp_child = df_temp_child.assign(s_tmp=df_child[activity_col].apply(lambda x: x[0:i+1]))
-                df_temp_child = df_temp_child.assign(length=df_child[activity_col].str.len())
-
-                # drop children that have the same sector of i+1 (because these are double counting), /
-                # as long as they are not the same length
-                net_flow = df_temp_child.groupby(['length', 's_tmp']).agg({'FlowAmount': ['sum']}).reset_index()
-                net_flow.columns = ['length', 's_tmp', 'FlowAmount']
-                # calculate the amount supplied by existing sectors
-                net_flow = net_flow.drop_duplicates(subset=['s_tmp'])
-
-                cw_temp = cw2[cw2['NAICS_' + str(i)] == sector]
-                cw_childlist = cw_temp['NAICS_' + str(i+1)].drop_duplicates().tolist()
-                sectors_to_add = list(set(cw_childlist).difference(childlist))
-
-                if len(sectors_to_add) != 0:
-                    new_flow_amount = (df_temp_parent['FlowAmount'].sum()-net_flow['FlowAmount'].sum())/len(sectors_to_add)
-                    # Add new children to dataframe as new Activities, and assign flow amount,
-                    # all other data remains the same as the parent (update DQI?)
-                    new_child = pd.DataFrame(sectors_to_add, columns=[sector_col])
-                    new_child[activity_col] = sector
-                    new_child = df_temp_parent.merge(new_child, how='left', on=activity_col)
-                    new_child[sector_col] = new_child[sector_col + '_y']
-                    new_child.drop(columns=[sector_col + '_x', sector_col + '_y'], inplace=True)
-                    new_child['FlowAmount'] = new_flow_amount
-                    # reset the activity col value
-                    new_child[activity_col] = new_child[sector_col].copy()
-                    # then concat new data to original df
-                    df = pd.concat([df, new_child], axis=0, ignore_index=True)
+    # replace Activity col with value from sector col
+    df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
 
     return df
