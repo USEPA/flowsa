@@ -2,14 +2,12 @@
 Helper functions for flowbyactivity and flowbysector data
 """
 
-import logging as log
 import flowsa
 import pandas as pd
 import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
-    create_fill_na_dict, fips_number_key, load_source_catalog, \
-    load_sector_length_crosswalk, update_geoscale, flow_by_activity_wsec_mapped_fields
+    create_fill_na_dict, fips_number_key, load_sector_length_crosswalk, update_geoscale, flow_by_activity_wsec_mapped_fields
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]
@@ -303,8 +301,6 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
     :return: df with FlowAmountRatio for each sector
     """
 
-    from flowsa.mapping import get_fba_allocation_subset
-
     # first determine if there is a special case with how the allocation ratios are created
     if allocation_method == 'proportional-flagged':
         # if the allocation method is flagged, subset sectors that are flagged/notflagged, where nonflagged sectors \
@@ -530,8 +526,8 @@ def allocation_helper(df_w_sector, attr, method, v):
     :return:
     """
 
-    from flowsa.Blackhurst_IO import scale_blackhurst_results_to_usgs_values
-    from flowsa.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
+    from flowsa.data_source_scripts.Blackhurst_IO import scale_blackhurst_results_to_usgs_values
+    from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba, bls_clean_allocation_fba_w_sec
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     helper_allocation = flowsa.getFlowByActivity(datasource=attr['helper_source'],

@@ -7,7 +7,7 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
-    load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
+    load_sector_crosswalk, log
 from flowsa.flowbyfunctions import fbs_activity_fields, fba_activity_fields, load_sector_length_crosswalk
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
