@@ -9,7 +9,7 @@ Download the crosswalk from CBECS to NAICS that CBECS publishes and reshape
 import pandas as pd
 import io
 from flowsa.common import datapath, make_http_request
-from flowsa.EIA_CBECS_Land import standardize_eia_cbecs_land_activity_names
+from flowsa.data_source_scripts.EIA_CBECS_Land import standardize_eia_cbecs_land_activity_names
 
 if __name__ == '__main__':
     # url for excel crosswalk
