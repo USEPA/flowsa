@@ -30,7 +30,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     """
 
     import stewicombo
-    from flowsa.EPA_NEI import drop_GHGs
+    from flowsa.data_source_scripts.EPA_NEI import drop_GHGs
 
     NAICS_level_value=sector_level_key[NAICS_level]
     ## run stewicombo to combine inventories, filter for LCI, remove overlap

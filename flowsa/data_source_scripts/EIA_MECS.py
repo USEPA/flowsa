@@ -2,8 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import pandas as pd
-import numpy as np
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
@@ -367,7 +365,7 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
 
 def mecs_land_fba_cleanup(fba):
 
-    from flowsa.EIA_CBECS_Land import calculate_total_facility_land_area
+    from flowsa.data_source_scripts.EIA_CBECS_Land import calculate_total_facility_land_area
 
     fba = fba[fba['FlowName'].str.contains('Approximate Enclosed Floorspace of All Buildings Onsite')]
 

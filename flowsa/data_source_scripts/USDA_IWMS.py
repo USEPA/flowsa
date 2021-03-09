@@ -85,7 +85,7 @@ def iwms_parse(dataframe_list, args):
 
 def disaggregate_iwms_to_6_digit_naics(df, attr, method):
 
-    from flowsa.USDA_CoA_Cropland import disaggregate_pastureland, disaggregate_cropland
+    from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, disaggregate_cropland
 
     # define sector column to base df modifications
     sector_column = 'SectorConsumedBy'
