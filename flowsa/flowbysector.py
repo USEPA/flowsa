@@ -117,9 +117,6 @@ def main(**kwargs):
     if len(kwargs)==0:
         kwargs = parse_args()
 
-    # test
-    # kwargs = {'method': 'cap_crop'}
-
     method_name = kwargs['method']
     # assign arguments
     log.info("Initiating flowbysector creation for " + method_name)
