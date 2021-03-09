@@ -426,6 +426,14 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
 
     df_load = replace_NoneType_with_empty_cells(df_load)
 
+    # modify to work with mapped vs unmapped dfs
+    if 'Compartment' in df_load:
+        c_col = 'Compartment'
+        flow_col = 'FlowName'
+    else:
+        c_col = 'Context'
+        flow_col = 'Flowable'
+
     # # determine which headers are in the df to subset/merge on
     # possible_column_headers = ['FlowName', 'Compartment', 'Location']
     # # list of column headers that exist in the df
@@ -433,11 +441,11 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
 
     # original df - subset
     # subset cols of original df
-    dfo = df_load[['FlowAmount', 'FlowName', 'Compartment', 'Location', 'SectorConsumedBy']]
+    dfo = df_load[['FlowAmount', flow_col, c_col, 'Location', 'SectorConsumedBy']]
     # add a column of the sector dropping last digit
     dfo = dfo.assign(SectorMatch=dfo['SectorConsumedBy'].apply(lambda x: x[:len(x) - 1]))
     # sum flowamounts based on sector match col
-    dfo2 = dfo.groupby(['FlowName', 'Compartment', 'Location', 'SectorMatch'], as_index=False)['FlowAmount'] \
+    dfo2 = dfo.groupby([flow_col, c_col, 'Location', 'SectorMatch'], as_index=False)['FlowAmount'] \
         .sum().rename(columns={'FlowAmount': 'SubtractFlow'})
     dfo2 = dfo2.assign(SectorLengthMatch=dfo2['SectorMatch'].apply(lambda x: len(x)+1))
 
@@ -466,9 +474,9 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
 
     # merge the two dfs and create new flowamounts for allocation
     # first merge the new df with the subset original df where activity = sector match
-    df = pd.merge(dfn3, dfo2[['FlowName', 'Compartment', 'Location', 'SectorMatch', 'SubtractFlow']],
-                  how='left', left_on=['FlowName', 'Compartment', 'Location', 'ActivityConsumedBy'],
-                  right_on=['FlowName', 'Compartment', 'Location', 'SectorMatch']
+    df = pd.merge(dfn3, dfo2[[flow_col, c_col, 'Location', 'SectorMatch', 'SubtractFlow']],
+                  how='left', left_on=[flow_col, c_col, 'Location', 'ActivityConsumedBy'],
+                  right_on=[flow_col, c_col, 'Location', 'SectorMatch']
                   ).rename(columns={'SubtractFlow': 'SubtractFlow1'}).drop(columns='SectorMatch')
     # then merge new df with subset original df a second time, this time where sector - length 1 = sector match
 
@@ -476,8 +484,8 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
         # conditions
         # sector match != activity consumed by
         condition1 = dfo2['Location'] == row['Location']
-        condition2 = dfo2['FlowName'] == row['FlowName']
-        condition3 = dfo2['Compartment'] == row['Compartment']
+        condition2 = dfo2[flow_col] == row[flow_col]
+        condition3 = dfo2[c_col] == row[c_col]
         condition4 = dfo2['SectorLengthMatch'] <= row['SectorLength']
         condition5 = dfo2['SectorMatch'] != row['ActivityConsumedBy']
         condition6 = ((row['NAICS3'] == dfo2['SectorMatch']) |
@@ -513,7 +521,7 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
     return df_c
 
 
-def iteritively_estimate_missing_data(df_load): #, activity_col, sector_col, sector_lengths):
+def iteritively_estimate_missing_data(df_load):
     """
     For a given dataframe where data is reported by NAICS, but not all nested NAICS are listed,
     this function applies the unaccounted for amounts equally across unreported children.
