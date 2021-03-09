@@ -163,7 +163,6 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     :param kwargs: can be the mapping file and method of allocation
     :return:
     """
-
     # first determine if there are special cases that would modify the typical method of subset
     # an example of a special case is when the allocation method is 'proportional-flagged'
     if kwargs != {}:
@@ -232,11 +231,17 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     if subset_by_column_value:
         # create subset of activity names and allocation subset metrics
         asn_subset = asn[asn['name'].isin(activitynames)].reset_index(drop=True)
-        col_to_subset = asn_subset['allocation_subset_col'][0]
-        val_to_subset = asn_subset['allocation_subset'][0]
-        # subset fba_allocation_subset further
-        log.info('Subset the allocation dataseet where ' + col_to_subset + ' = ' + val_to_subset)
-        fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset] == val_to_subset].reset_index(drop=True)
+        if asn_subset['allocation_subset'].isna().all():
+            pass
+        elif asn_subset['allocation_subset'].isna().any():
+            log.error('Define column and value to subset on in the activity set csv for all rows')
+        else:
+            col_to_subset = asn_subset['allocation_subset_col'][0]
+            val_to_subset = asn_subset['allocation_subset'][0]
+            # subset fba_allocation_subset further
+            log.info('Subset the allocation dataseet where ' + str(col_to_subset) + ' = ' + str(val_to_subset))
+            fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset]
+                                                          == val_to_subset].reset_index(drop=True)
 
     return fba_allocation_subset
 
