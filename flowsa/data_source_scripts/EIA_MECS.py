@@ -339,34 +339,30 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     :return:
     """
 
-    from flowsa.flowbyfunctions import sector_aggregation, fba_mapped_default_grouping_fields
+    from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation, fba_mapped_default_grouping_fields
 
-    # test
-    # df_w_sec = fba_allocation_wsec.copy()
+    # estimate missing data
+    df = iteratively_determine_flows_requiring_disaggregation(df_w_sec, attr, method)
+    df2 = iteritively_estimate_missing_data(df)
+
+    # drop rows where flowamount = 0
+    df2 = df2[df2['FlowAmount'] != 0].reset_index(drop=True)
 
     # define activity/sector columns to base df modifications on
     activity_column = 'ActivityConsumedBy'
     sector_column = 'SectorConsumedBy'
-
-    # first aggregate existing data to higher naics
+    # aggregate data to higher naics
     group_cols = fba_mapped_default_grouping_fields
     group_cols = [e for e in group_cols if
                   e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-    # group_cols.append('Sector')
     df_w_sec = sector_aggregation(df_w_sec, group_cols)
+    df_w_sec = sector_disaggregation(df_w_sec, group_cols)
     # replace value in Activity col for created rows
     df_w_sec.loc[:, activity_column] = np.where(df_w_sec[activity_column].isnull(),
                                                 df_w_sec[sector_column],
                                                 df_w_sec[activity_column])
 
-    # then estimate missing data
-    df = iteratively_determine_flows_requiring_disaggregation(df_w_sec, attr, method)
-    df = iteritively_estimate_missing_data(df)
-
-    # drop rows where flowamount = 0
-    df = df[df['FlowAmount'] != 0].reset_index(drop=True)
-
-    return df
+    return df2
 
 def mecs_land_fba_cleanup(fba):
 
@@ -434,18 +430,13 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
         c_col = 'Context'
         flow_col = 'Flowable'
 
-    # # determine which headers are in the df to subset/merge on
-    # possible_column_headers = ['FlowName', 'Compartment', 'Location']
-    # # list of column headers that exist in the df
-    # column_headers = [e for e in possible_column_headers if e in df_load.columns.values.tolist()]
-
     # original df - subset
     # subset cols of original df
-    dfo = df_load[['FlowAmount', flow_col, c_col, 'Location', 'SectorConsumedBy']]
+    dfo = df_load[['FlowAmount', flow_col, 'Location', 'SectorConsumedBy']]
     # add a column of the sector dropping last digit
     dfo = dfo.assign(SectorMatch=dfo['SectorConsumedBy'].apply(lambda x: x[:len(x) - 1]))
     # sum flowamounts based on sector match col
-    dfo2 = dfo.groupby([flow_col, c_col, 'Location', 'SectorMatch'], as_index=False)['FlowAmount'] \
+    dfo2 = dfo.groupby([flow_col, 'Location', 'SectorMatch'], as_index=False)['FlowAmount'] \
         .sum().rename(columns={'FlowAmount': 'SubtractFlow'})
     dfo2 = dfo2.assign(SectorLengthMatch=dfo2['SectorMatch'].apply(lambda x: len(x)+1))
 
@@ -460,13 +451,15 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
     # add column noting that these columns require an allocation ratio
     dfn = dfn.assign(disaggregate_flag=1)
     # create lists of sectors to drop
-    list_original = df_load['ActivityConsumedBy'].drop_duplicates().tolist()
+    original_df = df_load[[flow_col, 'ActivityConsumedBy']].drop_duplicates()
     # drop values in original df
-    dfn2 = dfn[~dfn['SectorConsumedBy'].isin(list_original)].reset_index(drop=True)
+    dfn2 = dfn.merge(original_df, left_on=[flow_col, 'SectorConsumedBy'], right_on=[flow_col, 'ActivityConsumedBy'],
+                     indicator=True, how='left').rename(columns={'ActivityConsumedBy_x': 'ActivityConsumedBy'})
+    dfn2 = dfn2[dfn2['_merge'] == 'left_only'].drop(columns=['ActivityConsumedBy_y', '_merge'])
     # sort the df by 'ActivityConsumedBy' and drop duplicated rows of SectorconsumedBy, keeping the second entry \
     # (where ActivityConsumedBy has greater sector length)
-    dfn2 = dfn2.sort_values(['ActivityConsumedBy', 'SectorConsumedBy'])
-    dfn3 = dfn2.drop_duplicates('SectorConsumedBy', keep='last').reset_index(drop=True)
+    dfn2 = dfn2.sort_values([flow_col, 'ActivityConsumedBy', 'SectorConsumedBy'])
+    dfn3 = dfn2.drop_duplicates([flow_col, 'SectorConsumedBy'], keep='last').reset_index(drop=True)
     # add columns on which to match
     dfn3 = dfn3.assign(NAICS3=dfn3.apply(lambda x: x['SectorConsumedBy'][0:3] if len(x['ActivityConsumedBy']) <= 3 else 0, axis=1))
     dfn3 = dfn3.assign(NAICS4=dfn3.apply(lambda x: x['SectorConsumedBy'][0:4] if len(x['ActivityConsumedBy']) <= 4 else 0, axis=1))
@@ -474,9 +467,9 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
 
     # merge the two dfs and create new flowamounts for allocation
     # first merge the new df with the subset original df where activity = sector match
-    df = pd.merge(dfn3, dfo2[[flow_col, c_col, 'Location', 'SectorMatch', 'SubtractFlow']],
-                  how='left', left_on=[flow_col, c_col, 'Location', 'ActivityConsumedBy'],
-                  right_on=[flow_col, c_col, 'Location', 'SectorMatch']
+    df = pd.merge(dfn3, dfo2[[flow_col, 'Location', 'SectorMatch', 'SubtractFlow']],
+                  how='left', left_on=[flow_col, 'Location', 'ActivityConsumedBy'],
+                  right_on=[flow_col, 'Location', 'SectorMatch']
                   ).rename(columns={'SubtractFlow': 'SubtractFlow1'}).drop(columns='SectorMatch')
     # then merge new df with subset original df a second time, this time where sector - length 1 = sector match
 
@@ -485,13 +478,13 @@ def iteratively_determine_flows_requiring_disaggregation(df_load, attr, method):
         # sector match != activity consumed by
         condition1 = dfo2['Location'] == row['Location']
         condition2 = dfo2[flow_col] == row[flow_col]
-        condition3 = dfo2[c_col] == row[c_col]
+        # condition3 = dfo2[c_col] == row[c_col]
         condition4 = dfo2['SectorLengthMatch'] <= row['SectorLength']
         condition5 = dfo2['SectorMatch'] != row['ActivityConsumedBy']
         condition6 = ((row['NAICS3'] == dfo2['SectorMatch']) |
                       (row['NAICS4'] == dfo2['SectorMatch']) |
                       (row['NAICS5'] == dfo2['SectorMatch']))
-        curr_df = dfo2[condition1 & condition2 & condition3 & condition4 & condition5 & condition6]
+        curr_df = dfo2[condition1 & condition2  & condition4 & condition5 & condition6]
 
         try:
             row['SubtractFlow2'] = curr_df['SubtractFlow'].iloc[0]
