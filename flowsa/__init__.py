@@ -11,6 +11,7 @@ from flowsa.common import paths, set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 import flowsa.flowbyactivity
 import flowsa.flowbysector
+from flowsa.bibliography_functions import generate_fbs_bibliography
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
@@ -72,3 +73,15 @@ def collapse_FlowBySector(fbs):
     fbs_collapsed = check_for_negative_flowamounts(fbs_collapsed)
 
     return fbs_collapsed
+
+
+def getFlowBySectorBibliography(methodname):
+    """
+    Generate bibliography for FlowBySectorMethod
+    :param methodname:
+    :return:
+    """
+
+    fbs_bib = generate_fbs_bibliography(methodname)
+
+    return fbs_bib
