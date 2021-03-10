@@ -404,12 +404,12 @@ activity_set_1,2805001000,Agriculture - Livestock
 activity_set_1,2805001100,Agriculture - Livestock
 activity_set_1,2805001200,Agriculture - Livestock
 activity_set_1,2805001300,Agriculture - Livestock
-activity_set_4,2805002000,Agriculture - Livestock
-activity_set_4,2805003000,Agriculture - Livestock
+activity_set_1,2805002000,Agriculture - Livestock
+activity_set_1,2805003000,Agriculture - Livestock
 activity_set_1,2805003100,Agriculture - Livestock
-activity_set_4,2805020002,Agriculture - Livestock
-activity_set_4,2805020003,Agriculture - Livestock
-activity_set_4,2805020004,Agriculture - Livestock
+activity_set_1,2805020002,Agriculture - Livestock
+activity_set_1,2805020003,Agriculture - Livestock
+activity_set_1,2805020004,Agriculture - Livestock
 activity_set_4,2805030000,Agriculture - Livestock
 activity_set_5,2275085000,Mobile Sources
 activity_set_5,2275087000,Mobile Sources

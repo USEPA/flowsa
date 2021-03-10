@@ -9,6 +9,7 @@ data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
 
 """
 
+import sys
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow_by_fields
 from flowsa.mapping import map_elementary_flows
@@ -16,7 +17,8 @@ from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level
     update_geoscale, log, load_sector_length_crosswalk
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
-def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
+def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments,
+                         functions = []):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
@@ -27,6 +29,7 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
                 'county'), should match target_geoscale
     :param compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
+    :param functions: list of functions (str) to call for additional processing
     """
 
     import stewicombo
@@ -39,8 +42,9 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
 
     inventory_list = list(inventory_dict.keys())
 
-    if 'NEI' in inventory_list and not 'GHGRP' in inventory_list:
+    if 'drop_GHGs' in functions:
         df = drop_GHGs(df)
+        functions.remove('drop_GHGs')
     facility_mapping = extract_facility_data(inventory_dict)
     # use NAICS from facility matcher so drop them here
     facility_mapping.drop(columns = ['NAICS'], inplace = True)
@@ -54,16 +58,21 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments):
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    if 'NEI' in inventory_list:
+    if 'reassign_airplane_emissions' in functions:   
         df = reassign_airplane_emissions(df, inventory_dict['NEI'], NAICS_level_value)
+        functions.remove('reassign_airplane_emissions')
         
     df['MetaSources'] = df['Source']
     
     fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
 
+    for function in functions:
+        fbs = getattr(sys.modules[__name__], function)(fbs)
+
     return fbs
 
-def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None):
+def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None,
+                    functions = []):
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
@@ -74,6 +83,7 @@ def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None)
                 'county'), should match target_geoscale
     :param compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
+    :param functions: list of functions (str) to call for additional processing
     """
     import stewi
 
@@ -100,6 +110,9 @@ def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments = None)
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
     
     fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
+
+    for function in functions:
+        fbs = getattr(sys.modules[__name__], function)(fbs)
 
     return fbs    
 
@@ -347,3 +360,22 @@ def check_for_missing_sector_data(df, target_sector_level):
     df_allocated = replace_strings_with_NoneType(df_allocated)
 
     return df_allocated
+
+def remove_N_P_overlap(fbs):
+    """Removes N and P flows from selected sectors to avoid overlap with
+    other satellite tables in USEEIOr"""
+    
+    # Function is not complete
+    
+    naics_list = ['1111',
+                  '1112',
+                  '1113',
+                  '1119',
+                  '112',
+                  ]
+    
+    flow_list = ['Nitrogen',
+                 'Phosphorous',
+                 ]
+    
+    return fbs
