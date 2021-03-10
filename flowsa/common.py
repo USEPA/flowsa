@@ -571,11 +571,24 @@ def convert_fba_unit(df):
     return df
 
 
+def get_version_number():
+    """
+    Return the package version number from setup.py
+    Requires pkg_resources
+    :return:
+    """
+
+    content = open(os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + '/setup.py').read()
+    v = content.partition("version=\'")[2].partition("',")[0]
+
+    return v
+
+
 def set_fb_meta(name_data, category):
     fb_meta = FileMeta
     fb_meta.name_data = name_data
     fb_meta.tool = pkg.project_name
-    fb_meta.tool_version = pkg.version
+    fb_meta.tool_version = get_version_number()
     fb_meta.category = category
     fb_meta.ext = write_format
     fb_meta.git_hash = git_hash
