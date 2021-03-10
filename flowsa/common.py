@@ -37,6 +37,7 @@ paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 outputpath = paths.local_path
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
+biboutputpath = outputpath + '/Bibliography/'
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
