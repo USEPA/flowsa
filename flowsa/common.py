@@ -119,14 +119,6 @@ def load_sector_length_crosswalk():
     cw = pd.read_csv(datapath + 'NAICS_2012_Crosswalk.csv', dtype='str')
     return cw
 
-# def load_sector_length_crosswalk_w_nonnaics():
-#     cw = load_sector_length_crosswalk()
-#     # append household codes
-#     cw = cw.append(pd.DataFrame([["F010", "F010", "F010", "F0100", "F01000"]], columns=cw.columns), ignore_index=True)
-#     # append government transportation codes
-#     cw = cw.append(pd.DataFrame([["S00201", "S00201", "S00201", "S00201", "S00201"]], columns=cw.columns), ignore_index=True)
-#     return cw
-
 def load_household_sector_codes():
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
@@ -150,6 +142,22 @@ def load_sourceconfig(source):
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
+
+def update_fba_yaml_date(source):
+    from ruamel.yaml import YAML
+    filename = sourceconfigpath + source + '.yaml'
+
+    yaml = YAML()
+    # open yaml
+    with open(filename) as f:
+        config = yaml.load(f)
+        # update the method yaml with date generated
+        config['date_generated']= pd.to_datetime('today').strftime('%Y-%m-%d')
+
+    # save yaml, preserving comments
+    with open(filename, "w") as file:
+        yaml.dump(config, file)
+    return None
 
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],

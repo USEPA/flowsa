@@ -140,10 +140,13 @@ def main(**kwargs):
     # assign arguments
     if len(kwargs)==0:
         kwargs = parse_args()
+
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
-    log.info("Creating dataframe list")
+    # update the method yaml with date generated
+    update_fba_yaml_date(kwargs['source'])
 
+    log.info("Creating dataframe list")
     # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
     if '-' in str(kwargs['year']):
         years = str(kwargs['year']).split('-')
