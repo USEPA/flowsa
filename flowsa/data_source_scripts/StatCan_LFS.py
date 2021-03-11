@@ -55,10 +55,8 @@ def sc_lfs_parse(dataframe_list, args):
     df['FlowName'] = df['FlowName'].str.strip()
     df.loc[df['FlowName'] == 'Water intake', 'ActivityConsumedBy'] = df['Activity']
     df.loc[df['FlowName'].isin(['Water discharge', "Water recirculation"]), 'ActivityProducedBy'] = df['Activity']
-    # create "unit" column
-    df["Unit"] = "million " + df["UOM"] + "/year"
     # drop columns used to create unit and activity columns
-    df = df.drop(columns=['SCALAR_FACTOR', 'UOM', 'Activity'])
+    df = df.drop(columns=['Activity'])
     # Modify the assigned RSD letter values to numeric value
     df.loc[df['Spread'] == 'A', 'Spread'] = 2.5  # given range: 0.01 - 4.99%
     df.loc[df['Spread'] == 'B', 'Spread'] = 7.5  # given range: 5 - 9.99%
