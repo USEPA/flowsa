@@ -1,7 +1,11 @@
 # Queries Commercial Buildings Energy Consumption Survey (CBECS) Land
 ---
-# api_name: EIA_CBECS_Land
-# api_key_required: false
+author: "US Energy Information Administration"
+source_name: "Commercial Buildings Energy Consumption Survey"
+citeable_url: "https://www.eia.gov/consumption/commercial/"
+date_of_access: "2020-08-18"
+api_name: EIA_CBECS_Land
+api_key_required: false
 format: xlsx
 url:
   base_url: "https://www.eia.gov/consumption/commercial/data/2012/bc/xls/__xlsx__"
