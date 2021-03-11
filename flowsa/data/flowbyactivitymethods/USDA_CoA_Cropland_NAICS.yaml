@@ -3,7 +3,7 @@
 author: "US Department of Agriculture"
 source_name: "Census of Agriculture"
 citable_url: "https://www.nass.usda.gov/AgCensus/"
-date_of_access: "2020-03-11"
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: USDA_Quickstats
 api_key_required: true
 format: json

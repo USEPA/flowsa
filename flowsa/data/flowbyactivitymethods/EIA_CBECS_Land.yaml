@@ -3,7 +3,7 @@
 author: "US Energy Information Administration"
 source_name: "Commercial Buildings Energy Consumption Survey"
 citable_url: "https://www.eia.gov/consumption/commercial/"
-date_of_access: "2020-08-18"
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: EIA_CBECS_Land
 api_key_required: false
 format: xlsx

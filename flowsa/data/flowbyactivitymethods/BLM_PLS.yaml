@@ -3,7 +3,7 @@
 author: "Bureau of Land Management"
 source_name: "Public Land Statistics"
 citable_url: "https://www.blm.gov/about/data/public-land-statistics"
-date_of_access: "2020-10-07"
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: BLM_PLS
 format: pfd
 url:
