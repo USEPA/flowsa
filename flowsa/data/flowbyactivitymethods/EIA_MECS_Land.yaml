@@ -2,7 +2,7 @@
 ---
 author: "US Energy Information Administration"
 source_name: "Manufacturing Energy Consumption Survey"
-citeable_url: "https://www.eia.gov/consumption/manufacturing/"
+citable_url: "https://www.eia.gov/consumption/manufacturing/"
 date_of_access: "2020-08-27"
 api_name: EIA_MECS
 api_key_required: false

@@ -44,7 +44,7 @@ def generate_fbs_bibliography(methodname):
             'title': config['source_name'],
             'author': config['author'],
             'year': str(f[1]),
-            'url': config['citeable_url'],
+            'url': config['citable_url'],
             'urldate': config['date_of_access'],
             'ID': f[0] + '_' + str(f[1]),
             'ENTRYTYPE': 'misc'

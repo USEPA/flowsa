@@ -2,7 +2,7 @@
 ---
 author: "US Department of Agriculture"
 source_name: "Major Uses of Land in the United States 2012"
-citeable_url: "https://www.ers.usda.gov/data-products/major-land-uses/"
+citable_url: "https://www.ers.usda.gov/data-products/major-land-uses/"
 date_of_access: "2020-08-12"
 api_name: USDA_ERS_MLU
 api_key_required: false

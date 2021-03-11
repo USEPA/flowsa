@@ -3,7 +3,7 @@
 ---
 author: "Bureau of Labor Statistics"
 source_name: "Quarterly Census of Employment and Wages"
-citeable_url: "https://www.bls.gov/cew/downloadable-data-files.htm"
+citable_url: "https://www.bls.gov/cew/downloadable-data-files.htm"
 date_of_access: "2020-03-04"
 api_name: BLS
 api_key_required: false
