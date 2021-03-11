@@ -13,51 +13,44 @@ def generate_fbs_bibliography(methodname):
     :param methodname:
     :return:
     """
-
     # load the fbs method yaml
     fbs_yaml = load_method(methodname)
 
-    # create dictionary of data and allocation datasets
+    # create list of data and allocation data sets
     fbs = fbs_yaml['source_names']
-    bib_list = []
+    fbas = []
     for fbs_k, fbs_v in fbs.items():
+        fbas.append([fbs_k, fbs_v['year']])
+        activities = fbs_v['activity_sets']
+        for aset, attr in activities.items():
+            if attr['allocation_source'] != 'None':
+                fbas.append([attr['allocation_source'], attr['allocation_source_year']])
+            if 'helper_source' in attr:
+                fbas.append([attr['allocation_source'], attr['helper_source_year']])
+    # drop list duplicates and any where year is None (because allocation is a function, not a datasource)
+    fba_list = []
+    for fba in fbas:
+        if fba not in fba_list:
+            if fba[1] != 'None':
+                fba_list.append(fba)
 
-        # load the fba yaml
-        fba = load_sourceconfig(fbs_k)
+    # loop through list of fbas, load fba method yaml, and create bib entry
+    bib_list = []
+    for f in fba_list:
+        config = load_sourceconfig(f[0])
 
         db = BibDatabase()
         db.entries = [{
-            'title': fba['source_name'],
-            'author': fba['author'],
-            'year': str(fbs_v['year']),
-            'url': fba['citeable_url'],
-            'urldate': fba['date_of_access'],
-            'ID': fbs_k + '_' + str(fbs_v['year']),
+            'title': config['source_name'],
+            'author': config['author'],
+            'year': str(f[1]),
+            'url': config['citeable_url'],
+            'urldate': config['date_of_access'],
+            'ID': f[0] + '_' + str(f[1]),
             'ENTRYTYPE': 'misc'
         }]
         # append each entry to a list of BibDatabase entries
         bib_list.append(db)
-
-        # add information for activity sets
-        activities = fbs_v['activity_sets']
-        for aset, attr in activities.items():
-            if attr['allocation_source'] != 'None':
-
-                # load the fba yaml
-                fba_alloc = load_sourceconfig(attr['allocation_source'])
-
-                db = BibDatabase()
-                db.entries = [{
-                     'title': fba_alloc['source_name'],
-                     'author': fba_alloc['author'],
-                     'year': str(attr['allocation_source_year']),
-                     'url': fba_alloc['citeable_url'],
-                     'urldate': fba_alloc['citeable_url'],
-                     'ID': attr['allocation_source'] + '_' + str(attr['allocation_source_year']),
-                     'ENTRYTYPE': 'misc'
-                }]
-                # append each entry to a list of BibDatabase entries
-                bib_list.append(db)
 
     # write out bibliography
     writer = BibTexWriter()
