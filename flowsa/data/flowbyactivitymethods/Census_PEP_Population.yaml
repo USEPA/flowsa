@@ -1,6 +1,10 @@
 #For calling Census API to get population for each county, state, and nation in.
 #The API key must be requested and saved to the appdir local directory in a Census_API_KEY.txt file
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: Census
 api_key_required: true
 format: json

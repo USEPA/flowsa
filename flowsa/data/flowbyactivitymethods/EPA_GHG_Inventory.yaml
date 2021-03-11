@@ -1,5 +1,9 @@
 # Downloads and parses CSV from EPA GHG Inventory
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 # api_name: EPA_GHG_Inventory
 # api_key_required: false
 format: csv

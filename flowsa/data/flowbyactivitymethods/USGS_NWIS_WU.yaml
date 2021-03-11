@@ -1,6 +1,10 @@
 # Queries USGS NWIS to get all water withdrawals at national, state and county levels
 ---
-  api_name: USGS
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
+api_name: USGS
   api_key_required: false
   format: tab  # tab delineated data
   url:

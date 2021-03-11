@@ -1,6 +1,10 @@
 # Queries USDA Irrigation and Water Management Survey API to get water application rates at national and state levels
 ---
 
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: USDA_Quickstats
 api_key_required: true
 format: json

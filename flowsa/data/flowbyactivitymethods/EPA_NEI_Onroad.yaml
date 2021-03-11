@@ -1,5 +1,9 @@
 # Calling EPA's National Emissions Inventory (NEI) Data for ONROAD sources
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: EPA_NEI
 api_key_required: false
 format: zip  # .zip file with individual .csv files and .txt

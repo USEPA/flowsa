@@ -1,7 +1,11 @@
 # Queries Manufacturing Energy Consumption Survey (MECS) Energy
 ---
-# api_name: EIA_MECS
-# api_key_required: false
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
+api_name: EIA_MECS
+api_key_required: false
 format: xlsx
 url:
   base_url: "https://www.eia.gov/consumption/manufacturing/data/__year__/xls/__table__.xlsx"

@@ -1,5 +1,9 @@
 # EIA_MER
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: EIA_MER
 format: pdf
 url:

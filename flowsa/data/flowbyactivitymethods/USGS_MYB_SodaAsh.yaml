@@ -1,5 +1,9 @@
 # Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 # api_name: USGS_MYB_SodaAsh
 # api_key_required: false
 format: xlsx

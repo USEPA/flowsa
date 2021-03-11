@@ -1,5 +1,9 @@
 # Info required to download single CSV from statistics canada site. Downloads as a zip
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: Stat Canada
 api_key_required: false
 format: csv  # comma delineated data

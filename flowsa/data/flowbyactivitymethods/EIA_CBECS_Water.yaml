@@ -1,5 +1,9 @@
 #Calling EIA's CBECS water consumption for large buildings
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: EIA_CBECS
 api_key_required: false
 format: xlsx  # excel workbook, two sheets

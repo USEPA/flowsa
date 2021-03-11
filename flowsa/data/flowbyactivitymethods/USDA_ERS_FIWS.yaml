@@ -1,5 +1,9 @@
 # Queries USDA ERS Farm Income and Wealth Statistics at national and state levels
 ---
+author:
+source_name:
+citable_url:
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 # api_name: USDA_ERS_FIWS
 # api_key_required: false
 format: csv
