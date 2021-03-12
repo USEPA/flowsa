@@ -34,10 +34,10 @@ externaldatapath = datapath + 'external_data/'
 
 paths = Paths
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
-outputpath = paths.local_path
+outputpath = paths.local_path.replace('\\', '/') + '/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
-biboutputpath = outputpath + '/Bibliography/'
+biboutputpath = outputpath + 'Bibliography/'
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
