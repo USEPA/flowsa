@@ -1,41 +1,39 @@
-# Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
----
 author:
 source_name:
 citable_url:
-date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
+date_generated: '2021-03-12' # updated automatically when flowbyactivity.py is run
 # api_name: USGS_MYB_SodaAsh
 # api_key_required: false
 format: xlsx
 url:
-  base_url: "https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/__url_text__/myb1-__year__-sodaa.__format__"
-url_replace_fxn: usgs_url_helper
-call_response_fxn: usgs_call
-parse_response_fxn: usgs_parse
+  base_url: https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/__url_text__/myb1-__year__-sodaa.__format__
+url_replace_fxn: soda_url_helper
+call_response_fxn: soda_call
+parse_response_fxn: soda_parse
 url_texts:
-  "2010": "mineral-pubs/soda-ash"
-  "2011": "mineral-pubs/soda-ash"
-  "2012": "mineral-pubs/soda-ash"
-  "2013": "mineral-pubs/soda-ash"
-  "2014": "mineral-pubs/soda-ash"
-  "2015": "mineral-pubs/soda-ash"
-  "2016": "mineral-pubs/soda-ash"
-  "2017": "atoms/files"
+  '2010': mineral-pubs/soda-ash
+  '2011': mineral-pubs/soda-ash
+  '2012': mineral-pubs/soda-ash
+  '2013': mineral-pubs/soda-ash
+  '2014': mineral-pubs/soda-ash
+  '2015': mineral-pubs/soda-ash
+  '2016': mineral-pubs/soda-ash
+  '2017': atoms/files
 years:
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
+- 2010
+- 2011
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
 formats:
-  "2010": xls
-  "2011": xls
-  "2012": xls
-  "2013": xls
-  "2014": xls
-  "2015": xlsx
-  "2016": xlsx
-  "2017": xls
+  '2010': xls
+  '2011': xls
+  '2012': xls
+  '2013': xls
+  '2014': xls
+  '2015': xlsx
+  '2016': xlsx
+  '2017': xls

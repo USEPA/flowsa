@@ -45,7 +45,7 @@ def description(value, code):
     return return_val
 
 
-def usgs_url_helper(build_url, config, args):
+def soda_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
     # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
@@ -56,9 +56,9 @@ def usgs_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_call(url, usgs_response, args):
+def soda_call(url, soda_response, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(soda_response.content), sheet_name='T4')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -74,7 +74,7 @@ def usgs_call(url, usgs_response, args):
     return df_data
 
 
-def usgs_parse(dataframe_list, args):
+def soda_parse(dataframe_list, args):
     total_glass = 0
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
