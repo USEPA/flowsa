@@ -1,6 +1,6 @@
-author:
-source_name:
-citable_url:
+author: US Geological Survey
+source_name: Minerals Yearbook
+citable_url: https://www.usgs.gov/centers/nmic/minerals-yearbook-metals-and-minerals
 date_generated: '2021-03-12' # updated automatically when flowbyactivity.py is run
 # api_name: USGS_MYB_SodaAsh
 # api_key_required: false

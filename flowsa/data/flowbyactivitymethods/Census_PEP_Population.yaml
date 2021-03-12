@@ -1,28 +1,25 @@
-#For calling Census API to get population for each county, state, and nation in.
-#The API key must be requested and saved to the appdir local directory in a Census_API_KEY.txt file
----
-author:
-source_name:
-citable_url:
-date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
+author: US Census Bureau
+source_name: Population and Housing Unit Estimates
+citable_url: https://www.census.gov/programs-surveys/popest.html
+date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
 api_name: Census
 api_key_required: true
 format: json
 url:
-  base_url: "http://api.census.gov/data/"
-  api_path: "__year__/pep/population?" # __year__ is used to trigger a replace function to substitute in year
+  base_url: http://api.census.gov/data/
+  api_path: __year__/pep/population?   # __year__ is used to trigger a replace function to substitute in year
   url_params:
-    get: "POP"
-    for: "__aggLevel__:*&DATE_CODE=__DateCode__"  # county, state, or national level
-    key: "__apiKey__" # make the __apiKey__ part of the url and substitute in individual api key
+    get: POP
+    for: __aggLevel__:*&DATE_CODE=__DateCode__    # county, state, or national level
+    key: __apiKey__   # make the __apiKey__ part of the url and substitute in individual api key
   key_param: key
 url_replace_fxn: Census_pop_URL_helper
 call_response_fxn: census_pop_call
 parse_response_fxn: census_pop_parse
 agg_levels:
-  - county
-  - state
-  - us
+- county
+- state
+- us
 # want all population estimates from july 1
 datecodes:
   2011: 4
@@ -35,11 +32,11 @@ datecodes:
   2018: 11
   2019: 12
 years:
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
+- 2010
+- 2011
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017

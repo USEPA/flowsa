@@ -1,15 +1,13 @@
-#Calling EIA's CBECS water consumption for large buildings
----
-author:
-source_name:
-citable_url:
-date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
+author: US Energy Information Administration
+source_name: Commercial Buildings Energy Consumption Survey
+citable_url: https://www.eia.gov/consumption/commercial/
+date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
 api_name: EIA_CBECS
 api_key_required: false
 format: xlsx  # excel workbook, two sheets
 url: # no replacement needed in url because only single workbook
-  base_url: "https://www.eia.gov/consumption/commercial/reports/2012/water/xls/water%20consumption_w1.xlsx"
+  base_url: https://www.eia.gov/consumption/commercial/reports/2012/water/xls/water%20consumption_w1.xlsx
 call_response_fxn: eia_cbecs_water_call
 parse_response_fxn: eia_cbecs_water_parse
 years:
-  - 2012
+- 2012

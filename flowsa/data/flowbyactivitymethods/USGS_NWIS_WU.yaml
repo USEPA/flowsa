@@ -1,29 +1,27 @@
-# Queries USGS NWIS to get all water withdrawals at national, state and county levels
----
-author:
-source_name:
-citable_url:
-date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
+author: US Geological Survey
+source_name: Water Data for the Nation
+citable_url: https://waterdata.usgs.gov/nwis
+date_generated: '2021-03-12'   # updated automatically when flowbyactivity.py is run
 api_name: USGS
-  api_key_required: false
-  format: tab  # tab delineated data
-  url:
-    base_url: "https://waterdata.usgs.gov/"
-    api_path: "__stateAlpha__/nwis/water_use?" # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
-    url_params:
-      format: "rdb&rdb_compression=value" # doesn't exist at nat'l level
-      wu_area: "__aggLevel__" # "County", "State+Total" or does not exist for nat'l level
-      wu_year: "__year__" # replaced with the year of data desired
-      wu_county: "ALL" # only for the county level
-      wu_category: "ALL"
-    key_param: None
-  url_replace_fxn: usgs_URL_helper
-  call_response_fxn: usgs_call
-  parse_response_fxn: usgs_parse
-  years:
-    - 2010
-    - 2015
-  agg_levels:
-     - "National"
-     - "State+Total"
-     - "County"
+api_key_required: false
+format: tab    # tab delineated data
+url:
+  base_url: https://waterdata.usgs.gov/
+  api_path: __stateAlpha__/nwis/water_use?     # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
+  url_params:
+    format: rdb&rdb_compression=value     # doesn't exist at nat'l level
+    wu_area: __aggLevel__     # "County", "State+Total" or does not exist for nat'l level
+    wu_year: __year__     # replaced with the year of data desired
+    wu_county: ALL     # only for the county level
+    wu_category: ALL
+  key_param: None
+url_replace_fxn: usgs_URL_helper
+call_response_fxn: usgs_call
+parse_response_fxn: usgs_parse
+years:
+- 2010
+- 2015
+agg_levels:
+- National
+- State+Total
+- County

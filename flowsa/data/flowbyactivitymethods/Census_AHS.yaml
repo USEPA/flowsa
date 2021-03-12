@@ -1,8 +1,8 @@
 # Downloads and parses CSV from US Census American Housing Survey (AHS) at national level
 ---
-author:
-source_name:
-citable_url:
+author: US Census Bureau
+source_name: American Housing Survey
+citable_url: https://www.census.gov/programs-surveys/ahs.html
 date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: Census_AHS
 api_key_required: false
