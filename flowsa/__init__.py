@@ -7,7 +7,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 
 from esupy.processed_data_mgmt import load_preprocessed_output
-from flowsa.common import paths, set_fb_meta, biboutputpath
+from flowsa.common import paths, set_fb_meta, biboutputpath, fbaoutputpath, fbsoutputpath
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
@@ -32,10 +32,13 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
     # Try to load a local version of fba; generate and load if missing
     fba = load_preprocessed_output(fba_meta,paths)
     if fba is None:
+        log.info(datasource + ' ' + str(year) + ' not found in ' + fbaoutputpath + ', running functions to generate FBA')
         # Generate the fba
         flowsa.flowbyactivity.main(year=year,source=datasource)
         # Now load the fba
         fba = load_preprocessed_output(fba_meta,paths)
+    else:
+        log.info('Loading ' + datasource + ' ' + str(year) + ' from ' + fbaoutputpath)
 
     # Address optional parameters
     if flowclass is not None:
@@ -55,10 +58,13 @@ def getFlowBySector(methodname):
     fbs_meta = set_fb_meta(methodname, "FlowBySector")
     fbs = load_preprocessed_output(fbs_meta,paths)
     if fbs is None:
+        log.info(methodname + ' not found in ' + fbsoutputpath + ', running functions to generate FBA')
         # Generate the fba
         flowsa.flowbysector.main(method=methodname)
         # Now load the fba
         fbs = load_preprocessed_output(fbs_meta,paths)
+    else:
+        log.info('Loading ' + methodname + ' from ' + fbsoutputpath)
     return fbs
 
 
