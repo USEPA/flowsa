@@ -9,6 +9,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths, set_fb_meta, biboutputpath
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
+from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography_functions import generate_fbs_bibliography
@@ -67,6 +68,7 @@ def collapse_FlowBySector(fbs):
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
+    fbs = flowsa.getFlowBySector(fbs)
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
     # check data
