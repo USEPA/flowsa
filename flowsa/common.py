@@ -39,6 +39,10 @@ fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
 
+# paths to scripts
+scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + '/scripts/'
+scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
+
 pkg = pkg_resources.get_distribution("flowsa")
 try:
     git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
