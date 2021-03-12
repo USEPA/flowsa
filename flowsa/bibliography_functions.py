@@ -5,7 +5,7 @@ from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig
 
 # test
-# methodname = 'Land_national_2012'
+# methodname = 'Water_national_2015_m1'
 
 def generate_fbs_bibliography(methodname):
     """
@@ -26,7 +26,7 @@ def generate_fbs_bibliography(methodname):
             if attr['allocation_source'] != 'None':
                 fbas.append([attr['allocation_source'], attr['allocation_source_year']])
             if 'helper_source' in attr:
-                fbas.append([attr['allocation_source'], attr['helper_source_year']])
+                fbas.append([attr['helper_source'], attr['helper_source_year']])
     # drop list duplicates and any where year is None (because allocation is a function, not a datasource)
     fba_list = []
     for fba in fbas:
