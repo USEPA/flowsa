@@ -47,7 +47,7 @@ def generate_fbs_bibliography(methodname):
             'url': config['citable_url'],
             'urldate': config['date_generated'],
             'ID': f[0] + '_' + str(f[1]),
-            'ENTRYTYPE': 'misc'
+            'ENTRYTYPE': 'document'
         }]
         # append each entry to a list of BibDatabase entries
         bib_list.append(db)
