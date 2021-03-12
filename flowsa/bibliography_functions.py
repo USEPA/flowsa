@@ -2,7 +2,8 @@ import os
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
-from flowsa.common import outputpath, biboutputpath, load_sourceconfig
+from flowsa.common import outputpath, biboutputpath, load_sourceconfig, scriptsFBApath
+import logging as log
 
 # test
 # methodname = 'Water_national_2015_m1'
@@ -20,7 +21,11 @@ def generate_fbs_bibliography(methodname):
     fbs = fbs_yaml['source_names']
     fbas = []
     for fbs_k, fbs_v in fbs.items():
-        fbas.append([fbs_k, fbs_v['year']])
+        try:
+            fbas.append([fbs_k, fbs_v['year']])
+        except:
+            log.info('Could not append ' + fbs_k + ' to datasource list')
+            continue
         activities = fbs_v['activity_sets']
         for aset, attr in activities.items():
             if attr['allocation_source'] != 'None':
@@ -37,20 +42,24 @@ def generate_fbs_bibliography(methodname):
     # loop through list of fbas, load fba method yaml, and create bib entry
     bib_list = []
     for f in fba_list:
-        config = load_sourceconfig(f[0])
+        try:
+            config = load_sourceconfig(f[0])
 
-        db = BibDatabase()
-        db.entries = [{
-            'title': config['source_name'],
-            'author': config['author'],
-            'year': str(f[1]),
-            'url': config['citable_url'],
-            'urldate': config['date_generated'],
-            'ID': f[0] + '_' + str(f[1]),
-            'ENTRYTYPE': 'document'
-        }]
-        # append each entry to a list of BibDatabase entries
-        bib_list.append(db)
+            db = BibDatabase()
+            db.entries = [{
+                'title': config['source_name'],
+                'author': config['author'],
+                'year': str(f[1]),
+                'url': config['citable_url'],
+                'urldate': config['date_generated'],
+                'ID': f[0] + '_' + str(f[1]),
+                'ENTRYTYPE': 'document'
+            }]
+            # append each entry to a list of BibDatabase entries
+            bib_list.append(db)
+        except:
+            log.info('Could not find a method yaml for ' + f[0])
+            continue
 
     # write out bibliography
     writer = BibTexWriter()
