@@ -7,11 +7,12 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 
 from esupy.processed_data_mgmt import load_preprocessed_output
-from flowsa.common import paths, set_fb_meta
+from flowsa.common import paths, set_fb_meta, biboutputpath
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography_functions import generate_fbs_bibliography
+import logging as log
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
@@ -75,13 +76,13 @@ def collapse_FlowBySector(fbs):
     return fbs_collapsed
 
 
-def getFlowBySectorBibliography(methodname):
+def writeFlowBySectorBibliography(methodname):
     """
-    Generate bibliography for FlowBySectorMethod
+    Generate bibliography for FlowBySectorMethod in local directory
     :param methodname:
     :return:
     """
+    log.info('Write bibliography to ' + biboutputpath + methodname + '.bib')
+    generate_fbs_bibliography(methodname)
 
-    fbs_bib = generate_fbs_bibliography(methodname)
-
-    return fbs_bib
+    return None
