@@ -165,9 +165,9 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     """
     # first determine if there are special cases that would modify the typical method of subset
     # an example of a special case is when the allocation method is 'proportional-flagged'
+    subset_by_sector_cols = False
+    subset_by_column_value = False
     if kwargs != {}:
-        subset_by_sector_cols = False
-        subset_by_column_value = False
         if 'flowSubsetMapped' in kwargs:
             fsm = kwargs['flowSubsetMapped']
         if 'allocMethod' in kwargs:
@@ -179,9 +179,6 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
             if asn is not None:
                 if 'allocation_subset_col' in asn:
                     subset_by_column_value = True
-    else:
-        subset_by_sector_cols = False
-        subset_by_column_value = False
 
     # load the source catalog
     cat = load_source_catalog()
