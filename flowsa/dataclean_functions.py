@@ -62,13 +62,12 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass, geoscal
                 fba = fba.loc[fba['FlowName'].isin(kwargs['flowname_subset'])]
     if 'compartment_subset' in kwargs:
         if kwargs['compartment_subset'] != 'None':
-            fba = fba.loc[ fba['Compartment'].isin(kwargs['compartment_subset'])]
+            fba = fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
 
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning " + fba_sourcename)
-        fba = getattr(sys.modules[__name__],
-                                 kwargs["clean_fba"])(fba, attr=attr)
+        fba = getattr(sys.modules[__name__], kwargs["clean_fba"])(fba, attr=attr)
     # reset index
     fba = fba.reset_index(drop=True)
 
