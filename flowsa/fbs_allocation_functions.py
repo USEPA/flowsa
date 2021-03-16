@@ -17,7 +17,8 @@ from flowsa.dataclean_functions import load_map_clean_fba
 
 # import specific functions
 from flowsa.data_source_scripts.BEA import subset_BEA_Use
-from flowsa.data_source_scripts.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee
+from flowsa.data_source_scripts.Blackhurst_IO import \
+    convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee, scale_blackhurst_results_to_usgs_values
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba, clean_bls_qcew_fba_for_employment_sat_table, \
     bls_clean_allocation_fba_w_sec
 from flowsa.data_source_scripts.EIA_CBECS_Land import cbecs_land_fba_cleanup
@@ -169,11 +170,6 @@ def allocation_helper(df_w_sector, attr, method, v):
     :return:
     """
 
-    from flowsa.data_source_scripts.Blackhurst_IO import scale_blackhurst_results_to_usgs_values
-
-    # test
-    # df_w_sector = fba_allocation_subset.copy()
-
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
     if 'helper_flow' in attr:
@@ -203,77 +199,85 @@ def allocation_helper(df_w_sector, attr, method, v):
     # rename column
     helper_allocation = helper_allocation.rename(columns={"FlowAmount": 'HelperFlow'})
 
-    if attr['allocation_method'] == 'proportional-flagged':
-        modified_fba_allocation = allocate_by_sector(df_w_sector, )
+    # determine the df_w_sector column to merge on
+    df_w_sector = replace_strings_with_NoneType(df_w_sector)
+    sec_consumed_list = df_w_sector['SectorConsumedBy'].drop_duplicates().values.tolist()
+    sec_produced_list = df_w_sector['SectorProducedBy'].drop_duplicates().values.tolist()
+    # if a sector field column is not all 'none', that is the column to merge
+    if all(v is None for v in sec_consumed_list):
+        sector_col_to_merge = 'SectorProducedBy'
+    elif all(v is None for v in sec_produced_list):
+        sector_col_to_merge = 'SectorConsumedBy'
     else:
-        # determine the df_w_sector column to merge on
-        df_w_sector = replace_strings_with_NoneType(df_w_sector)
-        sec_consumed_list = df_w_sector['SectorConsumedBy'].drop_duplicates().values.tolist()
-        sec_produced_list = df_w_sector['SectorProducedBy'].drop_duplicates().values.tolist()
-        # if a sector field column is not all 'none', that is the column to merge
-        if all(v is None for v in sec_consumed_list):
-            sector_col_to_merge = 'SectorProducedBy'
-        elif all(v is None for v in sec_produced_list):
-            sector_col_to_merge = 'SectorConsumedBy'
-        else:
-            log.error('There is not a clear sector column to base merge with helper allocation dataset')
+        log.error('There is not a clear sector column to base merge with helper allocation dataset')
 
-        # merge allocation df with helper df based on sectors, depending on geo scales of dfs
-        if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
-            helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(lambda x: x[0:2])
-            df_w_sector.loc[:, 'Location_tmp'] = df_w_sector['Location'].apply(lambda x: x[0:2])
-            # merge_columns.append('Location_tmp')
-            modified_fba_allocation = df_w_sector.merge(helper_allocation[['Location_tmp', 'Sector', 'HelperFlow']],
-                                                        how='left',
-                                                        left_on=['Location_tmp', sector_col_to_merge],
-                                                        right_on=['Location_tmp', 'Sector'])
-            modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
-        elif (attr['helper_from_scale'] == 'national') and (attr['allocation_from_scale'] != 'national'):
-            modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']],
-                                                        how='left',
-                                                        left_on=[sector_col_to_merge],
-                                                        right_on=['Sector'])
-        else:
-            modified_fba_allocation = df_w_sector.merge(helper_allocation[['Location', 'Sector', 'HelperFlow']],
-                                                        how='left',
-                                                        left_on=['Location', sector_col_to_merge],
-                                                        right_on=['Location', 'Sector'])
+    # merge allocation df with helper df based on sectors, depending on geo scales of dfs
+    if (attr['helper_from_scale'] == 'state') and (attr['allocation_from_scale'] == 'county'):
+        helper_allocation.loc[:, 'Location_tmp'] = helper_allocation['Location'].apply(lambda x: x[0:2])
+        df_w_sector.loc[:, 'Location_tmp'] = df_w_sector['Location'].apply(lambda x: x[0:2])
+        # merge_columns.append('Location_tmp')
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Location_tmp', 'Sector', 'HelperFlow']],
+                                                    how='left',
+                                                    left_on=['Location_tmp', sector_col_to_merge],
+                                                    right_on=['Location_tmp', 'Sector'])
+        modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
+    elif (attr['helper_from_scale'] == 'national') and (attr['allocation_from_scale'] != 'national'):
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']],
+                                                    how='left',
+                                                    left_on=[sector_col_to_merge],
+                                                    right_on=['Sector'])
+    else:
+        modified_fba_allocation = df_w_sector.merge(helper_allocation[['Location', 'Sector', 'HelperFlow']],
+                                                    how='left',
+                                                    left_on=['Location', sector_col_to_merge],
+                                                    right_on=['Location', 'Sector'])
 
-        # modify flow amounts using helper data
-        if 'multiplication' in attr['helper_method']:
-            # todo: modify so if missing data, replaced with value from one geoscale up instead of national
-            # todo: modify year after merge if necessary
-            # if missing values (na or 0), replace with national level values
-            replacement_values = helper_allocation[helper_allocation['Location'] == US_FIPS].reset_index(
-                drop=True)
-            replacement_values = replacement_values.rename(columns={"HelperFlow": 'ReplacementValue'})
-            modified_fba_allocation = modified_fba_allocation.merge(
-                replacement_values[['Sector', 'ReplacementValue']], how='left')
-            modified_fba_allocation.loc[:, 'HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(
-                modified_fba_allocation['ReplacementValue'])
-            modified_fba_allocation.loc[:, 'HelperFlow'] = np.where(modified_fba_allocation['HelperFlow'] == 0,
-                                                                    modified_fba_allocation['ReplacementValue'],
-                                                                    modified_fba_allocation['HelperFlow'])
+    # modify flow amounts using helper data
+    if 'multiplication' in attr['helper_method']:
+        # todo: modify so if missing data, replaced with value from one geoscale up instead of national
+        # todo: modify year after merge if necessary
+        # if missing values (na or 0), replace with national level values
+        replacement_values = helper_allocation[helper_allocation['Location'] == US_FIPS].reset_index(
+            drop=True)
+        replacement_values = replacement_values.rename(columns={"HelperFlow": 'ReplacementValue'})
+        modified_fba_allocation = modified_fba_allocation.merge(
+            replacement_values[['Sector', 'ReplacementValue']], how='left')
+        modified_fba_allocation.loc[:, 'HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(
+            modified_fba_allocation['ReplacementValue'])
+        modified_fba_allocation.loc[:, 'HelperFlow'] = np.where(modified_fba_allocation['HelperFlow'] == 0,
+                                                                modified_fba_allocation['ReplacementValue'],
+                                                                modified_fba_allocation['HelperFlow'])
 
-            # replace non-existent helper flow values with a 0, so after multiplying, don't have incorrect value associated
-            # with new unit
-            modified_fba_allocation['HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(value=0)
-            modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
-                                                           modified_fba_allocation['HelperFlow']
-            # drop columns
-            modified_fba_allocation = modified_fba_allocation.drop(columns=["HelperFlow", 'ReplacementValue', 'Sector'])
+        # replace non-existent helper flow values with a 0, so after multiplying, don't have incorrect value associated
+        # with new unit
+        modified_fba_allocation['HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(value=0)
+        modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
+                                                       modified_fba_allocation['HelperFlow']
+        # drop columns
+        modified_fba_allocation = modified_fba_allocation.drop(columns=["HelperFlow", 'ReplacementValue', 'Sector'])
 
-        elif attr['helper_method'].str.contains('proportional'):
-            modified_fba_allocation = proportional_allocation_by_location_and_activity(modified_fba_allocation,
-                                                                                       sector_col_to_merge,
-                                                                                       attr['helper_method'])
-            modified_fba_allocation['FlowAmountRatio'] = modified_fba_allocation['FlowAmountRatio'].fillna(0)
-            modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
-                                                           modified_fba_allocation['FlowAmountRatio']
-            modified_fba_allocation = modified_fba_allocation.drop(columns=['FlowAmountRatio', 'HelperFlow', 'Sector'])
+    elif attr['helper_method'] == 'proportional':
+        modified_fba_allocation = proportional_allocation_by_location_and_activity(modified_fba_allocation,
+                                                                                   sector_col_to_merge,
+                                                                                   attr['helper_method'])
+        modified_fba_allocation['FlowAmountRatio'] = modified_fba_allocation['FlowAmountRatio'].fillna(0)
+        modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
+                                                       modified_fba_allocation['FlowAmountRatio']
+        modified_fba_allocation = modified_fba_allocation.drop(columns=['FlowAmountRatio', 'HelperFlow', 'Sector'])
 
-        # elif attr['helper_method'] == 'proportional-flagged':
-        #     modified_fba_allocation = allocate_by_sector()
+    elif attr['helper_method'] == 'proportional-flagged':
+        # calculate denominators based on activity and 'flagged' column
+        modified_fba_allocation = modified_fba_allocation.assign(Denominator=
+                                                                  modified_fba_allocation.groupby(
+                                                                      ['FlowName', 'ActivityConsumedBy', 'Location',
+                                                                       'disaggregate_flag']
+                                                                  )['HelperFlow'].transform('sum'))
+        modified_fba_allocation = modified_fba_allocation.assign(
+            FlowAmountRatio=modified_fba_allocation['HelperFlow'] / modified_fba_allocation['Denominator'])
+        modified_fba_allocation = modified_fba_allocation.assign(FlowAmount=modified_fba_allocation['FlowAmount'] *
+                                                                            modified_fba_allocation['FlowAmountRatio'])
+        modified_fba_allocation = modified_fba_allocation.drop(columns=['disaggregate_flag', 'Sector', 'HelperFlow',
+                                                                        'Denominator', 'FlowAmountRatio'])
 
     # drop rows of 0
     modified_fba_allocation = modified_fba_allocation[modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
@@ -303,14 +307,6 @@ def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_
     :param group_cols: columns on which to base aggregation and disaggregation
     :return: df with FlowAmountRatio for each sector
     """
-
-    # test
-    # df_w_sectors = modified_fba_allocation.copy()
-    # source_name = 'EIA_MECS_Energy'
-    # allocation_source = 'BLS_QCEW'
-    # allocation_method = attr['helper_method']
-    # kwargs = {'flowSubsetMapped'}
-
 
     # first determine if there is a special case with how the allocation ratios are created
     if allocation_method == 'proportional-flagged':
@@ -408,11 +404,6 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn, allocatio
     :param sectorcolumn:
     :return:
     """
-
-    # test
-    # df = modified_fba_allocation.copy()
-    # sectorcolumn = sector_col_to_merge
-    # allocation_method = attr['helper_method']
 
     # tmp replace NoneTypes with empty cells
     df = replace_NoneType_with_empty_cells(df)
