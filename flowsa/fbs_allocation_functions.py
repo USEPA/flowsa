@@ -9,6 +9,7 @@ from flowsa.flowbyfunctions import fba_activity_fields, clean_df, fba_fill_na_di
     subset_df_by_geoscale, allocation_helper, fba_mapped_default_grouping_fields, allocate_by_sector, \
     collapse_activity_fields, fbs_activity_fields
 from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
+from flowsa.dataclean_functions import load_map_clean_fba
 
 # import specific functions
 from flowsa.data_source_scripts.BEA import subset_BEA_Use
@@ -54,47 +55,23 @@ def function_allocation_method(flow_subset_mapped, names, attr, fbs_list):
 
 
 def dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, aset, method_name, aset_names):
-    # determine appropriate allocation dataset
-    log.info("Loading allocation flowbyactivity " + attr['allocation_source'] + " for year " +
-             str(attr['allocation_source_year']))
-    fba_allocation = flowsa.getFlowByActivity(datasource=attr['allocation_source'],
-                                              year=attr['allocation_source_year'],
-                                              flowclass=attr['allocation_source_class'])
-    fba_allocation = clean_df(fba_allocation, flow_by_activity_fields, fba_fill_na_dict)
-    fba_allocation = harmonize_units(fba_allocation)
-
-    # check if allocation data exists at specified geoscale to use
-    log.info("Checking if allocation data exists at the " + attr['allocation_from_scale'] + " level")
-    check_if_data_exists_at_geoscale(fba_allocation, attr['allocation_from_scale'])
-
-    # aggregate geographically to the scale of the flowbyactivty source, if necessary
-    fba_allocation = subset_df_by_geoscale(fba_allocation, attr['allocation_from_scale'], v['geoscale_to_use'])
-
-    # subset based on yaml settings
-    if attr['allocation_flow'] != 'None':
-        fba_allocation = fba_allocation.loc[fba_allocation['FlowName'].isin(attr['allocation_flow'])]
-    if attr['allocation_compartment'] != 'None':
-        fba_allocation = fba_allocation.loc[
-            fba_allocation['Compartment'].isin(attr['allocation_compartment'])]
-
-    # cleanup the fba allocation df, if necessary
+    # add parameters to dictionary if exist in method yaml
+    fba_dict = {}
+    if 'allocation_flow' in attr:
+        fba_dict['flowname_subset'] = attr['allocation_flow']
+    if 'allocation_compartment' in attr:
+        fba_dict['compartment_subset'] = attr['allocation_compartment']
     if 'clean_allocation_fba' in attr:
-        log.info("Cleaning " + attr['allocation_source'])
-        fba_allocation = getattr(sys.modules[__name__],
-                                 attr["clean_allocation_fba"])(fba_allocation, attr=attr)
-    # reset index
-    fba_allocation = fba_allocation.reset_index(drop=True)
-
-    # assign sector to allocation dataset
-    log.info("Adding sectors to " + attr['allocation_source'])
-    fba_allocation_wsec = add_sectors_to_flowbyactivity(fba_allocation,
-                                                        sectorsourcename=method['target_sector_source'])
-
-    # call on fxn to further clean up/disaggregate the fba allocation data, if exists
+        fba_dict['clean_fba'] = attr['clean_allocation_fba']
     if 'clean_allocation_fba_w_sec' in attr:
-        log.info("Further disaggregating sectors in " + attr['allocation_source'])
-        fba_allocation_wsec = getattr(sys.modules[__name__],
-                                      attr["clean_allocation_fba_w_sec"])(fba_allocation_wsec, attr=attr, method=method)
+        fba_dict['clean_fba_w_sec'] = attr['clean_allocation_fba_w_sec']
+
+    # load the allocation FBA
+    fba_allocation_wsec = load_map_clean_fba(method, attr, fba_sourcename=attr['allocation_source'],
+                                             df_year=attr['allocation_source_year'],
+                                             flowclass=attr['allocation_source_class'],
+                                             geoscale_from=attr['allocation_from_scale'],
+                                             geoscale_to=v['geoscale_to_use'], **fba_dict)
 
     # subset fba datasets to only keep the sectors associated with activity subset
     log.info("Subsetting " + attr['allocation_source'] + " for sectors in " + k)
