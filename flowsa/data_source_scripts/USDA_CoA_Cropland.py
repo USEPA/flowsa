@@ -232,9 +232,10 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
     """
 
     import flowsa
-    from flowsa.flowbyfunctions import allocate_by_sector, clean_df, flow_by_activity_fields, \
+    from flowsa.flowbyfunctions import clean_df, flow_by_activity_fields, \
         fba_fill_na_dict, replace_strings_with_NoneType, replace_NoneType_with_empty_cells, \
         fba_mapped_default_grouping_fields, harmonize_units
+    from flowsa.fbs_allocation_functions import allocate_by_sector
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # tmp drop NoneTypes

@@ -84,8 +84,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
 
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
-    from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict,  proportional_allocation_by_location_and_activity, \
-        filter_by_geoscale, harmonize_units
+    from flowsa.flowbyfunctions import clean_df, fba_fill_na_dict, filter_by_geoscale, harmonize_units
+    from flowsa.fbs_allocation_functions import proportional_allocation_by_location_and_activity
     from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
