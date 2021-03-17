@@ -39,7 +39,6 @@ source_names:
         allocation_source_class: "Energy"
         allocation_source_year: 2014
         allocation_flow:
-          - "Total"
           - "Coal"
           - "Coke and Breeze"
           - "Distillate Fuel Oil"
@@ -49,9 +48,17 @@ source_names:
           - "Residual Fuel Oil"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: mecs_energy_fba_cleanup # todo: need to subtract elec from total
+        clean_allocation_fba: mecs_energy_fba_cleanup
         clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
-        allocation_helper: no
+        allocation_helper: 'yes'
+        helper_source: "BLS_QCEW"
+        helper_method: proportional-flagged
+        helper_source_class: "Employment"
+        helper_source_year: 2014
+        helper_flow: None
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_4: #Livestock losing NAICS 11211
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
