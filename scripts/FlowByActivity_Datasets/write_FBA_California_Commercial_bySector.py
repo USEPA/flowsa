@@ -12,7 +12,8 @@ Last updated:
 
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import add_missing_flow_by_fields, assign_fips_location_system, clean_df, fba_fill_na_dict
+from flowsa.flowbyfunctions import assign_fips_location_system, fba_fill_na_dict
+from flowsa.dataclean_functions import clean_df, add_missing_flow_by_fields
 from flowsa.common import *
 import os
 

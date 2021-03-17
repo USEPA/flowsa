@@ -25,8 +25,7 @@ Data output saved as csv, retaining assigned file name "foss_landings.csv"
 from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
-
+from flowsa.dataclean_functions import add_missing_flow_by_fields
 
 # 2012--2018 fisheries data at state level
 csv_load = datapath + "foss_landings.csv"

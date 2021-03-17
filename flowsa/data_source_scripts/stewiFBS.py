@@ -11,7 +11,8 @@ data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
 
 import sys
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system, add_missing_flow_by_fields
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.dataclean_functions import add_missing_flow_by_fields
 from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk
@@ -309,7 +310,8 @@ def check_for_missing_sector_data(df, target_sector_level):
     :return:
     """
 
-    from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
+    from flowsa.dataclean_functions import replace_NoneType_with_empty_cells
+    from flowsa.dataclean_functions import replace_strings_with_NoneType
 
     # temporarily replace null values with empty cells
     df = replace_NoneType_with_empty_cells(df)

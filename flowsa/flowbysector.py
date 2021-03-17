@@ -32,8 +32,8 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, 
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, \
     agg_by_geoscale, fba_fill_na_dict, fbs_fill_na_dict, fbs_activity_fields, sector_aggregation, \
-    aggregator, clean_df, subset_df_by_geoscale, harmonize_FBS_columns, \
-    sector_disaggregation, fbs_grouping_fields_w_activities
+    aggregator, subset_df_by_geoscale, sector_disaggregation, fbs_grouping_fields_w_activities
+from flowsa.dataclean_functions import clean_df, harmonize_FBS_columns
 from flowsa.datachecks import check_if_losing_sector_data, check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals
 
@@ -116,6 +116,9 @@ def main(**kwargs):
     """
     if len(kwargs)==0:
         kwargs = parse_args()
+
+    # test
+    # kwargs = {'method': 'cap_mecs'}
 
     method_name = kwargs['method']
     # assign arguments
@@ -225,9 +228,8 @@ def main(**kwargs):
                     from_scale = v['geoscale_to_use']
                 else:
                     from_scale = attr['allocation_from_scale']
-                to_scale = method['target_geoscale']
 
-                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, to_scale, groupingcols)
+                fbs_geo_agg = agg_by_geoscale(fbs, from_scale, method['target_geoscale'], groupingcols)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")

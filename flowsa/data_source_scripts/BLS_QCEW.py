@@ -204,7 +204,9 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     :return:
     """
     from flowsa.flowbyfunctions import estimate_suppressed_data, sector_disaggregation, sector_aggregation, \
-        flow_by_activity_wsec_mapped_fields, add_missing_flow_by_fields, replace_strings_with_NoneType, fba_mapped_default_grouping_fields
+        flow_by_activity_wsec_mapped_fields, fba_mapped_default_grouping_fields
+    from flowsa.dataclean_functions import add_missing_flow_by_fields
+    from flowsa.dataclean_functions import replace_strings_with_NoneType
 
     df2 = add_missing_flow_by_fields(df_w_sec, flow_by_activity_wsec_mapped_fields)
     df3 = replace_strings_with_NoneType(df2)

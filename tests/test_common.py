@@ -8,7 +8,7 @@ import pandas as pd
 import os
 import logging as log
 from flowsa.common import flow_by_activity_fields, fbaoutputpath, datapath
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.dataclean_functions import add_missing_flow_by_fields
 
 
 def store_test_flowbyactivity(csvname, year=None):

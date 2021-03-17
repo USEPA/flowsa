@@ -232,9 +232,10 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
     """
 
     import flowsa
-    from flowsa.flowbyfunctions import clean_df, flow_by_activity_fields, \
-        fba_fill_na_dict, replace_strings_with_NoneType, replace_NoneType_with_empty_cells, \
-        fba_mapped_default_grouping_fields, harmonize_units
+    from flowsa.flowbyfunctions import flow_by_activity_fields, \
+        fba_fill_na_dict, fba_mapped_default_grouping_fields
+    from flowsa.dataclean_functions import harmonize_units, replace_NoneType_with_empty_cells, \
+        replace_strings_with_NoneType, clean_df
     from flowsa.fbs_allocation_functions import allocate_by_sector
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
@@ -309,9 +310,12 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
 
     import flowsa
     from flowsa.flowbyfunctions import sector_aggregation,\
-        fbs_default_grouping_fields, clean_df, fba_fill_na_dict, fbs_fill_na_dict, add_missing_flow_by_fields,\
-        sector_disaggregation, sector_ratios, replace_strings_with_NoneType, replace_NoneType_with_empty_cells,\
-        harmonize_units
+        fbs_default_grouping_fields, fba_fill_na_dict, fbs_fill_na_dict, sector_disaggregation, sector_ratios
+    from flowsa.dataclean_functions import harmonize_units
+    from flowsa.dataclean_functions import add_missing_flow_by_fields
+    from flowsa.dataclean_functions import replace_NoneType_with_empty_cells
+    from flowsa.dataclean_functions import replace_strings_with_NoneType
+    from flowsa.dataclean_functions import clean_df
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # tmp drop NoneTypes

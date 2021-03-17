@@ -7,10 +7,10 @@ from flowsa.common import load_source_catalog, activity_fields, US_FIPS
 from flowsa.datachecks import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import fba_activity_fields, fba_mapped_default_grouping_fields, collapse_activity_fields, \
-    fbs_activity_fields, sector_aggregation, sector_disaggregation, replace_strings_with_NoneType, \
-    replace_NoneType_with_empty_cells
+    fbs_activity_fields, sector_aggregation, sector_disaggregation
 from flowsa.mapping import get_fba_allocation_subset
-from flowsa.dataclean_functions import load_map_clean_fba
+from flowsa.dataclean_functions import load_map_clean_fba, replace_strings_with_NoneType, \
+    replace_NoneType_with_empty_cells
 
 # import specific functions
 from flowsa.data_source_scripts.BEA import subset_BEA_Use

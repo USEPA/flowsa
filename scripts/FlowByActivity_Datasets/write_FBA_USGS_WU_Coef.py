@@ -12,8 +12,13 @@ Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
 from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import fba_fill_na_dict, clean_df, assign_fips_location_system
+from flowsa.flowbyfunctions import fba_fill_na_dict, assign_fips_location_system
+from flowsa.dataclean_functions import clean_df
 
+# add info to be read when creating a bibliography
+author = 'US Geological Survey'
+source_name = 'Method for Estimating Water Withdrawals for Livestock in the United States, 2005'
+citable_url = 'https://pubs.er.usgs.gov/publication/sir20095041'
 
 # 2012--2018 fisheries data at state level
 csv_load = externaldatapath + "USGS_WU_Coef_Raw.csv"

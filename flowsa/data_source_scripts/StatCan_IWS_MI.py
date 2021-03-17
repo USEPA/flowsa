@@ -83,7 +83,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
     """
     import flowsa
     from flowsa.values_from_literature import get_Canadian_to_USD_exchange_rate
-    from flowsa.flowbyfunctions import assign_fips_location_system, aggregator, fba_default_grouping_fields, harmonize_units
+    from flowsa.flowbyfunctions import assign_fips_location_system, aggregator, fba_default_grouping_fields
+    from flowsa.dataclean_functions import harmonize_units
     from flowsa.common import US_FIPS, load_bea_crosswalk
 
     # load Canadian GDP data
