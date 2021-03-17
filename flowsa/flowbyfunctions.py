@@ -333,20 +333,23 @@ def sector_aggregation(df_load, group_cols):
     :return:
     """
 
-    # determine if activities are sector-like
-    # load source catalog
-    cat = load_source_catalog()
-    # for s in pd.unique(flowbyactivity_df['SourceName']):
-    s = pd.unique(df_load['SourceName'])[0]
-    # load catalog info for source
-    src_info = cat[s]
+    # determine if activities are sector-like, if aggregating a df with a 'SourceName'
+    sector_like_activities = False
+    if 'SourceName' in df_load.columns:
+        # load source catalog
+        cat = load_source_catalog()
+        # for s in pd.unique(flowbyactivity_df['SourceName']):
+        s = pd.unique(df_load['SourceName'])[0]
+        # load catalog info for source
+        src_info = cat[s]
+        sector_like_activities = src_info['sector-like_activities']
 
     # ensure None values are not strings
     df = replace_NoneType_with_empty_cells(df_load)
 
     # if activities are source like, drop from df and group calls, add back in as copies of sector columns
     # columns to keep
-    if src_info['sector-like_activities']:
+    if sector_like_activities:
         group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
         # subset df
         df_cols = [e for e in df.columns if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
@@ -414,7 +417,7 @@ def sector_aggregation(df_load, group_cols):
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
     # if activities are source-like, set col values as copies of the sector columns
-    if src_info['sector-like_activities']:
+    if sector_like_activities:
         df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
         df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
         # reindex columns
