@@ -134,6 +134,7 @@ def process_data_frame(df, source, year):
     name_data = set_fba_name(source, year)
     meta = set_fb_meta(name_data, "FlowByActivity")
     write_df_to_file(flow_df,paths,meta)
+    log.info("FBA generated and saved for " + name_data)
 
 
 def main(**kwargs):
@@ -143,6 +144,8 @@ def main(**kwargs):
 
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
+    # update the local config with today's date
+    config['date_generated']= pd.to_datetime('today').strftime('%Y-%m-%d')
     # update the method yaml with date generated
     update_fba_yaml_date(kwargs['source'])
 

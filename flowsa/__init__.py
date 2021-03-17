@@ -37,8 +37,12 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
         flowsa.flowbyactivity.main(year=year,source=datasource)
         # Now load the fba
         fba = load_preprocessed_output(fba_meta,paths)
+        if fba is None:
+            log.error('getFlowByActivity failed, FBA not found')
+        else:
+            log.info('Loaded ' + datasource + ' ' + str(year) + ' from ' + fbaoutputpath)
     else:
-        log.info('Loading ' + datasource + ' ' + str(year) + ' from ' + fbaoutputpath)
+        log.info('Loaded ' + datasource + ' ' + str(year) + ' from ' + fbaoutputpath)
 
     # Address optional parameters
     if flowclass is not None:
@@ -58,13 +62,17 @@ def getFlowBySector(methodname):
     fbs_meta = set_fb_meta(methodname, "FlowBySector")
     fbs = load_preprocessed_output(fbs_meta,paths)
     if fbs is None:
-        log.info(methodname + ' not found in ' + fbsoutputpath + ', running functions to generate FBA')
+        log.info(methodname + ' not found in ' + fbsoutputpath + ', running functions to generate FBS')
         # Generate the fba
         flowsa.flowbysector.main(method=methodname)
         # Now load the fba
         fbs = load_preprocessed_output(fbs_meta,paths)
+        if fbs is None:
+            log.error('getFlowBySector failed, FBS not found')
+        else:
+            log.info('Loaded ' + methodname + ' from ' + fbsoutputpath)
     else:
-        log.info('Loading ' + methodname + ' from ' + fbsoutputpath)
+        log.info('Loaded ' + methodname + ' from ' + fbsoutputpath)
     return fbs
 
 
