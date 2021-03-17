@@ -1,24 +1,21 @@
-import logging
-import logging as log
-import sys
 
+import logging as log
 import numpy as np
 import pandas as pd
-import flowsa
-from flowsa.common import load_source_catalog, flow_by_activity_fields, activity_fields, US_FIPS
-from flowsa.datachecks import check_if_losing_sector_data, check_if_data_exists_at_geoscale, check_allocation_ratios, \
+import sys
+from flowsa.common import load_source_catalog, activity_fields, US_FIPS
+from flowsa.datachecks import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
-from flowsa.flowbyfunctions import fba_activity_fields, clean_df, fba_fill_na_dict, harmonize_units, \
-    subset_df_by_geoscale, fba_mapped_default_grouping_fields, collapse_activity_fields, \
+from flowsa.flowbyfunctions import fba_activity_fields, fba_mapped_default_grouping_fields, collapse_activity_fields, \
     fbs_activity_fields, sector_aggregation, sector_disaggregation, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
-from flowsa.mapping import add_sectors_to_flowbyactivity, get_fba_allocation_subset
+from flowsa.mapping import get_fba_allocation_subset
 from flowsa.dataclean_functions import load_map_clean_fba
 
 # import specific functions
 from flowsa.data_source_scripts.BEA import subset_BEA_Use
-from flowsa.data_source_scripts.Blackhurst_IO import \
-    convert_blackhurst_data_to_gal_per_year, convert_blackhurst_data_to_gal_per_employee, scale_blackhurst_results_to_usgs_values
+from flowsa.data_source_scripts.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, \
+    convert_blackhurst_data_to_gal_per_employee, scale_blackhurst_results_to_usgs_values
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba, clean_bls_qcew_fba_for_employment_sat_table, \
     bls_clean_allocation_fba_w_sec
 from flowsa.data_source_scripts.EIA_CBECS_Land import cbecs_land_fba_cleanup
@@ -278,6 +275,8 @@ def allocation_helper(df_w_sector, attr, method, v):
                                                                             modified_fba_allocation['FlowAmountRatio'])
         modified_fba_allocation = modified_fba_allocation.drop(columns=['disaggregate_flag', 'Sector', 'HelperFlow',
                                                                         'Denominator', 'FlowAmountRatio'])
+        # run sector aggregation
+        modified_fba_allocation = sector_aggregation(modified_fba_allocation, fba_mapped_default_grouping_fields)
 
     # drop rows of 0
     modified_fba_allocation = modified_fba_allocation[modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
