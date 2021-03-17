@@ -5,7 +5,7 @@ Functions to check data is loaded correctly
 import pandas as pd
 from flowsa.flowbyfunctions import fba_activity_fields, aggregator,  fbs_fill_na_dict, \
     fbs_activity_fields, create_geoscale_list
-from flowsa.dataclean_functions import clean_df, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+from flowsa.dataclean import clean_df, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk, \
     load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath, activity_fields
 import os

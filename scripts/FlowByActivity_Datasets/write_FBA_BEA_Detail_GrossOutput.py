@@ -9,7 +9,7 @@ Generation of BEA Gross Output data as FBA
 from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.dataclean_functions import add_missing_flow_by_fields
+from flowsa.dataclean import add_missing_flow_by_fields
 
 year = '2017'
 csv_load = datapath + "BEA_GDP_GrossOutput_IO.csv"

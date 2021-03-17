@@ -24,7 +24,7 @@ import numpy as np
 import rpy2.robjects.packages as packages
 from rpy2.robjects import pandas2ri
 from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells
-from flowsa.dataclean_functions import replace_strings_with_NoneType
+from flowsa.dataclean import replace_strings_with_NoneType
 
 
 def import_useeior_mastercrosswalk():

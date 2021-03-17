@@ -5,7 +5,7 @@
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.dataclean_functions import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 import yaml
 
 """

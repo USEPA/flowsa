@@ -26,14 +26,14 @@ from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, load_source_catalog, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, set_fb_meta, paths
-from flowsa.fbs_allocation_functions import direct_allocation_method, function_allocation_method, \
+from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
 from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import fba_activity_fields, fbs_default_grouping_fields, \
     agg_by_geoscale, fba_fill_na_dict, fbs_fill_na_dict, fbs_activity_fields, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, fbs_grouping_fields_w_activities
-from flowsa.dataclean_functions import clean_df, harmonize_FBS_columns
+from flowsa.dataclean import clean_df, harmonize_FBS_columns
 from flowsa.datachecks import check_if_losing_sector_data, check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals
 

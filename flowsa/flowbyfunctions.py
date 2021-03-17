@@ -7,7 +7,7 @@ import numpy as np
 from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, load_source_catalog, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
     create_fill_na_dict, fips_number_key, load_sector_length_crosswalk, update_geoscale, flow_by_activity_wsec_mapped_fields
-from flowsa.dataclean_functions import clean_df, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+from flowsa.dataclean import clean_df, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 
 fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
                        activity_fields['ConsumedBy'][0]['flowbyactivity']]

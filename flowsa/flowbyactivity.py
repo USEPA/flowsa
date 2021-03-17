@@ -11,7 +11,7 @@ import argparse
 from flowsa.common import *
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.flowbyfunctions import fba_fill_na_dict
-from flowsa.dataclean_functions import clean_df
+from flowsa.dataclean import clean_df
 from flowsa.data_source_scripts.Blackhurst_IO import *
 from flowsa.data_source_scripts.BLS_QCEW import *
 from flowsa.data_source_scripts.Census_CBP import *

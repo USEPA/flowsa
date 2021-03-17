@@ -13,7 +13,7 @@ from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
 from flowsa.flowbyfunctions import fba_fill_na_dict, assign_fips_location_system
-from flowsa.dataclean_functions import clean_df
+from flowsa.dataclean import clean_df
 
 # add info to be read when creating a bibliography
 author = 'US Geological Survey'
