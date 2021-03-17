@@ -285,7 +285,6 @@ def create_fill_na_dict(flow_by_fields):
             fill_na_dict[k] = 0.0
     return fill_na_dict
 
-
 def get_flow_by_groupby_cols(flow_by_fields):
     groupby_cols = []
     for k,v in flow_by_fields.items():
@@ -297,6 +296,20 @@ def get_flow_by_groupby_cols(flow_by_fields):
         #Do not use description for grouping
         groupby_cols.remove('Description')
     return groupby_cols
+
+
+fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
+                       activity_fields['ConsumedBy'][0]['flowbyactivity']]
+fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
+                       activity_fields['ConsumedBy'][1]['flowbysector']]
+fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
+fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
+fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
+fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
+fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
+fbs_grouping_fields_w_activities = fbs_default_grouping_fields + (['ActivityProducedBy', 'ActivityConsumedBy'])
+fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
 
 
 def read_stored_FIPS(year='2015'):

@@ -4,7 +4,8 @@
 
 import io
 from flowsa.common import *
-from flowsa.flowbyfunctions import fba_activity_fields, fbs_activity_fields, assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import fba_activity_fields, fbs_activity_fields
 
 
 def usgs_URL_helper(build_url, config, args):

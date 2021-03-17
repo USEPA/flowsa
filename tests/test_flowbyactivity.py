@@ -5,7 +5,6 @@
 """ Tests of flowbyactivity functions """
 import os
 import unittest
-import pandas as pd
 from flowsa.flowbyfunctions import *
 
 class TestFlowByActivityFunctions(unittest.TestCase):

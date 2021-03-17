@@ -12,7 +12,8 @@ Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
 from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import fba_fill_na_dict, assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import fba_fill_na_dict
 from flowsa.dataclean import clean_df
 
 # add info to be read when creating a bibliography

@@ -6,7 +6,7 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields
+from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields, allocate_by_sector
 
 
 def CoA_Cropland_URL_helper(build_url, config, args):
@@ -232,11 +232,11 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
     """
 
     import flowsa
-    from flowsa.flowbyfunctions import flow_by_activity_fields, \
-        fba_fill_na_dict, fba_mapped_default_grouping_fields
+    from flowsa.flowbyfunctions import flow_by_activity_fields
+    from flowsa.common import fba_mapped_default_grouping_fields
+    from flowsa.common import fba_fill_na_dict
     from flowsa.dataclean import harmonize_units, replace_NoneType_with_empty_cells, \
         replace_strings_with_NoneType, clean_df
-    from flowsa.fbs_allocation import allocate_by_sector
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
     # tmp drop NoneTypes
@@ -309,8 +309,11 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     """
 
     import flowsa
-    from flowsa.flowbyfunctions import sector_aggregation,\
-        fbs_default_grouping_fields, fba_fill_na_dict, fbs_fill_na_dict, sector_disaggregation, sector_ratios
+    from flowsa.flowbyfunctions import sector_aggregation, \
+        sector_disaggregation, sector_ratios
+    from flowsa.common import fbs_default_grouping_fields
+    from flowsa.common import fbs_fill_na_dict
+    from flowsa.common import fba_fill_na_dict
     from flowsa.dataclean import harmonize_units
     from flowsa.dataclean import add_missing_flow_by_fields
     from flowsa.dataclean import replace_NoneType_with_empty_cells

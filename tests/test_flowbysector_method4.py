@@ -3,9 +3,7 @@
 # coding=utf-8
 
 """ Tests of flowbysectorfunctions """
-import os
 import unittest
-import pandas as pd
 from flowsa.flowbyfunctions import *
 from flowsa.common import *
 

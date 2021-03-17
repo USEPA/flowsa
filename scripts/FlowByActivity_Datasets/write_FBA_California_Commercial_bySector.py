@@ -10,9 +10,8 @@ The data  was manually scraped so no R/python code is available to replicate.
 Last updated:
 """
 
-import pandas as pd
 from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import assign_fips_location_system, fba_fill_na_dict
+from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import clean_df, add_missing_flow_by_fields
 from flowsa.common import *
 import os

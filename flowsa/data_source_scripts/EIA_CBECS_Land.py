@@ -6,7 +6,8 @@ import pandas as pd
 import numpy as np
 import io
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system , fba_default_grouping_fields, aggregator
+from flowsa.flowbyfunctions import assign_fips_location_system , aggregator
+from flowsa.common import fba_default_grouping_fields
 
 """
 2012 Commercial Buildings Energy Consumption Survey (CBECS)

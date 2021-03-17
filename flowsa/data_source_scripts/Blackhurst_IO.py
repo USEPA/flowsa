@@ -10,7 +10,7 @@ Scrapes data from Blackhurst paper 'Direct and Indirect Water Withdrawals for US
 import tabula
 import io
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, proportional_allocation_by_location_and_activity
 
 
 # Read pdf into list of DataFrame
@@ -50,7 +50,7 @@ def bh_parse(dataframe_list, args):
 def convert_blackhurst_data_to_gal_per_year(df, attr):
 
     import flowsa
-    from flowsa.flowbyfunctions import fba_fill_na_dict
+    from flowsa.common import fba_fill_na_dict
     from flowsa.dataclean import harmonize_units
     from flowsa.dataclean import clean_df
 
@@ -86,10 +86,10 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
 
     import flowsa
     from flowsa.mapping import add_sectors_to_flowbyactivity
-    from flowsa.flowbyfunctions import fba_fill_na_dict, filter_by_geoscale
+    from flowsa.flowbyfunctions import filter_by_geoscale
+    from flowsa.common import fba_fill_na_dict
     from flowsa.dataclean import harmonize_units
     from flowsa.dataclean import clean_df
-    from flowsa.fbs_allocation import proportional_allocation_by_location_and_activity
     from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
