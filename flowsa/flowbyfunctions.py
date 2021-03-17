@@ -4,7 +4,7 @@ Helper functions for flowbyactivity and flowbysector data
 
 import pandas as pd
 import numpy as np
-from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, \
+from flowsa.common import log, get_county_FIPS, get_state_FIPS, US_FIPS, activity_fields, load_source_catalog, \
     flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, get_flow_by_groupby_cols, \
     create_fill_na_dict, fips_number_key, load_sector_length_crosswalk, update_geoscale, flow_by_activity_wsec_mapped_fields
 
@@ -325,7 +325,7 @@ def sector_ratios(df, sectorcolumn):
     return df_w_ratios
 
 
-def sector_aggregation(df, group_cols):
+def sector_aggregation(df_load, group_cols):
     """
     Function that checks if a sector length exists, and if not, sums the less aggregated sector
     :param df: Either a flowbyactivity df with sectors or a flowbysector df
@@ -333,9 +333,24 @@ def sector_aggregation(df, group_cols):
     :return:
     """
 
-    # todo: add statement that if sector-like, drop activity cols if exist (then add them back as copies of sector cols)
+    # determine if activities are sector-like
+    # load source catalog
+    cat = load_source_catalog()
+    # for s in pd.unique(flowbyactivity_df['SourceName']):
+    s = pd.unique(df_load['SourceName'])[0]
+    # load catalog info for source
+    src_info = cat[s]
+
     # ensure None values are not strings
-    df = replace_NoneType_with_empty_cells(df)
+    df = replace_NoneType_with_empty_cells(df_load)
+
+    # if activities are source like, drop from df and group calls, add back in as copies of sector columns
+    # columns to keep
+    if src_info['sector-like_activities']:
+        group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+        # subset df
+        df_cols = [e for e in df.columns if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+        df = df[df_cols]
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -389,8 +404,6 @@ def sector_aggregation(df, group_cols):
             agg_sectors = aggregator(agg_sectors, group_cols)
             # append to df
             agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
-            # agg_sectors['SectorConsumedBy'] = agg_sectors['SectorConsumedBy'].replace({np.nan: ""})
-            # agg_sectors['SectorProducedBy'] = agg_sectors['SectorProducedBy'].replace({np.nan: ""})
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
 
     # manually modify non-NAICS codes that might exist in sector
@@ -400,6 +413,12 @@ def sector_aggregation(df, group_cols):
                                              'F010', df['SectorProducedBy'])  # domestic/household
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
+    # if activities are source-like, set col values as copies of the sector columns
+    if src_info['sector-like_activities']:
+        df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
+        df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
+        # reindex columns
+        df = df.reindex(df_load.columns, axis=1)
     # replace null values
     df = replace_strings_with_NoneType(df)
 
