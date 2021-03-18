@@ -5,7 +5,7 @@
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -24,21 +24,13 @@ Table T1
 SourceName: USGS_MYB_Clay
 https://www.usgs.gov/centers/nmic/clays-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1 
+Minerals Yearbook, xls file, tab T1
 
 Data for: Clay; Ball Clay, Bentonite, Fire Clay, Fuller's Clay, Kaolin
 
 Years = 2016+
 """
-
-def year_name_clay(year):
-    if int(year) == 2015:
-        return_val = "year_1"
-    elif int(year) == 2016:
-        return_val = "year_2"
-    return return_val
-
-
+SPAN_YEARS = "2015-2016"
 
 def usgs_clay_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
@@ -86,13 +78,13 @@ def usgs_clay_call(url, usgs_response, args):
 
 
     df_raw_data_export = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T13')
-    df_data_export = pd.DataFrame(df_raw_data_export.loc[7:12]).reindex()
+    df_data_export = pd.DataFrame(df_raw_data_export.loc[6:15]).reindex()
     df_data_export = df_data_export.reset_index()
     del df_data_export["index"]
 
 
     df_raw_data_import = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T14')
-    df_data_import = pd.DataFrame(df_raw_data_import.loc[7:12]).reindex()
+    df_data_import = pd.DataFrame(df_raw_data_import.loc[6:13]).reindex()
     df_data_import = df_data_import.reset_index()
     del df_data_import["index"]
 
@@ -123,7 +115,7 @@ def usgs_clay_call(url, usgs_response, args):
     df_data_import["type"] = "import"
 
     col_to_use = ["Production", "type"]
-    col_to_use.append(year_name_clay(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data_import.columns:
         if col not in col_to_use:
             del df_data_import[col]
@@ -148,7 +140,9 @@ def usgs_clay_call(url, usgs_response, args):
 def usgs_clay_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["Ball clay", "Bentonite", "Fire clay", "Kaolin", "Fuller’s earth", "Total", "Grand total"]
+    row_to_use = ["Ball clay", "Bentonite", "Fire clay", "Kaolin", "Fuller’s earth", "Total", "Grand total",
+                  "Artificially activated clay and earth", "Clays, not elsewhere classified",
+                  "Clays, not elsewhere classified"]
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
@@ -160,11 +154,8 @@ def usgs_clay_parse(dataframe_list, args):
                 product = "production"
 
             if str(df.iloc[index]["Production"]).strip() in row_to_use :
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Clay"
+                data = usgs_myb_static_varaibles()
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
                 if product == "production":
@@ -176,10 +167,7 @@ def usgs_clay_parse(dataframe_list, args):
                     data["Description"] = df.iloc[index]["Production"].strip()
                     data["ActivityProducedBy"] = df.iloc[index]["Production"].strip()
 
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
-
-                col_name = year_name_clay(args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)" or str(df.iloc[index][col_name]) == "(2)":
                     data["FlowAmount"] = str(0)
                 else:

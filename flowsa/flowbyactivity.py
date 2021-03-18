@@ -81,6 +81,7 @@ from flowsa.USGS_MYB_Chromium import *
 from flowsa.USGS_MYB_Manganese import *
 from flowsa.USGS_MYB_Niobium import *
 from flowsa.USGS_MYB_Strontium import *
+from flowsa.USGS_MYB_Tungsten import *
 
 def parse_args():
     """Make year and source script parameters"""
