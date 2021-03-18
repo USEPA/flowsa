@@ -9,7 +9,13 @@ from flowsa.common import fba_activity_fields, fbs_activity_fields
 
 
 def usgs_URL_helper(build_url, config, args):
-    """ Used to substitute in components of usgs urls"""
+    """
+    Used to substitute in components of usgs urls
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     # initiate url list for usgs data
     urls_usgs = []
     # call on state acronyms from common.py (and remove entry for DC)
@@ -35,7 +41,13 @@ def usgs_URL_helper(build_url, config, args):
 
 
 def usgs_call(url, usgs_response, args):
-    """Remove the metadata at beginning of files (lines start with #)"""
+    """
+    Remove the metadata at beginning of files (lines start with #)
+    :param url:
+    :param usgs_response:
+    :param args:
+    :return:
+    """
     usgs_data = []
     metadata = []
     with io.StringIO(usgs_response.text) as fp:
@@ -64,7 +76,12 @@ def usgs_call(url, usgs_response, args):
 
 
 def usgs_parse(dataframe_list, args):
-    """Parsing the usgs data into flowbyactivity format"""
+    """
+    Parsing the usgs data into flowbyactivity format
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
 
     for df in dataframe_list:
         # add columns at national and state level that only exist at the county level
@@ -105,16 +122,25 @@ def usgs_parse(dataframe_list, args):
     # create flow name column
     df.loc[:, 'FlowName'] = np.where(df.Description.str.contains("fresh"), "fresh",
                                      np.where(df.Description.str.contains("saline"), "saline",
-                                              np.where(df.Description.str.contains("wastewater"), "wastewater", "total")))
+                                              np.where(df.Description.str.contains("wastewater"), "wastewater",
+                                                       "total")))
     # create flow name column
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"), "ground",
-                               np.where(df.Description.str.contains("Ground"), "ground",
-                               np.where(df.Description.str.contains("surface"), "surface",
-                               np.where(df.Description.str.contains("Surface"), "surface",
-                               np.where(df.Description.str.contains("instream water use"), "surface",  # based on usgs def
-                               np.where(df.Description.str.contains("consumptive"), "air",
-                               np.where(df.Description.str.contains("conveyance"), "water",
-                               np.where(df.Description.str.contains("total"), "total", "total"))))))))
+                                        np.where(df.Description.str.contains("Ground"), "ground",
+                                                 np.where(df.Description.str.contains("surface"), "surface",
+                                                          np.where(df.Description.str.contains("Surface"), "surface",
+                                                                   np.where(df.Description.str.contains(
+                                                                       "instream water use"), "surface",
+                                                                       # based on usgs def
+                                                                       np.where(df.Description.str.contains(
+                                                                           "consumptive"), "air",
+                                                                           np.where(
+                                                                               df.Description.str.contains(
+                                                                                   "conveyance"), "water",
+                                                                               np.where(
+                                                                                   df.Description.str.contains(
+                                                                                       "total"), "total",
+                                                                                   "total"))))))))
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
     df.loc[:, "Unit"] = df['Unit'].str.replace("in ", "", regex=True)
@@ -140,9 +166,10 @@ def usgs_parse(dataframe_list, args):
                                           'Thermoelectric power', 'Thermoelectric Power Once-through cooling',
                                           'Thermoelectric Power Closed-loop cooling',
                                           'Wastewater Treatment']), 'DataReliability'] = '3'
-    df.loc[df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic', 'Industrial', 'Self-supplied industrial',
-                                          'Irrigation, Crop', 'Irrigation, Golf Courses', 'Irrigation, Total',
-                                          'Irrigation', 'Mining']), 'DataReliability'] = '4'
+    df.loc[
+        df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic', 'Industrial', 'Self-supplied industrial',
+                                       'Irrigation, Crop', 'Irrigation, Golf Courses', 'Irrigation, Total',
+                                       'Irrigation', 'Mining']), 'DataReliability'] = '4'
     df.loc[df['ActivityConsumedBy'].isin(['Total withdrawals', 'Total Groundwater',
                                           'Total Surface water']), 'DataReliability'] = '5'
     df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
@@ -158,12 +185,16 @@ def usgs_parse(dataframe_list, args):
 
     # add FlowType
     df['FlowType'] = np.where(df["Description"].str.contains('wastewater'), "WASTE_FLOW",
-                     np.where(df["Description"].str.contains('self-supplied'), "ELEMENTARY_FLOW",
-                     np.where(df["Description"].str.contains('Self-supplied'), "ELEMENTARY_FLOW",
-                     np.where(df["Description"].str.contains('conveyance'), "ELEMENTARY_FLOW",
-                     np.where(df["Description"].str.contains('consumptive'), "ELEMENTARY_FLOW",
-                     np.where(df["Description"].str.contains('deliveries'), "ELEMENTARY_FLOW", # is really a "TECHNOSPHERE_FLOW"
-                                                              None))))))
+                              np.where(df["Description"].str.contains('self-supplied'), "ELEMENTARY_FLOW",
+                                       np.where(df["Description"].str.contains('Self-supplied'), "ELEMENTARY_FLOW",
+                                                np.where(df["Description"].str.contains('conveyance'),
+                                                         "ELEMENTARY_FLOW",
+                                                         np.where(df["Description"].str.contains('consumptive'),
+                                                                  "ELEMENTARY_FLOW",
+                                                                  np.where(df["Description"].str.contains('deliveries'),
+                                                                           "ELEMENTARY_FLOW",
+                                                                           # is really a "TECHNOSPHERE_FLOW"
+                                                                           None))))))
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -172,7 +203,11 @@ def usgs_parse(dataframe_list, args):
 
 
 def activity(name):
-    """Create rules to assign activities to produced by or consumed by"""
+    """
+    Create rules to assign activities to produced by or consumed by
+    :param name:
+    :return:
+    """
 
     name_split = name.split(",")
     if "Irrigation" in name and "gal" not in name_split[1]:
@@ -231,7 +266,11 @@ def activity(name):
 
 
 def split_name(name):
-    """This method splits the header name into a source name and a flow name"""
+    """
+    This method splits the header name into a source name and a flow name
+    :param name:
+    :return:
+    """
     space_split = name.split(" ")
     upper_case = ""
     lower_case = ""
@@ -248,6 +287,8 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     """
     The activity names differ at the national level. Method to standardize names to allow for comparison of aggregation
     to national level.
+    :param flowbyactivity_df:
+    :return:
     """
 
     # modify national level compartment
@@ -260,7 +301,6 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 
     # standardize activity names across geoscales
     for f in fba_activity_fields:
-
         flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Public'] = 'Public Supply'
         flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Irrigation Total'] = 'Irrigation'
         flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Total Thermoelectric Power'] = 'Thermoelectric Power'
@@ -350,9 +390,10 @@ def calculate_net_public_supply(df):
                                   "FlowAmount_y": "FlowTotal"
                                   })
     # merge the deliveries to domestic
-    df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
+    df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']], how='left', left_on='Location',
+                             right_on='Location')
     df_w_modified = df_w_modified.rename(columns={"FlowAmount_x": "FlowAmount",
-                                         "FlowAmount_y": "DomesticDeliveries"})
+                                                  "FlowAmount_y": "DomesticDeliveries"})
 
     # create flowratio for ground/surface
     df_w_modified.loc[:, 'FlowRatio'] = df_w_modified['FlowAmount'] / df_w_modified['FlowTotal']
@@ -536,32 +577,3 @@ def filter_out_activities(df, attr):
                     (df[fba_activity_fields[1]] != 'Domestic')].reset_index(drop=True)
 
     return df
-
-
-# def modify_thermo_and_aqua_sector_assignments(df):
-#     """
-#     Currently, do not have a method to allocate water withdrawal beyond four digits for Thermoelectric and Aquaculture.
-#     Therefore, after mapping these 2 activities to sectors, drop associated sectors > 4 digits.
-#     :param df:
-#     :return:
-#     """
-#
-#     from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
-#
-#     activities_to_modify = ("Aquaculture", "Thermoelectric Power")
-#     max_sector_length = 4
-#
-#     # if activities are in the activities to modify length and if sector length is greater than max specified, drop rows
-#     # tmp set None to "" so len(x) fxn woks
-#     df = replace_NoneType_with_empty_cells(df)
-#     # set conditions
-#     c1 = df[fba_activity_fields[0]].isin(activities_to_modify)
-#     c2 = df[fba_activity_fields[1]].isin(activities_to_modify)
-#     c3 = df[fbs_activity_fields[0]].apply(lambda x: len(x) > max_sector_length)
-#     c4 = df[fbs_activity_fields[1]].apply(lambda x: len(x) > max_sector_length)
-#     # subset data
-#     df_modified = df.loc[~((c1 | c2) & (c3 | c4))].reset_index(drop=True)
-#     # set '' back to None
-#     df_modified = replace_strings_with_NoneType(df_modified)
-#
-#     return df_modified

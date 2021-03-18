@@ -21,7 +21,13 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def BLS_QCEW_URL_helper(build_url, config, args):
+    """
 
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     urls = []
 
     url = build_url
@@ -32,7 +38,13 @@ def BLS_QCEW_URL_helper(build_url, config, args):
 
 
 def bls_qcew_call(url, qcew_response, args):
+    """
 
+    :param url:
+    :param qcew_response:
+    :param args:
+    :return:
+    """
     # initiate dataframes list
     df_list = []
     # unzip folder that contains bls data in ~4000 csv files
@@ -52,6 +64,12 @@ def bls_qcew_call(url, qcew_response, args):
 
 
 def bls_qcew_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # Concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop rows don't need
@@ -173,7 +191,8 @@ def replace_missing_2_digit_sector_values(df):
             rows_list.append(df[(c1 & c2)])
         rows_to_drop = pd.concat(rows_list, ignore_index=True)
         # drop rows from df
-        modified_df = pd.merge(df, rows_to_drop, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
+        modified_df = pd.merge(df, rows_to_drop, indicator=True, how='outer').query('_merge=="left_only"').drop(
+            '_merge', axis=1)
         # add new rows
         modified_df = modified_df.append(new_sectors, sort=False)
     else:
@@ -193,7 +212,6 @@ def remove_2_digit_sector_ranges(fba_df):
     df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')]
 
     return df
-
 
 
 def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):

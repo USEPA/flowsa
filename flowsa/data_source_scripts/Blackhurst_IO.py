@@ -15,6 +15,13 @@ from flowsa.flowbyfunctions import assign_fips_location_system, proportional_all
 
 # Read pdf into list of DataFrame
 def bh_call(url, bh_response, args):
+    """
+
+    :param url:
+    :param bh_response:
+    :param args:
+    :return:
+    """
 
     pages = range(5, 13)
     bh_df_list = []
@@ -28,6 +35,12 @@ def bh_call(url, bh_response, args):
 
 
 def bh_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
@@ -35,7 +48,7 @@ def bh_parse(dataframe_list, args):
                             "gal/$M": "FlowAmount",
                             })
     # hardcode
-    df.loc[:, 'FlowAmount'] = df['FlowAmount'] / 1000000 # original data in gal/million usd
+    df.loc[:, 'FlowAmount'] = df['FlowAmount'] / 1000000  # original data in gal/million usd
     df['Unit'] = 'gal/USD'
     df['SourceName'] = 'Blackhurst_IO'
     df['Class'] = 'Water'
@@ -48,7 +61,12 @@ def bh_parse(dataframe_list, args):
 
 
 def convert_blackhurst_data_to_gal_per_year(df, attr):
+    """
 
+    :param df:
+    :param attr:
+    :return:
+    """
     import flowsa
     from flowsa.common import fba_fill_na_dict
     from flowsa.dataclean import harmonize_units
@@ -129,7 +147,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     df_wratio = df_wratio[df_wratio['Employees'] != 0]
 
     # calculate gal/employee in 2002
-    df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] * df_wratio['EmployeeRatio'])/df_wratio['Employees']
+    df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] * df_wratio['EmployeeRatio']) / df_wratio['Employees']
     df_wratio.loc[:, 'Unit'] = 'gal/employee'
 
     # drop cols
@@ -156,7 +174,8 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     pv_load = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU", year=str(attr['helper_source_year']),
                                        flowclass='Water')
     pv_load = harmonize_units(pv_load)
-    pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) & (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
+    pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) & (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(
+        drop=True)
     pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
 
     # sum quantity of water withdrawals already allocated to sectors
@@ -166,8 +185,9 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     vd = pv - av
 
     # subset df to scale into oil and non-oil sectors
-    df_to_scale['sector_label'] = np.where(df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil', 'nonoil')
-    df_to_scale['ratio'] = np.where(df_to_scale['sector_label'] == 'oil', 2/3, 1/3)
+    df_to_scale['sector_label'] = np.where(df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil',
+                                           'nonoil')
+    df_to_scale['ratio'] = np.where(df_to_scale['sector_label'] == 'oil', 2 / 3, 1 / 3)
     df_to_scale['label_sum'] = df_to_scale.groupby(['Location', 'sector_label'])['FlowAmount'].transform('sum')
     df_to_scale.loc[:, 'value_difference'] = vd.astype(float)
 

@@ -10,20 +10,34 @@ import io
 from flowsa.common import US_FIPS, withdrawn_keyword
 from flowsa.flowbyfunctions import assign_fips_location_system
 
+
 def eia_cbecs_water_call(url, response_load, args):
+    """
+
+    :param url:
+    :param response_load:
+    :param args:
+    :return:
+    """
     # Convert response to dataframe
     df_raw = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
     # skip rows and remove extra rows at end of dataframe
     df = pd.DataFrame(df_raw.loc[10:25]).reindex()
     # set column headers
     df.columns = ["PBA", "Number of Buildings", "Total Floor Space", "Total Consumption",
-                      "Consumption per Building", "Consumption per square foot",
-                      "Consumption per worker", "Distribution of building 25th",
-                      "Distribution of building Median", "Distribution of building 75th"]
+                  "Consumption per Building", "Consumption per square foot",
+                  "Consumption per worker", "Distribution of building 25th",
+                  "Distribution of building Median", "Distribution of building 75th"]
     return df
 
 
 def eia_cbecs_water_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False).dropna()
     # drop columns
@@ -55,4 +69,3 @@ def eia_cbecs_water_parse(dataframe_list, args):
     df['Year'] = args["year"]
     df['Location'] = US_FIPS
     return df
-

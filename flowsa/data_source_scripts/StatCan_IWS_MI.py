@@ -11,7 +11,15 @@ import zipfile
 import pycountry
 from flowsa.common import *
 
+
 def sc_call(url, sc_response, args):
+    """
+
+    :param url:
+    :param sc_response:
+    :param args:
+    :return:
+    """
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(sc_response.content), "r") as f:
@@ -24,8 +32,13 @@ def sc_call(url, sc_response, args):
     return df
 
 
-
 def sc_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
@@ -79,6 +92,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
     use:
     - canadian gdp
     - us gdp
+    :param df:
+    :param attr:
     :return:
     """
     import flowsa
@@ -147,5 +162,10 @@ def convert_statcan_data_to_US_water_use(df, attr):
 
 
 def disaggregate_statcan_to_naics_6(df):
+    """
+
+    :param df:
+    :return:
+    """
 
     return df

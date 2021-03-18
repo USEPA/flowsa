@@ -14,7 +14,15 @@ import zipfile
 import pycountry
 from flowsa.common import *
 
+
 def sc_lfs_call(url, sc_response, args):
+    """
+
+    :param url:
+    :param sc_response:
+    :param args:
+    :return:
+    """
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(sc_response.content), "r") as f:
@@ -27,8 +35,13 @@ def sc_lfs_call(url, sc_response, args):
     return df
 
 
-
 def sc_lfs_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
@@ -78,6 +91,11 @@ def sc_lfs_parse(dataframe_list, args):
 
 
 def call_country_code(country):
+    """
+
+    :param country:
+    :return:
+    """
     """use pycountry to call on 3 digit iso country code"""
     country_info = pycountry.countries.get(name=country)
     country_numeric_iso = country_info.numeric

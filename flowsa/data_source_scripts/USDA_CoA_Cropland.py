@@ -10,9 +10,15 @@ from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activit
 
 
 def CoA_Cropland_URL_helper(build_url, config, args):
-    """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
-    This function does not parse the data, only modifies the urls from which data is obtained. """
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     # initiate url list for coa cropland data
     urls = []
 
@@ -62,8 +68,13 @@ def coa_cropland_call(url, coa_response, args):
 
 
 def coa_cropland_parse(dataframe_list, args):
-    """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
-    (irrigated and total). """
+    """
+    Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
+    (irrigated and total).
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
 
     df = pd.concat(dataframe_list, sort=False)
     # specify desired data based on domain_desc
@@ -101,8 +112,8 @@ def coa_cropland_parse(dataframe_list, args):
     df_fla = df_fla[df_fla['short_desc'].str.contains("AG LAND|FARM OPERATIONS")]
     # drop the irrigated acreage in farms (want the irrigated harvested acres)
     df_fla = df_fla[~((df_fla['domaincat_desc'] == 'AREA CROPLAND, HARVESTED: (ANY)') &
-                    (df_fla['domain_desc'] == 'AREA CROPLAND, HARVESTED') &
-                    (df_fla['short_desc'] == 'AG LAND, IRRIGATED - ACRES'))]
+                      (df_fla['domain_desc'] == 'AREA CROPLAND, HARVESTED') &
+                      (df_fla['short_desc'] == 'AG LAND, IRRIGATED - ACRES'))]
     # concat data frames
     df = pd.concat([df_fc, df_ftn, df_h, df_v, df_fla], sort=False).reset_index(drop=True)
     # drop unused columns
@@ -122,9 +133,12 @@ def coa_cropland_parse(dataframe_list, args):
     df.loc[:, 'FlowName'] = df['FlowName'].str.replace(", ALL PRODUCTION PRACTICES", "", regex=True)
     df.loc[:, 'FlowName'] = df['FlowName'].str.replace(", IN THE OPEN", "", regex=True)
     # combine column information to create activity information, and create two new columns for activities
-    df['Activity'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + df['util_practice_desc']  # drop this column later
-    df['Activity'] = df['Activity'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
-    df['Activity'] = df['Activity'].str.replace(", ALL UTILIZATION PRACTICES", "", regex=True)  # not interested in all data from class_desc
+    df['Activity'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + df[
+        'util_practice_desc']  # drop this column later
+    df['Activity'] = df['Activity'].str.replace(", ALL CLASSES", "",
+                                                regex=True)  # not interested in all data from class_desc
+    df['Activity'] = df['Activity'].str.replace(", ALL UTILIZATION PRACTICES", "",
+                                                regex=True)  # not interested in all data from class_desc
     df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], None)
     df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], None)
 
@@ -329,8 +343,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     # drop sectors < 4 digits
     crop = crop[crop[sector_column].apply(lambda x: len(x) > 3)].reset_index(drop=True)
     # create tmp location
-    crop = crop.assign(Location_tmp=crop['Location'].apply(lambda x: x[0:2]))\
-
+    crop = crop.assign(Location_tmp=crop['Location'].apply(lambda x: x[0:2])) \
+ \
     # load the relevant state level harvested cropland by naics
     naics_load = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland_NAICS", year=year,
                                           flowclass='Land').reset_index(drop=True)
@@ -369,7 +383,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     # for loop through naics lengths to determine naics 4 and 5 digits to disaggregate
     for i in range(4, 6):
         # subset df to sectors with length = i and length = i + 1
-        crop_subset = crop.loc[crop[sector_column].apply(lambda x: i+1 >= len(x) >= i)]
+        crop_subset = crop.loc[crop[sector_column].apply(lambda x: i + 1 >= len(x) >= i)]
         crop_subset = crop_subset.assign(Sector_tmp=crop_subset[sector_column].apply(lambda x: x[0:i]))
         # if duplicates drop all rows
         df = crop_subset.drop_duplicates(subset=['Location', 'Sector_tmp'], keep=False).reset_index(drop=True)
@@ -378,11 +392,12 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
         # subset df to keep the sectors of length i
         df_subset = df.loc[df[sector_column].apply(lambda x: len(x) == i)]
         # subset the naics df where naics length is i + 1
-        naics_subset = naics4.loc[naics4[sector_column].apply(lambda x: len(x) == i+1)].reset_index(drop=True)
+        naics_subset = naics4.loc[naics4[sector_column].apply(lambda x: len(x) == i + 1)].reset_index(drop=True)
         naics_subset = naics_subset.assign(Sector_tmp=naics_subset[sector_column].apply(lambda x: x[0:i]))
         # merge the two df based on locations
         df_subset = pd.merge(df_subset, naics_subset[[sector_column, 'FlowAmountRatio', 'Sector_tmp', 'Location_tmp']],
-                      how='left', left_on=[sector_column, 'Location_tmp'], right_on=['Sector_tmp', 'Location_tmp'])
+                             how='left', left_on=[sector_column, 'Location_tmp'],
+                             right_on=['Sector_tmp', 'Location_tmp'])
         # create flow amounts for the new NAICS based on the flow ratio
         df_subset.loc[:, 'FlowAmount'] = df_subset['FlowAmount'] * df_subset['FlowAmountRatio']
         # drop rows of 0 and na

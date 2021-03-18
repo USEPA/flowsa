@@ -10,9 +10,15 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
-    """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
-    This function does not parse the data, only modifies the urls from which data is obtained. """
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     # initiate url list for coa cropland data
     urls = []
 
@@ -41,14 +47,26 @@ def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
 
 
 def coa_cropland_NAICS_call(url, coa_response, args):
+    """
+
+    :param url:
+    :param coa_response:
+    :param args:
+    :return:
+    """
     cropland_json = json.loads(coa_response.text)
     df_cropland = pd.DataFrame(data=cropland_json["data"])
     return df_cropland
 
 
 def coa_cropland_NAICS_parse(dataframe_list, args):
-    """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
-    (irrigated and total). """
+    """
+    Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
+    (irrigated and total).
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     df = pd.concat(dataframe_list, sort=False)
     # specify desired data based on domain_desc
     df = df[df['domain_desc'] == 'NAICS CLASSIFICATION']
@@ -110,6 +128,3 @@ def coa_cropland_NAICS_parse(dataframe_list, args):
     df['DataReliability'] = None
     df['DataCollection'] = 2
     return df
-
-
-
