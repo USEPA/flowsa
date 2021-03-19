@@ -37,7 +37,7 @@ def stewicombo_to_sector(yaml_load):
     from flowsa.data_source_scripts.EPA_NEI import drop_GHGs
 
     # determine if fxns specified in FBS method yaml
-    if yaml_load['functions'] != None:
+    if 'functions' not in yaml_load:
         functions = []
     else:
         functions = yaml_load['functions']
@@ -96,7 +96,7 @@ def stewi_to_sector(yaml_load):
     import stewi
 
     # determine if fxns specified in FBS method yaml
-    if yaml_load['functions'] != None:
+    if 'functions' not in yaml_load:
         functions = []
     else:
         functions = yaml_load['functions']
