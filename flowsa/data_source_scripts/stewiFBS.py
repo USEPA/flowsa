@@ -19,8 +19,7 @@ from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
 
-def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments,
-                         functions=[]):
+def stewicombo_to_sector(yaml_items):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
@@ -37,18 +36,18 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments,
     import stewicombo
     from flowsa.data_source_scripts.EPA_NEI import drop_GHGs
 
-    NAICS_level_value = sector_level_key[NAICS_level]
+    NAICS_level_value = sector_level_key[yaml_items['NAICS_level']]
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
-    df = stewicombo.combineFullInventories(inventory_dict, filter_for_LCI=True, remove_overlap=True,
-                                           compartments=compartments)
+    df = stewicombo.combineFullInventories(yaml_items['inventory_dict'], filter_for_LCI=True, remove_overlap=True,
+                                           compartments=yaml_items['compartments'])
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
-    inventory_list = list(inventory_dict.keys())
+    inventory_list = list(yaml_items['inventory_dict'].keys())
 
-    if 'drop_GHGs' in functions:
+    if 'drop_GHGs' in yaml_items['functions']:
         df = drop_GHGs(df)
-        functions.remove('drop_GHGs')
-    facility_mapping = extract_facility_data(inventory_dict)
+        yaml_items['functions'].remove('drop_GHGs')
+    facility_mapping = extract_facility_data(yaml_items['inventory_dict'])
     # use NAICS from facility matcher so drop them here
     facility_mapping.drop(columns=['NAICS'], inplace=True)
     # merge dataframes to assign facility information based on facility IDs
@@ -61,15 +60,15 @@ def stewicombo_to_sector(inventory_dict, NAICS_level, geo_scale, compartments,
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    if 'reassign_airplane_emissions' in functions:
-        df = reassign_airplane_emissions(df, inventory_dict['NEI'], NAICS_level_value)
-        functions.remove('reassign_airplane_emissions')
+    if 'reassign_airplane_emissions' in yaml_items['functions']:
+        df = reassign_airplane_emissions(df, yaml_items['inventory_dict']['NEI'], NAICS_level_value)
+        yaml_items['functions'].remove('reassign_airplane_emissions')
 
     df['MetaSources'] = df['Source']
 
-    fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
+    fbs = prepare_stewi_fbs(df, yaml_items['inventory_dict'], yaml_items['NAICS_level'], yaml_items['geo_scale'])
 
-    for function in functions:
+    for function in yaml_items['functions']:
         fbs = getattr(sys.modules[__name__], function)(fbs)
 
     return fbs

@@ -102,7 +102,7 @@ def load_source_dataframe(k, v):
         flows_df = flowsa.getFlowBySector(k)
     elif v['data_format'] == 'FBS_outside_flowsa':
         log.info("Retrieving flowbysector for datasource " + k)
-        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(*v['parameters'])
+        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(v)
     else:
         log.error("Data format not specified in method file for datasource " + k)
 
@@ -119,7 +119,7 @@ def main(**kwargs):
         kwargs = parse_args()
 
     # test
-    # kwargs = {'method': 'cap_mecs'}
+    # kwargs = {'method': 'stewi'}
 
     method_name = kwargs['method']
     # assign arguments
