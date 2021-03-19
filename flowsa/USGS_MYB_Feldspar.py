@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -24,24 +24,13 @@ Table T1
 SourceName: USGS_MYB_Feldspar
 https://www.usgs.gov/centers/nmic/feldspar-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
+Minerals Yearbook, xls file, tab T1:
 
 Data for: Feldspar; marketable
 
 Years = 2014+
 """
-def year_name_feldspar(year):
-    if int(year) == 2013:
-        return_val = "year_1"
-    elif int(year) == 2014:
-        return_val = "year_2"
-    elif int(year) == 2015:
-        return_val = "year_3"
-    elif int(year) == 2016:
-        return_val = "year_4"
-    elif int(year) == 2017:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2013-2017"
 
 def usgs_feldspar_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
@@ -67,7 +56,7 @@ def usgs_feldspar_call(url, usgs_response, args):
         df_data_one.columns = ["Production", "space_1",  "unit",  "space_2",  "year_1", "space_3", "year_2",
                                "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
     col_to_use = ["Production"]
-    col_to_use.append(year_name_feldspar(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
 
     for col in df_data_two.columns:
         if col not in col_to_use:
@@ -115,7 +104,7 @@ def usgs_feldspar_parse(dataframe_list, args):
                 data["Context"] = None
                 data["ActivityConsumedBy"] = None
                 data["Unit"] = "Metric Tons"
-                col_name = year_name_feldspar(args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 data["Description"] = des
                 data["ActivityProducedBy"] = "feldspar"

@@ -44,26 +44,46 @@ def usgs_boron_url_helper(build_url, config, args):
 def usgs_boron_call(url, usgs_response, args):
     """TODO."""
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
-    df_data = pd.DataFrame(df_raw_data.loc[8:8]).reindex()
-    df_data = df_data.reset_index()
-    del df_data["index"]
+    df_data_one = pd.DataFrame(df_raw_data.loc[8:8]).reindex()
+    df_data_one = df_data_one.reset_index()
+    del df_data_one["index"]
 
-    if len(df_data. columns) == 11:
-        df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
+    df_data_two = pd.DataFrame(df_raw_data.loc[21:22]).reindex()
+    df_data_two = df_data_two.reset_index()
+    del df_data_two["index"]
+
+    df_data_three = pd.DataFrame(df_raw_data.loc[27:28]).reindex()
+    df_data_three = df_data_three.reset_index()
+    del df_data_three["index"]
+
+    if len(df_data_one. columns) == 11:
+        df_data_one.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
+                           "space_4", "year_4", "space_5", "year_5"]
+        df_data_two.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
+                           "space_4", "year_4", "space_5", "year_5"]
+        df_data_three.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
                            "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
-    for col in df_data.columns:
+    for col in df_data_one.columns:
         if col not in col_to_use:
-            del df_data[col]
+            del df_data_one[col]
+            del df_data_two[col]
+            del df_data_three[col]
+
+    frames = [df_data_one, df_data_two, df_data_three]
+    df_data = pd.concat(frames)
+    df_data = df_data.reset_index()
+    del df_data["index"]
     return df_data
+
 
 
 def usgs_boron_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["B2O3 content"]
+    row_to_use = ["B2O3 content", "Quantity"]
     prod = ""
     name = usgs_myb_name(args["source"])
     des = name
@@ -73,8 +93,13 @@ def usgs_boron_parse(dataframe_list, args):
     for df in dataframe_list:
         for index, row in df.iterrows():
 
-            if df.iloc[index]["Production"].strip() == "B2O3 content":
+            if df.iloc[index]["Production"].strip() == "B2O3 content" or df.iloc[index]["Production"].strip() == "Quantity":
                 product = "production"
+
+            if df.iloc[index]["Production"].strip() == "Colemanite:4":
+                des = "Colemanite"
+            elif df.iloc[index]["Production"].strip() == "Ulexite:4":
+                des = "Ulexite"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
@@ -82,7 +107,7 @@ def usgs_boron_parse(dataframe_list, args):
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = name + " " + product
-                data["Description"] = name
+                data["Description"] = des
                 data["ActivityProducedBy"] = name
                 if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
