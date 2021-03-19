@@ -10,5 +10,4 @@ source_names:
     geo_scale: 'national'
     compartments:
       - 'water'
-    functions: None
    
