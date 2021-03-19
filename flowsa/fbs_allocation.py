@@ -35,13 +35,13 @@ from flowsa.data_source_scripts.USGS_NWIS_WU import usgs_fba_data_cleanup, usgs_
 
 
 def direct_allocation_method(flow_subset_mapped, k, names, method):
-    log.info('Directly assigning ' + ', '.join(map(str, names)) + ' to sectors')
+    log.info('Directly assigning activities to sectors')
     fbs = flow_subset_mapped.copy()
     # for each activity, if activities are not sector like, check that there is no data loss
     if load_source_catalog()[k]['sector-like_activities'] is False:
         activity_list = []
         for n in names:
-            log.info('Checking for ' + n + ' at ' + method['target_sector_level'])
+            log.debug('Checking for ' + n + ' at ' + method['target_sector_level'])
             fbs_subset = fbs[((fbs[fba_activity_fields[0]] == n) &
                               (fbs[fba_activity_fields[1]] == n)) |
                              (fbs[fba_activity_fields[0]] == n) |
@@ -95,7 +95,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method, k, v, ase
     group_cols = fba_mapped_default_grouping_fields
     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
     for n in names:
-        log.info("Creating allocation ratios for " + n)
+        log.debug("Creating allocation ratios for " + n)
         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n],
                                                             flowSubsetMapped=flow_subset_mapped,
                                                             allocMethod=attr['allocation_method'],

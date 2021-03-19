@@ -159,13 +159,14 @@ def main(**kwargs):
                 else:
                     names = attr['names']
 
-                log.info("Preparing to handle subset of flownames " + ', '.join(map(str, names)) + " in " + k)
+                log.info("Preparing to handle " + aset + " in " + k)                
+                log.debug("Preparing to handle subset of activities: " + ', '.join(map(str, names)))
                 # subset fba data by activity
                 flows_subset = flows[(flows[fba_activity_fields[0]].isin(names)) |
                                      (flows[fba_activity_fields[1]].isin(names))].reset_index(drop=True)
 
                 # extract relevant geoscale data or aggregate existing data
-                log.info("Subsetting/aggregating dataframe to " + attr['allocation_from_scale'] + " geoscale")
+                log.info("Subsetting/aggregating " + k + " to " + attr['allocation_from_scale'] + " geoscale")
                 flows_subset_geo = subset_df_by_geoscale(flows_subset, v['geoscale_to_use'],
                                                          attr['allocation_from_scale'])
 
@@ -240,7 +241,7 @@ def main(**kwargs):
 
                 # check if any sector information is lost before reaching the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                log.info('Checking for data at ' + method['target_sector_level'])
+                log.debug('Checking for data at ' + method['target_sector_level'])
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
@@ -269,7 +270,7 @@ def main(**kwargs):
                 compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
                                                        method_name, attr, method, mapping_files)
 
-                log.info("Completed flowbysector for activity subset with flows " + ', '.join(map(str, names)))
+                log.info("Completed flowbysector for " + aset)
                 fbs_list.append(fbs_sector_subset)
         else:
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
