@@ -19,7 +19,7 @@ from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
 
-def stewicombo_to_sector(yaml_items):
+def stewicombo_to_sector(yaml_load):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
@@ -36,18 +36,24 @@ def stewicombo_to_sector(yaml_items):
     import stewicombo
     from flowsa.data_source_scripts.EPA_NEI import drop_GHGs
 
-    NAICS_level_value = sector_level_key[yaml_items['NAICS_level']]
+    # determine if fxns specified in FBS method yaml
+    if yaml_load['functions'] != None:
+        functions = []
+    else:
+        functions = yaml_load['functions']
+
+    NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
     ## run stewicombo to combine inventories, filter for LCI, remove overlap
-    df = stewicombo.combineFullInventories(yaml_items['inventory_dict'], filter_for_LCI=True, remove_overlap=True,
-                                           compartments=yaml_items['compartments'])
+    df = stewicombo.combineFullInventories(yaml_load['inventory_dict'], filter_for_LCI=True, remove_overlap=True,
+                                           compartments=yaml_load['compartments'])
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
-    inventory_list = list(yaml_items['inventory_dict'].keys())
+    inventory_list = list(yaml_load['inventory_dict'].keys())
 
-    if 'drop_GHGs' in yaml_items['functions']:
+    if 'drop_GHGs' in functions:
         df = drop_GHGs(df)
-        yaml_items['functions'].remove('drop_GHGs')
-    facility_mapping = extract_facility_data(yaml_items['inventory_dict'])
+        functions.remove('drop_GHGs')
+    facility_mapping = extract_facility_data(yaml_load['inventory_dict'])
     # use NAICS from facility matcher so drop them here
     facility_mapping.drop(columns=['NAICS'], inplace=True)
     # merge dataframes to assign facility information based on facility IDs
@@ -60,22 +66,21 @@ def stewicombo_to_sector(yaml_items):
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    if 'reassign_airplane_emissions' in yaml_items['functions']:
-        df = reassign_airplane_emissions(df, yaml_items['inventory_dict']['NEI'], NAICS_level_value)
-        yaml_items['functions'].remove('reassign_airplane_emissions')
+    if 'reassign_airplane_emissions' in functions:
+        df = reassign_airplane_emissions(df, yaml_load['inventory_dict']['NEI'], NAICS_level_value)
+        functions.remove('reassign_airplane_emissions')
 
     df['MetaSources'] = df['Source']
 
-    fbs = prepare_stewi_fbs(df, yaml_items['inventory_dict'], yaml_items['NAICS_level'], yaml_items['geo_scale'])
+    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'], yaml_load['NAICS_level'], yaml_load['geo_scale'])
 
-    for function in yaml_items['functions']:
+    for function in functions:
         fbs = getattr(sys.modules[__name__], function)(fbs)
 
     return fbs
 
 
-def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments=None,
-                    functions=[]):
+def stewi_to_sector(yaml_load):
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
@@ -90,17 +95,23 @@ def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments=None,
     """
     import stewi
 
-    NAICS_level_value = sector_level_key[NAICS_level]
+    # determine if fxns specified in FBS method yaml
+    if yaml_load['functions'] != None:
+        functions = []
+    else:
+        functions = yaml_load['functions']
+
+    NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
     # run stewicombo to combine inventories, filter for LCI, remove overlap
     df = pd.DataFrame()
-    for database, year in inventory_dict.items():
+    for database, year in yaml_load['inventory_dict'].items():
         inv = stewi.getInventory(database, year, filter_for_LCI=True, US_States_Only=True)
         inv['Year'] = year
         inv['MetaSources'] = database
         df = df.append(inv)
-    if compartments != None:
-        df = df[df['Compartment'].isin(compartments)]
-    facility_mapping = extract_facility_data(inventory_dict)
+    if yaml_load['compartments'] != None:
+        df = df[df['Compartment'].isin(yaml_load['compartments'])]
+    facility_mapping = extract_facility_data(yaml_load['inventory_dict'])
     # Convert NAICS to string (first to int to avoid decimals)
     facility_mapping['NAICS'] = facility_mapping['NAICS'].astype(int).astype(str)
     facility_mapping = naics_expansion(facility_mapping)
@@ -112,7 +123,7 @@ def stewi_to_sector(inventory_dict, NAICS_level, geo_scale, compartments=None,
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    fbs = prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale)
+    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'], yaml_load['NAICS_level'], yaml_load['geo_scale'])
 
     for function in functions:
         fbs = getattr(sys.modules[__name__], function)(fbs)
