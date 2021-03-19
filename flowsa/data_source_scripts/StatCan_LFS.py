@@ -14,7 +14,15 @@ import zipfile
 import pycountry
 from flowsa.common import *
 
+
 def sc_lfs_call(url, sc_response, args):
+    """
+
+    :param url:
+    :param sc_response:
+    :param args:
+    :return:
+    """
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(sc_response.content), "r") as f:
@@ -27,8 +35,13 @@ def sc_lfs_call(url, sc_response, args):
     return df
 
 
-
 def sc_lfs_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
@@ -55,10 +68,8 @@ def sc_lfs_parse(dataframe_list, args):
     df['FlowName'] = df['FlowName'].str.strip()
     df.loc[df['FlowName'] == 'Water intake', 'ActivityConsumedBy'] = df['Activity']
     df.loc[df['FlowName'].isin(['Water discharge', "Water recirculation"]), 'ActivityProducedBy'] = df['Activity']
-    # create "unit" column
-    df["Unit"] = "million " + df["UOM"] + "/year"
     # drop columns used to create unit and activity columns
-    df = df.drop(columns=['SCALAR_FACTOR', 'UOM', 'Activity'])
+    df = df.drop(columns=['Activity'])
     # Modify the assigned RSD letter values to numeric value
     df.loc[df['Spread'] == 'A', 'Spread'] = 2.5  # given range: 0.01 - 4.99%
     df.loc[df['Spread'] == 'B', 'Spread'] = 7.5  # given range: 5 - 9.99%
@@ -80,6 +91,11 @@ def sc_lfs_parse(dataframe_list, args):
 
 
 def call_country_code(country):
+    """
+
+    :param country:
+    :return:
+    """
     """use pycountry to call on 3 digit iso country code"""
     country_info = pycountry.countries.get(name=country)
     country_numeric_iso = country_info.numeric

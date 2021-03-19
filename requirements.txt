@@ -4,6 +4,7 @@ pandas>=1.1.0                  # Powerful data structures for data analysis, tim
 pip>=9                         # The PyPA recommended tool for installing Python packages.
 setuptools>=41                 # Fully-featured library designed to facilitate packaging Python projects.
 pyyaml>=5.3                    # Yaml for python
+ruamel.yaml>=0.16.13           # Preserves comments when updating yaml
 pyarrow >= 0.15.0              # Compression for parquet files
 requests >=2.22.0              # Web service calls
 appdirs >= 1.4.3               # Storing user data
@@ -12,3 +13,4 @@ xlrd >= 1.2.0                  # Extract data from Excel spreadsheets
 requests_ftp == 0.3.1          # Requests implementation for FTP
 tabula-py >= 2.1.1             # PDF reader
 numpy<1.20                    # Library used for arrays
+bibtexparser>=1.2.0            # Generates bibtex

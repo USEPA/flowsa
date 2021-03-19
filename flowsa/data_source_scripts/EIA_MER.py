@@ -9,14 +9,19 @@ https://www.eia.gov/totalenergy/data/monthly/
 Last updated: September 8, 2020
 """
 
-
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def eia_mer_url_helper(build_url, config, args):
-    """Build URL's for EIA_MER dataset. Critical parameter is 'tbl', representing a table from the dataset."""
+    """
+    Build URL's for EIA_MER dataset. Critical parameter is 'tbl', representing a table from the dataset.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     urls = []
     for tbl in config['tbls']:
         url = build_url.replace("__tbl__", tbl)
@@ -25,14 +30,24 @@ def eia_mer_url_helper(build_url, config, args):
 
 
 def eia_mer_call(url, response, args):
-    """TODO. """
+    """
+
+    :param url:
+    :param response:
+    :param args:
+    :return:
+    """
     with io.StringIO(response.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
 
 def decide_flow_name(desc):
-    """Based on the provided description, determine the FlowName."""
+    """
+    Based on the provided description, determine the FlowName.
+    :param desc:
+    :return:
+    """
     if 'Production' in desc:
         return 'Production'
     elif 'Consumed' in desc:
@@ -45,14 +60,22 @@ def decide_flow_name(desc):
 
 
 def decide_produced(desc):
-    """Based on the provided description, determine the ActivityProducedBy."""
+    """
+    Based on the provided description, determine the ActivityProducedBy.
+    :param desc:
+    :return:
+    """
     if 'Production' in desc:
         return desc.split('Production')[0].strip()
     return 'None'
 
 
 def decide_consumed(desc):
-    """Based on the provided description, determine the ActivityConsumedBy."""
+    """
+    Based on the provided description, determine the ActivityConsumedBy.
+    :param desc:
+    :return:
+    """
     if 'Consumed' in desc:
         return desc.split('Consumed')[0].strip()
     elif 'Sales' in desc:
@@ -63,7 +86,12 @@ def decide_consumed(desc):
 
 
 def eia_mer_parse(dataframe_list, args):
-    """Combine and parse the provided dataframes. """
+    """
+    Combine and parse the provided dataframes.
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     df = pd.concat(dataframe_list, sort=False)
     # Filter only the rows we want, YYYYMM field beginning with 201, for 2010's.
     # df = df[df['YYYYMM'] > 201000]

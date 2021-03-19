@@ -8,8 +8,8 @@ Created on Fri Sep 25 09:53:24 2020
 import flowsa
 import pandas as pd
 from flowsa.common import fbaoutputpath, fbsoutputpath, datapath, log, \
-    flowbysectoractivitysetspath
-from flowsa.flowbyfunctions import agg_by_geoscale, fba_default_grouping_fields
+    flowbysectoractivitysetspath, fba_default_grouping_fields
+from flowsa.flowbyfunctions import agg_by_geoscale
 from flowsa.mapping import map_elementary_flows
 
 

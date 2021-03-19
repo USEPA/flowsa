@@ -3,9 +3,7 @@
 # coding=utf-8
 
 """ Tests of flowbysectorfunctions """
-import os
 import unittest
-import pandas as pd
 from flowsa.flowbyfunctions import *
 from flowsa.common import *
 
@@ -21,7 +19,7 @@ class TestFlowBySectorFunctions(unittest.TestCase):
         flows = aggregator(flows, fbs_default_grouping_fields)
         totaltotaldomestic = flows['FlowAmount'].loc[(flows['Flowable'] == 'total') &
                                                      (flows['Context'] == 'total') &
-                                                     (flows['SectorProducedBy'] == 'None') &
+                                                     (flows['SectorProducedBy'] is None) &
                                                      (flows['SectorConsumedBy'] == 'F010')].reset_index(drop=True)
         totaltotalpstodomestic = flows['FlowAmount'].loc[(flows['Flowable'] == 'total') &
                                                      (flows['Context'] == 'total') &

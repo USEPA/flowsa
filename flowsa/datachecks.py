@@ -3,11 +3,11 @@ Functions to check data is loaded correctly
 """
 
 import pandas as pd
-from flowsa.flowbyfunctions import fba_activity_fields, aggregator,  fbs_fill_na_dict, \
-    fbs_activity_fields, clean_df, create_geoscale_list, replace_strings_with_NoneType, \
-    replace_NoneType_with_empty_cells
+from flowsa.flowbyfunctions import aggregator, create_geoscale_list
+from flowsa.dataclean import clean_df, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk, \
-    load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath, activity_fields
+    load_sector_crosswalk, sector_source_name, log, outputpath, fba_activity_fields, \
+    fbs_activity_fields, fbs_fill_na_dict
 import os
 
 
@@ -721,6 +721,14 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
         # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
+    # drop rows where both SectorConsumedBy and SectorProducedBy are both empty
+    df_drop = df[(df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == '')]
+    if len(df_drop) != 0:
+        activities_dropped = pd.unique(df_drop[['ActivityConsumedBy', 'ActivityProducedBy']].values.ravel('K'))
+        activities_dropped = list(filter(lambda x: x != '', activities_dropped))
+        log.info('Dropping rows where the Activity columns contain ' + ', '.join(activities_dropped))
+
+    df = df[~((df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == ''))].reset_index(drop=True)
     df = replace_strings_with_NoneType(df)
 
     return df

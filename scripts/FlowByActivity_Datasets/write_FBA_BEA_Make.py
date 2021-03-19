@@ -8,8 +8,8 @@ Generation of BEA Make data as FBA
 
 from flowsa.common import *
 import pandas as pd
-from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.flowbyactivity import process_data_frame
+from flowsa.dataclean import add_missing_flow_by_fields
 
 year = 2012
 level = 'Detail'
@@ -42,4 +42,4 @@ if __name__ == '__main__':
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
     parquet_name = 'BEA_Make_'+level+'_BeforeRedef_'+str(year)
-    store_flowbyactivity(flow_df, parquet_name)
+    process_data_frame(flow_df, parquet_name, str(year))

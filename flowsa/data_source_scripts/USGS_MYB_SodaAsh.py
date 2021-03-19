@@ -7,9 +7,9 @@ import numpy as np
 import io
 from flowsa.common import *
 from string import digits
-from flowsa.flowbyfunctions import assign_fips_location_system , fba_default_grouping_fields, aggregator
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
+from flowsa.common import fba_default_grouping_fields
 import math
-
 
 """
 SourceName: USGS_MYB_SodaAsh
@@ -23,7 +23,14 @@ Years = 2010+
 https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-pubs/soda-ash/myb1-2010-sodaa.pdf
 """
 
+
 def description(value, code):
+    """
+
+    :param value:
+    :param code:
+    :return:
+    """
     glass_list = ["Container", "Flat", "Fiber", "Other", "Total"]
     other_list = ["Total domestic consumption4"]
     export_list = ["Canada"]
@@ -45,8 +52,14 @@ def description(value, code):
     return return_val
 
 
-def usgs_url_helper(build_url, config, args):
-    """Used to substitute in components of usgs urls"""
+def soda_url_helper(build_url, config, args):
+    """
+    Used to substitute in components of usgs urls
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     year = str(args["year"])
@@ -56,13 +69,19 @@ def usgs_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_call(url, usgs_response, args):
-    """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4')# .dropna()
+def soda_call(url, soda_response, args):
+    """
+
+    :param url:
+    :param soda_response:
+    :param args:
+    :return:
+    """
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(soda_response.content), sheet_name='T4')  # .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
-    df_data.columns = ["NAICS code", "space_1", "End use", "space_2", "2009", "space_3","First quarter", "space_4",
+    df_data.columns = ["NAICS code", "space_1", "End use", "space_2", "2009", "space_3", "First quarter", "space_4",
                        "Second quarter", "space_5", "Third quarter", "space_6", "Fourth quarter", "space_7", "Total"]
     for col in df_data.columns:
         if "space_" in str(col):
@@ -74,13 +93,17 @@ def usgs_call(url, usgs_response, args):
     return df_data
 
 
-def usgs_parse(dataframe_list, args):
+def soda_parse(dataframe_list, args):
+    """
+    Parsing the USGS data into flowbyactivity format.
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     total_glass = 0
-    """Parsing the USGS data into flowbyactivity format."""
     data = {}
     dataframe = pd.DataFrame()
     for df in dataframe_list:
-
 
         data["Class"] = "Chemicals"
         data['FlowType'] = "Elementary Type"
@@ -111,4 +134,3 @@ def usgs_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

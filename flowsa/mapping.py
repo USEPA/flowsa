@@ -7,8 +7,8 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
-    load_sector_crosswalk, log, load_sector_length_crosswalk, load_household_sector_codes
-from flowsa.flowbyfunctions import fbs_activity_fields, fba_activity_fields, load_sector_length_crosswalk
+    load_sector_crosswalk, log, flow_by_activity_wsec_mapped_fields, fba_activity_fields
+from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
 def get_activitytosector_mapping(source):
@@ -36,6 +36,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     :param kwargs: option to include the parameter 'allocationmethod', which modifies function behavoir if = 'direct'
     :return: a df with activity fields mapped to 'sectors'
     """
+
     # First check if source activities are NAICS like - if so make it into a mapping file
     cat = load_source_catalog()
 
@@ -162,20 +163,22 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     :param kwargs: can be the mapping file and method of allocation
     :return:
     """
-
     # first determine if there are special cases that would modify the typical method of subset
     # an example of a special case is when the allocation method is 'proportional-flagged'
+    subset_by_sector_cols = False
+    subset_by_column_value = False
     if kwargs != {}:
-        special_case = False
         if 'flowSubsetMapped' in kwargs:
             fsm = kwargs['flowSubsetMapped']
         if 'allocMethod' in kwargs:
             am = kwargs['allocMethod']
             if am == 'proportional-flagged':
-                special_case = True
-    else:
-        special_case = False
-
+                subset_by_sector_cols = True
+        if 'activity_set_names' in kwargs:
+            asn = kwargs['activity_set_names']
+            if asn is not None:
+                if 'allocation_subset_col' in asn:
+                    subset_by_column_value = True
 
     # load the source catalog
     cat = load_source_catalog()
@@ -199,7 +202,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     else:
         if 'Sector' in fba_allocation:
             fba_allocation_subset = fba_allocation.loc[fba_allocation['Sector'].isin(activitynames)].reset_index(drop=True)
-        elif special_case:
+        elif subset_by_sector_cols:
             # if it is a special case, then base the subset of data on sectors in the sector columns, not on activitynames
             fsm_sub = fsm.loc[(fsm[fba_activity_fields[0]].isin(activitynames)) |
                               (fsm[fba_activity_fields[1]].isin(activitynames))
@@ -219,6 +222,23 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
             fba_allocation_subset = fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
                                                        (fba_allocation[fbs_activity_fields[1]].isin(activitynames))
                                                        ].reset_index(drop=True)
+
+    # if activity set names included in function call and activity set names is not null, \
+    # then subset data based on value and column specified
+    if subset_by_column_value:
+        # create subset of activity names and allocation subset metrics
+        asn_subset = asn[asn['name'].isin(activitynames)].reset_index(drop=True)
+        if asn_subset['allocation_subset'].isna().all():
+            pass
+        elif asn_subset['allocation_subset'].isna().any():
+            log.error('Define column and value to subset on in the activity set csv for all rows')
+        else:
+            col_to_subset = asn_subset['allocation_subset_col'][0]
+            val_to_subset = asn_subset['allocation_subset'][0]
+            # subset fba_allocation_subset further
+            log.info('Subset the allocation dataseet where ' + str(col_to_subset) + ' = ' + str(val_to_subset))
+            fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset]
+                                                          == val_to_subset].reset_index(drop=True)
 
     return fba_allocation_subset
 

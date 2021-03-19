@@ -19,6 +19,13 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def Census_CBP_URL_helper(build_url, config, args):
+    """
+
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     urls_census = []
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
     for c in FIPS_2:
@@ -36,6 +43,13 @@ def Census_CBP_URL_helper(build_url, config, args):
 
 
 def census_cbp_call(url, cbp_response, args):
+    """
+
+    :param url:
+    :param cbp_response:
+    :param args:
+    :return:
+    """
     cbp_json = json.loads(cbp_response.text)
     # convert response to dataframe
     df_census = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
@@ -43,6 +57,12 @@ def census_cbp_call(url, cbp_response, args):
 
 
 def census_cbp_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # Add year
@@ -88,5 +108,3 @@ def census_cbp_parse(dataframe_list, args):
     df['DataCollection'] = 5
     df['Compartment'] = None
     return df
-
-

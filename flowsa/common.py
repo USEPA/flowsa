@@ -16,6 +16,10 @@ import pkg_resources
 import subprocess
 from esupy.processed_data_mgmt import Paths, FileMeta
 
+# set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
+pkg_version_number = '0.0.2'
+
+
 log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
 
@@ -34,9 +38,14 @@ externaldatapath = datapath + 'external_data/'
 
 paths = Paths
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
-outputpath = paths.local_path
+outputpath = paths.local_path.replace('\\', '/') + '/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
+biboutputpath = outputpath + 'Bibliography/'
+
+# paths to scripts
+scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + '/scripts/'
+scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
@@ -118,14 +127,6 @@ def load_sector_length_crosswalk():
     cw = pd.read_csv(datapath + 'NAICS_2012_Crosswalk.csv', dtype='str')
     return cw
 
-# def load_sector_length_crosswalk_w_nonnaics():
-#     cw = load_sector_length_crosswalk()
-#     # append household codes
-#     cw = cw.append(pd.DataFrame([["F010", "F010", "F010", "F0100", "F01000"]], columns=cw.columns), ignore_index=True)
-#     # append government transportation codes
-#     cw = cw.append(pd.DataFrame([["S00201", "S00201", "S00201", "S00201", "S00201"]], columns=cw.columns), ignore_index=True)
-#     return cw
-
 def load_household_sector_codes():
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
@@ -149,6 +150,22 @@ def load_sourceconfig(source):
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
+
+def update_fba_yaml_date(source):
+    from ruamel.yaml import YAML
+    filename = sourceconfigpath + source + '.yaml'
+
+    yaml = YAML()
+    # open yaml
+    with open(filename) as f:
+        config = yaml.load(f)
+        # update the method yaml with date generated
+        config['date_generated']= pd.to_datetime('today').strftime('%Y-%m-%d')
+
+    # save yaml, preserving comments
+    with open(filename, "w") as file:
+        yaml.dump(config, file)
+    return None
 
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
@@ -272,7 +289,6 @@ def create_fill_na_dict(flow_by_fields):
             fill_na_dict[k] = 0.0
     return fill_na_dict
 
-
 def get_flow_by_groupby_cols(flow_by_fields):
     groupby_cols = []
     for k,v in flow_by_fields.items():
@@ -284,6 +300,20 @@ def get_flow_by_groupby_cols(flow_by_fields):
         #Do not use description for grouping
         groupby_cols.remove('Description')
     return groupby_cols
+
+
+fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
+                       activity_fields['ConsumedBy'][0]['flowbyactivity']]
+fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
+                       activity_fields['ConsumedBy'][1]['flowbysector']]
+fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
+fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
+fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
+fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
+fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
+fbs_grouping_fields_w_activities = fbs_default_grouping_fields + (['ActivityProducedBy', 'ActivityConsumedBy'])
+fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
 
 
 def read_stored_FIPS(year='2015'):
@@ -575,7 +605,7 @@ def set_fb_meta(name_data, category):
     fb_meta = FileMeta
     fb_meta.name_data = name_data
     fb_meta.tool = pkg.project_name
-    fb_meta.tool_version = pkg.version
+    fb_meta.tool_version = pkg_version_number
     fb_meta.category = category
     fb_meta.ext = write_format
     fb_meta.git_hash = git_hash

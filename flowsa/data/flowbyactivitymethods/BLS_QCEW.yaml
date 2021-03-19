@@ -1,19 +1,20 @@
-#For calling BLS Quarterly Census of Employment and Wages to get establishments, employment, annual payroll
-#by NAICS industry for each state and requested year.
----
+author: Bureau of Labor Statistics
+source_name: Quarterly Census of Employment and Wages
+citable_url: https://www.bls.gov/cew/downloadable-data-files.htm
+date_generated: '2021-03-16' # updated automatically when flowbyactivity.py is run
 api_name: BLS
 api_key_required: false
 format: csv  # comma delineated data
 url:
-  base_url: "https://data.bls.gov/cew/data/files/__year__/csv/__year___annual_singlefile.zip"
+  base_url: https://data.bls.gov/cew/data/files/__year__/csv/__year___annual_singlefile.zip
 url_replace_fxn: BLS_QCEW_URL_helper
 call_response_fxn: bls_qcew_call
 parse_response_fxn: bls_qcew_parse
 years:
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018

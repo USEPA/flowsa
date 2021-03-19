@@ -1,33 +1,36 @@
-# Queries Census of Ag API to get all crop land uses at national, state and county levels
----
- api_name: USDA_Quickstats
- api_key_required: true
- format: json
- url:
-   base_url: "https://quickstats.nass.usda.gov/api/"
-   api_path: "api_GET/?key=__apiKey__" #__apiKey__ should be substituted with user's api key
-   url_params:
-     source_desc: "CENSUS"
-     sector_desc: "__secLevel__" # CROPS or ECONOMICS
+author: US Department of Agriculture
+source_name: Census of Agriculture
+citable_url: https://www.nass.usda.gov/AgCensus/
+date_generated: '2021-03-12'  # updated automatically when flowbyactivity.py is run
+api_name: USDA_Quickstats
+api_key_required: true
+format: json
+url:
+  base_url: https://quickstats.nass.usda.gov/api/
+  api_path: api_GET/?key=__apiKey__    #__apiKey__ should be substituted with user's api key
+  url_params:
+    source_desc: CENSUS
+    sector_desc: __secLevel__    # CROPS or ECONOMICS
      # if economics, replace statisticcat_desc with "AREA" and "AREA OPERATED"
-     statisticcat_desc: "AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc=AREA BEARING %26 NON-BEARING"
+    statisticcat_desc: AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc=AREA
+      BEARING %26 NON-BEARING
      # only want commodity_desc as part of URL if sector_desc = Economics
-     commodity_desc: "AG LAND&commodity_desc=FARM OPERATIONS"
-     unit_desc: "ACRES&unit_desc=OPERATIONS" # want two unit types
-     agg_level_desc: "__aggLevel__" # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL", "STATE", or "COUNTY"
-     state_alpha: "__stateAlpha__" # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
-     year: "__year__" # __year__ is used to trigger a replace function to substitute in year
-   key_param: key
- url_replace_fxn: CoA_Cropland_URL_helper
- call_response_fxn: coa_cropland_call
- parse_response_fxn: coa_cropland_parse
- years:
-    - 2012
-    - 2017
- sector_levels:
-   - "CROPS"
-   - "ECONOMICS" # used to get total irrigated cropland
- agg_levels:
-   - "NATIONAL"
-   - "STATE"
-   - "COUNTY"
+    commodity_desc: AG LAND&commodity_desc=FARM OPERATIONS
+    unit_desc: ACRES&unit_desc=OPERATIONS    # want two unit types
+    agg_level_desc: __aggLevel__    # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL", "STATE", or "COUNTY"
+    state_alpha: __stateAlpha__    # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
+    year: __year__    # __year__ is used to trigger a replace function to substitute in year
+  key_param: key
+url_replace_fxn: CoA_Cropland_URL_helper
+call_response_fxn: coa_cropland_call
+parse_response_fxn: coa_cropland_parse
+years:
+- 2012
+- 2017
+sector_levels:
+- CROPS
+- ECONOMICS      # used to get total irrigated cropland
+agg_levels:
+- NATIONAL
+- STATE
+- COUNTY

@@ -10,9 +10,9 @@ The data  was manually scraped so no R/python code is available to replicate.
 Last updated:
 """
 
-import pandas as pd
-from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import add_missing_flow_by_fields, assign_fips_location_system, clean_df, fba_fill_na_dict
+from flowsa.flowbyactivity import process_data_frame
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.dataclean import clean_df, add_missing_flow_by_fields
 from flowsa.common import *
 import os
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = clean_df(flow_df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
     parquet_name = 'California_Commercial_bySector'
-    store_flowbyactivity(flow_df, parquet_name, 2014)
+    process_data_frame(flow_df, parquet_name, '2014')
 
 
 

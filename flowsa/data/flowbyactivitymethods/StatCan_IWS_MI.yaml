@@ -1,16 +1,18 @@
-# Info required to download single CSV from statistics canada site. Downloads as a zip
----
+author: Statistics Canada
+source_name: Water use parameters in manufacturing industries, by industry
+citable_url: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701
+date_generated: '2021-03-12' # updated automatically when flowbyactivity.py is run
 api_name: Stat Canada
 api_key_required: false
 format: csv  # comma delineated data
 url:
-  base_url: "https://www150.statcan.gc.ca/n1/tbl/csv/38100037-eng.zip"
+  base_url: https://www150.statcan.gc.ca/n1/tbl/csv/38100037-eng.zip
 call_response_fxn: sc_call
 parse_response_fxn: sc_parse
 years:
-  - 2005
-  - 2007
-  - 2009
-  - 2011
-  - 2013
-  - 2015
+- 2005
+- 2007
+- 2009
+- 2011
+- 2013
+- 2015
