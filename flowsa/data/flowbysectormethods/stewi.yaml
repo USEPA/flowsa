@@ -1,0 +1,16 @@
+target_sector_level: NAICS_6
+target_sector_source: NAICS_2012_Code
+target_geoscale: national
+source_names:
+  "StEWI":
+    data_format: 'FBS_outside_flowsa'
+    FBS_datapull_fxn: stewicombo_to_sector
+    inventory_dict: {"NEI":"2017", "TRI":"2017"}
+    NAICS_level: 'NAICS_6'
+    geo_scale: 'national'
+    compartments:
+     - 'air'
+    functions:
+     - 'drop_GHGs'
+     - 'reassign_airplane_emissions'
+
