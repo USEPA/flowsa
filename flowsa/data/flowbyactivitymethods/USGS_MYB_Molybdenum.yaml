@@ -1,5 +1,8 @@
 # Downloads and parses CSV from USGS Molybdenum Statistics and Information on an annual basis.
 ---
+source_name: USGS Minneral Yearbook Molybdenum
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-molyb-adv.xlsx
+date_generated: '2021-03-19'
 # api_name: USGS_MYB_Molybdenum
 # api_key_required: false
 format: xls

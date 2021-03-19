@@ -1,5 +1,8 @@
 # Downloads and parses CSV from USGS Zirconium Statistics and Information on an annual basis.
 ---
+source_name: USGS Minneral Yearbook Zirconium
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-zirco.xls
+date_generated: '2021-03-19'
 # api_name: USGS_MYB_Zirconium
 # api_key_required: false
 format: xls

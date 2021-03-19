@@ -1,0 +1,14 @@
+# Downloads and parses CSV from USGS Gallium Statistics and Information on an annual basis.
+---
+source_name: USGS Minneral Yearbook Gallium
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-galli-adv.xlsx
+date_generated: '2021-03-19'
+# api_name: USGS_MYB_Gallium
+# api_key_required: false
+format: xls
+url:
+  base_url: "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-galli-adv.xlsx"
+url_replace_fxn: usgs_gallium_url_helper
+call_response_fxn: usgs_gallium_call
+parse_response_fxn: usgs_gallium_parse
+
