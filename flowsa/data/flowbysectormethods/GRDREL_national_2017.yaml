@@ -5,8 +5,9 @@ source_names:
   "stewicombo":
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: stewicombo_to_sector
-    parameters:
-     - {"TRI":"2017"}       # inventory_dict
-     - 'NAICS_6'            # NAICS_level
-     - 'national'           # geo_scale
-     - ['soil']             # compartments
+    inventory_dict: {"TRI":"2017"}
+    NAICS_level: 'NAICS_6'
+    geo_scale: 'national'
+    compartments:
+      - 'soil'
+    functions: None
