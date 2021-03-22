@@ -25,10 +25,10 @@ Table T1 and T9
 SourceName: USGS_MYB_Mica
 https://www.usgs.gov/centers/nmic/mica-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
+Minerals Yearbook, xls file, tab T1:
 
 Data for: Mica; mine
-This only has Production No import or export. 
+This only has Production No import or export.
 
 Years = 2014+
 """
@@ -37,7 +37,6 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_mica_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -48,18 +47,17 @@ def usgs_mica_call(url, usgs_response, args):
     df_data_one = pd.DataFrame(df_raw_data_one.loc[4:6]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
-
+    name = usgs_myb_name(args["source"])
+    des = name
     if len(df_data_one. columns) == 12:
         df_data_one.columns = ["Production", "Unit", "space_2",  "year_1", "space_3", "year_2",
                                "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
-
     for col in df_data_one.columns:
         if col not in col_to_use:
             del df_data_one[col]
-
     frames = [df_data_one]
     df_data = pd.concat(frames)
     df_data = df_data.reset_index()

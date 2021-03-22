@@ -7,7 +7,7 @@ from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.USGS_MYB_Common import *
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -21,15 +21,15 @@ Import USGS Mineral Yearbook data
 
 Description
 
-Table T1 
+Table T1
 SourceName: USGS_MYB_Zeolites
 https://www.usgs.gov/centers/nmic/zeolites-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
+Minerals Yearbook, xls file, tab T1:
 
 Data for: Zeolites; zeolites, natural
-All of the Export and Import values were originally <1,000 
-The '<' has been striped for the Parquet files.  
+All of the Export and Import values were originally <1,000
+The '<' has been striped for the Parquet files.
 
 Years = 2014+
 """
@@ -38,7 +38,6 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_zeolites_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 

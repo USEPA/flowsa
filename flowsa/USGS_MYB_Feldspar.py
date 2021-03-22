@@ -34,7 +34,6 @@ SPAN_YEARS = "2013-2017"
 
 def usgs_feldspar_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -77,38 +76,32 @@ def usgs_feldspar_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Quantity", "Quantity3"]
     prod = ""
+    name = usgs_myb_name(args["source"])
+    des = name
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Exports, feldspar:4":
                 prod = "exports"
-                des = "feldspar"
             elif df.iloc[index]["Production"].strip() == "Imports for consumption:4":
                 prod = "imports"
-                des = "feldspar"
             elif df.iloc[index]["Production"].strip() == "Production, feldspar:e, 2":
                 prod = "production"
-                des = "feldspar"
             elif df.iloc[index]["Production"].strip() == "Nepheline syenite:":
                 prod = "production"
                 des = "Nepheline syenite"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
                 product = df.iloc[index]["Production"].strip()
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
+                data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
                 data["Unit"] = "Metric Tons"
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 data["Description"] = des
-                data["ActivityProducedBy"] = "feldspar"
-                data['FlowName'] = "feldspar " + prod
+                data["ActivityProducedBy"] = name
+                data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe

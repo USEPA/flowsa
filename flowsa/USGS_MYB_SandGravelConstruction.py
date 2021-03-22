@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -25,28 +25,18 @@ Table T1
 SourceName: USGS_MYB_SandGravelCon
 https://www.usgs.gov/centers/nmic/construction-sand-and-gravel-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
-Data for: 
+Minerals Yearbook, xls file, tab T1:
+Data for:
 Sand and Gravel; sand and gravel (construction)
 
 Years = 2013+
 """
-def year_name_sgc(year):
-    if int(year) == 2013:
-        return_val = "year_1"
-    elif int(year) == 2014:
-        return_val = "year_2"
-    elif int(year) == 2015:
-        return_val = "year_3"
-    elif int(year) == 2016:
-        return_val = "year_4"
-    elif int(year) == 2017:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2013-2017"
+
 
 def usgs_sgc_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
+
     url = build_url
     return [url]
 
@@ -68,7 +58,7 @@ def usgs_sgc_call(url, usgs_response, args):
 
 
     col_to_use = ["Production"]
-    col_to_use.append(year_name_sgc(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data_1.columns:
         if col not in col_to_use:
             del df_data_1[col]
@@ -93,23 +83,14 @@ def usgs_sgc_parse(dataframe_list, args):
             if df.iloc[index]["Production"].strip() in row_to_use:
                 remove_digits = str.maketrans('', '', digits)
                 product = df.iloc[index]["Production"].strip().translate(remove_digits)
-
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_SandGravelCon"
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
-
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
                 data["Unit"] = "Thousand Metric Tons"
-                col_name = year_name_sgc(args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 data["Description"] = "Sand Gravel Construction"
                 data["ActivityProducedBy"] = "Sand Gravel Construction"
                 if product.strip() == "Quantity":
                     data['FlowName'] = "Sand Gravel Construction " + prod
-
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))

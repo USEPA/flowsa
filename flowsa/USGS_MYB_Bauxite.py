@@ -21,24 +21,23 @@ Import USGS Mineral Yearbook data
 
 Description
 
-Table T1 
+Table T1
 SourceName: USGS_MYB_Bauxite
 https://www.usgs.gov/centers/nmic/bauxite-and-alumina-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
+Minerals Yearbook, xls file, tab T1:
 
 Data for: Bauxite
-All of the Export and Import values were originally <1,000 
-The '<' has been striped for the Parquet files.  
+All of the Export and Import values were originally <1,000
+The '<' has been striped for the Parquet files.
 
-Years = 2014+
+Years = 2013+
 """
 
 SPAN_YEARS = "2013-2017"
 
 def usgs_bauxite_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 

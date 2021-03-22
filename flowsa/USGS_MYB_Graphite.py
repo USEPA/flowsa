@@ -29,7 +29,7 @@ Minerals Yearbook, xls file, tab T1
 
 Data for: Graphite; concentrate
 There is no production in this file.
-Years = 2014+
+Years = 2013+
 """
 SPAN_YEARS = "2013-2017"
 

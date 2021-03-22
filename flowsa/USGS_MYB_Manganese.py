@@ -25,18 +25,17 @@ Table T1
 SourceName: USGS_MYB_Manganese
 https://www.usgs.gov/centers/nmic/manganese-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1 
+Minerals Yearbook, xls file, tab T1
 
 Data for: Manganese; manganese ore, US imports
 
-Years = 2014+
+Years = 2012+
 """
 SPAN_YEARS = "2012-2016"
 
 
 def usgs_manganese_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -83,9 +82,6 @@ def usgs_manganese_parse(dataframe_list, args):
                 product = "production"
             elif df.iloc[index]["Production"].strip() == "Exports:":
                 product = "exports"
-
-
-
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]

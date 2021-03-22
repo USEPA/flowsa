@@ -35,7 +35,6 @@ SPAN_YEARS_INPORTS = ["2016", "2017"]
 
 def usgs_fluorspar_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -49,7 +48,7 @@ def usgs_fluorspar_call(url, usgs_response, args):
         df_raw_data_three = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T7')
         df_raw_data_four = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T8')
 
-    df_data_one = pd.DataFrame(df_raw_data_one.loc[5:9]).reindex()
+    df_data_one = pd.DataFrame(df_raw_data_one.loc[5:15]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
     if args['year'] in SPAN_YEARS_INPORTS:
@@ -84,6 +83,7 @@ def usgs_fluorspar_call(url, usgs_response, args):
         for col in df_data_four.columns:
             if col not in col_to_use:
              del df_data_four[col]
+    df_data_one["type"] = "data_one"
 
     if args['year'] in SPAN_YEARS_INPORTS:
         # aluminum fluoride
@@ -105,7 +105,7 @@ def usgs_fluorspar_call(url, usgs_response, args):
 def usgs_fluorspar_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
-    row_to_use = ["Quantity", "Quantity3", "Total", "Hydrofluoric acid", "Metallurgical"]
+    row_to_use = ["Quantity", "Quantity3", "Total", "Hydrofluoric acid", "Metallurgical", "Production"]
     prod = ""
     name = usgs_myb_name(args["source"])
     dataframe = pd.DataFrame()
@@ -117,6 +117,9 @@ def usgs_fluorspar_parse(dataframe_list, args):
             elif df.iloc[index]["Production"].strip() == "Imports for consumption:3":
                 prod = "imports"
                 des = name
+            elif df.iloc[index]["Production"].strip() == "Fluorosilicic acid:":
+                prod = "production"
+                des = "Fluorosilicic acid:"
 
             if str(df.iloc[index]["type"]).strip() == "data_two":
                 prod = "imports"

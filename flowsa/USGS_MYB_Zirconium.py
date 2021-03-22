@@ -1,4 +1,4 @@
-# USGS_MYB_SodaAsh.py (flowsa)
+# USGS_MYB_Zirconium.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -35,7 +35,6 @@ SPAN_YEARS = "2013-2017"
 
 def usgs_zirconium_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 

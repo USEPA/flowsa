@@ -22,7 +22,7 @@ Description
 
 Table T1
 
-SourceName: USGS_MYB_Platinum 
+SourceName: USGS_MYB_Platinum
 https://www.usgs.gov/centers/nmic/platinum-group-metals-statistics-and-information
 
 Minerals Yearbook, xls file, tab T1: SALIENT PLATINUM STATISTICS
@@ -44,7 +44,6 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_platinum_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 

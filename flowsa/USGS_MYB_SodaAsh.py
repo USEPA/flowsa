@@ -20,7 +20,7 @@ Minerals Yearbook, xls file, tab "T4"
 REPORTED CONSUMPTION OF SODA ASH IN THE UNITED STATES, BY END USE, BY QUARTER1
 
 tab "T1"
-Production Input and exports. 
+Production Input and exports.
 
 Interested in annual data, not quarterly
 Years = 2010+
@@ -52,7 +52,6 @@ def description(value, code):
 
 def usgs_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -143,7 +142,6 @@ def usgs_parse(dataframe_list, args):
                     dataframe = dataframe.append(data, ignore_index=True)
                     dataframe = assign_fips_location_system(dataframe, str(args["year"]))
             else:
-                print(df.iloc[index]["Production"])
                 data["Class"] = "Chemicals"
                 data["Compartment"] = None
                 data["Context"] = "air"
@@ -164,11 +162,5 @@ def usgs_parse(dataframe_list, args):
                 if df.iloc[index]["End use"].strip() != "Glass:":
                     dataframe = dataframe.append(data, ignore_index=True)
                     dataframe = assign_fips_location_system(dataframe, str(args["year"]))
-
-
-
-
-
-
     return dataframe
 

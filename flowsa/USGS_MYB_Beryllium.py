@@ -31,7 +31,7 @@ Data for: Beryllium Mine
 SourceName: USGS_MYB_Beryllium
 https://www.usgs.gov/centers/nmic/beryllium-statistics-and-information
 
-Minerals Yearbook, xls file, tab T4 and T1 
+Minerals Yearbook, xls file, tab T4 and T1
 
 Data for: Beryllium; mine shipments
 
@@ -42,7 +42,6 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_beryllium_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 

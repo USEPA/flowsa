@@ -25,11 +25,11 @@ Table T1
 SourceName: USGS_MYB_Niobium
 https://www.usgs.gov/centers/nmic/niobium-columbium-and-tantalum-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1 
+Minerals Yearbook, xls file, tab T1
 
 Data for: Niobium (Columbium); niobium content of ores, concentrate, ferroniobium alloys, metal, powder
 Tantalum; mine
-There is no Production in this excel. 
+There is no Production in this excel.
 Years = 2014+
 """
 SPAN_YEARS = "2014-2018"
@@ -37,7 +37,6 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_niobium_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -82,9 +81,6 @@ def usgs_niobium_parse(dataframe_list, args):
                 product = "imports"
             elif df.iloc[index]["Production"].strip() == "Exports:":
                 product = "exports"
-
-
-
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]

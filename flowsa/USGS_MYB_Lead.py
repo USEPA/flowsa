@@ -1,15 +1,15 @@
-# USGS_MYB_SodaAsh.py (flowsa)
+# USGS_MYB_Lead.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 SourceName: USGS_MYB_Lead
-https://www.usgs.gov/centers/nmic/lead-statistics-and-information 
+https://www.usgs.gov/centers/nmic/lead-statistics-and-information
 
 Minerals Yearbook, xls file, tab T1: SALIENT LEAD STATISTICS
 data for:
@@ -19,36 +19,11 @@ Secondary lead, lead content
 
 Years = 2010+
 """
-
-def year_name(year):
-    if int(year) < 2013:
-        return_val = "year_1"
-    elif int(year) == 2013:
-        return_val = "year_2"
-    elif int(year) == 2014:
-        return_val = "year_3"
-    elif int(year) == 2015:
-        return_val = "year_4"
-    elif int(year) == 2016:
-        return_val = "year_5"
-    return return_val
-
+SPAN_YEARS = "2012-2016"
 
 def usgs_lead_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
-    year = str(args["year"])
-    file_2016 = ["2012", "2013", "2014", "2015", "2016"]
-    if year in file_2016:
-        url = url.replace("__url_text__", config["url_texts"]["2016"])
-        url = url.replace("__file_year__", "2016")
-    elif year == "2011":
-        url = url.replace("__url_text__", config["url_texts"]["2015"])
-        url = url.replace("__file_year__", "2015")
-    elif year == "2010":
-        url = url.replace("__url_text__", config["url_texts"]["2014"])
-        url = url.replace("__file_year__", "2014")
     return [url]
 
 
@@ -68,7 +43,7 @@ def usgs_lead_call(url, usgs_response, args):
         df_data.columns = ["Production", "Units", "space_1", "year_1", "space_2", "year_2", "space_3","year_3", "space_4",
                            "year_4", "space_5", "year_5", "space_6"]
     col_to_use = ["Production", "Units"]
-    col_to_use.append(year_name(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data.columns:
         if col not in col_to_use:
             del df_data[col]
@@ -79,6 +54,8 @@ def usgs_lead_call(url, usgs_response, args):
 def usgs_lead_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
+    name = usgs_myb_name(args["source"])
+    des = name
     row_to_use = ["Primary lead, refined content, domestic ores and base bullion", "Secondary lead, lead content",
                    "Lead ore and concentrates", "Lead in base bullion"]
     import_export = ["Exports, lead content:","Imports for consumption, lead content:"]
@@ -92,18 +69,13 @@ def usgs_lead_parse(dataframe_list, args):
                 elif df.iloc[index]["Production"].strip() == "Imports for consumption, lead content:":
                     product = "imports"
             if df.iloc[index]["Production"].strip() in row_to_use:
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Lead"
+                data = usgs_myb_static_varaibles()
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = "Lead " + product
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
+                data['FlowName'] = name + " " + product
                 data["ActivityProducedBy"] = df.iloc[index]["Production"]
-                col_name = year_name(args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)
                 else:

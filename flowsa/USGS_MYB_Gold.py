@@ -1,10 +1,11 @@
-# USGS_MYB_SodaAsh.py (flowsa)
+# USGS_MYB_Gold.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -30,24 +31,10 @@ Gold; mine
 
 Years = 2013+
 """
-
-def year_name_gold(year):
-    if int(year) == 2013:
-        return_val = "year_1"
-    elif int(year) == 2014:
-        return_val = "year_2"
-    elif int(year) == 2015:
-        return_val = "year_3"
-    elif int(year) == 2016:
-        return_val = "year_4"
-    elif int(year) == 2017:
-        return_val = "year_5"
-    return return_val
-
+SPAN_YEARS = "2013-2017"
 
 def usgs_gold_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -65,7 +52,7 @@ def usgs_gold_call(url, usgs_response, args):
                            "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
-    col_to_use.append(year_name_gold(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data.columns:
         if col not in col_to_use:
             del df_data[col]
@@ -79,6 +66,8 @@ def usgs_gold_parse(dataframe_list, args):
     row_to_use = ["Quantity", "Exports, refined bullion", "Imports for consumption, refined bullion"]
     dataframe = pd.DataFrame()
     product = "production"
+    name = usgs_myb_name(args["source"])
+    des = name
     for df in dataframe_list:
         for index, row in df.iterrows():
 
@@ -90,19 +79,16 @@ def usgs_gold_parse(dataframe_list, args):
                 product = "imports"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Gold"
+                data = usgs_myb_static_varaibles()
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "kilograms"
-                data['FlowName'] = "Gold " + product
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
-                data["Description"] = "Gold"
-                data["ActivityProducedBy"] = "Gold"
-                col_name = year_name_gold(args["year"])
+                data['FlowName'] = name + " " + product
+
+
+                data["Description"] = des
+                data["ActivityProducedBy"] = name
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)
                 else:

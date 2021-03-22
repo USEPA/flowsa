@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -24,28 +24,16 @@ Table T1 and T9
 SourceName: USGS_MYB_Diatomite
 https://www.usgs.gov/centers/nmic/diatomite-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1 and T9: 
+Minerals Yearbook, xls file, tab T1 and T9:
 
 Data for: Diatomite; diatomite
 
-Years =  2014+ 
+Years =  2014+
 """
-def year_name_diatomite(year):
-    if int(year) == 2014:
-        return_val = "year_1"
-    elif int(year) == 2015:
-        return_val = "year_2"
-    elif int(year) == 2016:
-        return_val = "year_3"
-    elif int(year) == 2017:
-        return_val = "year_4"
-    elif int(year) == 2018:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2014-2018"
 
 def usgs_diatomite_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -62,7 +50,7 @@ def usgs_diatomite_call(url, usgs_response, args):
         df_data_one.columns = ["Production", "year_1", "space_2", "year_2", "space_3",
                            "year_3", "space_4", "year_4", "space_5", "year_5"]
     col_to_use = ["Production"]
-    col_to_use.append(year_name_diatomite(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
 
     for col in df_data_one.columns:
         if col not in col_to_use:
@@ -82,6 +70,8 @@ def usgs_diatomite_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Quantity", "Exports2", "Imports for consumption2"]
     prod = ""
+    name = usgs_myb_name(args["source"])
+    des = name
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
@@ -94,22 +84,20 @@ def usgs_diatomite_parse(dataframe_list, args):
 
             if df.iloc[index]["Production"].strip() in row_to_use:
                 product = df.iloc[index]["Production"].strip()
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Diatomite"
+                data = usgs_myb_static_varaibles()
+
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
+
+
                 data["Unit"] = "Thousand metric tons"
-                col_name = year_name_diatomite(args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 data["FlowAmount"] = str(df.iloc[index][col_name])
 
                 if product.strip() == "Quantity":
-                    data["Description"] = "diatomite"
-                    data["ActivityProducedBy"] = "diatomite"
-                    data['FlowName'] = "diatomite" + prod
+                    data["Description"] = name
+                    data["ActivityProducedBy"] = name
+                    data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe

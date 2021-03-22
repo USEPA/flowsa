@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -25,7 +25,7 @@ Table T1
 SourceName: USGS_MYB_Lime
 https://www.usgs.gov/centers/nmic/lime-statistics-and-information
 
-Minerals Yearbook, xls file, tab T10: 
+Minerals Yearbook, xls file, tab T10:
 United States, sulfide ore, concentrate
 
 
@@ -33,22 +33,10 @@ Data for: Lime; lime
 
 Years = 2014+
 """
-def year_name_lime(year):
-    if int(year) == 2014:
-        return_val = "year_1"
-    elif int(year) == 2015:
-        return_val = "year_2"
-    elif int(year) == 2016:
-        return_val = "year_3"
-    elif int(year) == 2017:
-        return_val = "year_4"
-    elif int(year) == 2018:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2014-2018"
 
 def usgs_lime_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -77,7 +65,7 @@ def usgs_lime_call(url, usgs_response, args):
                            "space_9"]
 
     col_to_use = ["Production"]
-    col_to_use.append(year_name_lime(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data_1.columns:
         if col not in col_to_use:
             del df_data_1[col]
@@ -96,6 +84,8 @@ def usgs_lime_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Total", "Quantity"]
     import_export = ["Exports:7", "Imports for consumption:7"]
+    name = usgs_myb_name(args["source"])
+    des = name
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         prod = "production"
@@ -107,24 +97,17 @@ def usgs_lime_parse(dataframe_list, args):
             if df.iloc[index]["Production"].strip() in row_to_use:
                 remove_digits = str.maketrans('', '', digits)
                 product = df.iloc[index]["Production"].strip().translate(remove_digits)
-
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Lime"
+                data = usgs_myb_static_varaibles()
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
-
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
                 data["Unit"] = "Thousand Metric Tons"
-                col_name = year_name_lime(args["year"])
-                data["Description"] = "Lime"
-                data["ActivityProducedBy"] = "Lime"
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
+                data["Description"] = des
+                data["ActivityProducedBy"] = name
                 if product.strip() == "Total":
-                    data['FlowName'] = "Lime " + prod
+                    data['FlowName'] = name + " " + prod
                 elif product.strip() == "Quantity":
-                    data['FlowName'] = "Lime " + prod
+                    data['FlowName'] = name + " " + prod
 
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)

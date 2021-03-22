@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 
@@ -26,40 +26,17 @@ Table T1
 SourceName: USGS_MYB_Copper
 https://www.usgs.gov/centers/nmic/copper-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
+Minerals Yearbook, xls file, tab T1:
 
 Data for: Copper; mine
 
 Years = 2010+
 """
-
-def year_name_copper(year):
-    if int(year) < 2012:
-        return_val = "year_1"
-    elif int(year) == 2012:
-        return_val = "year_2"
-    elif int(year) == 2013:
-        return_val = "year_3"
-    elif int(year) == 2014:
-        return_val = "year_4"
-    elif int(year) == 2015:
-        return_val = "year_5"
-    return return_val
-
+SPAN_YEARS = "2011-2015"
 
 def usgs_copper_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
-    year = str(args["year"])
-    last_file = ["2011", "2012", "2013", "2014", "2015"]
-    if year in last_file:
-        url = url.replace("__file_year__", "2015")
-        url = url.replace("__format__",  config["formats"]["2015"])
-    else:
-        year_string = str(int(args["year"]) + 4)
-        url = url.replace("__file_year__", year_string)
-        url = url.replace("__format__", config["formats"][year_string])
     return [url]
 
 
@@ -81,7 +58,7 @@ def usgs_copper_call(url, usgs_response, args):
                            "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production", "Unit"]
-    col_to_use.append(year_name_copper(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data_1.columns:
         if col not in col_to_use:
             del df_data_1[col]
@@ -98,29 +75,27 @@ def usgs_copper_call(url, usgs_response, args):
 def usgs_copper_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
+    name = usgs_myb_name(args["source"])
+    des = name
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
             remove_digits = str.maketrans('', '', digits)
             product = df.iloc[index]["Production"].strip().translate(remove_digits)
-
-            data["Class"] = "Geological"
-            data['FlowType'] = "ELEMENTARY_FLOWS"
-            data["Location"] = "00000"
-            data["Compartment"] = "ground"
-            data["SourceName"] = "USGS_MYB_Copper"
+            data = usgs_myb_static_varaibles()
+            data["SourceName"] = args["source"]
             data["Year"] = str(args["year"])
             if product == "Total":
-                data['FlowName'] = "copper production"
+                prod = "production"
             elif product == "Exports, refined":
-                data['FlowName'] = "copper exports"
+                prod = "exports"
             elif product == "Imports, refined":
-                data['FlowName'] = "copper imports"
-            data["Context"] = None
+                prod = "imports"
+
             data["ActivityProducedBy"] = "Copper; Mine"
-            data["ActivityConsumedBy"] = None
+            data['FlowName'] = name + " " + prod
             data["Unit"] = "Metric Tons"
-            col_name = year_name_copper(args["year"])
+            col_name = usgs_myb_year(SPAN_YEARS, args["year"])
             data["Description"] = "Copper; Mine"
             data["FlowAmount"] = str(df.iloc[index][col_name])
             dataframe = dataframe.append(data, ignore_index=True)

@@ -1,11 +1,11 @@
-# USGS_MYB_SodaAsh.py (flowsa)
+# USGS_MYB_Silver.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
 import io
 from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 
@@ -25,30 +25,17 @@ Table T1
 SourceName: USGS_MYB_Silver
 https://www.usgs.gov/centers/nmic/silver-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1 
+Minerals Yearbook, xls file, tab T1
 
 Data for: Silver; mine
 
 Years = 2012+
 """
-
-def year_name_silver(year):
-    if int(year) == 2012:
-        return_val = "year_1"
-    elif int(year) == 2013:
-        return_val = "year_2"
-    elif int(year) == 2014:
-        return_val = "year_3"
-    elif int(year) == 2015:
-        return_val = "year_4"
-    elif int(year) == 2016:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2012-2016"
 
 
 def usgs_silver_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -65,7 +52,7 @@ def usgs_silver_call(url, usgs_response, args):
                            "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
-    col_to_use.append(year_name_silver(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data.columns:
         if col not in col_to_use:
             del df_data[col]
@@ -77,7 +64,8 @@ def usgs_silver_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Ore and concentrate", "Ore and concentrate2", "Quantity"]
     dataframe = pd.DataFrame()
-
+    name = usgs_myb_name(args["source"])
+    des = name
     for df in dataframe_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Ore and concentrate2":
@@ -86,21 +74,15 @@ def usgs_silver_parse(dataframe_list, args):
                 product = "production"
             elif df.iloc[index]["Production"].strip() == "Ore and concentrate":
                 product = "exports"
-
             if df.iloc[index]["Production"].strip() in row_to_use:
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Silver"
+                data = usgs_myb_static_varaibles()
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = "Silver " + product
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
-                data["Description"] = "Silver"
-                data["ActivityProducedBy"] = "Silver"
-                col_name = year_name_silver(args["year"])
+                data['FlowName'] = name + " " + product
+                data["Description"] = des
+                data["ActivityProducedBy"] = name
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
                 else:

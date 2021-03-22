@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -24,29 +24,17 @@ Table T1 and T8
 SourceName: USGS_MYB_Cobalt
 https://www.usgs.gov/centers/nmic/cobalt-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1 and T8: 
+Minerals Yearbook, xls file, tab T1 and T8:
 United States, sulfide ore, concentrate
 
 Data for: Cobalt; cobalt content
 
 Years = 2013+
 """
-def year_name_cobalt(year):
-    if int(year) == 2013:
-        return_val = "year_1"
-    elif int(year) == 2014:
-        return_val = "year_2"
-    elif int(year) == 2015:
-        return_val = "year_3"
-    elif int(year) == 2016:
-        return_val = "year_4"
-    elif int(year) == 2017:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2013-2017"
 
 def usgs_cobalt_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -75,7 +63,7 @@ def usgs_cobalt_call(url, usgs_response, args):
                            "year_3", "space_4", "year_4", "space_5", "year_5", "space_6"]
 
     col_to_use = ["Production"]
-    col_to_use.append(year_name_cobalt(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data_1.columns:
         if col not in col_to_use:
             del df_data_1[col]
@@ -92,6 +80,8 @@ def usgs_cobalt_call(url, usgs_response, args):
 def usgs_cobalt_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
+    name = usgs_myb_name(args["source"])
+    des = name
     row_to_use = ["United Statese, 16, 17", "Mine productione", "Imports for consumption", "Exports"]
     dataframe = pd.DataFrame()
     for df in dataframe_list:
@@ -111,21 +101,20 @@ def usgs_cobalt_parse(dataframe_list, args):
             if df.iloc[index]["Production"].strip() in row_to_use:
                 remove_digits = str.maketrans('', '', digits)
                 product = df.iloc[index]["Production"].strip().translate(remove_digits)
+                data = usgs_myb_static_varaibles()
 
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
-                data["SourceName"] = "USGS_MYB_Cobalt"
+
+
+                data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
 
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
+
+
                 data["Unit"] = "Thousand Metric Tons"
-                col_name = year_name_cobalt(args["year"])
-                data["Description"] = "Cobalt"
-                data["ActivityProducedBy"] = "Cobalt"
-                data['FlowName'] = "Cobalt " + prod
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
+                data["Description"] = des
+                data["ActivityProducedBy"] = name
+                data['FlowName'] = name + " " + prod
 
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 remove_rows = ["(18)", "(2)"]

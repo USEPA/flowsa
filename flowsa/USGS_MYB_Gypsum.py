@@ -24,10 +24,10 @@ Table T1
 SourceName: USGS_MYB_Gypsum
 https://www.usgs.gov/centers/nmic/gypsum-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
+Minerals Yearbook, xls file, tab T1:
 
 Data for: Gypsum; crude
-There is no export for this file. 
+There is no export for this file.
 
 Years = 2014+
 """
@@ -36,7 +36,6 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_gypsum_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 

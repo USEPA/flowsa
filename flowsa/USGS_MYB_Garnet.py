@@ -6,7 +6,7 @@ import io
 from flowsa.common import *
 from string import digits
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.USGS_MYB_Common import *
 
 """
 Projects
@@ -24,28 +24,16 @@ Table T1
 SourceName: USGS_MYB_Garnet
 https://www.usgs.gov/centers/nmic/garnet-statistics-and-information
 
-Minerals Yearbook, xls file, tab T1: 
+Minerals Yearbook, xls file, tab T1:
 
 Data for: Garnet (Industrial); crude
 
 Years = 2014+
 """
-def year_name_garnet(year):
-    if int(year) == 2014:
-        return_val = "year_1"
-    elif int(year) == 2015:
-        return_val = "year_2"
-    elif int(year) == 2016:
-        return_val = "year_3"
-    elif int(year) == 2017:
-        return_val = "year_4"
-    elif int(year) == 2018:
-        return_val = "year_5"
-    return return_val
+SPAN_YEARS = "2014-2018"
 
 def usgs_garnet_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
@@ -72,7 +60,7 @@ def usgs_garnet_call(url, usgs_response, args):
                                "space_8", "space_9", "space_10", "space_11", "space_12", "space_13", "space_14",
                                "space_15", "space_16"]
     col_to_use = ["Production"]
-    col_to_use.append(year_name_garnet(args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
 
     for col in df_data_two.columns:
         if col not in col_to_use:
@@ -93,36 +81,28 @@ def usgs_garnet_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Quantity"]
     prod = ""
+    name = usgs_myb_name(args["source"])
+    des = name
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Exports:2":
                 prod = "exports"
-                des = "garnet"
             elif df.iloc[index]["Production"].strip() == "Imports for consumption: 3":
                 prod = "imports"
-                des = "garnet"
             elif df.iloc[index]["Production"].strip() == "Crude production:":
                 prod = "production"
-                des = "garnet"
-
-
             if df.iloc[index]["Production"].strip() in row_to_use:
                 product = df.iloc[index]["Production"].strip()
-                data["Class"] = "Geological"
-                data['FlowType'] = "ELEMENTARY_FLOWS"
-                data["Location"] = "00000"
-                data["Compartment"] = "ground"
+                data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
-                data["Context"] = None
-                data["ActivityConsumedBy"] = None
                 data["Unit"] = "Metric Tons"
-                col_name = year_name_garnet(args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 data["Description"] = des
-                data["ActivityProducedBy"] = "garnet"
-                data['FlowName'] = "garnet " + prod
+                data["ActivityProducedBy"] = name
+                data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe

@@ -1,4 +1,4 @@
-# USGS_MYB_SodaAsh.py (flowsa)
+# USGS_MYB_Clay.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -34,7 +34,6 @@ SPAN_YEARS = "2015-2016"
 
 def usgs_clay_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
