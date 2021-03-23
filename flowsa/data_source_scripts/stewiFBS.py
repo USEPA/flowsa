@@ -190,7 +190,7 @@ def extract_facility_data(inventory_dict):
         facilities = stewi.getInventoryFacilities(database, year)
         facilities = facilities[['FacilityID', 'State', 'County', 'NAICS']]
         if len(facilities[facilities.duplicated(subset='FacilityID', keep=False)]) > 0:
-            log.info('Duplicate facilities in ' + inventory_name + ' - keeping first listed')
+            log.debug('Duplicate facilities in ' + inventory_name + ' - keeping first listed')
             facilities.drop_duplicates(subset='FacilityID',
                                        keep='first', inplace=True)
         facility_mapping = facility_mapping.append(facilities)
@@ -210,7 +210,7 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     all_NAICS.drop(columns=['PRIMARY_INDICATOR'], inplace=True)
     all_NAICS = naics_expansion(all_NAICS)
     if len(all_NAICS[all_NAICS.duplicated(subset=['FRS_ID', 'Source'], keep=False)]) > 0:
-        log.info('Duplicate primary NAICS reported - keeping first')
+        log.debug('Duplicate primary NAICS reported - keeping first')
         all_NAICS.drop_duplicates(subset=['FRS_ID', 'Source'],
                                   keep='first', inplace=True)
     return all_NAICS

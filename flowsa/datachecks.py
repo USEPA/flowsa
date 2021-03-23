@@ -641,7 +641,7 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
         log.info('There are sectors that are not NAICS 2012 Codes')
-        print(non_sectors)
+        log.debug(non_sectors)
     else:
         log.info('All sectors are NAICS 2012 Codes')
 

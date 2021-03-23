@@ -20,7 +20,7 @@ from esupy.processed_data_mgmt import Paths, FileMeta
 pkg_version_number = '0.0.2'
 
 
-log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
+log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
 
 try:
