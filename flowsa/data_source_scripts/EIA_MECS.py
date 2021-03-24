@@ -469,6 +469,9 @@ def determine_flows_requiring_disaggregation(df_load, attr, method):
             df_not_merged = df_not_merged.append(df_right, ignore_index=True)
     # rename the flowamount column
     df_merged = df_merged.rename(columns={'FlowAmount': 'FlowAmountNew', 'SectorConsumedBy': 'ActivityConsumedBy'})
+    # In the original EIA MECS df, some of the NAICS 6-digit codes sum to a value greater than published NAICS3,
+    # due to rounding. In these cases, the new FlowAmount is a negative number. Reset neg numbers to 0
+    df_merged.loc[df_merged['FlowAmountNew'] < 0, 'FlowAmountNew'] = 0
     # in the original df, drop sector columns re-add sectors, this time with sectors = 'aggregated'
     dfn = df_load.drop(columns=['SectorProducedBy', 'ProducedBySectorType', 'SectorConsumedBy', 'ConsumedBySectorType',
                                 'SectorSourceName'])
