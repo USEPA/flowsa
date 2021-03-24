@@ -39,11 +39,11 @@ formatting criteria, meaning units are not standardized across "Class" types.
  
 Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 |
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
-Blackhurst_IO | Input-Output Vector of 2002 Water Withdrawals for the United States | Water| National | |  |  |  |  |  | |  | |  |  | 
-BLM_PLS | Bureau of Land Management Public Land Statistics | Land | National | |  |  |  |  |  | |  | |  |  | 
-BEA_GDP | Bureau of Economic Analysis GDP | Money| National | |  |  |  |  |  | |  | |  |  | 
-BEA_GDP_GrossOutput | Bureau of Economic Analysis GDP Gross Output | Money | National | |  |  |  |  |  | |  | |  |  | 
-BEA_Use | Bureau of Economic Analysis Use | Money | National | |  |  |  |  |  | |  | |  |  | 
+Blackhurst_IO | [Input-Output Vector of 2002 Water Withdrawals for the United States](https://pubs.acs.org/doi/abs/10.1021/es903147k?journalCode=esthag) | Water| National | |  |  |  |  |  | |  | |  |  | 
+BLM_PLS | [Bureau of Land Management Public Land Statistics](https://www.blm.gov/about/data/public-land-statistics) | Land | National | |  | X |  |  |  | |  | |  |  | 
+BEA_GDP | [Bureau of Economic Analysis GDP](https://www.bea.gov/data/gdp) | Money| National | |  |  |  |  |  | |  | |  |  | 
+BEA_GDP_GrossOutput | [Bureau of Economic Analysis GDP Gross Output](https://www.bea.gov/data/industries/gross-output-by-industry) | Money | National | |  |  |  |  |  | |  | |  |  | 
+BEA_Use | [Bureau of Economic Analysis Use](https://www.bea.gov/industry/input-output-accounts-data) | Money | National | |  | X |  |  |  | | X | |  |  | 
 BEA_Use_Detail_PRO_BeforeRedef |Bureau of Economic Analysis Use Before Redefinitions | Money | National | |  |  |  |  |  | |  | |  |  | 
 BEA_Make_Detail_BeforeRedef |Bureau of Economic Analysis Make Before Redefinitions | Money | National | |  |  |  |  |  | |  | |  |  | 
 BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment, Money, Other | County | Number of employees per industry |  |  |  |  | X | X |  |  |  |  |
