@@ -10,7 +10,6 @@ from flowsa.common import *
 import re
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-
 """
 2012 Commercial Buildings Energy Consumption Survey (CBECS)
 https://www.eia.gov/consumption/commercial/reports/2012/energyusage/index.php 
@@ -19,7 +18,14 @@ Last updated: Monday, August 17, 2020
 
 
 def split(row, header, sub_header, next_line):
+    """
 
+    :param row:
+    :param header:
+    :param sub_header:
+    :param next_line:
+    :return:
+    """
     location_str = ""
     flow_name = ""
     flow_amount = ""
@@ -66,7 +72,7 @@ def split(row, header, sub_header, next_line):
                 column = 1
             elif len(split_str_one) >= 4:
                 if "Leases" in split_str_one[2]:
-                        column = 1
+                    column = 1
                 else:
                     if any(i.isdigit() for i in split_str_one[2]):
                         column = 5
@@ -176,9 +182,8 @@ def split(row, header, sub_header, next_line):
     elif column == 8:
         flow_amount = split_str_one[6]
 
-
-    #if "Geothermal Leases" in flow_name:
-     #   print(flow_amount)
+    # if "Geothermal Leases" in flow_name:
+    #   print(flow_amount)
     if next_line:
         location_str = "Total"
 
@@ -190,14 +195,21 @@ def split(row, header, sub_header, next_line):
         flow_amount_no_comma = "".join(flow_amount.split(","))
     else:
         flow_amount_no_comma = float(flow_amount)
-    #print(location_str, flow_name, flow_amount_no_comma)
+    # print(location_str, flow_name, flow_amount_no_comma)
     return location_str, flow_name, flow_amount_no_comma
 
 
 def blm_pls_URL_helper(build_url, config, args):
-    """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
-    This function does not parse the data, only modifies the urls from which data is obtained. """
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
+
     # initiate url list for coa cropland data
     urls = []
     year = args["year"]
@@ -214,7 +226,13 @@ def blm_pls_URL_helper(build_url, config, args):
 
 
 def blm_pls_call(url, response_load, args):
+    """
 
+    :param url:
+    :param response_load:
+    :param args:
+    :return:
+    """
     # test
     # response_load = r
 
@@ -244,7 +262,6 @@ def blm_pls_call(url, response_load, args):
     flow_name = []
     number_of_sub_headers = 0
     page_value = 0
-
 
     duplicate_headers = [
         "Pre-Reform Act Future Interest Leases",
@@ -343,35 +360,35 @@ def blm_pls_call(url, response_load, args):
                 "Competitive Regional Leases": [136],
                 "Exchange Leases": [136],
                 "Preference Right Leases": [136]
-                                    },
+            },
             "Coal Licenses": {
                 "Exploration Licenses": [137],
                 "Licenses To Mine": [137]
-                              },
+            },
             "Logical Mining Units": {"None": [137]},
             "Combined Hydrocarbon Leases": {"None": [139]},
             "Phosphate Leases": {
                 "Phosphate Competitive Leases": [139],
                 "Phosphate Fringe Acreage Noncompetitive Leases": [139],
                 "Phosphate Preference Right Leases": [139]
-                },
+            },
             "Phosphate Use Permits": {"None": [139]},
             "Sodium Leases": {
                 "Sodium Competitive Leases": [140],
                 "Sodium Fringe Acreage Noncompetitive Leases": [140],
                 "Sodium Preference Right Leases": [140]
-                },
+            },
             "Sodium Use Permit": {"None": [140]},
             "Potassium Leases": {
                 "Potassium Competitive Leases": [141],
                 "Potassium Fringe Acreage Noncompetitive Leases": [141],
-               "Potassium Preference Right Leases": [141]
-                       },
+                "Potassium Preference Right Leases": [141]
+            },
             "Gilsonite Leases": {
                 "Gilsonite Competitive Leases": [142],
                 "Gilsonite Fringe Acreage Noncompetitive Leases": [142],
-                 "Gilsonite Preference Right Leases": [142]
-                                         },
+                "Gilsonite Preference Right Leases": [142]
+            },
             "Oil Shale RD&D Leases": {"None": [142]},
             "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [143]}
         }
@@ -411,35 +428,35 @@ def blm_pls_call(url, response_load, args):
                 "Competitive Regional Leases": [134],
                 "Exchange Leases": [134],
                 "Preference Right Leases": [134]
-                                    },
+            },
             "Coal Licenses": {
                 "Exploration Licenses": [135],
                 "Licenses To Mine": [135]
-                              },
+            },
             "Logical Mining Units": {"None": [135]},
             "Combined Hydrocarbon Leases": {"None": [137]},
             "Phosphate Leases": {
                 "Phosphate Competitive Leases": [137],
                 "Phosphate Fringe Acreage Noncompetitive Leases": [137],
                 "Phosphate Preference Right Leases": [137]
-                },
+            },
             "Phosphate Use Permits": {"None": [137]},
             "Sodium Leases": {
                 "Sodium Competitive Leases": [138],
                 "Sodium Fringe Acreage Noncompetitive Leases": [138],
                 "Sodium Preference Right Leases": [138]
-                },
+            },
             "Sodium Use Permit": {"None": [138]},
             "Potassium Leases": {
                 "Potassium Competitive Leases": [139],
                 "Potassium Fringe Acreage Noncompetitive Leases": [139],
                 "Potassium Preference Right Leases": [139]
-                       },
+            },
             "Gilsonite Leases": {
                 "Gilsonite Competitive Leases": [140],
                 "Gilsonite Fringe Acreage Noncompetitive Leases": [140],
                 "Gilsonite Preference Right Leases": [140]
-                                         },
+            },
             "Oil Shale RD&D Leases": {"None": [140]},
             "Hardrock – Acquired Lands Leases": {"Hardrock Preference Right Leases": [141]}
         }
@@ -457,7 +474,8 @@ def blm_pls_call(url, response_load, args):
                 found_header = False
                 found_sub_header = False
 
-                pdf_page = tabula.read_pdf(io.BytesIO(response_load.content), pages=page_number, stream=True, guess=False,)[0]
+                pdf_page = \
+                tabula.read_pdf(io.BytesIO(response_load.content), pages=page_number, stream=True, guess=False, )[0]
 
                 if pdf_page.shape[1] == 1:
                     pdf_page.columns = ["one"]
@@ -478,7 +496,7 @@ def blm_pls_call(url, response_load, args):
                         split_row = row["one"]
                     # if page_number in no_header_page_numbers:
                     if row['page_no'] in no_header_page_numbers:
-                    # if pages in no_header_page_numbers:
+                        # if pages in no_header_page_numbers:
                         found_header = True
                     if split_row == header:
                         found_header = True
@@ -511,7 +529,7 @@ def blm_pls_call(url, response_load, args):
                                 next_line = False
                                 header = "Nothing"
                             if "Total" in row["one"]:
-                              #  print(header, sub_header)
+                                #  print(header, sub_header)
                                 row_one_str = ""
                                 if any(i.isdigit() for i in row["one"]):
                                     #   row split based on space
@@ -528,13 +546,13 @@ def blm_pls_call(url, response_load, args):
                                     number_of_sub_headers = number_of_sub_headers + 1
                                     copy = False
                                     found_header = False
-                                   # if number_of_sub_headers >= len(sub_headers[item]):
-                                  #      header = "Nothing"
+                                # if number_of_sub_headers >= len(sub_headers[item]):
+                                #      header = "Nothing"
                                 else:
                                     next_line = True
 
-                         #   if "Total" in row["one"]:
-                         #       copy = False
+                        #   if "Total" in row["one"]:
+                        #       copy = False
                         #        found_header = False
                         if sub_header + "—continued" in row["one"]:
                             skip = False
@@ -547,6 +565,12 @@ def blm_pls_call(url, response_load, args):
 
 
 def blm_pls_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     Location = []
     fips = get_all_state_FIPS_2()
     for df in dataframe_list:
@@ -598,4 +622,3 @@ def standardize_blm_pls_activity_names(df):
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('—', '-', x))
 
     return df
-

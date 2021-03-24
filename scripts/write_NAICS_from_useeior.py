@@ -23,8 +23,8 @@ import pandas as pd
 import numpy as np
 import rpy2.robjects.packages as packages
 from rpy2.robjects import pandas2ri
-from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
-
+from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells
+from flowsa.dataclean import replace_strings_with_NoneType
 
 
 def import_useeior_mastercrosswalk():
@@ -126,6 +126,7 @@ def load_naics_02_to_07_crosswalk():
 
     return naics_02_to_07_cw
 
+
 def update_naics_crosswalk():
     """
     update the useeior crosswalk with crosswalks created for flowsa datasets - want to add any NAICS > 6 digits
@@ -144,7 +145,10 @@ def update_naics_crosswalk():
     # drop rows where all None
     naics = naics.dropna(how='all')
 
-    # find any NAICS where length > 6 that are sed for allocation purposes and add to naics list
+    # drop naics > 6 in mastercrosswalk (all manufacturing) because unused and slows functions
+    naics = naics[naics['NAICS_2012_Code'].apply(lambda x: len(x) < 7)].reset_index(drop=True)
+
+    # find any NAICS where length > 6 that are used for allocation purposes and add to naics list
     missing_naics_df_list = []
     # read in all the crosswalk csv files (ends in toNAICS.csv)
     for file_name in glob.glob(datapath + "activitytosectormapping/"+'*_toNAICS.csv'):

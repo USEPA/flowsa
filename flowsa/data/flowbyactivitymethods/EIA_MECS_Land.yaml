@@ -1,16 +1,18 @@
-# Queries Manufacturing Energy Consumption Survey (MECS) Land
----
-# api_name: EIA_MECS
-# api_key_required: false
+author: US Energy Information Administration
+source_name: Manufacturing Energy Consumption Survey
+citable_url: https://www.eia.gov/consumption/manufacturing/
+date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
+api_name: EIA_MECS
+api_key_required: false
 format: xlsx
 url:
-  base_url: "https://www.eia.gov/consumption/manufacturing/data/__year__/xls/__table__.xlsx"
+  base_url: https://www.eia.gov/consumption/manufacturing/data/__year__/xls/__table__.xlsx
 url_replace_fxn: eia_mecs_URL_helper
 call_response_fxn: eia_mecs_land_call
 parse_response_fxn: eia_mecs_land_parse
 years:
-  - 2010
-  - 2014
+- 2010
+- 2014
 tables:
-  - table9_1
+- table9_1
 

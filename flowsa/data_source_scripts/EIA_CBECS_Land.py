@@ -6,7 +6,8 @@ import pandas as pd
 import numpy as np
 import io
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system , fba_default_grouping_fields, aggregator
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
+from flowsa.common import fba_default_grouping_fields
 
 """
 2012 Commercial Buildings Energy Consumption Survey (CBECS)
@@ -16,9 +17,15 @@ Last updated: Monday, August 17, 2020
 
 
 def eia_cbecs_land_URL_helper(build_url, config, args):
-    """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
-    This function does not parse the data, only modifies the urls from which data is obtained. """
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     # initiate url list for coa cropland data
     urls = []
     # replace "__xlsx_name__" in build_url to create three urls
@@ -31,32 +38,38 @@ def eia_cbecs_land_URL_helper(build_url, config, args):
 
 
 def eia_cbecs_land_call(url, cbesc_response, args):
+    """
 
+    :param url:
+    :param cbesc_response:
+    :param args:
+    :return:
+    """
     # Convert response to dataframe
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='data').dropna()
     df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='rse').dropna()
 
-    if("b5.xlsx" in url):
+    if ("b5.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
         df_data = pd.DataFrame(df_raw_data.loc[15:34]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[15:34]).reindex()
 
         df_data.columns = ["Name", "All buildings", "New England", "Middle Atlantic", "East North Central",
-                          "West North Central", "South Atlantic",
-                          "East South Central", "West South Central",
-                          "Mountain", "Pacific"]
+                           "West North Central", "South Atlantic",
+                           "East South Central", "West South Central",
+                           "Mountain", "Pacific"]
         df_rse.columns = ["Name", "All buildings", "New England", "Middle Atlantic", "East North Central",
                           "West North Central", "South Atlantic",
                           "East South Central", "West South Central",
                           "Mountain", "Pacific"]
 
         df_rse = df_rse.melt(id_vars=["Name"],
-                    var_name="Location",
-                    value_name="Spread")
-        df_data =df_data.melt(id_vars=["Name"],
-                    var_name="Location",
-                    value_name="FlowAmount")
-    elif("b12.xlsx" in url):
+                             var_name="Location",
+                             value_name="Spread")
+        df_data = df_data.melt(id_vars=["Name"],
+                               var_name="Location",
+                               value_name="FlowAmount")
+    elif ("b12.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
         df_data1 = pd.DataFrame(df_raw_data.loc[4:5]).reindex()
         df_data2 = pd.DataFrame(df_raw_data.loc[46:50]).reindex()
@@ -69,14 +82,14 @@ def eia_cbecs_land_call(url, cbesc_response, args):
                            "Mercantile", "Religious worship",
                            "Education", "Public assembly"]
         df_rse.columns = ["Description", "All buildings", "Office", "Warehouse and storage", "Service",
-                           "Mercantile", "Religious worship",
-                           "Education", "Public assembly"]
+                          "Mercantile", "Religious worship",
+                          "Education", "Public assembly"]
         df_rse = df_rse.melt(id_vars=["Description"],
-                    var_name="Name",
-                    value_name="Spread")
-        df_data =df_data.melt(id_vars=["Description"],
-                    var_name="Name",
-                    value_name="FlowAmount")
+                             var_name="Name",
+                             value_name="Spread")
+        df_data = df_data.melt(id_vars=["Description"],
+                               var_name="Name",
+                               value_name="FlowAmount")
     elif ("b14.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
         df_data = pd.DataFrame(df_raw_data.loc[27:31]).reindex()
@@ -86,8 +99,8 @@ def eia_cbecs_land_call(url, cbesc_response, args):
                            "Health care In-Patient", "Health care Out-Patient",
                            "Public order and safety"]
         df_rse.columns = ["Description", "All buildings", "Food service", "Food sales", "Lodging",
-                           "Health care In-Patient", "Health care Out-Patient",
-                           "Public order and safety"]
+                          "Health care In-Patient", "Health care Out-Patient",
+                          "Public order and safety"]
         df_rse = df_rse.melt(id_vars=["Description"],
                              var_name="Name",
                              value_name="Spread")
@@ -116,7 +129,8 @@ def eia_cbecs_land_parse(dataframe_list, args):
             dataframes["Location"] = US_FIPS
             dataframes = assign_fips_location_system(dataframes, args['year'])
             dataframes = dataframes.drop(dataframes[dataframes.Description == "Any elevators"].index)
-            dataframes["Description"] = dataframes["Description"].apply(lambda x: x if 'All buildings' in x else x + " floors")
+            dataframes["Description"] = dataframes["Description"].apply(
+                lambda x: x if 'All buildings' in x else x + " floors")
         else:
             dataframes = dataframes.drop(dataframes[dataframes.ActivityConsumedBy == "Before 1920"].index)
             # rename location
@@ -260,7 +274,7 @@ def disaggregate_eia_cbecs_mercentile(df_load):
     # subset to mall activities and calc ratio of mercantile
     df_mall = df_load[df_load['ActivityConsumedBy'].isin(['Enclosed and strip malls'])].reset_index(drop=True)
     df_mall2 = df_mall.merge(df_merc_all)
-    df_mall2['FlowAmount'] = df_mall2['FlowAmount']/df_mall2['Mercantile']
+    df_mall2['FlowAmount'] = df_mall2['FlowAmount'] / df_mall2['Mercantile']
     # drop description col and merge with mercantile floors, recalc flow amount
     df_mall2 = df_mall2.drop(columns=['Description', 'Mercantile'])
     df_mall3 = df_mall2.merge(df_merc_floors)
@@ -270,7 +284,7 @@ def disaggregate_eia_cbecs_mercentile(df_load):
     # repeat with non mall categories
     df_nonmall = df_load[df_load['ActivityConsumedBy'].isin(['Retail (other than mall)'])].reset_index(drop=True)
     df_nonmall2 = df_nonmall.merge(df_merc_all)
-    df_nonmall2['FlowAmount'] = df_nonmall2['FlowAmount']/df_nonmall2['Mercantile']
+    df_nonmall2['FlowAmount'] = df_nonmall2['FlowAmount'] / df_nonmall2['Mercantile']
     # drop description col and merge with mercantile floors, recalc flow amount
     df_nonmall2 = df_nonmall2.drop(columns=['Description', 'Mercantile'])
     df_nonmall3 = df_nonmall2.merge(df_merc_floors)
@@ -312,7 +326,8 @@ def disaggregate_eia_cbecs_vacant_and_other(df_load):
 
     # create ratio of vacant and other
     df_vo = df_load[df_load['ActivityConsumedBy'].isin(['Vacant', 'Other'])].reset_index(drop=True)
-    df_vo = df_vo.assign(Denominator=df_vo.groupby(['Location', 'LocationSystem', 'Year'])['FlowAmount'].transform('sum'))
+    df_vo = df_vo.assign(
+        Denominator=df_vo.groupby(['Location', 'LocationSystem', 'Year'])['FlowAmount'].transform('sum'))
     df_vo['FlowAmount'] = df_vo['FlowAmount'] / df_vo['Denominator']
 
     # drop description col, merge with info on floors and use the ratios to calculate floor area
@@ -339,7 +354,6 @@ def calculate_total_facility_land_area(df):
 
     floor_space_to_land_area_ratio = get_commercial_and_manufacturing_floorspace_to_land_area_ratio()
 
-    df = df.assign(FlowAmount=(df['FlowAmount']/floor_space_to_land_area_ratio) - df['FlowAmount'])
+    df = df.assign(FlowAmount=(df['FlowAmount'] / floor_space_to_land_area_ratio) - df['FlowAmount'])
 
     return df
-

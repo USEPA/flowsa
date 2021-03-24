@@ -1,5 +1,9 @@
 # Calling EPA's National Emissions Inventory (NEI) Data for NONROAD sources
 ---
+author: US Environmental Protection Agency
+source_name: National Emissions Inventory Nonroad Sources
+citable_url: https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei
+date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 api_name: EPA_NEI
 api_key_required: false
 format: zip  # .zip file with individual .csv files and .txt

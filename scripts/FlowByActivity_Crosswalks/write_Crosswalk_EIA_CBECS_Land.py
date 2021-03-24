@@ -9,7 +9,7 @@ Download the crosswalk from CBECS to NAICS that CBECS publishes and reshape
 import pandas as pd
 import io
 from flowsa.common import datapath, make_http_request
-from flowsa.EIA_CBECS_Land import standardize_eia_cbecs_land_activity_names
+from flowsa.data_source_scripts.EIA_CBECS_Land import standardize_eia_cbecs_land_activity_names
 
 if __name__ == '__main__':
     # url for excel crosswalk
@@ -32,8 +32,15 @@ if __name__ == '__main__':
     df = pd.melt(df, id_vars=['Sector'])
     df.columns = ['Sector', 'Activity', 'value']
 
-    # remove all rows where the crosswalk is null
-    df = df[df['value'].notna()]
+    # remove all rows where the crosswalk is null and drop value column
+    df = df[df['value'].notna()].drop(columns=['value']).reset_index(drop=True)
+
+    # Add 'vacant', which is missing from crosswalk, but included in imported data. Will associate vacant
+    # with all CBECS NAICS
+    sec_list = df['Sector'].drop_duplicates().values.tolist()
+    for s in sec_list:
+        df = df.append(pd.DataFrame([[s, 'Vacant']],
+                                    columns=['Sector', 'Activity']), ignore_index=True, sort=False)
 
     # Add additional columns
     df['ActivitySourceName'] = "EIA_CBECS_Land"
@@ -43,15 +50,11 @@ if __name__ == '__main__':
 
     # standarize activity names to match those in FBA
     df = standardize_eia_cbecs_land_activity_names(df, 'Activity')
-
     # reorder and drop columns
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
 
     # sort df
-    df = df.sort_values(['Activity'])
-
-    # reset index
-    df.reset_index(drop=True, inplace=True)
+    df = df.sort_values(['Activity', 'Sector']).reset_index(drop=True)
 
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_EIA_CBECS_Land_toNAICS.csv", index=False)

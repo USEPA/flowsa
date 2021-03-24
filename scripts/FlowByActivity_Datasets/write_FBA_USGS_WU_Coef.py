@@ -11,9 +11,15 @@ Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
 
 from flowsa.common import *
 import pandas as pd
-from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import fba_fill_na_dict, clean_df, assign_fips_location_system
+from flowsa.flowbyactivity import process_data_frame
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import fba_fill_na_dict
+from flowsa.dataclean import clean_df
 
+# add info to be read when creating a bibliography
+author = 'US Geological Survey'
+source_name = 'Method for Estimating Water Withdrawals for Livestock in the United States, 2005'
+citable_url = 'https://pubs.er.usgs.gov/publication/sir20095041'
 
 # 2012--2018 fisheries data at state level
 csv_load = externaldatapath + "USGS_WU_Coef_Raw.csv"
@@ -44,5 +50,5 @@ if __name__ == '__main__':
 
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-    parquet_name = 'USGS_WU_Coef_2005'
-    store_flowbyactivity(flow_df, parquet_name)
+    parquet_name = 'USGS_WU_Coef'
+    process_data_frame(flow_df, parquet_name, '2005')

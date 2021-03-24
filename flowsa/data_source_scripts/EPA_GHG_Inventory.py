@@ -6,7 +6,6 @@ Inventory of US EPA GHG
 https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2018
 """
 
-
 import io
 import zipfile
 import numpy as np
@@ -188,13 +187,23 @@ YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
 
 
 def ghg_url_helper(build_url, config, args):
-    """Only one URL is needed to retrieve the data for all tables for all years."""
+    """
+    Only one URL is needed to retrieve the data for all tables for all years.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     annex_url = config['url']['annex_url']
     return [build_url, annex_url]
 
 
 def fix_a17_headers(header):
-    """Fix A-17 headers, trim white spaces, convert shortened words such as Elec., Res., etc."""
+    """
+    Fix A-17 headers, trim white spaces, convert shortened words such as Elec., Res., etc.
+    :param header:
+    :return:
+    """
     if header == A_17_TBTU_HEADER[0]:
         header = f' {A_17_TBTU_HEADER[1].strip()}'.replace('')
     elif header == A_17_CO2_HEADER[0]:
@@ -211,7 +220,12 @@ def fix_a17_headers(header):
 
 
 def cell_get_name(value, default_flow_name):
-    """Given a single string value (cell), separate the name and units."""
+    """
+    Given a single string value (cell), separate the name and units.
+    :param value:
+    :param default_flow_name:
+    :return:
+    """
     if '(' not in value:
         return default_flow_name.replace('__type__', value.strip())
 
@@ -227,7 +241,12 @@ def cell_get_name(value, default_flow_name):
 
 
 def cell_get_units(value, default_units):
-    """Given a single string value (cell), separate the name and units."""
+    """
+    Given a single string value (cell), separate the name and units.
+    :param value:
+    :param default_units:
+    :return:
+    """
     if '(' not in value:
         return default_units
 
@@ -246,8 +265,12 @@ def cell_get_units(value, default_units):
 def series_separate_name_and_units(series, default_flow_name, default_units):
     """
     Given a series (such as a df column), split the contents' strings into a name and units.
-
     An example might be converting "Carbon Stored (MMT C)" into ["Carbon Stored", "MMT C"].
+
+    :param series:
+    :param default_flow_name:
+    :param default_units:
+    :return:
     """
     names = series.apply(lambda x: cell_get_name(x, default_flow_name))
     units = series.apply(lambda x: cell_get_units(x, default_units))
@@ -258,6 +281,10 @@ def ghg_call(url, response, args):
     """
     Callback function for the US GHG Emissions download. Open the downloaded zip file and
     read the contained CSV(s) into pandas dataframe(s).
+    :param url:
+    :param response:
+    :param args:
+    :return:
     """
     df = None
     year = args['year']
@@ -346,19 +373,32 @@ def ghg_call(url, response, args):
 
 
 def get_unnamed_cols(df):
-    """Get a list of all unnamed columns, used to drop them."""
+    """
+    Get a list of all unnamed columns, used to drop them.
+    :param df:
+    :return:
+    """
     return [col for col in df.columns if "Unnamed" in col]
 
 
 def is_consumption(source_name):
-    """Determine whether the given source contains consumption or production data."""
+    """
+    Determine whether the given source contains consumption or production data.
+    :param source_name:
+    :return:
+    """
     if 'consum' in TBL_META[source_name]['desc'].lower():
         return True
     return False
 
 
 def ghg_parse(dataframe_list, args):
-    """Parse the given EPA GHGI data and return multiple dataframes, one per-year per-table."""
+    """
+    Parse the given EPA GHGI data and return multiple dataframes, one per-year per-table.
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     cleaned_list = []
     for df in dataframe_list:
         special_format = False
@@ -488,4 +528,3 @@ def ghg_parse(dataframe_list, args):
         df = pd.DataFrame()
 
     return df
-

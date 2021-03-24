@@ -18,6 +18,13 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def Census_pop_URL_helper(build_url, config, args):
+    """
+
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     urls = []
 
     # get date code for july 1 population numbers
@@ -69,6 +76,13 @@ def Census_pop_URL_helper(build_url, config, args):
 
 
 def census_pop_call(url, response_load, args):
+    """
+
+    :param url:
+    :param response_load:
+    :param args:
+    :return:
+    """
     json_load = json.loads(response_load.text)
     # convert response to dataframe
     df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])
@@ -76,6 +90,12 @@ def census_pop_call(url, response_load, args):
 
 
 def census_pop_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # Add year

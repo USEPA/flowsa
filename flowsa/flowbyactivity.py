@@ -10,31 +10,31 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 from flowsa.common import *
 from esupy.processed_data_mgmt import write_df_to_file
-from flowsa.flowbyfunctions import add_missing_flow_by_fields, clean_df, fba_fill_na_dict
-from flowsa.Blackhurst_IO import *
-from flowsa.BLS_QCEW import *
-from flowsa.Census_CBP import *
-from flowsa.Census_AHS import *
-from flowsa.Census_PEP_Population import *
-from flowsa.EIA_CBECS_Water import *
-from flowsa.EPA_NEI import *
-from flowsa.StatCan_GDP import *
-from flowsa.StatCan_IWS_MI import *
-from flowsa.StatCan_LFS import *
-from flowsa.USDA_CoA_Cropland import *
-from flowsa.USDA_CoA_Cropland_NAICS import *
-from flowsa.USDA_CoA_Livestock import *
-from flowsa.USDA_ERS_FIWS import *
-from flowsa.USDA_IWMS import *
-from flowsa.USGS_NWIS_WU import *
-from flowsa.USDA_ERS_MLU import *
-from flowsa.EIA_CBECS_Land import *
-from flowsa.EIA_CBECS_Water import *
-from flowsa.EIA_MECS import *
-from flowsa.BLM_PLS import *
-from flowsa.EIA_MER import *
-from flowsa.EPA_GHG_Inventory import *
-from flowsa.USGS_MYB_SodaAsh import *
+from flowsa.dataclean import clean_df
+from flowsa.data_source_scripts.Blackhurst_IO import *
+from flowsa.data_source_scripts.BLS_QCEW import *
+from flowsa.data_source_scripts.Census_CBP import *
+from flowsa.data_source_scripts.Census_AHS import *
+from flowsa.data_source_scripts.Census_PEP_Population import *
+from flowsa.data_source_scripts.EIA_CBECS_Water import *
+from flowsa.data_source_scripts.EPA_NEI import *
+from flowsa.data_source_scripts.StatCan_GDP import *
+from flowsa.data_source_scripts.StatCan_IWS_MI import *
+from flowsa.data_source_scripts.StatCan_LFS import *
+from flowsa.data_source_scripts.USDA_CoA_Cropland import *
+from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import *
+from flowsa.data_source_scripts.USDA_CoA_Livestock import *
+from flowsa.data_source_scripts.USDA_ERS_FIWS import *
+from flowsa.data_source_scripts.USDA_IWMS import *
+from flowsa.data_source_scripts.USGS_NWIS_WU import *
+from flowsa.data_source_scripts.USDA_ERS_MLU import *
+from flowsa.data_source_scripts.EIA_CBECS_Land import *
+from flowsa.data_source_scripts.EIA_CBECS_Water import *
+from flowsa.data_source_scripts.EIA_MECS import *
+from flowsa.data_source_scripts.BLM_PLS import *
+from flowsa.data_source_scripts.EIA_MER import *
+from flowsa.data_source_scripts.EPA_GHG_Inventory import *
+from flowsa.data_source_scripts.USGS_MYB_SodaAsh import *
 
 
 def parse_args():
@@ -134,16 +134,22 @@ def process_data_frame(df, source, year):
     name_data = set_fba_name(source, year)
     meta = set_fb_meta(name_data, "FlowByActivity")
     write_df_to_file(flow_df,paths,meta)
+    log.info("FBA generated and saved for " + name_data)
 
 
 def main(**kwargs):
     # assign arguments
     if len(kwargs)==0:
         kwargs = parse_args()
+
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
-    log.info("Creating dataframe list")
+    # update the local config with today's date
+    config['date_generated']= pd.to_datetime('today').strftime('%Y-%m-%d')
+    # update the method yaml with date generated
+    update_fba_yaml_date(kwargs['source'])
 
+    log.info("Creating dataframe list")
     # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
     if '-' in str(kwargs['year']):
         years = str(kwargs['year']).split('-')

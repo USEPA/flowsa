@@ -24,13 +24,11 @@ Data output saved as csv, retaining assigned file name "foss_landings.csv"
 
 from flowsa.common import *
 import pandas as pd
-from flowsa.flowbyactivity import store_flowbyactivity
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
-
+from flowsa.flowbyactivity import process_data_frame
+from flowsa.dataclean import add_missing_flow_by_fields
 
 # 2012--2018 fisheries data at state level
 csv_load = datapath + "foss_landings.csv"
-
 
 if __name__ == '__main__':
     # Read directly into a pandas df
@@ -71,11 +69,11 @@ if __name__ == '__main__':
     df4["Class"] = "Money"
     df4["SourceName"] = "NOAA_Landings"
     df4["FlowName"] = None
-    df['LocationSystem'] = "FIPS_2018" # state FIPS codes have not changed over last decade
+    df['LocationSystem'] = "FIPS_2018"  # state FIPS codes have not changed over last decade
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
 
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = add_missing_flow_by_fields(df4, flow_by_activity_fields)
     parquet_name = 'NOAA_FisheryLandings_2012-2018'
-    store_flowbyactivity(flow_df, parquet_name)
+    process_data_frame(flow_df, parquet_name, year)
