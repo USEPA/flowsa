@@ -40,10 +40,7 @@ def replace_strings_with_NoneType(df):
     # if datatypes are strings, ensure that Null values remain NoneType
     for y in df.columns:
         if df[y].dtype == object:
-            df[y] = df[y].replace({'nan': None,
-                                   'None': None,
-                                   np.nan: None,
-                                   '': None})
+            df.loc[df[y].isin(['nan', 'None', np.nan, '']), y] = None
     return df
 
 
