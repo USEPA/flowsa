@@ -34,7 +34,56 @@ from flowsa.data_source_scripts.EIA_MECS import *
 from flowsa.data_source_scripts.BLM_PLS import *
 from flowsa.data_source_scripts.EIA_MER import *
 from flowsa.data_source_scripts.EPA_GHG_Inventory import *
+from flowsa.data_source_scripts.USGS_MYB_Asbestos import *
+from flowsa.data_source_scripts.USGS_MYB_Barite import *
+from flowsa.data_source_scripts.USGS_MYB_Bauxite import *
+from flowsa.data_source_scripts.USGS_MYB_Beryllium import *
+from flowsa.data_source_scripts.USGS_MYB_Boron import *
+from flowsa.data_source_scripts.USGS_MYB_Chromium import *
+from flowsa.data_source_scripts.USGS_MYB_Clay import *
+from flowsa.data_source_scripts.USGS_MYB_Cobalt import *
+from flowsa.data_source_scripts.USGS_MYB_Copper import *
+from flowsa.data_source_scripts.USGS_MYB_Diatomite import *
+from flowsa.data_source_scripts.USGS_MYB_Feldspar import *
+from flowsa.data_source_scripts.USGS_MYB_Fluorspar import *
+from flowsa.data_source_scripts.USGS_MYB_Gallium import *
+from flowsa.data_source_scripts.USGS_MYB_Garnet import *
+from flowsa.data_source_scripts.USGS_MYB_Gold import *
+from flowsa.data_source_scripts.USGS_MYB_Graphite import *
+from flowsa.data_source_scripts.USGS_MYB_Gypsum import *
+from flowsa.data_source_scripts.USGS_MYB_Iodine import *
+from flowsa.data_source_scripts.USGS_MYB_IronOre import *
+from flowsa.data_source_scripts.USGS_MYB_Kyanite import *
+from flowsa.data_source_scripts.USGS_MYB_Lead import *
+from flowsa.data_source_scripts.USGS_MYB_Lithium import *
+from flowsa.data_source_scripts.USGS_MYB_Manganese import *
+from flowsa.data_source_scripts.USGS_MYB_ManufacturedAbrasive import *
+from flowsa.data_source_scripts.USGS_MYB_Mica import *
+from flowsa.data_source_scripts.USGS_MYB_Molybdenum import *
+from flowsa.data_source_scripts.USGS_MYB_Nickel import *
+from flowsa.data_source_scripts.USGS_MYB_Niobium import *
+from flowsa.data_source_scripts.USGS_MYB_Peat import *
+from flowsa.data_source_scripts.USGS_MYB_Perlite import *
+from flowsa.data_source_scripts.USGS_MYB_Phosphate import *
+from flowsa.data_source_scripts.USGS_MYB_Platinum import *
+from flowsa.data_source_scripts.USGS_MYB_Potash import *
+from flowsa.data_source_scripts.USGS_MYB_Pumice import *
+from flowsa.data_source_scripts.USGS_MYB_Rhenium import *
+from flowsa.data_source_scripts.USGS_MYB_Salt import *
+from flowsa.data_source_scripts.USGS_MYB_SandGravelConstruction import *
+from flowsa.data_source_scripts.USGS_MYB_SandGravelIndustrial import *
+from flowsa.data_source_scripts.USGS_MYB_Silver import *
 from flowsa.data_source_scripts.USGS_MYB_SodaAsh import *
+from flowsa.data_source_scripts.USGS_MYB_StoneCrushed import *
+from flowsa.data_source_scripts.USGS_MYB_StoneDimension import *
+from flowsa.data_source_scripts.USGS_MYB_Strontium import *
+from flowsa.data_source_scripts.USGS_MYB_Talc import *
+from flowsa.data_source_scripts.USGS_MYB_Titanium import *
+from flowsa.data_source_scripts.USGS_MYB_Tungsten import *
+from flowsa.data_source_scripts.USGS_MYB_Vermiculite import *
+from flowsa.data_source_scripts.USGS_MYB_Zeolites import *
+from flowsa.data_source_scripts.USGS_MYB_Zinc import *
+from flowsa.data_source_scripts.USGS_MYB_Zirconium import *
 
 
 def parse_args():
@@ -141,6 +190,10 @@ def main(**kwargs):
     # assign arguments
     if len(kwargs)==0:
         kwargs = parse_args()
+
+    # test
+    # kwargs = [{'year': '2017',
+    #            'source': 'USGS_MYB_Boron'}]
 
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
