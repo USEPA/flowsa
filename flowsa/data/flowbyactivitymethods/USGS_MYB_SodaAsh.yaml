@@ -8,6 +8,6 @@ date_generated: '2021-03-19'
 format: xlsx
 url:
   base_url: "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-sodaa.xls"
-url_replace_fxn: usgs_url_helper
-call_response_fxn: usgs_call
-parse_response_fxn: usgs_parse
+url_replace_fxn: sa_url_helper
+call_response_fxn: sa_call
+parse_response_fxn: sa_parse

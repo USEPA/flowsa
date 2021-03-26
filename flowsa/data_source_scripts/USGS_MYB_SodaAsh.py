@@ -50,13 +50,13 @@ def description(value, code):
     return return_val
 
 
-def usgs_url_helper(build_url, config, args):
+def sa_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
     url = build_url
     return [url]
 
 
-def usgs_call(url, usgs_response, args):
+def sa_call(url, usgs_response, args):
     """TODO."""
     col_to_use = ["Production", "NAICS code", "End use"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -102,7 +102,7 @@ def usgs_call(url, usgs_response, args):
 
 
 
-def usgs_parse(dataframe_list, args):
+def sa_parse(dataframe_list, args):
     total_glass = 0
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
