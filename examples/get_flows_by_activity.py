@@ -37,9 +37,12 @@ usgs_water_2015_fba.to_csv(fbaoutputpath + ds + "_" + "_".join(map(str, years_fb
 # EXAMPLE 3
 # loop through and read all USGS_MYB parquets for 2015
 # list of minerals
-minerals = ['Barite', 'Beryllium', 'Boron', 'Clay', 'Colbolt', 'Copper', 'Gold', 'Iron_Ore', 'Lead', 'Lime',
-            'Magnesium', 'ManufacturedAbrasive', 'Molybdenum', 'Nickel', 'Platinum', 'Rhenium', 'SandGravelCon',
-            'SandGravelInd', 'Silver', 'SodaAsh', 'Stone_Crushed', 'Stone_Dimension', 'Titanium', 'Zinc', 'Zirconium']
+minerals = ['Asbestos', 'Barite', 'Bauxite', 'Beryllium', 'Boron', 'Chromium', 'Clay', 'Cobalt', 'Copper', 'Diatomite',
+            'Feldspar', 'Fluorspar', 'Gallium', 'Garnet', 'Gold', 'Graphite', 'Gypsum', 'Iodine', 'IronOre', 'Kyanite',
+            'Lead', 'Lime', 'Lithium', 'Magnesium', 'Manganese', 'ManufacturedAbrasive', 'Mica', 'Molybdenum', 'Nickel',
+            'Niobium', 'Peat', 'Perlite', 'Phosphate', 'Platinum', 'Potash', 'Pumice', 'Rhenium', 'Salt',
+            'SandGravelConstruction', 'SandGravelIndustrial', 'Silver', 'SodaAsh', 'StoneCrushed', 'StoneDimension',
+            'Strontium', 'Talc', 'Titanium', 'Tungsten', 'Vermiculite', 'Zeolites', 'Zinc', 'Zirconium']
 for m in minerals:
     try:
         datasource_name = 'USGS_MYB_' + m
