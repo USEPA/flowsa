@@ -53,10 +53,11 @@ def replace_NoneType_with_empty_cells(df):
     # if datatypes are strings, change NoneType to empty cells
     for y in df.columns:
         if df[y].dtype == object:
-            df.loc[:, y] = df[y].replace({'nan': '',
-                                          'None': '',
-                                          np.nan: '',
-                                          None: ''})
+            df.loc[df[y].isin(['nan', 'None', np.nan, None]), y] = ''
+            # df.loc[:, y] = df[y].replace({'nan': '',
+            #                               'None': '',
+            #                               np.nan: '',
+            #                               None: ''})
     return df
 
 
