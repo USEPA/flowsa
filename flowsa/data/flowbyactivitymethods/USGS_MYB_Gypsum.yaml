@@ -1,13 +1,12 @@
-# Downloads and parses CSV from USGS Gypsum Statistics and Information on an annual basis.
----
 source_name: USGS Minneral Yearbook Gypsum
 citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-gypsu-adv.xlsx
-date_generated: '2021-03-19'
+date_generated: '2021-03-26'
+years_available: 2014-2018
 # api_name: USGS_MYB_Gypsum
 # api_key_required: false
 format: xls
 url:
-  base_url: "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-gypsu-adv.xlsx"
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-gypsu-adv.xlsx
 url_replace_fxn: usgs_gypsum_url_helper
 call_response_fxn: usgs_gypsum_call
 parse_response_fxn: usgs_gypsum_parse

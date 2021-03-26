@@ -79,7 +79,7 @@ def usgs_manganese_parse(dataframe_list, args):
                 product = "imports"
             elif df.iloc[index]["Production"].strip() == "Production":
                 product = "production"
-            elif df.iloc[index]["Production"].strip() == "Exports:":
+            elif df.iloc[index]["Production"].strip() == "Exports":
                 product = "exports"
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()

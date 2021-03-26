@@ -89,6 +89,7 @@ def usgs_zinc_parse(dataframe_list, args):
     row_to_use = ["Quantity", "Ores and concentrates, zinc content", "United States"]
     import_export = ["Exports:", "Imports for consumption:", "Recoverable zinc:"]
     prod = ""
+    name = usgs_myb_name(args["source"])
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
@@ -97,6 +98,8 @@ def usgs_zinc_parse(dataframe_list, args):
             elif df.iloc[index]["Production"].strip() == "Imports for consumption:":
                 prod = "imports"
             elif df.iloc[index]["Production"].strip() == "Recoverable zinc:":
+                prod = "production"
+            elif df.iloc[index]["Production"].strip() == "United States":
                 prod = "production"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
@@ -118,7 +121,8 @@ def usgs_zinc_parse(dataframe_list, args):
                     data['FlowName'] = "Ores and concentrates, zinc content " + prod
                 elif product.strip() == "United States":
                     data["Description"] = "Zinc; Mine"
-                    data["ActivityProducedBy"] = "Zinc; Mine"
+                    data["ActivityProducedBy"] = name + " " + prod
+                    data['FlowName'] = "Zinc; Mine"
 
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))

@@ -102,7 +102,7 @@ def usgs_nickel_parse(dataframe_list, args):
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 if product.strip() == "United States, sulfide ore, concentrate":
                     data["Description"] = "United States, sulfide ore, concentrate Nickel"
-                    data["ActivityProducedBy"] = "Nickel"
+                    data["ActivityProducedBy"] = name
                     data['FlowName'] = name + " " + prod
                 elif product.strip() == "Ores and concentrates":
                     data["Description"] = "Ores and concentrates Nickel"

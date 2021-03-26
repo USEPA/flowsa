@@ -58,6 +58,7 @@ from flowsa.data_source_scripts.USGS_MYB_Lead import *
 from flowsa.data_source_scripts.USGS_MYB_Lime import *
 from flowsa.data_source_scripts.USGS_MYB_Lithium import *
 from flowsa.data_source_scripts.USGS_MYB_Manganese import *
+from flowsa.data_source_scripts.USGS_MYB_Magnesium import *
 from flowsa.data_source_scripts.USGS_MYB_ManufacturedAbrasive import *
 from flowsa.data_source_scripts.USGS_MYB_Mica import *
 from flowsa.data_source_scripts.USGS_MYB_Molybdenum import *

@@ -73,7 +73,7 @@ def usgs_lead_parse(dataframe_list, args):
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = name + " " + product
+                data['FlowName'] = name + " " + product + " " + df.iloc[index]["Production"]
                 data["ActivityProducedBy"] = df.iloc[index]["Production"]
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 if str(df.iloc[index][col_name]) == "--":

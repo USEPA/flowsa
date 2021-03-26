@@ -3,6 +3,7 @@
 source_name: USGS Minneral Yearbook Clay
 citable_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2016-clays.xls
 date_generated: '2021-03-19'
+years_available: 2015-2016
 # api_name: USGS_MYB_Clay
 # api_key_required: false
 format: xls

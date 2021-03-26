@@ -99,7 +99,10 @@ def usgs_feldspar_parse(dataframe_list, args):
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
-                data['FlowName'] = name + " " + prod
+                if name == des:
+                    data['FlowName'] = name + " " + prod
+                else:
+                    data['FlowName'] = name + " " + prod + " " + des
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe

@@ -90,7 +90,10 @@ def usgs_strontium_parse(dataframe_list, args):
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = name + " " + product
+                if usgs_myb_remove_digits(df.iloc[index]["Production"].strip()) == "Celestite":
+                    data['FlowName'] = name + " " + product + " " + usgs_myb_remove_digits(df.iloc[index]["Production"].strip())
+                else:
+                    data['FlowName'] = name + " " + product
                 data["Description"] = usgs_myb_remove_digits(df.iloc[index]["Production"].strip())
                 data["ActivityProducedBy"] = name
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])

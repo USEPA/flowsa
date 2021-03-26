@@ -139,11 +139,11 @@ def sa_parse(dataframe_list, args):
                     dataframe = assign_fips_location_system(dataframe, str(args["year"]))
             else:
                 data["Class"] = "Chemicals"
-                data["Compartment"] = None
-                data["Context"] = "air"
+                data["Context"] = None
+                data["Compartment"] = "air"
                 data["Description"] = ""
                 data['ActivityConsumedBy'] = description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
-
+                data['FlowName'] = name  + " " + description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
                 if df.iloc[index]["End use"].strip() == "Glass:":
                     total_glass = int(df.iloc[index]["NAICS code"])
                 elif data['ActivityConsumedBy'] == "Glass Total":

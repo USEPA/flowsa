@@ -1,13 +1,12 @@
-# Downloads and parses CSV from USGS Soda Ash Statistics and Information on an annual basis.
----
 source_name: USGS Minneral Yearbook Soda Ash
 citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-sodaa.xls
-date_generated: '2021-03-19'
+date_generated: '2021-03-26'
+years_available: 2013-2017
 # api_name: USGS_MYB_SodaAsh
 # api_key_required: false
 format: xlsx
 url:
-  base_url: "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-sodaa.xls"
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-sodaa.xls
 url_replace_fxn: sa_url_helper
 call_response_fxn: sa_call
 parse_response_fxn: sa_parse

@@ -68,7 +68,7 @@ def usgs_magnesium_parse(dataframe_list, args):
             elif df.iloc[index]["Production"].strip() == "Imports for consumption":
                 product = "imports"
             elif df.iloc[index]["Production"].strip() == "Secondary" or df.iloc[index]["Production"].strip() == "Primary" :
-                product = "production"
+                product = "production" + " " + df.iloc[index]["Production"].strip()
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]

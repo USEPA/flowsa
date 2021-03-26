@@ -90,10 +90,10 @@ def usgs_cobalt_parse(dataframe_list, args):
 
         for index, row in df.iterrows():
             prod = "production"
-            if df.iloc[index]["Production"].strip() == "Mine productione":
-                prod = "production"
+            # if df.iloc[index]["Production"].strip() == "Mine productione":
+            #   prod = "mine production"
             if df.iloc[index]["Production"].strip() == "United Statese, 16, 17":
-                prod = "US production"
+                prod = "production"
             elif df.iloc[index]["Production"].strip() == "Imports for consumption":
                 prod = "imports"
             elif df.iloc[index]["Production"].strip() == "Exports":

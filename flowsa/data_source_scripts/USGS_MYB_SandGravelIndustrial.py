@@ -47,7 +47,7 @@ def usgs_sgi_call(url, usgs_response, args):
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]
 
-    df_data_2 = pd.DataFrame(df_raw_data_two.loc[16:19]).reindex()
+    df_data_2 = pd.DataFrame(df_raw_data_two.loc[15:19]).reindex()
     df_data_2 = df_data_2.reset_index()
     del df_data_2["index"]
 

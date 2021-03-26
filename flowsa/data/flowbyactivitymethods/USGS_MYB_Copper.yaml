@@ -3,6 +3,7 @@
 source_name: USGS Minneral Yearbook Copper
 citable_url: https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-pubs/copper/myb1-2015-coppe.xlsx
 date_generated: '2021-03-19'
+years_available: 2011-2015
 # api_name: USGS_MYB_Copper
 # api_key_required: false
 format: xlsx

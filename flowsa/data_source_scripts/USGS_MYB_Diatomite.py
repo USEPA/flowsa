@@ -92,10 +92,10 @@ def usgs_diatomite_parse(dataframe_list, args):
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 data["FlowAmount"] = str(df.iloc[index][col_name])
 
-                if product.strip() == "Quantity":
-                    data["Description"] = name
-                    data["ActivityProducedBy"] = name
-                    data['FlowName'] = name + " " + prod
+
+                data["Description"] = name
+                data["ActivityProducedBy"] = name
+                data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe

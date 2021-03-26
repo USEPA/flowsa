@@ -104,7 +104,10 @@ def usgs_boron_parse(dataframe_list, args):
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = name + " " + product
+                if des == name:
+                    data['FlowName'] = name + " " + product
+                else:
+                    data['FlowName'] = name + " " + product + " " + des
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
