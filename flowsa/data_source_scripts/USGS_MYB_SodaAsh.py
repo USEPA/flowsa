@@ -2,14 +2,10 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import pandas as pd
-import numpy as np
 import io
-from flowsa.common import *
-from string import digits
-from flowsa.flowbyfunctions import assign_fips_location_system , fba_default_grouping_fields, aggregator
+from flowsa.flowbyfunctions import assign_fips_location_system
 import math
-from flowsa.USGS_MYB_Common import *
+from flowsa.data_source_scripts.USGS_MYB_Common import *
 
 
 """
