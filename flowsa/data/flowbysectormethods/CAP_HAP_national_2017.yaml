@@ -25,26 +25,40 @@ source_names:
         allocation_source: "USDA_CoA_Cropland"
         allocation_method: proportional
         allocation_source_class: "Land"
-        allocation_source_year: 2017 
+        allocation_source_year: 2017
         allocation_flow:
           - "AREA HARVESTED"
         allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics        
+        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: no
       activity_set_3: #Fuel Combustion - Industry #only allocating to 3digits
         allocation_source: "EIA_MECS_Energy"
         allocation_method: proportional
         allocation_source_class: "Energy"
-        allocation_source_year: 2014 
+        allocation_source_year: 2014
         allocation_flow:
-          - "Total"
+          - "Coal"
+          - "Coke and Breeze"
+          - "Distillate Fuel Oil"
+          - "Hydrocarbon Gas Liquids, excluding natural gasoline"
+          - "Natural Gas"
+          - "Other"
+          - "Residual Fuel Oil"
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: mecs_energy_fba_cleanup
         clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
-        allocation_helper: no
+        allocation_helper: 'yes'
+        helper_source: "BLS_QCEW"
+        helper_method: proportional-flagged
+        helper_source_class: "Employment"
+        helper_source_year: 2014
+        helper_flow: None
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_4: #Livestock losing NAICS 11211
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
@@ -62,7 +76,7 @@ source_names:
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
         allocation_source_class: "Money"
-        allocation_source_year: 2012 
+        allocation_source_year: 2012
         allocation_flow:
           - "USD2012"
         allocation_compartment: None
@@ -78,12 +92,12 @@ source_names:
           - "Number of employees"
         helper_from_scale: national
         clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec        
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_6: # fertilizers
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
         allocation_source_class: "Money"
-        allocation_source_year: 2012 
+        allocation_source_year: 2012
         allocation_flow:
           - "USD2012"
         allocation_compartment: None
@@ -104,7 +118,7 @@ source_names:
         allocation_source: "BEA_GDP_GrossOutput"
         allocation_method: proportional
         allocation_source_class: "Money"
-        allocation_source_year: 2017 
+        allocation_source_year: 2017
         allocation_flow:
           - "Gross Output"
         allocation_compartment: None
@@ -123,7 +137,7 @@ source_names:
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
         allocation_source_class: "Money"
-        allocation_source_year: 2012 
+        allocation_source_year: 2012
         allocation_flow:
           - "USD2012"
         allocation_compartment: None
@@ -139,7 +153,7 @@ source_names:
           - "Number of employees"
         helper_from_scale: national
         clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec 
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
   "EPA_NEI_Nonroad":
     data_format: 'FBA'
     class: Chemicals
@@ -163,7 +177,7 @@ source_names:
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
         allocation_source_class: "Money"
-        allocation_source_year: 2012 
+        allocation_source_year: 2012
         allocation_flow:
           - "USD2012"
         allocation_compartment: None
@@ -203,7 +217,7 @@ source_names:
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
         allocation_source_class: "Money"
-        allocation_source_year: 2012 
+        allocation_source_year: 2012
         allocation_flow:
           - "USD2012"
         allocation_compartment: None
@@ -223,9 +237,12 @@ source_names:
   "StEWI":
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: stewicombo_to_sector
-    parameters:
-     - {"NEI":"2017", "TRI":"2017"}   # inventory_dict
-     - 'NAICS_6'        # NAICS_level
-     - 'national'       # geo_scale
-     - ['air']          # compartments
-   
+    inventory_dict: {"NEI":"2017", "TRI":"2017"}
+    NAICS_level: 'NAICS_6'
+    geo_scale: 'national'
+    compartments:
+     - 'air'
+    functions:
+     - 'drop_GHGs'
+     - 'reassign_airplane_emissions'
+

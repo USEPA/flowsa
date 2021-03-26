@@ -3,11 +3,12 @@ Functions to check data is loaded correctly
 """
 
 import pandas as pd
-from flowsa.flowbyfunctions import fba_activity_fields, aggregator,  fbs_fill_na_dict, \
-    fbs_activity_fields, clean_df, create_geoscale_list, replace_strings_with_NoneType, \
-    replace_NoneType_with_empty_cells
+import numpy as np
+from flowsa.flowbyfunctions import aggregator, create_geoscale_list
+from flowsa.dataclean import clean_df, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk, \
-    load_sector_crosswalk, sector_source_name, log, fips_number_key, outputpath, activity_fields
+    load_sector_crosswalk, sector_source_name, log, outputpath, fba_activity_fields, \
+    fbs_activity_fields, fbs_fill_na_dict
 import os
 
 
@@ -273,7 +274,7 @@ def check_if_losing_sector_data(df, target_sector_level):
             rows_lost = rows_lost.append(rl_m3, ignore_index=True, sort=True)
 
     if len(rows_lost) == 0:
-        log.info('Data exists at ' + target_sector_level)
+        log.debug('Data exists at ' + target_sector_level)
     else:
         log.info('Allocating FlowAmounts equally to each ' + target_sector_level +
                  ' associated with the sectors previously dropped')
@@ -304,17 +305,21 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
     flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
 
     ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
-    log.info('There are ' + str(ua_count1) +
-             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is < 1')
+    if ua_count1 > 0:
+        log.info('There are ' + str(ua_count1) +
+                 ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is < 1')
     ua_count2 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 0.99])
-    log.info('There are ' + str(ua_count2) +
-             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is < 0.99')
+    if ua_count2 > 0:
+        log.debug('There are ' + str(ua_count2) +
+                 ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is < 0.99')
     ua_count3 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1])
-    log.info('There are ' + str(ua_count3) +
-             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is > 1')
+    if ua_count3 > 0:
+        log.debug('There are ' + str(ua_count3) +
+                 ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is > 1')
     ua_count4 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1.01])
-    log.info('There are ' + str(ua_count4) +
-             ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is > 1.01')
+    if ua_count4 > 0:
+        log.info('There are ' + str(ua_count4) +
+                 ' instances at a sector length of 6 or less where the allocation ratio for a location and sector length is > 1.01')
 
     # save csv to output folder
     log.info('Save the summary table of flow allocation ratios for each sector length for ' +
@@ -430,17 +435,21 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load, ac
     # todo: address the duplicated rows/data that occur for non-naics household sector length
 
     ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
-    log.info('There are ' + str(ua_count1) +
-             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.95')
+    if ua_count1 > 0:
+        log.info('There are ' + str(ua_count1) +
+                 ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.95')
     ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
-    log.info('There are ' + str(ua_count2) +
-             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.99')
+    if ua_count2 > 0:
+        log.debug('There are ' + str(ua_count2) +
+                 ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is < 0.99')
     oa_count1 = len(comparison[comparison['Ratio'] > 1])
-    log.info('There are ' + str(oa_count1) +
-             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.0')
+    if oa_count1 > 0:
+        log.debug('There are ' + str(oa_count1) +
+                 ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.0')
     oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
-    log.info('There are ' + str(oa_count2) +
-             ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.01')
+    if oa_count2 > 0:
+        log.info('There are ' + str(oa_count2) +
+                 ' combinations of flowable/context/sector length where the flowbyactivity to flowbysector ratio is > 1.01')
 
     # save csv to output folder
     log.info('Save the comparison of FlowByActivity load to FlowBySector ratios for ' +
@@ -521,6 +530,10 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set, sou
         for i in context_list:
             df_merge_subset = df_merge[df_merge['Context'] == i].reset_index(drop=True)
             diff_per = df_merge_subset['Percent_difference'][0]
+            if np.isnan(diff_per):
+                log.info('The total FlowBySector FlowAmount for ' + source_name + ' ' + activity_set +
+                         ' ' + i + ' can not be calculated.')
+                continue
             # make reporting more manageable
             if abs(diff_per) > 0.001:
                 diff_per = round(diff_per, 2)
@@ -721,6 +734,14 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
         # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
+    # drop rows where both SectorConsumedBy and SectorProducedBy are both empty
+    df_drop = df[(df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == '')]
+    if len(df_drop) != 0:
+        activities_dropped = pd.unique(df_drop[['ActivityConsumedBy', 'ActivityProducedBy']].values.ravel('K'))
+        activities_dropped = list(filter(lambda x: x != '', activities_dropped))
+        log.debug('Dropping rows where the Activity columns contain ' + ', '.join(activities_dropped))
+
+    df = df[~((df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == ''))].reset_index(drop=True)
     df = replace_strings_with_NoneType(df)
 
     return df

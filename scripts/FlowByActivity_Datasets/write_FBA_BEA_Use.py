@@ -9,7 +9,7 @@ Generation of BEA Use data as FBA
 from flowsa.common import *
 import pandas as pd
 from flowsa.flowbyactivity import process_data_frame
-from flowsa.flowbyfunctions import add_missing_flow_by_fields
+from flowsa.dataclean import add_missing_flow_by_fields
 
 year = 2012
 level = 'Detail'

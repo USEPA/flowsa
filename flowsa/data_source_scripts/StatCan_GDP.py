@@ -1,4 +1,3 @@
-
 # Stat_Canada.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
@@ -15,6 +14,13 @@ from flowsa.common import *
 
 
 def sc_gdp_call(url, sc_response, args):
+    """
+
+    :param url:
+    :param sc_response:
+    :param args:
+    :return:
+    """
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(sc_response.content), "r") as f:
@@ -27,8 +33,13 @@ def sc_gdp_call(url, sc_response, args):
     return df
 
 
-
 def sc_gdp_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
@@ -61,4 +72,3 @@ def sc_gdp_parse(dataframe_list, args):
     df = df[df['Year'] == args['year']]
     df = df[~df['ActivityProducedBy'].apply(lambda x: x[0:1] == 'T')].reset_index(drop=True)
     return df
-

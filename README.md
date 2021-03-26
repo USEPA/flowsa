@@ -39,20 +39,37 @@ formatting criteria, meaning units are not standardized across "Class" types.
  
 Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 |
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
+Blackhurst_IO | [Input-Output Vector of 2002 Water Withdrawals for the United States](https://pubs.acs.org/doi/abs/10.1021/es903147k?journalCode=esthag) | Water| National | |  |  |  |  |  | |  | |  |  | 
+BLM_PLS | [Bureau of Land Management Public Land Statistics](https://www.blm.gov/about/data/public-land-statistics) | Land | National | |  | X |  |  |  | |  | |  |  | 
+BEA_GDP | [Bureau of Economic Analysis GDP](https://www.bea.gov/data/gdp) | Money| National | |  |  |  |  |  | |  | |  |  | 
+BEA_GDP_GrossOutput | [Bureau of Economic Analysis GDP Gross Output](https://www.bea.gov/data/industries/gross-output-by-industry) | Money | National | |  |  |  |  |  | |  | |  |  | 
+BEA_Use | [Bureau of Economic Analysis Use](https://www.bea.gov/industry/input-output-accounts-data) | Money | National | |  | X |  |  |  | | X | |  |  | 
+BEA_Use_Detail_PRO_BeforeRedef |Bureau of Economic Analysis Use Before Redefinitions | Money | National | |  |  |  |  |  | |  | |  |  | 
+BEA_Make_Detail_BeforeRedef |Bureau of Economic Analysis Make Before Redefinitions | Money | National | |  |  |  |  |  | |  | |  |  | 
 BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment, Money, Other | County | Number of employees per industry |  |  |  |  | X | X |  |  |  |  |
 Census_CBP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment, Money, Other | County | Number of employees per industry, Annual payroll per industry, Number of establishments per industry |  |  |  |  | X |  |  |  |  |  |
 Census_PEP_Population | [Census Bureau Population Estimates](https://www.census.gov/programs-surveys/popest.html) | Other | County | Population | X | X | X | X | X | X | X | X | X | X | 
+EIA_CBECS_Land | Energy Information Administration Commercial Buildings Energy Consumption Survey | |  | |  |  |  |  |  | |  | |  |  |
 EIA_CBECS_Water| [Energy Information Administration Commercial Buildings Energy Consumption Survey](https://www.eia.gov/consumption/commercial/reports/2012/water/) | Water | Country | Water consumption in large buildings |  |  | X |  |  |  |  |  |  |  | 
 EIA_MECS_Energy| [Energy Information Administration Manufacturing Energy Consumption Survey](https://www.eia.gov/consumption/manufacturing/) | Energy, Other | Region | Fuel and nonfuel consumption of energy flows by manufacturing industries | X |  |  |  | X |  |  |  |  |  | 
+EIA_MECS_Land | Energy Information Administration Manufacturing Energy Consumption Survey | Land | National, Regional | |  |  |  |  |  | |  | |  |  |
+EIA_MER | Energy Information Administration Monthly Energy Review  | Energy | National | |  |  |  |  |  | |  | |  |  |
+EPA_GHG_Inventory | Inventory of U.S. Greenhouse Gas Emissions and Sinks | Chemicals, Energy, Other| National | |  |  |  |  |  | |  | |  |  |
 EPA_NEI_Nonpoint |[Environmental Protection Agency National Emissions Inventory Nonpoint sources](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei) | Chemicals | County | Air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants |  |  |  |  |  |  |  | X |  |  | 
 EPA_NEI_Nonroad |[Environmental Protection Agency National Emissions Inventory Nonroad sources](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei) | Chemicals | County | Air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants |  |  |  |  |  |  |  | X |  |  |
 EPA_NEI_Onroad |[Environmental Protection Agency National Emissions Inventory Onroad sources](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei) | Chemicals | County |  Air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants |  |  |  |  |  |  |  | X |  |  |
 NOAA_FisheryLandings | [National Oceanic and Atmospheric Administration Fisheries](https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200) | Money | State | Fishery landings | X | X | X | X | X | X | X | X | X | X | 
+StatCan_GDP | Statistics Canada Gross Domestic Product | Money | Canada | |  |  |  |  |  | |  | |  |  |
 StatCan_IWS_MI | [Statistics Canada Industrial Water Survey](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701) | Water | Country | Water use by NAICS |  | X |  | X |  | X |  |  |  |  | 
+StatCan_LFS | Statistics Canada Labour Force Study | Employment | Canada  | |  |  |  |  |  | |  | |  |  |
 USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) | Land, Other | County | Crop area by farm size and irrigation status | | | X | | | |  | X | | |
+USDA_CoA_Cropland_NAICS | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report)  | |  | |  |  |  |  |  | |  | |  |  |
 USDA_CoA_Livestock | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) | Other | County | Livestock count by farm size | | | X | | | |  | X | | | 
+USDA_ERS_FIWS | USDA Farm Income and Wealth Statistics | Money | National | |  |  |  |  |  | |  | |  |  |
+USDA_ERS_MLU | USDA Major Land Use | Land | National | |  |  |  |  |  | |  | |  |  |
 USDA_IWMS | [USDA Irrigation and Water Management Survey](https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Farm_and_Ranch_Irrigation/) | Water | State | Water application rate by state and crop |  |  |  | X |  |  |  |  | X |  | 
 USGS_NWIS_WU | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | X |  |  | | | X | | | | |
+USGS_WU_Coef | USDA Water Use Coefficients | Water | National | |  |  |  |  |  | |  | |  |  |
 
 ### FlowByActivity Naming Convention
 Source dataset names are consistent across (1) the FlowByActivity dataset 'SourceName' columns, (2) the parquet file names,

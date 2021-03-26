@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='flowsa',
-    version='0.0.2',
+    version='0.1',
     packages=['flowsa'],
     package_dir={'flowsa': 'flowsa'},
     package_data={'flowsa': [
@@ -15,13 +15,16 @@ setup(
         'pip>=9',
         'setuptools>=41',
         'pyyaml>=5.3',
+        'ruamel.yaml>=0.16.13',
         'pyarrow==0.15',
         'requests>=2.22.0',
         'appdirs>=1.4.3',
         'pycountry>=19.8.18',
         'xlrd>=1.2.0',
         'requests_ftp==0.3.1',
-        'tabula-py>=2.1.1'
+        'tabula-py>=2.1.1',
+        'numpy<1.20',
+        'bibtexparser>=1.2.0'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',

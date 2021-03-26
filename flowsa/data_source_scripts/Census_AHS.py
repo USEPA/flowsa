@@ -7,20 +7,24 @@ US Census American Housing Survey (AHS)
 https://www.census.gov/programs-surveys/ahs/data.html
 """
 
-
 import zipfile
 import io
 import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-
 # 2011 and 2013 are LOT, 2015 and 2017 are LOTSIZE
 COLS_TO_KEEP = ["LOT", "LOTSIZE", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
 
 
 def ahs_url_helper(build_url, config, args):
-    """Based on the configured year, get the version arg and replace it into the URL."""
+    """
+    Based on the configured year, get the version arg and replace it into the URL.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     version = config["years"][args["year"]]
     url = build_url
     url = url.replace("__ver__", version)
@@ -31,6 +35,10 @@ def ahs_call(url, ahs_response, args):
     """
     Callback function for the Census AHS URL download. Open the downloaded zip file and
     read the contained CSV(s) into pandas dataframe(s).
+    :param url:
+    :param ahs_response:
+    :param args:
+    :return:
     """
     # extract data from zip file (multiple csvs)
     with zipfile.ZipFile(io.BytesIO(ahs_response.content), "r") as f:
@@ -67,9 +75,13 @@ def ahs_call(url, ahs_response, args):
 #     return df
 
 
-# TODO: Figure out why all the None fields in parquet are nan instead.
 def ahs_parse(dataframe_list, args):
-    """ TODO. """
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     df = pd.concat(dataframe_list)
 
     df["Class"] = "Land"
@@ -149,7 +161,6 @@ def ahs_parse(dataframe_list, args):
     df["DistributionType"] = None
     df["FlowType"] = None
     return df
-
 
 # def calculate_urban_and_rural_residential_land_area(ahs_fba):
 #     """

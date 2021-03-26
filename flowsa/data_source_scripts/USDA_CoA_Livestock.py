@@ -11,9 +11,15 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def CoA_Livestock_URL_helper(build_url, config, args):
-    """This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
     that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
-    This function does not parse the data, only modifies the urls from which data is obtained. """
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url:
+    :param config:
+    :param args:
+    :return:
+    """
     # initiate url list for coa cropland data
     urls_livestock = []
 
@@ -42,6 +48,13 @@ def CoA_Livestock_URL_helper(build_url, config, args):
 
 
 def coa_livestock_call(url, coa_response, args):
+    """
+
+    :param url:
+    :param coa_response:
+    :param args:
+    :return:
+    """
     livestock_json = json.loads(coa_response.text)
     # Convert response to dataframe
     df_livestock = pd.DataFrame(data=livestock_json["data"])
@@ -49,8 +62,13 @@ def coa_livestock_call(url, coa_response, args):
 
 
 def coa_livestock_parse(dataframe_list, args):
-    """Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
-    (irrigated and total)."""
+    """
+    Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
+    (irrigated and total).
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     df = pd.concat(dataframe_list, sort=False)
     # # specify desired data based on domain_desc
     df = df[df['domain_desc'].str.contains("INVENTORY|TOTAL")]
@@ -72,7 +90,8 @@ def coa_livestock_parse(dataframe_list, args):
     df.loc[df['Location'] == '99000', 'Location'] = US_FIPS  # modify national level fips
     # combine column information to create activity information, and create two new columns for activities
     df['ActivityProducedBy'] = df['commodity_desc'] + ', ' + df['class_desc']  # drop this column later
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ALL CLASSES", "", regex=True)  # not interested in all data from class_desc
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ALL CLASSES", "",
+                                                                    regex=True)  # not interested in all class_desc data
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount",
                             "unit_desc": "FlowName",
@@ -93,7 +112,7 @@ def coa_livestock_parse(dataframe_list, args):
     df['Spread'] = df['Spread'].str.strip()  # trim whitespace
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
-    df.loc[df['Spread'] == "", 'Spread'] = None # for instances where data is missing
+    df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
     df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])

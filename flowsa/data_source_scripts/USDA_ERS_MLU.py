@@ -16,15 +16,28 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def mlu_call(url, mlu_response, args):
+    """
+
+    :param url:
+    :param mlu_response:
+    :param args:
+    :return:
+    """
     with io.StringIO(mlu_response.text) as fp:
-       # for line in fp:
+        # for line in fp:
         #    if line[0] != '#':
-         #       if "16s" not in line:
+        #       if "16s" not in line:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
 
 def mlu_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     output = pd.DataFrame()
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
@@ -118,7 +131,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     # first concat dfs for residential, openspace, commercial, and manufacturing land use
     df_non_urban_transport_area = pd.concat([df_residential, df_openspace, cbecs, mecs], sort=False, ignore_index=True)
     df_non_urban_transport_area = df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
-    non_urban_transport_area_sum = df_non_urban_transport_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount']\
+    non_urban_transport_area_sum = df_non_urban_transport_area.groupby(['Location', 'Unit'], as_index=False)[
+        'FlowAmount'] \
         .sum().rename(columns={'FlowAmount': 'NonTransport'})
 
     # calculate total urban transportation by subtracting calculated areas from total urban land

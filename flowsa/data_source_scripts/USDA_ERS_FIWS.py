@@ -16,6 +16,13 @@ from flowsa.common import *
 
 
 def fiws_call(url, fiws_response, args):
+    """
+
+    :param url:
+    :param fiws_response:
+    :param args:
+    :return:
+    """
     # extract data from zip file (only one csv)
     with zipfile.ZipFile(io.BytesIO(fiws_response.content), "r") as f:
         # read in file names
@@ -24,7 +31,14 @@ def fiws_call(url, fiws_response, args):
             df = pd.read_csv(data, encoding="ISO-8859-1")
         return df
 
+
 def fiws_parse(dataframe_list, args):
+    """
+
+    :param dataframe_list:
+    :param args:
+    :return:
+    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # select data for chosen year, cast year as string to match argument
@@ -81,5 +95,3 @@ def fiws_parse(dataframe_list, args):
     df.reset_index(drop=True, inplace=True)
 
     return df
-
-
