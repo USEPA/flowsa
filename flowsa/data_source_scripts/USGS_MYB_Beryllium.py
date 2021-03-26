@@ -58,13 +58,17 @@ def usgs_beryllium_call(url, usgs_response, args):
     df_data_2 = df_data_2.reset_index()
     del df_data_2["index"]
 
+    if len(df_data_2.columns) > 11:
+        for x in range(11, len(df_data_2.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data_2[col_name]
 
     if len(df_data_1. columns) == 11:
         df_data_1.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5"]
-    if len(df_data_2. columns) == 13:
+                             "year_3", "space_4", "year_4", "space_5", "year_5"]
+    if len(df_data_2. columns) == 11:
         df_data_2.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5", "space_6", "space_7"]
+                             "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

@@ -48,15 +48,17 @@ def usgs_garnet_call(url, usgs_response, args):
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
 
-    if len(df_data_two. columns) == 23:
+    if len(df_data_one.columns) > 13:
+        for x in range(13, len(df_data_one.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data_one[col_name]
+            del df_data_two[col_name]
+
+    if len(df_data_two. columns) == 13:
         df_data_two.columns = ["Production", "space_1",  "unit",  "space_2",  "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5", "space_7",
-                               "space_8", "space_9", "space_10", "space_11", "space_12", "space_13", "space_14",
-                               "space_15", "space_16"]
+                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
         df_data_one.columns = ["Production", "space_1",  "unit",  "space_2",  "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5", "space_7",
-                               "space_8", "space_9", "space_10", "space_11", "space_12", "space_13", "space_14",
-                               "space_15", "space_16"]
+                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
 

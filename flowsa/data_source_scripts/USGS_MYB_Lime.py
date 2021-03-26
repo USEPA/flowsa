@@ -54,13 +54,17 @@ def usgs_lime_call(url, usgs_response, args):
     df_data_2 = df_data_2.reset_index()
     del df_data_2["index"]
 
-    if len(df_data_1. columns) == 16:
+    if len(df_data_1.columns) > 12:
+        for x in range(12, len(df_data_1.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data_1[col_name]
+            del df_data_2[col_name]
+
+    if len(df_data_1. columns) == 12:
         df_data_1.columns = ["Production", "Unit", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5", "space_6", "space_7", "space_8",
-                           "space_9"]
+                           "year_3", "space_4", "year_4", "space_5", "year_5"]
         df_data_2.columns =  ["Production", "Unit", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5", "space_6", "space_7", "space_8",
-                           "space_9"]
+                           "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

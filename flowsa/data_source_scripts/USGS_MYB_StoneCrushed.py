@@ -50,10 +50,15 @@ def usgs_stonecr_call(url, usgs_response, args):
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]
 
+    if len(df_data_1.columns) > 11:
+        for x in range(11, len(df_data_1.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data_1[col_name]
 
-    if len(df_data_1. columns) == 12:
+
+    if len(df_data_1. columns) == 11:
         df_data_1.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5", "space_6"]
+                           "year_3", "space_4", "year_4", "space_5", "year_5"]
 
 
     col_to_use = ["Production"]

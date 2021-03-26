@@ -46,9 +46,9 @@ def usgs_gold_call(url, usgs_response, args):
     del df_data["index"]
 
 
-    if len(df_data. columns) == 13:
-        df_data.columns = ["Production", "Space", "Units", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5"]
+    if len(df_data.columns) == 13:
+        df_data.columns = ["Production", "Space", "Units", "space_1", "year_1", "space_2", "year_2", "space_3",
+                           "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

@@ -50,11 +50,18 @@ def usgs_potash_call(url, usgs_response, args):
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
 
-    if len(df_data_one. columns) == 14:
+    if len(df_data_one.columns) > 12:
+        for x in range(12, len(df_data_one.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data_one[col_name]
+            del df_data_two[col_name]
+
+
+    if len(df_data_one. columns) == 12:
         df_data_one.columns = ["Production", "space_1", "space_2",  "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5", "space_7", "space_8"]
+                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
         df_data_two.columns = ["Production", "space_1", "space_2", "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5", "space_7", "space_8"]
+                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

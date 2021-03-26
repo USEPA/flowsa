@@ -47,9 +47,14 @@ def usgs_rhenium_call(url, usgs_response, args):
     df_data = df_data.reset_index()
     del df_data["index"]
 
-    if len(df_data. columns) == 15:
+    if len(df_data.columns) > 14:
+        for x in range(14, len(df_data.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data[col_name]
+
+    if len(df_data. columns) == 14:
         df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5", "space_6", "space_7", "space_8", "space_9"]
+                           "space_4", "year_4", "space_5", "year_5", "space_6", "space_7", "space_8"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

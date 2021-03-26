@@ -51,6 +51,7 @@ def usgs_strontium_call(url, usgs_response, args):
             col_name = "Unnamed: " + str(x)
             del df_data[col_name]
 
+
     if len(df_data. columns) == 11:
         df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
                            "year_3", "space_4", "year_4", "space_5", "year_5"]

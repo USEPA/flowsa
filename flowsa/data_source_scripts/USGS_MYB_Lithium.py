@@ -45,9 +45,14 @@ def usgs_lithium_call(url, usgs_response, args):
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
 
-    if len(df_data_one. columns) == 12:
+    if len(df_data_one.columns) > 11:
+        for x in range(11, len(df_data_one.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data_one[col_name]
+
+    if len(df_data_one. columns) == 11:
         df_data_one.columns = ["Production", "space_2",  "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5", "space_1"]
+                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

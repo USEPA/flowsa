@@ -33,14 +33,15 @@ def usgs_lead_call(url, usgs_response, args):
     df_data = df_data.reset_index()
     del df_data["index"]
 
+    if len(df_data.columns) > 12:
+        for x in range(12, len(df_data.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data[col_name]
 
     if len(df_data. columns) == 12:
         df_data.columns = ["Production", "Units", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4",
-                           "year_4", "space_5", "year_5"]
-    else:
-        df_data.columns = ["Production", "Units", "space_1", "year_1", "space_2", "year_2", "space_3","year_3", "space_4",
-                           "year_4", "space_5", "year_5", "space_6"]
+                           "space_4", "year_4", "space_5", "year_5"]
+
     col_to_use = ["Production", "Units"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
     for col in df_data.columns:

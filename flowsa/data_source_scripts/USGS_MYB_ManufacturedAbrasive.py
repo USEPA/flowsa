@@ -46,12 +46,18 @@ def usgs_ma_call(url, usgs_response, args):
     df_data = df_data.reset_index()
     del df_data["index"]
 
+    if len(df_data.columns) > 9:
+        for x in range(9, len(df_data.columns)):
+            col_name = "Unnamed: " + str(x)
+            del df_data[col_name]
+
+
     if len(df_data. columns) == 9:
         df_data.columns = ["Product", "space_1", "quality_year_1", "space_2", "value_year_1", "space_3",
                            "quality_year_2", "space_4", "value_year_2"]
-    elif len(df_data. columns) == 13:
+    elif len(df_data. columns) == 9:
         df_data.columns = ["Product", "space_1", "quality_year_1", "space_2", "value_year_1", "space_3",
-                           "quality_year_2", "space_4", "value_year_2", "space_5", "space_6", "space_7", "space_8"]
+                           "quality_year_2", "space_4", "value_year_2"]
 
     col_to_use = ["Product"]
     col_to_use.append("quality_" + usgs_myb_year(SPAN_YEARS, args["year"]))
