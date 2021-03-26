@@ -55,6 +55,7 @@ from flowsa.data_source_scripts.USGS_MYB_Iodine import *
 from flowsa.data_source_scripts.USGS_MYB_IronOre import *
 from flowsa.data_source_scripts.USGS_MYB_Kyanite import *
 from flowsa.data_source_scripts.USGS_MYB_Lead import *
+from flowsa.data_source_scripts.USGS_MYB_Lime import *
 from flowsa.data_source_scripts.USGS_MYB_Lithium import *
 from flowsa.data_source_scripts.USGS_MYB_Manganese import *
 from flowsa.data_source_scripts.USGS_MYB_ManufacturedAbrasive import *
@@ -190,10 +191,6 @@ def main(**kwargs):
     # assign arguments
     if len(kwargs)==0:
         kwargs = parse_args()
-
-    # test
-    # kwargs = [{'year': '2017',
-    #            'source': 'USGS_MYB_Boron'}]
 
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
