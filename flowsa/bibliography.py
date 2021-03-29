@@ -5,33 +5,32 @@ from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, scriptsFBApath
 import logging as log
 
-# test
-# methodname = 'Water_national_2015_m1'
-
-def generate_fbs_bibliography(methodname):
+def generate_fbs_bibliography(methodnames):
     """
     Generate bibliography for a FlowBySector
-    :param methodname:
+    :param methodname: list of methodnames to create a bibliiography
     :return:
     """
-    # load the fbs method yaml
-    fbs_yaml = load_method(methodname)
 
-    # create list of data and allocation data sets
-    fbs = fbs_yaml['source_names']
     fbas = []
-    for fbs_k, fbs_v in fbs.items():
-        try:
-            fbas.append([fbs_k, fbs_v['year']])
-        except:
-            log.info('Could not append ' + fbs_k + ' to datasource list')
-            continue
-        activities = fbs_v['activity_sets']
-        for aset, attr in activities.items():
-            if attr['allocation_source'] != 'None':
-                fbas.append([attr['allocation_source'], attr['allocation_source_year']])
-            if 'helper_source' in attr:
-                fbas.append([attr['helper_source'], attr['helper_source_year']])
+    for m in methodnames:
+        # load the fbs method yaml
+        fbs_yaml = load_method(m)
+
+        # create list of data and allocation data sets
+        fbs = fbs_yaml['source_names']
+        for fbs_k, fbs_v in fbs.items():
+            try:
+                fbas.append([fbs_k, fbs_v['year']])
+            except:
+                log.info('Could not append ' + fbs_k + ' to datasource list')
+                continue
+            activities = fbs_v['activity_sets']
+            for aset, attr in activities.items():
+                if attr['allocation_source'] != 'None':
+                    fbas.append([attr['allocation_source'], attr['allocation_source_year']])
+                if 'helper_source' in attr:
+                    fbas.append([attr['helper_source'], attr['helper_source_year']])
     # drop list duplicates and any where year is None (because allocation is a function, not a datasource)
     fba_list = []
     for fba in fbas:
@@ -65,7 +64,8 @@ def generate_fbs_bibliography(methodname):
     writer = BibTexWriter()
     # create directory if missing
     os.makedirs(outputpath + '/Bibliography', exist_ok=True)
-    with open(biboutputpath + methodname + '.bib', 'w') as bibfile:
+    print(biboutputpath + "_".join(map(str, methodnames)) + '.bib')
+    with open(biboutputpath + "_".join(methodnames) + '.bib', 'w') as bibfile:
         # loop through all entries in bib_list
         for b in bib_list:
             bibfile.write(writer.write(b))
