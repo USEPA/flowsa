@@ -4,6 +4,7 @@ from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, scriptsFBApath
 import logging as log
+import re
 
 def generate_fbs_bibliography(methodnames):
     """
@@ -33,10 +34,17 @@ def generate_fbs_bibliography(methodnames):
                     fbas.append([attr['helper_source'], attr['helper_source_year']])
     # drop list duplicates and any where year is None (because allocation is a function, not a datasource)
     fba_list = []
+    fba_set = set()
     for fba in fbas:
-        if fba not in fba_list:
-            if fba[1] != 'None':
-                fba_list.append(fba)
+        if fba[1] != 'None':
+            try:
+                config = load_sourceconfig(fba[0])
+                if (config['source_name'], config['author'], fba[1], config['citable_url']) not in fba_set:
+                    fba_set.add((config['source_name'], config['author'], fba[1], config['citable_url']))
+                    fba_list.append(fba)
+            except:
+                log.info('Could not find a method yaml for ' + fba[0])
+                continue
 
     # loop through list of fbas, load fba method yaml, and create bib entry
     bib_list = []
@@ -51,7 +59,7 @@ def generate_fbs_bibliography(methodnames):
                 'year': str(f[1]),
                 'url': config['citable_url'],
                 'urldate': config['date_generated'],
-                'ID': f[0] + '_' + str(f[1]),
+                'ID': re.sub(' ', '_', config['source_name']) + '_' + str(f[1]),
                 'ENTRYTYPE': 'misc'
             }]
             # append each entry to a list of BibDatabase entries
