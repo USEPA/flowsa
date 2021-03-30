@@ -2,7 +2,8 @@ author: US Energy Information Administration
 source_name: Commercial Buildings Energy Consumption Survey
 citable_url: https://www.eia.gov/consumption/commercial/
 date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
-api_name: EIA_CBECS
+bib_id: EIA_CBECS
+api_name: EIA_CBECS_Water
 api_key_required: false
 format: xlsx  # excel workbook, two sheets
 url: # no replacement needed in url because only single workbook

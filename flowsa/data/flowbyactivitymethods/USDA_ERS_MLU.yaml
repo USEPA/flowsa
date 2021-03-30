@@ -2,6 +2,7 @@ author: US Department of Agriculture
 source_name: Major Uses of Land in the United States
 citable_url: https://www.ers.usda.gov/data-products/major-land-uses/
 date_generated: '2021-03-12' # updated automatically when flowbyactivity.py is run
+bib_id: USDA_ERS_MLU_csv
 api_name: USDA_ERS_MLU
 api_key_required: false
 format: csv
