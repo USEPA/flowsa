@@ -5,7 +5,6 @@ from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, load_script_fba_citations, \
     load_values_from_literature_citations
 import logging as log
-import re
 
 
 def generate_fbs_bibliography(methodnames):
@@ -71,7 +70,7 @@ def generate_fbs_bibliography(methodnames):
                     'year': str(fba[1]),
                     'url': config['citable_url'],
                     'urldate': config['date_generated'],
-                    'ID': re.sub(' ', '_', config['source_name']) + '_' + str(fba[1]),
+                    'ID': config['bib_id'] + '_' + str(fba[1]),
                     'ENTRYTYPE': 'misc'
                     }]
                 # append each entry to a list of BibDatabase entries
@@ -81,7 +80,6 @@ def generate_fbs_bibliography(methodnames):
     writer = BibTexWriter()
     # create directory if missing
     os.makedirs(outputpath + '/Bibliography', exist_ok=True)
-    print(biboutputpath + "_".join(map(str, methodnames)) + '.bib')
     with open(biboutputpath + "_".join(methodnames) + '.bib', 'w') as bibfile:
         # loop through all entries in bib_list
         for b in bib_list:
