@@ -151,6 +151,12 @@ def load_sourceconfig(source):
         config = yaml.safe_load(f)
     return config
 
+def load_script_fba_citations():
+    sfile = scriptsFBApath + 'write_FBA_source_citations.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
 def update_fba_yaml_date(source):
     from ruamel.yaml import YAML
     filename = sourceconfigpath + source + '.yaml'
