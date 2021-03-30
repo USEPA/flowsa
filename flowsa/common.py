@@ -157,6 +157,12 @@ def load_script_fba_citations():
         config = yaml.safe_load(f)
     return config
 
+def load_values_from_literature_citations():
+    sfile = datapath + 'values_from_literature_source_citations.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
 def update_fba_yaml_date(source):
     from ruamel.yaml import YAML
     filename = sourceconfigpath + source + '.yaml'
