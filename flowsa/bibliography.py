@@ -2,9 +2,10 @@ import os
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
-from flowsa.common import outputpath, biboutputpath, load_sourceconfig, scriptsFBApath
+from flowsa.common import outputpath, biboutputpath, load_sourceconfig, load_script_fba_citations
 import logging as log
 import re
+
 
 def generate_fbs_bibliography(methodnames):
     """
@@ -32,41 +33,37 @@ def generate_fbs_bibliography(methodnames):
                     fbas.append([attr['allocation_source'], attr['allocation_source_year']])
                 if 'helper_source' in attr:
                     fbas.append([attr['helper_source'], attr['helper_source_year']])
-    # drop list duplicates and any where year is None (because allocation is a function, not a datasource)
-    fba_list = []
+    # loop through list of fbas, load fba method yaml, and create bib entry
+    bib_list = []
     fba_set = set()
     for fba in fbas:
+        # drop list duplicates and any where year is None (because allocation is a function, not a datasource)
         if fba[1] != 'None':
             try:
                 config = load_sourceconfig(fba[0])
-                if (config['source_name'], config['author'], fba[1], config['citable_url']) not in fba_set:
-                    fba_set.add((config['source_name'], config['author'], fba[1], config['citable_url']))
-                    fba_list.append(fba)
             except:
-                log.info('Could not find a method yaml for ' + fba[0])
-                continue
+                try:
+                    config_load = load_script_fba_citations()
+                    config = config_load[fba[0]]
+                except:
+                    log.info('Could not find a method yaml for ' + fba[0])
+                    continue
+            # ensure data sources are not duplicated when different FBA names
+            if (config['source_name'], config['author'], fba[1], config['citable_url']) not in fba_set:
+                fba_set.add((config['source_name'], config['author'], fba[1], config['citable_url']))
 
-    # loop through list of fbas, load fba method yaml, and create bib entry
-    bib_list = []
-    for f in fba_list:
-        try:
-            config = load_sourceconfig(f[0])
-
-            db = BibDatabase()
-            db.entries = [{
-                'title': config['source_name'],
-                'author': config['author'],
-                'year': str(f[1]),
-                'url': config['citable_url'],
-                'urldate': config['date_generated'],
-                'ID': re.sub(' ', '_', config['source_name']) + '_' + str(f[1]),
-                'ENTRYTYPE': 'misc'
-            }]
-            # append each entry to a list of BibDatabase entries
-            bib_list.append(db)
-        except:
-            log.info('Could not find a method yaml for ' + f[0])
-            continue
+                db = BibDatabase()
+                db.entries = [{
+                    'title': config['source_name'] + ' ' + str(fba[1]),
+                    'author': config['author'],
+                    'year': str(fba[1]),
+                    'url': config['citable_url'],
+                    'urldate': config['date_generated'],
+                    'ID': re.sub(' ', '_', config['source_name']) + '_' + str(fba[1]),
+                    'ENTRYTYPE': 'misc'
+                    }]
+                # append each entry to a list of BibDatabase entries
+                bib_list.append(db)
 
     # write out bibliography
     writer = BibTexWriter()
