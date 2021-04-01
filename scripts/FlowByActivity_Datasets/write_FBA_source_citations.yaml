@@ -2,17 +2,17 @@ BEA_GDP_GrossOutput:
   author: 'Bureau of Economic Analysis'
   source_name: 'Gross Output by Industry'
   citable_url: 'https://www.bea.gov/data/industries/gross-output-by-industry'
-  date_generated: '2021-03-11'
+  date_generated: '2020-07-14'
   bib_id: BEA_GDP_GO
 BEA_Use_Detail_PRO_BeforeRedef:
   author: 'Bureau of Economic Analysis'
   source_name: "Use Before Redefinitions Producer's Prices"
   citable_url: 'https://www.bea.gov/industry/input-output-accounts-data'
-  date_generated: '2021-03-11'
+  date_generated: '2020-07-14'
   bib_id: BEA_Use_Detail_Pro_BR
 USGS_WU_Coef:
   author: 'US Geological Survey'
   source_name: 'Method for Estimating Water Withdrawals for Livestock in the United States'
   citable_url: 'https://pubs.er.usgs.gov/publication/sir20095041'
-  date_generated: '2021-03-11'
+  date_generated: '2020-04-06'
   bib_id: USGS_WU_Coef
