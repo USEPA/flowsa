@@ -1,11 +1,13 @@
-# fbs_external.py (flowsa)
+# stewiFBS.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Functions to access data from external packages for use in flowbysector
+Functions to access data from stewi and stewicombo for use in flowbysector
 
 These functions are called if referenced in flowbysectormethods as
 data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
+
+Requires StEWI >= 0.9.5. https://github.com/USEPA/standardizedinventories
 
 """
 
@@ -22,15 +24,16 @@ from flowsa.datachecks import replace_naics_w_naics_from_another_year
 def stewicombo_to_sector(yaml_load):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
-    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+    :param yaml_load which may contain the following elements:
+        inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
-    :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
+        NAICS_level: desired NAICS aggregation level, using sector_level_key,
                 should match target_sector_level
-    :param geo_scale: desired geographic aggregation level ('national', 'state',
+        geo_scale: desired geographic aggregation level ('national', 'state',
                 'county'), should match target_geoscale
-    :param compartments: list of compartments to include (e.g., 'water', 'air',
+        compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
-    :param functions: list of functions (str) to call for additional processing
+        functions: list of functions (str) to call for additional processing
     """
 
     import stewicombo
@@ -83,15 +86,16 @@ def stewicombo_to_sector(yaml_load):
 def stewi_to_sector(yaml_load):
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
-    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+    :param yaml_load which may contain the following elements:
+        inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
-    :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
+        NAICS_level: desired NAICS aggregation level, using sector_level_key,
                 should match target_sector_level
-    :param geo_scale: desired geographic aggregation level ('national', 'state',
+        geo_scale: desired geographic aggregation level ('national', 'state',
                 'county'), should match target_geoscale
-    :param compartments: list of compartments to include (e.g., 'water', 'air',
+        compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
-    :param functions: list of functions (str) to call for additional processing
+        functions: list of functions (str) to call for additional processing
     """
     import stewi
 
@@ -132,6 +136,14 @@ def stewi_to_sector(yaml_load):
 
 
 def reassign_airplane_emissions(df, year, NAICS_level_value):
+    """
+    Reassigns emissions from airplanes to NAICS associated with air
+    transportation instead of the NAICS assigned to airports
+    :param df: a dataframe of emissions and mapped faciliites from stewicombo
+    :param year: year as str
+    :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
+                should match target_sector_level
+    """
     import stewi
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
@@ -177,6 +189,12 @@ def reassign_airplane_emissions(df, year, NAICS_level_value):
 
 
 def extract_facility_data(inventory_dict):
+    """
+    Returns df of facilities from each inventory in inventory_dict,
+    including FIPS code
+    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+                {'NEI':'2017', 'TRI':'2017'})
+    """
     import stewi
     facility_mapping = pd.DataFrame()
     # load facility data from stewi output directory, keeping only the facility IDs, and geographic information
@@ -202,6 +220,11 @@ def extract_facility_data(inventory_dict):
 
 
 def obtain_NAICS_from_facility_matcher(inventory_list):
+    """
+    Returns dataframe of all facilities with included in inventory_list with
+    their first or primary NAICS.
+    :param inventory_list: a list of inventories (e.g., ['NEI', 'TRI'])
+    """
     import facilitymatcher
     ## Access NAICS From facility matcher and assign based on FRS_ID
     all_NAICS = facilitymatcher.get_FRS_NAICSInfo_for_facility_list(frs_id_list=None,
@@ -217,6 +240,17 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
 
 
 def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
+    """
+    Function to prepare an emissions df from stewi or stewicombo for use as FBS
+    :param df: a dataframe of emissions and mapped faciliites from stewi
+                or stewicombo
+    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+                {'NEI':'2017', 'TRI':'2017'})
+    :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
+                should match target_sector_level
+    :param geo_scale: desired geographic aggregation level ('national', 'state',
+                'county'), should match target_geoscale
+    """
     from stewi.globals import weighted_average
 
     # update location to appropriate geoscale prior to aggregating
