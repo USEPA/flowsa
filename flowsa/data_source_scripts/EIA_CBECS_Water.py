@@ -1,4 +1,4 @@
-# EIA_CBECS.py (flowsa)
+# EIA_CBECS_Water.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 '''

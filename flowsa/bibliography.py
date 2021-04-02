@@ -1,3 +1,10 @@
+# bibliography.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
+"""
+Function to generate .bib file for FlowBySector method(s)
+"""
+
 import os
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase

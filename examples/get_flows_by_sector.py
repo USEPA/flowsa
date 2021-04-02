@@ -1,7 +1,6 @@
-# __init__.py (flowsa)
+# get_flows_by_sector.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Retrieves stored data in the FlowBySector format

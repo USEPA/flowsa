@@ -1,7 +1,6 @@
-# __init__.py (flowsa)
+# get_flows_by_activity.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 """
 See source_catalog.yaml for available FlowByActivity datasets and available parameters for getFlowByActivity()
 Examples of use of flowsa. Read parquet files as dataframes.
@@ -21,11 +20,11 @@ usda_cropland_fba_2017 = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland"
 # only load state level data and save as csv
 # set parameters
 fc = 'Water'
-years_fba = 2015
+year_fba = 2015
 ds = "USGS_NWIS_WU"
 geo_level_fba = 'state'
 # load FBA
-usgs_water_fba_2015 = flowsa.getFlowByActivity(datasource=ds, year=years_fba, flowclass=fc,
+usgs_water_fba_2015 = flowsa.getFlowByActivity(datasource=ds, year=year_fba, flowclass=fc,
                                                geographic_level=geo_level_fba).reset_index(drop=True)
 # save output to csv
-usgs_water_fba_2015.to_csv(fbaoutputpath + ds + "_" + "_".join(map(str, years_fba)) + ".csv", index=False)
+usgs_water_fba_2015.to_csv(fbaoutputpath + ds + "_" + str(year_fba) + ".csv", index=False)

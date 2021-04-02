@@ -1,3 +1,6 @@
+# flowbyfunctions.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
 """
 Helper functions for flowbyactivity and flowbysector data
 """

@@ -1,4 +1,4 @@
-# EIA_CBECS_Land.py (flowsa)
+# BLM_PLS.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -11,9 +11,7 @@ import re
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 """
-2012 Commercial Buildings Energy Consumption Survey (CBECS)
-https://www.eia.gov/consumption/commercial/reports/2012/energyusage/index.php 
-Last updated: Monday, August 17, 2020
+Supporting functions for importing and transforming Bureau of Land Management Public Land Statistics data
 """
 
 

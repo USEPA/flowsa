@@ -1,4 +1,4 @@
-# __init__.py (flowsa)
+# write_bibliography.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 

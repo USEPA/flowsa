@@ -1,6 +1,10 @@
+# dataclean.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
+"""
+Common functions to clean and harmonize dataframes
 """
 
-"""
 import logging as log
 import numpy as np
 

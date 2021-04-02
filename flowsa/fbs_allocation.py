@@ -1,3 +1,10 @@
+# fbs_allocation.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
+"""
+Functions to allocate data using additional data sources
+"""
+
 import logging
 import logging as log
 import numpy as np

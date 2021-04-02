@@ -1,10 +1,9 @@
-# write_FBA_Blackhurst_IO.py (scripts)
+# Blackhurst_IO.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-
-
 """
 Scrapes data from Blackhurst paper 'Direct and Indirect Water Withdrawals for US Industrial Sectors' (Supplemental info)
+Includes supporting functions for Blackhurst paper data.
 """
 
 import tabula

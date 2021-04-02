@@ -1,5 +1,8 @@
+# datachecks.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
 """
-Functions to check data is loaded correctly
+Functions to check data is loaded and transformed correctly
 """
 
 import pandas as pd
