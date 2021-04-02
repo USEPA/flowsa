@@ -1,4 +1,4 @@
-# EPA_GHG_Inventory.py (flowsa)
+# EPA_GHGI.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """

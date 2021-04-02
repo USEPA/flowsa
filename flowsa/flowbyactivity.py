@@ -33,7 +33,7 @@ from flowsa.data_source_scripts.EIA_CBECS_Water import *
 from flowsa.data_source_scripts.EIA_MECS import *
 from flowsa.data_source_scripts.BLM_PLS import *
 from flowsa.data_source_scripts.EIA_MER import *
-from flowsa.data_source_scripts.EPA_GHG_Inventory import *
+from flowsa.data_source_scripts.EPA_GHGI import *
 from flowsa.data_source_scripts.USGS_MYB_SodaAsh import *
 
 
