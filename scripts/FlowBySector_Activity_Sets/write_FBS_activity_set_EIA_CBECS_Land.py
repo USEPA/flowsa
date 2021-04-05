@@ -1,8 +1,6 @@
-# write_FBS_activity_set_BLM_PLS.py (scripts)
+# write_FBS_activity_set_EIA_CBECS_Land.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-
-
 """
 Write the csv called on in flowbysectormethods yaml files for land use related EIA CBECS
 """

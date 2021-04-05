@@ -3,7 +3,8 @@
 # coding=utf-8
 
 """
-Generation of BEA Gross Output data as FBA
+Generation of BEA Gross Output data as FBA, csv files for BEA data originate from USEEIOR and were originally
+generated on 2020-07-14.
 """
 
 from flowsa.common import *
