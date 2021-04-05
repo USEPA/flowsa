@@ -37,6 +37,7 @@ from flowsa.data_source_scripts.BLM_PLS import *
 from flowsa.data_source_scripts.EIA_MER import *
 from flowsa.data_source_scripts.EPA_GHGI import *
 from flowsa.data_source_scripts.USGS_MYB_SodaAsh import *
+from flowsa.data_source_scripts.USGS_WU_Coef import *
 
 
 def parse_args():
