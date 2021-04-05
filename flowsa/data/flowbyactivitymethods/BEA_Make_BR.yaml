@@ -1,5 +1,5 @@
 author: BEA
-source_name: BEA_Make_BR
+source_name_bib: BEA_Make_BR
 citable_url: ' '
 date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
 date_downloaded: ' ' # todo: modify bib fxn to use date_downloaded over date_generated

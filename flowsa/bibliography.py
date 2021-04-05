@@ -62,12 +62,12 @@ def generate_fbs_bibliography(methodnames):
                     log.info('Could not find a method yaml for ' + fba[0])
                     continue
             # ensure data sources are not duplicated when different FBA names
-            if (config['source_name'], config['author'], fba[1], config['citable_url']) not in fba_set:
-                fba_set.add((config['source_name'], config['author'], fba[1], config['citable_url']))
+            if (config['source_name_bib'], config['author'], fba[1], config['citable_url']) not in fba_set:
+                fba_set.add((config['source_name_bib'], config['author'], fba[1], config['citable_url']))
 
                 db = BibDatabase()
                 db.entries = [{
-                    'title': config['source_name'] + ' ' + str(fba[1]),
+                    'title': config['source_name_bib'] + ' ' + str(fba[1]),
                     'author': config['author'],
                     'year': str(fba[1]),
                     'url': config['citable_url'],

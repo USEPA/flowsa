@@ -1,5 +1,5 @@
 author: NOAA
-source_name: NOAA_Landings
+source_name_bib: NOAA_Landings
 citable_url: ' '
 date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
 date_downloaded: '2020-04-28' # todo: modify bib fxn to use date_downloaded over date_generated

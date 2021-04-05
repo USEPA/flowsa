@@ -1,7 +1,7 @@
 # Calling EPA's National Emissions Inventory (NEI) Data for NONPOINT sources
 ---
 author: US Environmental Protection Agency
-source_name: National Emissions Inventory Nonpoint Sources
+source_name_bib: National Emissions Inventory Nonpoint Sources
 citable_url: https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei
 date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
 bib_id: EPA_NEI_Nonpoint

@@ -1,5 +1,5 @@
 author: US Geological Survey
-source_name: Minerals Yearbook
+source_name_bib: Minerals Yearbook
 citable_url: https://www.usgs.gov/centers/nmic/minerals-yearbook-metals-and-minerals
 date_generated: '2021-03-12' # updated automatically when flowbyactivity.py is run
 bib_id: USGS_MYB_SA

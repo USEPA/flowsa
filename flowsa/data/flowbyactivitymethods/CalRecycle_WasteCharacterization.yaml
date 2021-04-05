@@ -1,5 +1,5 @@
 author: California Commercial
-source_name: CalRecycle_WasteCharacterization
+source_name_bib: CalRecycle_WasteCharacterization
 citable_url: ' '
 date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
 date_downloaded: ' ' # todo: modify bib fxn to use date_downloaded over date_generated
