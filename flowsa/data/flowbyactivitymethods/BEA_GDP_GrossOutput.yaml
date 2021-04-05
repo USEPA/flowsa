@@ -1,0 +1,13 @@
+author: BEA
+source_name: BEA_GDP_GrossOutput
+citable_url: ' '
+date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
+date_downloaded: ' ' # todo: modify bib fxn to use date_downloaded over date_generated
+bib_id: BEA_GDP
+api_name: None
+api_key_required: false
+format: csv  # comma delineated data
+url: None
+parse_response_fxn: bea_gdp_parse
+years:
+- 2015

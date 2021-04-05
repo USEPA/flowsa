@@ -11,6 +11,7 @@ import argparse
 from flowsa.common import *
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.dataclean import clean_df
+from flowsa.data_source_scripts.BEA import *
 from flowsa.data_source_scripts.Blackhurst_IO import *
 from flowsa.data_source_scripts.BLS_QCEW import *
 from flowsa.data_source_scripts.CalRecycle_WasteCharacterization import *
