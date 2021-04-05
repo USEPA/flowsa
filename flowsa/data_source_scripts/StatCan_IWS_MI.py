@@ -132,7 +132,7 @@ def convert_statcan_data_to_US_water_use(df, attr):
 
     # load us gdp
     # load Canadian GDP data
-    us_gdp_load = flowsa.getFlowByActivity(datasource='BEA_GDP_GrossOutput_IO', year=attr['allocation_source_year'],
+    us_gdp_load = flowsa.getFlowByActivity(datasource='BEA_GDP_GrossOutput', year=attr['allocation_source_year'],
                                            flowclass='Money')
     us_gdp_load = harmonize_units(us_gdp_load)
     # load bea crosswalk

@@ -1,4 +1,4 @@
-# write_BEA_Make_Table.py (scripts)
+# write_Crosswalk_BEA_Make_Table.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 
