@@ -55,17 +55,12 @@ def generate_fbs_bibliography(methodnames):
                 config = load_sourceconfig(fba[0])
             except:
                 try:
-                    # if no source yaml, check if citation information is in the scripts folder
-                    config_load = load_script_fba_citations()
+                    # if no source yaml, check if citation info is for values in the literature
+                    config_load = load_values_from_literature_citations()
                     config = config_load[fba[0]]
                 except:
-                    try:
-                        # finally, check if citation info is for values in the literature
-                        config_load = load_values_from_literature_citations()
-                        config = config_load[fba[0]]
-                    except:
-                        log.info('Could not find a method yaml for ' + fba[0])
-                        continue
+                    log.info('Could not find a method yaml for ' + fba[0])
+                    continue
             # ensure data sources are not duplicated when different FBA names
             if (config['source_name'], config['author'], fba[1], config['citable_url']) not in fba_set:
                 fba_set.add((config['source_name'], config['author'], fba[1], config['citable_url']))
