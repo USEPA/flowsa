@@ -8,11 +8,14 @@ Supporting functions for BEA data.
 BEA data is imported as csv files from useeior and formatted into FBAs in the scripts folder
 https://github.com/USEPA/flowsa/tree/master/scripts/FlowByActivity_Datasets
 """
-from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system
-
 
 def subset_BEA_Use(df, attr):
+    """
+    Function to modify loaded BEA table based on data in the FBA method yaml
+    :param df: flowbyactivity dataframe
+    :param attr: attribute parameters from method yaml
+    :return: modified BEA dataframe
+    """
     commodity = attr['clean_parameter']
     df = df.loc[df['ActivityProducedBy'] == commodity]
 
