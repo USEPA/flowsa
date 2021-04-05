@@ -19,6 +19,7 @@ generated on 2020-07-14.
 """
 
 from flowsa.common import *
+from flowsa.flowbyfunctions import assign_fips_location_system
 import pandas as pd
 
 
@@ -44,6 +45,85 @@ def bea_gdp_parse(dataframe_list, args):
     df['LocationSystem'] = "FIPS_2015"  # state FIPS codes have not changed over last decade
     df["Unit"] = "USD"
 
+    return df
+
+
+def bea_use_detail_br_parse(dataframe_list, args):
+    csv_load = externaldatapath + "BEA_" + str(args['year']) + "_Detail_Use_PRO_BeforeRedef.csv"
+    df_raw = pd.read_csv(csv_load)
+
+    # first column is the commodity being consumed
+    df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
+
+    # use "melt" fxn to convert colummns into rows
+    df = df.melt(id_vars=["ActivityProducedBy"],
+                 var_name="ActivityConsumedBy",
+                 value_name="FlowAmount")
+
+    df['Year'] = str(args['year'])
+    # hardcode data
+    df['FlowName'] = "USD" + str(args['year'])
+    df["Class"] = "Money"
+    df["FlowType"] = "TECHNOSPHERE_FLOW"
+    df['Description'] = 'BEA_2012_Detail_Code'
+    df["SourceName"] = "BEA_Use_BR"
+    df["Location"] = US_FIPS
+    df['LocationSystem'] = "FIPS_2015"
+    df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
+    df["Unit"] = "USD"
+
+    return df
+
+
+def bea_make_detail_br_parse(dataframe_list, args):
+    # Read directly into a pandas df
+    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) + "_Detail_Make_BeforeRedef.csv")
+
+    # first column is the industry
+    df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
+
+    # use "melt" fxn to convert colummns into rows
+    df = df.melt(id_vars=["ActivityProducedBy"],
+                 var_name="ActivityConsumedBy",
+                 value_name="FlowAmount")
+
+    df['Year'] = str(args['year'])
+    # hardcode data
+    df['FlowName'] = "USD" + str(args['year'])
+    df["Class"] = "Money"
+    df["FlowType"] = "TECHNOSPHERE_FLOW"
+    df['Description'] = 'BEA_2012_Detail_Code'
+    df["SourceName"] = "BEA_Make_BR"
+    df["Location"] = US_FIPS
+    df['LocationSystem'] = "FIPS_2015"
+    df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
+    df["Unit"] = "USD"
+    return df
+
+
+def bea_make_ar_parse(dataframe_list, args):
+    # concat dataframes - tmp load from uploaded csv
+    # df = pd.concat(dataframe_list, sort=False)
+    df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] + "_Make_AfterRedef.csv", dtype="str")
+    # strip whitespace
+    df = df_load.apply(lambda x: x.str.strip())
+    # drop rows of data
+    df = df[df['Industry'] == df['Commodity']].reset_index(drop=True)
+    # drop columns
+    df = df.drop(columns=['Commodity', 'CommodityDescription'])
+    # rename columns
+    df = df.rename(columns={'Industry': 'ActivityProducedBy',
+                            'IndustryDescription': 'Description',
+                            'ProVal': 'FlowAmount',
+                            'IOYear': 'Year'})
+    df.loc[:, 'FlowAmount'] = df['FlowAmount'].astype(float) * 1000000
+    # hard code data
+    df['Class'] = 'Money'
+    df['SourceName'] = 'BEA_Make_Table'
+    df['Unit'] = 'USD'
+    df['Location'] = US_FIPS
+    df = assign_fips_location_system(df, args['year'])
+    df['FlowName'] = 'Gross Output Producer Value After Redef'
     return df
 
 
