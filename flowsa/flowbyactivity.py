@@ -13,6 +13,7 @@ from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.dataclean import clean_df
 from flowsa.data_source_scripts.Blackhurst_IO import *
 from flowsa.data_source_scripts.BLS_QCEW import *
+from flowsa.data_source_scripts.CalRecycle_WasteCharacterization import *
 from flowsa.data_source_scripts.Census_CBP import *
 from flowsa.data_source_scripts.Census_AHS import *
 from flowsa.data_source_scripts.Census_PEP_Population import *
