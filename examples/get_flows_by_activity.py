@@ -14,8 +14,8 @@ Examples of use of flowsa. Read parquet files as dataframes.
 import flowsa
 from flowsa.common import fbaoutputpath
 
-# single flowclass, year, datasource, geographic_level default = 'all', file_location default = 'local'
-usda_cropland_fba_2017 = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017, flowclass='Land')
+# Load all information for USDA Cropland
+usda_cropland_fba_2017 = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017)
 
 # only load state level data and save as csv
 # set parameters
