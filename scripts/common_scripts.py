@@ -1,9 +1,8 @@
 # common_scripts.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
-"""Common variables and functions used across flowsa"""
+"""Common variables and functions used within the 'scripts' folder"""
 
 import flowsa
 import pandas as pd

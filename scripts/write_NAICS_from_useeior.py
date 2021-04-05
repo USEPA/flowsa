@@ -1,7 +1,6 @@
 # write_NAICS_from_useeior.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 3 scripts:

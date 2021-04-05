@@ -1,5 +1,9 @@
-# -*- coding: utf-8 -*-
+# common_scripts.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
 """
+Test code to check data loaded correctly
+
 Created on Fri Sep 25 09:53:24 2020
 
 @author: BYoung

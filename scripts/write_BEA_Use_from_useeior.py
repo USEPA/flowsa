@@ -1,7 +1,6 @@
 # write_BEA_Use_from_useeior.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 A script to get Use table transactions from a useeior EEIOmodel.
