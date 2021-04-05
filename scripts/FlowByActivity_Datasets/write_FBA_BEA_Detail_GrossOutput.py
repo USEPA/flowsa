@@ -12,7 +12,7 @@ import pandas as pd
 from flowsa.flowbyactivity import process_data_frame
 from flowsa.dataclean import add_missing_flow_by_fields
 
-year = '2017'
+year = '2015'
 csv_load = datapath + "BEA_GDP_GrossOutput_IO.csv"
 
 
@@ -40,5 +40,5 @@ if __name__ == '__main__':
 
     # add missing dataframe fields (also converts columns to desired datatype)
     flow_df = add_missing_flow_by_fields(df, flow_by_activity_fields)
-    parquet_name = 'BEA_GDP_GrossOutput_'+year
+    parquet_name = 'BEA_GDP_GrossOutput'
     process_data_frame(flow_df, parquet_name, str(year))
