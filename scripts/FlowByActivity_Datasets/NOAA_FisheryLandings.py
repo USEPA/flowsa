@@ -1,7 +1,6 @@
 # write_NOAA_fisheries_from_csv.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 This script is run on it's own, not through flowbyactivity.py, as data pulled from csv in flowsa.
@@ -28,6 +27,7 @@ from flowsa.flowbyactivity import process_data_frame
 from flowsa.dataclean import add_missing_flow_by_fields
 
 # 2012--2018 fisheries data at state level
+year = '2012'
 csv_load = datapath + "foss_landings.csv"
 
 if __name__ == '__main__':
