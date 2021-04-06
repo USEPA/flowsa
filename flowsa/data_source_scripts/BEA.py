@@ -119,7 +119,7 @@ def bea_make_ar_parse(dataframe_list, args):
     df.loc[:, 'FlowAmount'] = df['FlowAmount'].astype(float) * 1000000
     # hard code data
     df['Class'] = 'Money'
-    df['SourceName'] = 'BEA_Make_Table'
+    df['SourceName'] = 'BEA_Make_AR'
     df['Unit'] = 'USD'
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, args['year'])
