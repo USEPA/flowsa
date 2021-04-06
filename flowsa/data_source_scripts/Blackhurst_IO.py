@@ -2,14 +2,22 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Scrapes data from Blackhurst paper 'Direct and Indirect Water Withdrawals for US Industrial Sectors' (Supplemental info)
+Scrapes data from Blackhurst paper 'Direct and Indirect Water Withdrawals
+for US Industrial Sectors' (Supplemental info)
 Includes supporting functions for Blackhurst paper data.
 """
 
-import tabula
 import io
-from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system, proportional_allocation_by_location_and_activity
+import tabula
+import pandas as pd
+import numpy as np
+import flowsa
+from flowsa.common import US_FIPS, flow_by_activity_fields, fba_fill_na_dict
+from flowsa.flowbyfunctions import assign_fips_location_system, \
+    proportional_allocation_by_location_and_activity, filter_by_geoscale
+from flowsa.dataclean import harmonize_units, clean_df
+from flowsa.mapping import add_sectors_to_flowbyactivity
+from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 
 
 # Read pdf into list of DataFrame
@@ -66,10 +74,10 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     :param attr:
     :return:
     """
-    import flowsa
-    from flowsa.common import fba_fill_na_dict
-    from flowsa.dataclean import harmonize_units
-    from flowsa.dataclean import clean_df
+    # import flowsa
+    # from flowsa.common import fba_fill_na_dict
+    # from flowsa.dataclean import harmonize_units
+    # from flowsa.dataclean import clean_df
 
     # load the bea make table
     bmt = flowsa.getFlowByActivity(datasource='BEA_Make_Table',
@@ -81,13 +89,18 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     bmt = bmt[bmt['FlowAmount'] != 0]
 
     bh_df_revised = pd.merge(df, bmt[['FlowAmount', 'ActivityProducedBy', 'Location']],
-                             left_on=['ActivityConsumedBy', 'Location'], right_on=['ActivityProducedBy', 'Location'])
+                             left_on=['ActivityConsumedBy', 'Location'],
+                             right_on=['ActivityProducedBy', 'Location']
+                             )
 
-    bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']) * (bh_df_revised['FlowAmount_y']))
+    bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']) *
+                                          (bh_df_revised['FlowAmount_y']))
     bh_df_revised.loc[:, 'Unit'] = 'gal'
     # drop columns
-    bh_df_revised = bh_df_revised.drop(columns=["FlowAmount_x", "FlowAmount_y", 'ActivityProducedBy_y'])
-    bh_df_revised = bh_df_revised.rename(columns={"ActivityProducedBy_x": "ActivityProducedBy"})
+    bh_df_revised = bh_df_revised.drop(columns=["FlowAmount_x", "FlowAmount_y",
+                                                'ActivityProducedBy_y'])
+    bh_df_revised = bh_df_revised.rename(columns={"ActivityProducedBy_x":
+                                                      "ActivityProducedBy"})
 
     return bh_df_revised
 
@@ -101,13 +114,13 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     :return:
     """
 
-    import flowsa
-    from flowsa.mapping import add_sectors_to_flowbyactivity
-    from flowsa.flowbyfunctions import filter_by_geoscale
-    from flowsa.common import fba_fill_na_dict
-    from flowsa.dataclean import harmonize_units
-    from flowsa.dataclean import clean_df
-    from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
+    # import flowsa
+    # from flowsa.mapping import add_sectors_to_flowbyactivity
+    # from flowsa.flowbyfunctions import filter_by_geoscale
+    # from flowsa.common import fba_fill_na_dict
+    # from flowsa.dataclean import harmonize_units
+    # from flowsa.dataclean import clean_df
+    # from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
 
@@ -146,7 +159,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     df_wratio = df_wratio[df_wratio['Employees'] != 0]
 
     # calculate gal/employee in 2002
-    df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] * df_wratio['EmployeeRatio']) / df_wratio['Employees']
+    df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] *
+                                      df_wratio['EmployeeRatio']) / df_wratio['Employees']
     df_wratio.loc[:, 'Unit'] = 'gal/employee'
 
     # drop cols
@@ -157,8 +171,9 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
 
 def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     """
-    Scale the initial estimates for Blackhurst-based mining estimates to USGS values. Oil-based sectors are allocated
-    a larger percentage of the difference between initial water withdrawal estimates and published USGS values.
+    Scale the initial estimates for Blackhurst-based mining estimates to USGS values.
+    Oil-based sectors are allocated a larger percentage of the difference between initial
+    water withdrawal estimates and published USGS values.
 
     This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
     :param df_to_scale:
@@ -166,15 +181,17 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     :return:
     """
 
-    import flowsa
-    from flowsa.dataclean import harmonize_units
+    # import flowsa
+    # from flowsa.dataclean import harmonize_units
 
     # determine national level published withdrawal data for usgs mining in FBS method year
-    pv_load = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU", year=str(attr['helper_source_year']),
-                                       flowclass='Water')
+    pv_load = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
+                                       year=str(attr['helper_source_year']),
+                                       flowclass='Water'
+                                       )
     pv_load = harmonize_units(pv_load)
-    pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) & (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(
-        drop=True)
+    pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) &
+                     (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
     pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
 
     # sum quantity of water withdrawals already allocated to sectors
@@ -184,10 +201,11 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     vd = pv - av
 
     # subset df to scale into oil and non-oil sectors
-    df_to_scale['sector_label'] = np.where(df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil',
-                                           'nonoil')
+    df_to_scale['sector_label'] = np.where(
+        df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil','nonoil')
     df_to_scale['ratio'] = np.where(df_to_scale['sector_label'] == 'oil', 2 / 3, 1 / 3)
-    df_to_scale['label_sum'] = df_to_scale.groupby(['Location', 'sector_label'])['FlowAmount'].transform('sum')
+    df_to_scale['label_sum'] = df_to_scale.groupby(['Location',
+                                                    'sector_label'])['FlowAmount'].transform('sum')
     df_to_scale.loc[:, 'value_difference'] = vd.astype(float)
 
     # calculate revised water withdrawal allocation
