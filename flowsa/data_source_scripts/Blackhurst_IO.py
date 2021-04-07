@@ -80,7 +80,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     # from flowsa.dataclean import clean_df
 
     # load the bea make table
-    bmt = flowsa.getFlowByActivity(datasource='BEA_Make_Table',
+    bmt = flowsa.getFlowByActivity(datasource='BEA_Make_AR',
                                    year=2002, flowclass='Money')
     # clean df
     bmt = clean_df(bmt, flow_by_activity_fields, fba_fill_na_dict)
