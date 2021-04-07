@@ -69,7 +69,8 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
     """
     Add in missing fields to have a complete and ordered df
     :param flowby_partial_df: Either flowbyactivity or flowbysector df
-    :param flowbyfields: Either flow_by_activity_fields, flow_by_sector_fields, or flow_by_sector_collapsed_fields
+    :param flowbyfields: Either flow_by_activity_fields, flow_by_sector_fields,
+           or flow_by_sector_collapsed_fields
     :return:
     """
     for k in flowbyfields.keys():
@@ -110,7 +111,8 @@ def harmonize_units(df):
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
                                        df['FlowAmount'] * sq_ft_to_sq_m_multiplier * 1000000,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']), 'm2', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
+                                 'm2', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['square feet']),
                                        df['FlowAmount'] * sq_ft_to_sq_m_multiplier,
@@ -171,16 +173,19 @@ def harmonize_FBS_columns(df):
     df = replace_NoneType_with_empty_cells(df)
 
     # subset all string cols of the df and drop duplicates
-    string_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',  'SectorSourceName', 'Context',
-                   'Location', 'LocationSystem', 'Unit', 'FlowType', 'Year', 'MeasureofSpread', 'MetaSources']
+    string_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
+                   'SectorSourceName', 'Context', 'Location', 'LocationSystem',
+                   'Unit', 'FlowType', 'Year', 'MeasureofSpread', 'MetaSources']
     df_sub = df[string_cols].drop_duplicates().reset_index(drop=True)
     # sort df
-    df_sub = df_sub.sort_values(['MetaSources', 'SectorProducedBy', 'SectorConsumedBy']).reset_index(drop=True)
+    df_sub = df_sub.sort_values(['MetaSources', 'SectorProducedBy',
+                                 'SectorConsumedBy']).reset_index(drop=True)
 
     # new group cols
-    group_no_meta = [e for e in string_cols if e not in ('MetaSources')]
+    group_no_meta = [e for e in string_cols if e not in 'MetaSources']
 
-    # combine/sum columns that share the same data other than Metasources, combining MetaSources string in process
+    # combine/sum columns that share the same data other than Metasources,
+    # combining MetaSources string in process
     df_sub = df_sub.groupby(group_no_meta)['MetaSources'].apply(', '.join).reset_index()
     # drop the MetaSources col in original df and replace with the MetaSources col in df_sub
     df = df.drop('MetaSources', 1)
