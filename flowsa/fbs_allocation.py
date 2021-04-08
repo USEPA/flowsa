@@ -265,8 +265,7 @@ def allocation_helper(df_w_sector, attr, method, v):
 
     elif attr['helper_method'] == 'proportional':
         modified_fba_allocation = proportional_allocation_by_location_and_activity(modified_fba_allocation,
-                                                                                   sector_col_to_merge,
-                                                                                   attr['helper_method'])
+                                                                                   sector_col_to_merge)
         modified_fba_allocation['FlowAmountRatio'] = modified_fba_allocation['FlowAmountRatio'].fillna(0)
         modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
                                                        modified_fba_allocation['FlowAmountRatio']

@@ -764,7 +764,7 @@ def proportional_allocation_by_location(df):
     return allocation_df
 
 
-def proportional_allocation_by_location_and_activity(df, sectorcolumn, allocation_method):
+def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     """
     Creates a proportional allocation within each aggregated sector within a location
     :param df:
