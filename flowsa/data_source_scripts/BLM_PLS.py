@@ -180,8 +180,6 @@ def split(row, header, sub_header, next_line):
     elif column == 8:
         flow_amount = split_str_one[6]
 
-    # if "Geothermal Leases" in flow_name:
-    #   print(flow_amount)
     if next_line:
         location_str = "Total"
 
@@ -193,7 +191,6 @@ def split(row, header, sub_header, next_line):
         flow_amount_no_comma = "".join(flow_amount.split(","))
     else:
         flow_amount_no_comma = float(flow_amount)
-    # print(location_str, flow_name, flow_amount_no_comma)
     return location_str, flow_name, flow_amount_no_comma
 
 
@@ -231,8 +228,6 @@ def blm_pls_call(url, response_load, args):
     :param args:
     :return:
     """
-    # test
-    # response_load = r
 
     dataframe = pd.DataFrame()
     df = pd.DataFrame()
@@ -527,7 +522,6 @@ def blm_pls_call(url, response_load, args):
                                 next_line = False
                                 header = "Nothing"
                             if "Total" in row["one"]:
-                                #  print(header, sub_header)
                                 row_one_str = ""
                                 if any(i.isdigit() for i in row["one"]):
                                     #   row split based on space

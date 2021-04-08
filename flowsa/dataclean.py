@@ -193,3 +193,38 @@ def harmonize_FBS_columns(df):
     harmonized_df = replace_strings_with_NoneType(harmonized_df)
 
     return harmonized_df
+
+
+def reset_fbs_dq_scores(df):
+    """
+    Set all Data Quality Scores to None
+    :param df: FBS dataframe with mixed values/strings in columns
+    :return: FBS df with the DQ scores set to null
+    """
+
+    # reset spread, as current values are misleading
+    log.info('Reset Spread to None')
+    df = df.assign(Spread=None)
+    # reset min, as current values are misleading
+    log.info('Reset Min to None')
+    df = df.assign(Min=None)
+    # reset min, as current values are misleading
+    log.info('Reset Max to None')
+    df = df.assign(Max=None)
+    # reset DR, as current values are misleading
+    log.info('Reset DataReliability to None')
+    df = df.assign(DataReliability=None)
+    # reset TC, as current values are misleading
+    log.info('Reset TemporalCorrelation to None')
+    df = df.assign(TemporalCorrelation=None)
+    # reset GC, as current values are misleading
+    log.info('Reset GeographicalCorrelation to None')
+    df = df.assign(GeographicalCorrelation=None)
+    # reset TC, as current values are misleading
+    log.info('Reset TechnologicalCorrelation to None')
+    df = df.assign(TechnologicalCorrelation=None)
+    # reset DC, as current values are misleading
+    log.info('Reset DataCollection to None')
+    df = df.assign(DataCollection=None)
+
+    return df

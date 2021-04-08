@@ -34,7 +34,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, 
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation
-from flowsa.dataclean import clean_df, harmonize_FBS_columns
+from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.datachecks import check_if_losing_sector_data, check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals
 
@@ -117,9 +117,6 @@ def main(**kwargs):
     """
     if len(kwargs)==0:
         kwargs = parse_args()
-
-    # test
-    # kwargs = {'method': 'stewi'}
 
     method_name = kwargs['method']
     # assign arguments
@@ -294,6 +291,8 @@ def main(**kwargs):
     fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
+    # tmp reset data quality scores
+    fbss = reset_fbs_dq_scores(fbss)
     # save parquet file
     meta = set_fb_meta(method_name, "FlowBySector")
     write_df_to_file(fbss,paths,meta)
