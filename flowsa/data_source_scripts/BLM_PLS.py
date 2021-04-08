@@ -17,12 +17,12 @@ from flowsa.common import withdrawn_keyword, get_all_state_FIPS_2
 
 def split(row, header, sub_header, next_line):
     """
-
-    :param row:
-    :param header:
-    :param sub_header:
-    :param next_line:
-    :return:
+    Helper function for parsing df
+    :param row: df row
+    :param header: df column header
+    :param sub_header: df column subheader
+    :param next_line: next row
+    :return: data appropriately split
     """
 
     flow_amount = ""
@@ -195,16 +195,17 @@ def split(row, header, sub_header, next_line):
 def blm_pls_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for coa cropland data that requires parts of the url text string
-    to be replaced with info specific to the usda nass quickstats API.
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data yaer.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
 
-    # initiate url list for coa cropland data
+    # initiate url list for blm pls
     urls = []
     year = args["year"]
     if year == '2015':
@@ -221,11 +222,12 @@ def blm_pls_URL_helper(build_url, config, args):
 
 def blm_pls_call(url, response_load, args):
     """
-
-    :param url:
-    :param response_load:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
 
     df = pd.DataFrame()
@@ -558,10 +560,10 @@ def blm_pls_call(url, response_load, args):
 
 def blm_pls_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     Location = []
     fips = get_all_state_FIPS_2()
