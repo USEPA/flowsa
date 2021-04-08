@@ -23,11 +23,11 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 # Read pdf into list of DataFrame
 def bh_call(url, bh_response, args):
     """
-
-    :param url:
-    :param bh_response:
-    :param args:
-    :return:
+    Load the data in pdf format and produce a response
+    :param url: url where data found
+    :param bh_response: response to reading url
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe to format into a flowbyactivty data set
     """
 
     pages = range(5, 13)
@@ -43,10 +43,10 @@ def bh_call(url, bh_response, args):
 
 def bh_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
@@ -69,10 +69,11 @@ def bh_parse(dataframe_list, args):
 
 def convert_blackhurst_data_to_gal_per_year(df, attr):
     """
-
-    :param df:
-    :param attr:
-    :return:
+    Load BEA Make After Redefinition data to convert dataframe units
+    to gallon per year
+    :param df: fba ataframe
+    :param attr: attribute data from method yaml
+    :return: transformed fba df
     """
     # import flowsa
     # from flowsa.common import fba_fill_na_dict
@@ -107,11 +108,11 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
 
 def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     """
-
-    :param df_wsec:
-    :param attr:
-    :param method:
-    :return:
+    Load BLS employment data and use to transporm original units to gallons per employee
+    :param df_wsec: dataframe that includes sector columns
+    :param attr: attribute data from fba method yaml
+    :param method: The name of the fba method yaml
+    :return: transformed fba dataframe with sector columns
     """
 
     # import flowsa
@@ -176,9 +177,9 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     water withdrawal estimates and published USGS values.
 
     This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
-    :param df_to_scale:
-    :param attr:
-    :return:
+    :param df_to_scale: fba dataframe to be modified
+    :param attr: attributes from the fba method yaml
+    :return: scaled fba results
     """
 
     # import flowsa
