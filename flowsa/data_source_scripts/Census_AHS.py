@@ -9,7 +9,6 @@ https://www.census.gov/programs-surveys/ahs/data.html
 
 import zipfile
 import io
-import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
@@ -90,7 +89,8 @@ def ahs_parse(dataframe_list, args):
     df["Compartment"] = "None"
     df["Location"] = "00000"
     df["Year"] = args["year"]
-    id_vars = ["Class", "SourceName", "ActivityConsumedBy", "ActivityProducedBy", "Compartment", "Location", "Year"]
+    id_vars = ["Class", "SourceName", "ActivityConsumedBy",
+               "ActivityProducedBy", "Compartment", "Location", "Year"]
 
     # Rename the PK column from "CONTROL" to "ActivityConsumedBy"
     df = df.rename(columns={"CONTROL": "ActivityConsumedBy"})
@@ -164,7 +164,8 @@ def ahs_parse(dataframe_list, args):
 
 # def calculate_urban_and_rural_residential_land_area(ahs_fba):
 #     """
-#     Read in an American Housing Survey FlowByActivity and calculate the land area in the US occupied by
+#     Read in an American Housing Survey FlowByActivity and
+#     calculate the land area in the US occupied by
 #     urban and rural housing
 #     :param ahs_fba: American Housing Survey FlowByActivity
 #     :return:
@@ -178,17 +179,23 @@ def ahs_parse(dataframe_list, args):
 #     df = ahs_fba.pivot(index='ActivityConsumedBy', columns='FlowName', values = 'FlowAmount')
 #
 #     # replace any missing lot size values with assumption defined above
-#     # df2 = df.assign(LOT=df.apply(lambda x: fill_missing_lot_value if x['LOT'] == -9 else x['LOT'], axis=1))
+#     df2 = df.assign(LOT=df.apply(lambda x: fill_missing_lot_value if x['LOT']
+#                                                                      == -9 else x['LOT'], axis=1))
 #     # convert lot data from square feet to square acres
 #     df2 = df.assign(LOT=df['LOT']/convert_square_ft_to_acres)
 #
 #     # label rows as urban or rural
-#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in [1, 2, 4] else 'rural', axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in [1, 2, 4] else '', axis=1))
-#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5]) else x['loc_label'], axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5]) & (x['CROPSL'] == 1) else x['loc_label'], axis=1))
+# #     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
+# #                                                               [1, 2, 4] else 'rural', axis=1))
+#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
+#                                                               [1, 2, 4] else '', axis=1))
+#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in
+#     #                                                            [3, 5]) else x['loc_label'], axis=1))
+#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5])
+#                                                               & (x['CROPSL'] == 1) else x['loc_label'], axis=1))
 #
-#     # We then weighted the lot sizes (‘lot’) with the AHS survey weights, summed, and converted to acres (dividing by 43560)
+#     # We then weighted the lot sizes (‘lot’) with the AHS survey weights, summed,
+#     and converted to acres (dividing by 43560)
 #
 #     # weight_calc = weighted_average(df2, 'LOT', 'WEIGHT', 'loc_label')
 #     df3 = df2.assign(FlowAmount=df2['LOT'] * df2['WEIGHT'])
