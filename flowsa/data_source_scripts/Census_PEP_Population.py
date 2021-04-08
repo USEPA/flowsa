@@ -11,19 +11,23 @@ This script is designed to run with a configuration parameter
 --year = 'year' e.g. 2015
 """
 
-import pandas as pd
 import json
+import pandas as pd
 from flowsa.common import US_FIPS, load_api_key, get_all_state_FIPS_2
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def Census_pop_URL_helper(build_url, config, args):
     """
-
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data yaer.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     urls = []
 
@@ -33,7 +37,8 @@ def Census_pop_URL_helper(build_url, config, args):
             dc = str(v)
 
     # the url for 2010 and earlier is different
-    url2000 = 'https://api.census.gov/data/2000/pep/int_population?get=POP,DATE_DESC&for=__aggLevel__:*&DATE_=12&key=__apiKey__'
+    url2000 = 'https://api.census.gov/data/2000/pep/int_population?get=' \
+              'POP,DATE_DESC&for=__aggLevel__:*&DATE_=12&key=__apiKey__'
 
     # state fips required for county level 13-14
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
@@ -77,12 +82,14 @@ def Census_pop_URL_helper(build_url, config, args):
 
 def census_pop_call(url, response_load, args):
     """
-
-    :param url:
-    :param response_load:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, transform to pandas df
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
+
     json_load = json.loads(response_load.text)
     # convert response to dataframe
     df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])
@@ -91,10 +98,10 @@ def census_pop_call(url, response_load, args):
 
 def census_pop_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
