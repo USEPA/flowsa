@@ -24,11 +24,8 @@ def split(row, header, sub_header, next_line):
     :param next_line:
     :return:
     """
-    location_str = ""
-    flow_name = ""
+
     flow_amount = ""
-    flow_amount_no_comma = ""
-    df = pd.DataFrame()
     num_in_state = False
     split_str_one = row["one"].split(" ")
     split_str_two = ""
@@ -231,32 +228,17 @@ def blm_pls_call(url, response_load, args):
     :return:
     """
 
-    dataframe = pd.DataFrame()
     df = pd.DataFrame()
-    header = ""
     sub_headers = {}
-    df_list = []
-    LocationStr = []
-    FlowName = []
-    FlowAmount = []
-    FlowAmount_No_Comma = []
-
-    last_header = ""
 
     skip = False
     last_row_header = ""
-    sub_header = ""
-    split_row = ""
-    row_one_sub_header = ""
-    sub_head = False
     next_line = False
     copy = False
-    data_frame_list = []
     location_str = []
     flow_value = []
     flow_name = []
     number_of_sub_headers = 0
-    page_value = 0
 
     duplicate_headers = [
         "Pre-Reform Act Future Interest Leases",
@@ -482,7 +464,6 @@ def blm_pls_call(url, response_load, args):
             pdf_pages = []
             for page_number in pg:
                 found_header = False
-                found_sub_header = False
 
                 pdf_page = \
                 tabula.read_pdf(io.BytesIO(response_load.content),
@@ -633,5 +614,4 @@ def standardize_blm_pls_activity_names(df):
     # standardize dashes so do not corrupt in csvs
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('–', '-', x))
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('—', '-', x))
-
     return df
