@@ -10,21 +10,24 @@ ESTAB = Number of establishments, Class = Other
 This script is designed to run with a configuration parameter
 --year = 'year' e.g. 2015
 """
-
+import json
 import pandas as pd
 import numpy as np
-import json
-from flowsa.common import log, flow_by_activity_fields, get_all_state_FIPS_2, datapath
+from flowsa.common import get_all_state_FIPS_2
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def Census_CBP_URL_helper(build_url, config, args):
     """
-
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data yaer.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     urls_census = []
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
@@ -44,11 +47,12 @@ def Census_CBP_URL_helper(build_url, config, args):
 
 def census_cbp_call(url, cbp_response, args):
     """
-
-    :param url:
-    :param cbp_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, transform to pandas df
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     cbp_json = json.loads(cbp_response.text)
     # convert response to dataframe
@@ -58,10 +62,10 @@ def census_cbp_call(url, cbp_response, args):
 
 def census_cbp_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
