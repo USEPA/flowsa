@@ -5,25 +5,22 @@
 """
 Supporting functions for BEA data.
 
-BEA data is imported as csv files from useeior and formatted into FBAs in the scripts folder
-https://github.com/USEPA/flowsa/tree/master/scripts/FlowByActivity_Datasets
+Generation of BEA Gross Output data as FBA, csv files for BEA data
+originate from USEEIOR and were originally generated on 2020-07-14.
 """
-
-# write_FBA_BEA_Detail_GrossOutput.py (flowsa)
-# !/usr/bin/env python3
-# coding=utf-8
-
-"""
-Generation of BEA Gross Output data as FBA, csv files for BEA data originate from USEEIOR and were originally
-generated on 2020-07-14.
-"""
-
-from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system
 import pandas as pd
+from flowsa.common import externaldatapath, US_FIPS
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def bea_gdp_parse(dataframe_list, args):
+    """
+    Load BEA GDP Gross Output data from csv in 'external_data' directory,
+    parse, and begin FBA formatting
+    :param dataframe_list: flowbyactivity dataframe
+    :param args: args used to run flowbyactivity.py ('year' and 'source')
+    :return: modified flowbyactivity dataframe
+    """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_GDP_GrossOutput_IO.csv")
 
@@ -49,6 +46,13 @@ def bea_gdp_parse(dataframe_list, args):
 
 
 def bea_use_detail_br_parse(dataframe_list, args):
+    """
+    Load BEA Use Before Redefinition data from csv in 'external_data' directory,
+    parse, and begin FBA formatting
+    :param dataframe_list: flowbyactivity dataframe
+    :param args: args used to run flowbyactivity.py ('year' and 'source')
+    :return: modified flowbyactivity dataframe
+    """
     csv_load = externaldatapath + "BEA_" + str(args['year']) + "_Detail_Use_PRO_BeforeRedef.csv"
     df_raw = pd.read_csv(csv_load)
 
@@ -76,8 +80,16 @@ def bea_use_detail_br_parse(dataframe_list, args):
 
 
 def bea_make_detail_br_parse(dataframe_list, args):
+    """
+    Load BEA Make Before Redefinition data from csv in 'external_data' directory,
+    parse, and begin FBA formatting
+    :param dataframe_list: flowbyactivity dataframe
+    :param args: args used to run flowbyactivity.py ('year' and 'source')
+    :return: modified flowbyactivity dataframe
+    """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) + "_Detail_Make_BeforeRedef.csv")
+    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) +
+                         "_Detail_Make_BeforeRedef.csv")
 
     # first column is the industry
     df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
@@ -102,9 +114,16 @@ def bea_make_detail_br_parse(dataframe_list, args):
 
 
 def bea_make_ar_parse(dataframe_list, args):
-    # concat dataframes - tmp load from uploaded csv
+    """
+    Load BEA Make After Redefinition data from csv in 'external_data' directory,
+    parse, and begin FBA formatting
+    :param dataframe_list: flowbyactivity dataframe
+    :param args: args used to run flowbyactivity.py ('year' and 'source')
+    :return: modified flowbyactivity dataframe
+    """
     # df = pd.concat(dataframe_list, sort=False)
-    df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] + "_Make_AfterRedef.csv", dtype="str")
+    df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] +
+                          "_Make_AfterRedef.csv", dtype="str")
     # strip whitespace
     df = df_load.apply(lambda x: x.str.strip())
     # drop rows of data
