@@ -6,19 +6,19 @@ Function to generate .bib file for FlowBySector method(s)
 """
 
 import os
+import logging as log
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
-from flowsa.common import outputpath, biboutputpath, load_sourceconfig, load_script_fba_citations, \
+from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
     load_values_from_literature_citations
-import logging as log
 
 
 def generate_fbs_bibliography(methodnames):
     """
     Generate bibliography for a FlowBySector
     :param methodname: list of methodnames to create a bibliiography
-    :return:
+    :return: a .bib file saved in local directory
     """
 
     fbas = []
@@ -48,7 +48,8 @@ def generate_fbs_bibliography(methodnames):
     bib_list = []
     fba_set = set()
     for fba in fbas:
-        # drop list duplicates and any where year is None (because allocation is a function, not a datasource)
+        # drop list duplicates and any where year is None (because allocation
+        # is a function, not a datasource)
         if fba[1] != 'None':
             try:
                 # first try loading citation information from source yaml
@@ -62,8 +63,10 @@ def generate_fbs_bibliography(methodnames):
                     log.info('Could not find a method yaml for ' + fba[0])
                     continue
             # ensure data sources are not duplicated when different FBA names
-            if (config['source_name_bib'], config['author'], fba[1], config['citable_url']) not in fba_set:
-                fba_set.add((config['source_name_bib'], config['author'], fba[1], config['citable_url']))
+            if (config['source_name_bib'], config['author'], fba[1],
+                config['citable_url']) not in fba_set:
+                fba_set.add((config['source_name_bib'], config['author'],
+                             fba[1], config['citable_url']))
 
                 db = BibDatabase()
                 db.entries = [{
