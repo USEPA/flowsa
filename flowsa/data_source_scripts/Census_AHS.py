@@ -18,11 +18,15 @@ COLS_TO_KEEP = ["LOT", "LOTSIZE", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
 
 def ahs_url_helper(build_url, config, args):
     """
-    Based on the configured year, get the version arg and replace it into the URL.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data yaer.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     version = config["years"][args["year"]]
     url = build_url
@@ -32,12 +36,12 @@ def ahs_url_helper(build_url, config, args):
 
 def ahs_call(url, ahs_response, args):
     """
-    Callback function for the Census AHS URL download. Open the downloaded zip file and
-    read the contained CSV(s) into pandas dataframe(s).
-    :param url:
-    :param ahs_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, transform to pandas df
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     # extract data from zip file (multiple csvs)
     with zipfile.ZipFile(io.BytesIO(ahs_response.content), "r") as f:
@@ -76,11 +80,12 @@ def ahs_call(url, ahs_response, args):
 
 def ahs_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
+
     df = pd.concat(dataframe_list)
 
     df["Class"] = "Land"
