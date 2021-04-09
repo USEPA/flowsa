@@ -2,13 +2,8 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Pulls County Business Patterns data in NAICS from the Census Bureau
-Writes out to various FlowBySector class files for these data items
-EMP = Number of employees, Class = Employment
-PAYANN = Annual payroll ($1,000), Class = Money
-ESTAB = Number of establishments, Class = Other
-This script is designed to run with a configuration parameter
---year = 'year' e.g. 2015
+Pulls Population data from US Census Bureau
+Inclues helper functions for calling and parsing data
 """
 
 import json
