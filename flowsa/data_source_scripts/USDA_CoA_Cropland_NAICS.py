@@ -6,7 +6,7 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import *
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, estimate_suppressed_data
 
 
 def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
@@ -127,4 +127,16 @@ def coa_cropland_NAICS_parse(dataframe_list, args):
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = None
     df['DataCollection'] = 2
+    return df
+
+
+def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
+    """
+    Clean up the land fba for use in allocation
+    :param fba_w_sector: df, coa cropland naics flowbyactivity with sector columns
+    :return: df, flowbyactivity with modified values
+    """
+
+    # estimate the suppressed data by equally allocating parent naics to child
+    df = estimate_suppressed_data(fba_w_sector, 'SectorConsumedBy', 3)
     return df
