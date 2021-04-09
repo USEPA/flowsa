@@ -133,6 +133,7 @@ source_names:
           - "FARM OPERATIONS"
         allocation_compartment: None
         allocation_from_scale: state
+        clean_allocation_fba_w_sec: coa_cropland_naics_fba_wsec_cleanup
         allocation_helper: 'no'
       activity_set_4:
         names:
