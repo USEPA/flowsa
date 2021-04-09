@@ -11,13 +11,15 @@ from flowsa.flowbyfunctions import assign_fips_location_system, estimate_suppres
 
 def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
-    that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     # initiate url list for coa cropland data
     urls = []
@@ -48,11 +50,12 @@ def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
 
 def coa_cropland_NAICS_call(url, coa_response, args):
     """
-
-    :param url:
-    :param coa_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param coa_response: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     cropland_json = json.loads(coa_response.text)
     df_cropland = pd.DataFrame(data=cropland_json["data"])
@@ -63,9 +66,9 @@ def coa_cropland_NAICS_parse(dataframe_list, args):
     """
     Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
     (irrigated and total).
-    :param dataframe_list:
-    :param args:
-    :return:
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     df = pd.concat(dataframe_list, sort=False)
     # specify desired data based on domain_desc

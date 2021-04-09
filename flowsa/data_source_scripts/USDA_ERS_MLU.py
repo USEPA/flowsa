@@ -17,11 +17,12 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def mlu_call(url, mlu_response, args):
     """
-
-    :param url:
-    :param mlu_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param usgs_response: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     with io.StringIO(mlu_response.text) as fp:
         # for line in fp:
@@ -33,10 +34,10 @@ def mlu_call(url, mlu_response, args):
 
 def mlu_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     output = pd.DataFrame()
     # concat dataframes

@@ -25,11 +25,10 @@ import pandas as pd
 
 def noaa_parse(dataframe_list, args):
     """
-    Load the fishery landings csv from flowsa and parse to create FBA
-    (irrigated and total).
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
 
     # Read directly into a pandas df

@@ -10,11 +10,15 @@ from flowsa.common import fba_activity_fields, fbs_activity_fields
 
 def usgs_URL_helper(build_url, config, args):
     """
-    Used to substitute in components of usgs urls
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     # initiate url list for usgs data
     urls_usgs = []
@@ -42,11 +46,12 @@ def usgs_URL_helper(build_url, config, args):
 
 def usgs_call(url, usgs_response, args):
     """
-    Remove the metadata at beginning of files (lines start with #)
-    :param url:
-    :param usgs_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param usgs_response: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     usgs_data = []
     metadata = []
@@ -77,10 +82,10 @@ def usgs_call(url, usgs_response, args):
 
 def usgs_parse(dataframe_list, args):
     """
-    Parsing the usgs data into flowbyactivity format
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
 
     for df in dataframe_list:

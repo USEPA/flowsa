@@ -14,6 +14,12 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def usgs_coef_parse(dataframe_list, args):
+    """
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "USGS_WU_Coef_Raw.csv")
 

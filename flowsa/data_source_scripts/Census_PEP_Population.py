@@ -16,7 +16,7 @@ def Census_pop_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for blm pls data that requires parts of the url text string
-    to be replaced with info specific to the data yaer.
+    to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
     :param build_url: string, base url
     :param config: dictionary of method yaml

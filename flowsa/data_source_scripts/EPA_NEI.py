@@ -15,10 +15,11 @@ def epa_nei_url_helper(build_url, config, args):
     """
     Takes the basic url text and performs substitutions based on NEI year and version.
     Returns the finished url.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     urls = []
     url = build_url
@@ -42,10 +43,11 @@ def epa_nei_call(url, response_load, args):
     Takes the .zip archive returned from the url call and extracts
     the individual .csv files. The .csv files are read into a dataframe and
     concatenated into one master dataframe containing all 10 EPA regions.
-    :param url:
-    :param response_load:
-    :param args:
-    :return:
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     z = zipfile.ZipFile(io.BytesIO(response_load.content))
     # create a list of files contained in the zip archive
@@ -68,9 +70,9 @@ def epa_nei_global_parse(dataframe_list, args):
     Renames certain column headers to match flowbyactivity format.
     Adds a few additional columns with hardcoded data.
     Deletes all unnecessary columns.
-    :param dataframe_list:
-    :param args:
-    :return:
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     df = pd.concat(dataframe_list, sort=True)
 
