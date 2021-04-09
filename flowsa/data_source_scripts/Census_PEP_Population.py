@@ -1,4 +1,4 @@
-# Census_CBP.py (flowsa)
+# Census_PEP_Population.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """
