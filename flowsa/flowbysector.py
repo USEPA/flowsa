@@ -47,7 +47,7 @@ from flowsa.data_source_scripts.EIA_CBECS_Land import cbecs_land_fba_cleanup
 from flowsa.data_source_scripts.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec, \
     mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs, mecs_land_clean_allocation_mapped_fba_w_sec
 from flowsa.data_source_scripts.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
-from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
+from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use
 from flowsa.data_source_scripts.stewiFBS import stewicombo_to_sector, stewi_to_sector
 from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
 from flowsa.data_source_scripts.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas, allocate_usda_ers_mlu_other_land,\
@@ -115,7 +115,7 @@ def main(**kwargs):
     :param method_name: Name of method corresponding to flowbysector method yaml name
     :return: flowbysector
     """
-    if len(kwargs)==0:
+    if len(kwargs) == 0:
         kwargs = parse_args()
 
     method_name = kwargs['method']
