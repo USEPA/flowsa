@@ -252,6 +252,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
     from flowsa.dataclean import harmonize_units, replace_NoneType_with_empty_cells, \
         replace_strings_with_NoneType, clean_df
     from flowsa.mapping import add_sectors_to_flowbyactivity
+    from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import coa_cropland_naics_fba_wsec_cleanup
 
     # tmp drop NoneTypes
     fba_w_sector = replace_NoneType_with_empty_cells(fba_w_sector)
@@ -278,6 +279,8 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
+        # estimate suppressed data by equal allocation
+        df_f = coa_cropland_naics_fba_wsec_cleanup(df_f)
         # create proportional ratios
         group_cols = fba_mapped_default_grouping_fields
         group_cols = [e for e in group_cols if
@@ -334,6 +337,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     from flowsa.dataclean import replace_strings_with_NoneType
     from flowsa.dataclean import clean_df
     from flowsa.mapping import add_sectors_to_flowbyactivity
+    from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import coa_cropland_naics_fba_wsec_cleanup
 
     # tmp drop NoneTypes
     fba_w_sector = replace_NoneType_with_empty_cells(fba_w_sector)
@@ -357,6 +361,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     naics = naics[~naics['ActivityConsumedBy'].str.contains('&')].reset_index(drop=True)
     # add sectors
     naics = add_sectors_to_flowbyactivity(naics, sectorsourcename=method['target_sector_source'])
+    # estimate suppressed data by equally allocating parent to child naics
+    naics = coa_cropland_naics_fba_wsec_cleanup(naics)
     # add missing fbs fields
     naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
     # drop cols and rename
