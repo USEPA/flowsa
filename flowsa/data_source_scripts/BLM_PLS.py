@@ -482,7 +482,7 @@ def blm_pls_call(url, response_load, args):
                 pdf_pages.append(pdf_page)
 
             for page in pdf_pages:
-                for row in page.iterrows():
+                for index, row in page.iterrows():
                     if " /" in row["one"]:
                         split_header = row["one"].split(" /")
                         split_row = split_header[0].strip()
@@ -569,11 +569,11 @@ def blm_pls_parse(dataframe_list, args):
     fips = get_all_state_FIPS_2()
     for df in dataframe_list:
         df = df.drop(df[df.FlowAmount == ""].index)
-        for row in df.iterrows():
+        for index, row in df.iterrows():
             if row['LocationStr'] == "Total":
                 Location.append("00000")
             else:
-                for fips_row in fips.iterrows():
+                for i, fips_row in fips.iterrows():
                     if fips_row["State"] == row['LocationStr']:
                         Location.append(fips_row["FIPS_2"] + "000")
         df = df.drop(columns=["LocationStr"])
