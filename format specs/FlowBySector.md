@@ -36,7 +36,7 @@ which specifies the fields `Flowable`,`Class`,`Context`, and `Unit` in common wi
 
 ### Flow-By-Sector Collapsed Format
 
-In this variant, the fields `SectorProducedBy` and `SectorConsumedBy` are replaced by a `Sector` field
+In this variant, the fields `SectorProducedBy` and `SectorConsumedBy` are replaced by a `Sector` field. All other fields are identical.
 
 | Field | Type | Required? | Description |
 | --- | --- | ---  | --- |
