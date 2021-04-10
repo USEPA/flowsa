@@ -31,3 +31,15 @@ If there is a transfer between sectors, both must be present.
 
 For FlowType 'ELEMENTARY_FLOW', flows by default will use the Federal LCA Commons Elementary Flow List from [fedelemflowlist](https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List),
 which specifies the fields `Flowable`,`Class`,`Context`, and `Unit` in common with this specification.
+
+## Variants
+
+### Flow-By-Sector Collapsed Format
+
+In this variant, the fields `SectorProducedBy` and `SectorConsumedBy` are replaced by a `Sector` field
+
+| Field | Type | Required? | Description |
+| --- | --- | ---  | --- |
+| Sector | String | Y | A valid code from the SectorSourceName system |
+
+
