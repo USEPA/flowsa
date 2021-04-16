@@ -750,29 +750,37 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     return df
 
 
-def compare_remote_to_local_FBS_parquet(DataCommonsParquetName, LocalParquetName):
+def compare_FBS_results(fbs1_load, fbs2_load):
     """
     Compare a parquet on Data Commons to a parquet stored locally
-    :param DataCommonsParquetName:
-    :param LocalParquetName:
+    :param fbs1_load:
+    :param fbs2_load:
     :param FileFormat: Either 'FlowByActivity' or 'FlowBySector'
     :return:
     """
     import flowsa
-    from flowsa.flowbyfunctions import dataframe_difference
 
     # load remote file
-    df_remote = flowsa.getFlowBySector(DataCommonsParquetName, file_location='remote')
+    df1 = flowsa.getFlowBySector(fbs1_load).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
     # load local file
-    df_local = flowsa.getFlowBySector((LocalParquetName))
+    df2 = flowsa.getFlowBySector(fbs2_load).rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
     # compare df
-    df_diff = dataframe_difference(df_remote, df_local)
+    merge_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
+       'SectorSourceName', 'Context', 'Location', 'LocationSystem',
+       'Unit', 'FlowType', 'Year', 'MetaSources']
+    df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
+                    df2[merge_cols + ['FlowAmount_fbs2']],
+                    how='outer')
+    df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs1'] - df_m['FlowAmount_fbs2'])
+    df_m = df_m.assign(Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fbs1']) * 100)
+    df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
-    if len(df_diff) == 0:
+    if len(df_m) == 0:
         log.info('No differences between dataframes')
     else:
         log.info('Differences exist between dataframes')
-        df_diff = df_diff.sort_values(['Location', 'SectorProducedBy', 'SectorConsumedBy', 'Flowable',
-                                       'Context', ]).reset_index(drop=True)
+        df_m = df_m.sort_values(['Location', 'SectorProducedBy',
+                                 'SectorConsumedBy', 'Flowable',
+                                 'Context', ]).reset_index(drop=True)
 
-    return df_diff
+    return df_m
