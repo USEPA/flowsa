@@ -18,7 +18,7 @@ def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
     :param drop_description: specify if want the Description column dropped, defaults to true
     :return:
     """
-
+    df = df.reset_index(drop=True)
     # ensure correct data types
     df = add_missing_flow_by_fields(df, flowbyfields)
     # fill null values
