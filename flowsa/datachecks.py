@@ -5,14 +5,14 @@
 Functions to check data is loaded and transformed correctly
 """
 
+import os
 import pandas as pd
 import numpy as np
-from flowsa.flowbyfunctions import aggregator, create_geoscale_list
+from flowsa.flowbyfunctions import aggregator, create_geoscale_list, fba_default_grouping_fields
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields, load_sector_length_crosswalk, \
     load_sector_crosswalk, sector_source_name, log, outputpath, fba_activity_fields, \
     fbs_activity_fields, fbs_fill_na_dict
-import os
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -784,3 +784,35 @@ def compare_FBS_results(fbs1_load, fbs2_load):
                                  'Context', ]).reset_index(drop=True)
 
     return df_m
+
+def compare_geographic_totals(df_subset, df_load):
+    """
+    Check for any data loss between the geoscale used and published national data
+    :param df_subset:
+    :param df_load:
+    :return:
+    """
+
+    # subset df_load to national level
+    nat = df_load[df_load['Location'] == US_FIPS].reset_index(drop=True).rename(columns={'FlowAmount': 'FlowAmount_nat'})
+    # if df len is not 0, continue with comparision
+    if len(nat) != 0:
+        # drop the geoscale in df_subset and sum
+        sub = df_subset.assign(Location=US_FIPS)
+        sub2 = aggregator(sub, fba_default_grouping_fields).rename(columns={'FlowAmount': 'FlowAmount_sub'})
+
+        # compare df
+        merge_cols = ['Class', 'SourceName', 'FlowName', 'Unit',
+                      'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment', 'Location',
+                      'LocationSystem', 'Year']
+        df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
+                        sub2[merge_cols + ['FlowAmount_sub']],
+                        how='outer')
+        df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_nat'] - df_m['FlowAmount_sub'])
+        df_m = df_m.assign(Percent_Diff=(df_m['FlowAmount_diff'] / df_m['FlowAmount_nat']) * 100)
+        df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
+
+        if len(df_m) == 0:
+            log.debug('No data loss between national level data and df subset')
+
+    return None
