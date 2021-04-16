@@ -4,12 +4,13 @@
 
 """
 Animal Water Use coefficients data obtained from: USGS Publication (Lovelace, 2005)
+https://pubs.er.usgs.gov/publication/sir20095041
 
-Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
+Data output manually saved as csv, "data/external_data/USGS_WU_Coef_Raw.csv"
 """
 
-from flowsa.common import *
 import pandas as pd
+from flowsa.common import US_FIPS, externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
