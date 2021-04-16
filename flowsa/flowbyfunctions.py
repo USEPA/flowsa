@@ -111,6 +111,8 @@ def aggregator(df, groupbycols):
     :return:
     """
 
+    # reset index
+    df = df.reset_index(drop=True)
     # tmp replace null values with empty cells
     df = replace_NoneType_with_empty_cells(df)
 
