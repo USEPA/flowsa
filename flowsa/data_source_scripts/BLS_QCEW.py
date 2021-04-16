@@ -125,7 +125,7 @@ def bls_qcew_parse(dataframe_list, args):
     return df
 
 
-def clean_bls_qcew_fba_for_employment_sat_table(fba_df):
+def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
     """
     When creating the employment satellite table for use in useeior,
     modify the flow name to match prior methodology for mapping/impact factors
@@ -143,7 +143,7 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df):
     return fba_df
 
 
-def clean_bls_qcew_fba(fba_df):
+def clean_bls_qcew_fba(fba_df, **kwargs):
     """
     Function to clean BLS QCEW data when FBA is not used for employment satellite table
 
@@ -228,7 +228,7 @@ def remove_2_digit_sector_ranges(fba_df):
     return df
 
 
-def bls_clean_allocation_fba_w_sec(df_w_sec):
+def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     clean up bls df with sectors by estimating suppresed data
     :param df_w_sec:
