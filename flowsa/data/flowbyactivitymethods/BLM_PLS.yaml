@@ -1,27 +1,25 @@
-# BLM_PLS
----
-author: "Bureau of Land Management"
-source_name: "Public Land Statistics"
-citable_url: "https://www.blm.gov/about/data/public-land-statistics"
-date_generated: "2020-03-11" # updated automatically when flowbyactivity.py is run
+author: Bureau of Land Management
+source_name: Public Land Statistics
+citable_url: https://www.blm.gov/about/data/public-land-statistics
+date_generated: '2021-04-08' # updated automatically when flowbyactivity.py is run
 bib_id: BLM_PLS
 api_name: BLM_PLS
 format: pfd
 url:
-  base_url: "https://www.blm.gov/sites/blm.gov/files/"
-  base_url_2015: "https://blm-prod.opengov.ibmcloud.com/sites/blm.gov/files/documents/files/"
+  base_url: https://www.blm.gov/sites/blm.gov/files/
+  base_url_2015: https://blm-prod.opengov.ibmcloud.com/sites/blm.gov/files/documents/files/
 url_replace_fxn: blm_pls_URL_helper
 call_response_fxn: blm_pls_call
 parse_response_fxn: blm_pls_parse
 years:
-  - 2007
-  - 2010
-  - 2011
-  - 2012
-  - 2015
+- 2007
+- 2010
+- 2011
+- 2012
+- 2015
 file_name:
-  "2007": "pls07.pdf"
-  "2010": "pls10.pdf"
-  "2011": "pls2011.pdf"
-  "2012": "pls2012-web.pdf"
-  "2015": "Public%20Land%20Statistics2015%20%281%29.pdf"
+  '2007': pls07.pdf
+  '2010': pls10.pdf
+  '2011': pls2011.pdf
+  '2012': pls2012-web.pdf
+  '2015': Public%20Land%20Statistics2015%20%281%29.pdf

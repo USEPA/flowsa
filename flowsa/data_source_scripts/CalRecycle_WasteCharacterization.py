@@ -1,4 +1,4 @@
-# ca_waste.py (flowsa)
+# CalRecycle_WasteCharacterization.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -10,92 +10,91 @@ The data  was manually scraped so no R/python code is available to replicate.
 Last updated:
 """
 
-from flowsa.flowbyactivity import process_data_frame
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.dataclean import clean_df, add_missing_flow_by_fields
-from flowsa.common import *
 import os
-
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import externaldatapath
 
 
 def produced_by(entry):
+    """
+    Modify source activity names to clarify data meaning
+    :param entry: original source name
+    :return: modified activity name
+    """
     if "ArtsEntRec" in entry:
         return "Arts Entertainment Recreation"
-    elif "DurableWholesaleTrucking" in entry:
+    if "DurableWholesaleTrucking" in entry:
         return "Durable Wholesale Trucking"
-    elif "Education" in entry:
+    if "Education" in entry:
         return "Education"
-    elif "ElectronicEquipment" in entry:
+    if "ElectronicEquipment" in entry:
         return "Electronic Equipment"
-    elif "FoodBeverageStores" in entry:
+    if "FoodBeverageStores" in entry:
         return "Food Beverage Stores"
-    elif "FoodNondurableWholesale" in entry:
+    if "FoodNondurableWholesale" in entry:
         return "Food Nondurable Wholesale"
-    elif "HotelLodging" in entry:
+    if "HotelLodging" in entry:
         return "Hotel Lodging"
-    elif "MedicalHealth" in entry:
+    if "MedicalHealth" in entry:
         return "Medical Health"
-    elif "Multifamily" in entry:
+    if "Multifamily" in entry:
         return "Multifamily"
-    elif "NotElsewhereClassified" in entry:
+    if "NotElsewhereClassified" in entry:
         return "Not Elsewhere Classified"
-    elif "OtherManufacturing" in entry:
+    if "OtherManufacturing" in entry:
         return "Other Manufacturing"
-    elif "OtherRetailTrade" in entry:
+    if "OtherRetailTrade" in entry:
         return "Other Retail Trade"
-    elif "PublicAdministration" in entry:
+    if "PublicAdministration" in entry:
         return "Public Administration"
-    elif "Restaurants" in entry:
+    if "Restaurants" in entry:
         return "Restaurants"
-    elif "ServicesManagementAdminSupportSocial" in entry:
+    if "ServicesManagementAdminSupportSocial" in entry:
         return "Services Management Administration Support Social"
-    elif "ServicesProfessionalTechFinancial" in entry:
+    if "ServicesProfessionalTechFinancial" in entry:
         return "Services Professional Technical  Financial"
-    elif "ServicesRepairPersonal" in entry:
+    if "ServicesRepairPersonal" in entry:
         return "Services Repair Personal"
-    else:
-        return ""
 
-external_datapath = datapath + "external_data"
 
-if __name__ == '__main__':
-    df_list = []
+def calR_parse(dataframe_list, args):
+    """
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    """
     data = {}
     output = pd.DataFrame()
 
-    for entry in os.listdir(external_datapath):
-        if os.path.isfile(os.path.join(external_datapath, entry)):
+    for entry in os.listdir(externaldatapath):
+        if os.path.isfile(os.path.join(externaldatapath, entry)):
             data["Class"] = "Other"
             data['FlowType'] = "Waste Flow"
             data["Location"] = "06000"
             data["Compartment"] = "ground"
             data["LocationSystem"] = "FIPS"
             data["SourceName"] = "California_Commercial_bySector"
-            data["Year"] = 2014
+            data["Year"] = args['year']
 
             if "California_Commercial_bySector_2014" in entry and "Map" not in entry:
                 data["ActivityProducedBy"] = produced_by(entry)
                 data["ActivityConsumedBy"] = None
-                dataframe = pd.read_csv(external_datapath + "/" + entry, header=0, dtype=str)
+                dataframe = pd.read_csv(externaldatapath + "/" + entry, header=0, dtype=str)
                 for col in dataframe.columns:
                     if "Percent" in str(col):
                         del dataframe[col]
 
                 for index, row in dataframe.iterrows():
                     for column in dataframe.columns:
-                        if "Material" != column:
+                        if column != "Material":
                             col_string = column.split()
                             data["Unit"] = col_string[1]
-                            data['FlowName'] = dataframe.iloc[index]["Material"] + " " + col_string[0]
+                            data['FlowName'] = dataframe.iloc[index]["Material"] + \
+                                               " " + col_string[0]
                             if dataframe.iloc[index][column] != "-":
                                 data["FlowAmount"] = int(dataframe.iloc[index][column])
                                 output = output.append(data, ignore_index=True)
                                 output = assign_fips_location_system(output, '2014')
-    flow_df = add_missing_flow_by_fields(output, flow_by_activity_fields)
-    # add missing dataframe fields (also converts columns to desired datatype)
-    flow_df = clean_df(flow_df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-    parquet_name = 'California_Commercial_bySector'
-    process_data_frame(flow_df, parquet_name, '2014')
-
-
-
+    return output

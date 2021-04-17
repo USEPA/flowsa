@@ -32,9 +32,10 @@ from flowsa.data_source_scripts.EIA_CBECS_Land import cbecs_land_fba_cleanup
 from flowsa.data_source_scripts.EIA_MECS import mecs_energy_fba_cleanup, eia_mecs_energy_clean_allocation_fba_w_sec, \
     mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs, mecs_land_clean_allocation_mapped_fba_w_sec
 from flowsa.data_source_scripts.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
-from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use, disaggregate_statcan_to_naics_6
+from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use #, disaggregate_statcan_to_naics_6
 from flowsa.data_source_scripts.stewiFBS import stewicombo_to_sector, stewi_to_sector
 from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, coa_irrigated_cropland_fba_cleanup
+from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import coa_cropland_naics_fba_wsec_cleanup
 from flowsa.data_source_scripts.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas, allocate_usda_ers_mlu_other_land,\
     allocate_usda_ers_mlu_land_in_rural_transportation_areas
 from flowsa.data_source_scripts.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
@@ -265,8 +266,7 @@ def allocation_helper(df_w_sector, attr, method, v):
 
     elif attr['helper_method'] == 'proportional':
         modified_fba_allocation = proportional_allocation_by_location_and_activity(modified_fba_allocation,
-                                                                                   sector_col_to_merge,
-                                                                                   attr['helper_method'])
+                                                                                   sector_col_to_merge)
         modified_fba_allocation['FlowAmountRatio'] = modified_fba_allocation['FlowAmountRatio'].fillna(0)
         modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
                                                        modified_fba_allocation['FlowAmountRatio']

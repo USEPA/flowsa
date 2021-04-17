@@ -1,5 +1,5 @@
 author: US Department of Agriculture
-source_name: Irrigation and Water Management Survey
+source_name_bib: Irrigation and Water Management Survey
 citable_url: https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Farm_and_Ranch_Irrigation/index.php
 date_generated: '2021-03-12' # updated automatically when flowbyactivity.py is run
 bib_id: USDA_IWMS

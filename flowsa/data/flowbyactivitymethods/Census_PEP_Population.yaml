@@ -1,5 +1,5 @@
 author: US Census Bureau
-source_name: Population and Housing Unit Estimates
+source_name_bib: Population and Housing Unit Estimates
 citable_url: https://www.census.gov/programs-surveys/popest.html
 date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
 bib_id: Census_PEP_Pop

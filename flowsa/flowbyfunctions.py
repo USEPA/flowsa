@@ -111,6 +111,8 @@ def aggregator(df, groupbycols):
     :return:
     """
 
+    # reset index
+    df = df.reset_index(drop=True)
     # tmp replace null values with empty cells
     df = replace_NoneType_with_empty_cells(df)
 
@@ -558,27 +560,26 @@ def dataframe_difference(df1, df2, which=None):
     return diff_df
 
 
-def estimate_suppressed_data(df, sector_column):
+def estimate_suppressed_data(df, sector_column, naics_level):
     """
-    Estimate data suppressions
+    Estimate data suppression, by equally allocating parent NAICS values to child NAICS
     :param df:
+    :param sector_column:
+    :param naics_level: numeric, indicate at what NAICS length to base estimated suppresed data off (2 - 5)
     :return:
     """
 
     # exclude nonsectors
     df = replace_NoneType_with_empty_cells(df)
 
-    # can be changed to expand range - takes a long time and at national level, only missing suppresed \
-    # 6 digit for industrial
-    estimate_range = [5]
-    for i in estimate_range:
-
+    # find the longest length sector
+    max_length = max(df[sector_column].apply(lambda x: len(str(x))).unique())
+    # loop through starting at naics_level, use most detailed level possible to save time
+    for i in range(naics_level, max_length):
         # create df of i length
         df_x = df.loc[df[sector_column].apply(lambda x: len(x) == i)]
-
         # create df of i + 1 length
         df_y = df.loc[df[sector_column].apply(lambda x: len(x) == i + 1)]
-
         # create temp sector columns in df y, that are i digits in length
         df_y = df_y.assign(s_tmp=df_y[sector_column].apply(lambda x: x[0:i]))
 
@@ -595,39 +596,40 @@ def estimate_suppressed_data(df, sector_column):
                 c2 = df_y['s_tmp'] == r
                 # subset data
                 suppressed_list.append(df_y.loc[c1 & c2])
-            suppressed_sectors = pd.concat(suppressed_list, sort=False)
+            suppressed_sectors = pd.concat(suppressed_list, sort=False, ignore_index=True)
             # add column of existing allocated data for length of i
             suppressed_sectors['alloc_flow'] = suppressed_sectors.groupby(['Location', 's_tmp'])['FlowAmount'].transform('sum')
             # subset further so only keep rows of 0 value
             suppressed_sectors_sub = suppressed_sectors[suppressed_sectors['FlowAmount'] == 0]
             # add count
-            suppressed_sectors_sub = suppressed_sectors_sub.assign(sector_count=suppressed_sectors_sub.groupby(['Location', 's_tmp'])['s_tmp'].transform('count'))
+            suppressed_sectors_sub = \
+                suppressed_sectors_sub.assign(sector_count=
+                                              suppressed_sectors_sub.groupby(['Location',
+                                                                              's_tmp'])['s_tmp'].transform('count'))
 
             # merge suppressed sector subset with df x
             df_m = pd.merge(df_x,
                             suppressed_sectors_sub[['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
                                                     'Year', sector_column, 's_tmp', 'alloc_flow', 'sector_count']],
-                            how='right',
                             left_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
                                      'Year', sector_column],
                             right_on=['Class', 'Compartment', 'FlowType', 'FlowName', 'Location', 'LocationSystem', 'Unit',
-                                      'Year', 's_tmp'])
+                                      'Year', 's_tmp'],
+                            how='right')
             # calculate estimated flows by subtracting the flow amount already allocated from total flow of \
             # sector one level up and divide by number of sectors with suppresed data
             df_m.loc[:, 'FlowAmount'] = (df_m['FlowAmount'] - df_m['alloc_flow']) / df_m['sector_count']
             # only keep the suppressed sector subset activity columns
             df_m = df_m.drop(columns=[sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
             df_m = df_m.rename(columns={sector_column + '_y': sector_column})
+            # reset activity columns #todo: modify so next 2 lines only run if activities are sector-like
+            df_m = df_m.assign(ActivityProducedBy=df_m['SectorProducedBy'])
+            df_m = df_m.assign(ActivityConsumedBy=df_m['SectorConsumedBy'])
 
             # drop the existing rows with suppressed data and append the new estimates from fba df
-            modified_df = pd.merge(df, suppressed_sectors_sub, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
-            df = pd.concat([modified_df, df_m], ignore_index=True, sort=True)
-
+            modified_df = pd.merge(df, df_m[['FlowName', 'Location', sector_column]], indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
+            df = pd.concat([modified_df, df_m], ignore_index=True)
     df_w_estimated_data = replace_strings_with_NoneType(df)
-    # drop cols
-    # df_w_estimated_data = df_w_estimated_data.drop(columns=['s_tmp', 'alloc_flow', 'sector_count'])
-    # reorder cols
-    # df_w_estimated_data = df = add_missing_flow_by_fields(df_w_estimated_data, fba_mapped_default_grouping_fields)
 
     return df_w_estimated_data
 
@@ -764,7 +766,7 @@ def proportional_allocation_by_location(df):
     return allocation_df
 
 
-def proportional_allocation_by_location_and_activity(df, sectorcolumn, allocation_method):
+def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     """
     Creates a proportional allocation within each aggregated sector within a location
     :param df:

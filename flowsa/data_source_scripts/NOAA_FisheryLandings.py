@@ -1,10 +1,8 @@
-# write_NOAA_fisheries_from_csv.py (scripts)
+# NOAA_FisheryLandings.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 
 """
-This script is run on it's own, not through flowbyactivity.py, as data pulled from csv in flowsa.
-
 NOAA fisheries data obtained from: https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200
                                on: April 28, 2020
 
@@ -23,16 +21,18 @@ Data output saved as csv, retaining assigned file name "foss_landings.csv"
 
 from flowsa.common import *
 import pandas as pd
-from flowsa.flowbyactivity import process_data_frame
-from flowsa.dataclean import add_missing_flow_by_fields
 
-# 2012--2018 fisheries data at state level
-year = '2012'
-csv_load = datapath + "foss_landings.csv"
 
-if __name__ == '__main__':
+def noaa_parse(dataframe_list, args):
+    """
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    """
+
     # Read directly into a pandas df
-    df_raw = pd.read_csv(csv_load)
+    df_raw = pd.read_csv(externaldatapath + "foss_landings.csv")
 
     # read state fips from common.py
     df_state = get_state_FIPS()
@@ -73,7 +73,4 @@ if __name__ == '__main__':
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
 
-    # add missing dataframe fields (also converts columns to desired datatype)
-    flow_df = add_missing_flow_by_fields(df4, flow_by_activity_fields)
-    parquet_name = 'NOAA_FisheryLandings_2012-2018'
-    process_data_frame(flow_df, parquet_name, year)
+    return df4

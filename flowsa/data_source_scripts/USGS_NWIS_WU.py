@@ -1,20 +1,29 @@
-# USGS_Water_Use.py (flowsa)
+# USGS_NWIS_WU.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
+"""
+Helper functions for importing, parsing, formatting USGS Water Use data
+"""
+
 import io
-from flowsa.common import *
+import pandas as pd
+import numpy as np
+from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first_letter, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import fba_activity_fields, fbs_activity_fields
 
 
 def usgs_URL_helper(build_url, config, args):
     """
-    Used to substitute in components of usgs urls
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     # initiate url list for usgs data
     urls_usgs = []
@@ -42,11 +51,12 @@ def usgs_URL_helper(build_url, config, args):
 
 def usgs_call(url, usgs_response, args):
     """
-    Remove the metadata at beginning of files (lines start with #)
-    :param url:
-    :param usgs_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param usgs_response: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     usgs_data = []
     metadata = []
@@ -71,16 +81,17 @@ def usgs_call(url, usgs_response, args):
     else:
         df_usgs.insert(0, "geo", "national")
         # rename national level columns to make it easier to concat and parse data frames
-        df_usgs = df_usgs.rename(columns={df_usgs.columns[1]: "Description", df_usgs.columns[2]: "FlowAmount"})
+        df_usgs = df_usgs.rename(columns={df_usgs.columns[1]: "Description",
+                                          df_usgs.columns[2]: "FlowAmount"})
     return df_usgs
 
 
 def usgs_parse(dataframe_list, args):
     """
-    Parsing the usgs data into flowbyactivity format
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
 
     for df in dataframe_list:
@@ -103,7 +114,8 @@ def usgs_parse(dataframe_list, args):
     df_n = df_n.dropna(axis=1, how='all')
     df_sc = df_sc.dropna(axis=1, how='all')
     # melt state and county level data frame
-    df_sc = pd.melt(df_sc, id_vars=["geo", "state_cd", "state_name", "county_cd", "county_nm", "year"],
+    df_sc = pd.melt(df_sc, id_vars=["geo", "state_cd", "state_name",
+                                    "county_cd", "county_nm", "year"],
                     var_name="Description", value_name="FlowAmount")
     # merge national and state/county dataframes
     df = pd.concat([df_n, df_sc], sort=False)
@@ -122,30 +134,30 @@ def usgs_parse(dataframe_list, args):
     # create flow name column
     df.loc[:, 'FlowName'] = np.where(df.Description.str.contains("fresh"), "fresh",
                                      np.where(df.Description.str.contains("saline"), "saline",
-                                              np.where(df.Description.str.contains("wastewater"), "wastewater",
-                                                       "total")))
+                                              np.where(df.Description.str.contains("wastewater"),
+                                                       "wastewater", "total")))
     # create flow name column
-    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"), "ground",
-                                        np.where(df.Description.str.contains("Ground"), "ground",
-                                                 np.where(df.Description.str.contains("surface"), "surface",
-                                                          np.where(df.Description.str.contains("Surface"), "surface",
-                                                                   np.where(df.Description.str.contains(
-                                                                       "instream water use"), "surface",
-                                                                       # based on usgs def
-                                                                       np.where(df.Description.str.contains(
-                                                                           "consumptive"), "air",
-                                                                           np.where(
-                                                                               df.Description.str.contains(
-                                                                                   "conveyance"), "water",
-                                                                               np.where(
-                                                                                   df.Description.str.contains(
-                                                                                       "total"), "total",
-                                                                                   "total"))))))))
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"),
+                                        "ground", "total")
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Ground"),
+                                        "ground", "total")
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("surface"),
+                                        "surface", "total")
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Surface"),
+                                        "surface", "total")
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("instream water use"),
+                                        "surface", "total") # based on usgs def
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("consumptive"),
+                                        "air", "total")
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("conveyance"),
+                                        "water", "total")
+    # df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("total"), "total", "total")
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
     df.loc[:, "Unit"] = df['Unit'].str.replace("in ", "", regex=True)
     df.loc[:, "Unit"] = df['Unit'].str.replace("In ", "", regex=True)
-    df = df[~df['Unit'].isin(["millions", "gallons/person/day", "thousands", "thousand acres", "gigawatt-hours"])]
+    df = df[~df['Unit'].isin(["millions", "gallons/person/day",
+                              "thousands", "thousand acres", "gigawatt-hours"])]
     df = df[~df['Unit'].str.contains("number of")]
     df.loc[df['Unit'].isin(['Mgal/', 'Mgal']), 'Unit'] = 'Mgal/d'
     df = df.reset_index(drop=True)
@@ -161,14 +173,18 @@ def usgs_parse(dataframe_list, args):
     df['Class'] = 'Water'
     df['SourceName'] = 'USGS_NWIS_WU'
     # Assign data quality scores
-    df.loc[df['ActivityConsumedBy'].isin(['Public Supply', 'Public supply']), 'DataReliability'] = '2'
+    df.loc[df['ActivityConsumedBy'].isin(['Public Supply',
+                                          'Public supply']), 'DataReliability'] = '2'
     df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
-                                          'Thermoelectric power', 'Thermoelectric Power Once-through cooling',
+                                          'Thermoelectric power',
+                                          'Thermoelectric Power Once-through cooling',
                                           'Thermoelectric Power Closed-loop cooling',
                                           'Wastewater Treatment']), 'DataReliability'] = '3'
     df.loc[
-        df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic', 'Industrial', 'Self-supplied industrial',
-                                       'Irrigation, Crop', 'Irrigation, Golf Courses', 'Irrigation, Total',
+        df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic',
+                                       'Industrial', 'Self-supplied industrial',
+                                       'Irrigation, Crop', 'Irrigation, Golf Courses',
+                                       'Irrigation, Total',
                                        'Irrigation', 'Mining']), 'DataReliability'] = '4'
     df.loc[df['ActivityConsumedBy'].isin(['Total withdrawals', 'Total Groundwater',
                                           'Total Surface water']), 'DataReliability'] = '5'
@@ -177,24 +193,27 @@ def usgs_parse(dataframe_list, args):
                                           'Thermoelectric Power Once-through cooling',
                                           'Thermoelectric Power Closed-loop cooling',
                                           'Wastewater Treatment']), 'DataReliability'] = '3'
-    df.loc[df['ActivityProducedBy'].isin(['Domestic', 'Industrial', 'Irrigation, Crop', 'Irrigation, Golf Courses',
+    df.loc[df['ActivityProducedBy'].isin(['Domestic', 'Industrial',
+                                          'Irrigation, Crop', 'Irrigation, Golf Courses',
                                           'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
     # remove commas from activity names
     df.loc[:, 'ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
     df.loc[:, 'ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
 
     # add FlowType
-    df['FlowType'] = np.where(df["Description"].str.contains('wastewater'), "WASTE_FLOW",
-                              np.where(df["Description"].str.contains('self-supplied'), "ELEMENTARY_FLOW",
-                                       np.where(df["Description"].str.contains('Self-supplied'), "ELEMENTARY_FLOW",
-                                                np.where(df["Description"].str.contains('conveyance'),
-                                                         "ELEMENTARY_FLOW",
-                                                         np.where(df["Description"].str.contains('consumptive'),
-                                                                  "ELEMENTARY_FLOW",
-                                                                  np.where(df["Description"].str.contains('deliveries'),
-                                                                           "ELEMENTARY_FLOW",
-                                                                           # is really a "TECHNOSPHERE_FLOW"
-                                                                           None))))))
+    df['FlowType'] = np.where(df["Description"].str.contains('wastewater'),
+                              "WASTE_FLOW", None)
+    df['FlowType'] = np.where(df["Description"].str.contains('self-supplied'),
+                              "ELEMENTARY_FLOW", df['FlowType'])
+    df['FlowType'] = np.where(df["Description"].str.contains('Self-supplied'),
+                              "ELEMENTARY_FLOW", df['FlowType'])
+    df['FlowType'] = np.where(df["Description"].str.contains('conveyance'),
+                              "ELEMENTARY_FLOW", df['FlowType'])
+    df['FlowType'] = np.where(df["Description"].str.contains('consumptive'),
+                              "ELEMENTARY_FLOW", df['FlowType'])
+    df['FlowType'] = np.where(df["Description"].str.contains('deliveries'),
+                              "ELEMENTARY_FLOW", df['FlowType'])  # is really a "TECHNOSPHERE_FLOW"
+
 
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
@@ -285,25 +304,29 @@ def split_name(name):
 
 def standardize_usgs_nwis_names(flowbyactivity_df):
     """
-    The activity names differ at the national level. Method to standardize names to allow for comparison of aggregation
-    to national level.
+    The activity names differ at the national level. Method to standardize
+    names to allow for comparison of aggregation to national level.
     :param flowbyactivity_df:
     :return:
     """
 
     # modify national level compartment
     flowbyactivity_df['Compartment'].loc[
-        (flowbyactivity_df['Location'] == '00000') & (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'total'
+        (flowbyactivity_df['Location'] == '00000') &
+        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'total'
     flowbyactivity_df['FlowName'].loc[
-        (flowbyactivity_df['Location'] == '00000') & (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
+        (flowbyactivity_df['Location'] == '00000') &
+        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
     flowbyactivity_df['Compartment'].loc[
-        (flowbyactivity_df['Compartment'] is None) & (flowbyactivity_df['Location'] == '00000')] = 'total'
+        (flowbyactivity_df['Compartment'] is None) &
+        (flowbyactivity_df['Location'] == '00000')] = 'total'
 
     # standardize activity names across geoscales
     for f in fba_activity_fields:
         flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Public'] = 'Public Supply'
         flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Irrigation Total'] = 'Irrigation'
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Total Thermoelectric Power'] = 'Thermoelectric Power'
+        flowbyactivity_df[f].loc[flowbyactivity_df[f] ==
+                                 'Total Thermoelectric Power'] = 'Thermoelectric Power'
         flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Thermoelectric'] = 'Thermoelectric Power'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
@@ -317,9 +340,8 @@ def usgs_fba_data_cleanup(df):
     :return:
     """
 
-    from flowsa.common import US_FIPS
-
-    # drop rows of commercial data (because only exists for 3 states), causes issues because linked with public supply
+    # drop rows of commercial data (because only exists for 3 states),
+    # causes issues because linked with public supply
     df = df[~df['Description'].str.lower().str.contains('commercial')]
 
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
@@ -353,27 +375,32 @@ def usgs_fba_data_cleanup(df):
 
 def calculate_net_public_supply(df):
     """
-    USGS Provides info on the quantity of public supply withdrawals that are delivered to domestic use.
-    The USGS PS withdrawals are not necessarily greater than/equal to the Domestic deliveries because water can be
-    withdrawn in one county and delivered in another (water can also cross state lines). Therefore, can/do end up
-    with NEGATIVE net public supply values and PS water should only be used at a national level
+    USGS Provides info on the quantity of public supply withdrawals that
+    are delivered to domestic use. The USGS PS withdrawals are not necessarily
+    greater than/equal to the Domestic deliveries because water can be
+    withdrawn in one county and delivered in another (water can also cross state lines).
+    Therefore, can/do end up with NEGATIVE net public supply values and
+    PS water should only be used at a national level
 
-    Domestic deliveries are subtracted from public supply. An assumption is made that PS deliveries to domestic is
-    fresh water. The national level data can then be allocated to end users using the BEA Use tables.
+    Domestic deliveries are subtracted from public supply. An assumption is made
+    that PS deliveries to domestic is fresh water. The national level data can then be
+    allocated to end users using the BEA Use tables.
     :param df: USGS df
     :return:
     """
 
     # drop duplicate info of "Public Supply deliveries to"
     df = df.loc[~df['Description'].str.contains("Public Supply total deliveries")]
-    df = df.loc[~df['Description'].str.contains("deliveries from public supply")].reset_index(drop=True)
+    df = df.loc[~df['Description'].str.contains(
+        "deliveries from public supply")].reset_index(drop=True)
 
     # subset into 2 dfs, one that contains PS data and one that does not
     df1 = df[(df[fba_activity_fields[0]] == 'Public Supply') |
              (df[fba_activity_fields[1]] == 'Public Supply')]
     df2 = df[(df[fba_activity_fields[0]] != 'Public Supply') &
              (df[fba_activity_fields[1]] != 'Public Supply')]
-    # drop all deliveries to thermo and industrial (not enough states report the data to make useable)
+    # drop all deliveries to thermo and industrial
+    # (not enough states report the data to make useable)
     df1_sub = df1[~df1[fba_activity_fields[1]].isin(['Industrial', 'Thermoelectric Power',
                                                      'Thermoelectric Power Closed-loop cooling',
                                                      'Thermoelectric Power Once-through cooling'])]
@@ -385,12 +412,14 @@ def calculate_net_public_supply(df):
     # temporary assumption that water withdrawal taken evenly from ground and surface
     df_w1 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] != 'total')]
     df_w2 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] == 'total')]
-    df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location']], how='left', left_on='Location', right_on='Location')
+    df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location']], how='left',
+                     left_on='Location', right_on='Location')
     df_wm = df_wm.rename(columns={"FlowAmount_x": "FlowAmount",
                                   "FlowAmount_y": "FlowTotal"
                                   })
     # merge the deliveries to domestic
-    df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']], how='left', left_on='Location',
+    df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']],
+                             how='left', left_on='Location',
                              right_on='Location')
     df_w_modified = df_w_modified.rename(columns={"FlowAmount_x": "FlowAmount",
                                                   "FlowAmount_y": "DomesticDeliveries"})
@@ -398,14 +427,19 @@ def calculate_net_public_supply(df):
     # create flowratio for ground/surface
     df_w_modified.loc[:, 'FlowRatio'] = df_w_modified['FlowAmount'] / df_w_modified['FlowTotal']
     # calculate new, net total public supply withdrawals
-    # will end up with negative values due to instances of water deliveries coming form surrounding counties
+    # will end up with negative values due to instances of water
+    # deliveries coming form surrounding counties
     df_w_modified.loc[:, 'FlowAmount'] = df_w_modified['FlowAmount'] - \
-                                         (df_w_modified['FlowRatio'] * df_w_modified['DomesticDeliveries'])
+                                         (df_w_modified['FlowRatio'] *
+                                          df_w_modified['DomesticDeliveries'])
 
     net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
 
-    # because assumiming domestic is all fresh, change flow name. also allocate to ground/surface from state ratios
-    df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']], how='left', left_on='Location',
+    # because assumiming domestic is all fresh, change flow name.
+    # Also allocate to ground/surface from state ratios
+    df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']],
+                             how='left',
+                             left_on='Location',
                              right_on='Location')
     df_d_modified.loc[:, 'FlowAmount'] = df_d_modified['FlowAmount'] * df_d_modified['FlowRatio']
     df_d_modified.loc[:, 'FlowName'] = 'fresh'
@@ -422,7 +456,8 @@ def calculate_net_public_supply(df):
 
 def check_golf_and_crop_irrigation_totals(df_load):
     """
-    Check that golf + crop values equal published irrigation totals. If not, assign water to crop irrigation.
+    Check that golf + crop values equal published irrigation totals.
+    If not, assign water to crop irrigation.
 
     Resuult : 2010 and 2015 published data correct
     :param df:
@@ -441,7 +476,8 @@ def check_golf_and_crop_irrigation_totals(df_load):
               (df[fba_activity_fields[1]] == 'Irrigation Crop')]
 
     # merge the golf and total irrigation into crop df and modify crop FlowAmounts if necessary
-    df_m = pd.merge(df_i, df_g[['FlowName', 'FlowAmount', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment',
+    df_m = pd.merge(df_i, df_g[['FlowName', 'FlowAmount', 'ActivityProducedBy',
+                                'ActivityConsumedBy', 'Compartment',
                                 'Location', 'Year']],
                     how='outer',
                     right_on=['FlowName', 'Compartment', 'Location', 'Year'],
@@ -453,7 +489,8 @@ def check_golf_and_crop_irrigation_totals(df_load):
                                 "ActivityProducedBy_y": "Golf_APB",
                                 "ActivityConsumedBy_y": "Golf_ACB",
                                 })
-    df_m2 = pd.merge(df_m, df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy', 'ActivityConsumedBy', 'Compartment',
+    df_m2 = pd.merge(df_m, df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy',
+                                 'ActivityConsumedBy', 'Compartment',
                                  'Location', 'Year']],
                      how='outer',
                      right_on=['FlowName', 'Compartment', 'Location', 'Year'],
@@ -505,9 +542,10 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
 
 def modify_sector_length(df_wsec):
     """
-    After assigning sectors to activities, modify the sector length of an activity, to match the assigned sector in
-    another sector column (SectorConsumedBy/SectorProducedBy). This is helpful for sector aggregation. The USGS NWIS WU
-    "Public Supply" should be modified to match sector length.
+    After assigning sectors to activities, modify the sector length of an activity,
+    to match the assigned sector in another sector column (SectorConsumedBy/SectorProducedBy).
+    This is helpful for sector aggregation. The USGS NWIS WU "Public Supply" should
+    be modified to match sector length.
     :param df_wsec: a df that includes columns for SectorProducedBy and SectorConsumedBy
     :return:
     """
@@ -526,24 +564,30 @@ def modify_sector_length(df_wsec):
         df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityProducedBy'].isin(activities),
                                                 df2['SectorProducedBy'].str.len(), 0)
         df2.loc[:, 'LengthToModify'] = np.where(df2['ActivityConsumedBy'].isin(activities),
-                                                df2['SectorConsumedBy'].str.len(), df2['LengthToModify'])
+                                                df2['SectorConsumedBy'].str.len(),
+                                                df2['LengthToModify'])
         df2.loc[:, 'TargetLength'] = np.where(df2['ActivityProducedBy'].isin(activities),
                                               df2['SectorConsumedBy'].str.len(), 0)
         df2.loc[:, 'TargetLength'] = np.where(df2['ActivityConsumedBy'].isin(activities),
-                                              df2['SectorProducedBy'].str.len(), df2['TargetLength'])
+                                              df2['SectorProducedBy'].str.len(),
+                                              df2['TargetLength'])
 
         df2.loc[:, 'SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+            lambda x: x['SectorProducedBy'][:x['TargetLength']]
+            if x['LengthToModify'] > x['TargetLength']
             else x['SectorProducedBy'], axis=1)
         df2.loc[:, 'SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'][:x['TargetLength']] if x['LengthToModify'] > x['TargetLength']
+            lambda x: x['SectorConsumedBy'][:x['TargetLength']]
+            if x['LengthToModify'] > x['TargetLength']
             else x['SectorConsumedBy'], axis=1)
 
         df2.loc[:, 'SectorProducedBy'] = df2.apply(
-            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+            lambda x: x['SectorProducedBy'].ljust(x['TargetLength'], '0')
+            if x['LengthToModify'] < x['TargetLength']
             else x['SectorProducedBy'], axis=1)
         df2.loc[:, 'SectorConsumedBy'] = df2.apply(
-            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0') if x['LengthToModify'] < x['TargetLength']
+            lambda x: x['SectorConsumedBy'].ljust(x['TargetLength'], '0')
+            if x['LengthToModify'] < x['TargetLength']
             else x['SectorConsumedBy'], axis=1)
 
         df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
@@ -557,17 +601,18 @@ def modify_sector_length(df_wsec):
 
 def filter_out_activities(df, attr):
     """
-    To avoid double counting and ensure that the deliveries from public supplies to another activity are accurately
-    accounted for, in some activity sets, need to drop certain rows of data. if direct allocation, drop rows of data
-    where an activity in either activity column is not also directly allocated. These non-direct activities are
+    To avoid double counting and ensure that the deliveries from public supplies to another
+    activity are accurately accounted for, in some activity sets, need to drop certain rows
+    of data. if direct allocation, drop rows of data where an activity in either activity
+    column is not also directly allocated. These non-direct activities are
     captured in other activity allocations
     :param df: a dataframe that has activity consumed/produced by columns
     :param attr: FBS method file activity set attributes
     :return:
     """
 
-    # if the activity is public supply and the method is direct, drop rows of industrial and domestic because
-    # accounted for in other activity sets
+    # if the activity is public supply and the method is direct,
+    # drop rows of industrial and domestic because accounted for in other activity sets
     if (attr['allocation_method'] == 'direct') & ('Public Supply' in attr['names']):
         # drop rows of Industrial
         df = df.loc[(df[fba_activity_fields[0]] != 'Industrial') &

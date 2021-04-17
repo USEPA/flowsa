@@ -1,7 +1,7 @@
 # BLS_QCEW.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-'''
+"""
 Pulls Quarterly Census of Employment and Wages data in NAICS from Bureau of Labor Statistics
 Writes out to various FlowBySector class files for these data items
 EMP = Number of employees, Class = Employment
@@ -9,24 +9,29 @@ PAYANN = Annual payroll ($1,000), Class = Money
 ESTAB = Number of establishments, Class = Other
 This script is designed to run with a configuration parameter
 --year = 'year' e.g. 2015
-'''
+"""
 
+import zipfile
+import io
 import pandas as pd
 import numpy as np
-import io
-import zipfile
-from flowsa.common import log, get_all_state_FIPS_2, US_FIPS, fba_default_grouping_fields, \
-    fba_mapped_default_grouping_fields
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import US_FIPS, fba_default_grouping_fields
+from flowsa.flowbyfunctions import assign_fips_location_system, \
+    flow_by_activity_wsec_mapped_fields, aggregator
+from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
 
 
 def BLS_QCEW_URL_helper(build_url, config, args):
     """
-
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     urls = []
 
@@ -39,11 +44,12 @@ def BLS_QCEW_URL_helper(build_url, config, args):
 
 def bls_qcew_call(url, qcew_response, args):
     """
-
-    :param url:
-    :param qcew_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, transform to pandas df
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     # initiate dataframes list
     df_list = []
@@ -65,10 +71,10 @@ def bls_qcew_call(url, qcew_response, args):
 
 def bls_qcew_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     # Concat dataframes
     df = pd.concat(dataframe_list, sort=False)
@@ -82,9 +88,11 @@ def bls_qcew_parse(dataframe_list, args):
     # Keep owner_code = 1, 2, 3, 5
     df = df[df.own_code.isin([1, 2, 3, 5])]
     # Aggregate annual_avg_estabs and annual_avg_emplvl by area_fips, industry_code, year, flag
-    df = df.groupby(['area_fips', 'industry_code', 'year'])[['annual_avg_estabs',
-                                                             'annual_avg_emplvl',
-                                                             'total_annual_wages']].sum().reset_index()
+    df = df.groupby(['area_fips',
+                     'industry_code',
+                     'year'])[['annual_avg_estabs',
+                               'annual_avg_emplvl',
+                               'total_annual_wages']].sum().reset_index()
     # Rename fields
     df = df.rename(columns={'area_fips': 'Location',
                             'industry_code': 'ActivityProducedBy',
@@ -119,15 +127,15 @@ def bls_qcew_parse(dataframe_list, args):
 
 def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
     """
-    When creating the employment satellite table for use in useeior, modify the flow name to match prior methodology
-    for mapping/impact factors
+    When creating the employment satellite table for use in useeior,
+    modify the flow name to match prior methodology for mapping/impact factors
 
-    :param fba_df:
+    :param fba_df: df, flowbyactivity
     :param kwargs:
-    :return:
+    :return: df, flowbyactivity, with modified flow names
     """
 
-    fba_df = clean_bls_qcew_fba(fba_df, **kwargs)
+    fba_df = clean_bls_qcew_fba(fba_df)
 
     # rename flowname value
     fba_df['FlowName'] = fba_df['FlowName'].replace({'Number of employees': 'Jobs'})
@@ -140,10 +148,10 @@ def clean_bls_qcew_fba(fba_df, **kwargs):
     Function to clean BLS QCEW data when FBA is not used for employment satellite table
 
     :param fba_df:
-    :param kwargs:
     :return:
     """
 
+    fba_df = fba_df.reset_index(drop=True)
     fba_df = replace_missing_2_digit_sector_values(fba_df)
     fba_df = remove_2_digit_sector_ranges(fba_df)
 
@@ -152,19 +160,23 @@ def clean_bls_qcew_fba(fba_df, **kwargs):
 
 def replace_missing_2_digit_sector_values(df):
     """
-    In the 2015 (and possibly other dfs, there are instances of values at the 3 digit NAICS level, while
-    the 2 digit NAICS is reported as 0. The 0 values are replaced with summed 3 digit NAICS
+    In the 2015 (and possibly other dfs, there are instances of values
+    at the 3 digit NAICS level, while the 2 digit NAICS is reported as 0.
+    The 0 values are replaced with summed 3 digit NAICS
     :param df:
     :return:
     """
-    from flowsa.flowbyfunctions import aggregator
+    # from flowsa.flowbyfunctions import aggregator
 
     # check for 2 digit 0 values
-    df_missing = df[(df['ActivityProducedBy'].apply(lambda x: len(x) == 2)) & (df['FlowAmount'] == 0)]
+    df_missing = df[(df['ActivityProducedBy'].apply(lambda x:
+                                                    len(x) == 2)) & (df['FlowAmount'] == 0)]
     # create list of location/activityproduced by combos
-    missing_sectors = df_missing[['Location', 'ActivityProducedBy']].drop_duplicates().values.tolist()
+    missing_sectors = df_missing[['Location',
+                                  'ActivityProducedBy']].drop_duplicates().values.tolist()
 
-    # subset the df to 3 naics where flow amount is not 0 and that would sum to the missing 2 digit naics
+    # subset the df to 3 naics where flow amount is not 0 and
+    # that would sum to the missing 2 digit naics
     df_subset = df[df['ActivityProducedBy'].apply(lambda x: len(x) == 3) & (df['FlowAmount'] != 0)]
     new_sectors_list = []
     for q, r in missing_sectors:
@@ -176,11 +188,13 @@ def replace_missing_2_digit_sector_values(df):
         new_sectors = pd.concat(new_sectors_list, sort=False, ignore_index=True)
 
         # drop last digit of naics and aggregate
-        new_sectors.loc[:, 'ActivityProducedBy'] = new_sectors['ActivityProducedBy'].apply(lambda x: x[0:2])
+        new_sectors.loc[:, 'ActivityProducedBy'] = \
+            new_sectors['ActivityProducedBy'].apply(lambda x: x[0:2])
         new_sectors = aggregator(new_sectors, fba_default_grouping_fields)
 
         # drop the old location/activity columns in the bls df and add new sector values
-        new_sectors_list = new_sectors[['Location', 'ActivityProducedBy']].drop_duplicates().values.tolist()
+        new_sectors_list = new_sectors[['Location',
+                                        'ActivityProducedBy']].drop_duplicates().values.tolist()
 
         # rows to drop
         rows_list = []
@@ -191,7 +205,8 @@ def replace_missing_2_digit_sector_values(df):
             rows_list.append(df[(c1 & c2)])
         rows_to_drop = pd.concat(rows_list, ignore_index=True)
         # drop rows from df
-        modified_df = pd.merge(df, rows_to_drop, indicator=True, how='outer').query('_merge=="left_only"').drop(
+        modified_df = pd.merge(df, rows_to_drop, indicator=True,
+                               how='outer').query('_merge=="left_only"').drop(
             '_merge', axis=1)
         # add new rows
         modified_df = modified_df.append(new_sectors, sort=False)
@@ -209,7 +224,7 @@ def remove_2_digit_sector_ranges(fba_df):
     :return:
     """
 
-    df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')]
+    df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')].reset_index(drop=True)
 
     return df
 
@@ -222,11 +237,10 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     :param method:
     :return:
     """
-    from flowsa.flowbyfunctions import estimate_suppressed_data, sector_disaggregation, sector_aggregation, \
-        flow_by_activity_wsec_mapped_fields
-    from flowsa.dataclean import add_missing_flow_by_fields
-    from flowsa.dataclean import replace_strings_with_NoneType
+    # from flowsa.flowbyfunctions import flow_by_activity_wsec_mapped_fields
+    # from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
 
+    df_w_sec = df_w_sec.reset_index(drop=True)
     df2 = add_missing_flow_by_fields(df_w_sec, flow_by_activity_wsec_mapped_fields)
     df3 = replace_strings_with_NoneType(df2)
 

@@ -11,13 +11,16 @@ import argparse
 from flowsa.common import *
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.dataclean import clean_df
+from flowsa.data_source_scripts.BEA import *
 from flowsa.data_source_scripts.Blackhurst_IO import *
 from flowsa.data_source_scripts.BLS_QCEW import *
+from flowsa.data_source_scripts.CalRecycle_WasteCharacterization import *
 from flowsa.data_source_scripts.Census_CBP import *
 from flowsa.data_source_scripts.Census_AHS import *
 from flowsa.data_source_scripts.Census_PEP_Population import *
 from flowsa.data_source_scripts.EIA_CBECS_Water import *
 from flowsa.data_source_scripts.EPA_NEI import *
+from flowsa.data_source_scripts.NOAA_FisheryLandings import *
 from flowsa.data_source_scripts.StatCan_GDP import *
 from flowsa.data_source_scripts.StatCan_IWS_MI import *
 from flowsa.data_source_scripts.StatCan_LFS import *
@@ -35,6 +38,7 @@ from flowsa.data_source_scripts.BLM_PLS import *
 from flowsa.data_source_scripts.EIA_MER import *
 from flowsa.data_source_scripts.EPA_GHGI import *
 from flowsa.data_source_scripts.USGS_MYB_SodaAsh import *
+from flowsa.data_source_scripts.USGS_WU_Coef import *
 
 
 def parse_args():
@@ -58,23 +62,24 @@ def build_url_for_query(config,args):
     """Creates a base url which requires string substitutions that depend on data source"""
     # if there are url parameters defined in the yaml, then build a url, else use "base_url"
     urlinfo = config["url"]
-    if 'url_params' in urlinfo:
-        params = ""
-        for k, v in urlinfo['url_params'].items():
-            params = params+'&'+k+"="+str(v)
+    if urlinfo != 'None':
+        if 'url_params' in urlinfo:
+            params = ""
+            for k, v in urlinfo['url_params'].items():
+                params = params+'&'+k+"="+str(v)
 
-    if 'url_params' in urlinfo:
-        build_url = "{0}{1}{2}".format(urlinfo['base_url'], urlinfo['api_path'], params)
-    else:
-        build_url = "{0}".format(urlinfo['base_url'])
+        if 'url_params' in urlinfo:
+            build_url = "{0}{1}{2}".format(urlinfo['base_url'], urlinfo['api_path'], params)
+        else:
+            build_url = "{0}".format(urlinfo['base_url'])
 
-    # substitute year from arguments and users api key into the url
-    if "__year__" in build_url:
-        build_url = build_url.replace("__year__", str(args["year"]))
-    if "__apiKey__" in build_url:
-        userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
-        build_url = build_url.replace("__apiKey__", userAPIKey)
-    return build_url
+        # substitute year from arguments and users api key into the url
+        if "__year__" in build_url:
+            build_url = build_url.replace("__year__", str(args["year"]))
+        if "__apiKey__" in build_url:
+            userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
+            build_url = build_url.replace("__apiKey__", userAPIKey)
+        return build_url
 
 
 def assemble_urls_for_query(build_url, config, args):
@@ -93,15 +98,16 @@ def call_urls(url_list, args, config):
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
     data_frames_list = []
-    for url in url_list:
-        log.info("Calling " + url)
-        r = make_http_request(url)
-        if hasattr(sys.modules[__name__], config["call_response_fxn"]):
-            df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r, args)
-        if isinstance(df, pd.DataFrame):
-            data_frames_list.append(df)
-        elif isinstance(df, list):
-            data_frames_list.extend(df)
+    if url_list[0] is not None:
+        for url in url_list:
+            log.info("Calling " + url)
+            r = make_http_request(url)
+            if hasattr(sys.modules[__name__], config["call_response_fxn"]):
+                df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r, args)
+            if isinstance(df, pd.DataFrame):
+                data_frames_list.append(df)
+            elif isinstance(df, list):
+                data_frames_list.extend(df)
 
     return data_frames_list
 

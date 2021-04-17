@@ -1,5 +1,5 @@
 author: Statistics Canada
-source_name: Labour Force Survey
+source_name_bib: Labour Force Survey
 citable_url: https://www.statcan.gc.ca/eng/survey/household/3701
 date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
 bib_id: StatCan_LFS

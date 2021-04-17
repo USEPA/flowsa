@@ -1,28 +1,28 @@
-# write_FBA_USGS_WU_Coef.py (flowsa)
+# USGS_WU_Coef.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
 """
 Animal Water Use coefficients data obtained from: USGS Publication (Lovelace, 2005)
+https://pubs.er.usgs.gov/publication/sir20095041
 
-Data output saved as csv, retaining assigned file name "USGS_WU_Coef_Raw.csv"
+Data output manually saved as csv, "data/external_data/USGS_WU_Coef_Raw.csv"
 """
 
-
-from flowsa.common import *
 import pandas as pd
-from flowsa.flowbyactivity import process_data_frame
+from flowsa.common import US_FIPS, externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import fba_fill_na_dict
-from flowsa.dataclean import clean_df
-
-# 2012--2018 fisheries data at state level
-csv_load = externaldatapath + "USGS_WU_Coef_Raw.csv"
 
 
-if __name__ == '__main__':
+def usgs_coef_parse(dataframe_list, args):
+    """
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(csv_load)
+    df_raw = pd.read_csv(externaldatapath + "USGS_WU_Coef_Raw.csv")
 
     # rename columns to match flowbyactivity format
     df = df_raw.copy()
@@ -39,11 +39,8 @@ if __name__ == '__main__':
     df["Class"] = "Water"
     df["SourceName"] = "USGS_WU_Coef"
     df["Location"] = US_FIPS
-    df['Year'] = 2005
+    df['Year'] = args['year']
     df = assign_fips_location_system(df, '2005')
     df["Unit"] = "gallons/animal/day"
 
-    # add missing dataframe fields (also converts columns to desired datatype)
-    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-    parquet_name = 'USGS_WU_Coef'
-    process_data_frame(flow_df, parquet_name, '2005')
+    return df

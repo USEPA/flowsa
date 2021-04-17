@@ -5,19 +5,21 @@
 Pulls EIA CBECS water use data for large buildings from 2012
 '''
 
-import pandas as pd
 import io
+import pandas as pd
 from flowsa.common import US_FIPS, withdrawn_keyword
 from flowsa.flowbyfunctions import assign_fips_location_system
 
+# todo: merge these fxns with EIA_CBECS_Land
 
 def eia_cbecs_water_call(url, response_load, args):
     """
-
-    :param url:
-    :param response_load:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, transform to pandas df
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
     df_raw = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
@@ -33,10 +35,10 @@ def eia_cbecs_water_call(url, response_load, args):
 
 def eia_cbecs_water_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False).dropna()

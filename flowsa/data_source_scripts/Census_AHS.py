@@ -9,7 +9,6 @@ https://www.census.gov/programs-surveys/ahs/data.html
 
 import zipfile
 import io
-import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
@@ -19,11 +18,15 @@ COLS_TO_KEEP = ["LOT", "LOTSIZE", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
 
 def ahs_url_helper(build_url, config, args):
     """
-    Based on the configured year, get the version arg and replace it into the URL.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for blm pls data that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary of method yaml
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: list of urls to call, concat, parse
     """
     version = config["years"][args["year"]]
     url = build_url
@@ -33,12 +36,12 @@ def ahs_url_helper(build_url, config, args):
 
 def ahs_call(url, ahs_response, args):
     """
-    Callback function for the Census AHS URL download. Open the downloaded zip file and
-    read the contained CSV(s) into pandas dataframe(s).
-    :param url:
-    :param ahs_response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, transform to pandas df
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     # extract data from zip file (multiple csvs)
     with zipfile.ZipFile(io.BytesIO(ahs_response.content), "r") as f:
@@ -77,11 +80,12 @@ def ahs_call(url, ahs_response, args):
 
 def ahs_parse(dataframe_list, args):
     """
-
-    :param dataframe_list:
-    :param args:
-    :return:
+    Functions to being parsing and formatting data into flowbyactivity format
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
+    :return: dataframe parsed and partially formatted to flowbyactivity specifications
     """
+
     df = pd.concat(dataframe_list)
 
     df["Class"] = "Land"
@@ -90,7 +94,8 @@ def ahs_parse(dataframe_list, args):
     df["Compartment"] = "None"
     df["Location"] = "00000"
     df["Year"] = args["year"]
-    id_vars = ["Class", "SourceName", "ActivityConsumedBy", "ActivityProducedBy", "Compartment", "Location", "Year"]
+    id_vars = ["Class", "SourceName", "ActivityConsumedBy",
+               "ActivityProducedBy", "Compartment", "Location", "Year"]
 
     # Rename the PK column from "CONTROL" to "ActivityConsumedBy"
     df = df.rename(columns={"CONTROL": "ActivityConsumedBy"})
@@ -164,7 +169,8 @@ def ahs_parse(dataframe_list, args):
 
 # def calculate_urban_and_rural_residential_land_area(ahs_fba):
 #     """
-#     Read in an American Housing Survey FlowByActivity and calculate the land area in the US occupied by
+#     Read in an American Housing Survey FlowByActivity and
+#     calculate the land area in the US occupied by
 #     urban and rural housing
 #     :param ahs_fba: American Housing Survey FlowByActivity
 #     :return:
@@ -178,17 +184,23 @@ def ahs_parse(dataframe_list, args):
 #     df = ahs_fba.pivot(index='ActivityConsumedBy', columns='FlowName', values = 'FlowAmount')
 #
 #     # replace any missing lot size values with assumption defined above
-#     # df2 = df.assign(LOT=df.apply(lambda x: fill_missing_lot_value if x['LOT'] == -9 else x['LOT'], axis=1))
+#     df2 = df.assign(LOT=df.apply(lambda x: fill_missing_lot_value if x['LOT']
+#                                                                      == -9 else x['LOT'], axis=1))
 #     # convert lot data from square feet to square acres
 #     df2 = df.assign(LOT=df['LOT']/convert_square_ft_to_acres)
 #
 #     # label rows as urban or rural
-#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in [1, 2, 4] else 'rural', axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in [1, 2, 4] else '', axis=1))
-#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5]) else x['loc_label'], axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5]) & (x['CROPSL'] == 1) else x['loc_label'], axis=1))
+# #     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
+# #                                                               [1, 2, 4] else 'rural', axis=1))
+#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
+#                                                               [1, 2, 4] else '', axis=1))
+#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in
+#     #                                                            [3, 5]) else x['loc_label'], axis=1))
+#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5])
+#                                                               & (x['CROPSL'] == 1) else x['loc_label'], axis=1))
 #
-#     # We then weighted the lot sizes (‘lot’) with the AHS survey weights, summed, and converted to acres (dividing by 43560)
+#     # We then weighted the lot sizes (‘lot’) with the AHS survey weights, summed,
+#     and converted to acres (dividing by 43560)
 #
 #     # weight_calc = weighted_average(df2, 'LOT', 'WEIGHT', 'loc_label')
 #     df3 = df2.assign(FlowAmount=df2['LOT'] * df2['WEIGHT'])
