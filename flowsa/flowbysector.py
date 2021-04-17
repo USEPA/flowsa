@@ -36,7 +36,7 @@ from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.datachecks import check_if_losing_sector_data, check_for_differences_between_fba_load_and_fbs_output, \
-    compare_fba_load_and_fbs_output_totals
+    compare_fba_load_and_fbs_output_totals, compare_geographic_totals
 
 # import specific functions
 from flowsa.data_source_scripts.BEA import subset_BEA_Use
@@ -166,6 +166,9 @@ def main(**kwargs):
                 log.info("Subsetting/aggregating " + k + " to " + attr['allocation_from_scale'] + " geoscale")
                 flows_subset_geo = subset_df_by_geoscale(flows_subset, v['geoscale_to_use'],
                                                          attr['allocation_from_scale'])
+                # if loading data subnational geoscale, check for data loss
+                if attr['allocation_from_scale'] != 'national':
+                    compare_geographic_totals(flows_subset_geo, flows_subset, k, method_name, aset)
 
                 # Add sectors to df activity, depending on level of specified sector aggregation
                 log.info("Adding sectors to " + k)
