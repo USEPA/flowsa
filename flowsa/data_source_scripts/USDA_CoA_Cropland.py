@@ -212,7 +212,7 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     sector_col = 'SectorConsumedBy'
 
     # drop rows without assigned sectors
-    fba_w_sector = fba_w_sector[~fba_w_sector[sector_col].isna()]
+    fba_w_sector = fba_w_sector[~fba_w_sector[sector_col].isna()].reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
     fba_w_sector = modify_orchard_flowamounts(fba_w_sector, activity_column=activity_col)
@@ -289,7 +289,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
         # estimate suppressed data by equal allocation
-        df_f = coa_cropland_naics_fba_wsec_cleanup(df_f)
+        # df_f = coa_cropland_naics_fba_wsec_cleanup(df_f)
         # create proportional ratios
         group_cols = fba_mapped_default_grouping_fields
         group_cols = [e for e in group_cols if
@@ -371,7 +371,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     # add sectors
     naics = add_sectors_to_flowbyactivity(naics, sectorsourcename=method['target_sector_source'])
     # estimate suppressed data by equally allocating parent to child naics
-    naics = coa_cropland_naics_fba_wsec_cleanup(naics)
+    # naics = coa_cropland_naics_fba_wsec_cleanup(naics)
     # add missing fbs fields
     naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
     # drop cols and rename
