@@ -113,7 +113,7 @@ source_names:
         allocation_source_class: "Land"
         allocation_source_year: 2012
         allocation_flow:
-          - "AREA HARVESTED"    # todo: modify allocation flows to use unharvested data
+          - "AREA HARVESTED"
           - "AREA"
         allocation_compartment: None
         allocation_from_scale: state
