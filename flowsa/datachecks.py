@@ -785,11 +785,12 @@ def compare_FBS_results(fbs1_load, fbs2_load):
 
     return df_m
 
-def compare_geographic_totals(df_subset, df_load):
+def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activity_set):
     """
     Check for any data loss between the geoscale used and published national data
     :param df_subset:
     :param df_load:
+    :param sourcename:
     :return:
     """
 
@@ -814,5 +815,11 @@ def compare_geographic_totals(df_subset, df_load):
 
         if len(df_m) == 0:
             log.debug('No data loss between national level data and df subset')
+        else:
+            log.debug('There are data differences between published national values and dataframe subset,'
+                     'saving as csv')
+            # save as csv
+            df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + sourcename +
+                            "_geographic_comparison_" + activity_set + ".csv", index=False)
 
     return None
