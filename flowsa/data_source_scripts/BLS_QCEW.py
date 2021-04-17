@@ -151,6 +151,7 @@ def clean_bls_qcew_fba(fba_df, **kwargs):
     :return:
     """
 
+    fba_df = fba_df.reset_index(drop=True)
     fba_df = replace_missing_2_digit_sector_values(fba_df)
     fba_df = remove_2_digit_sector_ranges(fba_df)
 
@@ -223,7 +224,7 @@ def remove_2_digit_sector_ranges(fba_df):
     :return:
     """
 
-    df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')]
+    df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')].reset_index(drop=True)
 
     return df
 
@@ -239,6 +240,7 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     # from flowsa.flowbyfunctions import flow_by_activity_wsec_mapped_fields
     # from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
 
+    df_w_sec = df_w_sec.reset_index(drop=True)
     df2 = add_missing_flow_by_fields(df_w_sec, flow_by_activity_wsec_mapped_fields)
     df3 = replace_strings_with_NoneType(df2)
 
