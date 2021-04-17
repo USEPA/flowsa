@@ -9,18 +9,18 @@ Last updated: Monday, August 17, 2020
 """
 import io
 import pandas as pd
+import numpy as np
 from flowsa.common import US_FIPS, get_region_and_division_codes, withdrawn_keyword,\
     clean_str_and_capitalize, fba_default_grouping_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.values_from_literature import \
     get_commercial_and_manufacturing_floorspace_to_land_area_ratio
 
-
 def eia_cbecs_land_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for blm pls data that requires parts of the url text string
-    to be replaced with info specific to the data yaer.
+    to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
     :param build_url: string, base url
     :param config: dictionary of method yaml
@@ -39,7 +39,7 @@ def eia_cbecs_land_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_cbecs_land_call(url, cbesc_response, args):
+def eia_cbecs_land_call(url, cbecs_response, args):
     """
     Convert response for calling url to pandas dataframe, transform to pandas df
     :param url: string, url
@@ -49,8 +49,8 @@ def eia_cbecs_land_call(url, cbesc_response, args):
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='data').dropna()
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='rse').dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbecs_response.content), sheet_name='data')
+    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbecs_response.content), sheet_name='rse')
 
     if ("b5.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
@@ -72,7 +72,7 @@ def eia_cbecs_land_call(url, cbesc_response, args):
         df_data = df_data.melt(id_vars=["Name"],
                                var_name="Location",
                                value_name="FlowAmount")
-    elif ("b12.xlsx" in url):
+    if ("b12.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
         df_data1 = pd.DataFrame(df_raw_data.loc[4:5]).reindex()
         df_data2 = pd.DataFrame(df_raw_data.loc[46:50]).reindex()
@@ -80,6 +80,9 @@ def eia_cbecs_land_call(url, cbesc_response, args):
         df_rse1 = pd.DataFrame(df_raw_rse.loc[4:5]).reindex()
         df_rse2 = pd.DataFrame(df_raw_rse.loc[46:50]).reindex()
         df_rse = pd.concat([df_rse1, df_rse2])
+        # drop the empty columns at end of df
+        df_data = df_data.iloc[:, 0:9]
+        df_rse = df_rse.iloc[:, 0:9]
 
         df_data.columns = ["Description", "All buildings", "Office", "Warehouse and storage", "Service",
                            "Mercantile", "Religious worship",
@@ -93,10 +96,13 @@ def eia_cbecs_land_call(url, cbesc_response, args):
         df_data = df_data.melt(id_vars=["Description"],
                                var_name="Name",
                                value_name="FlowAmount")
-    elif ("b14.xlsx" in url):
+    if ("b14.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
         df_data = pd.DataFrame(df_raw_data.loc[27:31]).reindex()
         df_rse = pd.DataFrame(df_raw_rse.loc[27:31]).reindex()
+        # drop the empty columns at end of df
+        df_data = df_data.iloc[:, 0:8]
+        df_rse = df_rse.iloc[:, 0:8]
 
         df_data.columns = ["Description", "All buildings", "Food service", "Food sales", "Lodging",
                            "Health care In-Patient", "Health care Out-Patient",
@@ -152,8 +158,10 @@ def eia_cbecs_land_parse(dataframe_list, args):
     df = standardize_eia_cbecs_land_activity_names(df, column_to_standardize='ActivityConsumedBy')
 
     # replace withdrawn code
-    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = 0 #withdrawn_keyword
+    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = 0 #withdrawn_keyword
+    df.loc[df['FlowAmount'].isin(["nan", np.nan]), 'FlowAmount'] = 0
+    df.loc[df['Spread'].isin(["", " "]), 'Spread'] = 0
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
     df['Year'] = args["year"]
