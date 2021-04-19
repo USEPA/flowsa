@@ -699,7 +699,8 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     cw_melt = cw_melt.drop(columns='naics_count')
 
     # determine which headers are in the df
-    possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
+    possible_column_headers = ['SectorProducedBy', 'SectorConsumedBy',
+                               'ActivityProducedBy', 'ActivityConsumedBy']
     # # list of column headers that do exist in the df being aggregated
     column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
 
@@ -722,7 +723,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
 
         # check if there are any sectors that are not in the naics 2012 crosswalk
         log.info('Check again for non NAICS 2012 Codes')
-        nonsectors= check_if_sectors_are_naics(df, cw, column_headers)
+        nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
             log.info('Dropping non-NAICS from dataframe')
             for c in column_headers:
@@ -731,20 +732,23 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
         # aggregate data
         possible_column_headers = ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
                                    'GeographicalCorrelation', 'TechnologicalCorrelation',
-                                   'DataCollection')
+                                   'DataCollection', 'Description')
         # list of column headers to group aggregation by
         groupby_cols = [e for e in df.columns.values.tolist() if e not in possible_column_headers]
         # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
-    # drop rows where both SectorConsumedBy and SectorProducedBy are both empty
-    df_drop = df[(df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == '')]
-    if len(df_drop) != 0:
-        activities_dropped = pd.unique(df_drop[['ActivityConsumedBy', 'ActivityProducedBy']].values.ravel('K'))
-        activities_dropped = list(filter(lambda x: x != '', activities_dropped))
-        log.debug('Dropping rows where the Activity columns contain ' + ', '.join(activities_dropped))
+    # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
+    if 'SectorConsumedBy' in df:
+        df_drop = df[(df['SectorConsumedBy'].isnull()) & (df['SectorProducedBy'].isnull())]
+        if len(df_drop) != 0:
+            activities_dropped = pd.unique(df_drop[['ActivityConsumedBy', 'ActivityProducedBy']].values.ravel('K'))
+            activities_dropped = list(filter(lambda x: x is not None, activities_dropped))
+            log.debug('Dropping rows where the Activity columns contain ' + ', '.join(activities_dropped))
+        df = df[~((df['SectorConsumedBy'].isnull()) & (df['SectorProducedBy'].isnull()))].reset_index(drop=True)
+    else:
+        df = df[~((df['ActivityConsumedBy'].isnull()) & (df['ActivityProducedBy'].isnull()))].reset_index(drop=True)
 
-    df = df[~((df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == ''))].reset_index(drop=True)
     df = replace_strings_with_NoneType(df)
 
     return df
