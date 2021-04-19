@@ -163,7 +163,6 @@ def main(**kwargs):
                                      (flows[fba_activity_fields[1]].isin(names))].reset_index(drop=True)
 
                 # extract relevant geoscale data or aggregate existing data
-                log.info("Subsetting/aggregating " + k + " to " + attr['allocation_from_scale'] + " geoscale")
                 flows_subset_geo = subset_df_by_geoscale(flows_subset, v['geoscale_to_use'],
                                                          attr['allocation_from_scale'])
                 # if loading data subnational geoscale, check for data loss

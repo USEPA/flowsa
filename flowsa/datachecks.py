@@ -143,9 +143,7 @@ def check_if_location_systems_match(df1, df2):
     :return:
     """
 
-    if df1["LocationSystem"].all() == df2["LocationSystem"].all():
-        log.info("LocationSystems match")
-    else:
+    if df1["LocationSystem"].all() != df2["LocationSystem"].all():
         log.warning("LocationSystems do not match, might lose county level data")
 
 
@@ -183,9 +181,7 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
     # create list of locations with missing alllocation data
     states_missing_data = pd.unique(missing_alloc['Location']).tolist()
 
-    if len(missing_alloc) == 0:
-        log.info("All aggregated sector flows have allocation flow ratio data")
-    else:
+    if len(missing_alloc) != 0:
         log.warning("Missing allocation flow ratio data for " + ', '.join(states_missing_data))
 
     return None
@@ -643,10 +639,10 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         ns_list = pd.concat(non_sectors_list, sort=False, ignore_index=True)
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
-        log.info('There are sectors that are not NAICS 2012 Codes')
-        print(non_sectors)
+        log.debug('There are sectors that are not NAICS 2012 Codes')
+        log.debug(non_sectors)
     else:
-        log.info('All sectors are NAICS 2012 Codes')
+        log.debug('All sectors are NAICS 2012 Codes')
 
     return non_sectors
 
@@ -709,7 +705,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
 
     # loop through the df headers and determine if value is not in crosswalk list
     if len(non_naics) != 0:
-        log.info('Checking if sectors represent a different NAICS year, if so, replace with ' + sectorsourcename)
+        log.debug('Checking if sectors represent a different NAICS year, if so, replace with ' + sectorsourcename)
         for c in column_headers:
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
@@ -719,13 +715,13 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
             df.loc[df[c] == df[sectorsourcename], 'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
             # drop columns
             df = df.drop(columns=[sectorsourcename, 'NAICS', 'allocation_ratio'])
-        log.info('Replaced NAICS with ' + sectorsourcename)
+        log.debug('Replaced NAICS with ' + sectorsourcename)
 
         # check if there are any sectors that are not in the naics 2012 crosswalk
-        log.info('Check again for non NAICS 2012 Codes')
+        log.debug('Check again for non NAICS 2012 Codes')
         nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
-            log.info('Dropping non-NAICS from dataframe')
+            log.debug('Dropping non-NAICS from dataframe')
             for c in column_headers:
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
