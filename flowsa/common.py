@@ -19,7 +19,7 @@ from esupy.processed_data_mgmt import Paths, FileMeta
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 pkg_version_number = '0.1.1'
 
-log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
+log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
 
 try:
@@ -45,6 +45,21 @@ biboutputpath = outputpath + 'Bibliography/'
 scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
              '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
+
+# setup log file handler
+fh = log.FileHandler(outputpath+'flowsa.log', mode='w')
+fh.setLevel(log.DEBUG)
+formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
+                          datefmt='%Y-%m-%d %H:%M:%S')
+fh.setFormatter(formatter)
+ch = log.StreamHandler(stream=sys.stdout)
+ch.setLevel(log.INFO)
+ch.setFormatter(formatter)
+for hdlr in log.getLogger('').handlers[:]:
+    log.getLogger('').removeHandler(hdlr)
+log.getLogger('').addHandler(fh)
+log.getLogger('').addHandler(ch)
+
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
