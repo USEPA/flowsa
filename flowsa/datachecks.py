@@ -47,11 +47,11 @@ def check_if_activities_match_sectors(fba):
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
-        log.info(str(len(
+        log.debug(str(len(
             activities_missing_sectors)) + " activities not matching sectors in default " + sector_source_name + " list.")
         return activities_missing_sectors
     else:
-        log.info("All activities match sectors in " + sector_source_name + " list.")
+        log.debug("All activities match sectors in " + sector_source_name + " list.")
         return None
 
 
@@ -143,9 +143,7 @@ def check_if_location_systems_match(df1, df2):
     :return:
     """
 
-    if df1["LocationSystem"].all() == df2["LocationSystem"].all():
-        log.info("LocationSystems match")
-    else:
+    if df1["LocationSystem"].all() != df2["LocationSystem"].all():
         log.warning("LocationSystems do not match, might lose county level data")
 
 
@@ -183,9 +181,7 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
     # create list of locations with missing alllocation data
     states_missing_data = pd.unique(missing_alloc['Location']).tolist()
 
-    if len(missing_alloc) == 0:
-        log.info("All aggregated sector flows have allocation flow ratio data")
-    else:
+    if len(missing_alloc) != 0:
         log.warning("Missing allocation flow ratio data for " + ', '.join(states_missing_data))
 
     return None
@@ -643,10 +639,10 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         ns_list = pd.concat(non_sectors_list, sort=False, ignore_index=True)
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
-        log.info('There are sectors that are not NAICS 2012 Codes')
-        print(non_sectors)
+        log.debug('There are sectors that are not NAICS 2012 Codes')
+        log.debug(non_sectors)
     else:
-        log.info('All sectors are NAICS 2012 Codes')
+        log.debug('All sectors are NAICS 2012 Codes')
 
     return non_sectors
 
@@ -687,7 +683,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     from flowsa.flowbyfunctions import aggregator
 
     # drop NoneType
-    df = replace_NoneType_with_empty_cells(df_load)
+    df = replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
     cw_load = load_sector_crosswalk()
@@ -699,52 +695,59 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     cw_melt = cw_melt.drop(columns='naics_count')
 
     # determine which headers are in the df
-    possible_column_headers = ['Sector', 'SectorProducedBy', 'SectorConsumedBy']
+    if 'SectorConsumedBy' in df:
+        column_headers = ['SectorProducedBy', 'SectorConsumedBy']
+    else:
+        column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
     # # list of column headers that do exist in the df being aggregated
-    column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
+    # column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
 
     # check if there are any sectors that are not in the naics 2012 crosswalk
     non_naics = check_if_sectors_are_naics(df, cw, column_headers)
 
     # loop through the df headers and determine if value is not in crosswalk list
     if len(non_naics) != 0:
-        log.info('Checking if sectors represent a different NAICS year, if so, replace with ' + sectorsourcename)
+        log.debug('Checking if sectors represent a different NAICS year, if so, replace with ' + sectorsourcename)
         for c in column_headers:
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
-            # if there is a value in the sectorsourcename column, use that value to replace sector in column c
-            df.loc[df[c] == df['NAICS'], c] = df[sectorsourcename]
+            # if there is a value in the sectorsourcename column,
+            # use that value to replace sector in column c if value in column c is in the non_naics list
+            df[c] = np.where((df[c] == df['NAICS']) & (df[c].isin(non_naics)), df[sectorsourcename], df[c])
             # multiply the FlowAmount col by allocation_ratio
             df.loc[df[c] == df[sectorsourcename], 'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
             # drop columns
             df = df.drop(columns=[sectorsourcename, 'NAICS', 'allocation_ratio'])
-        log.info('Replaced NAICS with ' + sectorsourcename)
+        log.debug('Replaced NAICS with ' + sectorsourcename)
 
         # check if there are any sectors that are not in the naics 2012 crosswalk
-        log.info('Check again for non NAICS 2012 Codes')
-        nonsectors= check_if_sectors_are_naics(df, cw, column_headers)
+        log.debug('Check again for non NAICS 2012 Codes')
+        nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
-            log.info('Dropping non-NAICS from dataframe')
+            log.debug('Dropping non-NAICS from dataframe')
             for c in column_headers:
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
         # aggregate data
         possible_column_headers = ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
                                    'GeographicalCorrelation', 'TechnologicalCorrelation',
-                                   'DataCollection')
+                                   'DataCollection', 'Description')
         # list of column headers to group aggregation by
         groupby_cols = [e for e in df.columns.values.tolist() if e not in possible_column_headers]
         # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
-    # drop rows where both SectorConsumedBy and SectorProducedBy are both empty
-    df_drop = df[(df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == '')]
-    if len(df_drop) != 0:
-        activities_dropped = pd.unique(df_drop[['ActivityConsumedBy', 'ActivityProducedBy']].values.ravel('K'))
-        activities_dropped = list(filter(lambda x: x != '', activities_dropped))
-        log.debug('Dropping rows where the Activity columns contain ' + ', '.join(activities_dropped))
+    # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
+    if 'SectorConsumedBy' in df:
+        df_drop = df[(df['SectorConsumedBy'].isnull()) & (df['SectorProducedBy'].isnull())]
+        if len(df_drop) != 0:
+            activities_dropped = pd.unique(df_drop[['ActivityConsumedBy', 'ActivityProducedBy']].values.ravel('K'))
+            activities_dropped = list(filter(lambda x: x is not None, activities_dropped))
+            log.debug('Dropping rows where the Activity columns contain ' + ', '.join(activities_dropped))
+        df = df[~((df['SectorConsumedBy'].isnull()) & (df['SectorProducedBy'].isnull()))].reset_index(drop=True)
+    else:
+        df = df[~((df['ActivityConsumedBy'].isnull()) & (df['ActivityProducedBy'].isnull()))].reset_index(drop=True)
 
-    df = df[~((df['SectorConsumedBy'] == '') & (df['SectorProducedBy'] == ''))].reset_index(drop=True)
     df = replace_strings_with_NoneType(df)
 
     return df
@@ -776,9 +779,9 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
     if len(df_m) == 0:
-        log.info('No differences between dataframes')
+        log.debug('No differences between dataframes')
     else:
-        log.info('Differences exist between dataframes')
+        log.debug('Differences exist between dataframes')
         df_m = df_m.sort_values(['Location', 'SectorProducedBy',
                                  'SectorConsumedBy', 'Flowable',
                                  'Context', ]).reset_index(drop=True)
@@ -814,9 +817,9 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
         df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
 
         if len(df_m) == 0:
-            log.debug('No data loss between national level data and df subset')
+            log.info('No data loss between national level data and df subset')
         else:
-            log.debug('There are data differences between published national values and dataframe subset,'
+            log.info('There are data differences between published national values and dataframe subset,'
                      'saving as csv')
             # save as csv
             df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" + method_name + '_' + sourcename +
