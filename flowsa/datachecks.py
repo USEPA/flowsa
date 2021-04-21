@@ -47,11 +47,11 @@ def check_if_activities_match_sectors(fba):
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
-        log.info(str(len(
+        log.debug(str(len(
             activities_missing_sectors)) + " activities not matching sectors in default " + sector_source_name + " list.")
         return activities_missing_sectors
     else:
-        log.info("All activities match sectors in " + sector_source_name + " list.")
+        log.debug("All activities match sectors in " + sector_source_name + " list.")
         return None
 
 
@@ -683,7 +683,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     from flowsa.flowbyfunctions import aggregator
 
     # drop NoneType
-    df = replace_NoneType_with_empty_cells(df_load)
+    df = replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
     cw_load = load_sector_crosswalk()
@@ -695,10 +695,12 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     cw_melt = cw_melt.drop(columns='naics_count')
 
     # determine which headers are in the df
-    possible_column_headers = ['SectorProducedBy', 'SectorConsumedBy',
-                               'ActivityProducedBy', 'ActivityConsumedBy']
+    if 'SectorConsumedBy' in df:
+        column_headers = ['SectorProducedBy', 'SectorConsumedBy']
+    else:
+        column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
     # # list of column headers that do exist in the df being aggregated
-    column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
+    # column_headers = [e for e in possible_column_headers if e in df.columns.values.tolist()]
 
     # check if there are any sectors that are not in the naics 2012 crosswalk
     non_naics = check_if_sectors_are_naics(df, cw, column_headers)
@@ -709,8 +711,9 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
         for c in column_headers:
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
-            # if there is a value in the sectorsourcename column, use that value to replace sector in column c
-            df.loc[df[c] == df['NAICS'], c] = df[sectorsourcename]
+            # if there is a value in the sectorsourcename column,
+            # use that value to replace sector in column c if value in column c is in the non_naics list
+            df[c] = np.where((df[c] == df['NAICS']) & (df[c].isin(non_naics)), df[sectorsourcename], df[c])
             # multiply the FlowAmount col by allocation_ratio
             df.loc[df[c] == df[sectorsourcename], 'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
             # drop columns
@@ -776,9 +779,9 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
     if len(df_m) == 0:
-        log.info('No differences between dataframes')
+        log.debug('No differences between dataframes')
     else:
-        log.info('Differences exist between dataframes')
+        log.debug('Differences exist between dataframes')
         df_m = df_m.sort_values(['Location', 'SectorProducedBy',
                                  'SectorConsumedBy', 'Flowable',
                                  'Context', ]).reset_index(drop=True)
