@@ -34,7 +34,7 @@ flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
 
-paths = Paths
+paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 outputpath = paths.local_path.replace('\\', '/') + '/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
@@ -667,7 +667,7 @@ def set_fb_meta(name_data, category):
     :param category: 'FlowBySector' or 'FlowByActivity'
     :return: metadata for parquet
     """
-    fb_meta = FileMeta
+    fb_meta = FileMeta()
     fb_meta.name_data = name_data
     fb_meta.tool = pkg.project_name
     fb_meta.tool_version = pkg_version_number
