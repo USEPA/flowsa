@@ -432,7 +432,7 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County), axis=1)
 
     # Pull and merge FIPS on state and county
-    mapping_FIPS = get_county_FIPS()
+    mapping_FIPS = get_county_FIPS(year)
     df = df.merge(mapping_FIPS, how='left')
 
     # Where no county match occurs, assign state FIPS instead
