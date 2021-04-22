@@ -1,5 +1,5 @@
 author: Bureau of Land Management
-source_name: Public Land Statistics
+source_name_bib: Public Land Statistics
 citable_url: https://www.blm.gov/about/data/public-land-statistics
 date_generated: '2021-04-08' # updated automatically when flowbyactivity.py is run
 bib_id: BLM_PLS
