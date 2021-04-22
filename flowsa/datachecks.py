@@ -55,9 +55,6 @@ def check_if_activities_match_sectors(fba):
             activities_missing_sectors)) +
                   " activities not matching sectors in default " + sector_source_name + " list.")
         return activities_missing_sectors
-    else:
-        log.debug("All activities match sectors in " + sector_source_name + " list.")
-        return None
 
 
 def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
@@ -308,7 +305,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
 
     # create column of sector lengths
     flow_alloc_df =\
-        flow_alloc_df_load.assign(slength=flow_alloc_df_load['Sector'].apply(lambda x: len(x)))
+        flow_alloc_df_load.assign(slength=flow_alloc_df_load['Sector'].str.len())  # .apply(lambda x: len(x)))
     # flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
     # subset df
     flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'slength', 'FlowAmountRatio']]
@@ -382,8 +379,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
 
     fbs = replace_NoneType_with_empty_cells(fbs)
 
-    fbs['ProducedLength'] = fbs['SectorProducedBy'].apply(lambda x: len(x))
-    fbs['ConsumedLength'] = fbs['SectorConsumedBy'].apply(lambda x: len(x))
+    fbs['ProducedLength'] = fbs['SectorProducedBy'].str.len()  # .apply(lambda x: len(x))
+    fbs['ConsumedLength'] = fbs['SectorConsumedBy'].str.len()  # .apply(lambda x: len(x))
     fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
     fbs.loc[:, 'Location'] = US_FIPS
     group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
@@ -453,8 +450,6 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
     :return:
     """
 
-    # from flowsa.flowbyfunctions import subset_df_by_geoscale, sector_aggregation
-    # from flowsa.common import load_source_catalog
     from flowsa.mapping import map_elementary_flows
 
 
