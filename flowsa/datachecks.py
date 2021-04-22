@@ -16,7 +16,7 @@ from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     load_sector_length_crosswalk, load_source_catalog, \
     load_sector_crosswalk, sector_source_name, log, outputpath, fba_activity_fields, \
     fbs_activity_fields, fbs_fill_na_dict
-from flowsa.mapping import map_elementary_flows
+
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -455,7 +455,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
     # from flowsa.flowbyfunctions import subset_df_by_geoscale, sector_aggregation
     # from flowsa.common import load_source_catalog
-    # from flowsa.mapping import map_elementary_flows
+    from flowsa.mapping import map_elementary_flows
 
 
     log.info('Comparing loaded FlowByActivity FlowAmount total to'
