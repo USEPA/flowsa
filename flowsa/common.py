@@ -182,7 +182,11 @@ def load_script_fba_citations():
     return config
 
 
-def load_values_from_literature_citations():
+def load_values_from_literature_citations_config():
+    """
+
+    :return:
+    """
     sfile = datapath + 'values_from_literature_source_citations.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)

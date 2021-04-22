@@ -11,7 +11,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations
+    load_values_from_literature_citations_config
 
 
 def generate_fbs_bibliography(methodnames):
@@ -57,7 +57,7 @@ def generate_fbs_bibliography(methodnames):
             except:
                 try:
                     # if no source yaml, check if citation info is for values in the literature
-                    config_load = load_values_from_literature_citations()
+                    config_load = load_values_from_literature_citations_config()
                     config = config_load[fba[0]]
                 except:
                     log.info('Could not find a method yaml for ' + fba[0])
