@@ -89,5 +89,3 @@ def generate_fbs_bibliography(methodnames):
         # loop through all entries in bib_list
         for b in bib_list:
             bibfile.write(writer.write(b))
-
-    return None
