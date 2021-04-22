@@ -175,13 +175,6 @@ def load_sourceconfig(source):
     return config
 
 
-def load_script_fba_citations():
-    sfile = scriptsFBApath + 'write_FBA_source_citations.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
 def load_values_from_literature_citations_config():
     """
 
