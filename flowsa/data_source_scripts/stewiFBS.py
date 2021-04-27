@@ -45,10 +45,21 @@ def stewicombo_to_sector(yaml_load):
     else:
         functions = yaml_load['functions']
 
+    if 'local_inventory_name' in yaml_load:
+        inventory_name = yaml_load['local_inventory_name']
+    else:
+        inventory_name = None
+
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
-    ## run stewicombo to combine inventories, filter for LCI, remove overlap
-    df = stewicombo.combineFullInventories(yaml_load['inventory_dict'], filter_for_LCI=True, remove_overlap=True,
-                                           compartments=yaml_load['compartments'])
+       
+    df = None
+    if inventory_name is not None:
+        df = stewicombo.getInventory(inventory_name)
+    if df is None:
+        ## run stewicombo to combine inventories, filter for LCI, remove overlap
+        log.info('generating inventory in stewicombo')
+        df = stewicombo.combineFullInventories(yaml_load['inventory_dict'], filter_for_LCI=True, remove_overlap=True,
+                                               compartments=yaml_load['compartments'])
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
     inventory_list = list(yaml_load['inventory_dict'].keys())
