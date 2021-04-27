@@ -90,7 +90,7 @@ def coa_cropland_parse(dataframe_list, args):
     df = df[~df['domain_desc'].isin(['ECONOMIC CLASS', 'FARM SALES', 'IRRIGATION STATUS', 'CONCENTRATION',
                                      'ORGANIC STATUS', 'NAICS CLASSIFICATION', 'PRODUCERS'])]
     df = df[df['statisticcat_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'AREA BEARING & NON-BEARING',
-                                          'AREA', 'AREA OPERATED'])]
+                                          'AREA', 'AREA OPERATED', 'AREA GROWN'])]
     # drop rows that subset data into farm sizes (ex. 'area harvested: (1,000 to 1,999 acres)
     df = df[~df['domaincat_desc'].str.contains(' ACRES')].reset_index(drop=True)
     # drop Descriptions that contain certain phrases, as these data are included in other categories
