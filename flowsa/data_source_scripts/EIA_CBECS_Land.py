@@ -54,8 +54,8 @@ def eia_cbecs_land_call(url, cbecs_response, args):
 
     if ("b5.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
-        df_data = pd.DataFrame(df_raw_data.loc[15:34]).reindex()
-        df_rse = pd.DataFrame(df_raw_rse.loc[15:34]).reindex()
+        df_data = pd.DataFrame(df_raw_data.loc[15:32]).reindex()
+        df_rse = pd.DataFrame(df_raw_rse.loc[15:32]).reindex()
 
         df_data.columns = ["Name", "All buildings", "New England", "Middle Atlantic", "East North Central",
                            "West North Central", "South Atlantic",
@@ -74,12 +74,12 @@ def eia_cbecs_land_call(url, cbecs_response, args):
                                value_name="FlowAmount")
     if ("b12.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
-        df_data1 = pd.DataFrame(df_raw_data.loc[4:5]).reindex()
+        df_data1 = pd.DataFrame(df_raw_data[4:5]).reindex()
         df_data2 = pd.DataFrame(df_raw_data.loc[46:50]).reindex()
-        df_data = pd.concat([df_data1, df_data2])
-        df_rse1 = pd.DataFrame(df_raw_rse.loc[4:5]).reindex()
+        df_data = pd.concat([df_data1, df_data2], ignore_index=True)
+        df_rse1 = pd.DataFrame(df_raw_rse[4:5]).reindex()
         df_rse2 = pd.DataFrame(df_raw_rse.loc[46:50]).reindex()
-        df_rse = pd.concat([df_rse1, df_rse2])
+        df_rse = pd.concat([df_rse1, df_rse2], ignore_index=True)
         # drop the empty columns at end of df
         df_data = df_data.iloc[:, 0:9]
         df_rse = df_rse.iloc[:, 0:9]
