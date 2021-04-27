@@ -196,6 +196,22 @@ def coa_irrigated_cropland_fba_cleanup(fba, **kwargs):
 
     return fba
 
+def coa_nonirrigated_cropland_fba_cleanup(fba, **kwargs):
+    """
+    When using irrigated cropland, aggregate sectors to cropland and total ag land. Doing this because published values
+    for irrigated harvested cropland do not include the water use for vegetables, woody crops, berries.
+    :param fba:
+    :return:
+    """
+
+    fba = fba[~fba['ActivityConsumedBy'].isin(['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])]
+
+    # when include 'area harvested' and 'area in production' in single dataframe, which is
+    # necessary to include woody crops, 'vegetable totals' are double counted
+    fba = fba[~((fba['FlowName'] == 'AREA IN PRODUCTION') & (fba['ActivityConsumedBy'] == 'VEGETABLE TOTALS'))]
+
+    return fba
+
 
 def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
     """

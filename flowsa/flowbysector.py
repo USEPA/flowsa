@@ -61,7 +61,7 @@ from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US
 from flowsa.data_source_scripts.stewiFBS import stewicombo_to_sector, stewi_to_sector
 from flowsa.data_source_scripts.USDA_CoA_Cropland import \
     disaggregate_coa_cropland_to_6_digit_naics,\
-    coa_irrigated_cropland_fba_cleanup
+    coa_irrigated_cropland_fba_cleanup, coa_nonirrigated_cropland_fba_cleanup
 from flowsa.data_source_scripts.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas,\
     allocate_usda_ers_mlu_other_land,\
     allocate_usda_ers_mlu_land_in_rural_transportation_areas
