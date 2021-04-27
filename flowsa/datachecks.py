@@ -305,8 +305,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
 
     # create column of sector lengths
     flow_alloc_df =\
-        flow_alloc_df_load.assign(slength=flow_alloc_df_load['Sector'].str.len())  # .apply(lambda x: len(x)))
-    # flow_alloc_df.loc[:, 'slength'] = flow_alloc_df['Sector'].apply(lambda x: len(x))
+        flow_alloc_df_load.assign(slength=flow_alloc_df_load['Sector'].str.len())
     # subset df
     flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'slength', 'FlowAmountRatio']]
     # sum the flow amount ratios by location and sector length
