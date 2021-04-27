@@ -8,10 +8,10 @@ import flowsa
 import pandas as pd
 
 
-def unique_activity_names(flowclass, year, datasource):
+def unique_activity_names(datasource, year):
     """read in the ers parquet files, select the unique activity names, return df with one column """
     # create single df representing all selected years
-    df = flowsa.getFlowByActivity(datasource, year, flowclass)
+    df = flowsa.getFlowByActivity(datasource, year)
 
     column_activities = df[["ActivityConsumedBy", "ActivityProducedBy"]].values.ravel()
     unique_activities = pd.unique(column_activities)
