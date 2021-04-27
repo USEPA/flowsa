@@ -3,7 +3,8 @@
 # coding=utf-8
 
 """
-Values from the literature used for data allocation are specified here and can be called on using functions.
+Values from the literature used for data allocation are
+specified here and can be called on using functions.
 """
 
 import pandas as pd
@@ -17,18 +18,16 @@ def get_US_urban_green_space_and_public_parks_ratio():
 
     weighted average value = 12.35%
 
-    Larson LR, Jennings V, Cloutier SA (2016) Public Parks and Wellbeing in Urban Areas of the United States.
+    Larson LR, Jennings V, Cloutier SA (2016) Public Parks and
+    Wellbeing in Urban Areas of the United States.
     PLoS ONE 11(4): e0153211. https://doi.org/10.1371/journal.pone.0153211
     """
 
     # load Larson's saved SI data
     df = pd.read_csv(datapath + "Larson_UrbanPublicParks_SI.csv")
-    # drop columns
-    # df = df.drop(columns=['PopChange2010-12', 'LogIncome', 'SinglePercent', 'WorkFulltime', 'CollegeDegree',
-    #                       'NaturalAmentiesIndex', 'ParkAccessibility-WalkableAccess2014', 'WBI-Total', 'WBI-Purpose',
-    #                       'WBI-Social', 'WBI-Financial', 'WBI-Physical', 'WBI-Community'])
 
-    # calculate a weighted value for ratio of urban land that belongs to parks based on city populations
+    # calculate a weighted value for ratio of urban land
+    # that belongs to parks based on city populations
     # weighted average function
     try:
         wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "CityPop2010"])
@@ -113,7 +112,8 @@ def get_area_of_rural_land_occupied_by_houses_2013():
 
 def get_commercial_and_manufacturing_floorspace_to_land_area_ratio():
     """
-    The additional land area associated with commercial and manufacturing buildings (parking, sinage, landscaping)
+    The additional land area associated with commercial and
+    manufacturing buildings (parking, sinage, landscaping)
 
     Based on original USEEIO assumption
     :return: ratio of land area to total floorspace assumption
@@ -179,9 +179,12 @@ def get_transportation_sectors_based_on_FHA_fees():
     :return:
     """
     fha_dict = ({'Truck transportation': {'NAICS_2012_Code': '484', 'ShareOfFees': 0.329},
-                 'Transit and ground passenger transportation': {'NAICS_2012_Code': '485', 'ShareOfFees': 0.001},
-                 'State and local government passenger transit': {'NAICS_2012_Code': 'S00201', 'ShareOfFees': 0.001},
-                 'Personal consumption expenditures': {'NAICS_2012_Code': 'F01000', 'ShareOfFees': 0.669}
+                 'Transit and ground passenger transportation': {'NAICS_2012_Code': '485',
+                                                                 'ShareOfFees': 0.001},
+                 'State and local government passenger transit': {'NAICS_2012_Code': 'S00201',
+                                                                  'ShareOfFees': 0.001},
+                 'Personal consumption expenditures': {'NAICS_2012_Code': 'F01000',
+                                                       'ShareOfFees': 0.669}
                  })
 
     return fha_dict

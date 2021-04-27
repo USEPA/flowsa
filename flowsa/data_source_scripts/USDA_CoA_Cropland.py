@@ -90,7 +90,7 @@ def coa_cropland_parse(dataframe_list, args):
     df = df[~df['domain_desc'].isin(['ECONOMIC CLASS', 'FARM SALES', 'IRRIGATION STATUS', 'CONCENTRATION',
                                      'ORGANIC STATUS', 'NAICS CLASSIFICATION', 'PRODUCERS'])]
     df = df[df['statisticcat_desc'].isin(['AREA HARVESTED', 'AREA IN PRODUCTION', 'AREA BEARING & NON-BEARING',
-                                          'AREA', 'AREA OPERATED'])]
+                                          'AREA', 'AREA OPERATED', 'AREA GROWN'])]
     # drop rows that subset data into farm sizes (ex. 'area harvested: (1,000 to 1,999 acres)
     df = df[~df['domaincat_desc'].str.contains(' ACRES')].reset_index(drop=True)
     # drop Descriptions that contain certain phrases, as these data are included in other categories
@@ -193,6 +193,22 @@ def coa_irrigated_cropland_fba_cleanup(fba, **kwargs):
     """
 
     fba = fba[~fba['ActivityConsumedBy'].isin(['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])]
+
+    return fba
+
+def coa_nonirrigated_cropland_fba_cleanup(fba, **kwargs):
+    """
+    When using irrigated cropland, aggregate sectors to cropland and total ag land. Doing this because published values
+    for irrigated harvested cropland do not include the water use for vegetables, woody crops, berries.
+    :param fba:
+    :return:
+    """
+
+    fba = fba[~fba['ActivityConsumedBy'].isin(['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])]
+
+    # when include 'area harvested' and 'area in production' in single dataframe, which is
+    # necessary to include woody crops, 'vegetable totals' are double counted
+    fba = fba[~((fba['FlowName'] == 'AREA IN PRODUCTION') & (fba['ActivityConsumedBy'] == 'VEGETABLE TOTALS'))]
 
     return fba
 

@@ -8,6 +8,7 @@ import os
 import subprocess
 import logging as log
 import yaml
+from ruamel.yaml import YAML
 import requests
 import requests_ftp
 import pandas as pd
@@ -34,7 +35,7 @@ flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
 
-paths = Paths
+paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 outputpath = paths.local_path.replace('\\', '/') + '/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
@@ -137,31 +138,55 @@ def make_http_request(url):
 
 
 def load_sector_crosswalk():
+    """
+    Load NAICS crosswalk between the years 2007, 2012, 2017
+    :return: df, NAICS crosswalk over the years
+    """
     cw = pd.read_csv(datapath + "NAICS_Crosswalk.csv", dtype="str")
     return cw
 
 
 def load_sector_length_crosswalk():
+    """
+    Load the 2-digit to 6-digit NAICS crosswalk for 2012
+    :return: df, NAICS 2012 crosswalk by sector length
+    """
     cw = pd.read_csv(datapath + 'NAICS_2012_Crosswalk.csv', dtype='str')
     return cw
 
 
 def load_household_sector_codes():
+    """
+    Load manually added household sector codes from csv
+    :return: df, household sector codes
+    """
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
 
 
 def load_government_sector_codes():
+    """
+    Load the government sector codes from csv
+    :return: df, government sector codes
+    """
     government = pd.read_csv(datapath + 'Government_SectorCodes.csv', dtype='str')
     return government
 
 
 def load_bea_crosswalk():
+    """
+    Load the BEA crosswalk
+    :return: df, BEA crosswalk
+    """
     cw = pd.read_csv(datapath + "BEA_Crosswalk.csv", dtype="str")
     return cw
 
 
 def load_source_catalog():
+    """
+    Load the information in 'source_catalog.yaml'
+    :return: dictionary containing all information in source_catalog.yaml
+    """
     sources = datapath + 'source_catalog.yaml'
     with open(sources, 'r') as f:
         config = yaml.safe_load(f)
@@ -169,20 +194,23 @@ def load_source_catalog():
 
 
 def load_sourceconfig(source):
+    """
+    Load the method yaml
+    :param source: string, method name
+    :return: dictionary, information on the source method
+    """
     sfile = sourceconfigpath + source + '.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
 
 
-def load_script_fba_citations():
-    sfile = scriptsFBApath + 'write_FBA_source_citations.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_values_from_literature_citations():
+def load_values_from_literature_citations_config():
+    """
+    Load the config file that contains information on where the
+    values from the literature come from
+    :return: dictionary of the values from the literature information
+    """
     sfile = datapath + 'values_from_literature_source_citations.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
@@ -190,20 +218,24 @@ def load_values_from_literature_citations():
 
 
 def update_fba_yaml_date(source):
-    from ruamel.yaml import YAML
+    """
+    Update the Flow-By-Activity method yaml with the current date.
+    Updates everytime a FBA is run.
+    :param source: string, Flow-By-Activity Source
+    :return: string, updated date in the FBA method yaml
+    """
     filename = sourceconfigpath + source + '.yaml'
 
-    yaml = YAML()
+    yml = YAML()
     # open yaml
     with open(filename) as f:
-        config = yaml.load(f)
+        config = yml.load(f)
         # update the method yaml with date generated
         config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
 
     # save yaml, preserving comments
     with open(filename, "w") as file:
-        yaml.dump(config, file)
-    return None
+        yml.dump(config, file)
 
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
@@ -397,7 +429,7 @@ def getFIPS(state=None, county=None, year='2015'):
     :param state: str. A US State Name or Puerto Rico, any case accepted
     :param county: str.
     :param year: str. '2010', '2013', '2015'
-    :return: str. A five digit 2017 FIPS code
+    :return: str. A five digit FIPS code
     """
     FIPS_df = read_stored_FIPS(year)
 
@@ -405,6 +437,8 @@ def getFIPS(state=None, county=None, year='2015'):
         if state is not None:
             state = clean_str_and_capitalize(state)
             code = FIPS_df.loc[(FIPS_df["State"] == state) & (FIPS_df["County"].isna()), "FIPS"]
+        else:
+            log.error("To get state FIPS, state name must be passed in 'state' param")
     else:
         if state is None:
             log.error("To get county FIPS, state name must be passed in 'state' param")
@@ -413,10 +447,11 @@ def getFIPS(state=None, county=None, year='2015'):
             county = clean_str_and_capitalize(county)
             code = FIPS_df.loc[(FIPS_df["State"] == state) & (FIPS_df["County"] == county), "FIPS"]
     if code.empty:
-        log.info("No FIPS code found")
+        log.error("No FIPS code found")
     else:
         code = code.values[0]
-        return code
+
+    return code
 
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
@@ -432,7 +467,7 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County), axis=1)
 
     # Pull and merge FIPS on state and county
-    mapping_FIPS = get_county_FIPS()
+    mapping_FIPS = get_county_FIPS(year)
     df = df.merge(mapping_FIPS, how='left')
 
     # Where no county match occurs, assign state FIPS instead
@@ -682,7 +717,7 @@ def set_fb_meta(name_data, category):
     :param category: 'FlowBySector' or 'FlowByActivity'
     :return: metadata for parquet
     """
-    fb_meta = FileMeta
+    fb_meta = FileMeta()
     fb_meta.name_data = name_data
     fb_meta.tool = pkg.project_name
     fb_meta.tool_version = pkg_version_number
