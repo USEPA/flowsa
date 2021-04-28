@@ -9,6 +9,8 @@ manually assigning to NAICS
 
 The assigned NAICS line up with 7/8 digit USDA CoA Cropland/Livestock
 """
+
+import pandas as pd
 from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
@@ -245,12 +247,14 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2012', '2017']
-    # flowclass
-    flowclass = ['Money']
     # datasource
     datasource = 'USDA_ERS_FIWS'
     # df of unique ers activity names
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)

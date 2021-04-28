@@ -87,11 +87,13 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select unique activity names from file
     years = ['2005']
-    # flowclass
-    flowclass = ['Water']
     # datasource
     datasource = 'USGS_WU_Coef'
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)

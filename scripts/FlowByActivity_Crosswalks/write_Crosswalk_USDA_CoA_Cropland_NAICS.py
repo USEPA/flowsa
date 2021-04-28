@@ -13,12 +13,14 @@ from scripts.common_scripts import unique_activity_names, order_crosswalk
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2012', '2017']
-    # flowclass
-    flowclass = ['Land']
     # datasource
     datasource = 'USDA_CoA_Cropland_NAICS'
     # df of unique ers activity names
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # drop activities with symbol '&'
     df = df[~df['Activity'].str.contains('&')]
     # Activity and Sector are the same

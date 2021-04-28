@@ -29,12 +29,10 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     year = '2002'
-    # flowclass
-    flowclass = 'Money'
     # datasource
     datasource = 'BEA_Make_AR'
     # df of unique ers activity names
-    df = unique_activity_names(flowclass, year, datasource)
+    df = unique_activity_names(datasource, year)
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)

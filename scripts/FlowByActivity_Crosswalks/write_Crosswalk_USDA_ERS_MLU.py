@@ -121,12 +121,14 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2007', '2012']
-    # class
-    flowclass = ['Land']
     # datasource
     datasource = 'USDA_ERS_MLU'
     # df of unique ers activity names
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # assign sector source name
