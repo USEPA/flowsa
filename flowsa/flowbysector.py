@@ -177,13 +177,15 @@ def main(**kwargs):
                 log.info("Preparing to handle " + aset + " in " + k)
                 log.debug("Preparing to handle subset of activities: " + ', '.join(map(str, names)))
                 # subset fba data by activity
-                # if activities are sector-like, check sectors are valid
-                if load_source_catalog()[k]['sector-like_activities']:
-                    flows = replace_naics_w_naics_from_another_year(flows,
-                                                                    method['target_sector_source'])
                 flows_subset =\
                     flows[(flows[fba_activity_fields[0]].isin(names)) |
                           (flows[fba_activity_fields[1]].isin(names))].reset_index(drop=True)
+
+                # if activities are sector-like, check sectors are valid
+                if load_source_catalog()[k]['sector-like_activities']:
+                    flows_subset =\
+                        replace_naics_w_naics_from_another_year(flows_subset,
+                                                                method['target_sector_source'])
 
                 # extract relevant geoscale data or aggregate existing data
                 flows_subset_geo = subset_df_by_geoscale(flows_subset, v['geoscale_to_use'],
