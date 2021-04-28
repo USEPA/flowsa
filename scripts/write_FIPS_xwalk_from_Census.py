@@ -10,8 +10,8 @@ Grabs FIPS codes from static URLs and creates crosswalk over the years.
 - Writes reshaped file to datapath as csv.
 """
 
-import pandas as pd
 import io
+import pandas as pd
 from flowsa.common import datapath, clean_str_and_capitalize
 from flowsa.flowbyactivity import make_http_request
 
@@ -33,11 +33,14 @@ def annual_fips(years):
 
     df_list = {}
     for year in years:
-        # only works for 2015 +....contacted Census on 5/1 to ask for county level fips for previous years
+        # only works for 2015 +....contacted Census on 5/1 to ask for county level
+        # fips for previous years
         if year == '2013':
-            url = 'https://www2.census.gov/programs-surveys/popest/geographies/' + year + '/all-geocodes-v' + year + '.xls'
+            url = 'https://www2.census.gov/programs-surveys/popest/geographies/' + \
+                  year + '/all-geocodes-v' + year + '.xls'
         else:
-            url = "https://www2.census.gov/programs-surveys/popest/geographies/" + year + "/all-geocodes-v" + year + ".xlsx"
+            url = "https://www2.census.gov/programs-surveys/popest/geographies/" + \
+                  year + "/all-geocodes-v" + year + ".xlsx"
 
         r = make_http_request(url)
         raw_df = pd.io.excel.read_excel(io.BytesIO(r.content)).dropna().reset_index(drop=True)
@@ -63,7 +66,8 @@ def annual_fips(years):
 
         # Assume df order in list is in geolevels keys order
 
-        state_and_county_fields = {"Country": ["StateCode(FIPS)"],  # country does not have its own field
+        # country does not have its own field
+        state_and_county_fields = {"Country": ["StateCode(FIPS)"],
                                    "State": ["StateCode(FIPS)"],
                                    "County_" + year: ["StateCode(FIPS)", "CountyCode(FIPS)"]}
 
@@ -89,8 +93,9 @@ def annual_fips(years):
             FIPS_df = pd.merge(FIPS_df, v, on=fields_to_merge, how="left")
 
         # combine state and county codes
-        FIPS_df['FIPS_' + year] = FIPS_df[state_and_county_fields["County_" + year][0]].astype(str) + \
-                                  FIPS_df[state_and_county_fields["County_" + year][1]].astype(str)
+        FIPS_df['FIPS_' + year] = \
+            FIPS_df[state_and_county_fields["County_" + year][0]].astype(str) + \
+            FIPS_df[state_and_county_fields["County_" + year][1]].astype(str)
 
         fields_to_keep = ["State", "County_" + year, "FIPS_" + year]
         FIPS_df = FIPS_df[fields_to_keep]
@@ -114,8 +119,14 @@ def annual_fips_name(df_fips_codes, years):
     return df
 
 def read_fips_2010():
+    """
+    Read the 2010 FIPS from census website
+    :return: df with FIPS 2010 codes
+    """
     # read in 2010 fips county names
-    names_10 = pd.io.excel.read_excel('https://www2.census.gov/programs-surveys/demo/reference-files/eeo/time-series/eeo-county-sets-2010.xls')
+    names_10 = pd.io.excel.read_excel(
+        'https://www2.census.gov/programs-surveys/demo/reference-files'
+        '/eeo/time-series/eeo-county-sets-2010.xls')
     # Assign the column titles
     names_10.columns = names_10.loc[2, ]
     # skip the first few rows
@@ -124,7 +135,8 @@ def read_fips_2010():
     names_10 = names_10.loc[~names_10['2010 County Set Description'].isna()]
     names_10 = names_10.loc[~names_10['FIPS County Code'].isna()].reset_index(drop=True)
     # new column of fips
-    names_10['FIPS_2010'] = names_10['FIPS State Code'].astype(str) + names_10['FIPS County Code'].astype(str)
+    names_10['FIPS_2010'] = names_10['FIPS State Code'].astype(str) +\
+                            names_10['FIPS County Code'].astype(str)
     # rename columns and subset df
     names_10 = names_10.rename(columns={'2010 County Set Description': 'County_2010'})
     names_10 = names_10[['FIPS_2010', 'County_2010']]
@@ -158,7 +170,8 @@ if __name__ == '__main__':
     df_13.loc[df_13['FIPS_2013'] == "02158", 'FIPS_2013'] = "02270"
     df_13.loc[df_13['FIPS_2013'] == "46102", 'FIPS_2013'] = "46113"
 
-    # # 2013 had a fips code that was merged with an existing fips, so 2010 will have an additional row
+    # # 2013 had a fips code that was merged with an existing fips,
+    # so 2010 will have an additional row
     df_10 = pd.DataFrame(df_13["FIPS_2013"])
     df_10['FIPS_2010'] = df_13['FIPS_2013']
     df_10 = df_10.append(pd.DataFrame([["51019", "51515"]], columns=df_10.columns))
@@ -172,7 +185,8 @@ if __name__ == '__main__':
     # 2015, 2016, 2017, 2018 have same fips codes
     # 2019                   have same fips codes
 
-    # Use Census data to assign county names to FIPS years. Some county names have changed over the years,
+    # Use Census data to assign county names to FIPS years.
+    # Some county names have changed over the years,
     # while FIPS remain unchanged
     df3 = annual_fips_name(df2, years)
 
@@ -187,9 +201,8 @@ if __name__ == '__main__':
     # reorder dataframe
     fips_xwalk = df4[['State', 'FIPS_2010', 'County_2010', 'FIPS_2013', 'County_2013',
                       'FIPS_2015', 'County_2015']]
-    fips_xwalk = fips_xwalk.sort_values(['FIPS_2010', 'FIPS_2013', 'FIPS_2015']).reset_index(drop=True)
+    fips_xwalk = fips_xwalk.sort_values(['FIPS_2010', 'FIPS_2013',
+                                         'FIPS_2015']).reset_index(drop=True)
 
     # write fips crosswalk as csv
     fips_xwalk.to_csv(datapath + "FIPS_Crosswalk.csv", index=False)
-
-
