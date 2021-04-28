@@ -36,4 +36,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

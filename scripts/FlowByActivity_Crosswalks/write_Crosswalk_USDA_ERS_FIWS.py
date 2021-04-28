@@ -4,7 +4,8 @@
 # ingwersen.wesley@epa.gov
 
 """
-Create a crosswalk linking the downloaded USDA_ERS_FIWS to NAICS_12. Created by selecting unique Activity Names and
+Create a crosswalk linking the downloaded USDA_ERS_FIWS to NAICS_12.
+Created by selecting unique Activity Names and
 manually assigning to NAICS
 
 The assigned NAICS line up with 7/8 digit USDA CoA Cropland/Livestock
@@ -15,7 +16,12 @@ from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):
-    """manually assign each ERS activity to a NAICS_2012 code"""
+    """
+    Function to assign NAICS codes to each dataframe activity
+    :param df: df, a FlowByActivity subset that contains unique activity names
+    :return: df with assigned Sector columns
+    """
+
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
@@ -37,7 +43,8 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Sunflower', 'Sector'] = '111120G'
     df.loc[df['Activity'] == 'Oil crops, Miscellaneous', 'Sector'] = '111120B'
     # df.loc[df['Activity'] == 'Canola', 'Sector'] = '111120A' # part of micellaneous oil crops
-    # df.loc[df['Activity'] == 'Mustardseed', 'Sector'] = '111120C'  # part of micellaneous oil crops
+    # df.loc[df['Activity'] == 'Mustardseed',
+    #        'Sector'] = '111120C'  # part of micellaneous oil crops
     # df.loc[df['Activity'] == 'Rapeseed', 'Sector'] = '111120D'  # part of micellaneous oil crops
 
     #  aggregates to dry pea and bean farming: 11113
@@ -232,8 +239,10 @@ def assign_naics(df):
     # apiculture: 11291
     df.loc[df['Activity'] == 'Honey', 'Sector'] = '112910A'
     # all other animal production: 11299
-    df.loc[df['Activity'] == 'Animals and products, Other animals and products', 'Sector'] = '112990E'
-    # df.loc[df['Activity'] == 'Animals and products, All other animals and products', 'Sector'] = '112990E1'
+    df.loc[df['Activity'] == 'Animals and products, Other animals and products',
+           'Sector'] = '112990E'
+    # df.loc[df['Activity'] == 'Animals and products, All other animals and products',
+    #        'Sector'] = '112990E1'
     # df.loc[df['Activity'] == 'Animals and products, Milk pelts', 'Sector'] = '112990E1'
     df.loc[df['Activity'] == 'Wool', 'Sector'] = '112990F'
 
@@ -257,11 +266,13 @@ if __name__ == '__main__':
     df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
-    # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
+    # drop any rows where naics12 is 'nan'
+    # (because level of detail not needed or to prevent double counting)
     df.dropna(subset=["Sector"], inplace=True)
     # assign sector type
     df['SectorType'] = None
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

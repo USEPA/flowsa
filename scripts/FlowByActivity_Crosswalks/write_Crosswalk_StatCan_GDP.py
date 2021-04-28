@@ -11,8 +11,6 @@ import pandas as pd
 from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
-
-
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2011', '2015']
@@ -41,4 +39,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

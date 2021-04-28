@@ -4,13 +4,14 @@
 # ingwersen.wesley@epa.gov
 
 """
-Create a crosswalk linking the downloaded USDA_CoA_Livestock to NAICS_12. Created by selecting unique Activity Names and
+Create a crosswalk linking the downloaded USDA_CoA_Livestock to NAICS_12.
+Created by selecting unique Activity Names and
 manually assigning to NAICS
 
-NAICS8 are unofficial and are not used again after initial aggregation to NAICS6. NAICS8 are based
-on NAICS definitions from the Census.
+NAICS8 are unofficial and are not used again after initial aggregation to NAICS6.
+NAICS8 are based on NAICS definitions from the Census.
 
-7/8 digit NAICS align with USDA ERS FIWS
+7/8 digit NAICS align with USDA ERS IWMS
 """
 
 import pandas as pd
@@ -19,7 +20,11 @@ from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
-    """manually assign each ERS activity to a NAICS_2012 code"""
+    """
+    Function to assign NAICS codes to each dataframe activity
+    :param df: df, a FlowByActivity subset that contains unique activity names
+    :return: df with assigned Sector columns
+    """
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
@@ -98,7 +103,8 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'HONEY, BEE COLONIES', 'Sector'] = '112910B'
 
     # horse and other equine production: 11292
-    df.loc[df['Activity'] == 'EQUINE, (HORSES & PONIES) & (MULES & BURROS & DONKEYS)', 'Sector'] = '11292'
+    df.loc[df['Activity'] == 'EQUINE, (HORSES & PONIES) & (MULES & BURROS & DONKEYS)',
+           'Sector'] = '11292'
     df.loc[df['Activity'] == 'EQUINE, HORSES & PONIES', 'Sector'] = '112920A'
     df.loc[df['Activity'] == 'EQUINE, MULES & BURROS & DONKEYS', 'Sector'] = '112920B'
 
@@ -130,11 +136,13 @@ if __name__ == '__main__':
     df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
-    # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
+    # drop any rows where naics12 is 'nan'
+    # (because level of detail not needed or to prevent double counting)
     df.dropna(subset=["Sector"], inplace=True)
     # assign sector type
     df['SectorType'] = None
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
