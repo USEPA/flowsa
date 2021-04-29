@@ -15,7 +15,7 @@ from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def mlu_call(url, mlu_response, args):
+def mlu_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param url: string, url
@@ -24,20 +24,17 @@ def mlu_call(url, mlu_response, args):
     flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    with io.StringIO(mlu_response.text) as fp:
-        # for line in fp:
-        #    if line[0] != '#':
-        #       if "16s" not in line:
+    with io.StringIO(response_load.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
 
 def mlu_parse(dataframe_list, args):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
+    Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     output = pd.DataFrame()
     # concat dataframes

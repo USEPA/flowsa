@@ -24,14 +24,14 @@ from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_No
 def BLS_QCEW_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for blm pls data that requires parts of the url text string
+    is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
     :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
     flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
     urls = []
 
@@ -42,9 +42,9 @@ def BLS_QCEW_URL_helper(build_url, config, args):
     return urls
 
 
-def bls_qcew_call(url, qcew_response, args):
+def bls_qcew_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, transform to pandas df
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -54,7 +54,7 @@ def bls_qcew_call(url, qcew_response, args):
     # initiate dataframes list
     df_list = []
     # unzip folder that contains bls data in ~4000 csv files
-    with zipfile.ZipFile(io.BytesIO(qcew_response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         # read in file names
         for name in f.namelist():
             # Only want state info
@@ -71,10 +71,10 @@ def bls_qcew_call(url, qcew_response, args):
 
 def bls_qcew_parse(dataframe_list, args):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
+    Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # Concat dataframes
     df = pd.concat(dataframe_list, sort=False)

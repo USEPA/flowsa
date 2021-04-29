@@ -189,10 +189,11 @@ YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
 def ghg_url_helper(build_url, config, args):
     """
     Only one URL is needed to retrieve the data for all tables for all years.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+    flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
     annex_url = config['url']['annex_url']
     return [build_url, annex_url]
@@ -277,18 +278,18 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
     return {'names': names, 'units': units}
 
 
-def ghg_call(url, response, args):
+def ghg_call(url, response_load, args):
     """
-    Callback function for the US GHG Emissions download. Open the downloaded zip file and
-    read the contained CSV(s) into pandas dataframe(s).
-    :param url:
-    :param response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
     df = None
     year = args['year']
-    with zipfile.ZipFile(io.BytesIO(response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         frames = []
         # TODO: replace this TABLES constant with kwarg['tables']
         if 'annex' in url:
@@ -394,10 +395,10 @@ def is_consumption(source_name):
 
 def ghg_parse(dataframe_list, args):
     """
-    Parse the given EPA GHGI data and return multiple dataframes, one per-year per-table.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     cleaned_list = []
     for df in dataframe_list:

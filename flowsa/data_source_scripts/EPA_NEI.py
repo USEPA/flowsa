@@ -13,13 +13,15 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def epa_nei_url_helper(build_url, config, args):
     """
-    Takes the basic url text and performs substitutions based on NEI year and version.
-    Returns the finished url.
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
     :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
     flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
     urls = []
     url = build_url
@@ -40,9 +42,7 @@ def epa_nei_url_helper(build_url, config, args):
 
 def epa_nei_call(url, response_load, args):
     """
-    Takes the .zip archive returned from the url call and extracts
-    the individual .csv files. The .csv files are read into a dataframe and
-    concatenated into one master dataframe containing all 10 EPA regions.
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -66,13 +66,10 @@ def epa_nei_call(url, response_load, args):
 
 def epa_nei_global_parse(dataframe_list, args):
     """
-    Modifies the raw data to meet the flowbyactivity criteria.
-    Renames certain column headers to match flowbyactivity format.
-    Adds a few additional columns with hardcoded data.
-    Deletes all unnecessary columns.
+    Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     df = pd.concat(dataframe_list, sort=True)
 
@@ -130,12 +127,10 @@ def epa_nei_global_parse(dataframe_list, args):
 
 def epa_nei_onroad_parse(dataframe_list, args):
     """
-    Calls global parse function to run parsing operations common
-    to all three data categories.
-    Runs additional parsing operations specific to ONROAD data.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     df = epa_nei_global_parse(dataframe_list, args)
 
@@ -148,12 +143,10 @@ def epa_nei_onroad_parse(dataframe_list, args):
 
 def epa_nei_nonroad_parse(dataframe_list, args):
     """
-    Calls global parse function to run parsing operations common
-    to all three data categories.
-    Runs additional parsing operations specific to NONROAD data.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     df = epa_nei_global_parse(dataframe_list, args)
 
@@ -166,12 +159,10 @@ def epa_nei_nonroad_parse(dataframe_list, args):
 
 def epa_nei_nonpoint_parse(dataframe_list, args):
     """
-    Calls global parse function to run parsing operations common
-    to all three data categories.
-    Runs additional parsing operations specific to NONPOINT data.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     df = epa_nei_global_parse(dataframe_list, args)
 

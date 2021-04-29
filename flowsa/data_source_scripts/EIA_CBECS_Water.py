@@ -14,7 +14,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def eia_cbecs_water_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, transform to pandas df
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -35,10 +35,10 @@ def eia_cbecs_water_call(url, response_load, args):
 
 def eia_cbecs_water_parse(dataframe_list, args):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
+    Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False).dropna()

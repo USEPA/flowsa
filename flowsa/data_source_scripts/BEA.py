@@ -15,11 +15,10 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def bea_gdp_parse(dataframe_list, args):
     """
-    Load BEA GDP Gross Output data from csv in 'external_data' directory,
-    parse, and begin FBA formatting
-    :param dataframe_list: flowbyactivity dataframe
-    :param args: args used to run flowbyactivity.py ('year' and 'source')
-    :return: modified flowbyactivity dataframe
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_GDP_GrossOutput_IO.csv")
@@ -47,11 +46,10 @@ def bea_gdp_parse(dataframe_list, args):
 
 def bea_use_detail_br_parse(dataframe_list, args):
     """
-    Load BEA Use Before Redefinition data from csv in 'external_data' directory,
-    parse, and begin FBA formatting
-    :param dataframe_list: flowbyactivity dataframe
-    :param args: args used to run flowbyactivity.py ('year' and 'source')
-    :return: modified flowbyactivity dataframe
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     csv_load = externaldatapath + "BEA_" + str(args['year']) + "_Detail_Use_PRO_BeforeRedef.csv"
     df_raw = pd.read_csv(csv_load)
@@ -81,11 +79,10 @@ def bea_use_detail_br_parse(dataframe_list, args):
 
 def bea_make_detail_br_parse(dataframe_list, args):
     """
-    Load BEA Make Before Redefinition data from csv in 'external_data' directory,
-    parse, and begin FBA formatting
-    :param dataframe_list: flowbyactivity dataframe
-    :param args: args used to run flowbyactivity.py ('year' and 'source')
-    :return: modified flowbyactivity dataframe
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) +
@@ -115,11 +112,10 @@ def bea_make_detail_br_parse(dataframe_list, args):
 
 def bea_make_ar_parse(dataframe_list, args):
     """
-    Load BEA Make After Redefinition data from csv in 'external_data' directory,
-    parse, and begin FBA formatting
-    :param dataframe_list: flowbyactivity dataframe
-    :param args: args used to run flowbyactivity.py ('year' and 'source')
-    :return: modified flowbyactivity dataframe
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # df = pd.concat(dataframe_list, sort=False)
     df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] +

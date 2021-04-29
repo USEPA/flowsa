@@ -17,8 +17,15 @@ Last updated: 8 Sept. 2020
 
 def eia_mecs_URL_helper(build_url, config, args):
     """
-    Takes the build url and performs substitutions based on the EIA MECS year 
-    and data tables of interest. Returns the finished url.
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+    flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
 
     # initiate url list
@@ -41,10 +48,18 @@ def eia_mecs_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_mecs_land_call(url, cbesc_response, args):
+def eia_mecs_land_call(url, response_load, args):
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     # Convert response to dataframe
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='Table 9.1')
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbesc_response.content), sheet_name='RSE 9.1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='Table 9.1')
+    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='RSE 9.1')
     if (args["year"] == "2014"):
         df_rse = pd.DataFrame(df_raw_rse.loc[12:93]).reindex()
         df_data = pd.DataFrame(df_raw_data.loc[16:97]).reindex()
@@ -122,6 +137,12 @@ def eia_mecs_land_call(url, cbesc_response, args):
 
 
 def eia_mecs_land_parse(dataframe_list, args):
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     df_array = []
     for dataframes in dataframe_list:
 
@@ -173,13 +194,14 @@ def eia_mecs_land_parse(dataframe_list, args):
     return df
 
 
-def eia_mecs_energy_call(url, mecs_response, args):
+def eia_mecs_energy_call(url, response_load, args):
     """
-    Takes the .xlsx or .xls file returned from the url call and reads it into a dataframe.
-    Grabs data for each of the census regions and "unpivots" dataframe.
-    Adds columns for census region, relative standard error, units.
-    Concatenates census region data into master dataframe.
-    Returns master dataframe containing data for all 4 census regions, plus U.S. totals.
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
 
     ## load .yaml file containing information about each energy table
@@ -191,8 +213,8 @@ def eia_mecs_energy_call(url, mecs_response, args):
 
     ## read raw data into dataframe
     ## (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(mecs_response.content), sheet_name=0, header=None)
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(mecs_response.content), sheet_name=1, header=None)
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name=0, header=None)
+    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name=1, header=None)
 
     ## retrieve table name from cell A3 of Excel file
     table = df_raw_data.iloc[2][0]
@@ -274,6 +296,12 @@ def eia_mecs_energy_call(url, mecs_response, args):
 
 
 def eia_mecs_energy_parse(dataframe_list, args):
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     from flowsa.common import assign_census_regions
 
     # concatenate dataframe list into single dataframe

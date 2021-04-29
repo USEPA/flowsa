@@ -60,10 +60,10 @@ def produced_by(entry):
 
 def calR_parse(dataframe_list, args):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
+    Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     data = {}
     output = pd.DataFrame()

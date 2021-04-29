@@ -21,19 +21,20 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 
 
 # Read pdf into list of DataFrame
-def bh_call(url, bh_response, args):
+def bh_call(url, response_load, args):
     """
-    Load the data in pdf format and produce a response
-    :param url: url where data found
-    :param bh_response: response to reading url
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe to format into a flowbyactivty data set
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+    flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
 
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
-        bh_df = tabula.read_pdf(io.BytesIO(bh_response.content), pages=x, stream=True)[0]
+        bh_df = tabula.read_pdf(io.BytesIO(response_load.content), pages=x, stream=True)[0]
         bh_df_list.append(bh_df)
 
     bh_df = pd.concat(bh_df_list, sort=False)
@@ -43,10 +44,10 @@ def bh_call(url, bh_response, args):
 
 def bh_parse(dataframe_list, args):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
+    Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)

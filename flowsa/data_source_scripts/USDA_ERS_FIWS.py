@@ -15,17 +15,17 @@ import io
 from flowsa.common import *
 
 
-def fiws_call(url, fiws_response, args):
+def fiws_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param url: string, url
-    :param usgs_response: df, response from url call
+    :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
     flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     # extract data from zip file (only one csv)
-    with zipfile.ZipFile(io.BytesIO(fiws_response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         # read in file names
         for name in f.namelist():
             data = f.open(name)
@@ -35,10 +35,10 @@ def fiws_call(url, fiws_response, args):
 
 def fiws_parse(dataframe_list, args):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
+    Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
