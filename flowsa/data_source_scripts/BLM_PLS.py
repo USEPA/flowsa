@@ -616,8 +616,8 @@ def standardize_blm_pls_activity_names(df):
     """
     Over the years, BLM PLS activities have minor syntax differences.
     Standardize the names over the years
-    :param df: BLM PLS df
-    :return: BLM PLS df with standaridized activity names
+    :param df: df, BLM PLS
+    :return: df, BLM PLS with standardized activity names
     """
 
     standardize_column = 'ActivityConsumedBy'

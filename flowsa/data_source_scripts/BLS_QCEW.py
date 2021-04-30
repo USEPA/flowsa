@@ -146,11 +146,11 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
     modify the flow name to match prior methodology for mapping/impact factors
 
     :param fba_df: df, flowbyactivity
-    :param kwargs:
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
     :return: df, flowbyactivity, with modified flow names
     """
 
-    fba_df = clean_bls_qcew_fba(fba_df)
+    fba_df = clean_bls_qcew_fba(fba_df, **kwargs)
 
     # rename flowname value
     fba_df['FlowName'] = fba_df['FlowName'].replace({'Number of employees': 'Jobs'})
@@ -161,8 +161,8 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
 def clean_bls_qcew_fba(fba_df, **kwargs):
     """
     Function to clean BLS QCEW data when FBA is not used for employment satellite table
-
     :param fba_df:
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
     :return:
     """
 

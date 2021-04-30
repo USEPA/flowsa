@@ -77,16 +77,12 @@ def bh_parse(**kwargs):
 
 def convert_blackhurst_data_to_gal_per_year(df, attr):
     """
-    Load BEA Make After Redefinition data to convert dataframe units
+    Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
-    :param df: fba ataframe
-    :param attr: attribute data from method yaml
+    :param df: df, FBA format
+    :param attr: dictionary, attribute data from method yaml
     :return: transformed fba df
     """
-    # import flowsa
-    # from flowsa.common import fba_fill_na_dict
-    # from flowsa.dataclean import harmonize_units
-    # from flowsa.dataclean import clean_df
 
     # load the bea make table
     bmt = flowsa.getFlowByActivity(datasource='BEA_Make_AR',
@@ -116,21 +112,14 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
 
 def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     """
-    Load BLS employment data and use to transporm original units to gallons per employee
-    :param df_wsec: dataframe that includes sector columns
-    :param attr: attribute data from fba method yaml
-    :param method: The name of the fba method yaml
-    :return: transformed fba dataframe with sector columns
+    Load BLS employment data and use to transform original units to gallons per employee
+    :param df_wsec: df, includes sector columns
+    :param attr: dictionary, attribute data from fba method yaml
+    :param method: str, name of the fba method yaml
+    :return: df, transformed fba dataframe with sector columns
     """
 
-    # import flowsa
-    # from flowsa.mapping import add_sectors_to_flowbyactivity
-    # from flowsa.flowbyfunctions import filter_by_geoscale
-    # from flowsa.common import fba_fill_na_dict
-    # from flowsa.dataclean import harmonize_units
-    # from flowsa.dataclean import clean_df
-    # from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
-
+    # load 2002 employment data
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
 
     bls = filter_by_geoscale(bls, 'national')
@@ -189,9 +178,6 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     :param attr: attributes from the fba method yaml
     :return: scaled fba results
     """
-
-    # import flowsa
-    # from flowsa.dataclean import harmonize_units
 
     # determine national level published withdrawal data for usgs mining in FBS method year
     pv_load = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
