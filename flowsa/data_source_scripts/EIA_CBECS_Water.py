@@ -12,15 +12,19 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 # todo: merge these fxns with EIA_CBECS_Land
 
-def eia_cbecs_water_call(url, response_load, args):
+def eia_cbecs_water_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     # Convert response to dataframe
     df_raw = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
     # skip rows and remove extra rows at end of dataframe
@@ -33,13 +37,18 @@ def eia_cbecs_water_call(url, response_load, args):
     return df
 
 
-def eia_cbecs_water_parse(dataframe_list, args):
+def eia_cbecs_water_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False).dropna()
     # drop columns

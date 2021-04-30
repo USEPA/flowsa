@@ -11,18 +11,24 @@ import io
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def epa_nei_url_helper(build_url, config, args):
+def epa_nei_url_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    args = kwargs['args']
+
     urls = []
     url = build_url
 
@@ -40,15 +46,19 @@ def epa_nei_url_helper(build_url, config, args):
     return urls
 
 
-def epa_nei_call(url, response_load, args):
+def epa_nei_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     z = zipfile.ZipFile(io.BytesIO(response_load.content))
     # create a list of files contained in the zip archive
     znames = z.namelist()
@@ -64,13 +74,18 @@ def epa_nei_call(url, response_load, args):
     return df
 
 
-def epa_nei_global_parse(dataframe_list, args):
+def epa_nei_global_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = pd.concat(dataframe_list, sort=True)
 
     # rename columns to match flowbyactivity format
@@ -125,13 +140,18 @@ def epa_nei_global_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_onroad_parse(dataframe_list, args):
+def epa_nei_onroad_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = epa_nei_global_parse(dataframe_list, args)
 
     # Add DQ scores
@@ -141,13 +161,18 @@ def epa_nei_onroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonroad_parse(dataframe_list, args):
+def epa_nei_nonroad_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = epa_nei_global_parse(dataframe_list, args)
 
     # Add DQ scores
@@ -157,13 +182,18 @@ def epa_nei_nonroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonpoint_parse(dataframe_list, args):
+def epa_nei_nonpoint_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = epa_nei_global_parse(dataframe_list, args)
 
     # Add DQ scores

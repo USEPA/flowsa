@@ -13,13 +13,17 @@ from flowsa.common import externaldatapath, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def bea_gdp_parse(dataframe_list, args):
+def bea_gdp_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
+
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_GDP_GrossOutput_IO.csv")
 
@@ -44,13 +48,17 @@ def bea_gdp_parse(dataframe_list, args):
     return df
 
 
-def bea_use_detail_br_parse(dataframe_list, args):
+def bea_use_detail_br_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
+
     csv_load = externaldatapath + "BEA_" + str(args['year']) + "_Detail_Use_PRO_BeforeRedef.csv"
     df_raw = pd.read_csv(csv_load)
 
@@ -77,13 +85,17 @@ def bea_use_detail_br_parse(dataframe_list, args):
     return df
 
 
-def bea_make_detail_br_parse(dataframe_list, args):
+def bea_make_detail_br_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
+
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) +
                          "_Detail_Make_BeforeRedef.csv")
@@ -110,13 +122,17 @@ def bea_make_detail_br_parse(dataframe_list, args):
     return df
 
 
-def bea_make_ar_parse(dataframe_list, args):
+def bea_make_ar_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
+
     # df = pd.concat(dataframe_list, sort=False)
     df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] +
                           "_Make_AfterRedef.csv", dtype="str")
