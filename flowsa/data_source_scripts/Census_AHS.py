@@ -72,23 +72,6 @@ def ahs_call(**kwargs):
         return pd.concat(frames)
 
 
-# def convert_values(df, args):
-#     """
-#     Convert columns to usable values. Columns include:
-#     LOT/LOTSIZE, WEIGHT, METRO3, CROPSL
-#     """
-#     if args['year'] in ['2011', '2013']:
-#         print("All four columns are available.")
-#
-#     elif args['year'] == '2015':
-#         print("LOT, WEIGHT, CROPSL")
-#
-#     elif args['year'] == '2017':
-#         print("LOT, WEIGHT")
-#
-#     return df
-
-
 def ahs_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
@@ -181,45 +164,3 @@ def ahs_parse(**kwargs):
     df["DistributionType"] = None
     df["FlowType"] = None
     return df
-
-# def calculate_urban_and_rural_residential_land_area(ahs_fba):
-#     """
-#     Read in an American Housing Survey FlowByActivity and
-#     calculate the land area in the US occupied by
-#     urban and rural housing
-#     :param ahs_fba: American Housing Survey FlowByActivity
-#     :return:
-#     """
-#
-#     # assumption on lot size where missing (assumption duplicates USDA Major Land Use report)
-#     fill_missing_lot_value = 200
-#     convert_square_ft_to_acres = 43560
-#
-#     # pivot table
-#     df = ahs_fba.pivot(index='ActivityConsumedBy', columns='FlowName', values = 'FlowAmount')
-#
-#     # replace any missing lot size values with assumption defined above
-#     df2 = df.assign(LOT=df.apply(lambda x: fill_missing_lot_value if x['LOT']
-#                                                                      == -9 else x['LOT'], axis=1))
-#     # convert lot data from square feet to square acres
-#     df2 = df.assign(LOT=df['LOT']/convert_square_ft_to_acres)
-#
-#     # label rows as urban or rural
-# #     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
-# #                                                               [1, 2, 4] else 'rural', axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
-#                                                               [1, 2, 4] else '', axis=1))
-#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in
-#     #                                                            [3, 5]) else x['loc_label'], axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5])
-#                                                               & (x['CROPSL'] == 1) else x['loc_label'], axis=1))
-#
-#     # We then weighted the lot sizes (‘lot’) with the AHS survey weights, summed,
-#     and converted to acres (dividing by 43560)
-#
-#     # weight_calc = weighted_average(df2, 'LOT', 'WEIGHT', 'loc_label')
-#     df3 = df2.assign(FlowAmount=df2['LOT'] * df2['WEIGHT'])
-#
-#     calculated_area = df3.groupby(df3['loc_label']).agg({'FlowAmount': ['sum']})
-#
-#     return calculated_area
