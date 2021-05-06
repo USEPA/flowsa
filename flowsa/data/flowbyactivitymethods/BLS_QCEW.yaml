@@ -1,7 +1,7 @@
 author: Bureau of Labor Statistics
 source_name_bib: Quarterly Census of Employment and Wages
 citable_url: https://www.bls.gov/cew/downloadable-data-files.htm
-date_generated: '2021-04-08' # updated automatically when flowbyactivity.py is run
+date_generated: '2021-04-28' # updated automatically when flowbyactivity.py is run
 bib_id: BLS_QCEW
 api_name: BLS
 api_key_required: false
