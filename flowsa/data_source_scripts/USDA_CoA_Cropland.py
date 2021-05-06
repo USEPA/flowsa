@@ -329,7 +329,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         group_cols = fba_mapped_default_grouping_fields
         group_cols = [e for e in group_cols if
                       e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-        df_f = allocate_by_sector(df_f, df_sourcename, df_allocation, 'proportional', group_cols)
+        df_f = allocate_by_sector(df_f, 'proportional', group_cols)
         # tmp drop NoneTypes
         df_f = replace_NoneType_with_empty_cells(df_f)
         # drop naics = '11

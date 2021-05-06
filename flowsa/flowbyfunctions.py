@@ -659,14 +659,11 @@ def collapse_activity_fields(df):
     return df
 
 
-def allocate_by_sector(df_w_sectors, source_name, allocation_source, allocation_method, group_cols, **kwargs):
+def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
     """
     Create an allocation ratio for df
-
     :param df_w_sectors: df with column of sectors
-    :param source_name: the name of the FBA df being allocated
-    :param allocation_source: The name of the FBA allocation dataframe
-    :param allocation_method: currently written for 'proportional'
+    :param allocation_method: currently written for 'proportional' and 'proportional-flagged'
     :param group_cols: columns on which to base aggregation and disaggregation
     :return: df with FlowAmountRatio for each sector
     """
