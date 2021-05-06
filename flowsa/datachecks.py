@@ -18,7 +18,6 @@ from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     fbs_activity_fields, fbs_fill_na_dict
 
 
-
 def check_flow_by_fields(flowby_df, flowbyfields):
     """
     Add in missing fields to have a complete and ordered
@@ -451,7 +450,6 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
     from flowsa.mapping import map_elementary_flows
 
-
     log.info('Comparing loaded FlowByActivity FlowAmount total to'
              'subset FlowBySector FlowAmount total')
 
@@ -506,12 +504,13 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
                              'FlowAmount_difference', 'Percent_difference']]
         df_merge = replace_NoneType_with_empty_cells(df_merge)
 
-        # list of contexts
-        context_list = df_merge['Context'].to_list()
+        # list of contexts and locations
+        context_list = df_merge[['Context', 'Location']].values.tolist()
 
         # loop through the contexts and print results of comparison
-        for i in context_list:
-            df_merge_subset = df_merge[df_merge['Context'] == i].reset_index(drop=True)
+        for i, j in context_list:
+            df_merge_subset = df_merge[(df_merge['Context'] == i) &
+                                       (df_merge['Location'] == j)].reset_index(drop=True)
             diff_per = df_merge_subset['Percent_difference'][0]
             if np.isnan(diff_per):
                 log.info('The total FlowBySector FlowAmount for ' + source_name +
@@ -526,11 +525,11 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
             # diff_units = df_merge_subset['FBS_unit'][0]
             if diff_per > 0:
                 log.info('The total FlowBySector FlowAmount for ' + source_name + ' '
-                         + activity_set + ' ' + i + ' is ' + str(abs(diff_per)) +
+                         + activity_set + ' ' + i + ' at ' + j + ' is ' + str(abs(diff_per)) +
                          '% less than the total FlowByActivity FlowAmount')
-            else:
+            elif diff_per < 0:
                 log.info('The total FlowBySector FlowAmount for ' + source_name +
-                         ' ' + activity_set + ' ' + i + ' is ' + str(abs(diff_per)) +
+                         ' ' + activity_set + ' ' + i + ' at ' + j + ' is ' + str(abs(diff_per)) +
                          '% more than the total FlowByActivity FlowAmount')
 
         # save csv to output folder
