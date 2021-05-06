@@ -16,6 +16,7 @@ def create_geoscale_list(df, geoscale, year='2015'):
 
     :param df: FlowBySector of FlowByActivity df
     :param geoscale: 'national', 'state', or 'county'
+    :param year: str, year of FIPS, defaults to 2015
     :return: list of relevant FIPS
     """
 
@@ -55,12 +56,12 @@ def filter_by_geoscale(df, geoscale):
 
 def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     """
-
+    Aggregate a df by geoscale
     :param df: flowbyactivity or flowbysector df
-    :param from_scale:
-    :param to_scale:
+    :param from_scale: str, geoscale to aggregate from ('national', 'state', 'county')
+    :param to_scale: str, geoscale to aggregate to ('national', 'state', 'county')
     :param groupbycolumns: flowbyactivity or flowbysector default groupby columns
-    :return:
+    :return: df, at identified to_scale geographic level
     """
 
     # use from scale to filter by these values
@@ -77,21 +78,13 @@ def weighted_average(df, data_col, weight_col, by_col):
     """
     Generates a weighted average result based on passed columns
     Parameters
-    ----------
-    df : DataFrame
-        Dataframe prior to aggregating from which a weighted average is calculated
-    data_col : str
-        Name of column to be averaged.
-    weight_col : str
-        Name of column to serve as the weighting.
-    by_col : list
-        List of columns on which the dataframe is aggregated.
-    Returns
-    -------
-    result : series
-        Series reflecting the weighted average values for the data_col,
-        at length consistent with the aggregated dataframe, to be reapplied
-        to the data_col in the aggregated dataframe.
+    :param df: df, Dataframe prior to aggregating from which a weighted average is calculated
+    :param data_col: str, Name of column to be averaged.
+    :param weight_col: str, Name of column to serve as the weighting.
+    :param by_col: list, List of columns on which the dataframe is aggregated.
+    :return: series, Series reflecting the weighted average values for the data_col,
+             at length consistent with the aggregated dataframe, to be reapplied
+             to the data_col in the aggregated dataframe.
     """
 
     df = df.assign(_data_times_weight=df[data_col] * df[weight_col])
@@ -104,11 +97,12 @@ def weighted_average(df, data_col, weight_col, by_col):
 
 def aggregator(df, groupbycols):
     """
-    Aggregates flowbyactivity or flowbysector df by given groupbycols
+    Aggregates flowbyactivity or flowbysector 'FlowAmount' column in df and generate
+    weighted average values based on FlowAmount values for numeric columns
 
-    :param df: Either flowbyactivity or flowbysector
-    :param groupbycols: Either flowbyactivity or flowbysector columns
-    :return:
+    :param df: df, Either flowbyactivity or flowbysector
+    :param groupbycols: list, Either flowbyactivity or flowbysector columns
+    :return: df, with aggregated columns
     """
 
     # reset index
@@ -147,7 +141,7 @@ def sector_ratios(df, sectorcolumn):
     Determine ratios of the less aggregated sectors within a more aggregated sector
     :param df: A df with sector columns
     :param sectorcolumn: 'SectorConsumedBy' or 'SectorProducedBy'
-    :return:
+    :return: df, with 'FlowAmountRatio' column
     """
 
     # drop any null rows (can occur when activities are ranges)
@@ -182,9 +176,9 @@ def sector_ratios(df, sectorcolumn):
 def sector_aggregation(df_load, group_cols):
     """
     Function that checks if a sector length exists, and if not, sums the less aggregated sector
-    :param df: Either a flowbyactivity df with sectors or a flowbysector df
+    :param df_load: Either a flowbyactivity df with sectors or a flowbysector df
     :param group_cols: columns by which to aggregate
-    :return:
+    :return: df, with aggregated sector values
     """
 
     # determine if activities are sector-like, if aggregating a df with a 'SourceName'
@@ -245,8 +239,8 @@ def sector_aggregation(df_load, group_cols):
             agg_sectors_list = []
             for q, r, s in missing_sectors:
                 c1 = df_subset['Location'] == q
-                c2 = df_subset[fbs_activity_fields[0]].apply(lambda x: x[0:i] == r)     #.str.startswith(y)
-                c3 = df_subset[fbs_activity_fields[1]].apply(lambda x: x[0:i] == s)   #.str.startswith(z)
+                c2 = df_subset[fbs_activity_fields[0]].apply(lambda x: x[0:i] == r)
+                c3 = df_subset[fbs_activity_fields[1]].apply(lambda x: x[0:i] == s)
                 # subset data
                 agg_sectors_list.append(df_subset.loc[c1 & c2 & c3])
             agg_sectors = pd.concat(agg_sectors_list, sort=False)
@@ -286,9 +280,9 @@ def sector_disaggregation(df, group_cols):
     """
     function to disaggregate sectors if there is only one naics at a lower level
     works for lower than naics 4
-    :param df_load: A FBS df
-    :param group_cols:
-    :return: A FBS df with missing naics5 and naics6
+    :param df_load: A FBS df, must have sector columns
+    :param group_cols: columns by which to disaggregate sectors
+    :return: A FBS df with values for the missing naics5 and naics6
     """
 
     # ensure None values are not strings
@@ -366,8 +360,8 @@ def assign_fips_location_system(df, year_of_data):
     """
     Add location system based on year of data. County level FIPS change over the years.
     :param df: df with FIPS location system
-    :param year_of_data: year of data pulled
-    :return:
+    :param year_of_data: str, year of data pulled
+    :return: df, with 'LocationSystem' column values
     """
 
     if '2015' <= year_of_data:
@@ -387,9 +381,9 @@ def assign_fips_location_system(df, year_of_data):
 def collapse_fbs_sectors(fbs):
     """
     Collapses the Sector Produced/Consumed into a single column named "Sector"
-    uses
-    :param fbs: a standard FlowBySector (format)
-    :return:
+    uses based on identified rules for flowtypes
+    :param fbs: df, a standard FlowBySector (format)
+    :return: df, FBS with single Sector column
     """
     # ensure correct datatypes and order
     fbs = clean_df(fbs, flow_by_sector_fields, fbs_fill_na_dict)
@@ -418,10 +412,8 @@ def return_activity_from_scale(df, provided_from_scale):
     """
     Determine the 'from scale' used for aggregation/df subsetting for each activity combo in a df
     :param df: flowbyactivity df
-    :param activity_df: a df with the activityproducedby, activityconsumedby columns and
-    a column 'exists' denoting if data is available at specified geoscale
-    :param provided_from_scale: The scale to use specified in method yaml
-    :return:
+    :param provided_from_scale: str, The scale to use specified in method yaml
+    :return: df, FBA with column indicating the "from" geoscale to use for each row
     """
 
     # determine the unique combinations of activityproduced/consumedby
@@ -477,10 +469,12 @@ def return_activity_from_scale(df, provided_from_scale):
 def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
     """
     Subset a df by geoscale or agg to create data specified in method yaml
-    :param flow_subset:
-    :param activity_from_scale:
-    :param activity_to_scale:
-    :return:
+    :param df: df, FBA format
+    :param activity_from_scale: str, identified geoscale by which to subset or
+                                aggregate from ('national', 'state', 'county')
+    :param activity_to_scale: str, identified geoscale by which to subset or
+                              aggregate to ('national', 'state', 'county')
+    :return: df, FBA, subset or aggregated to a single geoscale for all rows
     """
 
     # method of subset dependent on LocationSystem
@@ -544,10 +538,10 @@ def unique_activity_names(fba_df):
 def dataframe_difference(df1, df2, which=None):
     """
     Find rows which are different between two DataFrames
-    :param df1:
-    :param df2:
+    :param df1: df, FBA or FBS
+    :param df2: df, FBA or FBS
     :param which: 'both', 'right_only', 'left_only'
-    :return:
+    :return: df, comparison of data in the two dfs
     """
     comparison_df = df1.merge(df2,
                               indicator=True,
@@ -563,10 +557,10 @@ def dataframe_difference(df1, df2, which=None):
 def estimate_suppressed_data(df, sector_column, naics_level):
     """
     Estimate data suppression, by equally allocating parent NAICS values to child NAICS
-    :param df:
-    :param sector_column:
+    :param df: df with sector columns
+    :param sector_column: str, column to estimate suppressed data for
     :param naics_level: numeric, indicate at what NAICS length to base estimated suppresed data off (2 - 5)
-    :return:
+    :return: df, with estimated suppressed data
     """
 
     # exclude nonsectors
@@ -637,9 +631,9 @@ def estimate_suppressed_data(df, sector_column, naics_level):
 def collapse_activity_fields(df):
     """
     The 'activityconsumedby' and 'activityproducedby' columns from the allocation dataset do not always align with
-    the water use dataframe. Generalize the allocation activity column.
-    :param fba_df:
-    :return:
+    the dataframe being allocated. Generalize the allocation activity column.
+    :param df: df, FBA used to allocate another FBA
+    :return: df, single Activity column
     """
 
     df = replace_strings_with_NoneType(df)
@@ -738,9 +732,9 @@ def proportional_allocation_by_location(df):
     """
     Creates a proportional allocation based on all the most aggregated sectors within a location
     Ensure that sectors are at 2 digit level - can run sector_aggregation() prior to using this function
-    :param df:
-    :param sectorcolumn:
-    :return:
+    :param df: df, includes sector columns
+    :param sectorcolumn: str, sector column by which to base allocation
+    :return: df, with 'FlowAmountRatio' column
     """
 
     # tmp drop NoneType
@@ -769,9 +763,9 @@ def proportional_allocation_by_location(df):
 def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     """
     Creates a proportional allocation within each aggregated sector within a location
-    :param df:
-    :param sectorcolumn:
-    :return:
+    :param df: df with sector columns
+    :param sectorcolumn: str, sector column for which to create allocation ratios
+    :return: df, with 'FlowAmountRatio' and 'HelperFlow' columns
     """
 
     # tmp replace NoneTypes with empty cells

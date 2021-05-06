@@ -11,12 +11,12 @@ import numpy as np
 
 def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
     """
-
-    :param df:
-    :param flowbyfields: flow_by_activity_fields or flow_by_sector_fields
-    :param fill_na_dict: fba_fill_na_dict or fbs_fill_na_dict
+    Modify a dataframe to ensure all columns are present and column datatypes correct
+    :param df: df, any format
+    :param flowbyfields: list, flow_by_activity_fields or flow_by_sector_fields
+    :param fill_na_dict: dict, fba_fill_na_dict or fbs_fill_na_dict
     :param drop_description: specify if want the Description column dropped, defaults to true
-    :return:
+    :return: df, modified
     """
     df = df.reset_index(drop=True)
     # ensure correct data types
@@ -58,10 +58,6 @@ def replace_NoneType_with_empty_cells(df):
     for y in df.columns:
         if df[y].dtype == object:
             df.loc[df[y].isin(['nan', 'None', np.nan, None]), y] = ''
-            # df.loc[:, y] = df[y].replace({'nan': '',
-            #                               'None': '',
-            #                               np.nan: '',
-            #                               None: ''})
     return df
 
 
@@ -71,7 +67,7 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
     :param flowby_partial_df: Either flowbyactivity or flowbysector df
     :param flowbyfields: Either flow_by_activity_fields, flow_by_sector_fields,
            or flow_by_sector_collapsed_fields
-    :return:
+    :return: df, with all required columns
     """
     for k in flowbyfields.keys():
         if k not in flowby_partial_df.columns:
@@ -88,8 +84,8 @@ def harmonize_units(df):
     """
     Convert unit to standard
     Timeframe is over one year
-    :param df: Either flowbyactivity or flowbysector
-    :return: Df with standarized units
+    :param df: df, Either flowbyactivity or flowbysector
+    :return: df, with standarized units
     """
 
     days_in_year = 365

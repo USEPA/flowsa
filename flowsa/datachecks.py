@@ -23,7 +23,7 @@ def check_flow_by_fields(flowby_df, flowbyfields):
     Add in missing fields to have a complete and ordered
     :param flowby_df: Either flowbyactivity or flowbysector df
     :param flowbyfields: Either flow_by_activity_fields or flow_by_sector_fields
-    :return:
+    :return: printout, column datatypes
     """
     for k, v in flowbyfields.items():
         try:
@@ -62,7 +62,7 @@ def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
     :param df: flowbyactivity dataframe
     :param activitynames: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
     :param geoscale: national, state, or county
-    :return:
+    :return: str, 'yes' or 'no'
     """
 
     # if any activity name is specified, check if activity data exists at the specified geoscale
@@ -102,7 +102,7 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
     :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
     :param geoscale: national, state, or county
     :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
-    :return:
+    :return: str, geoscale to use
     """
 
     if geoscale == 'national':
@@ -142,20 +142,22 @@ def check_if_location_systems_match(df1, df2):
     Check if two dataframes share the same location system
     :param df1: fba or fbs df
     :param df2: fba or fbs df
-    :return:
+    :return: warning if Location Systems do not match between dfs
     """
 
     if df1["LocationSystem"].all() != df2["LocationSystem"].all():
         log.warning("LocationSystems do not match, might lose county level data")
+    return None
 
 
 def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
-                                            activity):  # fba_w_aggregated_sectors
+                                            activity):
     """
     Determine if data exists at the same scales for datasource and allocation source
-    :param source_fba:
-    :param allocation_fba:
-    :return:
+    :param fba_wsec_walloc: df, FBA format with sector columns
+    :param source: str, source name
+    :param activity: list, activity names
+    :return: printout where allocation ratios are missing
     """
     # todo: modify so only returns warning if no value for entire
     #  location, not just no value for one of the possible sectors
@@ -194,9 +196,10 @@ def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
 def check_if_losing_sector_data(df, target_sector_level):
     """
     Determine rows of data that will be lost if subset data at target sector level
-    In some instances, not all
-    :param fbs:
-    :return:
+    Equally allocate parent NAICS to child NAICS where child NAICS missing
+    :param df: df, FBS format
+    :param target_sector_level: str, target NAICS level for FBS output
+    :return: df, with all child NAICS at target sector level
     """
 
     # exclude nonsectors
@@ -298,8 +301,12 @@ def check_if_losing_sector_data(df, target_sector_level):
 def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, method_name):
     """
     Check for issues with the flow allocation ratios
-    :param df:
-    :return:
+    :param flow_alloc_df_load: df, includes 'FlowAmountRatio' column
+    :param activity_set: str, activity set
+    :param source_name: str, source name
+    :param method_name: str, method name
+    :return: print out information regarding allocation ratios,
+             save csv of results to local directory
     """
 
     # create column of sector lengths
@@ -350,14 +357,16 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                                                           activity_set, source_name, method_name):
     """
-    Function to compare the loaded flowbyactivity with the final flowbysector
+    Function to compare the loaded flowbyactivity with the final flowbysector at all sector levels
     output, checking for data loss
-    :param df:
-    :return:
+    :param fba_load: df, FBA loaded and mapped using FEDEFL
+    :param fbs_load: df, final FBS df
+    :param activity_set: str, activity set
+    :param source_name: str, source name
+    :param method_name: str, method name
+    :return: printout data differences between loaded FBA and FBS output,
+             save results as csv in local directory
     """
-
-    # from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells
-
     # subset fba df
     fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
                     'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
@@ -444,8 +453,17 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
                                            source_name, method_name, attr, method, mapping_files):
     """
     Function to compare the loaded flowbyactivity total with the final flowbysector output total
-    :param df:
-    :return:
+    for the target sector level
+    :param fba_load: df, FBA loaded, before being mapped
+    :param fbs_load: df, final FBS df at target sector level
+    :param activity_set: str, activity set
+    :param source_name: str, source name
+    :param method_name: str, method name
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :param mapping_files: df, fedefl mapping for data source
+    :return: printout data differences between loaded FBA and FBS output totals by location,
+             save results as csv in local directory
     """
 
     from flowsa.mapping import map_elementary_flows
@@ -617,7 +635,10 @@ def check_for_negative_flowamounts(df):
 def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
     """
     Check if activity-like sectors are in fact sectors. Also works for the Sector column
-    :return:
+    :param df_load: df with activity or sector columns
+    :param crosswalk_list: list, sectors found in crosswalk
+    :param column_headers: list, headers to check for sectors
+    :return: list, values that are not sectors
     """
 
     # create a df of non-sectors to export
@@ -653,7 +674,7 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
 def melt_naics_crosswalk():
     """
     Create a melt version of the naics 07 to 17 crosswalk to map naics to naics 2012
-    :return:
+    :return: df, naics crosswalk melted
     """
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
@@ -683,8 +704,10 @@ def melt_naics_crosswalk():
 
 def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     """
-    Check if activity-like sectors are in fact sectors. Also works for the Sector column
-    :return:
+    Replace any non sectors with sectors.
+    :param df_load: df with sector columns or sector-like activities
+    :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
+    :return: df, with non-sectors replaced with sectors
     """
     # from flowsa.flowbyfunctions import aggregator
 
@@ -771,10 +794,9 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
 def compare_FBS_results(fbs1_load, fbs2_load):
     """
     Compare a parquet on Data Commons to a parquet stored locally
-    :param fbs1_load:
-    :param fbs2_load:
-    :param FileFormat: Either 'FlowByActivity' or 'FlowBySector'
-    :return:
+    :param fbs1_load: df, fbs format
+    :param fbs2_load: df, fbs format
+    :return: df, comparison of the two dfs
     """
     import flowsa
 
@@ -807,10 +829,12 @@ def compare_FBS_results(fbs1_load, fbs2_load):
 def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activity_set):
     """
     Check for any data loss between the geoscale used and published national data
-    :param df_subset:
-    :param df_load:
-    :param sourcename:
-    :return:
+    :param df_subset: df, after subset by geography
+    :param df_load: df, loaded data, including published national data
+    :param sourcename: str, source name
+    :param method_name: str, method name
+    :param activity_set: str, activity set
+    :return: df, comparing published national level data to df subset
     """
 
     # subset df_load to national level
@@ -843,3 +867,4 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
             df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" +
                         method_name + '_' + sourcename +
                         "_geographic_comparison_" + activity_set + ".csv", index=False)
+    return None

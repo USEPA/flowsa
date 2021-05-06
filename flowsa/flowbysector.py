@@ -71,7 +71,10 @@ from flowsa.data_source_scripts.USGS_NWIS_WU import usgs_fba_data_cleanup,\
 
 
 def parse_args():
-    """Make year and source script parameters"""
+    """
+    Make year and source script parameters
+    :return: dictionary, 'method'
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("-m", "--method",
                     required=True, help="Method for flow by sector file. "
@@ -83,8 +86,8 @@ def parse_args():
 def load_method(method_name):
     """
     Loads a flowbysector method from a YAML
-    :param method_name:
-    :return:
+    :param method_name: str, FBS method name (ex. 'Water_national_m1_2015')
+    :return: dictionary, items in the FBS method yaml
     """
     sfile = flowbysectormethodpath + method_name + '.yaml'
     try:
@@ -100,9 +103,9 @@ def load_source_dataframe(k, v):
     Load the source dataframe. Data can be a FlowbyActivity or
     FlowBySector parquet stored in flowsa, or a FlowBySector
     formatted dataframe from another package.
-    :param k: The datasource name
-    :param v: The datasource parameters
-    :return:
+    :param k: str, The datasource name
+    :param v: dictionary, The datasource parameters
+    :return: df of identified parquet
     """
     if v['data_format'] == 'FBA':
         # if yaml specifies a geoscale to load, use parameter to filter dataframe
@@ -128,8 +131,9 @@ def load_source_dataframe(k, v):
 def main(**kwargs):
     """
     Creates a flowbysector dataset
-    :param method_name: Name of method corresponding to flowbysector method yaml name
-    :return: flowbysector
+    :param kwargs: dictionary of arguments, only argument is "method_name", the name of method
+                   corresponding to flowbysector method yaml name
+    :return: parquet, FBS save to local folder
     """
     if len(kwargs) == 0:
         kwargs = parse_args()

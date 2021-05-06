@@ -23,7 +23,7 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
     :param year: int, a year, e.g. 2012
     :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
     :param geographic_level: str, a geographic level of the data.
-    Optional. E.g. 'national', 'state', 'county'.
+                             Optional. E.g. 'national', 'state', 'county'.
     :return: a pandas DataFrame in FlowByActivity format
     """
     # Set fba metadata

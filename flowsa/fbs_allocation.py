@@ -55,7 +55,7 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
     :param k: str, source name
     :param names: list, activity names in activity set
     :param method: dictionary, FBS method yaml
-    :return:
+    :return: df with sector columns
     """
     log.info('Directly assigning activities to sectors')
     fbs = flow_subset_mapped.copy()
@@ -76,12 +76,12 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
 
 def function_allocation_method(flow_subset_mapped, names, attr, fbs_list):
     """
-
+    Allocate df activities to sectors using a function identified in the FBS method yaml
     :param flow_subset_mapped: df, FBA with flows converted using fedelemflowlist
     :param names: list, activity names in activity set
-    :param attr:
-    :param fbs_list:
-    :return:
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, fbs dfs created running flowbysector.py
+    :return: df, FBS, with allocated activity columns to sectors
     """
     log.info('Calling on function specified in method yaml to allocate ' +
              ', '.join(map(str, names)) + ' to sectors')
@@ -95,15 +95,15 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     """
     Method of allocation using a specified data source
     :param flow_subset_mapped: FBA subset mapped using federal elementary flow list
-    :param attr: method attributes
-    :param names:
-    :param method:
-    :param k:
-    :param v:
-    :param aset:
-    :param method_name:
-    :param aset_names:
-    :return:
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param names: list, activity names in activity set
+    :param method: dictionary, FBS method yaml
+    :param k: str, the datasource name
+    :param v: dictionary, the datasource parameters
+    :param aset: dictionary items for FBS method yaml
+    :param method_name: str, method ame
+    :param aset_names: list, activity set names
+    :return: df, allocated activity names
     """
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
@@ -211,15 +211,12 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
 
 def allocation_helper(df_w_sector, attr, method, v):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-    flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    Function to help allocate activity names using secondary df
+    :param df_w_sector: df, includes sector columns
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :param v: dictionary, the datasource parameters
+    :return: df, with modified fba allocation values
     """
 
     # add parameters to dictionary if exist in method yaml
@@ -372,19 +369,17 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                        geoscale_from, geoscale_to, **kwargs):
     """
     Load, clean, and map a FlowByActivity df
-    :param method:
-    :param attr:
-    :param fba_sourcename:
-    :param df_year:
-    :param flowclass:
-    :param geoscale_from:
-    :param geoscale_to:
-    :param kwargs:
-    :return:
+    :param method: dictionary, FBS method yaml
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fba_sourcename: str, source name
+    :param df_year: str, year
+    :param flowclass: str, flowclass to subset df with
+    :param geoscale_from: str, geoscale to use
+    :param geoscale_to: str, geoscale to aggregate to
+    :param kwargs: dictionary, can include parameters: 'allocation_flow',
+                   'allocation_compartment','clean_allocation_fba', 'clean_allocation_fba_w_sec'
+    :return: df, fba format
     """
-
-    # from flowsa.datachecks import check_if_data_exists_at_geoscale
-    # from flowsa.mapping import add_sectors_to_flowbyactivity
 
     log.info("Loading allocation flowbyactivity " + fba_sourcename + " for year " +
              str(df_year))

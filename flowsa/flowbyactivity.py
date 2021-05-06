@@ -42,7 +42,10 @@ from flowsa.data_source_scripts.USGS_WU_Coef import *
 
 
 def parse_args():
-    """Make year and source script parameters"""
+    """
+    Make year and source script parameters
+    :return: dictionary, 'year' and 'source'
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("-y", "--year", required=True, help="Year for data pull and save")
     ap.add_argument("-s", "--source", required=True, help="Data source code to pull and save")
@@ -51,6 +54,12 @@ def parse_args():
 
 
 def set_fba_name(datasource, year):
+    """
+    Generate name of FBA used when saving parquet
+    :param datasource: str, datasource
+    :param year: str, year
+    :return: str, name of parquet
+    """
     if year is not None:
         name_data = datasource + "_" + str(year)
     else:
@@ -59,7 +68,12 @@ def set_fba_name(datasource, year):
 
 
 def build_url_for_query(config, args):
-    """Creates a base url which requires string substitutions that depend on data source"""
+    """
+    Creates a base url which requires string substitutions that depend on data source
+    :param config: dictionary, FBA yaml
+    :param args: dictionary, load parameters 'source' and 'year'
+    :return: base url used to load data
+    """
     # if there are url parameters defined in the yaml, then build a url, else use "base_url"
     urlinfo = config["url"]
     if urlinfo != 'None':
@@ -83,7 +97,13 @@ def build_url_for_query(config, args):
 
 
 def assemble_urls_for_query(build_url, config, args):
-    """Calls on helper functions defined in source.py files to replace parts of the url string"""
+    """
+    Calls on helper functions defined in source.py files to replace parts of the url string
+    :param build_url: str, base url
+    :param config: dictionary, FBA yaml
+    :param args: dictionary, load parameters 'source' and 'year'
+    :return: list, urls to call data from
+    """
     if "url_replace_fxn" in config:
         if hasattr(sys.modules[__name__], config["url_replace_fxn"]):
             urls = getattr(sys.modules[__name__], config["url_replace_fxn"])(build_url=build_url,
@@ -96,9 +116,15 @@ def assemble_urls_for_query(build_url, config, args):
 
 
 def call_urls(url_list, args, config):
-    """This method calls all the urls that have been generated.
+    """
+    This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data. The processing method is specific to
-    the data source, so this function relies on a function in source.py"""
+    the data source, so this function relies on a function in source.py
+    :param url_list: list, urls to call
+    :param args: dictionary, load parameters 'source' and 'year'
+    :param config: dictionary, FBA yaml
+    :return: list, dfs to concat and parse
+    """
 
     data_frames_list = []
     if url_list[0] is not None:
@@ -118,7 +144,13 @@ def call_urls(url_list, args, config):
 
 
 def parse_data(dataframe_list, args, config):
-    """Calls on functions defined in source.py files, as parsing rules are specific to the data source."""
+    """
+    Calls on functions defined in source.py files, as parsing rules are specific to the data source.
+    :param dataframe_list: list, dfs to concat and parse
+    :param args: dictionary, load parameters 'source' and 'year'
+    :param config: dictionary, FBA yaml
+    :return: df, single df formatted to FBA
+    """
     if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
         df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list=dataframe_list,
                                                                           args=args)
@@ -128,9 +160,12 @@ def parse_data(dataframe_list, args, config):
 def process_data_frame(df, source, year):
     """
     Process the given dataframe, cleaning, converting data, and writing the final parquet.
-
     This method was written to move code into a shared method, which was necessary to support
     the processing of a list of dataframes instead of a single dataframe.
+    :param df: df, FBA format
+    :param source: str, source name
+    :param year: str, year
+    :return: df, FBA format, standardized
     """
     # log that data was retrieved
     log.info("Retrieved data for " + source + ' ' + year)
@@ -150,6 +185,11 @@ def process_data_frame(df, source, year):
 
 
 def main(**kwargs):
+    """
+    Generate FBA parquet(s)
+    :param kwargs: 'source' and 'year'
+    :return: parquet saved to local directory
+    """
     # assign arguments
     if len(kwargs) == 0:
         kwargs = parse_args()
