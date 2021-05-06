@@ -211,11 +211,15 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
 
 def allocation_helper(df_w_sector, attr, method, v):
     """
-    Used when two df required to create allocation ratio
-    :param df_w_sector:
-    :param method: currently written for 'multiplication' and 'proportional'
-    :param attr:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+    flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
 
     # add parameters to dictionary if exist in method yaml
@@ -399,10 +403,10 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     if 'flowname_subset' in kwargs:
         if kwargs['flowname_subset'] != 'None':
             fba = fba.loc[fba['FlowName'].isin(kwargs['flowname_subset'])]
+
     if 'compartment_subset' in kwargs:
         if kwargs['compartment_subset'] != 'None':
             fba = fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
-
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning " + fba_sourcename)

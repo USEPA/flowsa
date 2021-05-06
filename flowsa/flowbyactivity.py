@@ -50,7 +50,7 @@ def parse_args():
     return args
 
 
-def set_fba_name(datasource,year):
+def set_fba_name(datasource, year):
     if year is not None:
         name_data = datasource + "_" + str(year)
     else:
@@ -58,7 +58,7 @@ def set_fba_name(datasource,year):
     return name_data
 
 
-def build_url_for_query(config,args):
+def build_url_for_query(config, args):
     """Creates a base url which requires string substitutions that depend on data source"""
     # if there are url parameters defined in the yaml, then build a url, else use "base_url"
     urlinfo = config["url"]
@@ -86,7 +86,9 @@ def assemble_urls_for_query(build_url, config, args):
     """Calls on helper functions defined in source.py files to replace parts of the url string"""
     if "url_replace_fxn" in config:
         if hasattr(sys.modules[__name__], config["url_replace_fxn"]):
-            urls = getattr(sys.modules[__name__], config["url_replace_fxn"])(build_url, config, args)
+            urls = getattr(sys.modules[__name__], config["url_replace_fxn"])(build_url=build_url,
+                                                                             config=config,
+                                                                             args=args)
     else:
         urls = []
         urls.append(build_url)
@@ -97,13 +99,16 @@ def call_urls(url_list, args, config):
     """This method calls all the urls that have been generated.
     It then calls the processing method to begin processing the returned data. The processing method is specific to
     the data source, so this function relies on a function in source.py"""
+
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
             log.info("Calling " + url)
             r = make_http_request(url)
             if hasattr(sys.modules[__name__], config["call_response_fxn"]):
-                df = getattr(sys.modules[__name__], config["call_response_fxn"])(url, r, args)
+                df = getattr(sys.modules[__name__], config["call_response_fxn"])(url=url,
+                                                                                 r=r,
+                                                                                 args=args)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):
@@ -115,7 +120,8 @@ def call_urls(url_list, args, config):
 def parse_data(dataframe_list, args, config):
     """Calls on functions defined in source.py files, as parsing rules are specific to the data source."""
     if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
-        df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list, args)
+        df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list=dataframe_list,
+                                                                          args=args)
         return df
 
 
@@ -145,13 +151,13 @@ def process_data_frame(df, source, year):
 
 def main(**kwargs):
     # assign arguments
-    if len(kwargs)==0:
+    if len(kwargs) == 0:
         kwargs = parse_args()
 
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
     # update the local config with today's date
-    config['date_generated']= pd.to_datetime('today').strftime('%Y-%m-%d')
+    config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
     # update the method yaml with date generated
     update_fba_yaml_date(kwargs['source'])
 
