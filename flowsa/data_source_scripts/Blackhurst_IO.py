@@ -174,8 +174,8 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     water withdrawal estimates and published USGS values.
 
     This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
-    :param df_to_scale: fba dataframe to be modified
-    :param attr: attributes from the fba method yaml
+    :param df_to_scale: df, fba dataframe to be modified
+    :param attr: dictionary, attributes from the fba method yaml
     :return: scaled fba results
     """
 

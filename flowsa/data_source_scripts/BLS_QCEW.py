@@ -161,13 +161,15 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
 def clean_bls_qcew_fba(fba_df, **kwargs):
     """
     Function to clean BLS QCEW data when FBA is not used for employment satellite table
-    :param fba_df:
+    :param fba_df: df, FBA format
     :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
-    :return:
+    :return: df, modified BLS QCEW data
     """
 
     fba_df = fba_df.reset_index(drop=True)
+    # aggregate data to NAICS 2 digits, if 2 digit value is missing
     fba_df = replace_missing_2_digit_sector_values(fba_df)
+    # drop rows of data where sectors are provided in ranges
     fba_df = remove_2_digit_sector_ranges(fba_df)
 
     return fba_df
@@ -178,8 +180,8 @@ def replace_missing_2_digit_sector_values(df):
     In the 2015 (and possibly other dfs, there are instances of values
     at the 3 digit NAICS level, while the 2 digit NAICS is reported as 0.
     The 0 values are replaced with summed 3 digit NAICS
-    :param df:
-    :return:
+    :param df: df, BLS QCEW data in FBA format
+    :return: df, BLS QCEW data with 2-digit NAICS sector FlowAmounts
     """
     # from flowsa.flowbyfunctions import aggregator
 
@@ -235,8 +237,8 @@ def remove_2_digit_sector_ranges(fba_df):
     """
     BLS publishes activity ranges of '31-33', 44-45', '48-49... drop these ranges.
     The individual 2 digit naics are summed later.
-    :param df:
-    :return:
+    :param fba_df: df, BLS QCEW in FBA format
+    :return: df, no sector ranges
     """
 
     df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')].reset_index(drop=True)
@@ -247,13 +249,10 @@ def remove_2_digit_sector_ranges(fba_df):
 def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     clean up bls df with sectors by estimating suppresed data
-    :param df_w_sec:
-    :param attr:
-    :param method:
-    :return:
+    :param df_w_sec: df, FBA format BLS QCEW data
+    :param kwargs: additional arguments can include 'attr', a dictionary of FBA method yaml parameters
+    :return: df, BLS QCEW FBA with estimated suppressed data
     """
-    # from flowsa.flowbyfunctions import flow_by_activity_wsec_mapped_fields
-    # from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
 
     df_w_sec = df_w_sec.reset_index(drop=True)
     df2 = add_missing_flow_by_fields(df_w_sec, flow_by_activity_wsec_mapped_fields)

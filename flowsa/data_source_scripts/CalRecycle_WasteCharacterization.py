@@ -19,8 +19,8 @@ from flowsa.common import externaldatapath
 def produced_by(entry):
     """
     Modify source activity names to clarify data meaning
-    :param entry: original source name
-    :return: modified activity name
+    :param entry: str, original source name
+    :return: str, modified activity name
     """
     if "ArtsEntRec" in entry:
         return "Arts Entertainment Recreation"
