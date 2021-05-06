@@ -195,8 +195,8 @@ def eia_cbecs_land_parse(**kwargs):
 def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
     """
     Activity names vary across csvs. Standardize
-    :param df: df
-    :param column_to_standardize: column with the activity names
+    :param df: df, any format
+    :param column_to_standardize: str, column with the activity names
     :return: df with standardized activity names
     """
 
@@ -228,7 +228,7 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
 def cbecs_land_fba_cleanup(fba):
     """
     Clean up the land fba for use in allocation
-    :param fba: df, eia cbecs land flowbyactivity
+    :param fba: df, eia cbecs land flowbyactivity format
     :return: df, flowbyactivity with modified values
     """
 

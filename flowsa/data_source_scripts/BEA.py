@@ -162,7 +162,7 @@ def subset_BEA_Use(df, attr):
     """
     Function to modify loaded BEA table based on data in the FBA method yaml
     :param df: df, flowbyactivity format
-    :param attr: dictionary, attribute parameters from method yaml
+    :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe
     """
     commodity = attr['clean_parameter']

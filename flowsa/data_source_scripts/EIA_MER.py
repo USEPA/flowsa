@@ -60,8 +60,8 @@ def eia_mer_call(**kwargs):
 def decide_flow_name(desc):
     """
     Based on the provided description, determine the FlowName.
-    :param desc:
-    :return:
+    :param desc: str, row description
+    :return: str, flowname for row
     """
     if 'Production' in desc:
         return 'Production'
@@ -77,8 +77,8 @@ def decide_flow_name(desc):
 def decide_produced(desc):
     """
     Based on the provided description, determine the ActivityProducedBy.
-    :param desc:
-    :return:
+    :param desc: str, description for row
+    :return: str, ActivityProducedBy cell value
     """
     if 'Production' in desc:
         return desc.split('Production')[0].strip()
@@ -88,8 +88,8 @@ def decide_produced(desc):
 def decide_consumed(desc):
     """
     Based on the provided description, determine the ActivityConsumedBy.
-    :param desc:
-    :return:
+    :param desc: str, description cell
+    :return: str, ActivityConsumedBy value
     """
     if 'Consumed' in desc:
         return desc.split('Consumed')[0].strip()

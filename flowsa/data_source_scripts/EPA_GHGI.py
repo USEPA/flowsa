@@ -211,8 +211,8 @@ def ghg_url_helper(**kwargs):
 def fix_a17_headers(header):
     """
     Fix A-17 headers, trim white spaces, convert shortened words such as Elec., Res., etc.
-    :param header:
-    :return:
+    :param header: str, column header
+    :return: str, modified column header
     """
     if header == A_17_TBTU_HEADER[0]:
         header = f' {A_17_TBTU_HEADER[1].strip()}'.replace('')
@@ -232,9 +232,9 @@ def fix_a17_headers(header):
 def cell_get_name(value, default_flow_name):
     """
     Given a single string value (cell), separate the name and units.
-    :param value:
-    :param default_flow_name:
-    :return:
+    :param value: str
+    :param default_flow_name: indicate return flow name string subset
+    :return: flow name for row
     """
     if '(' not in value:
         return default_flow_name.replace('__type__', value.strip())
@@ -253,9 +253,9 @@ def cell_get_name(value, default_flow_name):
 def cell_get_units(value, default_units):
     """
     Given a single string value (cell), separate the name and units.
-    :param value:
-    :param default_units:
-    :return:
+    :param value: str
+    :param default_units: indicate return units string subset
+    :return: unit for row
     """
     if '(' not in value:
         return default_units
@@ -277,10 +277,10 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
     Given a series (such as a df column), split the contents' strings into a name and units.
     An example might be converting "Carbon Stored (MMT C)" into ["Carbon Stored", "MMT C"].
 
-    :param series:
-    :param default_flow_name:
-    :param default_units:
-    :return:
+    :param series: df column
+    :param default_flow_name: df column for flow name to be modified
+    :param default_units: df column for units to be modified
+    :return: str, flowname and units for each row in df
     """
     names = series.apply(lambda x: cell_get_name(x, default_flow_name))
     units = series.apply(lambda x: cell_get_units(x, default_units))
@@ -391,8 +391,8 @@ def ghg_call(**kwargs):
 def get_unnamed_cols(df):
     """
     Get a list of all unnamed columns, used to drop them.
-    :param df:
-    :return:
+    :param df: df being formatted
+    :return: list, unnamed columns
     """
     return [col for col in df.columns if "Unnamed" in col]
 
@@ -400,8 +400,8 @@ def get_unnamed_cols(df):
 def is_consumption(source_name):
     """
     Determine whether the given source contains consumption or production data.
-    :param source_name:
-    :return:
+    :param source_name: df
+    :return: True or False
     """
     if 'consum' in TBL_META[source_name]['desc'].lower():
         return True

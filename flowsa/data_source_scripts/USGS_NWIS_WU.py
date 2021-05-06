@@ -239,8 +239,8 @@ def usgs_parse(**kwargs):
 def activity(name):
     """
     Create rules to assign activities to produced by or consumed by
-    :param name:
-    :return:
+    :param name: str, activities
+    :return: pandas series, values for ActivityProducedBy and ActivityConsumedBy
     """
 
     name_split = name.split(",")
@@ -302,8 +302,8 @@ def activity(name):
 def split_name(name):
     """
     This method splits the header name into a source name and a flow name
-    :param name:
-    :return:
+    :param name: str, value includes source and flow name
+    :return: strings, source name and flow name for a row
     """
     space_split = name.split(" ")
     upper_case = ""
@@ -321,8 +321,8 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     """
     The activity names differ at the national level. Method to standardize
     names to allow for comparison of aggregation to national level.
-    :param flowbyactivity_df:
-    :return:
+    :param flowbyactivity_df: df, FBA format
+    :return: df, FBA format with standardized activity names
     """
 
     # modify national level compartment
@@ -351,8 +351,8 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 def usgs_fba_data_cleanup(df):
     """
     Clean up the dataframe to prepare for flowbysector. Used in flowbysector.py
-    :param df:
-    :return:
+    :param df: df, FBA format
+    :return: df, modified FBA
     """
 
     # drop rows of commercial data (because only exists for 3 states),
@@ -401,7 +401,7 @@ def calculate_net_public_supply(df):
     that PS deliveries to domestic is fresh water. The national level data can then be
     allocated to end users using the BEA Use tables.
     :param df: USGS df
-    :return:
+    :return: df with net public supply values
     """
 
     # drop duplicate info of "Public Supply deliveries to"
@@ -473,10 +473,8 @@ def check_golf_and_crop_irrigation_totals(df_load):
     """
     Check that golf + crop values equal published irrigation totals.
     If not, assign water to crop irrigation.
-
-    Resuult : 2010 and 2015 published data correct
-    :param df:
-    :return:
+    :param df_load: df, USGS water use
+    :return: df, FBA with reassigned irrigation water to crop and golf
     """
 
     # drop national data
@@ -543,14 +541,13 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     """
     Call on functions to modify the fba with sectors df before being allocated to sectors
     Used in flowbysector.py
-    :param df_wsec: a dataframe with sectors
-    :param attr: activity set attributes
-    :return:
+    :param df_wsec: an FBA dataframe with sectors
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, FBA modified
     """
 
     df = modify_sector_length(df_wsec)
     df = filter_out_activities(df, attr)
-    # df = modify_thermo_and_aqua_sector_assignments(df)
 
     return df
 
@@ -562,7 +559,7 @@ def modify_sector_length(df_wsec):
     This is helpful for sector aggregation. The USGS NWIS WU "Public Supply" should
     be modified to match sector length.
     :param df_wsec: a df that includes columns for SectorProducedBy and SectorConsumedBy
-    :return:
+    :return: df, FBA with sector columns modified
     """
 
     # the activity(ies) whose sector length should be modified
@@ -622,8 +619,8 @@ def filter_out_activities(df, attr):
     column is not also directly allocated. These non-direct activities are
     captured in other activity allocations
     :param df: a dataframe that has activity consumed/produced by columns
-    :param attr: FBS method file activity set attributes
-    :return:
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, modified to avoid double counting by activity sets
     """
 
     # if the activity is public supply and the method is direct,

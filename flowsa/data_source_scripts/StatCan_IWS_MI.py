@@ -102,9 +102,9 @@ def convert_statcan_data_to_US_water_use(df, attr):
     use:
     - canadian gdp
     - us gdp
-    :param df:
-    :param attr:
-    :return:
+    :param df: df, FBA format
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, FBA format, flowamounts converted
     """
     import flowsa
     from flowsa.values_from_literature import get_Canadian_to_USD_exchange_rate
@@ -169,13 +169,3 @@ def convert_statcan_data_to_US_water_use(df, attr):
     df_m2 = df_m2.drop(columns=['ActivityProducedBy_y', 'us_gdp'])
 
     return df_m2
-
-
-# def disaggregate_statcan_to_naics_6(df):
-#     """
-#
-#     :param df:
-#     :return:
-#     """
-#
-#     return df

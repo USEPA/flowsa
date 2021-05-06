@@ -224,9 +224,9 @@ def assign_nonpoint_dqi(args):
 
 def clean_NEI_fba(fba):
     """
-
-    :param fba:
-    :return:
+    Clean up the NEI FBA for use in FBS creation
+    :param fba: df, FBA format
+    :return: df, modified FBA
     """
     fba = remove_duplicate_NEI_flows(fba)
     fba = drop_GHGs(fba)
@@ -238,9 +238,9 @@ def clean_NEI_fba(fba):
 
 def clean_NEI_fba_no_pesticides(fba):
     """
-
-    :param fba:
-    :return:
+    Clean up the NEI FBA with no pesicides for use in FBS creation
+    :param fba: df, FBA format
+    :return: df, modified FBA
     """
     fba = drop_pesticides(fba)
     fba = clean_NEI_fba(fba)
@@ -251,8 +251,8 @@ def remove_duplicate_NEI_flows(df):
     """
     These flows for PM will get mapped to the primary PM flowable in FEDEFL
     resulting in duplicate emissions
-    :param df:
-    :return:
+    :param df: df, FBA format
+    :return: df, FBA format with duplicate flows dropped
     """
     flowlist = [
         'PM10-Primary from certain diesel engines',
@@ -267,8 +267,8 @@ def drop_GHGs(df):
     """
     GHGs are included in some NEI datasets. If these data are not compiled together 
     with GHGRP, need to remove them as they will be tracked from a different source
-    :param df: 
-    :return: 
+    :param df: df, FBA format
+    :return: df
     """""
     # Flow names reflect source data prior to FEDEFL mapping
     flowlist = [
@@ -287,8 +287,8 @@ def drop_pesticides(df):
     """
     To avoid overlap with other datasets, emissions of pesticides from pesticide
     application are removed.
-    :param df:
-    :return:
+    :param df: df, FBA format
+    :return: df
     """
     # Flow names reflect source data prior to FEDEFL mapping
     flowlist = [
@@ -318,10 +318,10 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     Quantity of contributing flows is subtracted from aggregate flow and the
     aggregate flow quantity is updated. Modeled after function of same name in
     stewicombo.overlaphandler.py
-    :param df:
-    :param aggregate_flow:
-    :param contributing_flows:
-    :return:
+    :param df: df, FBA format
+    :param aggregate_flow: str, flowname to modify
+    :param contributing_flows: list, flownames contributing to aggregate flow
+    :return: df, FBA format, modified flows
     """
     match_conditions = ['ActivityProducedBy', 'Compartment', 'Location', 'Year']
 

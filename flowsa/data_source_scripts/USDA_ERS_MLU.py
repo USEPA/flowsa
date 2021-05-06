@@ -101,8 +101,10 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     Environmental Science & Technology 2020 54 (6), 3091-3102
     DOI: 10.1021/acs.est.9b06024
 
-    :param df_load:
-    :return:
+    :param df: df, USDA ERA MLU Land
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, FBS dfs for activities created prior to the activity set that calls on this fxn
+    :return: df, allocated USDS ERS MLU Land, FBS format
     """
 
     from flowsa.values_from_literature import get_area_of_urban_land_occupied_by_houses_2013, \
@@ -124,7 +126,6 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(columns={'NAICS_2012_Code': sector_col})
 
     # calculate total residential area from the American Housing Survey
-    # todo: base calculation off AHS FBA, not USDA ERS MLU calculations
     residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
     df_residential = df[df[sector_col] == 'F01000']
     df_residential = df_residential.assign(FlowAmount=df_residential['FlowAmount'] - residential_land_area)
@@ -193,8 +194,10 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     Environmental Science & Technology 2020 54 (6), 3091-3102
     DOI: 10.1021/acs.est.9b06024
 
-    :param df_load:
-    :return:
+    :param df: df, USDA ERA MLU Land
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, FBS dfs for activities created prior to the activity set that calls on this fxn
+    :return: df, allocated USDS ERS MLU Land, FBS format
     """
 
     from flowsa.values_from_literature import get_urban_land_use_for_airports, get_urban_land_use_for_railroads, \
@@ -249,10 +252,10 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
 
     Mining data is calculated using a separate source = BLM PLS.
     Want to extract rural residential land area from total value of 'Other Land'
-    :param df:
-    :param attr:
-    :param fbs_list:
-    :return:
+    :param df: df, USDA ERA MLU Land
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, FBS dfs for activities created prior to the activity set that calls on this fxn
+    :return: df, allocated USDS ERS MLU Land, FBS format
     """
 
     from flowsa.values_from_literature import get_area_of_rural_land_occupied_by_houses_2013

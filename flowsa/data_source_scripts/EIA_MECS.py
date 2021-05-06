@@ -14,7 +14,6 @@ https://www.eia.gov/consumption/manufacturing/data/2014/
 Last updated: 8 Sept. 2020
 """
 
-
 def eia_mecs_URL_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
@@ -377,9 +376,14 @@ def eia_mecs_energy_parse(**kwargs):
 
 
 def mecs_energy_fba_cleanup(fba, attr):
-    fba = fba.loc[fba['Unit'] == 'MJ']
-
-    # todo: subtract net elec from total
+    """
+    Clean up the EIA MECS energy FlowByActivity
+    :param fba: df, FBA format
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, subset of EIA MECS Energy FBA
+    """
+    # subset the df to only include values where the unit = MJ
+    fba = fba.loc[fba['Unit'] == 'MJ'].reset_index(drop=True)
 
     return fba
 
@@ -387,10 +391,10 @@ def mecs_energy_fba_cleanup(fba, attr):
 def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
     """
     clean up eia_mecs_energy df with sectors by estimating missing data
-    :param df_w_sec:
-    :param attr:
-    :param method:
-    :return:
+    :param df_w_sec: df, EIA MECS Energy, FBA format with sector columns
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :return: df, EIA MECS energy with estimated missing data
     """
 
     # drop rows where flowamount = 0, which drops supressed data
@@ -406,6 +410,11 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(df_w_sec, attr, method):
 
 
 def mecs_land_fba_cleanup(fba):
+    """
+    Modify the EIA MECS Land FBA
+    :param fba: df, EIA MECS Land FBA format
+    :return: df, EA MECS Land FBA
+    """
     from flowsa.data_source_scripts.EIA_CBECS_Land import calculate_total_facility_land_area
 
     fba = fba[fba['FlowName'].str.contains('Approximate Enclosed Floorspace of All Buildings Onsite')]
@@ -419,12 +428,13 @@ def mecs_land_fba_cleanup(fba):
 def mecs_land_fba_cleanup_for_land_2012_fbs(fba):
     """
     The 'land_national_2012' FlowBySector uses MECS 2014 data, set MECS year to 2012
-    :param fba:
-    :return:
+    :param fba: df, EIA MECS Land, FBA format
+    :return: df, EIA MECS Land FBA modified
     """
 
     fba = mecs_land_fba_cleanup(fba)
 
+    # reset the EIA MECS Land year from 2014 to 2012 to match the USDA ERS MLU year
     fba['Year'] = 2012
 
     return fba
@@ -432,12 +442,12 @@ def mecs_land_fba_cleanup_for_land_2012_fbs(fba):
 
 def mecs_land_clean_allocation_mapped_fba_w_sec(df, attr, method):
     """
-
-    The mecs land dataset has varying levels of information for naics3-6. Iteratively determine which activities need allocated
+    The mecs land dataset has varying levels of information for naics3-6.
+    Iteratively determine which activities need allocated
 
     :param df: The mecs df with sectors after mapped to FEDEFL
-    :param attr:
-    :return:
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, with additional column flagging rows where sectors should be disaggregated
     """
 
     df = determine_flows_requiring_disaggregation(df, attr, method)
@@ -454,7 +464,9 @@ def determine_flows_requiring_disaggregation(df_load, attr, method):
     by employment for NAICS6 are based on the provided '3112' FlowAmounts. However, since there is data at one NAICS6
     (311221), the FlowAmount for that NAICS6 should be subtracted from other NAICS6 to accurately depict the remaining
     'FlowAmount' that requires a secondary source (Employment data) for allocation.
-    :param df_load:
+    :param df_load: df, EIA MECS Land FBA
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
     :return: A dataframe with a column 'disaggregate_flag', if '1', row requires secondary source to calculate
              FlowAmount, if '0' FlowAmount does not require modifications
     """

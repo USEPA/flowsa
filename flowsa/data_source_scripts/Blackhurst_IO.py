@@ -80,7 +80,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
     :param df: df, FBA format
-    :param attr: dictionary, attribute data from method yaml
+    :param attr: dictionary, attribute data from method yaml for activity set
     :return: transformed fba df
     """
 
@@ -114,8 +114,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     """
     Load BLS employment data and use to transform original units to gallons per employee
     :param df_wsec: df, includes sector columns
-    :param attr: dictionary, attribute data from fba method yaml
-    :param method: str, name of the fba method yaml
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
     :return: df, transformed fba dataframe with sector columns
     """
 
@@ -175,7 +175,7 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
 
     This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
     :param df_to_scale: df, fba dataframe to be modified
-    :param attr: dictionary, attributes from the fba method yaml
+    :param attr: dictionary, attribute data from method yaml for activity set
     :return: scaled fba results
     """
 

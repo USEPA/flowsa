@@ -24,7 +24,7 @@ from flowsa.datachecks import replace_naics_w_naics_from_another_year
 def stewicombo_to_sector(yaml_load):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
-    :param yaml_load which may contain the following elements:
+    :param yaml_load: which may contain the following elements:
         inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
         NAICS_level: desired NAICS aggregation level, using sector_level_key,
@@ -34,6 +34,7 @@ def stewicombo_to_sector(yaml_load):
         compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
         functions: list of functions (str) to call for additional processing
+    :return: df, FBS format
     """
 
     import stewicombo
@@ -86,7 +87,7 @@ def stewicombo_to_sector(yaml_load):
 def stewi_to_sector(yaml_load):
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
-    :param yaml_load which may contain the following elements:
+    :param yaml_load: which may contain the following elements:
         inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
         NAICS_level: desired NAICS aggregation level, using sector_level_key,
@@ -96,6 +97,7 @@ def stewi_to_sector(yaml_load):
         compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
         functions: list of functions (str) to call for additional processing
+    :return: df, FBS format
     """
     import stewi
 
@@ -141,8 +143,9 @@ def reassign_airplane_emissions(df, year, NAICS_level_value):
     transportation instead of the NAICS assigned to airports
     :param df: a dataframe of emissions and mapped faciliites from stewicombo
     :param year: year as str
-    :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
+    :param NAICS_level_value: desired NAICS aggregation level, using sector_level_key,
                 should match target_sector_level
+    :return: df
     """
     import stewi
     from stewicombo.overlaphandler import remove_default_flow_overlaps
@@ -194,6 +197,7 @@ def extract_facility_data(inventory_dict):
     including FIPS code
     :param inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
+    :return: df
     """
     import stewi
     facility_mapping = pd.DataFrame()
@@ -224,6 +228,7 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     Returns dataframe of all facilities with included in inventory_list with
     their first or primary NAICS.
     :param inventory_list: a list of inventories (e.g., ['NEI', 'TRI'])
+    :return: df
     """
     import facilitymatcher
     ## Access NAICS From facility matcher and assign based on FRS_ID
@@ -250,6 +255,7 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
                 should match target_sector_level
     :param geo_scale: desired geographic aggregation level ('national', 'state',
                 'county'), should match target_geoscale
+    :return: df
     """
     from stewi.globals import weighted_average
 
@@ -301,9 +307,11 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
 
 
 def naics_expansion(facility_NAICS):
-    """ modeled after sector_disaggregation in flowbyfunctions, updates NAICS 
+    """
+    modeled after sector_disaggregation in flowbyfunctions, updates NAICS
     to more granular sectors if there is only one naics at a lower level
     :param facility_NAICS: df of facilities from facility matcher with NAICS
+    :return: df
     """
 
     # load naics 2 to naics 6 crosswalk
@@ -358,9 +366,9 @@ def check_for_missing_sector_data(df, target_sector_level):
     """
     Modeled after datachecks.py check_if_losing_sector_data
     Allocates flow amount equally across child NAICS when parent NAICS is not target_level
-    :param df:
-    :param target_sector_level:
-    :return:
+    :param df: df
+    :param target_sector_level: str, final sector level of FBS (ex. NAICS_6)
+    :return: df with missing sector level data
     """
 
     from flowsa.dataclean import replace_NoneType_with_empty_cells
@@ -419,8 +427,12 @@ def check_for_missing_sector_data(df, target_sector_level):
 
 
 def remove_N_P_overlap(fbs):
-    """Removes N and P flows from selected sectors to avoid overlap with
-    other satellite tables in USEEIOr"""
+    """
+    Removes N and P flows from selected sectors to avoid overlap with
+    other satellite tables in USEEIOr
+    :param fbs: df, FBS format
+    :return: df, FBS format, modified
+    """
 
     # Function is not complete
 

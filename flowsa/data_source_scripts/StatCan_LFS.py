@@ -101,9 +101,9 @@ def sc_lfs_parse(**kwargs):
 
 def call_country_code(country):
     """
-
-    :param country:
-    :return:
+    Determine country code
+    :param country: str, country name
+    :return: str, country code
     """
     """use pycountry to call on 3 digit iso country code"""
     country_info = pycountry.countries.get(name=country)

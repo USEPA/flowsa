@@ -121,11 +121,12 @@ def iwms_parse(**kwargs):
 
 def disaggregate_iwms_to_6_digit_naics(df, attr, method):
     """
-
-    :param df:
-    :param attr:
-    :param method:
-    :return:
+    Disaggregate the data in the USDA Irrigation and Water Management Survey
+    to 6-digit NAICS using Census of Agriculture 'Land in Farm' data
+    :param df: df, FBA format
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :return: df, FBA format with disaggregated NAICS
     """
 
     from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, disaggregate_cropland
@@ -136,7 +137,6 @@ def disaggregate_iwms_to_6_digit_naics(df, attr, method):
     # address double counting brought on by iwms categories applying to multiply NAICS
     df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment', 'Location'], keep='first', inplace=True)
     years = [attr['allocation_source_year'] - 1]
-    # todo: print list of activities that are dropped because unmapped
     df = df[~df[sector_column].isna()]
     df = disaggregate_pastureland(df, attr, method, years, sector_column)
     df = disaggregate_cropland(df, attr, method, years, sector_column)

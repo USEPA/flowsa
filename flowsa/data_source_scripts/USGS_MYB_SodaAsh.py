@@ -26,10 +26,10 @@ https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-
 
 def description(value, code):
     """
-
-    :param value:
-    :param code:
-    :return:
+    Create string for column based on row description
+    :param value: str, description column for a row
+    :param code: str, NAICS code
+    :return: str, to use as column value
     """
     glass_list = ["Container", "Flat", "Fiber", "Other", "Total"]
     other_list = ["Total domestic consumption4"]
