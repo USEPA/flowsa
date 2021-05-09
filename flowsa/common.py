@@ -761,11 +761,12 @@ def rename_log_file(filename, fb_meta):
     :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
     :return: modified log file name
     """
+
+    # stop the log file being created
+    log.shutdown()
     # generate new log name
     new_log_name = f'{logoutputpath}{filename}{"_v"}' \
                    f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
-    # stop the log file being created
-    log.shutdown()
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file already exists)
