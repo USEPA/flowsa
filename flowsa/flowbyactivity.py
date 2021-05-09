@@ -3,13 +3,14 @@
 # coding=utf-8
 """
 Methods for pulling data from http sources
-File configuration requires a year for the data pull and a data source (yaml file name) as parameters
+File configuration requires a year for the data pull and a data
+source (yaml file name) as parameters
 EX: --year 2015 --source USGS_NWIS_WU
 """
 
 import argparse
-from flowsa.common import *
 from esupy.processed_data_mgmt import write_df_to_file
+from flowsa.common import *
 from flowsa.dataclean import clean_df
 from flowsa.data_source_scripts.BEA import *
 from flowsa.data_source_scripts.Blackhurst_IO import *
@@ -118,7 +119,8 @@ def assemble_urls_for_query(build_url, config, args):
 def call_urls(url_list, args, config):
     """
     This method calls all the urls that have been generated.
-    It then calls the processing method to begin processing the returned data. The processing method is specific to
+    It then calls the processing method to begin processing the returned data.
+    The processing method is specific to
     the data source, so this function relies on a function in source.py
     :param url_list: list, urls to call
     :param args: dictionary, load parameters 'source' and 'year'
@@ -152,8 +154,9 @@ def parse_data(dataframe_list, args, config):
     :return: df, single df formatted to FBA
     """
     if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
-        df = getattr(sys.modules[__name__], config["parse_response_fxn"])(dataframe_list=dataframe_list,
-                                                                          args=args)
+        df = getattr(sys.modules[__name__],
+                     config["parse_response_fxn"])(dataframe_list=dataframe_list,
+                                                   args=args)
         return df
 
 
