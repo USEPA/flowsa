@@ -7,11 +7,11 @@ import sys
 import os
 import subprocess
 import logging as log
+import shutil
 import yaml
 from ruamel.yaml import YAML
 import requests
 import requests_ftp
-import shutil
 import pandas as pd
 import numpy as np
 import pycountry
@@ -762,7 +762,8 @@ def rename_log_file(filename, fb_meta):
     :return: modified log file name
     """
     # generate new log name
-    new_log_name = f'{logoutputpath}{filename}{"_v"}{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
+                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
     # stop the log file being created
     log.shutdown()
     # create log directory if missing

@@ -37,8 +37,8 @@ from flowsa.data_source_scripts.EIA_MECS import mecs_energy_fba_cleanup, \
 from flowsa.data_source_scripts.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
 from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use
 from flowsa.data_source_scripts.stewiFBS import stewicombo_to_sector, stewi_to_sector
-from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, \
-    coa_irrigated_cropland_fba_cleanup, coa_nonirrigated_cropland_fba_cleanup
+from flowsa.data_source_scripts.USDA_CoA_Cropland import coa_irrigated_cropland_fba_cleanup, \
+    disaggregate_coa_cropland_to_6_digit_naics, coa_nonirrigated_cropland_fba_cleanup
 from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import coa_cropland_naics_fba_wsec_cleanup
 from flowsa.data_source_scripts.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas,\
     allocate_usda_ers_mlu_other_land,\
@@ -416,6 +416,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
     if 'clean_fba_w_sec' in kwargs:
         log.info("Further disaggregating sectors in " + fba_sourcename)
-        fba_wsec = getattr(sys.modules[__name__], kwargs['clean_fba_w_sec'])(fba_wsec, attr=attr, method=method)
+        fba_wsec = getattr(sys.modules[__name__],
+                           kwargs['clean_fba_w_sec'])(fba_wsec, attr=attr, method=method)
 
     return fba_wsec
