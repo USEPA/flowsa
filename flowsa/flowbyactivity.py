@@ -8,8 +8,8 @@ source (yaml file name) as parameters
 EX: --year 2015 --source USGS_NWIS_WU
 """
 
-import pandas as pd
 import argparse
+import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, rename_log_file, \
     load_sourceconfig, convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date
@@ -69,7 +69,7 @@ def build_url_for_query(config, args):
         if "__apiKey__" in build_url:
             userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
             build_url = build_url.replace("__apiKey__", userAPIKey)
-        return build_url
+    return build_url
 
 
 def assemble_urls_for_query(build_url, config, args):
@@ -82,9 +82,11 @@ def assemble_urls_for_query(build_url, config, args):
     """
 
     if "url_replace_fxn" in config:
+        # dynamically import and call on function
         urls = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
                                   fromlist=[config["url_replace_fxn"]]
-                                  ), config["url_replace_fxn"])(build_url=build_url, config=config, args=args)
+                                  ), config["url_replace_fxn"])(build_url=build_url,
+                                                                config=config, args=args)
     else:
         urls = []
         urls.append(build_url)
@@ -110,6 +112,7 @@ def call_urls(url_list, args, config):
             r = make_http_request(url)
             # if hasattr(sys.modules[__name__], config["call_response_fxn"]):
             if "call_response_fxn" in config:
+                # dynamically import and call on function
                 df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
                                         fromlist=[config["call_response_fxn"]]
                                         ), config["call_response_fxn"])(url=url, r=r, args=args)
@@ -131,10 +134,12 @@ def parse_data(dataframe_list, args, config):
     """
     # if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
     if "parse_response_fxn" in config:
+        # dynamically import and call on function
         df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
                                 fromlist=[config["parse_response_fxn"]]
-                                ), config["parse_response_fxn"])(dataframe_list=dataframe_list, args=args)
-        return df
+                                ), config["parse_response_fxn"])(dataframe_list=dataframe_list,
+                                                                 args=args)
+    return df
 
 
 def process_data_frame(df, source, year):
@@ -211,7 +216,7 @@ def main(**kwargs):
                     try:
                         source_names = frame['SourceName']
                         source_name = source_names.iloc[0]
-                    except KeyError as err:
+                    except KeyError:
                         source_name = kwargs['source']
                     process_data_frame(frame, source_name, kwargs['year'])
         else:
