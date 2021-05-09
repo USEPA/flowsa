@@ -11,17 +11,20 @@ import yaml
 from ruamel.yaml import YAML
 import requests
 import requests_ftp
+import shutil
 import pandas as pd
 import numpy as np
 import pycountry
 import pkg_resources
-from esupy.processed_data_mgmt import Paths, FileMeta
+from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 pkg_version_number = '0.1.1'
 
-log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
+log.basicConfig(level=log.DEBUG,
+                format='%(asctime)s %(levelname)-8s %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S',
+                stream=sys.stdout)
 
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -41,6 +44,7 @@ outputpath = paths.local_path.replace('\\', '/') + '/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
+logoutputpath = outputpath + 'Log/'
 
 # paths to scripts
 scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
@@ -48,7 +52,7 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
 # setup log file handler
-fh = log.FileHandler(outputpath+'flowsa.log', mode='w')
+fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
 fh.setLevel(log.DEBUG)
 formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
                           datefmt='%Y-%m-%d %H:%M:%S')
@@ -747,3 +751,22 @@ def set_fb_meta(name_data, category):
     fb_meta.ext = write_format
     fb_meta.git_hash = git_hash
     return fb_meta
+
+
+def rename_log_file(filename, fb_meta):
+    """
+    Rename the log file saved to local directory using df meta for df
+    :param filename: str, name of dataset
+    :param fb_meta: metadata for parquet
+    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
+    :return: modified log file name
+    """
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}{"_v"}{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    # stop the log file being created
+    log.shutdown()
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.move(f'{logoutputpath}{"flowsa.log"}', new_log_name)
+    return None
