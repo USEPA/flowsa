@@ -8,38 +8,13 @@ source (yaml file name) as parameters
 EX: --year 2015 --source USGS_NWIS_WU
 """
 
+import pandas as pd
 import argparse
 from esupy.processed_data_mgmt import write_df_to_file
-from flowsa.common import *
+from flowsa.common import log, make_http_request, load_api_key, rename_log_file, \
+    load_sourceconfig, convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date
+from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict
 from flowsa.dataclean import clean_df
-from flowsa.data_source_scripts.BEA import *
-from flowsa.data_source_scripts.Blackhurst_IO import *
-from flowsa.data_source_scripts.BLS_QCEW import *
-from flowsa.data_source_scripts.CalRecycle_WasteCharacterization import *
-from flowsa.data_source_scripts.Census_CBP import *
-from flowsa.data_source_scripts.Census_AHS import *
-from flowsa.data_source_scripts.Census_PEP_Population import *
-from flowsa.data_source_scripts.EIA_CBECS_Water import *
-from flowsa.data_source_scripts.EPA_NEI import *
-from flowsa.data_source_scripts.NOAA_FisheryLandings import *
-from flowsa.data_source_scripts.StatCan_GDP import *
-from flowsa.data_source_scripts.StatCan_IWS_MI import *
-from flowsa.data_source_scripts.StatCan_LFS import *
-from flowsa.data_source_scripts.USDA_CoA_Cropland import *
-from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import *
-from flowsa.data_source_scripts.USDA_CoA_Livestock import *
-from flowsa.data_source_scripts.USDA_ERS_FIWS import *
-from flowsa.data_source_scripts.USDA_IWMS import *
-from flowsa.data_source_scripts.USGS_NWIS_WU import *
-from flowsa.data_source_scripts.USDA_ERS_MLU import *
-from flowsa.data_source_scripts.EIA_CBECS_Land import *
-from flowsa.data_source_scripts.EIA_CBECS_Water import *
-from flowsa.data_source_scripts.EIA_MECS import *
-from flowsa.data_source_scripts.BLM_PLS import *
-from flowsa.data_source_scripts.EIA_MER import *
-from flowsa.data_source_scripts.EPA_GHGI import *
-from flowsa.data_source_scripts.USGS_MYB_SodaAsh import *
-from flowsa.data_source_scripts.USGS_WU_Coef import *
 
 
 def parse_args():
@@ -105,11 +80,11 @@ def assemble_urls_for_query(build_url, config, args):
     :param args: dictionary, load parameters 'source' and 'year'
     :return: list, urls to call data from
     """
+
     if "url_replace_fxn" in config:
-        if hasattr(sys.modules[__name__], config["url_replace_fxn"]):
-            urls = getattr(sys.modules[__name__], config["url_replace_fxn"])(build_url=build_url,
-                                                                             config=config,
-                                                                             args=args)
+        urls = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
+                                  fromlist=[config["url_replace_fxn"]]
+                                  ), config["url_replace_fxn"])(build_url=build_url, config=config, args=args)
     else:
         urls = []
         urls.append(build_url)
@@ -133,10 +108,11 @@ def call_urls(url_list, args, config):
         for url in url_list:
             log.info("Calling " + url)
             r = make_http_request(url)
-            if hasattr(sys.modules[__name__], config["call_response_fxn"]):
-                df = getattr(sys.modules[__name__], config["call_response_fxn"])(url=url,
-                                                                                 r=r,
-                                                                                 args=args)
+            # if hasattr(sys.modules[__name__], config["call_response_fxn"]):
+            if "call_response_fxn" in config:
+                df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
+                                        fromlist=[config["call_response_fxn"]]
+                                        ), config["call_response_fxn"])(url=url, r=r, args=args)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):
@@ -153,10 +129,11 @@ def parse_data(dataframe_list, args, config):
     :param config: dictionary, FBA yaml
     :return: df, single df formatted to FBA
     """
-    if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
-        df = getattr(sys.modules[__name__],
-                     config["parse_response_fxn"])(dataframe_list=dataframe_list,
-                                                   args=args)
+    # if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
+    if "parse_response_fxn" in config:
+        df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
+                                fromlist=[config["parse_response_fxn"]]
+                                ), config["parse_response_fxn"])(dataframe_list=dataframe_list, args=args)
         return df
 
 
@@ -239,6 +216,7 @@ def main(**kwargs):
                     process_data_frame(frame, source_name, kwargs['year'])
         else:
             process_data_frame(df, kwargs['source'], kwargs['year'])
+
 
 if __name__ == '__main__':
     main()
