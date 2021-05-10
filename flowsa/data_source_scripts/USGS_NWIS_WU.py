@@ -155,17 +155,17 @@ def usgs_parse(**kwargs):
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"),
                                         "ground", "total")
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Ground"),
-                                        "ground", "total")
+                                        "ground", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("surface"),
-                                        "surface", "total")
+                                        "surface", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Surface"),
-                                        "surface", "total")
+                                        "surface", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("instream water use"),
-                                        "surface", "total") # based on usgs def
+                                        "surface", df['Compartment']) # based on usgs def
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("consumptive"),
-                                        "air", "total")
+                                        "air", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("conveyance"),
-                                        "water", "total")
+                                        "water", df['Compartment'])
     # df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("total"), "total", "total")
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
@@ -388,7 +388,7 @@ def usgs_fba_data_cleanup(df):
     return df
 
 
-def calculate_net_public_supply(df):
+def calculate_net_public_supply(df_load):
     """
     USGS Provides info on the quantity of public supply withdrawals that
     are delivered to domestic use. The USGS PS withdrawals are not necessarily
@@ -405,7 +405,7 @@ def calculate_net_public_supply(df):
     """
 
     # drop duplicate info of "Public Supply deliveries to"
-    df = df.loc[~df['Description'].str.contains("Public Supply total deliveries")]
+    df = df_load.loc[~df_load['Description'].str.contains("Public Supply total deliveries")]
     df = df.loc[~df['Description'].str.contains(
         "deliveries from public supply")].reset_index(drop=True)
 
