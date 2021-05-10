@@ -39,6 +39,8 @@ flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
 
+datasourcescriptspath = modulepath + 'data_source_scripts/'
+
 paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 outputpath = paths.local_path.replace('\\', '/') + '/'
