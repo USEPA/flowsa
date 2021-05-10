@@ -5,6 +5,7 @@
 Helper functions for flowbyactivity and flowbysector data
 """
 
+import os
 import pandas as pd
 import numpy as np
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
@@ -12,7 +13,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
-    fips_number_key, flow_by_activity_fields, fba_fill_na_dict
+    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType,\
     replace_NoneType_with_empty_cells
 
@@ -860,3 +861,20 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     allocation_df['HelperFlow'] = allocation_df['HelperFlow'].fillna(0)
 
     return allocation_df
+
+
+def dynamically_import_fxn(data_source_scripts_file, function_name):
+    """
+    Dynamically import a function and call on that function
+    :param data_source_scripts_file: str, file name where function is found
+    :param function_name: str, name of function to import and call on
+    :return: a function
+    """
+
+    # if a file does not exist modify file name, dropping ext after last underscore
+    if os.path.exists(f"{datasourcescriptspath}{data_source_scripts_file}{'.py'}") is False:
+        data_source_scripts_file = data_source_scripts_file.rsplit("_", 1)[0]
+
+    df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
+                            fromlist=function_name), function_name)
+    return df

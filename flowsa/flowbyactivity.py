@@ -13,7 +13,8 @@ import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
     convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date, rename_log_file
-from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict
+from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
+    dynamically_import_fxn
 from flowsa.dataclean import clean_df
 
 
@@ -83,10 +84,9 @@ def assemble_urls_for_query(build_url, config, args):
 
     if "url_replace_fxn" in config:
         # dynamically import and call on function
-        urls = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
-                                  fromlist=[config["url_replace_fxn"]]
-                                  ), config["url_replace_fxn"])(build_url=build_url,
-                                                                config=config, args=args)
+        urls = dynamically_import_fxn(args['source'],
+                                      config["url_replace_fxn"])(build_url=build_url,
+                                                                 config=config, args=args)
     else:
         urls = []
         urls.append(build_url)
@@ -110,12 +110,9 @@ def call_urls(url_list, args, config):
         for url in url_list:
             log.info("Calling " + url)
             r = make_http_request(url)
-            # if hasattr(sys.modules[__name__], config["call_response_fxn"]):
             if "call_response_fxn" in config:
                 # dynamically import and call on function
-                df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
-                                        fromlist=[config["call_response_fxn"]]
-                                        ), config["call_response_fxn"])(url=url, r=r, args=args)
+                df = dynamically_import_fxn(args['source'], config["call_response_fxn"])(url=url, r=r, args=args)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):
@@ -135,10 +132,9 @@ def parse_data(dataframe_list, args, config):
     # if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
     if "parse_response_fxn" in config:
         # dynamically import and call on function
-        df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{args['source']}",
-                                fromlist=[config["parse_response_fxn"]]
-                                ), config["parse_response_fxn"])(dataframe_list=dataframe_list,
-                                                                 args=args)
+        df = dynamically_import_fxn(args['source'],
+                                    config["parse_response_fxn"])(dataframe_list=dataframe_list,
+                                                                  args=args)
     return df
 
 

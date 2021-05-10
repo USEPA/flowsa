@@ -15,37 +15,12 @@ from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict
 from flowsa.datachecks import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
-from flowsa.flowbyfunctions import collapse_activity_fields, \
+from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
     sector_aggregation, sector_disaggregation, allocate_by_sector, \
     proportional_allocation_by_location_and_activity, subset_df_by_geoscale
 from flowsa.mapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType, clean_df, harmonize_units
 from flowsa.datachecks import check_if_data_exists_at_geoscale
-
-# import specific functions
-from flowsa.data_source_scripts.BEA import subset_BEA_Use
-from flowsa.data_source_scripts.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, \
-    convert_blackhurst_data_to_gal_per_employee, scale_blackhurst_results_to_usgs_values
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba, \
-    clean_bls_qcew_fba_for_employment_sat_table, \
-    bls_clean_allocation_fba_w_sec
-from flowsa.data_source_scripts.EIA_CBECS_Land import cbecs_land_fba_cleanup
-from flowsa.data_source_scripts.EIA_MECS import mecs_energy_fba_cleanup, \
-    eia_mecs_energy_clean_allocation_fba_w_sec, \
-    mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs, \
-    mecs_land_clean_allocation_mapped_fba_w_sec
-from flowsa.data_source_scripts.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
-from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use
-from flowsa.data_source_scripts.stewiFBS import stewicombo_to_sector, stewi_to_sector
-from flowsa.data_source_scripts.USDA_CoA_Cropland import coa_irrigated_cropland_fba_cleanup, \
-    disaggregate_coa_cropland_to_6_digit_naics, coa_nonirrigated_cropland_fba_cleanup
-from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import coa_cropland_naics_fba_wsec_cleanup
-from flowsa.data_source_scripts.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas,\
-    allocate_usda_ers_mlu_other_land,\
-    allocate_usda_ers_mlu_land_in_rural_transportation_areas
-from flowsa.data_source_scripts.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
-from flowsa.data_source_scripts.USGS_NWIS_WU import usgs_fba_data_cleanup,\
-    usgs_fba_w_sectors_data_cleanup
 
 
 def direct_allocation_method(flow_subset_mapped, k, names, method):
@@ -74,10 +49,11 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
     return fbs
 
 
-def function_allocation_method(flow_subset_mapped, names, attr, fbs_list):
+def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
     """
     Allocate df activities to sectors using a function identified in the FBS method yaml
     :param flow_subset_mapped: df, FBA with flows converted using fedelemflowlist
+    :param k: str, source name
     :param names: list, activity names in activity set
     :param attr: dictionary, attribute data from method yaml for activity set
     :param fbs_list: list, fbs dfs created running flowbysector.py
@@ -85,8 +61,7 @@ def function_allocation_method(flow_subset_mapped, names, attr, fbs_list):
     """
     log.info('Calling on function specified in method yaml to allocate ' +
              ', '.join(map(str, names)) + ' to sectors')
-    fbs = getattr(sys.modules[__name__],
-                  attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
+    fbs = dynamically_import_fxn(k, attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
     return fbs
 
 
@@ -357,11 +332,10 @@ def allocation_helper(df_w_sector, attr, method, v):
         log.info("Scaling " + attr['helper_source'] + ' to FBA values')
         # tmp hard coded - need to generalize
         if attr['helper_source'] == 'BLS_QCEW':
-            modified_fba_allocation =\
-                scale_blackhurst_results_to_usgs_values(modified_fba_allocation, attr)
-            # modified_fba_allocation = getattr(sys.modules[__name__],
-            # attr["scale_helper_results"])(modified_fba_allocation, attr)
-
+            modified_fba_allocation = \
+                dynamically_import_fxn(attr['helper_source'],
+                                       attr["scale_helper_results"])(modified_fba_allocation,
+                                                                     attr)
     return modified_fba_allocation
 
 
@@ -405,7 +379,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning " + fba_sourcename)
-        fba = getattr(sys.modules[__name__], kwargs["clean_fba"])(fba, attr=attr)
+        fba = dynamically_import_fxn(fba_sourcename, kwargs["clean_fba"])(fba, attr=attr)
     # reset index
     fba = fba.reset_index(drop=True)
 
@@ -416,7 +390,8 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
     if 'clean_fba_w_sec' in kwargs:
         log.info("Further disaggregating sectors in " + fba_sourcename)
-        fba_wsec = getattr(sys.modules[__name__],
-                           kwargs['clean_fba_w_sec'])(fba_wsec, attr=attr, method=method)
+        fba_wsec = dynamically_import_fxn(fba_sourcename,
+                                          kwargs['clean_fba_w_sec'])(fba_wsec, attr=attr,
+                                                                     method=method)
 
     return fba_wsec
