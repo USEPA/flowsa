@@ -11,8 +11,8 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
-from flowsa.common import log, make_http_request, load_api_key, rename_log_file, \
-    load_sourceconfig, convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date
+from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
+    convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date, rename_log_file
 from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict
 from flowsa.dataclean import clean_df
 
@@ -69,7 +69,7 @@ def build_url_for_query(config, args):
         if "__apiKey__" in build_url:
             userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
             build_url = build_url.replace("__apiKey__", userAPIKey)
-    return build_url
+        return build_url
 
 
 def assemble_urls_for_query(build_url, config, args):
