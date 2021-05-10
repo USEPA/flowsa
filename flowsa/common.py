@@ -3,11 +3,12 @@
 # coding=utf-8
 
 """Common variables and functions used across flowsa"""
+
+import shutil
 import sys
 import os
 import subprocess
 import logging as log
-import shutil
 import yaml
 from ruamel.yaml import YAML
 import requests
@@ -761,14 +762,13 @@ def rename_log_file(filename, fb_meta):
     :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
     :return: modified log file name
     """
-
-    # stop the log file being created
-    log.shutdown()
+    # original log file name
+    log_file = f'{logoutputpath}{"flowsa.log"}'
     # generate new log name
     new_log_name = f'{logoutputpath}{filename}{"_v"}' \
                    f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file already exists)
-    shutil.move(f'{logoutputpath}{"flowsa.log"}', new_log_name)
+    shutil.copy(log_file, new_log_name)
     return None
