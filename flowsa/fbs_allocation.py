@@ -164,12 +164,6 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     # fill null rows with 0 because no allocation info
     flow_subset_mapped['FlowAmountRatio'] = flow_subset_mapped['FlowAmountRatio'].fillna(0)
 
-    # check if fba and alloc dfs have data for same geoscales -
-    # comment back in after address the 'todo'
-    # log.info("Checking if flowbyactivity and allocation
-    # dataframes have data at the same locations")
-    # check_if_data_exists_for_same_geoscales(fbs, k, attr['names'])
-
     # drop rows where there is no allocation data
     fbs = flow_subset_mapped.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
 
@@ -324,7 +318,6 @@ def allocation_helper(df_w_sector, attr, method, v):
     modified_fba_allocation =\
         modified_fba_allocation[modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
 
-    # todo: change units
     modified_fba_allocation.loc[modified_fba_allocation['Unit'] == 'gal/employee', 'Unit'] = 'gal'
 
     # option to scale up fba values

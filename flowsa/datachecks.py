@@ -150,49 +150,6 @@ def check_if_location_systems_match(df1, df2):
     return None
 
 
-def check_if_data_exists_for_same_geoscales(fba_wsec_walloc, source,
-                                            activity):
-    """
-    Determine if data exists at the same scales for datasource and allocation source
-    :param fba_wsec_walloc: df, FBA format with sector columns
-    :param source: str, source name
-    :param activity: list, activity names
-    :return: printout where allocation ratios are missing
-    """
-    # todo: modify so only returns warning if no value for entire
-    #  location, not just no value for one of the possible sectors
-
-    from flowsa.mapping import get_activitytosector_mapping
-
-    # create list of highest sector level for which there should be data
-    mapping = get_activitytosector_mapping(source)
-    # filter by activity of interest
-    mapping = mapping.loc[mapping['Activity'].isin(activity)]
-    # add sectors to list
-    sectors_list = pd.unique(mapping['Sector']).tolist()
-
-    # subset fba w sectors and with merged allocation table so
-    # only have rows with aggregated sector list
-    df_subset = fba_wsec_walloc.loc[
-        (fba_wsec_walloc[fbs_activity_fields[0]].isin(sectors_list)) |
-        (fba_wsec_walloc[fbs_activity_fields[1]].isin(sectors_list))].reset_index(drop=True)
-    # only interested in total flows
-    # df_subset = df_subset.loc[df_subset['FlowName'] == 'total'].reset_index(drop=True)
-    # df_subset = df_subset.loc[df_subset['Compartment'] == 'total'].reset_index(drop=True)
-
-    # create subset of fba where the allocation data is missing
-    missing_alloc = df_subset.loc[df_subset['FlowAmountRatio'].isna()].reset_index(drop=True)
-    # drop any rows where source flow value = 0
-    missing_alloc = missing_alloc.loc[missing_alloc['FlowAmount'] != 0].reset_index(drop=True)
-    # create list of locations with missing alllocation data
-    states_missing_data = pd.unique(missing_alloc['Location']).tolist()
-
-    if len(missing_alloc) != 0:
-        log.warning("Missing allocation flow ratio data for " + ', '.join(states_missing_data))
-
-    return None
-
-
 def check_if_losing_sector_data(df, target_sector_level):
     """
     Determine rows of data that will be lost if subset data at target sector level
