@@ -72,7 +72,7 @@ def sc_lfs_parse(**kwargs):
     df = df.drop(columns=['Sex', 'Age group', 'UOM', 'SCALAR_FACTOR'])
     # extract NAICS as activity column. rename activity based on flowname
     df['Activity'] = df['Description'].str.extract('.*\[(.*)\].*')
-    df.loc[df['Description'] == 'Total, all industries', 'Activity'] = '31-33'  # todo: change these activity names
+    df.loc[df['Description'] == 'Total, all industries', 'Activity'] = '31-33'
     df.loc[df['Description'] == 'Other manufacturing industries', 'Activity'] = 'Other'
     df['FlowName'] = df['FlowName'].str.strip()
     df.loc[df['FlowName'] == 'Water intake', 'ActivityConsumedBy'] = df['Activity']

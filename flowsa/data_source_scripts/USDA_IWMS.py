@@ -106,7 +106,7 @@ def iwms_parse(**kwargs):
     df.loc[df['Unit'] == 'ACRES', 'Class'] = 'Land'
     df.loc[df['Unit'] == 'ACRE FEET / ACRE', 'Class'] = 'Water'
     df['SourceName'] = "USDA_IWMS"
-    df['DataReliability'] = None  # TODO score data qualtiy
+    df['DataReliability'] = None
     df['DataCollection'] = None
 
     # drop rows of unused data

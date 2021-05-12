@@ -10,7 +10,6 @@ import pandas as pd
 from flowsa.common import US_FIPS, withdrawn_keyword
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-# todo: merge these fxns with EIA_CBECS_Land
 
 def eia_cbecs_water_call(**kwargs):
     """
