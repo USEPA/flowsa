@@ -259,10 +259,8 @@ def main(**kwargs):
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
-                # todo: modify fxn to work if activities are sector like in df being allocated
-                if load_source_catalog()[k]['sector-like_activities'] is False:
-                    check_for_differences_between_fba_load_and_fbs_output(
-                        flow_subset_mapped, fbs_agg_2, aset, k, method_name)
+                check_for_differences_between_fba_load_and_fbs_output(
+                    flow_subset_mapped, fbs_agg_2, aset, k, method_name)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths

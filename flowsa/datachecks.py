@@ -367,86 +367,93 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
-    # subset fba df
-    fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
-                    'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
-                    'FlowAmount']].drop_duplicates().reset_index(drop=True)
-    fba.loc[:, 'Location'] = US_FIPS
-    group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
-                  'Unit', 'FlowType', 'Context',
-                  'Location', 'LocationSystem', 'Year']
-    fba_agg = aggregator(fba, group_cols)
-    fba_agg.rename(columns={'FlowAmount': 'FBA_amount'}, inplace=True)
+    if load_source_catalog()[source_name]['sector-like_activities']:
+        log.debug('Not comparing loaded FlowByActivity to FlowBySector ratios '
+                  'for a dataset with sector-like activities because if there '
+                  'are modifications to flowamounts for a sector, then the '
+                  'ratios will be different')
+    else:
+        # subset fba df
+        fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
+                        'FlowAmount']].drop_duplicates().reset_index(drop=True)
+        fba.loc[:, 'Location'] = US_FIPS
+        group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
+                      'Unit', 'FlowType', 'Context',
+                      'Location', 'LocationSystem', 'Year']
+        fba_agg = aggregator(fba, group_cols)
+        fba_agg.rename(columns={'FlowAmount': 'FBA_amount'}, inplace=True)
 
-    # subset fbs df
-    fbs = fbs_load[['Class', 'SectorSourceName', 'Flowable', 'Unit', 'FlowType',
-                    'SectorProducedBy', 'SectorConsumedBy', 'ActivityProducedBy',
-                    'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
-                    'FlowAmount']].drop_duplicates().reset_index(drop=True)
+        # subset fbs df
 
-    fbs = replace_NoneType_with_empty_cells(fbs)
+        fbs = fbs_load[['Class', 'SectorSourceName', 'Flowable', 'Unit', 'FlowType',
+                        'SectorProducedBy', 'SectorConsumedBy', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
+                        'FlowAmount']].drop_duplicates().reset_index(drop=True)
 
-    fbs['ProducedLength'] = fbs['SectorProducedBy'].str.len()  # .apply(lambda x: len(x))
-    fbs['ConsumedLength'] = fbs['SectorConsumedBy'].str.len()  # .apply(lambda x: len(x))
-    fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
-    fbs.loc[:, 'Location'] = US_FIPS
-    group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
-                  'Unit', 'FlowType', 'Context', 'Location',
-                  'LocationSystem', 'Year', 'SectorLength']
-    fbs_agg = aggregator(fbs, group_cols)
-    fbs_agg.rename(columns={'FlowAmount': 'FBS_amount'}, inplace=True)
+        fbs = replace_NoneType_with_empty_cells(fbs)
 
-    # merge compare 1 and compare 2
-    df_merge = fba_agg.merge(fbs_agg,
-                             left_on=['ActivityProducedBy', 'ActivityConsumedBy',
-                                      'Flowable', 'Unit', 'FlowType', 'Context',
-                                      'Location','LocationSystem', 'Year'],
-                             right_on=['ActivityProducedBy', 'ActivityConsumedBy',
-                                       'Flowable', 'Unit', 'FlowType', 'Context',
-                                       'Location', 'LocationSystem', 'Year'],
-                             how='left')
-    df_merge['Ratio'] = df_merge['FBS_amount'] / df_merge['FBA_amount']
+        fbs['ProducedLength'] = fbs['SectorProducedBy'].str.len()
+        fbs['ConsumedLength'] = fbs['SectorConsumedBy'].str.len()
+        fbs['SectorLength'] = fbs[['ProducedLength', 'ConsumedLength']].max(axis=1)
+        fbs.loc[:, 'Location'] = US_FIPS
+        group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
+                      'Unit', 'FlowType', 'Context', 'Location',
+                      'LocationSystem', 'Year', 'SectorLength']
+        fbs_agg = aggregator(fbs, group_cols)
+        fbs_agg.rename(columns={'FlowAmount': 'FBS_amount'}, inplace=True)
 
-    # reorder
-    df_merge = df_merge[['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
-                         'FlowType', 'Context', 'Location', 'LocationSystem', 'Year',
-                         'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
+        # merge compare 1 and compare 2
+        df_merge = fba_agg.merge(fbs_agg,
+                                 left_on=['ActivityProducedBy', 'ActivityConsumedBy',
+                                          'Flowable', 'Unit', 'FlowType', 'Context',
+                                          'Location','LocationSystem', 'Year'],
+                                 right_on=['ActivityProducedBy', 'ActivityConsumedBy',
+                                           'Flowable', 'Unit', 'FlowType', 'Context',
+                                           'Location', 'LocationSystem', 'Year'],
+                                 how='left')
+        df_merge['Ratio'] = df_merge['FBS_amount'] / df_merge['FBA_amount']
 
-    # only report difference at sector length <= 6
-    comparison = df_merge[df_merge['SectorLength'] <= 6]
+        # reorder
+        df_merge = df_merge[['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable', 'Unit',
+                             'FlowType', 'Context', 'Location', 'LocationSystem', 'Year',
+                             'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
 
-    # todo: address the duplicated rows/data that occur for non-naics household sector length
+        # only report difference at sector length <= 6
+        comparison = df_merge[df_merge['SectorLength'] <= 6]
 
-    ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
-    if ua_count1 > 0:
-        log.info('There are ' + str(ua_count1) +
-                 ' combinations of flowable/context/sector length where the '
-                 'flowbyactivity to flowbysector ratio is < 0.95')
-    ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
-    if ua_count2 > 0:
-        log.debug('There are ' + str(ua_count2) +
-                 ' combinations of flowable/context/sector length where the '
-                 'flowbyactivity to flowbysector ratio is < 0.99')
-    oa_count1 = len(comparison[comparison['Ratio'] > 1])
-    if oa_count1 > 0:
-        log.debug('There are ' + str(oa_count1) +
-                 ' combinations of flowable/context/sector length where the flowbyactivity '
-                 'to flowbysector ratio is > 1.0')
-    oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
-    if oa_count2 > 0:
-        log.info('There are ' + str(oa_count2) +
-                 ' combinations of flowable/context/sector length where the '
-                 'flowbyactivity to flowbysector ratio is > 1.01')
+        # todo: address the duplicated rows/data that occur for non-naics household sector length
 
-    # save csv to output folder
-    log.info('Save the comparison of FlowByActivity load to FlowBySector ratios for ' +
-              activity_set + ' in output folder')
-    # create directory if missing
-    os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
-    # output data at all sector lengths
-    df_merge.to_csv(outputpath + "/FlowBySectorMethodAnalysis/" + method_name + '_' +
-                    source_name + "_FBA_load_to_FBS_comparision_" +
-                    activity_set + ".csv", index=False)
+        ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
+        if ua_count1 > 0:
+            log.info('There are ' + str(ua_count1) +
+                     ' combinations of flowable/context/sector length where the '
+                     'flowbyactivity to flowbysector ratio is < 0.95')
+        ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
+        if ua_count2 > 0:
+            log.debug('There are ' + str(ua_count2) +
+                     ' combinations of flowable/context/sector length where the '
+                     'flowbyactivity to flowbysector ratio is < 0.99')
+        oa_count1 = len(comparison[comparison['Ratio'] > 1])
+        if oa_count1 > 0:
+            log.debug('There are ' + str(oa_count1) +
+                     ' combinations of flowable/context/sector length where the flowbyactivity '
+                     'to flowbysector ratio is > 1.0')
+        oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
+        if oa_count2 > 0:
+            log.info('There are ' + str(oa_count2) +
+                     ' combinations of flowable/context/sector length where the '
+                     'flowbyactivity to flowbysector ratio is > 1.01')
+
+        # save csv to output folder
+        log.info('Save the comparison of FlowByActivity load to FlowBySector ratios for ' +
+                  activity_set + ' in output folder')
+        # create directory if missing
+        os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
+        # output data at all sector lengths
+        df_merge.to_csv(outputpath + "/FlowBySectorMethodAnalysis/" + method_name + '_' +
+                        source_name + "_FBA_load_to_FBS_comparision_" +
+                        activity_set + ".csv", index=False)
 
 
 def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
