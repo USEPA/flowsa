@@ -2,7 +2,7 @@ author: NOAA
 source_name_bib: NOAA_Landings
 citable_url: ' '
 date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
-date_downloaded: '2020-04-28' # todo: modify bib fxn to use date_downloaded over date_generated
+date_downloaded: '2020-04-28'
 bib_id: NOAA_Landings
 api_name: None
 api_key_required: false

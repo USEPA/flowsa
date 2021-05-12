@@ -2,7 +2,7 @@ author: California Commercial
 source_name_bib: CalRecycle_WasteCharacterization
 citable_url: ' '
 date_generated: '2021-04-08' # updated automatically when flowbyactivity.py is run
-date_downloaded: ' ' # todo: modify bib fxn to use date_downloaded over date_generated
+date_downloaded: ' '
 bib_id: CalRec_WasteChar
 api_name: None
 api_key_required: false

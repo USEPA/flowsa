@@ -2,7 +2,7 @@ author: US Geological Survey
 source_name_bib: Method for Estimating Water Withdrawals for Livestock in the United States
 citable_url: https://pubs.er.usgs.gov/publication/sir20095041
 date_generated: '2021-04-05'
-date_downloaded: ' ' # todo: modify bib fxn to use date_downloaded over date_generated
+date_downloaded: ' '
 bib_id: USGS_WU_Coef
 api_name: None
 api_key_required: false
