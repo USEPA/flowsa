@@ -151,9 +151,10 @@ def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
     """
     Clean up the land fba for use in allocation
     :param fba_w_sector: df, coa cropland naics flowbyactivity with sector columns
+    :param kwargs: dictionary, requires df sourcename
     :return: df, flowbyactivity with modified values
     """
 
     # estimate the suppressed data by equally allocating parent naics to child
-    df = estimate_suppressed_data(fba_w_sector, 'SectorConsumedBy', 3)
+    df = estimate_suppressed_data(fba_w_sector, 'SectorConsumedBy', 3, kwargs['sourcename'])
     return df

@@ -231,12 +231,14 @@ def coa_nonirrigated_cropland_fba_cleanup(fba, **kwargs):
     return fba
 
 
-def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method):
+def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method, **kwargs):
     """
     Disaggregate usda coa cropland to naics 6
     :param fba_w_sector: df, CoA cropland data, FBA format with sector columns
     :param attr: dictionary, attribute data from method yaml for activity set
     :param method: dictionary, FBS method yaml
+    :param kwargs: dictionary, arguments that might be required for other functions.
+           Currently includes data source name.
     :return: df, CoA cropland with disaggregated NAICS sectors
     """
 
