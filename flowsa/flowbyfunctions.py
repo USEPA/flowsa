@@ -593,13 +593,14 @@ def dataframe_difference(df1, df2, which=None):
     return diff_df
 
 
-def estimate_suppressed_data(df, sector_column, naics_level):
+def estimate_suppressed_data(df, sector_column, naics_level, sourcename):
     """
     Estimate data suppression, by equally allocating parent NAICS values to child NAICS
     :param df: df with sector columns
     :param sector_column: str, column to estimate suppressed data for
     :param naics_level: numeric, indicate at what NAICS length to base
                         estimated suppresed data off (2 - 5)
+    :param sourcename: str, sourcename
     :return: df, with estimated suppressed data
     """
 
@@ -663,9 +664,10 @@ def estimate_suppressed_data(df, sector_column, naics_level):
             # only keep the suppressed sector subset activity columns
             df_m = df_m.drop(columns=[sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
             df_m = df_m.rename(columns={sector_column + '_y': sector_column})
-            # reset activity columns #todo: modify so next 2 lines only run if activities are sector-like
-            df_m = df_m.assign(ActivityProducedBy=df_m['SectorProducedBy'])
-            df_m = df_m.assign(ActivityConsumedBy=df_m['SectorConsumedBy'])
+            # reset activity columns
+            if load_source_catalog()[sourcename]['sector-like_activities']:
+                df_m = df_m.assign(ActivityProducedBy=df_m['SectorProducedBy'])
+                df_m = df_m.assign(ActivityConsumedBy=df_m['SectorConsumedBy'])
 
             # drop the existing rows with suppressed data and append the new estimates from fba df
             modified_df =\
