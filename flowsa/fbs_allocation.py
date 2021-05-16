@@ -257,7 +257,6 @@ def allocation_helper(df_w_sector, attr, method, v):
     if 'multiplication' in attr['helper_method']:
         # todo: modify so if missing data, replaced with
         #  value from one geoscale up instead of national
-        # todo: modify year after merge if necessary
         # if missing values (na or 0), replace with national level values
         replacement_values =\
             helper_allocation[helper_allocation['Location'] ==
@@ -385,6 +384,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         log.info("Further disaggregating sectors in " + fba_sourcename)
         fba_wsec = dynamically_import_fxn(fba_sourcename,
                                           kwargs['clean_fba_w_sec'])(fba_wsec, attr=attr,
-                                                                     method=method)
+                                                                     method=method,
+                                                                     sourcename=fba_sourcename)
 
     return fba_wsec
