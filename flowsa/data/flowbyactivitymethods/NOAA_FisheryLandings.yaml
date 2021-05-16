@@ -1,7 +1,7 @@
 author: NOAA
 source_name_bib: NOAA_Landings
 citable_url: ' '
-date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
+date_generated: '2021-05-16' # updated automatically when flowbyactivity.py is run
 date_downloaded: '2020-04-28' # todo: modify bib fxn to use date_downloaded over date_generated
 bib_id: NOAA_Landings
 api_name: None
@@ -10,10 +10,10 @@ format: csv  # comma delineated data
 url: None
 parse_response_fxn: noaa_parse
 years:
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
