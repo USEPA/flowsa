@@ -55,6 +55,7 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
 # setup log file handler
+create_paths_if_missing(logoutputpath)
 fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
 fh.setLevel(log.DEBUG)
 formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
