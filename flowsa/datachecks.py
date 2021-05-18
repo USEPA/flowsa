@@ -862,7 +862,7 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
             log.info('No data loss between national level data and df subset')
         else:
             log.info('There are data differences between published national values'
-                     'and dataframe subset, saving as csv')
+                     ' and dataframe subset, saving as csv')
             # save as csv
             df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" +
                         method_name + '_' + sourcename +
