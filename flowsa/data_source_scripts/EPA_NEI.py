@@ -148,11 +148,8 @@ def epa_nei_onroad_parse(**kwargs):
                    args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
 
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(**kwargs)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -169,11 +166,8 @@ def epa_nei_nonroad_parse(**kwargs):
                    args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
 
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(**kwargs)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -190,11 +184,8 @@ def epa_nei_nonpoint_parse(**kwargs):
                    args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
 
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(**kwargs)
 
     # Add DQ scores
     df['DataReliability'] = 3
