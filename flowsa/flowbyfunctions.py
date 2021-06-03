@@ -876,6 +876,9 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
     # if a file does not exist modify file name, dropping ext after last underscore
     if os.path.exists(f"{datasourcescriptspath}{data_source_scripts_file}{'.py'}") is False:
         data_source_scripts_file = data_source_scripts_file.rsplit("_", 1)[0]
+    # if still does not exist, drop after second to last underscore
+    if os.path.exists(f"{datasourcescriptspath}{data_source_scripts_file}{'.py'}") is False:
+        data_source_scripts_file = data_source_scripts_file.rsplit("_", 2)[0]
 
     df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
                             fromlist=function_name), function_name)
