@@ -71,14 +71,19 @@ def eia_mecs_land_call(**kwargs):
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='Table 9.1')
     df_raw_rse = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='RSE 9.1')
     if (args["year"] == "2014"):
+        # skip rows and remove extra rows at end of dataframe
         df_rse = pd.DataFrame(df_raw_rse.loc[12:93]).reindex()
         df_data = pd.DataFrame(df_raw_data.loc[16:97]).reindex()
         df_description = pd.DataFrame(df_raw_data.loc[16:97]).reindex()
-        # skip rows and remove extra rows at end of dataframe
+        # pull first 12 columns
+        df_rse = df_rse.iloc[:, 0:12]
+        df_data = df_data.iloc[:, 0:12]
+        df_description = df_description.iloc[:, 0:12]
 
         df_description.columns = ["NAICS Code(a)", "Subsector and Industry",
                                   "Approximate Enclosed Floorspace of All Buildings Onsite (million sq ft)",
-                                  "Establishments(b) (counts)", "Average Enclosed Floorspace per Establishment (sq ft)",
+                                  "Establishments(b) (counts)",
+                                  "Average Enclosed Floorspace per Establishment (sq ft)",
                                   "Approximate Number of All Buildings Onsite (counts)",
                                   "Average Number of Buildings Onsite per Establishment (counts)",
                                   "n8", "n9", "n10", "n11", "n12"]
