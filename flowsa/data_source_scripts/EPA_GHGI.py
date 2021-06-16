@@ -10,7 +10,7 @@ import io
 import zipfile
 import numpy as np
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, log
 
 DEFAULT_YEAR = 9999
 
@@ -343,7 +343,7 @@ def ghg_call(**kwargs):
                             new_header = col[2]
                         new_headers.append(new_header)
                     df.columns = new_headers
-                    print('break')
+                    # print('break')
                 elif '4-' in table:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",", decimal=".")
                 elif 'A-' in table:
@@ -424,7 +424,7 @@ def ghg_parse(**kwargs):
     for df in dataframe_list:
         special_format = False
         source_name = df["SourceName"][0]
-        print(f'Processing Source Name {source_name}')
+        log.info(f'Processing Source Name {source_name}')
         for src in SRC_NAME_SPECIAL_FORMAT:
             if src in source_name:
                 special_format = True
@@ -470,12 +470,12 @@ def ghg_parse(**kwargs):
         try:
             df = df[~df["FlowAmount"].str.contains("\\+", na=False)]
         except AttributeError as ex:
-            print(ex)
+            log.info(ex)
         # Dropping all rows with value "NE"
         try:
             df = df[~df["FlowAmount"].str.contains("NE", na=False)]
         except AttributeError as ex:
-            print(ex)
+            log.info(ex)
 
         # Convert all empty cells to nan cells
         df["FlowAmount"].replace("", np.nan, inplace=True)
@@ -524,7 +524,7 @@ def ghg_parse(**kwargs):
         try:
             df = df[df['Year'].isin([args['year']])]
         except AttributeError as ex:
-            print(ex)
+            log.info(ex)
 
         # Add tmp DQ scores
         df["DataReliability"] = 5
