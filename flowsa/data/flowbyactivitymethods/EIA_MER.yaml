@@ -1,7 +1,7 @@
 author: US Energy Information Administration
 source_name_bib: Monthly Energy Review
 citable_url: https://www.eia.gov/totalenergy/data/monthly/
-date_generated: '2021-04-30' # updated automatically when flowbyactivity.py is run
+date_generated: '2021-06-16' # updated automatically when flowbyactivity.py is run
 bib_id: EIA_MER
 api_name: EIA_MER
 format: pdf
