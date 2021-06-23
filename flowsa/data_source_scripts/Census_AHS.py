@@ -16,35 +16,46 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 COLS_TO_KEEP = ["LOT", "LOTSIZE", "WEIGHT", "METRO3", "CROPSL", "CONTROL"]
 
 
-def ahs_url_helper(build_url, config, args):
+def ahs_url_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for blm pls data that requires parts of the url text string
+    is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+    args = kwargs['args']
+
     version = config["years"][args["year"]]
     url = build_url
     url = url.replace("__ver__", version)
     return [url]
 
 
-def ahs_call(url, ahs_response, args):
+def ahs_call(**kwargs):
     """
-    Convert response for calling url to pandas dataframe, transform to pandas df
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     # extract data from zip file (multiple csvs)
-    with zipfile.ZipFile(io.BytesIO(ahs_response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         # read in file names
         frames = []
         for name in f.namelist():
@@ -61,30 +72,17 @@ def ahs_call(url, ahs_response, args):
         return pd.concat(frames)
 
 
-# def convert_values(df, args):
-#     """
-#     Convert columns to usable values. Columns include:
-#     LOT/LOTSIZE, WEIGHT, METRO3, CROPSL
-#     """
-#     if args['year'] in ['2011', '2013']:
-#         print("All four columns are available.")
-#
-#     elif args['year'] == '2015':
-#         print("LOT, WEIGHT, CROPSL")
-#
-#     elif args['year'] == '2017':
-#         print("LOT, WEIGHT")
-#
-#     return df
-
-
-def ahs_parse(dataframe_list, args):
+def ahs_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
 
     df = pd.concat(dataframe_list)
 
@@ -166,45 +164,3 @@ def ahs_parse(dataframe_list, args):
     df["DistributionType"] = None
     df["FlowType"] = None
     return df
-
-# def calculate_urban_and_rural_residential_land_area(ahs_fba):
-#     """
-#     Read in an American Housing Survey FlowByActivity and
-#     calculate the land area in the US occupied by
-#     urban and rural housing
-#     :param ahs_fba: American Housing Survey FlowByActivity
-#     :return:
-#     """
-#
-#     # assumption on lot size where missing (assumption duplicates USDA Major Land Use report)
-#     fill_missing_lot_value = 200
-#     convert_square_ft_to_acres = 43560
-#
-#     # pivot table
-#     df = ahs_fba.pivot(index='ActivityConsumedBy', columns='FlowName', values = 'FlowAmount')
-#
-#     # replace any missing lot size values with assumption defined above
-#     df2 = df.assign(LOT=df.apply(lambda x: fill_missing_lot_value if x['LOT']
-#                                                                      == -9 else x['LOT'], axis=1))
-#     # convert lot data from square feet to square acres
-#     df2 = df.assign(LOT=df['LOT']/convert_square_ft_to_acres)
-#
-#     # label rows as urban or rural
-# #     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
-# #                                                               [1, 2, 4] else 'rural', axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'urban' if x['METRO3'] in
-#                                                               [1, 2, 4] else '', axis=1))
-#     # df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in
-#     #                                                            [3, 5]) else x['loc_label'], axis=1))
-#     df2 = df2.assign(loc_label=df2.apply(lambda x: 'rural' if (x['METRO3'] in [3, 5])
-#                                                               & (x['CROPSL'] == 1) else x['loc_label'], axis=1))
-#
-#     # We then weighted the lot sizes (‘lot’) with the AHS survey weights, summed,
-#     and converted to acres (dividing by 43560)
-#
-#     # weight_calc = weighted_average(df2, 'LOT', 'WEIGHT', 'loc_label')
-#     df3 = df2.assign(FlowAmount=df2['LOT'] * df2['WEIGHT'])
-#
-#     calculated_area = df3.groupby(df3['loc_label']).agg({'FlowAmount': ['sum']})
-#
-#     return calculated_area

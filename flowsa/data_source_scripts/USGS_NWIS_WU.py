@@ -13,18 +13,24 @@ from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def usgs_URL_helper(build_url, config, args):
+def usgs_URL_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for blm pls data that requires parts of the url text string
+    is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+
     # initiate url list for usgs data
     urls_usgs = []
     # call on state acronyms from common.py (and remove entry for DC)
@@ -49,18 +55,23 @@ def usgs_URL_helper(build_url, config, args):
     return urls_usgs
 
 
-def usgs_call(url, usgs_response, args):
+def usgs_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param usgs_response: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    url = kwargs['url']
+    response_load = kwargs['r']
+
     usgs_data = []
     metadata = []
-    with io.StringIO(usgs_response.text) as fp:
+    with io.StringIO(response_load.text) as fp:
         for line in fp:
             if line[0] != '#':
                 if "16s" not in line:
@@ -86,13 +97,17 @@ def usgs_call(url, usgs_response, args):
     return df_usgs
 
 
-def usgs_parse(dataframe_list, args):
+def usgs_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
 
     for df in dataframe_list:
         # add columns at national and state level that only exist at the county level
@@ -140,17 +155,17 @@ def usgs_parse(dataframe_list, args):
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"),
                                         "ground", "total")
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Ground"),
-                                        "ground", "total")
+                                        "ground", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("surface"),
-                                        "surface", "total")
+                                        "surface", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Surface"),
-                                        "surface", "total")
+                                        "surface", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("instream water use"),
-                                        "surface", "total") # based on usgs def
+                                        "surface", df['Compartment']) # based on usgs def
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("consumptive"),
-                                        "air", "total")
+                                        "air", df['Compartment'])
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("conveyance"),
-                                        "water", "total")
+                                        "water", df['Compartment'])
     # df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("total"), "total", "total")
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
@@ -224,8 +239,8 @@ def usgs_parse(dataframe_list, args):
 def activity(name):
     """
     Create rules to assign activities to produced by or consumed by
-    :param name:
-    :return:
+    :param name: str, activities
+    :return: pandas series, values for ActivityProducedBy and ActivityConsumedBy
     """
 
     name_split = name.split(",")
@@ -287,8 +302,8 @@ def activity(name):
 def split_name(name):
     """
     This method splits the header name into a source name and a flow name
-    :param name:
-    :return:
+    :param name: str, value includes source and flow name
+    :return: strings, source name and flow name for a row
     """
     space_split = name.split(" ")
     upper_case = ""
@@ -306,8 +321,8 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     """
     The activity names differ at the national level. Method to standardize
     names to allow for comparison of aggregation to national level.
-    :param flowbyactivity_df:
-    :return:
+    :param flowbyactivity_df: df, FBA format
+    :return: df, FBA format with standardized activity names
     """
 
     # modify national level compartment
@@ -336,8 +351,8 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
 def usgs_fba_data_cleanup(df):
     """
     Clean up the dataframe to prepare for flowbysector. Used in flowbysector.py
-    :param df:
-    :return:
+    :param df: df, FBA format
+    :return: df, modified FBA
     """
 
     # drop rows of commercial data (because only exists for 3 states),
@@ -373,7 +388,7 @@ def usgs_fba_data_cleanup(df):
     return df
 
 
-def calculate_net_public_supply(df):
+def calculate_net_public_supply(df_load):
     """
     USGS Provides info on the quantity of public supply withdrawals that
     are delivered to domestic use. The USGS PS withdrawals are not necessarily
@@ -386,11 +401,11 @@ def calculate_net_public_supply(df):
     that PS deliveries to domestic is fresh water. The national level data can then be
     allocated to end users using the BEA Use tables.
     :param df: USGS df
-    :return:
+    :return: df with net public supply values
     """
 
     # drop duplicate info of "Public Supply deliveries to"
-    df = df.loc[~df['Description'].str.contains("Public Supply total deliveries")]
+    df = df_load.loc[~df_load['Description'].str.contains("Public Supply total deliveries")]
     df = df.loc[~df['Description'].str.contains(
         "deliveries from public supply")].reset_index(drop=True)
 
@@ -458,10 +473,8 @@ def check_golf_and_crop_irrigation_totals(df_load):
     """
     Check that golf + crop values equal published irrigation totals.
     If not, assign water to crop irrigation.
-
-    Resuult : 2010 and 2015 published data correct
-    :param df:
-    :return:
+    :param df_load: df, USGS water use
+    :return: df, FBA with reassigned irrigation water to crop and golf
     """
 
     # drop national data
@@ -528,14 +541,13 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
     """
     Call on functions to modify the fba with sectors df before being allocated to sectors
     Used in flowbysector.py
-    :param df_wsec: a dataframe with sectors
-    :param attr: activity set attributes
-    :return:
+    :param df_wsec: an FBA dataframe with sectors
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, FBA modified
     """
 
     df = modify_sector_length(df_wsec)
     df = filter_out_activities(df, attr)
-    # df = modify_thermo_and_aqua_sector_assignments(df)
 
     return df
 
@@ -547,7 +559,7 @@ def modify_sector_length(df_wsec):
     This is helpful for sector aggregation. The USGS NWIS WU "Public Supply" should
     be modified to match sector length.
     :param df_wsec: a df that includes columns for SectorProducedBy and SectorConsumedBy
-    :return:
+    :return: df, FBA with sector columns modified
     """
 
     # the activity(ies) whose sector length should be modified
@@ -607,8 +619,8 @@ def filter_out_activities(df, attr):
     column is not also directly allocated. These non-direct activities are
     captured in other activity allocations
     :param df: a dataframe that has activity consumed/produced by columns
-    :param attr: FBS method file activity set attributes
-    :return:
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, modified to avoid double counting by activity sets
     """
 
     # if the activity is public supply and the method is direct,

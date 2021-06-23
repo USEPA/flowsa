@@ -19,8 +19,8 @@ from flowsa.common import externaldatapath
 def produced_by(entry):
     """
     Modify source activity names to clarify data meaning
-    :param entry: original source name
-    :return: modified activity name
+    :param entry: str, original source name
+    :return: str, modified activity name
     """
     if "ArtsEntRec" in entry:
         return "Arts Entertainment Recreation"
@@ -58,13 +58,17 @@ def produced_by(entry):
         return "Services Repair Personal"
 
 
-def calR_parse(dataframe_list, args):
+def calR_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
+
     data = {}
     output = pd.DataFrame()
 

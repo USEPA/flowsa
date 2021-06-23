@@ -15,37 +15,12 @@ from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict
 from flowsa.datachecks import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
-from flowsa.flowbyfunctions import collapse_activity_fields, \
+from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
     sector_aggregation, sector_disaggregation, allocate_by_sector, \
     proportional_allocation_by_location_and_activity, subset_df_by_geoscale
 from flowsa.mapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType, clean_df, harmonize_units
 from flowsa.datachecks import check_if_data_exists_at_geoscale
-
-# import specific functions
-from flowsa.data_source_scripts.BEA import subset_BEA_Use
-from flowsa.data_source_scripts.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year, \
-    convert_blackhurst_data_to_gal_per_employee, scale_blackhurst_results_to_usgs_values
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba, \
-    clean_bls_qcew_fba_for_employment_sat_table, \
-    bls_clean_allocation_fba_w_sec
-from flowsa.data_source_scripts.EIA_CBECS_Land import cbecs_land_fba_cleanup
-from flowsa.data_source_scripts.EIA_MECS import mecs_energy_fba_cleanup, \
-    eia_mecs_energy_clean_allocation_fba_w_sec, \
-    mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs, \
-    mecs_land_clean_allocation_mapped_fba_w_sec
-from flowsa.data_source_scripts.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
-from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use
-from flowsa.data_source_scripts.stewiFBS import stewicombo_to_sector, stewi_to_sector
-from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_coa_cropland_to_6_digit_naics, \
-    coa_irrigated_cropland_fba_cleanup, coa_nonirrigated_cropland_fba_cleanup
-from flowsa.data_source_scripts.USDA_CoA_Cropland_NAICS import coa_cropland_naics_fba_wsec_cleanup
-from flowsa.data_source_scripts.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas,\
-    allocate_usda_ers_mlu_other_land,\
-    allocate_usda_ers_mlu_land_in_rural_transportation_areas
-from flowsa.data_source_scripts.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
-from flowsa.data_source_scripts.USGS_NWIS_WU import usgs_fba_data_cleanup,\
-    usgs_fba_w_sectors_data_cleanup
 
 
 def direct_allocation_method(flow_subset_mapped, k, names, method):
@@ -55,7 +30,7 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
     :param k: str, source name
     :param names: list, activity names in activity set
     :param method: dictionary, FBS method yaml
-    :return:
+    :return: df with sector columns
     """
     log.info('Directly assigning activities to sectors')
     fbs = flow_subset_mapped.copy()
@@ -74,19 +49,19 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
     return fbs
 
 
-def function_allocation_method(flow_subset_mapped, names, attr, fbs_list):
+def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
     """
-
+    Allocate df activities to sectors using a function identified in the FBS method yaml
     :param flow_subset_mapped: df, FBA with flows converted using fedelemflowlist
+    :param k: str, source name
     :param names: list, activity names in activity set
-    :param attr:
-    :param fbs_list:
-    :return:
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, fbs dfs created running flowbysector.py
+    :return: df, FBS, with allocated activity columns to sectors
     """
     log.info('Calling on function specified in method yaml to allocate ' +
              ', '.join(map(str, names)) + ' to sectors')
-    fbs = getattr(sys.modules[__name__],
-                  attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
+    fbs = dynamically_import_fxn(k, attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
     return fbs
 
 
@@ -95,15 +70,15 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     """
     Method of allocation using a specified data source
     :param flow_subset_mapped: FBA subset mapped using federal elementary flow list
-    :param attr: method attributes
-    :param names:
-    :param method:
-    :param k:
-    :param v:
-    :param aset:
-    :param method_name:
-    :param aset_names:
-    :return:
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param names: list, activity names in activity set
+    :param method: dictionary, FBS method yaml
+    :param k: str, the datasource name
+    :param v: dictionary, the datasource parameters
+    :param aset: dictionary items for FBS method yaml
+    :param method_name: str, method ame
+    :param aset_names: list, activity set names
+    :return: df, allocated activity names
     """
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
@@ -148,7 +123,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         if len(fba_allocation_subset_2) == 0:
             log.info("No data found to allocate " + n)
         else:
-            flow_alloc = allocate_by_sector(fba_allocation_subset_2, k, attr['allocation_source'],
+            flow_alloc = allocate_by_sector(fba_allocation_subset_2,
                                             attr['allocation_method'], group_cols,
                                             flowSubsetMapped=flow_subset_mapped)
             flow_alloc = flow_alloc.assign(FBA_Activity=n)
@@ -189,12 +164,6 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     # fill null rows with 0 because no allocation info
     flow_subset_mapped['FlowAmountRatio'] = flow_subset_mapped['FlowAmountRatio'].fillna(0)
 
-    # check if fba and alloc dfs have data for same geoscales -
-    # comment back in after address the 'todo'
-    # log.info("Checking if flowbyactivity and allocation
-    # dataframes have data at the same locations")
-    # check_if_data_exists_for_same_geoscales(fbs, k, attr['names'])
-
     # drop rows where there is no allocation data
     fbs = flow_subset_mapped.dropna(subset=['Sector_x', 'Sector_y'], how='all').reset_index()
 
@@ -211,11 +180,12 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
 
 def allocation_helper(df_w_sector, attr, method, v):
     """
-    Used when two df required to create allocation ratio
-    :param df_w_sector:
-    :param method: currently written for 'multiplication' and 'proportional'
-    :param attr:
-    :return:
+    Function to help allocate activity names using secondary df
+    :param df_w_sector: df, includes sector columns
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :param v: dictionary, the datasource parameters
+    :return: df, with modified fba allocation values
     """
 
     # add parameters to dictionary if exist in method yaml
@@ -287,7 +257,6 @@ def allocation_helper(df_w_sector, attr, method, v):
     if 'multiplication' in attr['helper_method']:
         # todo: modify so if missing data, replaced with
         #  value from one geoscale up instead of national
-        # todo: modify year after merge if necessary
         # if missing values (na or 0), replace with national level values
         replacement_values =\
             helper_allocation[helper_allocation['Location'] ==
@@ -348,7 +317,6 @@ def allocation_helper(df_w_sector, attr, method, v):
     modified_fba_allocation =\
         modified_fba_allocation[modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
 
-    # todo: change units
     modified_fba_allocation.loc[modified_fba_allocation['Unit'] == 'gal/employee', 'Unit'] = 'gal'
 
     # option to scale up fba values
@@ -356,11 +324,10 @@ def allocation_helper(df_w_sector, attr, method, v):
         log.info("Scaling " + attr['helper_source'] + ' to FBA values')
         # tmp hard coded - need to generalize
         if attr['helper_source'] == 'BLS_QCEW':
-            modified_fba_allocation =\
-                scale_blackhurst_results_to_usgs_values(modified_fba_allocation, attr)
-            # modified_fba_allocation = getattr(sys.modules[__name__],
-            # attr["scale_helper_results"])(modified_fba_allocation, attr)
-
+            modified_fba_allocation = \
+                dynamically_import_fxn(attr['helper_source'],
+                                       attr["scale_helper_results"])(modified_fba_allocation,
+                                                                     attr)
     return modified_fba_allocation
 
 
@@ -368,19 +335,17 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                        geoscale_from, geoscale_to, **kwargs):
     """
     Load, clean, and map a FlowByActivity df
-    :param method:
-    :param attr:
-    :param fba_sourcename:
-    :param df_year:
-    :param flowclass:
-    :param geoscale_from:
-    :param geoscale_to:
-    :param kwargs:
-    :return:
+    :param method: dictionary, FBS method yaml
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fba_sourcename: str, source name
+    :param df_year: str, year
+    :param flowclass: str, flowclass to subset df with
+    :param geoscale_from: str, geoscale to use
+    :param geoscale_to: str, geoscale to aggregate to
+    :param kwargs: dictionary, can include parameters: 'allocation_flow',
+                   'allocation_compartment','clean_allocation_fba', 'clean_allocation_fba_w_sec'
+    :return: df, fba format
     """
-
-    # from flowsa.datachecks import check_if_data_exists_at_geoscale
-    # from flowsa.mapping import add_sectors_to_flowbyactivity
 
     log.info("Loading allocation flowbyactivity " + fba_sourcename + " for year " +
              str(df_year))
@@ -399,14 +364,14 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     if 'flowname_subset' in kwargs:
         if kwargs['flowname_subset'] != 'None':
             fba = fba.loc[fba['FlowName'].isin(kwargs['flowname_subset'])]
+
     if 'compartment_subset' in kwargs:
         if kwargs['compartment_subset'] != 'None':
             fba = fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
-
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning " + fba_sourcename)
-        fba = getattr(sys.modules[__name__], kwargs["clean_fba"])(fba, attr=attr)
+        fba = dynamically_import_fxn(fba_sourcename, kwargs["clean_fba"])(fba, attr=attr)
     # reset index
     fba = fba.reset_index(drop=True)
 
@@ -417,6 +382,9 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # call on fxn to further clean up/disaggregate the fba allocation data, if exists
     if 'clean_fba_w_sec' in kwargs:
         log.info("Further disaggregating sectors in " + fba_sourcename)
-        fba_wsec = getattr(sys.modules[__name__], kwargs['clean_fba_w_sec'])(fba_wsec, attr=attr, method=method)
+        fba_wsec = dynamically_import_fxn(fba_sourcename,
+                                          kwargs['clean_fba_w_sec'])(fba_wsec, attr=attr,
+                                                                     method=method,
+                                                                     sourcename=fba_sourcename)
 
     return fba_wsec

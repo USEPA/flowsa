@@ -12,18 +12,22 @@ import pycountry
 from flowsa.common import *
 
 
-def sc_call(url, sc_response, args):
+def sc_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param sc_response: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     # Convert response to dataframe
     # read all files in the stat canada zip
-    with zipfile.ZipFile(io.BytesIO(sc_response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         # read in file names
         for name in f.namelist():
             # if filename does not contain "MetaData", then create dataframe
@@ -33,13 +37,18 @@ def sc_call(url, sc_response, args):
     return df
 
 
-def sc_parse(dataframe_list, args):
+def sc_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
@@ -53,7 +62,7 @@ def sc_parse(dataframe_list, args):
                             'Water use parameter': 'FlowName'})
     # extract NAICS as activity column. rename activity based on flowname
     df['Activity'] = df['Description'].str.extract('.*\[(.*)\].*')
-    df.loc[df['Description'] == 'Total, all industries', 'Activity'] = '31-33'  # todo: change these activity names
+    df.loc[df['Description'] == 'Total, all industries', 'Activity'] = '31-33'
     df.loc[df['Description'] == 'Other manufacturing industries', 'Activity'] = 'Other'
     df['FlowName'] = df['FlowName'].str.strip()
     df.loc[df['FlowName'] == 'Water intake', 'ActivityConsumedBy'] = df['Activity']
@@ -93,9 +102,9 @@ def convert_statcan_data_to_US_water_use(df, attr):
     use:
     - canadian gdp
     - us gdp
-    :param df:
-    :param attr:
-    :return:
+    :param df: df, FBA format
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :return: df, FBA format, flowamounts converted
     """
     import flowsa
     from flowsa.values_from_literature import get_Canadian_to_USD_exchange_rate
@@ -160,13 +169,3 @@ def convert_statcan_data_to_US_water_use(df, attr):
     df_m2 = df_m2.drop(columns=['ActivityProducedBy_y', 'us_gdp'])
 
     return df_m2
-
-
-# def disaggregate_statcan_to_naics_6(df):
-#     """
-#
-#     :param df:
-#     :return:
-#     """
-#
-#     return df

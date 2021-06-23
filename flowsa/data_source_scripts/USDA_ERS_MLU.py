@@ -15,30 +15,36 @@ from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def mlu_call(url, mlu_response, args):
+def mlu_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param usgs_response: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    with io.StringIO(mlu_response.text) as fp:
-        # for line in fp:
-        #    if line[0] != '#':
-        #       if "16s" not in line:
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
+    with io.StringIO(response_load.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
 
-def mlu_parse(dataframe_list, args):
+def mlu_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     output = pd.DataFrame()
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
@@ -95,8 +101,10 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     Environmental Science & Technology 2020 54 (6), 3091-3102
     DOI: 10.1021/acs.est.9b06024
 
-    :param df_load:
-    :return:
+    :param df: df, USDA ERA MLU Land
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, FBS dfs for activities created prior to the activity set that calls on this fxn
+    :return: df, allocated USDS ERS MLU Land, FBS format
     """
 
     from flowsa.values_from_literature import get_area_of_urban_land_occupied_by_houses_2013, \
@@ -118,7 +126,6 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(columns={'NAICS_2012_Code': sector_col})
 
     # calculate total residential area from the American Housing Survey
-    # todo: base calculation off AHS FBA, not USDA ERS MLU calculations
     residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
     df_residential = df[df[sector_col] == 'F01000']
     df_residential = df_residential.assign(FlowAmount=df_residential['FlowAmount'] - residential_land_area)
@@ -187,8 +194,10 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     Environmental Science & Technology 2020 54 (6), 3091-3102
     DOI: 10.1021/acs.est.9b06024
 
-    :param df_load:
-    :return:
+    :param df: df, USDA ERA MLU Land
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, FBS dfs for activities created prior to the activity set that calls on this fxn
+    :return: df, allocated USDS ERS MLU Land, FBS format
     """
 
     from flowsa.values_from_literature import get_urban_land_use_for_airports, get_urban_land_use_for_railroads, \
@@ -243,10 +252,10 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
 
     Mining data is calculated using a separate source = BLM PLS.
     Want to extract rural residential land area from total value of 'Other Land'
-    :param df:
-    :param attr:
-    :param fbs_list:
-    :return:
+    :param df: df, USDA ERA MLU Land
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param fbs_list: list, FBS dfs for activities created prior to the activity set that calls on this fxn
+    :return: df, allocated USDS ERS MLU Land, FBS format
     """
 
     from flowsa.values_from_literature import get_area_of_rural_land_occupied_by_houses_2013

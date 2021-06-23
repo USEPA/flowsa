@@ -26,7 +26,8 @@ if __name__ == '__main__':
 
     # assign location system
     df['LocationSystem'] = np.where(df["Name"].str.contains("Region"), "Census_Region", None)
-    df['LocationSystem'] = np.where(df["Name"].str.contains("Division"), "Census_Division", df['LocationSystem'])
+    df['LocationSystem'] = np.where(df["Name"].str.contains("Division"),
+                                    "Census_Division", df['LocationSystem'])
 
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"State (FIPS)": "State_FIPS"})

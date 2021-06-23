@@ -68,13 +68,19 @@ def generate_fbs_bibliography(methodnames):
                 fba_set.add((config['source_name_bib'], config['author'],
                              fba[1], config['citable_url']))
 
+                # if there is a date downloaded, use in citation over date generated
+                if 'date_downloaded' in config:
+                    bib_date = config['date_downloaded']
+                else:
+                    bib_date = config['date_generated']
+
                 db = BibDatabase()
                 db.entries = [{
                     'title': config['source_name_bib'] + ' ' + str(fba[1]),
                     'author': config['author'],
                     'year': str(fba[1]),
                     'url': config['citable_url'],
-                    'urldate': config['date_generated'],
+                    'urldate': bib_date,
                     'ID': config['bib_id'] + '_' + str(fba[1]),
                     'ENTRYTYPE': 'misc'
                     }]

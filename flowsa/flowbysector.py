@@ -20,7 +20,6 @@ you need functions to clean up the FBA
 
 """
 
-import sys
 import argparse
 import yaml
 import pandas as pd
@@ -29,7 +28,7 @@ import flowsa
 from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, load_source_catalog, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity,\
-    set_fb_meta, paths, fba_activity_fields, \
+    set_fb_meta, paths, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
     fbs_grouping_fields_w_activities
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
@@ -37,41 +36,19 @@ from flowsa.fbs_allocation import direct_allocation_method, function_allocation_
 from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
-    aggregator, subset_df_by_geoscale, sector_disaggregation
+    aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.datachecks import check_if_losing_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year
 
-# import specific functions
-from flowsa.data_source_scripts.BEA import subset_BEA_Use
-from flowsa.data_source_scripts.Blackhurst_IO import convert_blackhurst_data_to_gal_per_year,\
-    convert_blackhurst_data_to_gal_per_employee
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba,\
-    clean_bls_qcew_fba_for_employment_sat_table, \
-    bls_clean_allocation_fba_w_sec
-from flowsa.data_source_scripts.EIA_CBECS_Land import cbecs_land_fba_cleanup
-from flowsa.data_source_scripts.EIA_MECS import mecs_energy_fba_cleanup,\
-    eia_mecs_energy_clean_allocation_fba_w_sec, \
-    mecs_land_fba_cleanup, mecs_land_fba_cleanup_for_land_2012_fbs,\
-    mecs_land_clean_allocation_mapped_fba_w_sec
-from flowsa.data_source_scripts.EPA_NEI import clean_NEI_fba, clean_NEI_fba_no_pesticides
-from flowsa.data_source_scripts.StatCan_IWS_MI import convert_statcan_data_to_US_water_use
-from flowsa.data_source_scripts.stewiFBS import stewicombo_to_sector, stewi_to_sector
-from flowsa.data_source_scripts.USDA_CoA_Cropland import \
-    disaggregate_coa_cropland_to_6_digit_naics,\
-    coa_irrigated_cropland_fba_cleanup, coa_nonirrigated_cropland_fba_cleanup
-from flowsa.data_source_scripts.USDA_ERS_MLU import allocate_usda_ers_mlu_land_in_urban_areas,\
-    allocate_usda_ers_mlu_other_land,\
-    allocate_usda_ers_mlu_land_in_rural_transportation_areas
-from flowsa.data_source_scripts.USDA_IWMS import disaggregate_iwms_to_6_digit_naics
-from flowsa.data_source_scripts.USGS_NWIS_WU import usgs_fba_data_cleanup,\
-    usgs_fba_w_sectors_data_cleanup
-
 
 def parse_args():
-    """Make year and source script parameters"""
+    """
+    Make year and source script parameters
+    :return: dictionary, 'method'
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("-m", "--method",
                     required=True, help="Method for flow by sector file. "
@@ -83,8 +60,8 @@ def parse_args():
 def load_method(method_name):
     """
     Loads a flowbysector method from a YAML
-    :param method_name:
-    :return:
+    :param method_name: str, FBS method name (ex. 'Water_national_m1_2015')
+    :return: dictionary, items in the FBS method yaml
     """
     sfile = flowbysectormethodpath + method_name + '.yaml'
     try:
@@ -100,9 +77,9 @@ def load_source_dataframe(k, v):
     Load the source dataframe. Data can be a FlowbyActivity or
     FlowBySector parquet stored in flowsa, or a FlowBySector
     formatted dataframe from another package.
-    :param k: The datasource name
-    :param v: The datasource parameters
-    :return:
+    :param k: str, The datasource name
+    :param v: dictionary, The datasource parameters
+    :return: df of identified parquet
     """
     if v['data_format'] == 'FBA':
         # if yaml specifies a geoscale to load, use parameter to filter dataframe
@@ -118,7 +95,7 @@ def load_source_dataframe(k, v):
         flows_df = flowsa.getFlowBySector(k)
     elif v['data_format'] == 'FBS_outside_flowsa':
         log.info("Retrieving flowbysector for datasource " + k)
-        flows_df = getattr(sys.modules[__name__], v["FBS_datapull_fxn"])(v)
+        flows_df = dynamically_import_fxn(k, v["FBS_datapull_fxn"])(v)
     else:
         log.error("Data format not specified in method file for datasource " + k)
 
@@ -128,8 +105,9 @@ def load_source_dataframe(k, v):
 def main(**kwargs):
     """
     Creates a flowbysector dataset
-    :param method_name: Name of method corresponding to flowbysector method yaml name
-    :return: flowbysector
+    :param kwargs: dictionary of arguments, only argument is "method_name", the name of method
+                   corresponding to flowbysector method yaml name
+    :return: parquet, FBS save to local folder
     """
     if len(kwargs) == 0:
         kwargs = parse_args()
@@ -155,7 +133,7 @@ def main(**kwargs):
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
                 log.info("Cleaning up " + k + " FlowByActivity")
-                flows = getattr(sys.modules[__name__], v["clean_fba_df_fxn"])(flows)
+                flows = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows)
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
@@ -177,13 +155,15 @@ def main(**kwargs):
                 log.info("Preparing to handle " + aset + " in " + k)
                 log.debug("Preparing to handle subset of activities: " + ', '.join(map(str, names)))
                 # subset fba data by activity
-                # if activities are sector-like, check sectors are valid
-                if load_source_catalog()[k]['sector-like_activities']:
-                    flows = replace_naics_w_naics_from_another_year(flows,
-                                                                    method['target_sector_source'])
                 flows_subset =\
                     flows[(flows[fba_activity_fields[0]].isin(names)) |
                           (flows[fba_activity_fields[1]].isin(names))].reset_index(drop=True)
+
+                # if activities are sector-like, check sectors are valid
+                if load_source_catalog()[k]['sector-like_activities']:
+                    flows_subset =\
+                        replace_naics_w_naics_from_another_year(flows_subset,
+                                                                method['target_sector_source'])
 
                 # extract relevant geoscale data or aggregate existing data
                 flows_subset_geo = subset_df_by_geoscale(flows_subset, v['geoscale_to_use'],
@@ -201,9 +181,9 @@ def main(**kwargs):
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
-                    flow_subset_wsec = getattr(sys.modules[__name__],
-                                               v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
-                                                                            attr=attr)
+                    flow_subset_wsec = \
+                        dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
+                                                                               attr=attr)
 
                 # map df to elementary flows
                 log.info("Mapping flows in " + k + ' to federal elementary flow list')
@@ -217,10 +197,9 @@ def main(**kwargs):
                 # clean up mapped fba with sectors, if specified in yaml
                 if "clean_mapped_fba_w_sec_df_fxn" in v:
                     log.info("Cleaning up " + k + " FlowByActivity with sectors")
-                    flow_subset_mapped =\
-                        getattr(sys.modules[__name__],
-                                v["clean_mapped_fba_w_sec_df_fxn"])\
-                            (flow_subset_mapped, attr, method)
+                    flow_subset_mapped = \
+                        dynamically_import_fxn(k, v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped,
+                                                                                      attr, method)
                 # rename SourceName to MetaSources
                 flow_subset_mapped = flow_subset_mapped.\
                     rename(columns={'SourceName': 'MetaSources'})
@@ -234,7 +213,7 @@ def main(**kwargs):
                 # function due to the complicated nature
                 # of the allocation, call on function here
                 elif attr['allocation_method'] == 'allocation_function':
-                    fbs = function_allocation_method(flow_subset_mapped, names, attr, fbs_list)
+                    fbs = function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list)
                 else:
                     fbs =\
                         dataset_allocation_method(flow_subset_mapped, attr,
@@ -280,10 +259,8 @@ def main(**kwargs):
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
-                # todo: modify fxn to work if activities are sector like in df being allocated
-                if load_source_catalog()[k]['sector-like_activities'] is False:
-                    check_for_differences_between_fba_load_and_fbs_output(
-                        flow_subset_mapped, fbs_agg_2, aset, k, method_name)
+                check_for_differences_between_fba_load_and_fbs_output(
+                    flow_subset_mapped, fbs_agg_2, aset, k, method_name)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
@@ -340,7 +317,9 @@ def main(**kwargs):
     fbss = reset_fbs_dq_scores(fbss)
     # save parquet file
     meta = set_fb_meta(method_name, "FlowBySector")
-    write_df_to_file(fbss,paths,meta)
+    write_df_to_file(fbss, paths, meta)
+    # rename the log file saved to local directory
+    rename_log_file(method_name, meta)
 
 
 if __name__ == '__main__':

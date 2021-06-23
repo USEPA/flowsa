@@ -4,13 +4,9 @@
 # ingwersen.wesley@epa.gov
 
 """
-Create a crosswalk linking the USDA Irrigation and Water Management Surveyto NAICS_12. Created by selecting unique
+Create a crosswalk linking the USGS Water Use Coefficients
+(for animals) to NAICS_12. Created by selecting unique
 Activity Names and manually assigning to NAICS
-
-NAICS8 are unofficial and are not used again after initial aggregation to NAICS6. NAICS8 are based
-on NAICS definitions from the Census.
-
-7/8 digit NAICS align with USDA ERS FIWS
 
 """
 import pandas as pd
@@ -18,7 +14,12 @@ from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):
-    """manually assign each ERS activity to a NAICS_2012 code"""
+    """
+    Function to assign NAICS codes to each dataframe activity
+    :param df: df, a FlowByActivity subset that contains unique activity names
+    :return: df with assigned Sector columns
+    """
+
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
@@ -48,9 +49,10 @@ def assign_naics(df):
     # poultry hatcheries: 11234
 
     # other poultry production: 11239, manually add row
-    df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11239']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                                ignore_index=True, sort=True)
+    df = df.append(
+        pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11239']],
+                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                     ), ignore_index=True, sort=True)
 
 
     # sheep and goat farming: 1124
@@ -68,18 +70,20 @@ def assign_naics(df):
     # apiculture: 11291
 
     # horse and other equine production: 11292
-    df.loc[df['Activity'] == 'Horses (including ponies, mules, burrows, and donkeys)', 'Sector'] = '11292'
+    df.loc[df['Activity'] == 'Horses (including ponies, mules, burrows, and donkeys)',
+           'Sector'] = '11292'
 
     # fur-bearing animal and rabbit production: 11293, manually add row
-    df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11293']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                                ignore_index=True, sort=True)
+    df = df.append(
+        pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11293']],
+                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
+                     ), ignore_index=True, sort=True)
 
 
     # all other animal production: 11299, manually add row
     df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Sheep and lambs', 'NAICS_2012_Code', '11299']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-                                ignore_index=True, sort=True)
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
 
     return df
 
@@ -87,18 +91,22 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select unique activity names from file
     years = ['2005']
-    # flowclass
-    flowclass = ['Water']
     # datasource
     datasource = 'USGS_WU_Coef'
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
-    # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
+    # drop any rows where naics12 is 'nan'
+    # (because level of detail not needed or to prevent double counting)
     df.dropna(subset=["Sector"], inplace=True)
     # assign sector type
     df['SectorType'] = None
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

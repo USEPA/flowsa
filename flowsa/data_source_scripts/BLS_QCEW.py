@@ -15,24 +15,30 @@ import zipfile
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, fba_default_grouping_fields
+from flowsa.common import US_FIPS, fba_default_grouping_fields, flow_by_activity_wsec_mapped_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    flow_by_activity_wsec_mapped_fields, aggregator
+    aggregator
 from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
 
 
-def BLS_QCEW_URL_helper(build_url, config, args):
+def BLS_QCEW_URL_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for blm pls data that requires parts of the url text string
+    is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    args = kwargs['args']
+
     urls = []
 
     url = build_url
@@ -42,19 +48,23 @@ def BLS_QCEW_URL_helper(build_url, config, args):
     return urls
 
 
-def bls_qcew_call(url, qcew_response, args):
+def bls_qcew_call(**kwargs):
     """
-    Convert response for calling url to pandas dataframe, transform to pandas df
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     # initiate dataframes list
     df_list = []
     # unzip folder that contains bls data in ~4000 csv files
-    with zipfile.ZipFile(io.BytesIO(qcew_response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         # read in file names
         for name in f.namelist():
             # Only want state info
@@ -69,13 +79,18 @@ def bls_qcew_call(url, qcew_response, args):
         return df
 
 
-def bls_qcew_parse(dataframe_list, args):
+def bls_qcew_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     # Concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop rows don't need
@@ -131,11 +146,11 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
     modify the flow name to match prior methodology for mapping/impact factors
 
     :param fba_df: df, flowbyactivity
-    :param kwargs:
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
     :return: df, flowbyactivity, with modified flow names
     """
 
-    fba_df = clean_bls_qcew_fba(fba_df)
+    fba_df = clean_bls_qcew_fba(fba_df, **kwargs)
 
     # rename flowname value
     fba_df['FlowName'] = fba_df['FlowName'].replace({'Number of employees': 'Jobs'})
@@ -146,13 +161,15 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
 def clean_bls_qcew_fba(fba_df, **kwargs):
     """
     Function to clean BLS QCEW data when FBA is not used for employment satellite table
-
-    :param fba_df:
-    :return:
+    :param fba_df: df, FBA format
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
+    :return: df, modified BLS QCEW data
     """
 
     fba_df = fba_df.reset_index(drop=True)
+    # aggregate data to NAICS 2 digits, if 2 digit value is missing
     fba_df = replace_missing_2_digit_sector_values(fba_df)
+    # drop rows of data where sectors are provided in ranges
     fba_df = remove_2_digit_sector_ranges(fba_df)
 
     return fba_df
@@ -163,10 +180,9 @@ def replace_missing_2_digit_sector_values(df):
     In the 2015 (and possibly other dfs, there are instances of values
     at the 3 digit NAICS level, while the 2 digit NAICS is reported as 0.
     The 0 values are replaced with summed 3 digit NAICS
-    :param df:
-    :return:
+    :param df: df, BLS QCEW data in FBA format
+    :return: df, BLS QCEW data with 2-digit NAICS sector FlowAmounts
     """
-    # from flowsa.flowbyfunctions import aggregator
 
     # check for 2 digit 0 values
     df_missing = df[(df['ActivityProducedBy'].apply(lambda x:
@@ -220,8 +236,8 @@ def remove_2_digit_sector_ranges(fba_df):
     """
     BLS publishes activity ranges of '31-33', 44-45', '48-49... drop these ranges.
     The individual 2 digit naics are summed later.
-    :param df:
-    :return:
+    :param fba_df: df, BLS QCEW in FBA format
+    :return: df, no sector ranges
     """
 
     df = fba_df[~fba_df['ActivityProducedBy'].str.contains('-')].reset_index(drop=True)
@@ -232,16 +248,13 @@ def remove_2_digit_sector_ranges(fba_df):
 def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     clean up bls df with sectors by estimating suppresed data
-    :param df_w_sec:
-    :param attr:
-    :param method:
-    :return:
+    :param df_w_sec: df, FBA format BLS QCEW data
+    :param kwargs: additional arguments can include 'attr', a dictionary of FBA method yaml parameters
+    :return: df, BLS QCEW FBA with estimated suppressed data
     """
-    # from flowsa.flowbyfunctions import flow_by_activity_wsec_mapped_fields
-    # from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
-
     df_w_sec = df_w_sec.reset_index(drop=True)
-    df2 = add_missing_flow_by_fields(df_w_sec, flow_by_activity_wsec_mapped_fields)
+    df2 = add_missing_flow_by_fields(df_w_sec,
+                                     flow_by_activity_wsec_mapped_fields).reset_index(drop=True)
     df3 = replace_strings_with_NoneType(df2)
 
     return df3

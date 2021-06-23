@@ -14,14 +14,24 @@ from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def eia_mer_url_helper(build_url, config, args):
+def eia_mer_url_helper(**kwargs):
     """
-    Build URL's for EIA_MER dataset. Critical parameter is 'tbl', representing a table from the dataset.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+
     urls = []
     for tbl in config['tbls']:
         url = build_url.replace("__tbl__", tbl)
@@ -29,15 +39,20 @@ def eia_mer_url_helper(build_url, config, args):
     return urls
 
 
-def eia_mer_call(url, response, args):
+def eia_mer_call(**kwargs):
     """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
+    # load arguments necessary for function
+    response_load = kwargs['r']
 
-    :param url:
-    :param response:
-    :param args:
-    :return:
-    """
-    with io.StringIO(response.text) as fp:
+    with io.StringIO(response_load.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
@@ -45,8 +60,8 @@ def eia_mer_call(url, response, args):
 def decide_flow_name(desc):
     """
     Based on the provided description, determine the FlowName.
-    :param desc:
-    :return:
+    :param desc: str, row description
+    :return: str, flowname for row
     """
     if 'Production' in desc:
         return 'Production'
@@ -62,8 +77,8 @@ def decide_flow_name(desc):
 def decide_produced(desc):
     """
     Based on the provided description, determine the ActivityProducedBy.
-    :param desc:
-    :return:
+    :param desc: str, description for row
+    :return: str, ActivityProducedBy cell value
     """
     if 'Production' in desc:
         return desc.split('Production')[0].strip()
@@ -73,8 +88,8 @@ def decide_produced(desc):
 def decide_consumed(desc):
     """
     Based on the provided description, determine the ActivityConsumedBy.
-    :param desc:
-    :return:
+    :param desc: str, description cell
+    :return: str, ActivityConsumedBy value
     """
     if 'Consumed' in desc:
         return desc.split('Consumed')[0].strip()
@@ -85,13 +100,18 @@ def decide_consumed(desc):
     return 'None'
 
 
-def eia_mer_parse(dataframe_list, args):
+def eia_mer_parse(**kwargs):
     """
-    Combine and parse the provided dataframes.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = pd.concat(dataframe_list, sort=False)
     # Filter only the rows we want, YYYYMM field beginning with 201, for 2010's.
     # df = df[df['YYYYMM'] > 201000]

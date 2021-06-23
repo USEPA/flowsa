@@ -12,7 +12,8 @@ from flowsa.common import datapath, load_bea_crosswalk
 if __name__ == '__main__':
 
     cw_load = load_bea_crosswalk()
-    cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
+    cw = cw_load[['BEA_2012_Detail_Code',
+                  'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # drop all rows with naics >6
     cw = cw[cw['NAICS_2012_Code'].apply(lambda x: len(str(x)) == 6)].reset_index(drop=True)
 
@@ -30,4 +31,5 @@ if __name__ == '__main__':
     # set order
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_BEA_2012_Detail_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_BEA_2012_Detail_toNAICS.csv", index=False)

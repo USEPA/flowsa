@@ -16,18 +16,24 @@ from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.values_from_literature import \
     get_commercial_and_manufacturing_floorspace_to_land_area_ratio
 
-def eia_cbecs_land_URL_helper(build_url, config, args):
+def eia_cbecs_land_URL_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for blm pls data that requires parts of the url text string
+    is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+
     # initiate url list for coa cropland data
     urls = []
     # replace "__xlsx_name__" in build_url to create three urls
@@ -39,18 +45,23 @@ def eia_cbecs_land_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_cbecs_land_call(url, cbecs_response, args):
+def eia_cbecs_land_call(**kwargs):
     """
-    Convert response for calling url to pandas dataframe, transform to pandas df
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    url = kwargs['url']
+    response_load = kwargs['r']
+
     # Convert response to dataframe
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(cbecs_response.content), sheet_name='data')
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(cbecs_response.content), sheet_name='rse')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data')
+    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='rse')
 
     if ("b5.xlsx" in url):
         # skip rows and remove extra rows at end of dataframe
@@ -121,13 +132,17 @@ def eia_cbecs_land_call(url, cbecs_response, args):
     return df
 
 
-def eia_cbecs_land_parse(dataframe_list, args):
+def eia_cbecs_land_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
 
     # concat dataframes
     df_array = []
@@ -180,8 +195,8 @@ def eia_cbecs_land_parse(dataframe_list, args):
 def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
     """
     Activity names vary across csvs. Standardize
-    :param df: df
-    :param column_to_standardize: column with the activity names
+    :param df: df, any format
+    :param column_to_standardize: str, column with the activity names
     :return: df with standardized activity names
     """
 
@@ -213,7 +228,7 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
 def cbecs_land_fba_cleanup(fba):
     """
     Clean up the land fba for use in allocation
-    :param fba: df, eia cbecs land flowbyactivity
+    :param fba: df, eia cbecs land flowbyactivity format
     :return: df, flowbyactivity with modified values
     """
 

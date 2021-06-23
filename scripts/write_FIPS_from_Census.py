@@ -54,7 +54,8 @@ if __name__ == '__main__':
 
     # Assume df order in list is in geolevels keys order
 
-    state_and_county_fields = {"Country": ["State Code (FIPS)"],  # country does not have its own field
+    # country does not have its own field
+    state_and_county_fields = {"Country": ["State Code (FIPS)"],
                                "State": ["State Code (FIPS)"],
                                "County": ["State Code (FIPS)", "County Code (FIPS)"]}
 
@@ -80,7 +81,8 @@ if __name__ == '__main__':
         FIPS_df = pd.merge(FIPS_df, v, on=fields_to_merge, how="left")
 
     # combine state and county codes
-    FIPS_df['FIPS'] = FIPS_df[state_and_county_fields["County"][0]] + FIPS_df[state_and_county_fields["County"][1]]
+    FIPS_df['FIPS'] = FIPS_df[state_and_county_fields["County"][0]] + \
+                      FIPS_df[state_and_county_fields["County"][1]]
 
     fields_to_keep = ["State", "County", "FIPS"]
     FIPS_df = FIPS_df[fields_to_keep]
