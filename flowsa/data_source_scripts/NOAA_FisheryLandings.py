@@ -32,6 +32,8 @@ def noaa_parse(**kwargs):
                    args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
 
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "foss_landings.csv")
