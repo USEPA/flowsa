@@ -1,4 +1,4 @@
-# USDA_ACUP_Pesticide.py (flowsa)
+# USDA_ACUP.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -9,7 +9,7 @@ from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields, allocate_by_sector
 
 
-def pest_url_helper(**kwargs):
+def acup_url_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
@@ -36,7 +36,7 @@ def pest_url_helper(**kwargs):
     return urls
 
 
-def pest_call(**kwargs):
+def acup_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param kwargs: potential arguments include:
