@@ -10,6 +10,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 
 import argparse
 import pandas as pd
+import numpy as np
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
     convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date, rename_log_file
@@ -194,6 +195,11 @@ def main(**kwargs):
     else:
         # Else only a single year defined, create an array of one:
         year_iter = [kwargs['year']]
+
+    # check that year(s) are listed in the method yaml, return warning if not
+    years_list = list(set(list(map(int, year_iter))).difference(config['years']))
+    if len(years_list) != 0:
+        log.warning(f'Years not listed in FBA method yaml: {years_list}, data might not exist')
 
     for p_year in year_iter:
         kwargs['year'] = str(p_year)
