@@ -96,9 +96,14 @@ def acup_parse(**kwargs):
 
     # address non-NAICS classification data
     # use info from other columns to determine flow name
-    df.loc[:, 'FlowName'] = df['statisticcat_desc'] + ', ' + df['prodn_practice_desc']
-    # combine column information to create activity information, and create two new columns for activities
-    df['ActivityConsumedBy'] = df['commodity_desc'] + ', ' + df['class_desc']
+    df.loc[:, 'FlowName'] = df['domaincat_desc'].apply(lambda x: x[x.find("(")+1:x.find(")")])
+    # extract data within parenthesis for activity col
+    df['ActivityConsumedBy'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + df[
+        'util_practice_desc']  # drop this column later
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ALL CLASSES", "",
+                                                regex=True)  # not interested in all data from class_desc
+    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ALL UTILIZATION PRACTICES", "",
+                                                regex=True)  # not interested in all data from class_desc
 
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount", "unit_desc": "Unit",
@@ -111,6 +116,7 @@ def acup_parse(**kwargs):
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
     df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
     df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(NA)", 'FlowAmount'] = 0
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # USDA CoA 2017 states that (H) means CV >= 99.95, therefore replacing with 99.95 so can convert column to int
     # (L) is a CV of <= 0.05
