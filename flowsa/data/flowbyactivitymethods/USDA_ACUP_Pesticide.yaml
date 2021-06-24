@@ -13,6 +13,7 @@ url:
     source_desc: SURVEY
     sector_desc: ENVIRONMENTAL
     unit_desc: LB
+    domain_desc: __domainLevel__ # __domainLevel__ triggers a replace function
     agg_level_desc: STATE
     state_alpha: __stateAlpha__    # dynamically substitute the 50 state acronyms.
     year: __year__    # __year__ is used to trigger a replace function to substitute in year
@@ -26,3 +27,8 @@ years:
 - 2017
 - 2018
 - 2020
+domain_levels:
+- CHEMICAL, FUNGICIDE
+- CHEMICAL, HERBICIDE
+- CHEMICAL, INCECTICIDE
+- CHEMICAL, OTHER

@@ -25,6 +25,7 @@ def acup_url_helper(**kwargs):
 
     # load the arguments necessary for function
     build_url = kwargs['build_url']
+    config = kwargs['config']
     # initiate url list for coa cropland data
     urls = []
 
@@ -32,11 +33,13 @@ def acup_url_helper(**kwargs):
     state_abbrevs = abbrev_us_state
     state_abbrevs = {k: v for (k, v) in state_abbrevs.items() if k != "DC"}
 
-    for z in state_abbrevs:
-        url = build_url
-        url = url.replace("__stateAlpha__", z)
-        url = url.replace(" ", "%20")
-        urls.append(url)
+    for x in config['domain_levels']:
+        for y in state_abbrevs:
+            url = build_url
+            url = url.replace("__domainLevel__", x)
+            url = url.replace("__stateAlpha__", y)
+            url = url.replace(" ", "%20")
+            urls.append(url)
 
     return urls
 
