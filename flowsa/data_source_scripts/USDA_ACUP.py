@@ -5,7 +5,7 @@
 import json
 import numpy as np
 import pandas as pd
-from flowsa.common import *
+from flowsa.common import US_FIPS, withdrawn_keyword, abbrev_us_state
 from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields, allocate_by_sector
 
 
@@ -68,7 +68,7 @@ def acup_call(**kwargs):
     return df
 
 
-def pest_parse(**kwargs):
+def acup_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
     :param kwargs: potential arguments include:

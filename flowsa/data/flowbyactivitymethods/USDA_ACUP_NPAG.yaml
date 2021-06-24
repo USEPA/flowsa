@@ -20,7 +20,7 @@ url:
   key_param: key
 url_replace_fxn: acup_url_helper
 call_response_fxn: acup_call
-parse_response_fxn: npag_parse
+parse_response_fxn: acup_parse
 years:
 - 2012
 - 2015
