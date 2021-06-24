@@ -55,7 +55,12 @@ def acup_call(**kwargs):
     response_load = kwargs['r']
 
     response_json = json.loads(response_load.text)
-    df = pd.DataFrame(data=response_json["data"])
+    # not all states have data, so return empty df if does not exist
+    try:
+        df = pd.DataFrame(data=response_json["data"])
+    except KeyError:
+        # log.info('No data exists for state')
+        df = []
 
     return df
 
