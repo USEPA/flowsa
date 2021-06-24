@@ -1,7 +1,7 @@
 author: US Department of Agriculture
 source_name_bib: Agricultural Chemical Use Program
 citable_url: https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Chemical_Use/
-date_generated: '2021-06-23'  # updated automatically when flowbyactivity.py is run
+date_generated: '2021-06-24'  # updated automatically when flowbyactivity.py is run
 bib_id: USDA_ACUP
 api_name: USDA_Quickstats
 api_key_required: true
@@ -12,11 +12,13 @@ url:
   url_params:
     source_desc: SURVEY
     sector_desc: ENVIRONMENTAL
+    unit_desc: LB
     agg_level_desc: STATE
+    state_alpha: __stateAlpha__    # dynamically substitute the 50 state acronyms.
     year: __year__    # __year__ is used to trigger a replace function to substitute in year
   key_param: key
-url_replace_fxn: pest_url_helper
-call_response_fxn: pest_call
+url_replace_fxn: acup_url_helper
+call_response_fxn: acup_call
 parse_response_fxn: pest_parse
 years:
 - 2012
