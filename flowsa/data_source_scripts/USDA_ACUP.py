@@ -28,10 +28,15 @@ def acup_url_helper(**kwargs):
     # initiate url list for coa cropland data
     urls = []
 
-    url = build_url
-    url = url.replace(" ", "%20")
+    # call on state acronyms from common.py (and remove entry for DC)
+    state_abbrevs = abbrev_us_state
+    state_abbrevs = {k: v for (k, v) in state_abbrevs.items() if k != "DC"}
 
-    urls.append(url)
+    for z in state_abbrevs:
+        url = build_url
+        url = url.replace("__stateAlpha__", z)
+        url = url.replace(" ", "%20")
+        urls.append(url)
 
     return urls
 
