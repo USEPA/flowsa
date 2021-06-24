@@ -191,6 +191,7 @@ def coa_cropland_parse(**kwargs):
     # Add hardcoded data
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland"
+    df['FlowType'] = 'ELEMENTARY_FLOW'
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
