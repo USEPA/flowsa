@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 import pycountry
 import pkg_resources
-from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing
+from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing, write_metadata_to_file
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 pkg_version_number = '0.1.1'
@@ -756,6 +756,19 @@ def set_fb_meta(name_data, category):
     fb_meta.ext = write_format
     fb_meta.git_hash = git_hash
     return fb_meta
+
+
+def write_metadata(config, name_data, fb_meta):
+    """
+
+    :param file_name:
+    :param metadata_dict:
+    :param category:
+    :return:
+    """
+
+    fb_meta.tool_meta = config
+    write_metadata_to_file(paths, fb_meta)
 
 
 def rename_log_file(filename, fb_meta):
