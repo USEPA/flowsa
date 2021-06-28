@@ -758,15 +758,12 @@ def set_fb_meta(name_data, category):
     return fb_meta
 
 
-def write_metadata(config, name_data, fb_meta):
+def write_metadata(config, fb_meta):
     """
-
-    :param file_name:
-    :param metadata_dict:
-    :param category:
+    Save the metadata to a json file
     :return:
     """
-
+    # todo: add specific year of FBA created. Perhaps specify the configuration parameters?
     fb_meta.tool_meta = config
     write_metadata_to_file(paths, fb_meta)
 
