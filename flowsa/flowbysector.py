@@ -30,7 +30,7 @@ from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity,\
     set_fb_meta, paths, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
-    fbs_grouping_fields_w_activities
+    fbs_grouping_fields_w_activities, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
 from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, \
@@ -318,6 +318,7 @@ def main(**kwargs):
     # save parquet file
     meta = set_fb_meta(method_name, "FlowBySector")
     write_df_to_file(fbss, paths, meta)
+    write_metadata(method, meta)
     # rename the log file saved to local directory
     rename_log_file(method_name, meta)
 
