@@ -9,8 +9,9 @@ setup(
         "data/*.*", "output/*.*"]},
     include_package_data=True,
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List',
-        'esupy @ git+https://github.com/USEPA/esupy',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.7#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy@v0.1.1#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories@v0.9.6#egg=StEWI',
         'pandas>=1.1.0',
         'pip>=9',
         'setuptools>=41',
@@ -28,7 +29,7 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',
-    author='Wesley Ingwersen',
+    author='Catherine Birney, Ben Young, Wesley Ingwersen, Melissa Conner, Jacob Specht, Mo Li',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 1 - Alpha",
