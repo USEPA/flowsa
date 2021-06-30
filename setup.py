@@ -29,7 +29,7 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',
-    author='Wesley Ingwersen',
+    author='Catherine Birney, Ben Young, Wesley Ingwersen, Melissa Conner, Jacob Specht, Mo Li',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 1 - Alpha",
