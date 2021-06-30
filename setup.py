@@ -17,7 +17,6 @@ setup(
         'setuptools>=41',
         'pyyaml>=5.3',
         'ruamel.yaml>=0.16.13',
-        'pyarrow==0.15',
         'requests>=2.22.0',
         'appdirs>=1.4.3',
         'pycountry>=19.8.18',
