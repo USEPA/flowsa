@@ -14,13 +14,7 @@ from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
     load_values_from_literature_citations_config
 
 
-def generate_fbs_bibliography(methodnames):
-    """
-    Generate bibliography for a FlowBySector
-    :param methodname: list of methodnames to create a bibliiography
-    :return: a .bib file saved in local directory
-    """
-
+def generate_list_of_sources_in_fbs_method(methodnames):
     fbas = []
     for m in methodnames:
         # load the fbs method yaml
@@ -43,6 +37,17 @@ def generate_fbs_bibliography(methodnames):
                 if 'literature_sources' in attr:
                     for source, date in attr['literature_sources'].items():
                         fbas.append([source, date])
+    return fbas
+
+def generate_fbs_bibliography(methodnames):
+    """
+    Generate bibliography for a FlowBySector
+    :param methodname: list of methodnames to create a bibliiography
+    :return: a .bib file saved in local directory
+    """
+
+    # create list of fbas in method
+    fbas = generate_list_of_sources_in_fbs_method(methodnames)
 
     # loop through list of fbas, load fba method yaml, and create bib entry
     bib_list = []
