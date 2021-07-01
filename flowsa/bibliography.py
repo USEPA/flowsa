@@ -15,7 +15,7 @@ from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
 
 
 def generate_list_of_sources_in_fbs_method(methodnames):
-    fbas = []
+    sources = []
     for m in methodnames:
         # load the fbs method yaml
         fbs_yaml = load_method(m)
@@ -24,20 +24,20 @@ def generate_list_of_sources_in_fbs_method(methodnames):
         fbs = fbs_yaml['source_names']
         for fbs_k, fbs_v in fbs.items():
             try:
-                fbas.append([fbs_k, fbs_v['year']])
+                sources.append([fbs_k, fbs_v['year']])
             except:
                 log.info('Could not append ' + fbs_k + ' to datasource list')
                 continue
             activities = fbs_v['activity_sets']
             for aset, attr in activities.items():
                 if attr['allocation_source'] != 'None':
-                    fbas.append([attr['allocation_source'], attr['allocation_source_year']])
+                    sources.append([attr['allocation_source'], attr['allocation_source_year']])
                 if 'helper_source' in attr:
-                    fbas.append([attr['helper_source'], attr['helper_source_year']])
+                    sources.append([attr['helper_source'], attr['helper_source_year']])
                 if 'literature_sources' in attr:
                     for source, date in attr['literature_sources'].items():
-                        fbas.append([source, date])
-    return fbas
+                        sources.append([source, date])
+    return sources
 
 def generate_fbs_bibliography(methodnames):
     """
@@ -46,32 +46,32 @@ def generate_fbs_bibliography(methodnames):
     :return: a .bib file saved in local directory
     """
 
-    # create list of fbas in method
-    fbas = generate_list_of_sources_in_fbs_method(methodnames)
+    # create list of sources in method
+    sources = generate_list_of_sources_in_fbs_method(methodnames)
 
-    # loop through list of fbas, load fba method yaml, and create bib entry
+    # loop through list of sources, load source method yaml, and create bib entry
     bib_list = []
-    fba_set = set()
-    for fba in fbas:
+    source_set = set()
+    for source in sources:
         # drop list duplicates and any where year is None (because allocation
         # is a function, not a datasource)
-        if fba[1] != 'None':
+        if source[1] != 'None':
             try:
                 # first try loading citation information from source yaml
-                config = load_sourceconfig(fba[0])
+                config = load_sourceconfig(source[0])
             except:
                 try:
                     # if no source yaml, check if citation info is for values in the literature
                     config_load = load_values_from_literature_citations_config()
-                    config = config_load[fba[0]]
+                    config = config_load[source[0]]
                 except:
-                    log.info('Could not find a method yaml for ' + fba[0])
+                    log.info('Could not find a method yaml for ' + source[0])
                     continue
-            # ensure data sources are not duplicated when different FBA names
-            if (config['source_name_bib'], config['author'], fba[1],
-                config['citable_url']) not in fba_set:
-                fba_set.add((config['source_name_bib'], config['author'],
-                             fba[1], config['citable_url']))
+            # ensure data sources are not duplicated when different source names
+            if (config['source_name_bib'], config['author'], source[1],
+                config['citable_url']) not in source_set:
+                source_set.add((config['source_name_bib'], config['author'],
+                             source[1], config['citable_url']))
 
                 # if there is a date downloaded, use in citation over date generated
                 if 'date_downloaded' in config:
@@ -81,12 +81,12 @@ def generate_fbs_bibliography(methodnames):
 
                 db = BibDatabase()
                 db.entries = [{
-                    'title': config['source_name_bib'] + ' ' + str(fba[1]),
+                    'title': config['source_name_bib'] + ' ' + str(source[1]),
                     'author': config['author'],
-                    'year': str(fba[1]),
+                    'year': str(source[1]),
                     'url': config['citable_url'],
                     'urldate': bib_date,
-                    'ID': config['bib_id'] + '_' + str(fba[1]),
+                    'ID': config['bib_id'] + '_' + str(source[1]),
                     'ENTRYTYPE': 'misc'
                     }]
                 # append each entry to a list of BibDatabase entries
