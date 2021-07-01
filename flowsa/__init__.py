@@ -8,7 +8,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 
 from esupy.processed_data_mgmt import load_preprocessed_output, download_from_remote
 from flowsa.common import paths, set_fb_meta, biboutputpath, fbaoutputpath, fbsoutputpath,\
-    default_remote_load
+    default_download_if_missing
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
@@ -18,7 +18,7 @@ import logging as log
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
-                      remote_load=default_remote_load):
+                      download_if_missing=default_download_if_missing):
     """
     Retrieves stored data in the FlowByActivity format
     :param datasource: str, the code of the datasource.
@@ -37,7 +37,7 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     fba = load_preprocessed_output(fba_meta,paths)
 
     # Remote download
-    if fba is None and remote_load:
+    if fba is None and download_if_missing:
         log.info(datasource + ' ' + str(year) + ' not found in ' + fbaoutputpath +
                  ', downloading from remote source')
         download_from_remote(fba_meta,paths)
