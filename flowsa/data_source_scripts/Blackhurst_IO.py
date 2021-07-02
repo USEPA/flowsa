@@ -21,19 +21,23 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 
 
 # Read pdf into list of DataFrame
-def bh_call(url, bh_response, args):
+def bh_call(**kwargs):
     """
-    Load the data in pdf format and produce a response
-    :param url: url where data found
-    :param bh_response: response to reading url
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe to format into a flowbyactivty data set
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
 
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
-        bh_df = tabula.read_pdf(io.BytesIO(bh_response.content), pages=x, stream=True)[0]
+        bh_df = tabula.read_pdf(io.BytesIO(response_load.content), pages=x, stream=True)[0]
         bh_df_list.append(bh_df)
 
     bh_df = pd.concat(bh_df_list, sort=False)
@@ -41,13 +45,17 @@ def bh_call(url, bh_response, args):
     return bh_df
 
 
-def bh_parse(dataframe_list, args):
+def bh_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
@@ -63,22 +71,20 @@ def bh_parse(dataframe_list, args):
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, '2002')
     df['Year'] = '2002'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     return df
 
 
 def convert_blackhurst_data_to_gal_per_year(df, attr):
     """
-    Load BEA Make After Redefinition data to convert dataframe units
+    Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
-    :param df: fba ataframe
-    :param attr: attribute data from method yaml
+    :param df: df, FBA format
+    :param attr: dictionary, attribute data from method yaml for activity set
     :return: transformed fba df
     """
-    # import flowsa
-    # from flowsa.common import fba_fill_na_dict
-    # from flowsa.dataclean import harmonize_units
-    # from flowsa.dataclean import clean_df
 
     # load the bea make table
     bmt = flowsa.getFlowByActivity(datasource='BEA_Make_AR',
@@ -108,21 +114,14 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
 
 def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     """
-    Load BLS employment data and use to transporm original units to gallons per employee
-    :param df_wsec: dataframe that includes sector columns
-    :param attr: attribute data from fba method yaml
-    :param method: The name of the fba method yaml
-    :return: transformed fba dataframe with sector columns
+    Load BLS employment data and use to transform original units to gallons per employee
+    :param df_wsec: df, includes sector columns
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :return: df, transformed fba dataframe with sector columns
     """
 
-    # import flowsa
-    # from flowsa.mapping import add_sectors_to_flowbyactivity
-    # from flowsa.flowbyfunctions import filter_by_geoscale
-    # from flowsa.common import fba_fill_na_dict
-    # from flowsa.dataclean import harmonize_units
-    # from flowsa.dataclean import clean_df
-    # from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
-
+    # load 2002 employment data
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
 
     bls = filter_by_geoscale(bls, 'national')
@@ -177,13 +176,10 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     water withdrawal estimates and published USGS values.
 
     This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
-    :param df_to_scale: fba dataframe to be modified
-    :param attr: attributes from the fba method yaml
+    :param df_to_scale: df, fba dataframe to be modified
+    :param attr: dictionary, attribute data from method yaml for activity set
     :return: scaled fba results
     """
-
-    # import flowsa
-    # from flowsa.dataclean import harmonize_units
 
     # determine national level published withdrawal data for usgs mining in FBS method year
     pv_load = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",

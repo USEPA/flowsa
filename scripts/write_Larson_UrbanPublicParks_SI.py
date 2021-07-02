@@ -6,15 +6,16 @@
 """
 Load and save the SI parks data from
 
-    Larson LR, Jennings V, Cloutier SA (2016) Public Parks and Wellbeing in Urban Areas of the United States.
+    Larson LR, Jennings V, Cloutier SA (2016) Public Parks and
+    Wellbeing in Urban Areas of the United States.
     PLoS ONE 11(4): e0153211. https://doi.org/10.1371/journal.pone.0153211
 
 SI obtained 08/26/2020
 """
 
-from flowsa.common import *
-import pandas as pd
 import io
+import pandas as pd
+from flowsa.common import datapath, make_http_request
 
 
 # 2012--2018 fisheries data at state level

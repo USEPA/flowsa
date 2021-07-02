@@ -6,19 +6,27 @@ They are stored in YAML format using a .yaml extension
 ```
 #Source configuration format
 ---
-api_name: #Name internally for API used for identifying api keys
-api_key_required:  #true or false 
-format: #format, either json or txt
+author: Data author, for use in bibliography entry
+source_name_bib: Data title, for use bibliography entry
+citable_url: Full data url, for use in bibliography entry
+date_generated: Date the dataset is imported and formatted, updated automatically when flowbyactivity.py is run
+bib_id: Shorthand data name used for citation purposes in a .bib entry
+api_name: Name internally for API used for identifying api keys
+api_key_required: true or false 
+format: #format, json, txt, xlsx
 url 
-  base_url: # base url
-  api_path: #path to api
-  url_params 
-    # A set of url parameters for query string
-  year_param: #name of year parameter
-  key_param: # name of key parameter 
-url_replace_fxn:  #name of the source specific function that replaces the dynamic values in the URL
+  base_url: base url
+  api_path: path to api
+  url_params: 
+    # A set of url parameters for query string, specific to data set
+  year_param: name of year parameter
+  key_param: name of key parameter 
+url_replace_fxn: name of the source specific function that replaces the dynamic values in the URL
+call_response_fxn: name of the source specific function that specifies how data should be loaded
+parse_response_fxn: name of the source specific function that parses and formats the dataframe
 years: 
-    #years of data as separate lines like - 2015 
+    #years of data as separate lines like - 2015
+* can add additional yaml dictionary items specific to calling on a data set
 ```
 
 To declare a value that needs to be dynamically replaced, surround

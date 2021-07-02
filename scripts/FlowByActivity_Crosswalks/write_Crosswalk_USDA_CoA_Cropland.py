@@ -4,13 +4,14 @@
 # ingwersen.wesley@epa.gov
 
 """
-Create a crosswalk linking the downloaded USDA_CoA_Cropland to NAICS_12. Created by selecting unique Activity Names and
+Create a crosswalk linking the downloaded USDA_CoA_Cropland to NAICS_12.
+Created by selecting unique Activity Names and
 manually assigning to NAICS
 
 NAICS8 are unofficial and are not used again after initial aggregation to NAICS6. NAICS8 are based
 on NAICS definitions from the Census.
 
-7/8 digit NAICS align with USDA ERS FIWS
+7/8 digit NAICS align with USDA ERS IWMS
 
 """
 import pandas as pd
@@ -19,7 +20,12 @@ from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
-    """manually assign each ERS activity to a NAICS_2012 code"""
+    """
+    Function to assign NAICS codes to each dataframe activity
+    :param df: df, a FlowByActivity subset that contains unique activity names
+    :return: df with assigned Sector columns
+    """
+
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
@@ -58,7 +64,7 @@ def assign_naics(df):
 
     # coa equivalent to wheat farming: 11114
     df.loc[df['Activity'] == 'WHEAT', 'Sector'] = '11114'
-    
+
     # coa aggregates to corn farming: 11115
     df.loc[df['Activity'] == 'CORN', 'Sector'] = '11115'
     df.loc[df['Activity'] == 'CORN, GRAIN', 'Sector'] = '111150A'
@@ -83,29 +89,30 @@ def assign_naics(df):
     # df.loc[df['Activity'] == 'SWEET RICE', 'Sector'] = '' # last year published 2002
 
     # coa equivalent to vegetable and melon farming: 1112
-    df.loc[df['Activity'] == 'VEGETABLE TOTALS', 'Sector'] = '1112'  # this category does include melons
+    df.loc[df['Activity'] == 'VEGETABLE TOTALS', 'Sector'] = '1112'  # this category includes melons
     df.loc[df['Activity'] == 'TARO', 'Sector'] = '111219'
 
     # coa aggregates to fruit and tree nut farming: 1113
-    # in 2017, pineapples included in "orchards" category. Therefore, for 2012, must sum pineapple data to make
-    # comparable
-    # orchards associated with 6 naics6, for now, after allocation, divide values associated with these naics by 6
+    # in 2017, pineapples included in "orchards" category.
+    # Therefore, for 2012, must sum pineapple data to make comparable
+    # orchards associated with 6 naics6, for now, after allocation,
+    # divide values associated with these naics by 6
     df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111331'
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
     df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '111339'
 
@@ -163,19 +170,23 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2012', '2017']
-    # flowclass
-    flowclass = ['Land', 'Other']
     # datasource
     datasource = 'USDA_CoA_Cropland'
     # df of unique ers activity names
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
-    # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
+    # drop any rows where naics12 is 'nan'
+    # (because level of detail not needed or to prevent double counting)
     df = df.dropna()
     # assign sector type
     df['SectorType'] = None
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

@@ -1,7 +1,8 @@
 author: Statistics Canada
-source_name_bib: Gross domestic product (GDP) at basic prices, by industry, monthly, growth rates
+source_name_bib: Gross domestic product (GDP) at basic prices, by industry, monthly,
+  growth rates
 citable_url: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3610043402
-date_generated: '2021-03-12' # updated automatically when flowbyactivity.py is run
+date_generated: '2021-06-16' # updated automatically when flowbyactivity.py is run
 bib_id: StatCan_GDP
 api_name: Stat Canada
 api_key_required: false

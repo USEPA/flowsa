@@ -100,9 +100,12 @@ source_names:
         allocation_flow:
           - "AREA HARVESTED"
           - "AREA"
+          - "AREA IN PRODUCTION"
+          - 'AREA BEARING & NON-BEARING'
+          - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'no'
       activity_set_2:
@@ -115,9 +118,12 @@ source_names:
         allocation_flow:
           - "AREA HARVESTED"
           - "AREA"
+          - "AREA IN PRODUCTION"
+          - 'AREA BEARING & NON-BEARING'
+          - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'no'
       activity_set_3:

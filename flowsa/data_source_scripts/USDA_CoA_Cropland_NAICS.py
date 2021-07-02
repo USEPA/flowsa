@@ -9,18 +9,24 @@ from flowsa.common import *
 from flowsa.flowbyfunctions import assign_fips_location_system, estimate_suppressed_data
 
 
-def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
+def CoA_Cropland_NAICS_URL_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for blm pls data that requires parts of the url text string
+    is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+
     # initiate url list for coa cropland data
     urls = []
 
@@ -48,28 +54,36 @@ def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
     return urls
 
 
-def coa_cropland_NAICS_call(url, coa_response, args):
+def coa_cropland_NAICS_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param coa_response: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    cropland_json = json.loads(coa_response.text)
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
+    cropland_json = json.loads(response_load.text)
     df_cropland = pd.DataFrame(data=cropland_json["data"])
     return df_cropland
 
 
-def coa_cropland_NAICS_parse(dataframe_list, args):
+def coa_cropland_NAICS_parse(**kwargs):
     """
-    Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
-    (irrigated and total).
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = pd.concat(dataframe_list, sort=False)
     # specify desired data based on domain_desc
     df = df[df['domain_desc'] == 'NAICS CLASSIFICATION']
@@ -128,7 +142,7 @@ def coa_cropland_NAICS_parse(dataframe_list, args):
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland_NAICS"
     df['MeasureofSpread'] = "RSD"
-    df['DataReliability'] = None
+    df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
     return df
 
@@ -137,9 +151,10 @@ def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
     """
     Clean up the land fba for use in allocation
     :param fba_w_sector: df, coa cropland naics flowbyactivity with sector columns
+    :param kwargs: dictionary, requires df sourcename
     :return: df, flowbyactivity with modified values
     """
 
     # estimate the suppressed data by equally allocating parent naics to child
-    df = estimate_suppressed_data(fba_w_sector, 'SectorConsumedBy', 3)
+    df = estimate_suppressed_data(fba_w_sector, 'SectorConsumedBy', 3, kwargs['sourcename'])
     return df

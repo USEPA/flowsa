@@ -11,16 +11,24 @@ import io
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def epa_nei_url_helper(build_url, config, args):
+def epa_nei_url_helper(**kwargs):
     """
-    Takes the basic url text and performs substitutions based on NEI year and version.
-    Returns the finished url.
-    :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    args = kwargs['args']
+
     urls = []
     url = build_url
 
@@ -38,17 +46,19 @@ def epa_nei_url_helper(build_url, config, args):
     return urls
 
 
-def epa_nei_call(url, response_load, args):
+def epa_nei_call(**kwargs):
     """
-    Takes the .zip archive returned from the url call and extracts
-    the individual .csv files. The .csv files are read into a dataframe and
-    concatenated into one master dataframe containing all 10 EPA regions.
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     z = zipfile.ZipFile(io.BytesIO(response_load.content))
     # create a list of files contained in the zip archive
     znames = z.namelist()
@@ -64,16 +74,18 @@ def epa_nei_call(url, response_load, args):
     return df
 
 
-def epa_nei_global_parse(dataframe_list, args):
+def epa_nei_global_parse(**kwargs):
     """
-    Modifies the raw data to meet the flowbyactivity criteria.
-    Renames certain column headers to match flowbyactivity format.
-    Adds a few additional columns with hardcoded data.
-    Deletes all unnecessary columns.
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = pd.concat(dataframe_list, sort=True)
 
     # rename columns to match flowbyactivity format
@@ -128,16 +140,16 @@ def epa_nei_global_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_onroad_parse(dataframe_list, args):
+def epa_nei_onroad_parse(**kwargs):
     """
-    Calls global parse function to run parsing operations common
-    to all three data categories.
-    Runs additional parsing operations specific to ONROAD data.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    df = epa_nei_global_parse(dataframe_list, args)
+
+    df = epa_nei_global_parse(**kwargs)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -146,16 +158,16 @@ def epa_nei_onroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonroad_parse(dataframe_list, args):
+def epa_nei_nonroad_parse(**kwargs):
     """
-    Calls global parse function to run parsing operations common
-    to all three data categories.
-    Runs additional parsing operations specific to NONROAD data.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    df = epa_nei_global_parse(dataframe_list, args)
+
+    df = epa_nei_global_parse(**kwargs)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -164,16 +176,16 @@ def epa_nei_nonroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonpoint_parse(dataframe_list, args):
+def epa_nei_nonpoint_parse(**kwargs):
     """
-    Calls global parse function to run parsing operations common
-    to all three data categories.
-    Runs additional parsing operations specific to NONPOINT data.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    df = epa_nei_global_parse(dataframe_list, args)
+
+    df = epa_nei_global_parse(**kwargs)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -203,9 +215,9 @@ def assign_nonpoint_dqi(args):
 
 def clean_NEI_fba(fba):
     """
-
-    :param fba:
-    :return:
+    Clean up the NEI FBA for use in FBS creation
+    :param fba: df, FBA format
+    :return: df, modified FBA
     """
     fba = remove_duplicate_NEI_flows(fba)
     fba = drop_GHGs(fba)
@@ -217,9 +229,9 @@ def clean_NEI_fba(fba):
 
 def clean_NEI_fba_no_pesticides(fba):
     """
-
-    :param fba:
-    :return:
+    Clean up the NEI FBA with no pesicides for use in FBS creation
+    :param fba: df, FBA format
+    :return: df, modified FBA
     """
     fba = drop_pesticides(fba)
     fba = clean_NEI_fba(fba)
@@ -230,8 +242,8 @@ def remove_duplicate_NEI_flows(df):
     """
     These flows for PM will get mapped to the primary PM flowable in FEDEFL
     resulting in duplicate emissions
-    :param df:
-    :return:
+    :param df: df, FBA format
+    :return: df, FBA format with duplicate flows dropped
     """
     flowlist = [
         'PM10-Primary from certain diesel engines',
@@ -246,8 +258,8 @@ def drop_GHGs(df):
     """
     GHGs are included in some NEI datasets. If these data are not compiled together 
     with GHGRP, need to remove them as they will be tracked from a different source
-    :param df: 
-    :return: 
+    :param df: df, FBA format
+    :return: df
     """""
     # Flow names reflect source data prior to FEDEFL mapping
     flowlist = [
@@ -266,8 +278,8 @@ def drop_pesticides(df):
     """
     To avoid overlap with other datasets, emissions of pesticides from pesticide
     application are removed.
-    :param df:
-    :return:
+    :param df: df, FBA format
+    :return: df
     """
     # Flow names reflect source data prior to FEDEFL mapping
     flowlist = [
@@ -297,10 +309,10 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     Quantity of contributing flows is subtracted from aggregate flow and the
     aggregate flow quantity is updated. Modeled after function of same name in
     stewicombo.overlaphandler.py
-    :param df:
-    :param aggregate_flow:
-    :param contributing_flows:
-    :return:
+    :param df: df, FBA format
+    :param aggregate_flow: str, flowname to modify
+    :param contributing_flows: list, flownames contributing to aggregate flow
+    :return: df, FBA format, modified flows
     """
     match_conditions = ['ActivityProducedBy', 'Compartment', 'Location', 'Year']
 

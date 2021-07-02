@@ -1,8 +1,8 @@
 author: BEA
 source_name_bib: BEA_Make_AR
 citable_url: ' '
-date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
-date_downloaded: ' ' # todo: modify bib fxn to use date_downloaded over date_generated
+date_generated: '2021-06-15' # updated automatically when flowbyactivity.py is run
+date_downloaded: ' '
 bib_id: BEA_Make_AR
 api_name: None
 api_key_required: false

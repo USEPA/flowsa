@@ -10,7 +10,7 @@ import io
 import zipfile
 import numpy as np
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, log
 
 DEFAULT_YEAR = 9999
 
@@ -186,14 +186,24 @@ TBL_META = {
 YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
 
 
-def ghg_url_helper(build_url, config, args):
+def ghg_url_helper(**kwargs):
     """
-    Only one URL is needed to retrieve the data for all tables for all years.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+
     annex_url = config['url']['annex_url']
     return [build_url, annex_url]
 
@@ -201,8 +211,8 @@ def ghg_url_helper(build_url, config, args):
 def fix_a17_headers(header):
     """
     Fix A-17 headers, trim white spaces, convert shortened words such as Elec., Res., etc.
-    :param header:
-    :return:
+    :param header: str, column header
+    :return: str, modified column header
     """
     if header == A_17_TBTU_HEADER[0]:
         header = f' {A_17_TBTU_HEADER[1].strip()}'.replace('')
@@ -222,9 +232,9 @@ def fix_a17_headers(header):
 def cell_get_name(value, default_flow_name):
     """
     Given a single string value (cell), separate the name and units.
-    :param value:
-    :param default_flow_name:
-    :return:
+    :param value: str
+    :param default_flow_name: indicate return flow name string subset
+    :return: flow name for row
     """
     if '(' not in value:
         return default_flow_name.replace('__type__', value.strip())
@@ -243,9 +253,9 @@ def cell_get_name(value, default_flow_name):
 def cell_get_units(value, default_units):
     """
     Given a single string value (cell), separate the name and units.
-    :param value:
-    :param default_units:
-    :return:
+    :param value: str
+    :param default_units: indicate return units string subset
+    :return: unit for row
     """
     if '(' not in value:
         return default_units
@@ -267,28 +277,34 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
     Given a series (such as a df column), split the contents' strings into a name and units.
     An example might be converting "Carbon Stored (MMT C)" into ["Carbon Stored", "MMT C"].
 
-    :param series:
-    :param default_flow_name:
-    :param default_units:
-    :return:
+    :param series: df column
+    :param default_flow_name: df column for flow name to be modified
+    :param default_units: df column for units to be modified
+    :return: str, flowname and units for each row in df
     """
     names = series.apply(lambda x: cell_get_name(x, default_flow_name))
     units = series.apply(lambda x: cell_get_units(x, default_units))
     return {'names': names, 'units': units}
 
 
-def ghg_call(url, response, args):
+def ghg_call(**kwargs):
     """
-    Callback function for the US GHG Emissions download. Open the downloaded zip file and
-    read the contained CSV(s) into pandas dataframe(s).
-    :param url:
-    :param response:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    url = kwargs['url']
+    response_load = kwargs['r']
+    args = kwargs['args']
+
     df = None
     year = args['year']
-    with zipfile.ZipFile(io.BytesIO(response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         frames = []
         # TODO: replace this TABLES constant with kwarg['tables']
         if 'annex' in url:
@@ -327,7 +343,7 @@ def ghg_call(url, response, args):
                             new_header = col[2]
                         new_headers.append(new_header)
                     df.columns = new_headers
-                    print('break')
+                    # print('break')
                 elif '4-' in table:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",", decimal=".")
                 elif 'A-' in table:
@@ -375,8 +391,8 @@ def ghg_call(url, response, args):
 def get_unnamed_cols(df):
     """
     Get a list of all unnamed columns, used to drop them.
-    :param df:
-    :return:
+    :param df: df being formatted
+    :return: list, unnamed columns
     """
     return [col for col in df.columns if "Unnamed" in col]
 
@@ -384,26 +400,31 @@ def get_unnamed_cols(df):
 def is_consumption(source_name):
     """
     Determine whether the given source contains consumption or production data.
-    :param source_name:
-    :return:
+    :param source_name: df
+    :return: True or False
     """
     if 'consum' in TBL_META[source_name]['desc'].lower():
         return True
     return False
 
 
-def ghg_parse(dataframe_list, args):
+def ghg_parse(**kwargs):
     """
-    Parse the given EPA GHGI data and return multiple dataframes, one per-year per-table.
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     cleaned_list = []
     for df in dataframe_list:
         special_format = False
         source_name = df["SourceName"][0]
-        print(f'Processing Source Name {source_name}')
+        log.info(f'Processing Source Name {source_name}')
         for src in SRC_NAME_SPECIAL_FORMAT:
             if src in source_name:
                 special_format = True
@@ -449,12 +470,12 @@ def ghg_parse(dataframe_list, args):
         try:
             df = df[~df["FlowAmount"].str.contains("\\+", na=False)]
         except AttributeError as ex:
-            print(ex)
+            log.info(ex)
         # Dropping all rows with value "NE"
         try:
             df = df[~df["FlowAmount"].str.contains("NE", na=False)]
         except AttributeError as ex:
-            print(ex)
+            log.info(ex)
 
         # Convert all empty cells to nan cells
         df["FlowAmount"].replace("", np.nan, inplace=True)
@@ -503,11 +524,11 @@ def ghg_parse(dataframe_list, args):
         try:
             df = df[df['Year'].isin([args['year']])]
         except AttributeError as ex:
-            print(ex)
+            log.info(ex)
 
-        # Add tmp DQ scores
-        df["DataReliability"] = 5
-        df["DataCollection"] = 5
+        # Add DQ scores
+        df["DataReliability"] = 5  # tmp
+        df["DataCollection"] = 5  # tmp
         # Fill in the rest of the Flow by fields so they show "None" instead of nan.76i
         df["MeasureofSpread"] = 'None'
         df["DistributionType"] = 'None'
