@@ -138,6 +138,6 @@ def coa_livestock_parse(**kwargs):
     df['SourceName'] = "USDA_CoA_Livestock"
     df['Unit'] = "p"
     df['MeasureofSpread'] = "RSD"
-    df['DataReliability'] = None
+    df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
     return df

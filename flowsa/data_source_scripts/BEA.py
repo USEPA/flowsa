@@ -44,6 +44,8 @@ def bea_gdp_parse(**kwargs):
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"  # state FIPS codes have not changed over last decade
     df["Unit"] = "USD"
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5 # tmp
 
     return df
 
@@ -81,6 +83,8 @@ def bea_use_detail_br_parse(**kwargs):
     df['LocationSystem'] = "FIPS_2015"
     df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
     df["Unit"] = "USD"
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5 #tmp
 
     return df
 
@@ -119,6 +123,9 @@ def bea_make_detail_br_parse(**kwargs):
     df['LocationSystem'] = "FIPS_2015"
     df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
     df["Unit"] = "USD"
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5 #tmp
+
     return df
 
 
@@ -155,6 +162,9 @@ def bea_make_ar_parse(**kwargs):
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, args['year'])
     df['FlowName'] = 'Gross Output Producer Value After Redef'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
+
     return df
 
 

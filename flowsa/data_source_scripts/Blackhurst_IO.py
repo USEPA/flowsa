@@ -71,6 +71,8 @@ def bh_parse(**kwargs):
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, '2002')
     df['Year'] = '2002'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     return df
 

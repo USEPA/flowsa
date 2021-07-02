@@ -135,6 +135,8 @@ def soda_parse(**kwargs):
         data["Unit"] = "Thousand metric tons"
         data['FlowName'] = "Soda Ash"
         data["Context"] = "air"
+        data['DataReliability'] = 5  # tmp
+        data['DataCollection'] = 5  # tmp
 
         for index, row in df.iterrows():
             data["Description"] = ""

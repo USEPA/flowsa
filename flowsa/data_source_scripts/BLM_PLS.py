@@ -608,6 +608,8 @@ def blm_pls_parse(**kwargs):
         df['Year'] = args["year"]
         df['Unit'] = "Acres"
         df['FlowType'] = 'ELEMENTARY_FLOW'
+        df['DataReliability'] = 5  # tmp
+        df['DataCollection'] = 5  #tmp
 
     return df
 

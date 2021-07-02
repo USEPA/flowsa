@@ -160,9 +160,9 @@ def eia_mer_parse(**kwargs):
     output['Compartment'] = 'None'
     output['MeasureofSpread'] = 'None'
     output['DistributionType'] = 'None'
-    # Add tmp DQ scores
-    output['DataReliability'] = 5
-    output['DataCollection'] = 5
+    # Add DQ scores
+    output['DataReliability'] = 5  # tmp
+    output['DataCollection'] = 5  # tmp
     # sort df
     output = output.sort_values(['Location', 'FlowName'])
     # reset index

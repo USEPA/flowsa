@@ -526,9 +526,9 @@ def ghg_parse(**kwargs):
         except AttributeError as ex:
             log.info(ex)
 
-        # Add tmp DQ scores
-        df["DataReliability"] = 5
-        df["DataCollection"] = 5
+        # Add DQ scores
+        df["DataReliability"] = 5  # tmp
+        df["DataCollection"] = 5  # tmp
         # Fill in the rest of the Flow by fields so they show "None" instead of nan.76i
         df["MeasureofSpread"] = 'None'
         df["DistributionType"] = 'None'
