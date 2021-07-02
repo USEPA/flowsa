@@ -11,17 +11,17 @@ import pandas as pd
 from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
-
-
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2011', '2015']
-    # flowclass
-    flowclass = ['Money']
     # datsource
     datasource = 'StatCan_GDP'
     # df of unique ers activity names
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     # Activity and Sector are the same
     df['Sector'] = df['Activity'].copy()
@@ -39,4 +39,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

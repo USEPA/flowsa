@@ -15,17 +15,21 @@ import io
 from flowsa.common import *
 
 
-def fiws_call(url, fiws_response, args):
+def fiws_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param usgs_response: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     # extract data from zip file (only one csv)
-    with zipfile.ZipFile(io.BytesIO(fiws_response.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         # read in file names
         for name in f.namelist():
             data = f.open(name)
@@ -33,13 +37,18 @@ def fiws_call(url, fiws_response, args):
         return df
 
 
-def fiws_parse(dataframe_list, args):
+def fiws_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # select data for chosen year, cast year as string to match argument
@@ -87,9 +96,9 @@ def fiws_parse(dataframe_list, args):
     df['Class'] = 'Money'
     df['SourceName'] = 'USDA_ERS_FIWS'
     df['Unit'] = 'USD'
-    # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5
+    # Add DQ scores
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
     # sort df
     df = df.sort_values(['Location', 'FlowName'])
     # reset index

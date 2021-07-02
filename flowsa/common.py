@@ -3,24 +3,29 @@
 # coding=utf-8
 
 """Common variables and functions used across flowsa"""
+
+import shutil
 import sys
 import os
 import subprocess
 import logging as log
 import yaml
+from ruamel.yaml import YAML
 import requests
 import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
 import pkg_resources
-from esupy.processed_data_mgmt import Paths, FileMeta
+from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 pkg_version_number = '0.1.1'
 
-log.basicConfig(level=log.INFO, format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S', stream=sys.stdout)
+log.basicConfig(level=log.DEBUG,
+                format='%(asctime)s %(levelname)-8s %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S',
+                stream=sys.stdout)
 
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -34,12 +39,15 @@ flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
 
+datasourcescriptspath = modulepath + 'data_source_scripts/'
+
 paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 outputpath = paths.local_path.replace('\\', '/') + '/'
 fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
+logoutputpath = outputpath + 'Log/'
 
 default_download_if_missing = False
 
@@ -47,6 +55,22 @@ default_download_if_missing = False
 scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
              '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
+
+# setup log file handler
+create_paths_if_missing(logoutputpath)
+fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
+fh.setLevel(log.DEBUG)
+formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
+                          datefmt='%Y-%m-%d %H:%M:%S')
+fh.setFormatter(formatter)
+ch = log.StreamHandler(stream=sys.stdout)
+ch.setLevel(log.INFO)
+ch.setFormatter(formatter)
+for hdlr in log.getLogger('').handlers[:]:
+    log.getLogger('').removeHandler(hdlr)
+log.getLogger('').addHandler(fh)
+log.getLogger('').addHandler(ch)
+
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
@@ -98,7 +122,8 @@ def load_api_key(api_source):
         with open(keyfile, mode='r') as keyfilecontents:
             key = keyfilecontents.read()
     except IOError:
-        log.error("Key file not found in 'API_Keys' directory")
+        log.error("Key file not found in 'API_Keys' directory. See github wiki for help"
+                  "https://github.com/USEPA/flowsa/wiki/GitHub-Contributors#api-keys")
     return key
 
 
@@ -124,31 +149,55 @@ def make_http_request(url):
 
 
 def load_sector_crosswalk():
+    """
+    Load NAICS crosswalk between the years 2007, 2012, 2017
+    :return: df, NAICS crosswalk over the years
+    """
     cw = pd.read_csv(datapath + "NAICS_Crosswalk.csv", dtype="str")
     return cw
 
 
 def load_sector_length_crosswalk():
+    """
+    Load the 2-digit to 6-digit NAICS crosswalk for 2012
+    :return: df, NAICS 2012 crosswalk by sector length
+    """
     cw = pd.read_csv(datapath + 'NAICS_2012_Crosswalk.csv', dtype='str')
     return cw
 
 
 def load_household_sector_codes():
+    """
+    Load manually added household sector codes from csv
+    :return: df, household sector codes
+    """
     household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
     return household
 
 
 def load_government_sector_codes():
+    """
+    Load the government sector codes from csv
+    :return: df, government sector codes
+    """
     government = pd.read_csv(datapath + 'Government_SectorCodes.csv', dtype='str')
     return government
 
 
 def load_bea_crosswalk():
+    """
+    Load the BEA crosswalk
+    :return: df, BEA crosswalk
+    """
     cw = pd.read_csv(datapath + "BEA_Crosswalk.csv", dtype="str")
     return cw
 
 
 def load_source_catalog():
+    """
+    Load the information in 'source_catalog.yaml'
+    :return: dictionary containing all information in source_catalog.yaml
+    """
     sources = datapath + 'source_catalog.yaml'
     with open(sources, 'r') as f:
         config = yaml.safe_load(f)
@@ -156,20 +205,23 @@ def load_source_catalog():
 
 
 def load_sourceconfig(source):
+    """
+    Load the method yaml
+    :param source: string, method name
+    :return: dictionary, information on the source method
+    """
     sfile = sourceconfigpath + source + '.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
 
 
-def load_script_fba_citations():
-    sfile = scriptsFBApath + 'write_FBA_source_citations.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_values_from_literature_citations():
+def load_values_from_literature_citations_config():
+    """
+    Load the config file that contains information on where the
+    values from the literature come from
+    :return: dictionary of the values from the literature information
+    """
     sfile = datapath + 'values_from_literature_source_citations.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
@@ -177,20 +229,24 @@ def load_values_from_literature_citations():
 
 
 def update_fba_yaml_date(source):
-    from ruamel.yaml import YAML
+    """
+    Update the Flow-By-Activity method yaml with the current date.
+    Updates everytime a FBA is run.
+    :param source: string, Flow-By-Activity Source
+    :return: string, updated date in the FBA method yaml
+    """
     filename = sourceconfigpath + source + '.yaml'
 
-    yaml = YAML()
+    yml = YAML()
     # open yaml
     with open(filename) as f:
-        config = yaml.load(f)
+        config = yml.load(f)
         # update the method yaml with date generated
         config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
 
     # save yaml, preserving comments
     with open(filename, "w") as file:
-        yaml.dump(config, file)
-    return None
+        yml.dump(config, file)
 
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
@@ -361,8 +417,8 @@ fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_w
 def read_stored_FIPS(year='2015'):
     """
     Read fips based on year specified, year defaults to 2015
-    :param year: '2010', '2013', or '2015'
-    :return:
+    :param year: str, '2010', '2013', or '2015', default year is 2015
+    :return: df, FIPS for specified year
     """
 
     FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
@@ -382,9 +438,9 @@ def getFIPS(state=None, county=None, year='2015'):
     Pass a state or state and county name to get the FIPS.
 
     :param state: str. A US State Name or Puerto Rico, any case accepted
-    :param county: str.
-    :param year: str. '2010', '2013', '2015'
-    :return: str. A five digit 2017 FIPS code
+    :param county: str. A US county
+    :param year: str. '2010', '2013', '2015', default year is 2015
+    :return: str. A five digit FIPS code
     """
     FIPS_df = read_stored_FIPS(year)
 
@@ -392,6 +448,8 @@ def getFIPS(state=None, county=None, year='2015'):
         if state is not None:
             state = clean_str_and_capitalize(state)
             code = FIPS_df.loc[(FIPS_df["State"] == state) & (FIPS_df["County"].isna()), "FIPS"]
+        else:
+            log.error("To get state FIPS, state name must be passed in 'state' param")
     else:
         if state is None:
             log.error("To get county FIPS, state name must be passed in 'state' param")
@@ -400,16 +458,19 @@ def getFIPS(state=None, county=None, year='2015'):
             county = clean_str_and_capitalize(county)
             code = FIPS_df.loc[(FIPS_df["State"] == state) & (FIPS_df["County"] == county), "FIPS"]
     if code.empty:
-        log.info("No FIPS code found")
+        log.error("No FIPS code found")
     else:
         code = code.values[0]
-        return code
+
+    return code
 
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     """
     Applies FIPS codes by county to dataframe containing columns with State and County
     :param df: dataframe must contain columns with 'State' and 'County', but not 'Location'
+    :param year: str, FIPS year, defaults to 2015
+    :param source_state_abbrev: True or False, the state column uses abbreviations
     :return dataframe with new column 'FIPS', blanks not removed
     """
     # If using 2 letter abbrevations, map to state names
@@ -419,7 +480,7 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County), axis=1)
 
     # Pull and merge FIPS on state and county
-    mapping_FIPS = get_county_FIPS()
+    mapping_FIPS = get_county_FIPS(year)
     df = df.merge(mapping_FIPS, how='left')
 
     # Where no county match occurs, assign state FIPS instead
@@ -433,7 +494,12 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
 
 
 def update_geoscale(df, to_scale):
-    """Updates df['Location'] based on specified to_scale"""
+    """
+    Updates df['Location'] based on specified to_scale
+    :param df: df, requires Location column
+    :param to_scale: str, target geoscale
+    :return: df, with 5 digit fips
+    """
     # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
         df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
@@ -446,7 +512,11 @@ def update_geoscale(df, to_scale):
 
 
 def clean_str_and_capitalize(s):
-    """Trim whitespace, modify string so first letter capitalized."""
+    """
+    Trim whitespace, modify string so first letter capitalized.
+    :param s: str
+    :return: str, formatted
+    """
     if s.__class__ == str:
         s = s.strip()
         s = s.lower()
@@ -455,7 +525,11 @@ def clean_str_and_capitalize(s):
 
 
 def capitalize_first_letter(string):
-    """Capitalize first letter of words"""
+    """
+    Capitalize first letter of words
+    :param string: str
+    :return: str, modified
+    """
     return_string = ""
     split_array = string.split(" ")
     for s in split_array:
@@ -466,6 +540,7 @@ def capitalize_first_letter(string):
 def get_state_FIPS(year='2015'):
     """
     Filters FIPS df for state codes only
+    :param year: str, year of FIPS, defaults to 2015
     :return: FIPS df with only state level records
     """
 
@@ -478,6 +553,7 @@ def get_state_FIPS(year='2015'):
 def get_county_FIPS(year='2015'):
     """
     Filters FIPS df for county codes only
+    :param year: str, year of FIPS, defaults to 2015
     :return: FIPS df with only county level records
     """
     fips = read_stored_FIPS(year)
@@ -489,6 +565,7 @@ def get_county_FIPS(year='2015'):
 def get_all_state_FIPS_2(year='2015'):
     """
     Gets a subset of all FIPS 2 digit codes for states
+    :param year: str, year of FIPS, defaults to 2015
     :return: df with 'State' and 'FIPS_2' cols
     """
 
@@ -599,7 +676,11 @@ def assign_census_regions(df_load):
 
 
 def call_country_code(country):
-    """use pycountry to call on 3 digit iso country code"""
+    """
+    use pycountry to call on 3 digit iso country code
+    :param country: str, name of country
+    :return: str, ISO code
+    """
     country_info = pycountry.countries.get(name=country)
     country_numeric_iso = country_info.numeric
     return country_numeric_iso
@@ -608,8 +689,8 @@ def call_country_code(country):
 def convert_fba_unit(df):
     """
     Convert unit to standard
-    :param df: Either flowbyactivity
-    :return: Df with standarized units
+    :param df: df, FBA flowbyactivity
+    :return: df, FBA with standarized units
     """
     # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
     days_in_year = 365
@@ -677,3 +758,23 @@ def set_fb_meta(name_data, category):
     fb_meta.ext = write_format
     fb_meta.git_hash = git_hash
     return fb_meta
+
+
+def rename_log_file(filename, fb_meta):
+    """
+    Rename the log file saved to local directory using df meta for df
+    :param filename: str, name of dataset
+    :param fb_meta: metadata for parquet
+    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
+    :return: modified log file name
+    """
+    # original log file name
+    log_file = f'{logoutputpath}{"flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
+                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
+    return None

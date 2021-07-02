@@ -14,13 +14,17 @@ from flowsa.common import US_FIPS, externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def usgs_coef_parse(dataframe_list, args):
+def usgs_coef_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
+
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "USGS_WU_Coef_Raw.csv")
 
@@ -42,5 +46,7 @@ def usgs_coef_parse(dataframe_list, args):
     df['Year'] = args['year']
     df = assign_fips_location_system(df, '2005')
     df["Unit"] = "gallons/animal/day"
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
 
     return df

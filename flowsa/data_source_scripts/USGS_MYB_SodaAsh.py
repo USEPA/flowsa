@@ -26,10 +26,10 @@ https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-
 
 def description(value, code):
     """
-
-    :param value:
-    :param code:
-    :return:
+    Create string for column based on row description
+    :param value: str, description column for a row
+    :param code: str, NAICS code
+    :return: str, to use as column value
     """
     glass_list = ["Container", "Flat", "Fiber", "Other", "Total"]
     other_list = ["Total domestic consumption4"]
@@ -52,18 +52,25 @@ def description(value, code):
     return return_val
 
 
-def soda_url_helper(build_url, config, args):
+def soda_url_helper(**kwargs):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for blm pls data that requires parts of the url text string
+    is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url: string, base url
-    :param config: dictionary of method yaml
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
-    :return: list of urls to call, concat, parse
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+    args = kwargs['args']
+
     # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     year = str(args["year"])
@@ -73,16 +80,20 @@ def soda_url_helper(build_url, config, args):
     return [url]
 
 
-def soda_call(url, soda_response, args):
+def soda_call(**kwargs):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param soda_response: df, response from url call
-    :param args: dictionary, arguments specified when running
-    flowbyactivity.py ('year' and 'source')
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(soda_response.content), sheet_name='T4')  # .dropna()
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='T4')  # .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -98,13 +109,18 @@ def soda_call(url, soda_response, args):
     return df_data
 
 
-def soda_parse(dataframe_list, args):
+def soda_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     total_glass = 0
     data = {}
     dataframe = pd.DataFrame()
@@ -119,6 +135,8 @@ def soda_parse(dataframe_list, args):
         data["Unit"] = "Thousand metric tons"
         data['FlowName'] = "Soda Ash"
         data["Context"] = "air"
+        data['DataReliability'] = 5  # tmp
+        data['DataCollection'] = 5  # tmp
 
         for index, row in df.iterrows():
             data["Description"] = ""

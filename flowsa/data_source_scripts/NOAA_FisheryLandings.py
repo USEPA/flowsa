@@ -19,29 +19,35 @@ Report Type: "7. Landings by States"
 Data output saved as csv, retaining assigned file name "foss_landings.csv"
 """
 
-from flowsa.common import *
 import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import externaldatapath, get_state_FIPS
 
 
-def noaa_parse(dataframe_list, args):
+def noaa_parse(**kwargs):
     """
-    Functions to being parsing and formatting data into flowbyactivity format
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: arguments as specified in flowbyactivity.py ('year' and 'source')
-    :return: dataframe parsed and partially formatted to flowbyactivity specifications
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    args = kwargs['args']
 
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "foss_landings.csv")
 
     # read state fips from common.py
-    df_state = get_state_FIPS()
+    df_state = get_state_FIPS().reset_index(drop=True)
     df_state['State'] = df_state["State"].str.lower()
 
     # modify fish state names to match those from common
     df = df_raw.drop('Sum Pounds', axis=1)
     df['State'] = df["State"].str.lower()
 
+    # filter by year
+    df = df[df['Year'] == int(args['year'])]
     # noaa differentiates between florida east and west, which is not necessary for our purposes
     df['State'] = df['State'].str.replace(r'-east', '')
     df['State'] = df['State'].str.replace(r'-west', '')
@@ -69,8 +75,10 @@ def noaa_parse(dataframe_list, args):
     df4["Class"] = "Money"
     df4["SourceName"] = "NOAA_Landings"
     df4["FlowName"] = None
-    df['LocationSystem'] = "FIPS_2018"  # state FIPS codes have not changed over last decade
+    df4 = assign_fips_location_system(df4, args['year'])
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
+    df4['DataReliability'] = 5  # tmp
+    df4['DataCollection'] = 5  #tmp
 
     return df4

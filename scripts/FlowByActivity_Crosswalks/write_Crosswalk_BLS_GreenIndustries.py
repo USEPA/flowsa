@@ -4,7 +4,8 @@
 # ingwersen.wesley@epa.gov
 
 """
-A NAICS list for green goods and services industries created in 2010. No longer being maintained by BLS.
+A NAICS list for green goods and services industries created in 2010.
+No longer being maintained by BLS.
 
 Converted from a pdf to a csv prior to importing dataset into flowsa.
 
@@ -38,12 +39,11 @@ df2['SectorType'] = None
 # reorder columns
 df3 = df2[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
 df3['Sector'] = df3['Sector'].astype(str).str.strip()
-# df3[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']] = \
-#     df3[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']].str.strip()
 
 # sort df
 df3 = df3.sort_values('Sector')
 # reset index
 df3.reset_index(drop=True, inplace=True)
 # save as csv
-df3.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_BLS_GreenIndustries_toNAICS.csv", index=False)
+df3.to_csv(datapath + "activitytosectormapping/" +
+           "Crosswalk_BLS_GreenIndustries_toNAICS.csv", index=False)

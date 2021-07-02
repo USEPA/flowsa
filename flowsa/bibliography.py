@@ -11,7 +11,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations
+    load_values_from_literature_citations_config
 
 
 def generate_fbs_bibliography(methodnames):
@@ -57,7 +57,7 @@ def generate_fbs_bibliography(methodnames):
             except:
                 try:
                     # if no source yaml, check if citation info is for values in the literature
-                    config_load = load_values_from_literature_citations()
+                    config_load = load_values_from_literature_citations_config()
                     config = config_load[fba[0]]
                 except:
                     log.info('Could not find a method yaml for ' + fba[0])
@@ -68,13 +68,19 @@ def generate_fbs_bibliography(methodnames):
                 fba_set.add((config['source_name_bib'], config['author'],
                              fba[1], config['citable_url']))
 
+                # if there is a date downloaded, use in citation over date generated
+                if 'date_downloaded' in config:
+                    bib_date = config['date_downloaded']
+                else:
+                    bib_date = config['date_generated']
+
                 db = BibDatabase()
                 db.entries = [{
                     'title': config['source_name_bib'] + ' ' + str(fba[1]),
                     'author': config['author'],
                     'year': str(fba[1]),
                     'url': config['citable_url'],
-                    'urldate': config['date_generated'],
+                    'urldate': bib_date,
                     'ID': config['bib_id'] + '_' + str(fba[1]),
                     'ENTRYTYPE': 'misc'
                     }]
@@ -89,5 +95,3 @@ def generate_fbs_bibliography(methodnames):
         # loop through all entries in bib_list
         for b in bib_list:
             bibfile.write(writer.write(b))
-
-    return None

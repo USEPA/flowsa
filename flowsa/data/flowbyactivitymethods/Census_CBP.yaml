@@ -1,7 +1,7 @@
 author: US Census Bureau
 source_name_bib: County Business Patterns
 citable_url: https://www.census.gov/programs-surveys/cbp.html
-date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
+date_generated: '2021-06-15' # updated automatically when flowbyactivity.py is run
 bib_id: Census_CBP
 api_name: Census
 api_key_required: true

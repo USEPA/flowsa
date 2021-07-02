@@ -4,7 +4,8 @@
 # ingwersen.wesley@epa.gov
 
 """
-Create a crosswalk linking the downloaded USGS_NWIS_WU to NAICS_12. Created by selecting unique Activity Names and
+Create a crosswalk linking the downloaded USGS_NWIS_WU to NAICS_12.
+Created by selecting unique Activity Names and
 manually assigning to NAICS
 
 """
@@ -14,7 +15,11 @@ from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
-    """manually assign each ERS activity to a NAICS_2012 code"""
+    """
+    Function to assign NAICS codes to each dataframe activity
+    :param df: df, a FlowByActivity subset that contains unique activity names
+    :return: df with assigned Sector columns
+    """
 
     df.loc[df['Activity'] == 'Aquaculture', 'Sector'] = '1125'
 
@@ -29,25 +34,35 @@ def assign_naics(df):
     df = df.append(pd.DataFrame([['Industrial', '31']], columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Industrial', '32']], columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Industrial', '33']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Industrial', '48839']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Industrial', '5111']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Industrial', '51222']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Industrial', '51223']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Industrial', '54171']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Industrial', '56291']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Industrial', '81149']], columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Industrial', '48839']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Industrial', '5111']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Industrial', '51222']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Industrial', '51223']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Industrial', '54171']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Industrial', '56291']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Industrial', '81149']],
+                                columns=['Activity', 'Sector']), sort=True)
 
     df.loc[df['Activity'] == 'Irrigation', 'Sector'] = '111'
     df = df.append(pd.DataFrame([['Irrigation', '112']], columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Irrigation', '71391']], columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Irrigation', '71391']],
+                                columns=['Activity', 'Sector']), sort=True)
 
     df.loc[df['Activity'] == 'Irrigation Crop', 'Sector'] = '111'
-    df = df.append(pd.DataFrame([['Irrigation Crop', '112']], columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Irrigation Crop', '112']],
+                                columns=['Activity', 'Sector']), sort=True)
 
     df.loc[df['Activity'] == 'Irrigation Golf Courses', 'Sector'] = '71391'
 
     df.loc[df['Activity'] == 'Irrigation Total', 'Sector'] = '111'
-    df = df.append(pd.DataFrame([['Irrigation Total', '71391']], columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Irrigation Total', '71391']],
+                                columns=['Activity', 'Sector']), sort=True)
 
     df.loc[df['Activity'] == 'Livestock', 'Sector'] = '1121'
     df = df.append(pd.DataFrame([['Livestock', '1122']], columns=['Activity', 'Sector']), sort=True)
@@ -61,7 +76,8 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Public', 'Sector'] = '221310'
     df.loc[df['Activity'] == 'Public Supply', 'Sector'] = '221310'
 
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '2211']], columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '2211']],
+                                columns=['Activity', 'Sector']), sort=True)
     df.loc[df['Activity'] == 'Thermoelectric Power Closed-loop cooling', 'Sector'] = '221100A'
     df.loc[df['Activity'] == 'Thermoelectric Power Once-through cooling', 'Sector'] = '221100B'
 
@@ -78,15 +94,18 @@ def assign_naics(df):
 if __name__ == '__main__':
     # select years to pull unique activity names
     years = ['2010', '2015']
-    # flowclass
-    flowclass = ['Water']
     # datasource
     datasource = 'USGS_NWIS_WU'
     # df of unique ers activity names
-    df = unique_activity_names(flowclass, years, datasource)
+    df_list = []
+    for y in years:
+        dfy = unique_activity_names(datasource, y)
+        df_list.append(dfy)
+    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
     df = assign_naics(df)
-    # drop any rows where naics12 is 'nan' (because level of detail not needed or to prevent double counting)
+    # drop any rows where naics12 is 'nan'
+    # (because level of detail not needed or to prevent double counting)
     df.dropna(subset=["Sector"], inplace=True)
     # assign sector type
     df['SectorType'] = 'I'
@@ -95,4 +114,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" + "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+    df.to_csv(datapath + "activitytosectormapping/" +
+              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)

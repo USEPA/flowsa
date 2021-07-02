@@ -66,6 +66,7 @@ source_names:
           - "AREA IN PRODUCTION, IRRIGATED"
           - "AREA, IRRIGATED"
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
+          - 'AREA GROWN, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
