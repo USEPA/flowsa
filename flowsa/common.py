@@ -764,6 +764,8 @@ def write_metadata(config, fb_meta):
     :return:
     """
     # todo: add specific year of FBA created. Perhaps specify the configuration parameters?
+    # todo: add time run/meta created
+    # todo: append fba-specific info
     fb_meta.tool_meta = config
     write_metadata_to_file(paths, fb_meta)
 
