@@ -58,7 +58,7 @@ def stewicombo_to_sector(yaml_load):
        
     df = None
     if inventory_name is not None:
-        df = stewicombo.getInventory(inventory_name)
+        df = stewicombo.getInventory(inventory_name, True)
     if df is None:
         ## run stewicombo to combine inventories, filter for LCI, remove overlap
         log.info('generating inventory in stewicombo')
