@@ -39,6 +39,18 @@ def generate_list_of_sources_in_fbs_method(methodnames):
                         sources.append([source, date])
     return sources
 
+
+def load_source_dict(sourcename):
+    try:
+        # first try loading citation information from source yaml
+        config = load_sourceconfig(sourcename)
+    except:
+        # if no source yaml, check if citation info is for values in the literature
+        config_load = load_values_from_literature_citations_config()
+        config = config_load[sourcename]
+    return config
+
+
 def generate_fbs_bibliography(methodnames):
     """
     Generate bibliography for a FlowBySector
@@ -57,16 +69,10 @@ def generate_fbs_bibliography(methodnames):
         # is a function, not a datasource)
         if source[1] != 'None':
             try:
-                # first try loading citation information from source yaml
-                config = load_sourceconfig(source[0])
+                config = load_source_dict(source[0])
             except:
-                try:
-                    # if no source yaml, check if citation info is for values in the literature
-                    config_load = load_values_from_literature_citations_config()
-                    config = config_load[source[0]]
-                except:
-                    log.info('Could not find a method yaml for ' + source[0])
-                    continue
+                log.info('Could not find a method yaml for ' + source[0])
+                continue
             # ensure data sources are not duplicated when different source names
             if (config['source_name_bib'], config['author'], source[1],
                 config['citable_url']) not in source_set:
