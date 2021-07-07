@@ -12,7 +12,8 @@ import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
-    convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date, rename_log_file, write_metadata
+    convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date, rename_log_file
+from flowsa.bibliography import write_metadata
 from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
     dynamically_import_fxn
 from flowsa.dataclean import clean_df
