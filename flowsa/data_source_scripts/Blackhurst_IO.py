@@ -86,9 +86,14 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     :return: transformed fba df
     """
 
+    # from the method file, load the fba information used within this function
+    bmt_source = attr['fbas_called_within_fxns']['convert_blackhurst_data_to_gal_per_year_fba_1']['source']
+    bmt_year = int(attr['fbas_called_within_fxns']['convert_blackhurst_data_to_gal_per_year_fba_1']['year'])
+    bmt_class = attr['fbas_called_within_fxns']['convert_blackhurst_data_to_gal_per_year_fba_1']['flowclass']
+
     # load the bea make table
-    bmt = flowsa.getFlowByActivity(datasource='BEA_Make_AR',
-                                   year=2002, flowclass='Money')
+    bmt = flowsa.getFlowByActivity(datasource=bmt_source,
+                                   year=bmt_year, flowclass=bmt_class)
     # clean df
     bmt = clean_df(bmt, flow_by_activity_fields, fba_fill_na_dict)
     bmt = harmonize_units(bmt)
@@ -112,7 +117,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     return bh_df_revised
 
 
-def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
+def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs):
     """
     Load BLS employment data and use to transform original units to gallons per employee
     :param df_wsec: df, includes sector columns
@@ -121,8 +126,13 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     :return: df, transformed fba dataframe with sector columns
     """
 
+    # from the method file, load the fba information used within this function
+    bls_source = attr['fbas_called_within_fxns']['convert_blackhurst_data_to_gal_per_employee_fba_1']['source']
+    bls_year = int(attr['fbas_called_within_fxns']['convert_blackhurst_data_to_gal_per_employee_fba_1']['year'])
+    bls_class = attr['fbas_called_within_fxns']['convert_blackhurst_data_to_gal_per_employee_fba_1']['flowclass']
+
     # load 2002 employment data
-    bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
+    bls = flowsa.getFlowByActivity(datasource=bls_source, year=bls_year, flowclass=bls_class)
 
     bls = filter_by_geoscale(bls, 'national')
 
