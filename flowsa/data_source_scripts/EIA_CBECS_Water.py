@@ -78,4 +78,7 @@ def eia_cbecs_water_parse(**kwargs):
     df["SourceName"] = 'EIA_CBECS_Water'
     df['Year'] = args["year"]
     df['Location'] = US_FIPS
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
+
     return df

@@ -142,7 +142,7 @@ def coa_cropland_NAICS_parse(**kwargs):
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland_NAICS"
     df['MeasureofSpread'] = "RSD"
-    df['DataReliability'] = None
+    df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
     return df
 

@@ -82,6 +82,8 @@ def mlu_parse(**kwargs):
                         data["Location"] = location
                         data["Year"] = int(args['year'])
                         data["Unit"] = "Thousand Acres"
+                        data['DataReliability'] = 5  # tmp
+                        data['DataCollection'] = 5  # tmp
                         output = output.append(data, ignore_index=True)
     output = assign_fips_location_system(output, args['year'])
 

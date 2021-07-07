@@ -75,8 +75,8 @@ def sc_gdp_parse(**kwargs):
     df['Location'] = call_country_code('Canada')
     df['LocationSystem'] = "ISO"
     df["MeasureofSpread"] = 'RSD'
-    df["DataReliability"] = '3'
-    df["DataCollection"] = '4'
+    df["DataReliability"] = 3
+    df["DataCollection"] = 4
 
     # drop data
     df = df[df['Year'] == args['year']]
