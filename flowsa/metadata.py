@@ -26,6 +26,11 @@ def write_metadata(config, fb_meta):
     Save the metadata to a json file
     :return:
     """
+
+    # test
+    # config = method.copy()
+    # fb_meta = meta
+
     # todo: add specific year of FBA created. Perhaps specify the configuration parameters?
     # todo: add time run/meta created
     # todo: append fba-specific info
