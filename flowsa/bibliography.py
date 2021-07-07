@@ -9,9 +9,6 @@ import os
 import logging as log
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
-from esupy.processed_data_mgmt import write_metadata_to_file
-
-from flowsa import paths
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
     load_values_from_literature_citations_config
@@ -109,15 +106,3 @@ def generate_fbs_bibliography(methodnames):
         # loop through all entries in bib_list
         for b in bib_list:
             bibfile.write(writer.write(b))
-
-
-def write_metadata(config, fb_meta):
-    """
-    Save the metadata to a json file
-    :return:
-    """
-    # todo: add specific year of FBA created. Perhaps specify the configuration parameters?
-    # todo: add time run/meta created
-    # todo: append fba-specific info
-    fb_meta.tool_meta = config
-    write_metadata_to_file(paths, fb_meta)

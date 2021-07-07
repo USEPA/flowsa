@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 import pycountry
 import pkg_resources
-from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing
+from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 pkg_version_number = '0.1.1'
@@ -741,23 +741,6 @@ def convert_fba_unit(df):
                                  'kg', df['Unit'])
 
     return df
-
-
-def set_fb_meta(name_data, category):
-    """
-    Create meta data for a parquet
-    :param name_data: name of df
-    :param category: 'FlowBySector' or 'FlowByActivity'
-    :return: metadata for parquet
-    """
-    fb_meta = FileMeta()
-    fb_meta.name_data = name_data
-    fb_meta.tool = pkg.project_name
-    fb_meta.tool_version = pkg_version_number
-    fb_meta.category = category
-    fb_meta.ext = write_format
-    fb_meta.git_hash = git_hash
-    return fb_meta
 
 
 def rename_log_file(filename, fb_meta):

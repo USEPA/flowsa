@@ -8,8 +8,9 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 
 import logging as log
 from esupy.processed_data_mgmt import load_preprocessed_output, download_from_remote
-from flowsa.common import paths, set_fb_meta, biboutputpath, fbaoutputpath, fbsoutputpath,\
+from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath,\
     default_download_if_missing
+from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
