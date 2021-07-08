@@ -55,53 +55,44 @@ def extract_yaml_method_data(config):
     # subset the FBS dictionary into a dictionary of source names
     fb = config['source_names']
     for k, v in fb.items():
+        # append source and year
         meta[k] = v['year']
-        dict_key_name = k + '_FBA_meta'
-        meta = append_fba_method_meta(meta, k, dict_key_name)
-        # fba = load_sourceconfig(k)
-        # # initiate nested dictionary
-        # meta[k + '_FBA_meta'] = {}
-        # for k2, v2 in fba.items():
-        #     if k2 in ('author', 'date_downloaded', 'date_generated'):
-        #         meta[k + '_FBA_meta'][k2] = str(v2)
-            # create dictionary of allocation datasets for different activities
-            activities = v['activity_sets']
-            # subset activity data and allocate to sector
+        # extract fba meta to append
+        fba_meta = return_fba_method_meta(k)
+        # append fba meta
+        meta[k + '_FBA_meta'] = fba_meta
+        # create dictionary of allocation datasets for different activities
+        activities = v['activity_sets']
+        # subset activity data and allocate to sector
         for aset, attr in activities.items():
-            # print(aset, attr)
-            # print(attr['allocation_source'])
             # initiate nested dictionary
             meta[k + '_FBA_meta'][aset] = {}
             for aset2, attr2 in attr.items():
                 # print(aset2, attr2)
                 if aset2 in ('allocation_method', 'allocation_source', 'allocation_source_year'):
                     meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
-                if aset2 == 'allocation_source':
-                    if attr2 != 'None':
-                        print(attr2)
-                        # dict_key_name = [k + '_FBA_meta'][aset]
-                        # meta = append_fba_method_meta(meta,, dictionary_key_name)
+            if attr['allocation_method'] not in (['direct', 'allocation_function']):
+                # extract fba meta to append
+                fba_meta = return_fba_method_meta(attr['allocation_source'])
+                # append fba meta
+                meta[k + '_FBA_meta'][aset]['allocation_source_meta'] = fba_meta
 
-                # if aset2 == 'allocation_method':
-                #     if attr2 not in ('direct', 'allocation_function'):
-                #         dict_key_name = [k + '_FBA_meta'][aset]
-                #         meta = append_fba_method_meta(meta, , dictionary_key_name)
-
-                        meta[k + '_FBA_meta'][aset][aset2] = attr2
+    return meta
 
 
-def append_fba_method_meta(dict, sourcename, dictionary_key_name):
+def return_fba_method_meta(sourcename):
     """
 
-    :param dict: dictionary, to which additional FBA information is appended
     :param sourcename: string, the FlowByActivity sourcename
     :return:
     """
+
     fba = load_sourceconfig(sourcename)
-    # initiate nested dictionary
-    dict[dictionary_key_name] = {}
+    # initiate empty dictionary
+    fba_dict = {}
+
     for k, v in fba.items():
         if k in ('author', 'date_downloaded', 'date_generated'):
-            dict[sourcename + '_FBA_meta'][k] = str(v)
+            fba_dict[k] = str(v)
 
-    return dict
+    return fba_dict
