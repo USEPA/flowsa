@@ -1,5 +1,5 @@
 import logging as log
-
+import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
 from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash, git_hash_long, load_sourceconfig
 
@@ -29,7 +29,6 @@ def write_metadata(source_name, config, fb_meta, category):
     """
     fb_meta.tool_meta = return_fb_meta_data(source_name, config, fb_meta, category)
     write_metadata_to_file(paths, fb_meta)
-    print(git_hash_long)
 
 
 def return_fb_meta_data(source_name, config, fb_meta, category):
@@ -92,7 +91,6 @@ def return_fbs_method_data(config):
             # initiate nested dictionary
             meta[k + '_FBA_meta'][aset] = {}
             for aset2, attr2 in attr.items():
-                # print(aset2, attr2)
                 if aset2 in ('allocation_method', 'allocation_source', 'allocation_source_year'):
                     meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
             if attr['allocation_method'] not in (['direct', 'allocation_function']):
