@@ -79,6 +79,11 @@ try:
 except:
     git_hash = None
 
+# define long version of git hash
+git_hash_long = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+        'ascii')
+
+
 # Common declaration of write format for package data products
 write_format = "parquet"
 
