@@ -1,7 +1,7 @@
 import logging as log
 
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
-from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash
+from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash, load_sourceconfig
 
 
 def set_fb_meta(name_data, category):
@@ -28,52 +28,80 @@ def write_metadata(config, fb_meta):
     """
 
     # test
-    # config = method.copy()
-    # fb_meta = meta
+    config = method.copy()
+    fb_meta = meta
 
     # todo: add specific year of FBA created. Perhaps specify the configuration parameters?
     # todo: add time run/meta created
     # todo: append fba-specific info
+    method_data = extract_yaml_method_data(config)
     fb_meta.tool_meta = config
     write_metadata_to_file(paths, fb_meta)
 
 
-# def loop_fbs():
-#     """
-#
-#     :return:
-#     """
-#     method_name = kwargs['method']
-#     # assign arguments
-#     log.info("Initiating flowbysector creation for " + method_name)
-#     # call on method
-#     method = load_method(method_name)
-#     # create dictionary of data and allocation datasets
-#     fb = method['source_names']
-#     # Create empty list for storing fbs files
-#     fbs_list = []
-#     for k, v in fb.items():
-#         # pull fba data for allocation
-#         flows = load_source_dataframe(k, v)
-#
-#         if v['data_format'] == 'FBA':
-#             # ensure correct datatypes and that all fields exist
-#             flows = clean_df(flows, flow_by_activity_fields,
-#                              fba_fill_na_dict, drop_description=False)
-#
-#             # clean up fba, if specified in yaml
-#             if v["clean_fba_df_fxn"] != 'None':
-#                 log.info("Cleaning up " + k + " FlowByActivity")
-#                 flows = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows)
-#
-#             # if activity_sets are specified in a file, call them here
-#             if 'activity_set_file' in v:
-#                 aset_names = pd.read_csv(flowbysectoractivitysetspath +
-#                                          v['activity_set_file'], dtype=str)
-#             else:
-#                 aset_names = None
-#
-#             # create dictionary of allocation datasets for different activities
-#             activities = v['activity_sets']
-#             # subset activity data and allocate to sector
-#             for aset, attr in activities.items():
+def extract_yaml_method_data(config):
+    """
+
+    :param config: dictionary, FBS method yaml
+    :return:
+    """
+
+    # Create empty dictionary for storing meta data
+    meta = {}
+    for x, y in config.items():
+        # append k,v if the key contains the phrase "target"
+        if 'target' in x:
+            meta[x] = y
+    # subset the FBS dictionary into a dictionary of source names
+    fb = config['source_names']
+    for k, v in fb.items():
+        meta[k] = v['year']
+        dict_key_name = k + '_FBA_meta'
+        meta = append_fba_method_meta(meta, k, dict_key_name)
+        # fba = load_sourceconfig(k)
+        # # initiate nested dictionary
+        # meta[k + '_FBA_meta'] = {}
+        # for k2, v2 in fba.items():
+        #     if k2 in ('author', 'date_downloaded', 'date_generated'):
+        #         meta[k + '_FBA_meta'][k2] = str(v2)
+            # create dictionary of allocation datasets for different activities
+            activities = v['activity_sets']
+            # subset activity data and allocate to sector
+        for aset, attr in activities.items():
+            # print(aset, attr)
+            # print(attr['allocation_source'])
+            # initiate nested dictionary
+            meta[k + '_FBA_meta'][aset] = {}
+            for aset2, attr2 in attr.items():
+                # print(aset2, attr2)
+                if aset2 in ('allocation_method', 'allocation_source', 'allocation_source_year'):
+                    meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
+                if aset2 == 'allocation_source':
+                    if attr2 != 'None':
+                        print(attr2)
+                        # dict_key_name = [k + '_FBA_meta'][aset]
+                        # meta = append_fba_method_meta(meta,, dictionary_key_name)
+
+                # if aset2 == 'allocation_method':
+                #     if attr2 not in ('direct', 'allocation_function'):
+                #         dict_key_name = [k + '_FBA_meta'][aset]
+                #         meta = append_fba_method_meta(meta, , dictionary_key_name)
+
+                        meta[k + '_FBA_meta'][aset][aset2] = attr2
+
+
+def append_fba_method_meta(dict, sourcename, dictionary_key_name):
+    """
+
+    :param dict: dictionary, to which additional FBA information is appended
+    :param sourcename: string, the FlowByActivity sourcename
+    :return:
+    """
+    fba = load_sourceconfig(sourcename)
+    # initiate nested dictionary
+    dict[dictionary_key_name] = {}
+    for k, v in fba.items():
+        if k in ('author', 'date_downloaded', 'date_generated'):
+            dict[sourcename + '_FBA_meta'][k] = str(v)
+
+    return dict
