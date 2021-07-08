@@ -319,7 +319,7 @@ def main(**kwargs):
     # save parquet file
     meta = set_fb_meta(method_name, "FlowBySector")
     write_df_to_file(fbss, paths, meta)
-    write_metadata(method, meta)
+    write_metadata(method_name, method, meta, "FlowBySector")
     # rename the log file saved to local directory
     rename_log_file(method_name, meta)
 

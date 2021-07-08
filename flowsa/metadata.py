@@ -21,25 +21,21 @@ def set_fb_meta(name_data, category):
     return fb_meta
 
 
-def write_metadata(config, fb_meta):
+def write_metadata(source_name, config, fb_meta, category):
     """
     Save the metadata to a json file
+    :param category: 'FlowBySector' or 'FlowByActivity'
     :return:
     """
-
-    # test
-    config = method.copy()
-    fb_meta = meta
-
-    # todo: add specific year of FBA created. Perhaps specify the configuration parameters?
-    # todo: add time run/meta created
-    # todo: append fba-specific info
-    method_data = extract_yaml_method_data(config)
-    fb_meta.tool_meta = config
+    if category == 'FlowBySector':
+        method_data = return_fbs_method_data(config)
+    elif category == 'FlowByActivity':
+        method_data = return_fba_method_meta(source_name)
+    fb_meta.tool_meta = method_data
     write_metadata_to_file(paths, fb_meta)
 
 
-def extract_yaml_method_data(config):
+def return_fbs_method_data(config):
     """
 
     :param config: dictionary, FBS method yaml
