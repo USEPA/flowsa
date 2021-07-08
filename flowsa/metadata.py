@@ -1,7 +1,7 @@
 import logging as log
 
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
-from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash, load_sourceconfig
+from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash, git_hash_long, load_sourceconfig
 
 
 def set_fb_meta(name_data, category):
@@ -27,12 +27,40 @@ def write_metadata(source_name, config, fb_meta, category):
     :param category: 'FlowBySector' or 'FlowByActivity'
     :return:
     """
+    fb_meta.tool_meta = return_fb_meta_data(source_name, config, fb_meta, category)
+    write_metadata_to_file(paths, fb_meta)
+    print(git_hash_long)
+
+
+def return_fb_meta_data(source_name, config, fb_meta, category):
+    """
+
+    :param source_name:
+    :param config:
+    :param fb_meta:
+    :param category:
+    :return:
+    """
+
+    # create empty dictionary
+    fb_dict = {}
+
+    # add date metadata file generated
+    # update the local config with today's date
+    fb_dict['date_metafile_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
+    # add url of FlowBy method at time of commit
+    fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{git_hash_long}' \
+                 f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
+
     if category == 'FlowBySector':
         method_data = return_fbs_method_data(config)
+
     elif category == 'FlowByActivity':
         method_data = return_fba_method_meta(source_name)
-    fb_meta.tool_meta = method_data
-    write_metadata_to_file(paths, fb_meta)
+
+    fb_dict.update(method_data)
+
+    return fb_dict
 
 
 def return_fbs_method_data(config):
