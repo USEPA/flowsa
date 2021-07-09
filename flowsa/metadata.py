@@ -27,16 +27,15 @@ def write_metadata(source_name, config, fb_meta, category):
     :param category: 'FlowBySector' or 'FlowByActivity'
     :return:
     """
-    fb_meta.tool_meta = return_fb_meta_data(source_name, config, fb_meta, category)
+    fb_meta.tool_meta = return_fb_meta_data(source_name, config, category)
     write_metadata_to_file(paths, fb_meta)
 
 
-def return_fb_meta_data(source_name, config, fb_meta, category):
+def return_fb_meta_data(source_name, config, category):
     """
 
     :param source_name:
     :param config:
-    :param fb_meta:
     :param category:
     :return:
     """
