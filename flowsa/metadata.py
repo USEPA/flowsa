@@ -141,7 +141,7 @@ def return_fba_method_meta(sourcename):
     fba_dict = {}
 
     for k, v in fba.items():
-        if k in ('author', 'date_downloaded', 'date_generated'):
+        if k in ('author', 'source_name_bib', 'citable_url', 'date_downloaded', 'date_generated'):
             fba_dict[k] = str(v)
 
     return fba_dict
