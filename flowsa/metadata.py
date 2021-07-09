@@ -1,7 +1,8 @@
 import logging as log
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
-from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash, git_hash_long, load_sourceconfig
+from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash, git_hash_long
+
 
 
 def set_fb_meta(name_data, category):
@@ -105,7 +106,7 @@ def return_fbs_method_data(config):
                 fba_meta = return_fba_method_meta(attr['helper_source'])
                 # append fba meta
                 meta[k + '_FBA_meta'][aset]['helper_source_meta'] = fba_meta
-            if attr['fbas_called_within_fxns']:
+            if 'fbas_called_within_fxns' in attr:
                 fbas = attr['fbas_called_within_fxns']
                 # initiate empty dictionary
                 meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'] = {}
@@ -114,7 +115,15 @@ def return_fbs_method_data(config):
                     fba_meta = return_fba_method_meta(attr3['source'])
                     # append fba meta
                     meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'][attr3['source']] = fba_meta
-
+            if 'literature_sources' in attr:
+                lit = attr['literature_sources']
+                # initiate empty dictionary
+                meta[k + '_FBA_meta'][aset]['literature_sources_meta'] = {}
+                for aset4, attr4 in lit.items():
+                    # extract fba meta to append
+                    fba_meta = return_fba_method_meta(aset4)
+                    # append fba meta
+                    meta[k + '_FBA_meta'][aset]['literature_sources_meta'][aset4] = fba_meta
     return meta
 
 
@@ -124,8 +133,10 @@ def return_fba_method_meta(sourcename):
     :param sourcename: string, the FlowByActivity sourcename
     :return:
     """
+    from flowsa.bibliography import load_source_dict
 
-    fba = load_sourceconfig(sourcename)
+    # load info from either a FBA method yaml or the literature yaml
+    fba = load_source_dict(sourcename)
     # initiate empty dictionary
     fba_dict = {}
 
