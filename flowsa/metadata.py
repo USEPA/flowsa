@@ -97,6 +97,14 @@ def return_fbs_method_data(config):
                 fba_meta = return_fba_method_meta(attr['allocation_source'])
                 # append fba meta
                 meta[k + '_FBA_meta'][aset]['allocation_source_meta'] = fba_meta
+            if attr['allocation_helper'] == 'yes':
+                for aset2, attr2 in attr.items():
+                    if aset2 in ('helper_method', 'helper_source', 'helper_source_year'):
+                        meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
+                # extract fba meta to append
+                fba_meta = return_fba_method_meta(attr['helper_source'])
+                # append fba meta
+                meta[k + '_FBA_meta'][aset]['helper_source_meta'] = fba_meta
 
     return meta
 
