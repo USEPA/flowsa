@@ -105,6 +105,15 @@ def return_fbs_method_data(config):
                 fba_meta = return_fba_method_meta(attr['helper_source'])
                 # append fba meta
                 meta[k + '_FBA_meta'][aset]['helper_source_meta'] = fba_meta
+            if attr['fbas_called_within_fxns']:
+                fbas = attr['fbas_called_within_fxns']
+                # initiate empty dictionary
+                meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'] = {}
+                for aset3, attr3 in fbas.items():
+                    # extract fba meta to append
+                    fba_meta = return_fba_method_meta(attr3['source'])
+                    # append fba meta
+                    meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'][attr3['source']] = fba_meta
 
     return meta
 
