@@ -1,5 +1,5 @@
 git+git://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.7#egg=fedelemflowlist
-git+git://github.com/USEPA/esupy@v0.1.1#egg=esupy
+git+git://github.com/USEPA/esupy@v0.1.2#egg=esupy
 git+git://github.com/USEPA/standardizedinventories@v0.9.7#egg=StEWI
 pandas>=1.1.0                  # Powerful data structures for data analysis, time series, and statistics.
 pip>=9                         # The PyPA recommended tool for installing Python packages.

@@ -7,7 +7,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 
 import logging as log
-from esupy.processed_data_mgmt import load_preprocessed_output, download_from_remote
+from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath,\
     default_download_if_missing
 from flowsa.metadata import set_fb_meta
@@ -31,6 +31,7 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
         prior to generating if file not found locally
     :return: a pandas DataFrame in FlowByActivity format
     """
+    from esupy.processed_data_mgmt import download_from_remote
     # Set fba metadata
     name = flowsa.flowbyactivity.set_fba_name(datasource, year)
     fba_meta = set_fb_meta(name, "FlowByActivity")
