@@ -1,3 +1,10 @@
 Water_national_2015_m2:
-  - convert_blackhurst_data_to_gal_per_year
-  - convert_blackhurst_data_to_gal_per_employee
+  activity_set_3:
+    convert_statcan_data_to_US_water_use:
+      'flowbyactivity_1': 2015
+      'flowbyactivity_2': 2015
+  activity_set_4:
+    convert_blackhurst_data_to_gal_per_year:
+      flowbyactivity_1: 2002
+    convert_blackhurst_data_to_gal_per_employee:
+      flowbyactivity_1: 2002
