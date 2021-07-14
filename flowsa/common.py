@@ -227,7 +227,7 @@ def load_values_from_literature_citations_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = datapath + 'values_from_literature_source_citations.yaml'
+    sfile = datapath + 'bibliographyinfo/values_from_literature_source_citations.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
