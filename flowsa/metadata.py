@@ -22,17 +22,17 @@ def set_fb_meta(name_data, category):
     return fb_meta
 
 
-def write_metadata(source_name, config, fb_meta, category):
+def write_metadata(source_name, config, fb_meta, category, **kwargs):
     """
     Save the metadata to a json file
     :param category: 'FlowBySector' or 'FlowByActivity'
     :return:
     """
-    fb_meta.tool_meta = return_fb_meta_data(source_name, config, category)
+    fb_meta.tool_meta = return_fb_meta_data(source_name, config, category, **kwargs)
     write_metadata_to_file(paths, fb_meta)
 
 
-def return_fb_meta_data(source_name, config, category):
+def return_fb_meta_data(source_name, config, category, **kwargs):
     """
 
     :param source_name:
@@ -46,7 +46,7 @@ def return_fb_meta_data(source_name, config, category):
 
     # add date metadata file generated
     # update the local config with today's date
-    fb_dict['date_file_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d %H:%M:%S')
+    fb_dict[f'date_{category}_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d %H:%M:%S')
     # add url of FlowBy method at time of commit
     fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{git_hash_long}' \
                  f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
@@ -55,7 +55,9 @@ def return_fb_meta_data(source_name, config, category):
         method_data = return_fbs_method_data(config)
 
     elif category == 'FlowByActivity':
-        method_data = return_fba_method_meta(source_name)
+        # when FBA meta created, kwargs exist for year
+        year = kwargs['year']
+        method_data = return_fba_method_meta(source_name, year)
 
     fb_dict.update(method_data)
 
@@ -127,7 +129,7 @@ def return_fbs_method_data(config):
     return meta
 
 
-def return_fba_method_meta(sourcename):
+def return_fba_method_meta(sourcename, year):
     """
 
     :param sourcename: string, the FlowByActivity sourcename
@@ -140,8 +142,12 @@ def return_fba_method_meta(sourcename):
     # initiate empty dictionary
     fba_dict = {}
 
+    # add year
+    fba_dict['fba_data_year'] = year
+
+    # loop through the FBA yaml and add info
     for k, v in fba.items():
-        if k in ('author', 'source_name_bib', 'source_url', 'date_accessed'):
+        if k in ('fba_author', 'fba_source_name', 'fba_source_url', 'date_accessed'):
             fba_dict[k] = str(v)
 
     return fba_dict
