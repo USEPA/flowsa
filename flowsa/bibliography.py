@@ -80,8 +80,8 @@ def generate_fbs_bibliography(methodnames):
                              source[1], config['citable_url']))
 
                 # if there is a date downloaded, use in citation over date generated
-                if 'date_downloaded' in config:
-                    bib_date = config['date_downloaded']
+                if 'date_accessed' in config:
+                    bib_date = config['date_accessed']
                 else:
                     bib_date = config['date_generated']
 
