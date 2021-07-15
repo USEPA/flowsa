@@ -1,3 +1,10 @@
+# metadata.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
+"""
+Functions for creating and loading metadata files for FlowByActivity (FBA) and FlowBySector (FBS) datasets
+"""
+
 import logging as log
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
