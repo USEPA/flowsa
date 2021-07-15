@@ -1,6 +1,6 @@
 author: US Census Bureau
 source_name_bib: Population and Housing Unit Estimates
-citable_url: https://www.census.gov/programs-surveys/popest.html
+source_url: https://www.census.gov/programs-surveys/popest.html
 bib_id: Census_PEP_Pop
 api_name: Census
 api_key_required: true

@@ -1,6 +1,6 @@
 author: US Energy Information Administration
 source_name_bib: Commercial Buildings Energy Consumption Survey
-citable_url: https://www.eia.gov/consumption/commercial/
+source_url: https://www.eia.gov/consumption/commercial/
 bib_id: EIA_CBECS
 api_name: EIA_CBECS_Water
 api_key_required: false
