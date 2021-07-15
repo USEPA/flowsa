@@ -198,7 +198,7 @@ def main(**kwargs):
         # build the base url with strings that will be replaced
         build_url = build_url_for_query(config, kwargs)
         # replace parts of urls with specific instructions from source.py
-        urls = assemble_urls_for_query(build_url, config, kwargs)[8:10] # test
+        urls = assemble_urls_for_query(build_url, config, kwargs)
         # create a list with data from all source urls
         dataframe_list = call_urls(urls, kwargs, config)
         # concat the dataframes and parse data with specific instructions from source.py
