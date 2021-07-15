@@ -13,7 +13,7 @@ import flowsa
 from flowsa.datachecks import compare_FBS_results
 
 # load FBS from local directory, if does not exist, method will run
-fbs_water = flowsa.getFlowBySector('Water_state_2015_m1')
+fbs_water = flowsa.getFlowBySector('Water_national_2015_m1')
 
 # collapse the FBS - output has 'Sector' column instead of
 # 'SectorProducedBy' and 'SectorConsumedBy' columns
