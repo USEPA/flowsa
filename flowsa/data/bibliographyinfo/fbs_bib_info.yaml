@@ -8,3 +8,10 @@ Water_national_2015_m2:
       flowbyactivity_1: 2002
     convert_blackhurst_data_to_gal_per_employee:
       flowbyactivity_1: 2002
+
+Land_national_2012:
+  activity_set_2:
+    dissagregate_cropland:
+      flowbyactivity_1: 2012
+    disaggregate_pastureland:
+      flowbyactivity_1: 2012
