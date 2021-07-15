@@ -1,7 +1,7 @@
 fba_author: Bureau of Economic Analysis
 fba_source_name: Use Before Redefinitions Producer's Prices
 fba_source_url: https://www.bea.gov/industry/input-output-accounts-data
-date_accessed: '2020-07-14'
+original_data_download_date: '2020-07-14'
 bib_id: BEA_Use_BR
 api_name: None
 api_key_required: false
