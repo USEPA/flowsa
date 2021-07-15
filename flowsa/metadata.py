@@ -46,7 +46,7 @@ def return_fb_meta_data(source_name, config, category):
 
     # add date metadata file generated
     # update the local config with today's date
-    fb_dict['date_metafile_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
+    fb_dict['date_file_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
     # add url of FlowBy method at time of commit
     fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{git_hash_long}' \
                  f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
@@ -141,7 +141,7 @@ def return_fba_method_meta(sourcename):
     fba_dict = {}
 
     for k, v in fba.items():
-        if k in ('author', 'source_name_bib', 'citable_url', 'date_downloaded', 'date_generated'):
+        if k in ('author', 'source_name_bib', 'citable_url', 'date_accessed'):
             fba_dict[k] = str(v)
 
     return fba_dict
