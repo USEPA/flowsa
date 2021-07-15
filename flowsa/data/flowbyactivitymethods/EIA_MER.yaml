@@ -1,5 +1,5 @@
-author: US Energy Information Administration
-source_name_bib: Monthly Energy Review
+fba_author: US Energy Information Administration
+fba_source_name: Monthly Energy Review
 source_url: https://www.eia.gov/totalenergy/data/monthly/
 bib_id: EIA_MER
 api_name: EIA_MER

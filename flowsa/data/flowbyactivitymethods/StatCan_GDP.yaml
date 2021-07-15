@@ -1,5 +1,5 @@
-author: Statistics Canada
-source_name_bib: Gross domestic product (GDP) at basic prices, by industry, monthly,
+fba_author: Statistics Canada
+fba_source_name: Gross domestic product (GDP) at basic prices, by industry, monthly,
   growth rates
 source_url: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3610043402
 bib_id: StatCan_GDP

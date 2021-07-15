@@ -1,5 +1,5 @@
-author: US Environmental Protection Agency
-source_name_bib: National Emissions Inventory Onroad Sources
+fba_author: US Environmental Protection Agency
+fba_source_name: National Emissions Inventory Onroad Sources
 source_url: https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei
 bib_id: EPA_NEI_Onroad
 api_name: EPA_NEI

@@ -1,5 +1,5 @@
-author: Bureau of Land Management
-source_name_bib: Public Land Statistics
+fba_author: Bureau of Land Management
+fba_source_name: Public Land Statistics
 source_url: https://www.blm.gov/about/data/public-land-statistics
 bib_id: BLM_PLS
 api_name: BLM_PLS

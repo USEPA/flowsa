@@ -1,5 +1,5 @@
-author: US Geological Survey
-source_name_bib: Minerals Yearbook
+fba_author: US Geological Survey
+fba_source_name: Minerals Yearbook
 source_url: https://www.usgs.gov/centers/nmic/minerals-yearbook-metals-and-minerals
 bib_id: USGS_MYB_SA
 # api_name: USGS_MYB_SodaAsh

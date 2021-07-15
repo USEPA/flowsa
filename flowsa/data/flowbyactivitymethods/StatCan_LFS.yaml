@@ -1,5 +1,5 @@
-author: Statistics Canada
-source_name_bib: Labour Force Survey
+fba_author: Statistics Canada
+fba_source_name: Labour Force Survey
 source_url: https://www.statcan.gc.ca/eng/survey/household/3701
 bib_id: StatCan_LFS
 api_name: Stat Canada

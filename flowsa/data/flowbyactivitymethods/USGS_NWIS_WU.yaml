@@ -1,5 +1,5 @@
-author: US Geological Survey
-source_name_bib: Water Data for the Nation
+fba_author: US Geological Survey
+fba_source_name: Water Data for the Nation
 source_url: https://waterdata.usgs.gov/nwis
 bib_id: USGS_NWIS_WU
 api_name: USGS
