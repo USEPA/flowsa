@@ -74,10 +74,10 @@ def generate_fbs_bibliography(methodnames):
                 log.info('Could not find a method yaml for ' + source[0])
                 continue
             # ensure data sources are not duplicated when different source names
-            if (config['source_name_bib'], config['author'], source[1],
-                config['source_url']) not in source_set:
-                source_set.add((config['source_name_bib'], config['author'],
-                             source[1], config['source_url']))
+            if (config['fba_source_name'], config['fba_author'], source[1],
+                config['fba_source_url']) not in source_set:
+                source_set.add((config['fba_source_name'], config['fba_author'],
+                             source[1], config['fba_source_url']))
 
                 # if there is a date downloaded, use in citation over date generated
                 if 'date_accessed' in config:
@@ -87,10 +87,10 @@ def generate_fbs_bibliography(methodnames):
 
                 db = BibDatabase()
                 db.entries = [{
-                    'title': config['source_name_bib'] + ' ' + str(source[1]),
+                    'title': config['fba_source_name'] + ' ' + str(source[1]),
                     'author': config['author'],
                     'year': str(source[1]),
-                    'url': config['source_url'],
+                    'url': config['fba_source_url'],
                     'urldate': bib_date,
                     'ID': config['bib_id'] + '_' + str(source[1]),
                     'ENTRYTYPE': 'misc'
