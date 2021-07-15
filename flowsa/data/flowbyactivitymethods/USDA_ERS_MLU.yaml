@@ -1,6 +1,6 @@
 fba_author: US Department of Agriculture
 fba_source_name: Major Land Uses
-source_url: https://www.ers.usda.gov/data-products/major-land-uses/
+fba_source_url: https://www.ers.usda.gov/data-products/major-land-uses/
 bib_id: USDA_ERS_MLU_csv
 api_name: USDA_ERS_MLU
 api_key_required: false

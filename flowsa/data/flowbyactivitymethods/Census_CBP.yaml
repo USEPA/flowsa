@@ -1,6 +1,6 @@
 fba_author: US Census Bureau
 fba_source_name: County Business Patterns
-source_url: https://www.census.gov/programs-surveys/cbp.html
+fba_source_url: https://www.census.gov/programs-surveys/cbp.html
 bib_id: Census_CBP
 api_name: Census
 api_key_required: true

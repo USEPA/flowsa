@@ -1,6 +1,6 @@
 fba_author: Statistics Canada
 fba_source_name: Water use parameters in manufacturing industries, by industry
-source_url: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701
+fba_source_url: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701
 bib_id: StatCan_IWS_MI
 api_name: Stat Canada
 api_key_required: false

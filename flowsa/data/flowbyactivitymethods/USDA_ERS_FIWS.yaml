@@ -1,6 +1,6 @@
 fba_author: US Department of Agriculture
 fba_source_name: Farm Income and Wealth Statistics
-source_url: https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
+fba_source_url: https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
 bib_id: USDA_ERS_FIWS
 # api_name: USDA_ERS_FIWS
 # api_key_required: false

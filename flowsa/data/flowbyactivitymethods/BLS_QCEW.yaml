@@ -1,6 +1,6 @@
 fba_author: Bureau of Labor Statistics
 fba_source_name: Quarterly Census of Employment and Wages
-source_url: https://www.bls.gov/cew/downloadable-data-files.htm
+fba_source_url: https://www.bls.gov/cew/downloadable-data-files.htm
 bib_id: BLS_QCEW
 api_name: BLS
 api_key_required: false

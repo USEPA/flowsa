@@ -1,6 +1,6 @@
 fba_author: US Energy Information Administration
 fba_source_name: Manufacturing Energy Consumption Survey
-source_url: https://www.eia.gov/consumption/manufacturing/
+fba_source_url: https://www.eia.gov/consumption/manufacturing/
 bib_id: EIA_MECS
 api_name: EIA_MECS_Land
 api_key_required: false

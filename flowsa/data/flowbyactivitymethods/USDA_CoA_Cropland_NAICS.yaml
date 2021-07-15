@@ -1,6 +1,6 @@
 fba_author: US Department of Agriculture
 fba_source_name: Census of Agriculture
-source_url: https://www.nass.usda.gov/AgCensus/
+fba_source_url: https://www.nass.usda.gov/AgCensus/
 bib_id: USDA_CoA
 api_name: USDA_Quickstats
 api_key_required: true
