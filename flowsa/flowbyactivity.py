@@ -12,7 +12,7 @@ import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
-    convert_fba_unit, paths, update_fba_yaml_date, rename_log_file
+    convert_fba_unit, paths, rename_log_file
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
     dynamically_import_fxn
@@ -181,10 +181,6 @@ def main(**kwargs):
 
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
-    # update the local config with today's date
-    config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
-    # update the method yaml with date generated
-    update_fba_yaml_date(kwargs['source'])
 
     log.info("Creating dataframe list")
     # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
@@ -202,7 +198,7 @@ def main(**kwargs):
         # build the base url with strings that will be replaced
         build_url = build_url_for_query(config, kwargs)
         # replace parts of urls with specific instructions from source.py
-        urls = assemble_urls_for_query(build_url, config, kwargs)
+        urls = assemble_urls_for_query(build_url, config, kwargs)[8:10] # test
         # create a list with data from all source urls
         dataframe_list = call_urls(urls, kwargs, config)
         # concat the dataframes and parse data with specific instructions from source.py

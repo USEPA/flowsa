@@ -233,27 +233,6 @@ def load_values_from_literature_citations_config():
     return config
 
 
-def update_fba_yaml_date(source):
-    """
-    Update the Flow-By-Activity method yaml with the current date.
-    Updates everytime a FBA is run.
-    :param source: string, Flow-By-Activity Source
-    :return: string, updated date in the FBA method yaml
-    """
-    filename = sourceconfigpath + source + '.yaml'
-
-    yml = YAML()
-    # open yaml
-    with open(filename) as f:
-        config = yml.load(f)
-        # update the method yaml with date generated
-        config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
-
-    # save yaml, preserving comments
-    with open(filename, "w") as file:
-        yml.dump(config, file)
-
-
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
                            'SourceName': [{'dtype': 'str'}, {'required': True}],
                            'FlowName': [{'dtype': 'str'}, {'required': True}],
