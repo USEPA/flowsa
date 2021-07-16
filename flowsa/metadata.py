@@ -92,11 +92,8 @@ def return_fbs_method_data(config):
     fb = config['source_names']
     for k, v in fb.items():
         # append source and year
-        meta[k] = v['year']
-        # extract fba meta to append
-        fba_meta = return_fba_method_meta(k)
-        # append fba meta
-        meta[k + '_FBA_meta'] = fba_meta
+        meta['datasource'] = k
+        meta[k + '_FBA_meta'] = getMetadata(k, v["year"], paths)["tool_meta"]
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
         # subset activity data and allocate to sector
@@ -107,27 +104,29 @@ def return_fbs_method_data(config):
                 if aset2 in ('allocation_method', 'allocation_source', 'allocation_source_year'):
                     meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
             if attr['allocation_method'] not in (['direct', 'allocation_function']):
-                # extract fba meta to append
-                fba_meta = return_fba_method_meta(attr['allocation_source'])
                 # append fba meta
-                meta[k + '_FBA_meta'][aset]['allocation_source_meta'] = fba_meta
+                meta[k + '_FBA_meta'][aset]['allocation_source_meta'] = \
+                    getMetadata(attr['allocation_source'],
+                                attr['allocation_source_year'], paths)["tool_meta"]
             if attr['allocation_helper'] == 'yes':
                 for aset2, attr2 in attr.items():
                     if aset2 in ('helper_method', 'helper_source', 'helper_source_year'):
                         meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
-                # extract fba meta to append
-                fba_meta = return_fba_method_meta(attr['helper_source'])
                 # append fba meta
-                meta[k + '_FBA_meta'][aset]['helper_source_meta'] = fba_meta
-            if 'fbas_called_within_fxns' in attr:
-                fbas = attr['fbas_called_within_fxns']
-                # initiate empty dictionary
-                meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'] = {}
-                for aset3, attr3 in fbas.items():
-                    # extract fba meta to append
-                    fba_meta = return_fba_method_meta(attr3['source'])
-                    # append fba meta
-                    meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'][attr3['source']] = fba_meta
+                meta[k + '_FBA_meta'][aset]['helper_source_meta'] = \
+                    getMetadata(attr['helper_source'],
+                                attr['helper_source_year'], paths)["tool_meta"]
+            # if 'fbas_called_within_fxns' in attr:
+            #     fbas = attr['fbas_called_within_fxns']
+            #     # initiate empty dictionary
+            #     meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'] = {}
+            #     for aset3, attr3 in fbas.items():
+            #         # extract fba meta to append
+            #         fba_meta = return_fba_method_meta(attr3['source'])
+            #         # append fba meta
+            #         meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'][attr3['source']] = \
+            #         getMetadata(attr['helper_source'],
+            #                     attr['helper_source_year'], paths)["tool_meta"]
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 # initiate empty dictionary
