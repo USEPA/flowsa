@@ -7,9 +7,12 @@ Functions for creating and loading metadata files for FlowByActivity (FBA) and F
 
 import logging as log
 import pandas as pd
-from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
-from flowsa.common import paths, pkg, pkg_version_number, write_format, git_hash, git_hash_long
-
+import re
+import json
+from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, load_preprocessed_output
+from esupy.util import strip_file_extension
+from flowsa.common import paths, pkg, pkg_version_number, write_format,\
+    git_hash, git_hash_long, default_download_if_missing, fbaoutputpath
 
 
 def set_fb_meta(name_data, category):
@@ -35,6 +38,7 @@ def write_metadata(source_name, config, fb_meta, category, **kwargs):
     :param category: 'FlowBySector' or 'FlowByActivity'
     :return:
     """
+
     fb_meta.tool_meta = return_fb_meta_data(source_name, config, category, **kwargs)
     write_metadata_to_file(paths, fb_meta)
 
@@ -159,3 +163,68 @@ def return_fba_method_meta(sourcename, year):
             fba_dict[k] = str(v)
 
     return fba_dict
+
+
+def read_source_metadata(filepath):
+    """return the locally saved metadata dictionary from JSON
+    :param filepath: str in the form of dir/inv_year
+    :return: metadata dictionary
+    """
+
+    try:
+        with open(filepath, 'r') as file:
+            file_contents = file.read()
+            metadata = json.loads(file_contents)
+            return metadata
+    except FileNotFoundError:
+        log.warning("metadata not found for source data")
+        return None
+
+def getMetadata(source, year, paths):
+    name = flowsa.flowbyactivity.set_fba_name(source, year)
+    fba_file_path = return_fba_metadata_file_path(name, paths)
+    meta = read_source_metadata(fba_file_path)
+    return meta
+
+
+def return_fba_metadata_file_path(file_name, paths):
+    """
+    Searches for file within path.local_path based on file metadata, if metadata matches,
+     returns most recently created file name
+    :param meta: populated instance of class FileMeta
+    :param paths: populated instance of class Paths
+    :param force_version: boolean on whether or not to include version number in search
+    :return: str with the file path if found, otherwise an empty string
+    """
+    path = os.path.realpath(paths.local_path + "/FlowByActivity")
+    if os.path.exists(path):
+        search_words = file_name
+        matches = []
+        fs = {}
+        for f in os.scandir(path):
+            name = f.name
+            # get file creation time
+            st = f.stat().st_ctime
+            fs[name]=st
+            matches = []
+            for k in fs.keys():
+                if re.search(search_words, k):
+                    if re.search(".parquet", k, re.IGNORECASE):
+                        matches.append(k)
+        if len(matches) == 0:
+            f = ""
+        else:
+            # Filter the dict by matches
+            r = {k:v for k,v in fs.items() if k in matches}
+            # Sort the dict by matches, return a list
+            #r = {k:v for k,v in sorted(r.items(), key=lambda item: item[1], reverse=True)}
+            rl = [k for k,v in sorted(r.items(), key=lambda item: item[1], reverse=True)]
+            f = os.path.realpath(path + "/" + rl[0])
+    else:
+        f = ""
+
+    # strip file extension and return file name of parquet
+    f = strip_file_extension(f)
+    f = f'{f}_metadata.json'
+
+    return f
