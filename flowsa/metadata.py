@@ -159,8 +159,9 @@ def return_fba_method_meta(sourcename, **kwargs):
 
     # loop through the FBA yaml and add info
     for k, v in fba.items():
-        if k in ('fba_author', 'fba_source_name', 'fba_source_url',
-                 'date_literature_accessed', 'original_data_download_date'):
+        if k in ('fba_author', 'fba_source_name', 'fba_source_url', 'original_data_download_date',
+                 'literature_author', 'literature_source_name', 'literature_source_url',
+                 'date_literature_accessed'):
             fba_dict[k] = str(v)
 
     return fba_dict
