@@ -69,7 +69,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     elif category == 'FlowByActivity':
         # when FBA meta created, kwargs exist for year
         year = kwargs['year']
-        method_data = return_fba_method_meta(source_name, year)
+        method_data = return_fba_method_meta(source_name, year=year)
 
     fb_dict.update(method_data)
 
@@ -140,7 +140,7 @@ def return_fbs_method_data(config):
     return meta
 
 
-def return_fba_method_meta(sourcename, year):
+def return_fba_method_meta(sourcename, **kwargs):
     """
 
     :param sourcename: string, the FlowByActivity sourcename
@@ -153,8 +153,9 @@ def return_fba_method_meta(sourcename, year):
     # initiate empty dictionary
     fba_dict = {}
 
-    # add year
-    fba_dict['fba_data_year'] = year
+    # add year if creating an FBA metafile
+    if 'year' in kwargs:
+        fba_dict['fba_data_year'] = kwargs['year']
 
     # loop through the FBA yaml and add info
     for k, v in fba.items():
@@ -187,7 +188,7 @@ def return_fba_metadata_file_path(file_name, paths):
             matches = []
             for k in fs.keys():
                 if re.search(search_words, k):
-                    if re.search(".parquet", k, re.IGNORECASE):
+                    if re.search("parquet", k, re.IGNORECASE):
                         matches.append(k)
         if len(matches) == 0:
             f = ""
