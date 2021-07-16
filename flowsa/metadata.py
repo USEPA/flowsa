@@ -7,6 +7,7 @@ Functions for creating and loading metadata files for FlowByActivity (FBA) and F
 
 import logging as log
 import pandas as pd
+import os
 import re
 import json
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, load_preprocessed_output
@@ -224,7 +225,9 @@ def read_source_metadata(filepath):
 
 
 def getMetadata(source, year, paths):
-    name = flowsa.flowbyactivity.set_fba_name(source, year)
+    from flowsa.flowbyactivity import set_fba_name
+
+    name = set_fba_name(source, year)
     fba_file_path = return_fba_metadata_file_path(name, paths)
     meta = read_source_metadata(fba_file_path)
     return meta
