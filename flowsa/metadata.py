@@ -64,7 +64,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
                  f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
 
     if category == 'FlowBySector':
-        method_data = return_fbs_method_data(config)
+        method_data = return_fbs_method_data(source_name, config)
 
     elif category == 'FlowByActivity':
         # when FBA meta created, kwargs exist for year
@@ -76,7 +76,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     return fb_dict
 
 
-def return_fbs_method_data(config):
+def return_fbs_method_data(source_name, config):
     """
 
     :param config: dictionary, FBS method yaml
