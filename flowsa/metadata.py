@@ -165,28 +165,6 @@ def return_fba_method_meta(sourcename, year):
     return fba_dict
 
 
-def read_source_metadata(filepath):
-    """return the locally saved metadata dictionary from JSON
-    :param filepath: str in the form of dir/inv_year
-    :return: metadata dictionary
-    """
-
-    try:
-        with open(filepath, 'r') as file:
-            file_contents = file.read()
-            metadata = json.loads(file_contents)
-            return metadata
-    except FileNotFoundError:
-        log.warning("metadata not found for source data")
-        return None
-
-def getMetadata(source, year, paths):
-    name = flowsa.flowbyactivity.set_fba_name(source, year)
-    fba_file_path = return_fba_metadata_file_path(name, paths)
-    meta = read_source_metadata(fba_file_path)
-    return meta
-
-
 def return_fba_metadata_file_path(file_name, paths):
     """
     Searches for file within path.local_path based on file metadata, if metadata matches,
@@ -228,3 +206,26 @@ def return_fba_metadata_file_path(file_name, paths):
     f = f'{f}_metadata.json'
 
     return f
+
+
+def read_source_metadata(filepath):
+    """return the locally saved metadata dictionary from JSON
+    :param filepath: str in the form of dir/inv_year
+    :return: metadata dictionary
+    """
+
+    try:
+        with open(filepath, 'r') as file:
+            file_contents = file.read()
+            metadata = json.loads(file_contents)
+            return metadata
+    except FileNotFoundError:
+        log.warning("metadata not found for source data")
+        return None
+
+
+def getMetadata(source, year, paths):
+    name = flowsa.flowbyactivity.set_fba_name(source, year)
+    fba_file_path = return_fba_metadata_file_path(name, paths)
+    meta = read_source_metadata(fba_file_path)
+    return meta
