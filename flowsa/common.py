@@ -232,6 +232,7 @@ def load_values_from_literature_citations_config():
         config = yaml.safe_load(f)
     return config
 
+
 def load_fbs_bib_info_config():
     """
     Load the config file that contains information on where the
@@ -239,6 +240,18 @@ def load_fbs_bib_info_config():
     :return: dictionary of the values from the literature information
     """
     sfile = datapath + 'bibliographyinfo/fbs_bib_info.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
+
+def load_functions_loading_fbas_config():
+    """
+    Load the config file that contains information on where the
+    values from the literature come from
+    :return: dictionary of the values from the literature information
+    """
+    sfile = datapath + 'bibliographyinfo/functions_loading_fbas.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
