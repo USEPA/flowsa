@@ -13,7 +13,7 @@ import json
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, load_preprocessed_output
 from esupy.util import strip_file_extension
 from flowsa.common import paths, pkg, pkg_version_number, write_format,\
-    git_hash, git_hash_long, default_download_if_missing, fbaoutputpath
+    git_hash, git_hash_long, default_download_if_missing, fbaoutputpath, load_functions_loading_fbas_config
 
 
 def set_fb_meta(name_data, category):
@@ -82,6 +82,7 @@ def return_fbs_method_data(source_name, config):
     :param config: dictionary, FBS method yaml
     :return:
     """
+    from flowsa.bibliography import load_source_dict
 
     # Create empty dictionary for storing meta data
     meta = {}
@@ -117,17 +118,6 @@ def return_fbs_method_data(source_name, config):
                 meta[k + '_FBA_meta'][aset]['helper_source_meta'] = \
                     getMetadata(attr['helper_source'],
                                 attr['helper_source_year'], paths)["tool_meta"]
-            # if 'fbas_called_within_fxns' in attr:
-            #     fbas = attr['fbas_called_within_fxns']
-            #     # initiate empty dictionary
-            #     meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'] = {}
-            #     for aset3, attr3 in fbas.items():
-            #         # extract fba meta to append
-            #         fba_meta = return_fba_method_meta(attr3['source'])
-            #         # append fba meta
-            #         meta[k + '_FBA_meta'][aset]['fbas_called_within_fxns'][attr3['source']] = \
-            #         getMetadata(attr['helper_source'],
-            #                     attr['helper_source_year'], paths)["tool_meta"]
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 # initiate empty dictionary
@@ -137,6 +127,22 @@ def return_fbs_method_data(source_name, config):
                     fba_meta = return_fba_method_meta(aset4)
                     # append fba meta
                     meta[k + '_FBA_meta'][aset]['literature_sources_meta'][aset4] = fba_meta
+    # depending on the method, there could be additional FBAs called within fxns
+    # when creating a FBS, check and append FBA meta
+    add_fbas = load_source_dict(source_name)
+    for source, activities in add_fbas.items():
+        # initiate nested dictionary
+        meta[source + '_additional_FBAs'] = {}
+        for actset, fxns in activities.items():
+            # initiate nested dictionary
+            meta[source + '_additional_FBAs'][actset] = {}
+            for fxn, fba_info in fxns.items():
+                # load the yaml with functions loading fbas
+                x = load_functions_loading_fbas_config()[fxn]
+                for s, y in fba_info.items():
+                    meta[source + '_additional_FBAs'][actset][fxn] = \
+                        getMetadata(x[s]['source'],
+                                    y, paths)["tool_meta"]
     return meta
 
 
