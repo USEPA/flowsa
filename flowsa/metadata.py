@@ -10,10 +10,10 @@ import pandas as pd
 import os
 import re
 import json
-from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, load_preprocessed_output
+from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
 from esupy.util import strip_file_extension
 from flowsa.common import paths, pkg, pkg_version_number, write_format,\
-    git_hash, git_hash_long, default_download_if_missing, fbaoutputpath, load_functions_loading_fbas_config
+    git_hash, git_hash_long, load_functions_loading_fbas_config
 
 
 def set_fb_meta(name_data, category):
@@ -97,7 +97,6 @@ def return_fbs_method_data(source_name, config):
     fb = config['source_names']
     for k, v in fb.items():
         # append source and year
-        meta['datasource'] = k
         meta[k + '_FBA_meta'] = getMetadata(k, v["year"], paths)["tool_meta"]
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
@@ -125,16 +124,18 @@ def return_fbs_method_data(source_name, config):
             try:
                 fba_sub = add_fbas[k][aset]
                 # initiate nested dictionary
-                meta[k + '_FBA_meta'][aset]['_FBAs_called_within_fxns'] = {}
+                meta[k + '_FBA_meta'][aset]['FBAs_called_within_fxns'] = {}
                 for fxn, fba_info in fba_sub.items():
                     # load the yaml with functions loading fbas
                     x = load_functions_loading_fbas_config()[fxn]
+                    # initiate nested dictionary
+                    meta[k + '_FBA_meta'][aset]['FBAs_called_within_fxns'][fxn] = {}
                     for s, y in fba_info.items():
-                        meta[k + '_FBA_meta'][aset]['_FBAs_called_within_fxns'][fxn] = \
+                        meta[k + '_FBA_meta'][aset]['FBAs_called_within_fxns'][fxn][s] = \
                             getMetadata(x[s]['source'],
                                         y, paths)["tool_meta"]
             except KeyError:
-                continue
+                pass
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 # initiate empty dictionary
