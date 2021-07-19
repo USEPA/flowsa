@@ -233,7 +233,7 @@ def load_values_from_literature_citations_config():
     return config
 
 
-def load_fbs_bib_info_config():
+def load_fbs_methods_additional_fbas_config():
     """
     Load the config file that contains information on where the
     values from the literature come from

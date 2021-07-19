@@ -11,7 +11,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations_config, load_fbs_bib_info_config
+    load_values_from_literature_citations_config, load_fbs_methods_additional_fbas_config
 
 
 def generate_list_of_sources_in_fbs_method(methodnames):
@@ -51,7 +51,7 @@ def load_source_dict(sourcename):
             config = config_load[sourcename]
         except:
             # if no source yaml or values in the lit, look in fbs bib info
-            config_load = load_fbs_bib_info_config()
+            config_load = load_fbs_methods_additional_fbas_config()
             config = config_load[sourcename]
 
     return config
