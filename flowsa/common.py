@@ -239,7 +239,7 @@ def load_fbs_bib_info_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = datapath + 'bibliographyinfo/fbs_bib_info.yaml'
+    sfile = datapath + 'bibliographyinfo/fbs_methods_additional_fbas.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
