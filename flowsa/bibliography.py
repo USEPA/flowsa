@@ -11,7 +11,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations_config,\
+    load_values_from_literature_citations_config, paths, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config
 
 
@@ -71,8 +71,7 @@ def generate_fbs_bibliography(methodnames):
     :return: a .bib file saved in local directory
     """
 
-    # test
-    methodnames = ['Land_national_2012']
+    from flowsa.metadata import getMetadata
 
     # create list of sources in method
     sources = generate_list_of_sources_in_fbs_method(methodnames)
@@ -85,32 +84,40 @@ def generate_fbs_bibliography(methodnames):
         # is a function, not a datasource)
         if source[1] != 'None':
             try:
-                config = load_source_dict(source[0])
-            except:
-                log.info('Could not find a method yaml for ' + source[0])
-                continue
+                config = load_values_from_literature_citations_config()[source[0]]
+            except KeyError:
+                try:
+                    config = getMetadata(source[0], source[1], paths)
+                except KeyError:
+                    log.info('Could not find a method yaml for ' + source[0])
+                    continue
+            # strip fba and literature from keys
+            for x in ['fba_', 'literature_']:
+                config = {k.replace(x, ''): v for k, v in config.items()}
             # ensure data sources are not duplicated when different source names
-            if (config['fba_source_name'], config['fba_author'], source[1],
-                config['fba_source_url']) not in source_set:
-                source_set.add((config['fba_source_name'], config['fba_author'],
-                             source[1], config['fba_source_url']))
+            if (config['source_name'], config['author'], source[1],
+                config['source_url']) not in source_set:
+                source_set.add((config['source_name'], config['author'],
+                                source[1], config['source_url']))
 
                 # if there is a date downloaded, use in citation over date generated
-                if 'date_literature_accessed' in config:
+                if 'original_data_download_date' in config:
+                    bib_date = config['original_data_download_date']
+                elif 'date_literature_accessed' in config:
                     bib_date = config['date_literature_accessed']
                 else:
-                    bib_date = config['date_generated']
+                    bib_date = config['date_FlowByActivity_generated']
 
                 db = BibDatabase()
                 db.entries = [{
-                    'title': config['fba_source_name'] + ' ' + str(source[1]),
+                    'title': config['source_name'] + ' ' + str(source[1]),
                     'author': config['author'],
                     'year': str(source[1]),
-                    'url': config['fba_source_url'],
+                    'url': config['source_url'],
                     'urldate': bib_date,
                     'ID': config['bib_id'] + '_' + str(source[1]),
                     'ENTRYTYPE': 'misc'
-                    }]
+                }]
                 # append each entry to a list of BibDatabase entries
                 bib_list.append(db)
 
