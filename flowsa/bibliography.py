@@ -11,7 +11,8 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations_config, load_fbs_methods_additional_fbas_config
+    load_values_from_literature_citations_config,\
+    load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config
 
 
 def generate_list_of_sources_in_fbs_method(methodnames):
@@ -37,6 +38,17 @@ def generate_list_of_sources_in_fbs_method(methodnames):
                 if 'literature_sources' in attr:
                     for source, date in attr['literature_sources'].items():
                         sources.append([source, date])
+        # load any additional fbas that are called in a fbs method within fxns
+        try:
+            fbas = load_fbs_methods_additional_fbas_config()[m]
+            for s, acts_info in fbas.items():
+                for acts, fxn_info in acts_info.items():
+                    for fxn, fba_info in fxn_info.items():
+                        for fba, y in fba_info.items():
+                            fxn_config = load_functions_loading_fbas_config()[fxn][fba]
+                            sources.append([fxn_config['source'], y])
+        except KeyError:
+            pass
     return sources
 
 
@@ -45,14 +57,9 @@ def load_source_dict(sourcename):
         # first try loading citation information from source yaml
         config = load_sourceconfig(sourcename)
     except:
-        try:
-            # if no source yaml, check if citation info is for values in the literature
-            config_load = load_values_from_literature_citations_config()
-            config = config_load[sourcename]
-        except:
-            # if no source yaml or values in the lit, look in fbs bib info
-            config_load = load_fbs_methods_additional_fbas_config()
-            config = config_load[sourcename]
+        # if no source yaml, check if citation info is for values in the literature
+        config_load = load_values_from_literature_citations_config()
+        config = config_load[sourcename]
 
     return config
 
@@ -63,6 +70,9 @@ def generate_fbs_bibliography(methodnames):
     :param methodname: list of methodnames to create a bibliiography
     :return: a .bib file saved in local directory
     """
+
+    # test
+    methodnames = ['Land_national_2012']
 
     # create list of sources in method
     sources = generate_list_of_sources_in_fbs_method(methodnames)
