@@ -97,7 +97,7 @@ def return_fbs_method_data(source_name, config):
     fb = config['source_names']
     for k, v in fb.items():
         # append source and year
-        meta[k + '_FBA_meta'] = getMetadata(k, v["year"], paths)["tool_meta"]
+        meta[k + '_FBA_meta'] = getMetadata(k, v["year"], paths)
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
         # subset activity data and allocate to sector
@@ -111,7 +111,7 @@ def return_fbs_method_data(source_name, config):
                 # append fba meta
                 meta[k + '_FBA_meta'][aset]['allocation_source_meta'] = \
                     getMetadata(attr['allocation_source'],
-                                attr['allocation_source_year'], paths)["tool_meta"]
+                                attr['allocation_source_year'], paths)
             if attr['allocation_helper'] == 'yes':
                 for aset2, attr2 in attr.items():
                     if aset2 in ('helper_method', 'helper_source', 'helper_source_year'):
@@ -119,7 +119,7 @@ def return_fbs_method_data(source_name, config):
                 # append fba meta
                 meta[k + '_FBA_meta'][aset]['helper_source_meta'] = \
                     getMetadata(attr['helper_source'],
-                                attr['helper_source_year'], paths)["tool_meta"]
+                                attr['helper_source_year'], paths)
             # subset the additional fbas to the source and activity set, if exists
             try:
                 fba_sub = add_fbas[k][aset]
@@ -133,7 +133,7 @@ def return_fbs_method_data(source_name, config):
                     for s, y in fba_info.items():
                         meta[k + '_FBA_meta'][aset]['FBAs_called_within_fxns'][fxn][s] = \
                             getMetadata(x[s]['source'],
-                                        y, paths)["tool_meta"]
+                                        y, paths)
             except KeyError:
                 pass
             if 'literature_sources' in attr:
@@ -165,12 +165,15 @@ def return_fba_method_meta(sourcename, **kwargs):
     if 'year' in kwargs:
         fba_dict['fba_data_year'] = kwargs['year']
 
-    # loop through the FBA yaml and add info
-    for k, v in fba.items():
-        if k in ('fba_author', 'fba_source_name', 'fba_source_url', 'original_data_download_date',
-                 'literature_author', 'literature_source_name', 'literature_source_url',
-                 'date_literature_accessed'):
-            fba_dict[k] = str(v)
+    try:
+        # loop through the FBA yaml and add info
+        for k, v in fba.items():
+            if k in ('fba_author', 'fba_source_name', 'fba_source_url', 'original_data_download_date',
+                     'literature_author', 'literature_source_name', 'literature_source_url',
+                     'date_literature_accessed'):
+                fba_dict[k] = str(v)
+    except:
+        fba_dict['meta_data'] = f'No metadata found for {sourcename}'
 
     return fba_dict
 
@@ -239,5 +242,8 @@ def getMetadata(source, year, paths):
 
     name = set_fba_name(source, year)
     fba_file_path = return_fba_metadata_file_path(name, paths)
-    meta = read_source_metadata(fba_file_path)
+    try:
+        meta = read_source_metadata(fba_file_path)["tool_meta"]
+    except:
+        meta = f'No metadata found for {source}'
     return meta
