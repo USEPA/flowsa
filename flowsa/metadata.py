@@ -173,6 +173,7 @@ def return_fba_method_meta(sourcename, **kwargs):
                      'date_literature_accessed'):
                 fba_dict[k] = str(v)
     except:
+        log.warning(f'No metadata found for {sourcename}')
         fba_dict['meta_data'] = f'No metadata found for {sourcename}'
 
     return fba_dict
@@ -233,7 +234,7 @@ def read_source_metadata(filepath):
             metadata = json.loads(file_contents)
             return metadata
     except FileNotFoundError:
-        log.warning("metadata not found for source data")
+        log.warning(f"metadata not found for {filepath}")
         return None
 
 
@@ -245,5 +246,5 @@ def getMetadata(source, year, paths):
     try:
         meta = read_source_metadata(fba_file_path)["tool_meta"]
     except:
-        meta = f'No metadata found for {source}'
+        meta = {'Warning': f'No metadata found for {source}'}
     return meta
