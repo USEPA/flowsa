@@ -13,7 +13,7 @@ Water_national_2015_m2:
 Land_national_2012:
   USDA_ERS_MLU:
     activity_set_2:
-      dissagregate_cropland:
+      disaggregate_cropland:
         flowbyactivity_1: 2012
       disaggregate_pastureland:
         flowbyactivity_1: 2012
