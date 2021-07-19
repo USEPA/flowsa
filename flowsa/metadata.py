@@ -84,6 +84,9 @@ def return_fbs_method_data(source_name, config):
     """
     from flowsa.bibliography import load_source_dict
 
+    # load the yaml that lists what additional fbas are used in creating the fbs
+    add_fbas = load_source_dict(source_name)
+
     # Create empty dictionary for storing meta data
     meta = {}
     for x, y in config.items():
@@ -118,6 +121,20 @@ def return_fbs_method_data(source_name, config):
                 meta[k + '_FBA_meta'][aset]['helper_source_meta'] = \
                     getMetadata(attr['helper_source'],
                                 attr['helper_source_year'], paths)["tool_meta"]
+            # subset the additional fbas to the source and activity set, if exists
+            try:
+                fba_sub = add_fbas[k][aset]
+                # initiate nested dictionary
+                meta[k + '_FBA_meta'][aset]['_FBAs_called_within_fxns'] = {}
+                for fxn, fba_info in fba_sub.items():
+                    # load the yaml with functions loading fbas
+                    x = load_functions_loading_fbas_config()[fxn]
+                    for s, y in fba_info.items():
+                        meta[k + '_FBA_meta'][aset]['_FBAs_called_within_fxns'][fxn] = \
+                            getMetadata(x[s]['source'],
+                                        y, paths)["tool_meta"]
+            except KeyError:
+                continue
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 # initiate empty dictionary
@@ -127,22 +144,6 @@ def return_fbs_method_data(source_name, config):
                     fba_meta = return_fba_method_meta(aset4)
                     # append fba meta
                     meta[k + '_FBA_meta'][aset]['literature_sources_meta'][aset4] = fba_meta
-    # depending on the method, there could be additional FBAs called within fxns
-    # when creating a FBS, check and append FBA meta
-    add_fbas = load_source_dict(source_name)
-    for source, activities in add_fbas.items():
-        # initiate nested dictionary
-        meta[source + '_additional_FBAs'] = {}
-        for actset, fxns in activities.items():
-            # initiate nested dictionary
-            meta[source + '_additional_FBAs'][actset] = {}
-            for fxn, fba_info in fxns.items():
-                # load the yaml with functions loading fbas
-                x = load_functions_loading_fbas_config()[fxn]
-                for s, y in fba_info.items():
-                    meta[source + '_additional_FBAs'][actset][fxn] = \
-                        getMetadata(x[s]['source'],
-                                    y, paths)["tool_meta"]
     return meta
 
 
