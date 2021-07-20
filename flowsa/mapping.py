@@ -6,6 +6,7 @@ Contains mapping functions
 """
 import pandas as pd
 import numpy as np
+from esupy.mapping import apply_flow_mapping
 from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, fba_activity_fields
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
@@ -264,51 +265,21 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
     :param keep_unmapped_rows: False if want unmapped rows dropped, True if want to retain
     :return: df, with flows mapped using federal elementary flow list
     """
-
-    from fedelemflowlist import get_flowmapping
-
     # rename columns to match FBS formatting
     fba = fba.rename(columns={"FlowName": 'Flowable',
                               "Compartment": "Context"})
 
-    flowmapping = get_flowmapping(from_fba_source)
-    mapping_fields = ["SourceListName",
-                      "SourceFlowName",
-                      "SourceFlowContext",
-                      "SourceUnit",
-                      "ConversionFactor",
-                      "TargetFlowName",
-                      "TargetFlowContext",
-                      "TargetUnit"]
-    if flowmapping.empty:
-        log.warning("No mapping file in fedelemflowlist found for " + ' '.join(from_fba_source))
+    fba_mapped_df = apply_flow_mapping(fba, from_fba_source,
+                                       flow_type='ELEMENTARY_FLOW',
+                                       keep_unmapped_rows = keep_unmapped_rows)
+
+    if fba_mapped_df is None:
         # return the original df but with columns renamed so can continue working on the FBS
         fba_mapped_df = fba.copy()
     else:
-        flowmapping = flowmapping[mapping_fields]
-
-        # define merge type based on keeping or dropping unmapped data
-        if keep_unmapped_rows is False:
-            merge_type = 'inner'
-        else:
-            merge_type = 'left'
-
-        # merge fba with flows
-        fba_mapped_df = pd.merge(fba, flowmapping,
-                                 left_on=["Flowable", "Context"],
-                                 right_on=["SourceFlowName", "SourceFlowContext"],
-                                 how=merge_type)
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] =\
-            fba_mapped_df["TargetFlowName"]
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] =\
-            fba_mapped_df["TargetFlowContext"]
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] =\
-            fba_mapped_df["TargetUnit"]
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
-            fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
-
-        # drop
-        fba_mapped_df = fba_mapped_df.drop(columns=mapping_fields)
+        # additional updates after mapping for fba
+        if 'FlowUUID' in fba_mapped_df.columns:
+            fba_mapped_df = fba_mapped_df.drop(columns=['FlowUUID'])
 
     return fba_mapped_df
 
