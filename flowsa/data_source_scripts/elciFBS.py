@@ -20,6 +20,8 @@ def get_elci_emissions(yaml_load):
     config.model_specs.regional_aggregation = 'US'
     config.model_specs.include_renewable_generation = False
     config.model_specs.include_netl_water = True
+    if 'DMR' not in config.model_specs.inventories_of_interest.keys():
+        config.model_specs.inventories_of_interest['DMR'] = 2016
 
     emissions = electricitylci.get_generation_process_df()
     emissions = emissions.loc[emissions['stage_code'] == 'Power plant']
