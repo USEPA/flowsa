@@ -13,7 +13,7 @@ import json
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
 from esupy.util import strip_file_extension
 from flowsa.common import paths, pkg, pkg_version_number, write_format,\
-    git_hash, git_hash_long, load_functions_loading_fbas_config
+    git_hash, git_hash_long, load_functions_loading_fbas_config, load_fbs_methods_additional_fbas_config
 
 
 def set_fb_meta(name_data, category):
@@ -82,10 +82,9 @@ def return_fbs_method_data(source_name, config):
     :param config: dictionary, FBS method yaml
     :return:
     """
-    from flowsa.bibliography import load_source_dict
 
     # load the yaml that lists what additional fbas are used in creating the fbs
-    add_fbas = load_source_dict(source_name)
+    add_fbas = load_fbs_methods_additional_fbas_config()[source_name]
 
     # Create empty dictionary for storing meta data
     meta = {}
