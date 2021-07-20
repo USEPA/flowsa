@@ -33,7 +33,7 @@ from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     fbs_grouping_fields_w_activities
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
-from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, \
+from flowsa.mapping import add_sectors_to_flowbyactivity, map_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
@@ -192,7 +192,7 @@ def main(**kwargs):
                 else:
                     mapping_files = k
 
-                flow_subset_mapped = map_elementary_flows(flow_subset_wsec, mapping_files)
+                flow_subset_mapped = map_flows(flow_subset_wsec, mapping_files)
 
                 # clean up mapped fba with sectors, if specified in yaml
                 if "clean_mapped_fba_w_sec_df_fxn" in v:

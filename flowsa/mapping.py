@@ -257,9 +257,11 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     return fba_allocation_subset
 
 
-def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
+def map_flows(fba, from_fba_source, flow_type = 'ELEMENTARY_FLOW', 
+                         keep_unmapped_rows=False):
     """
-    Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
+    Applies mapping from fedelemflowlist or material flow list to convert flows to 
+    standardized list of flows
     :param fba: df flow-by-activity or flow-by-sector with 'Flowable', 'Context', and 'Unit' fields
     :param from_fba_source: str Source name of fba list to look for mappings
     :param keep_unmapped_rows: False if want unmapped rows dropped, True if want to retain
@@ -270,7 +272,7 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
                               "Compartment": "Context"})
 
     fba_mapped_df = apply_flow_mapping(fba, from_fba_source,
-                                       flow_type='ELEMENTARY_FLOW',
+                                       flow_type=flow_type,
                                        keep_unmapped_rows = keep_unmapped_rows)
 
     if fba_mapped_df is None:
