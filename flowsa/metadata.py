@@ -10,7 +10,7 @@ import pandas as pd
 import os
 import re
 import json
-from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file
+from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, read_source_metadata
 from esupy.util import strip_file_extension
 from flowsa.common import paths, pkg, pkg_version_number, write_format,\
     git_hash, git_hash_long, load_functions_loading_fbas_config, load_fbs_methods_additional_fbas_config
@@ -40,11 +40,11 @@ def write_metadata(source_name, config, fb_meta, category, **kwargs):
     :return:
     """
 
-    fb_meta.tool_meta = return_fb_meta_data(source_name, config, category, **kwargs)
+    fb_meta.tool_meta = return_fb_meta_data(source_name, config, fb_meta, category, **kwargs)
     write_metadata_to_file(paths, fb_meta)
 
 
-def return_fb_meta_data(source_name, config, category, **kwargs):
+def return_fb_meta_data(source_name, config, fb_meta, category, **kwargs):
     """
 
     :param source_name:
@@ -64,7 +64,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
                  f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
 
     if category == 'FlowBySector':
-        method_data = return_fbs_method_data(source_name, config)
+        method_data = return_fbs_method_data(source_name, config, fb_meta)
 
     elif category == 'FlowByActivity':
         # when FBA meta created, kwargs exist for year
@@ -76,7 +76,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     return fb_dict
 
 
-def return_fbs_method_data(source_name, config):
+def return_fbs_method_data(source_name, config, fbs_meta):
     """
 
     :param config: dictionary, FBS method yaml
@@ -179,72 +179,22 @@ def return_fba_method_meta(sourcename, **kwargs):
     return fba_dict
 
 
-def return_fba_metadata_file_path(file_name, paths):
-    """
-    Searches for file within path.local_path based on file metadata, if metadata matches,
-     returns most recently created file name
-    :param meta: populated instance of class FileMeta
-    :param paths: populated instance of class Paths
-    :param force_version: boolean on whether or not to include version number in search
-    :return: str with the file path if found, otherwise an empty string
-    """
-    path = os.path.realpath(paths.local_path + "/FlowByActivity")
-    if os.path.exists(path):
-        search_words = file_name
-        matches = []
-        fs = {}
-        for f in os.scandir(path):
-            name = f.name
-            # get file creation time
-            st = f.stat().st_ctime
-            fs[name]=st
-            matches = []
-            for k in fs.keys():
-                if re.search(search_words, k):
-                    if re.search("parquet", k, re.IGNORECASE):
-                        matches.append(k)
-        if len(matches) == 0:
-            f = ""
-        else:
-            # Filter the dict by matches
-            r = {k:v for k,v in fs.items() if k in matches}
-            # Sort the dict by matches, return a list
-            #r = {k:v for k,v in sorted(r.items(), key=lambda item: item[1], reverse=True)}
-            rl = [k for k,v in sorted(r.items(), key=lambda item: item[1], reverse=True)]
-            f = os.path.realpath(path + "/" + rl[0])
-    else:
-        f = ""
-
-    # strip file extension and return file name of parquet
-    f = strip_file_extension(f)
-    f = f'{f}_metadata.json'
-
-    return f
-
-
-def read_source_metadata(filepath):
-    """return the locally saved metadata dictionary from JSON
-    :param filepath: str in the form of dir/inv_year
-    :return: metadata dictionary
-    """
-
-    try:
-        with open(filepath, 'r') as file:
-            file_contents = file.read()
-            metadata = json.loads(file_contents)
-            return metadata
-    except FileNotFoundError:
-        log.warning(f"metadata not found for {filepath}")
-        return None
-
-
 def getMetadata(source, year, paths):
+    """
+
+    :param source:
+    :param year:
+    :param paths:
+    :return:
+    """
     from flowsa.flowbyactivity import set_fba_name
 
     name = set_fba_name(source, year)
-    fba_file_path = return_fba_metadata_file_path(name, paths)
+    # fba_file_path = return_fba_metadata_file_path(name, paths)
     try:
-        meta = read_source_metadata(fba_file_path)["tool_meta"]
+        # using 'set_fb_meta' because fxn requires meta object. In the end, the version/git hash are
+        # not reset
+        meta = read_source_metadata(paths, set_fb_meta(name, 'FlowByActivity'))['tool_meta']
     except:
         meta = {'Warning': f'No metadata found for {source}'}
     return meta
