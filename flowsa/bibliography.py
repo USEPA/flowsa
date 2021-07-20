@@ -100,30 +100,31 @@ def generate_fbs_bibliography(methodnames):
                     config['source_url']) not in source_set:
                     source_set.add((config['source_name'], config['author'],
                                     source[1], config['source_url']))
+
+
+                    # if there is a date downloaded, use in citation over date generated
+                    if 'original_data_download_date' in config:
+                        bib_date = config['original_data_download_date']
+                    elif 'date_accessed' in config:
+                        bib_date = config['date_accessed']
+                    else:
+                        bib_date = config['date_FlowByActivity_generated']
+
+                    db = BibDatabase()
+                    db.entries = [{
+                        'title': config['source_name'] + ' ' + str(source[1]),
+                        'author': config['author'],
+                        'year': str(source[1]),
+                        'url': config['source_url'],
+                        'urldate': bib_date,
+                        'ID': config['bib_id'] + '_' + str(source[1]),
+                        'ENTRYTYPE': 'misc'
+                    }]
+                    # append each entry to a list of BibDatabase entries
+                    bib_list.append(db)
             except:
                 log.warning(f'Missing information needed to create bib for {source[0]}, {source[1]}')
                 continue
-
-            # if there is a date downloaded, use in citation over date generated
-            if 'original_data_download_date' in config:
-                bib_date = config['original_data_download_date']
-            elif 'date_literature_accessed' in config:
-                bib_date = config['date_literature_accessed']
-            else:
-                bib_date = config['date_FlowByActivity_generated']
-
-            db = BibDatabase()
-            db.entries = [{
-                'title': config['source_name'] + ' ' + str(source[1]),
-                'author': config['author'],
-                'year': str(source[1]),
-                'url': config['source_url'],
-                'urldate': bib_date,
-                'ID': config['bib_id'] + '_' + str(source[1]),
-                'ENTRYTYPE': 'misc'
-            }]
-            # append each entry to a list of BibDatabase entries
-            bib_list.append(db)
 
     # write out bibliography
     writer = BibTexWriter()
