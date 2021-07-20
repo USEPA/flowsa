@@ -6,7 +6,7 @@ Contains mapping functions
 """
 import pandas as pd
 import numpy as np
-from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
+from flowsa.common import crosswalkpath, sector_source_name, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, fba_activity_fields
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
@@ -22,7 +22,7 @@ def get_activitytosector_mapping(source):
         source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
-    mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
+    mapping = pd.read_csv(crosswalkpath +'Crosswalk_'+source+'_toNAICS.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
     return mapping

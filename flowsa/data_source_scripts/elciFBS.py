@@ -8,7 +8,7 @@ These functions are called if referenced in flowbysectormethods as
 data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
 
 """
-
+from flowsa.mapping import get_activitytosector_mapping
 
 def get_elci_emissions(yaml_load):
     import electricitylci
@@ -46,17 +46,26 @@ def get_elci_emissions(yaml_load):
                                       left_on = 'FlowUUID',
                                       right_on = 'Flow UUID')
     emissions_df.drop(columns=['Flow UUID', 'Compartment'], inplace=True)
-    
-    # Update SectorProducedBy
-    
-    
+
     # Assign other fields
     emissions_df['LocationSystem'] = 'BAA'
     emissions_df['FlowType'] = 'ELEMENTARY_FLOW'
     emissions_df['Class'] = 'Chemicals'
-    
-    
-    return emissions_df
+
+    # Update SectorProducedBy
+    mapping = get_activitytosector_mapping('eLCI')
+    mapping = mapping[['Activity','Sector']]
+    emissions_df_mapped = emissions_df.merge(mapping, how = 'left',
+                                            left_on = 'SectorProducedBy',
+                                            right_on = 'Activity')
+    emissions_df_mapped.drop(columns=['SectorProducedBy','Activity'],
+                             inplace=True)
+    emissions_df_mapped.rename(columns={'Sector':'SectorProducedBy'},
+                               inplace=True)
+    emissions_df_mapped.dropna(subset=['SectorProducedBy'],
+                               inplace=True)
+
+    return emissions_df_mapped
 
 
 
