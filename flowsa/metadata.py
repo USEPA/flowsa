@@ -28,7 +28,7 @@ def set_fb_meta(name_data, category):
     fb_meta.tool_version = pkg_version_number
     fb_meta.git_hash = git_hash
     fb_meta.ext = write_format
-    fb_meta.date_created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    fb_meta.date_created = pd.to_datetime('today').strftime('%Y-%m-%d %H:%M:%S')
     return fb_meta
 
 
@@ -61,9 +61,6 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     # create empty dictionary
     fb_dict = {}
 
-    # add date metadata file generated
-    # update the local config with today's date
-    fb_dict[f'date_{category}_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d %H:%M:%S')
     # add url of FlowBy method at time of commit
     fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{git_hash_long}' \
                  f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
@@ -200,10 +197,6 @@ def getMetadata(source, year, paths):
     from flowsa.flowbyactivity import set_fba_name
 
     name = set_fba_name(source, year)
-    try:
-        # using 'set_fb_meta' because fxn requires meta object. In the end, the version/git hash are
-        # not reset
-        meta = read_source_metadata(paths, set_fb_meta(name, 'FlowByActivity'))['tool_meta']
-    except:
-        meta = {'Warning': f'No metadata found for {source}'}
+    meta = read_source_metadata(paths, set_fb_meta(name, 'FlowByActivity'))
+
     return meta

@@ -118,7 +118,7 @@ def generate_fbs_bibliography(methodname):
                     elif 'date_accessed' in config:
                         bib_date = config['date_accessed']
                     else:
-                        bib_date = config['date_FlowByActivity_generated']
+                        bib_date = config['date_created']
 
                     db = BibDatabase()
                     db.entries = [{
