@@ -22,12 +22,13 @@ def set_fb_meta(name_data, category):
     :return: object, metadata for parquet
     """
     fb_meta = FileMeta()
-    fb_meta.name_data = name_data
     fb_meta.tool = pkg.project_name
-    fb_meta.tool_version = pkg_version_number
     fb_meta.category = category
-    fb_meta.ext = write_format
+    fb_meta.name_data = name_data
+    fb_meta.tool_version = pkg_version_number
     fb_meta.git_hash = git_hash
+    fb_meta.ext = write_format
+    fb_meta.date_created = datetime.now().strftime('%d-%b-%Y')
     return fb_meta
 
 
