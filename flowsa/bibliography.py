@@ -31,7 +31,7 @@ def generate_list_of_sources_in_fbs_method(methodname):
         try:
             sources.append([fbs_k, fbs_v['year']])
         except:
-            log.info('Could not append ' + fbs_k + ' to datasource list')
+            log.info('Could not append %s to datasource list', fbs_k)
             continue
         activities = fbs_v['activity_sets']
         for aset, attr in activities.items():

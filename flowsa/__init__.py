@@ -40,14 +40,14 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     fba = load_preprocessed_output(fba_meta, paths)
     # Remote download
     if fba is None and download_if_missing:
-        log.info(datasource + ' ' + str(year) + ' not found in ' + fbaoutputpath +
-                 ', downloading from remote source')
+        log.info('%s %s not found in %s, downloading from remote source',
+                 datasource, str(year), fbaoutputpath)
         download_from_remote(fba_meta,paths)
         fba = load_preprocessed_output(fba_meta,paths)
 
     if fba is None:
-        log.info(datasource + ' ' + str(year) + ' not found in ' +
-                 fbaoutputpath + ', running functions to generate FBA')
+        log.info('%s %s not found in %s, running functions to generate FBA',
+                 datasource, str(year), fbaoutputpath)
         # Generate the fba
         flowsa.flowbyactivity.main(year=year, source=datasource)
         # Now load the fba
@@ -55,9 +55,10 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
         if fba is None:
             log.error('getFlowByActivity failed, FBA not found')
         else:
-            log.info('Loaded ' + datasource + ' ' + str(year) + ' from ' + fbaoutputpath)
+            log.info('Loaded %s %s from %s',
+                     datasource, str(year), fbaoutputpath)
     else:
-        log.info('Loaded ' + datasource + ' ' + str(year) + ' from ' + fbaoutputpath)
+        log.info('Loaded %s %s from %s', datasource, str(year), fbaoutputpath)
 
     # Address optional parameters
     if flowclass is not None:
@@ -86,9 +87,9 @@ def getFlowBySector(methodname):
         if fbs is None:
             log.error('getFlowBySector failed, FBS not found')
         else:
-            log.info('Loaded ' + methodname + ' from ' + fbsoutputpath)
+            log.info('Loaded %s from %s', methodname, fbsoutputpath)
     else:
-        log.info('Loaded ' + methodname + ' from ' + fbsoutputpath)
+        log.info('Loaded %s from %s', methodname, fbsoutputpath)
     return fbs
 
 
@@ -117,5 +118,5 @@ def writeFlowBySectorBibliography(methodname):
     """
     # Generate a single .bib file for a list of Flow-By-Sector method names
     # and save file to local directory
-    log.info(f'Write bibliography to {biboutputpath}{methodname}.bib')
+    log.info('Write bibliography to %s%s.bib', biboutputpath,methodname)
     generate_fbs_bibliography(methodname)

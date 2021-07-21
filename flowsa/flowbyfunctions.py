@@ -541,11 +541,11 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
             # if df is less aggregated than allocation df, aggregate
             # fba activity to allocation geoscale
             if fips_number_key[i] > fips_number_key[to_scale]:
-                log.info("Aggregating subset from " + i + " to " + to_scale)
+                log.info("Aggregating subset from %s to %s", i, to_scale)
                 df_sub = agg_by_geoscale(df3, i, to_scale, fba_default_grouping_fields)
             # else filter relevant rows
             else:
-                log.info("Subsetting " + i + " data")
+                log.info("Subsetting %s data", i)
                 df_sub = filter_by_geoscale(df3, i)
             df_subset_list.append(df_sub)
         df_subset = pd.concat(df_subset_list, ignore_index=True)
