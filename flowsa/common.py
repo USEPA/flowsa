@@ -20,7 +20,7 @@ import pkg_resources
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-pkg_version_number = '0.1.1'
+pkg_version_number = '0.2'
 
 log.basicConfig(level=log.DEBUG,
                 format='%(asctime)s %(levelname)-8s %(message)s',
