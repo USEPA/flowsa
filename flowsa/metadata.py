@@ -199,7 +199,6 @@ def getMetadata(source, year, paths):
     from flowsa.flowbyactivity import set_fba_name
 
     name = set_fba_name(source, year)
-    # fba_file_path = return_fba_metadata_file_path(name, paths)
     try:
         # using 'set_fb_meta' because fxn requires meta object. In the end, the version/git hash are
         # not reset
