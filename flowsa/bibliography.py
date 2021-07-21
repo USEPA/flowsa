@@ -98,43 +98,44 @@ def generate_fbs_bibliography(methodname):
             except KeyError:
                 try:
                     config = getMetadata(source[0], source[1], paths)
-                except KeyError:
-                    log.info('Could not find a method yaml for ' + source[0])
+                except KeyError or AttributeError:
+                    log.info('Could not find metadata for ' + source[0])
                     continue
-            # strip fba and literature from keys
-            for x in ['fba_', 'literature_']:
-                config = {k.replace(x, ''): v for k, v in config.items()}
-            # ensure data sources are not duplicated when different source names
-            try:
-                if (config['source_name'], config['author'], source[1],
-                    config['source_url']) not in source_set:
-                    source_set.add((config['source_name'], config['author'],
-                                    source[1], config['source_url']))
+            if config is not None:
+                # strip fba and literature from keys
+                for x in ['fba_', 'literature_']:
+                    config = {k.replace(x, ''): v for k, v in config.items()}
+                # ensure data sources are not duplicated when different source names
+                try:
+                    if (config['source_name'], config['author'], source[1],
+                        config['source_url']) not in source_set:
+                        source_set.add((config['source_name'], config['author'],
+                                        source[1], config['source_url']))
 
 
-                    # if there is a date downloaded, use in citation over date generated
-                    if 'original_data_download_date' in config:
-                        bib_date = config['original_data_download_date']
-                    elif 'date_accessed' in config:
-                        bib_date = config['date_accessed']
-                    else:
-                        bib_date = config['date_created']
+                        # if there is a date downloaded, use in citation over date generated
+                        if 'original_data_download_date' in config:
+                            bib_date = config['original_data_download_date']
+                        elif 'date_accessed' in config:
+                            bib_date = config['date_accessed']
+                        else:
+                            bib_date = config['date_created']
 
-                    db = BibDatabase()
-                    db.entries = [{
-                        'title': config['source_name'] + ' ' + str(source[1]),
-                        'author': config['author'],
-                        'year': str(source[1]),
-                        'url': config['source_url'],
-                        'urldate': bib_date,
-                        'ID': config['bib_id'] + '_' + str(source[1]),
-                        'ENTRYTYPE': 'misc'
-                    }]
-                    # append each entry to a list of BibDatabase entries
-                    bib_list.append(db)
-            except:
-                log.warning(f'Missing information needed to create bib for {source[0]}, {source[1]}')
-                continue
+                        db = BibDatabase()
+                        db.entries = [{
+                            'title': config['source_name'] + ' ' + str(source[1]),
+                            'author': config['author'],
+                            'year': str(source[1]),
+                            'url': config['source_url'],
+                            'urldate': bib_date,
+                            'ID': config['bib_id'] + '_' + str(source[1]),
+                            'ENTRYTYPE': 'misc'
+                        }]
+                        # append each entry to a list of BibDatabase entries
+                        bib_list.append(db)
+                except:
+                    log.warning(f'Missing information needed to create bib for {source[0]}, {source[1]}')
+                    continue
 
     # write out bibliography
     writer = BibTexWriter()
