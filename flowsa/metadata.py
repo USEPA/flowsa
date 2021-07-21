@@ -2,26 +2,24 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Functions for creating and loading metadata files for FlowByActivity (FBA) and FlowBySector (FBS) datasets
+Functions for creating and loading metadata files for
+FlowByActivity (FBA) and FlowBySector (FBS) datasets
 """
 
 import logging as log
 import pandas as pd
-import os
-import re
-import json
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, read_source_metadata
-from esupy.util import strip_file_extension
 from flowsa.common import paths, pkg, pkg_version_number, write_format,\
-    git_hash, git_hash_long, load_functions_loading_fbas_config, load_fbs_methods_additional_fbas_config
+    git_hash, git_hash_long, load_functions_loading_fbas_config, \
+    load_fbs_methods_additional_fbas_config
 
 
 def set_fb_meta(name_data, category):
     """
     Create meta data for a parquet
-    :param name_data: name of df
-    :param category: 'FlowBySector' or 'FlowByActivity'
-    :return: metadata for parquet
+    :param name_data: string, name of df
+    :param category: string, 'FlowBySector' or 'FlowByActivity'
+    :return: object, metadata for parquet
     """
     fb_meta = FileMeta()
     fb_meta.name_data = name_data
@@ -35,9 +33,13 @@ def set_fb_meta(name_data, category):
 
 def write_metadata(source_name, config, fb_meta, category, **kwargs):
     """
-    Save the metadata to a json file
-    :param category: 'FlowBySector' or 'FlowByActivity'
-    :return:
+    Write the metadata and output as a JSON in a local directory
+    :param source_name: string, source name for either a FBA or FBS dataset
+    :param config: dictionary, configuration file
+    :param fb_meta: object, metadata
+    :param category: string, 'FlowBySector' or 'FlowByActivity'
+    :param kwargs: additional parameters, if running for FBA, define "year" of data
+    :return: object, metadata that includes methodology for FBAs
     """
 
     fb_meta.tool_meta = return_fb_meta_data(source_name, config, fb_meta, category, **kwargs)
@@ -46,11 +48,13 @@ def write_metadata(source_name, config, fb_meta, category, **kwargs):
 
 def return_fb_meta_data(source_name, config, fb_meta, category, **kwargs):
     """
-
-    :param source_name:
-    :param config:
-    :param category:
-    :return:
+    Generate the metadata specific to a Flow-by-Activity or Flow-By-Sector method
+    :param source_name: string, FBA or FBS method name
+    :param config: dictionary, FBA or FBS method
+    :param fb_meta: object, metadata
+    :param category: string, "FlowByActivity" or "FlowBySector"
+    :param kwargs: additional parameters, if running for FBA, define "year"
+    :return: object, metadata for FBA or FBS method
     """
 
     # create empty dictionary
@@ -78,9 +82,11 @@ def return_fb_meta_data(source_name, config, fb_meta, category, **kwargs):
 
 def return_fbs_method_data(source_name, config, fbs_meta):
     """
-
-    :param config: dictionary, FBS method yaml
-    :return:
+    Generate the meta data for a FlowBySector dataframe
+    :param source_name: string, FBA method name
+    :param config: dictionary, configuration/method file
+    :param fbs_meta: object, FBS metadata to add specific meta to
+    :return: meta object
     """
 
     # load the yaml that lists what additional fbas are used in creating the fbs
@@ -149,9 +155,10 @@ def return_fbs_method_data(source_name, config, fbs_meta):
 
 def return_fba_method_meta(sourcename, **kwargs):
     """
-
+    Return meta for a FlowByActivity method
     :param sourcename: string, the FlowByActivity sourcename
-    :return:
+    :param kwargs: requires "year" defined
+    :return: meta object
     """
     from flowsa.bibliography import load_source_dict
 
@@ -168,8 +175,9 @@ def return_fba_method_meta(sourcename, **kwargs):
         # loop through the FBA yaml and add info
         for k, v in fba.items():
             # include bib_id because this ifno pulled when generating a method bib
-            if k in ('fba_author', 'fba_source_name', 'fba_source_url', 'original_data_download_date',
-                     'literature_author', 'literature_source_name', 'literature_source_url',
+            if k in ('fba_author', 'fba_source_name', 'fba_source_url',
+                     'original_data_download_date', 'literature_author',
+                     'literature_source_name', 'literature_source_url',
                      'date_literature_accessed', 'bib_id'):
                 fba_dict[k] = str(v)
     except:
@@ -181,11 +189,12 @@ def return_fba_method_meta(sourcename, **kwargs):
 
 def getMetadata(source, year, paths):
     """
-
-    :param source:
-    :param year:
-    :param paths:
-    :return:
+    Use the esupy package functions to return the metadata for
+    a FBA used to generate a FBS
+    :param source: string, FBA source name
+    :param year: string, year of FBA data
+    :param paths: paths as defined in common.py
+    :return: meta object, previously generated FBA meta
     """
     from flowsa.flowbyactivity import set_fba_name
 
