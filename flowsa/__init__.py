@@ -109,13 +109,13 @@ def collapse_FlowBySector(methodname):
     return fbs_collapsed
 
 
-def writeFlowBySectorBibliography(methodnames):
+def writeFlowBySectorBibliography(methodname):
     """
     Generate bibliography for FlowBySectorMethod in local directory
-    :param methodnames: list, FBS methodnames for which to create .bib file
+    :param methodname: string, FBS methodname for which to create .bib file
     :return: .bib file save to local directory
     """
     # Generate a single .bib file for a list of Flow-By-Sector method names
     # and save file to local directory
-    log.info('Write bibliography to ' + biboutputpath + '_'.join(methodnames) + '.bib')
-    generate_fbs_bibliography(methodnames)
+    log.info(f'Write bibliography to {biboutputpath}{methodname}.bib')
+    generate_fbs_bibliography(methodname)

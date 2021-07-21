@@ -2,7 +2,7 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Function to generate .bib file for FlowBySector method(s)
+Functions to generate .bib file for a FlowBySector method
 """
 
 import os
@@ -15,44 +15,54 @@ from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config
 
 
-def generate_list_of_sources_in_fbs_method(methodnames):
+def generate_list_of_sources_in_fbs_method(methodname):
+    """
+    Determine what FlowByActivities are used to generate a FlowBySector
+    :param methodname: string, FlowBySector method
+    :return: list, pairs of FlowByActivity source names and years
+    """
     sources = []
-    for m in methodnames:
-        # load the fbs method yaml
-        fbs_yaml = load_method(m)
+    # load the fbs method yaml
+    fbs_yaml = load_method(methodname)
 
-        # create list of data and allocation data sets
-        fbs = fbs_yaml['source_names']
-        for fbs_k, fbs_v in fbs.items():
-            try:
-                sources.append([fbs_k, fbs_v['year']])
-            except:
-                log.info('Could not append ' + fbs_k + ' to datasource list')
-                continue
-            activities = fbs_v['activity_sets']
-            for aset, attr in activities.items():
-                if attr['allocation_source'] != 'None':
-                    sources.append([attr['allocation_source'], attr['allocation_source_year']])
-                if 'helper_source' in attr:
-                    sources.append([attr['helper_source'], attr['helper_source_year']])
-                if 'literature_sources' in attr:
-                    for source, date in attr['literature_sources'].items():
-                        sources.append([source, date])
-        # load any additional fbas that are called in a fbs method within fxns
+    # create list of data and allocation data sets
+    fbs = fbs_yaml['source_names']
+    for fbs_k, fbs_v in fbs.items():
         try:
-            fbas = load_fbs_methods_additional_fbas_config()[m]
-            for s, acts_info in fbas.items():
-                for acts, fxn_info in acts_info.items():
-                    for fxn, fba_info in fxn_info.items():
-                        for fba, y in fba_info.items():
-                            fxn_config = load_functions_loading_fbas_config()[fxn][fba]
-                            sources.append([fxn_config['source'], y])
-        except KeyError:
-            pass
+            sources.append([fbs_k, fbs_v['year']])
+        except:
+            log.info('Could not append ' + fbs_k + ' to datasource list')
+            continue
+        activities = fbs_v['activity_sets']
+        for aset, attr in activities.items():
+            if attr['allocation_source'] != 'None':
+                sources.append([attr['allocation_source'], attr['allocation_source_year']])
+            if 'helper_source' in attr:
+                sources.append([attr['helper_source'], attr['helper_source_year']])
+            if 'literature_sources' in attr:
+                for source, date in attr['literature_sources'].items():
+                    sources.append([source, date])
+    # load any additional fbas that are called in a fbs method within fxns
+    try:
+        fbas = load_fbs_methods_additional_fbas_config()[methodname]
+        for s, acts_info in fbas.items():
+            for acts, fxn_info in acts_info.items():
+                for fxn, fba_info in fxn_info.items():
+                    for fba, y in fba_info.items():
+                        fxn_config = load_functions_loading_fbas_config()[fxn][fba]
+                        sources.append([fxn_config['source'], y])
+    except KeyError:
+        pass
+
     return sources
 
 
 def load_source_dict(sourcename):
+    """
+    Load the yaml method file for a flowbyactivity dataset or for a value from the literature
+    :param sourcename: string, FBA source name or value from the lit name
+    :return: dictionary, the method file
+    """
     try:
         # first try loading citation information from source yaml
         config = load_sourceconfig(sourcename)
@@ -64,17 +74,17 @@ def load_source_dict(sourcename):
     return config
 
 
-def generate_fbs_bibliography(methodnames):
+def generate_fbs_bibliography(methodname):
     """
     Generate bibliography for a FlowBySector
-    :param methodname: list of methodnames to create a bibliiography
+    :param methodname: string, methodname to create a bibliiography
     :return: a .bib file saved in local directory
     """
 
     from flowsa.metadata import getMetadata
 
     # create list of sources in method
-    sources = generate_list_of_sources_in_fbs_method(methodnames)
+    sources = generate_list_of_sources_in_fbs_method(methodname)
 
     # loop through list of sources, load source method yaml, and create bib entry
     bib_list = []
@@ -130,7 +140,7 @@ def generate_fbs_bibliography(methodnames):
     writer = BibTexWriter()
     # create directory if missing
     os.makedirs(outputpath + '/Bibliography', exist_ok=True)
-    with open(biboutputpath + "_".join(methodnames) + '.bib', 'w') as bibfile:
+    with open(f'{biboutputpath}{methodname}.bib', 'w') as bibfile:
         # loop through all entries in bib_list
         for b in bib_list:
             bibfile.write(writer.write(b))
