@@ -31,7 +31,7 @@ def set_fb_meta(name_data, category):
     return fb_meta
 
 
-def write_metadata(source_name, config, category, **kwargs):
+def write_metadata(source_name, config, fb_meta, category, **kwargs):
     """
     Write the metadata and output as a JSON in a local directory
     :param source_name: string, source name for either a FBA or FBS dataset
