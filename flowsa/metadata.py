@@ -28,7 +28,7 @@ def set_fb_meta(name_data, category):
     fb_meta.tool_version = pkg_version_number
     fb_meta.git_hash = git_hash
     fb_meta.ext = write_format
-    fb_meta.date_created = datetime.now().strftime('%d-%b-%Y')
+    fb_meta.date_created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return fb_meta
 
 
