@@ -163,7 +163,7 @@ def process_data_frame(df, source, year, config):
     name_data = set_fba_name(source, year)
     meta = set_fb_meta(name_data, "FlowByActivity")
     write_df_to_file(flow_df,paths,meta)
-    write_metadata(source, config, meta, "FlowByActivity", year=year)
+    write_metadata(source, config, "FlowByActivity", year=year)
     log.info("FBA generated and saved for " + name_data)
     # rename the log file saved to local directory
     rename_log_file(name_data, meta)

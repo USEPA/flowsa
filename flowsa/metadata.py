@@ -31,7 +31,7 @@ def set_fb_meta(name_data, category):
     return fb_meta
 
 
-def write_metadata(source_name, config, fb_meta, category, **kwargs):
+def write_metadata(source_name, config, category, **kwargs):
     """
     Write the metadata and output as a JSON in a local directory
     :param source_name: string, source name for either a FBA or FBS dataset
@@ -42,11 +42,11 @@ def write_metadata(source_name, config, fb_meta, category, **kwargs):
     :return: object, metadata that includes methodology for FBAs
     """
 
-    fb_meta.tool_meta = return_fb_meta_data(source_name, config, fb_meta, category, **kwargs)
+    fb_meta.tool_meta = return_fb_meta_data(source_name, config, category, **kwargs)
     write_metadata_to_file(paths, fb_meta)
 
 
-def return_fb_meta_data(source_name, config, fb_meta, category, **kwargs):
+def return_fb_meta_data(source_name, config, category, **kwargs):
     """
     Generate the metadata specific to a Flow-by-Activity or Flow-By-Sector method
     :param source_name: string, FBA or FBS method name
@@ -68,7 +68,7 @@ def return_fb_meta_data(source_name, config, fb_meta, category, **kwargs):
                  f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
 
     if category == 'FlowBySector':
-        method_data = return_fbs_method_data(source_name, config, fb_meta)
+        method_data = return_fbs_method_data(source_name, config)
 
     elif category == 'FlowByActivity':
         # when FBA meta created, kwargs exist for year
@@ -80,7 +80,7 @@ def return_fb_meta_data(source_name, config, fb_meta, category, **kwargs):
     return fb_dict
 
 
-def return_fbs_method_data(source_name, config, fbs_meta):
+def return_fbs_method_data(source_name, config):
     """
     Generate the meta data for a FlowBySector dataframe
     :param source_name: string, FBA method name
