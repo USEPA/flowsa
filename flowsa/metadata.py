@@ -149,7 +149,7 @@ def return_fba_method_meta(sourcename, **kwargs):
 
     # add year if creating an FBA metafile
     if 'year' in kwargs:
-        fba_dict['fba_data_year'] = kwargs['year']
+        fba_dict['data_year'] = kwargs['year']
 
     try:
         # loop through the FBA yaml and add info
