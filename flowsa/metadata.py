@@ -63,7 +63,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
 
     # add url of FlowBy method at time of commit
     fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{git_hash_long}' \
-                 f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
+                            f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
 
     if category == 'FlowBySector':
         method_data = return_fbs_method_data(source_name, config)
@@ -83,7 +83,6 @@ def return_fbs_method_data(source_name, config):
     Generate the meta data for a FlowBySector dataframe
     :param source_name: string, FBA method name
     :param config: dictionary, configuration/method file
-    :param fbs_meta: object, FBS metadata to add specific meta to
     :return: meta object
     """
 
@@ -92,62 +91,45 @@ def return_fbs_method_data(source_name, config):
 
     # Create empty dictionary for storing meta data
     meta = {}
-    for x, y in config.items():
-        # append k,v if the key contains the phrase "target"
-        if 'target' in x:
-            meta[x] = y
     # subset the FBS dictionary into a dictionary of source names
     fb = config['source_names']
+    # initiate nested dictionary
+    meta['primary_source_meta'] = {}
     for k, v in fb.items():
         # append source and year
-        meta[k + '_FBA_meta'] = getMetadata(k, v["year"], paths)
+        meta['primary_source_meta'][k] = getMetadata(k, v["year"], paths)
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
+        # initiate nested dictionary
+        meta['primary_source_meta'][k]['allocation_source_meta'] = {}
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
-            # initiate nested dictionary
-            meta[k + '_FBA_meta'][aset] = {}
-            for aset2, attr2 in attr.items():
-                if aset2 in ('allocation_method', 'allocation_source', 'allocation_source_year'):
-                    meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
             if attr['allocation_method'] not in (['direct', 'allocation_function']):
                 # append fba meta
-                meta[k + '_FBA_meta'][aset]['allocation_source_meta'] = \
+                meta['primary_source_meta'][k]['allocation_source_meta'][attr['allocation_source']] = \
                     getMetadata(attr['allocation_source'],
                                 attr['allocation_source_year'], paths)
-            if attr['allocation_helper'] == 'yes':
-                for aset2, attr2 in attr.items():
-                    if aset2 in ('helper_method', 'helper_source', 'helper_source_year'):
-                        meta[k + '_FBA_meta'][aset][aset2] = str(attr2)
-                # append fba meta
-                meta[k + '_FBA_meta'][aset]['helper_source_meta'] = \
-                    getMetadata(attr['helper_source'],
-                                attr['helper_source_year'], paths)
-            # subset the additional fbas to the source and activity set, if exists
-            try:
-                fba_sub = add_fbas[k][aset]
-                # initiate nested dictionary
-                meta[k + '_FBA_meta'][aset]['FBAs_called_within_fxns'] = {}
-                for fxn, fba_info in fba_sub.items():
-                    # load the yaml with functions loading fbas
-                    x = load_functions_loading_fbas_config()[fxn]
-                    # initiate nested dictionary
-                    meta[k + '_FBA_meta'][aset]['FBAs_called_within_fxns'][fxn] = {}
-                    for s, y in fba_info.items():
-                        meta[k + '_FBA_meta'][aset]['FBAs_called_within_fxns'][fxn][s] = \
-                            getMetadata(x[s]['source'],
-                                        y, paths)
-            except KeyError:
-                pass
+            if 'helper_source' in attr:
+                meta['primary_source_meta'][k]['allocation_source_meta'][attr['helper_source']] = \
+                    getMetadata(attr['helper_source'], attr['helper_source_year'], paths)
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
-                # initiate empty dictionary
-                meta[k + '_FBA_meta'][aset]['literature_sources_meta'] = {}
-                for aset4, attr4 in lit.items():
-                    # extract fba meta to append
-                    fba_meta = return_fba_method_meta(aset4)
+                for s, y in lit.items():
+                    lit_meta = return_fba_method_meta(s)
                     # append fba meta
-                    meta[k + '_FBA_meta'][aset]['literature_sources_meta'][aset4] = fba_meta
+                    meta['primary_source_meta'][k]['allocation_source_meta'][s] = lit_meta
+                    # subset the additional fbas to the source and activity set, if exists
+        try:
+            fbas = add_fbas[k]
+            for acts, fxn_info in fbas.items():
+                for fxn, fba_info in fxn_info.items():
+                    for fba, y in fba_info.items():
+                        fxn_config = load_functions_loading_fbas_config()[fxn][fba]
+                        meta['primary_source_meta'][k]['allocation_source_meta'][fxn_config['source']] = \
+                            getMetadata(fxn_config['source'], y, paths)
+        except KeyError:
+            pass
+
     return meta
 
 
