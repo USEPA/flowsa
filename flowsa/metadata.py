@@ -115,7 +115,7 @@ def return_fbs_method_data(source_name, config):
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 for s, y in lit.items():
-                    lit_meta = return_fba_method_meta(s, y)
+                    lit_meta = return_fba_method_meta(s, year=y)
                     # append fba meta
                     meta['primary_source_meta'][k]['allocation_source_meta'][s] = lit_meta
                     # subset the additional fbas to the source and activity set, if exists
