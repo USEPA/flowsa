@@ -115,7 +115,7 @@ def return_fbs_method_data(source_name, config):
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 for s, y in lit.items():
-                    lit_meta = return_fba_method_meta(s)
+                    lit_meta = return_fba_method_meta(s, y)
                     # append fba meta
                     meta['primary_source_meta'][k]['allocation_source_meta'][s] = lit_meta
                     # subset the additional fbas to the source and activity set, if exists
@@ -156,7 +156,7 @@ def return_fba_method_meta(sourcename, **kwargs):
         for k, v in fba.items():
             # include bib_id because this ifno pulled when generating a method bib
             if k in ('author', 'source_name', 'source_url',
-                     'original_data_download_date', 'literature_author',
+                     'original_data_download_date',
                      'date_accessed', 'bib_id'):
                 fba_dict[k] = str(v)
     except:
