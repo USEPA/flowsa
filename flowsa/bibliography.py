@@ -102,16 +102,12 @@ def generate_fbs_bibliography(methodname):
                     log.info('Could not find metadata for ' + source[0])
                     continue
             if config is not None:
-                # strip fba and literature from keys
-                for x in ['fba_', 'literature_']:
-                    config = {k.replace(x, ''): v for k, v in config.items()}
                 # ensure data sources are not duplicated when different source names
                 try:
                     if (config['source_name'], config['author'], source[1],
-                        config['source_url']) not in source_set:
+                    config['source_url']) not in source_set:
                         source_set.add((config['source_name'], config['author'],
                                         source[1], config['source_url']))
-
 
                         # if there is a date downloaded, use in citation over date generated
                         if 'original_data_download_date' in config:
