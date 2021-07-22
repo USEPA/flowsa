@@ -1,6 +1,6 @@
-fba_author: US Environmental Protection Agency
-fba_source_name: 'Inventory of US Greenhouse Gas Emissions and Sinks: 1990-2018'
-fba_source_url: https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2018
+author: US Environmental Protection Agency
+source_name: 'Inventory of US Greenhouse Gas Emissions and Sinks: 1990-2018'
+source_url: https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2018
 bib_id: EPA_GHGI
 # api_name: EPA_GHGI
 # api_key_required: false

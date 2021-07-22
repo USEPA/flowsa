@@ -1,6 +1,6 @@
-fba_author: NOAA
-fba_source_name: NOAA_Landings
-fba_source_url: ' '
+author: NOAA
+source_name: NOAA_Landings
+source_url: ' '
 original_data_download_date: '2020-04-28'
 bib_id: NOAA_Landings
 api_name: None

@@ -173,10 +173,9 @@ def return_fba_method_meta(sourcename, **kwargs):
         # loop through the FBA yaml and add info
         for k, v in fba.items():
             # include bib_id because this ifno pulled when generating a method bib
-            if k in ('fba_author', 'fba_source_name', 'fba_source_url',
+            if k in ('author', 'source_name', 'source_url',
                      'original_data_download_date', 'literature_author',
-                     'literature_source_name', 'literature_source_url',
-                     'date_literature_accessed', 'bib_id'):
+                     'date_accessed', 'bib_id'):
                 fba_dict[k] = str(v)
     except:
         log.warning(f'No metadata found for {sourcename}')

@@ -1,6 +1,6 @@
-fba_author: Bureau of Economic Analysis
-fba_source_name: Gross Output by Industry
-fba_source_url: https://www.bea.gov/data/industries/gross-output-by-industry
+author: Bureau of Economic Analysis
+source_name: Gross Output by Industry
+source_url: https://www.bea.gov/data/industries/gross-output-by-industry
 original_data_download_date: '2020-07-14'
 bib_id: BEA_GDP
 api_name: None

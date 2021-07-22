@@ -1,6 +1,6 @@
-fba_author: US Energy Information Administration
-fba_source_name: Commercial Buildings Energy Consumption Survey
-fba_source_url: https://www.eia.gov/consumption/commercial/
+author: US Energy Information Administration
+source_name: Commercial Buildings Energy Consumption Survey
+source_url: https://www.eia.gov/consumption/commercial/
 bib_id: EIA_CBECS
 api_name: EIA_CBECS_Water
 api_key_required: false
