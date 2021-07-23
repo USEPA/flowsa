@@ -102,7 +102,7 @@ def generate_fbs_bibliography(methodname):
                 try:
                     config = getMetadata(source[0], source[1], paths)
                 except KeyError or AttributeError:
-                    log.info('Could not find metadata for ' + source[0])
+                    log.info('Could not find metadata for %s', source[0])
                     continue
             if config is not None:
                 # ensure data sources are not duplicated when different source names
@@ -133,7 +133,7 @@ def generate_fbs_bibliography(methodname):
                         # append each entry to a list of BibDatabase entries
                         bib_list.append(db)
                 except:
-                    log.warning(f'Missing information needed to create bib for {source[0]}, {source[1]}')
+                    log.warning('Missing information needed to create bib for %s, %s', source[0], source[1])
                     continue
 
     # write out bibliography

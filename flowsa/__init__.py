@@ -78,8 +78,7 @@ def getFlowBySector(methodname):
     fbs_meta = set_fb_meta(methodname, "FlowBySector")
     fbs = load_preprocessed_output(fbs_meta, paths)
     if fbs is None:
-        log.info(methodname + ' not found in ' + fbsoutputpath +
-                 ', running functions to generate FBS')
+        log.info('%s not found in %s, running functions to generate FBS', methodname, fbsoutputpath)
         # Generate the fba
         flowsa.flowbysector.main(method=methodname)
         # Now load the fba
@@ -118,5 +117,5 @@ def writeFlowBySectorBibliography(methodname):
     """
     # Generate a single .bib file for a list of Flow-By-Sector method names
     # and save file to local directory
-    log.info('Write bibliography to %s%s.bib', biboutputpath,methodname)
+    log.info('Write bibliography to %s%s.bib', biboutputpath, methodname)
     generate_fbs_bibliography(methodname)

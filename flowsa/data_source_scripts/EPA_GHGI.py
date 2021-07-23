@@ -424,7 +424,7 @@ def ghg_parse(**kwargs):
     for df in dataframe_list:
         special_format = False
         source_name = df["SourceName"][0]
-        log.info(f'Processing Source Name {source_name}')
+        log.info('Processing Source Name %s', source_name)
         for src in SRC_NAME_SPECIAL_FORMAT:
             if src in source_name:
                 special_format = True

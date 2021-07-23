@@ -145,7 +145,7 @@ def make_http_request(url):
         requests_ftp.monkeypatch_session()
         r = requests.Session().get(url)
     except requests.exceptions.ConnectionError:
-        log.error("URL Connection Error for " + url)
+        log.error("URL Connection Error for %s", url)
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError:

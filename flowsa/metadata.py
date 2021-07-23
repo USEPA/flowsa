@@ -160,7 +160,7 @@ def return_fba_method_meta(sourcename, **kwargs):
                      'date_accessed', 'bib_id'):
                 fba_dict[k] = str(v)
     except:
-        log.warning(f'No metadata found for {sourcename}')
+        log.warning('No metadata found for %s', sourcename)
         fba_dict['meta_data'] = f'No metadata found for {sourcename}'
 
     return fba_dict

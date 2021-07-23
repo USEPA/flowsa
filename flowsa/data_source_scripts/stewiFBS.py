@@ -233,7 +233,7 @@ def extract_facility_data(inventory_dict):
         facilities = stewi.getInventoryFacilities(database, year)
         facilities = facilities[['FacilityID', 'State', 'County', 'NAICS']]
         if len(facilities[facilities.duplicated(subset='FacilityID', keep=False)]) > 0:
-            log.debug('Duplicate facilities in ' + inventory_name + ' - keeping first listed')
+            log.debug('Duplicate facilities in %s - keeping first listed', inventory_name)
             facilities.drop_duplicates(subset='FacilityID',
                                        keep='first', inplace=True)
         facility_mapping = facility_mapping.append(facilities)
@@ -426,14 +426,14 @@ def check_for_missing_sector_data(df, target_sector_level):
         # append to df
         sector_list = df_subset[activity_field].drop_duplicates()
         if len(df_x) != 0:
-            log.warning('Data found at ' + str(i) + ' digit NAICS to be allocated'
-                                                    ': {}'.format(' '.join(map(str, sector_list))))
+            log.warning('Data found at %s digit NAICS to '
+                        'be allocated: {}'.format(' '.join(map(str, sector_list))), str(i))
             rows_lost = rows_lost.append(df_x, ignore_index=True, sort=True)
 
     if len(rows_lost) == 0:
         log.info('No data loss from NAICS in dataframe')
     else:
-        log.info('Allocating FlowAmounts equally to each ' + target_sector_level)
+        log.info('Allocating FlowAmounts equally to each %s', target_sector_level)
 
     # add rows of missing data to the fbs sector subset
     df_allocated = pd.concat([df, rows_lost], ignore_index=True, sort=True)

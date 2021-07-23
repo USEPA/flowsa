@@ -248,8 +248,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
             col_to_subset = asn_subset['allocation_subset_col'][0]
             val_to_subset = asn_subset['allocation_subset'][0]
             # subset fba_allocation_subset further
-            log.debug('Subset the allocation dataset where ' +
-                      str(col_to_subset) + ' = ' + str(val_to_subset))
+            log.debug('Subset the allocation dataset where %s = %s', str(col_to_subset), str(val_to_subset))
             fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset]
                                                           == val_to_subset].reset_index(drop=True)
 
@@ -281,7 +280,7 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
                       "TargetFlowContext",
                       "TargetUnit"]
     if flowmapping.empty:
-        log.warning("No mapping file in fedelemflowlist found for " + ' '.join(from_fba_source))
+        log.warning("No mapping file in fedelemflowlist found for %s", ' '.join(from_fba_source))
         # return the original df but with columns renamed so can continue working on the FBS
         fba_mapped_df = fba.copy()
     else:

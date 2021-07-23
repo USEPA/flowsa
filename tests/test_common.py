@@ -22,7 +22,7 @@ def store_test_flowbyactivity(csvname, year=None):
         result = add_missing_flow_by_fields(result, flow_by_activity_fields)
         result.to_parquet(f, engine="pyarrow")
     except:
-        log.error('Failed to save ' + csvname + "_" + str(year) + ' file.')
+        log.error('Failed to save %s_%s file', csvname, str(year))
 
 
 def gettestFlowByActivity(flowclass, years, datasource):
@@ -41,8 +41,8 @@ def gettestFlowByActivity(flowclass, years, datasource):
             fba = fba[fba['Class'].isin(flowclass)]
             fbas = pd.concat([fbas, fba], sort=False)
         except FileNotFoundError:
-            log.error("No parquet file found for datasource " + datasource + "and year " + str(
-                y) + " in flowsa")
+            log.error("No parquet file found for datasource %s and year "
+                      "%s in flowsa", datasource, str(y))
     return fbas
 
 
@@ -56,5 +56,5 @@ def gettestFlowBySector(methodname):
     try:
         fbs = pd.read_parquet(fbsoutputpath + methodname + ".parquet")
     except FileNotFoundError:
-        log.error("No parquet file found for datasource " + methodname + " in flowsa")
+        log.error("No parquet file found for datasource %s in flowsa", methodname)
     return fbs

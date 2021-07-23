@@ -109,7 +109,7 @@ def call_urls(url_list, args, config):
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
-            log.info("Calling " + url)
+            log.info("Calling %s", url)
             r = make_http_request(url)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
@@ -150,7 +150,7 @@ def process_data_frame(df, source, year, config):
     :return: df, FBA format, standardized
     """
     # log that data was retrieved
-    log.info("Retrieved data for " + source + ' ' + year)
+    log.info("Retrieved data for %s %s", source, year)
     # add any missing columns of data and cast to appropriate data type
     log.info("Add any missing columns and check field datatypes")
     flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
@@ -164,7 +164,7 @@ def process_data_frame(df, source, year, config):
     meta = set_fb_meta(name_data, "FlowByActivity")
     write_df_to_file(flow_df,paths,meta)
     write_metadata(source, config, meta, "FlowByActivity", year=year)
-    log.info("FBA generated and saved for " + name_data)
+    log.info("FBA generated and saved for %s", name_data)
     # rename the log file saved to local directory
     rename_log_file(name_data, meta)
 
