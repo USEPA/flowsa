@@ -1,7 +1,0 @@
-﻿SourceName,Class,FlowName,FlowAmount,Compartment,Unit,ActivityProducedBy,ActivityConsumedBy,FIPS,Year,MeasureofSpread,Spread,DistributionType,Min,Max,DataReliability,DataCollection,Description
-StarWars,Droid,RA-7,10000,,p,Arakyd Industries,,10001,1987,,,,,,1,1,
-StarWars,Droid,RA-7,9000,,p,Arakyd Industries,,10003,1987,,,,,,2,2,
-StarWars,Spaceship,X-wing,100,,p,,Rebellion,13001,1999,,,,,,1,1,
-StarWars,Spaceship,X-wing,100,,p,,Rebellion,13003,1999,,,,,,2,2,
-StarWars,Spaceship,X-wing,100,,p,,Rebellion,13005,1999,,,,,,3,3,
-StarWars,Spaceship,X-wing,20,,p,,Rebellion,13005,2000,,,,,,4,4,
