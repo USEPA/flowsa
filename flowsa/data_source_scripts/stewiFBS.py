@@ -18,7 +18,7 @@ from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk
-from flowsa.datachecks import replace_naics_w_naics_from_another_year
+from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
 def stewicombo_to_sector(yaml_load):
@@ -364,7 +364,7 @@ def naics_expansion(facility_NAICS):
 
 def check_for_missing_sector_data(df, target_sector_level):
     """
-    Modeled after datachecks.py check_if_losing_sector_data
+    Modeled after validation.py check_if_losing_sector_data
     Allocates flow amount equally across child NAICS when parent NAICS is not target_level
     :param df: df
     :param target_sector_level: str, final sector level of FBS (ex. NAICS_6)

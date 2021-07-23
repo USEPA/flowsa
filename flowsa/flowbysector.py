@@ -38,7 +38,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, 
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
-from flowsa.datachecks import check_if_losing_sector_data,\
+from flowsa.validation import check_if_losing_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year
