@@ -12,7 +12,8 @@ from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
     load_values_from_literature_citations_config, paths, \
-    load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config
+    load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
+    find_true_file_path, sourceconfigpath
 
 
 def generate_list_of_sources_in_fbs_method(methodname):
@@ -63,8 +64,10 @@ def load_source_dict(sourcename):
     :param sourcename: string, FBA source name or value from the lit name
     :return: dictionary, the method file
     """
+
     try:
-        # first try loading citation information from source yaml
+        # first check if file exists, then try loading citation information from source yaml
+        sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
         config = load_sourceconfig(sourcename)
     except:
         # if no source yaml, check if citation info is for values in the literature
