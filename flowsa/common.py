@@ -49,6 +49,8 @@ fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
 logoutputpath = outputpath + 'Log/'
 
+default_download_if_missing = False
+
 # paths to scripts
 scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
              '/scripts/'

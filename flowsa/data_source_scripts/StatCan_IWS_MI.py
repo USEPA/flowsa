@@ -87,8 +87,8 @@ def sc_parse(**kwargs):
     df['Year'] = df['Year'].astype(str)
     df['LocationSystem'] = "ISO"
     df["MeasureofSpread"] = 'RSD'
-    df["DataReliability"] = '3'
-    df["DataCollection"] = '4'
+    df["DataReliability"] = 3
+    df["DataCollection"] = 4
 
     # subset based on year
     df = df[df['Year'] == args['year']]

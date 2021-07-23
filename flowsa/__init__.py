@@ -8,7 +8,8 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 
 import logging as log
 from esupy.processed_data_mgmt import load_preprocessed_output
-from flowsa.common import paths, set_fb_meta, biboutputpath, fbaoutputpath, fbsoutputpath
+from flowsa.common import paths, set_fb_meta, biboutputpath, fbaoutputpath, fbsoutputpath,\
+    default_download_if_missing
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.validation import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
@@ -16,7 +17,8 @@ import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
 
 
-def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
+def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
+                      download_if_missing=default_download_if_missing):
     """
     Retrieves stored data in the FlowByActivity format
     :param datasource: str, the code of the datasource.
@@ -24,14 +26,24 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None):
     :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
     :param geographic_level: str, a geographic level of the data.
                              Optional. E.g. 'national', 'state', 'county'.
+    :param download_if_missing: bool, if True will attempt to load from remote server
+        prior to generating if file not found locally
     :return: a pandas DataFrame in FlowByActivity format
     """
+    from esupy.processed_data_mgmt import download_from_remote
     # Set fba metadata
     name = flowsa.flowbyactivity.set_fba_name(datasource, year)
     fba_meta = set_fb_meta(name, "FlowByActivity")
 
     # Try to load a local version of fba; generate and load if missing
     fba = load_preprocessed_output(fba_meta, paths)
+    # Remote download
+    if fba is None and download_if_missing:
+        log.info(datasource + ' ' + str(year) + ' not found in ' + fbaoutputpath +
+                 ', downloading from remote source')
+        download_from_remote(fba_meta,paths)
+        fba = load_preprocessed_output(fba_meta,paths)
+
     if fba is None:
         log.info(datasource + ' ' + str(year) + ' not found in ' +
                  fbaoutputpath + ', running functions to generate FBA')

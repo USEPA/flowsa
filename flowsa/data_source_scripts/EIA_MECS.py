@@ -207,6 +207,8 @@ def eia_mecs_land_parse(**kwargs):
     df['Unit'] = unit
     df = assign_fips_location_system(df, args['year'])
     df['FlowType'] = "ELEMENTARY_FLOW"
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     # modify flowname
     df['FlowName'] = df['Description'] + ', ' + df['FlowName'].str.strip()
@@ -351,6 +353,8 @@ def eia_mecs_energy_parse(**kwargs):
     df = assign_fips_location_system(df, args['year'])
     df = assign_census_regions(df)
     df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     # drop rows that reflect subtotals (only necessary in 2014)
     df.dropna(subset=['ActivityConsumedBy'], inplace=True)

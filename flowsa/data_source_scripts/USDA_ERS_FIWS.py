@@ -96,9 +96,9 @@ def fiws_parse(**kwargs):
     df['Class'] = 'Money'
     df['SourceName'] = 'USDA_ERS_FIWS'
     df['Unit'] = 'USD'
-    # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5
+    # Add DQ scores
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
     # sort df
     df = df.sort_values(['Location', 'FlowName'])
     # reset index

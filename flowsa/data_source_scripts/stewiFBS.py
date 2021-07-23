@@ -25,6 +25,10 @@ def stewicombo_to_sector(yaml_load):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
     :param yaml_load: which may contain the following elements:
+        local_inventory_name: (optional) a string naming the file from which to
+                source a pregenerated stewicombo file stored locally (e.g.,
+                'CAP_HAP_national_2017_v0.9.7_5cf36c0.parquet' or
+                'CAP_HAP_national_2017')
         inventory_dict: a dictionary of inventory types and years (e.g., 
                 {'NEI':'2017', 'TRI':'2017'})
         NAICS_level: desired NAICS aggregation level, using sector_level_key,
@@ -46,10 +50,23 @@ def stewicombo_to_sector(yaml_load):
     else:
         functions = yaml_load['functions']
 
+    if 'local_inventory_name' in yaml_load:
+        inventory_name = yaml_load['local_inventory_name']
+    else:
+        inventory_name = None
+
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
-    ## run stewicombo to combine inventories, filter for LCI, remove overlap
-    df = stewicombo.combineFullInventories(yaml_load['inventory_dict'], filter_for_LCI=True, remove_overlap=True,
-                                           compartments=yaml_load['compartments'])
+       
+    df = None
+    if inventory_name is not None:
+        df = stewicombo.getInventory(inventory_name, True)
+    if df is None:
+        ## run stewicombo to combine inventories, filter for LCI, remove overlap
+        log.info('generating inventory in stewicombo')
+        df = stewicombo.combineFullInventories(yaml_load['inventory_dict'],
+                                               filter_for_LCI=True,
+                                               remove_overlap=True,
+                                               compartments=yaml_load['compartments'])
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
     inventory_list = list(yaml_load['inventory_dict'].keys())
@@ -71,12 +88,14 @@ def stewicombo_to_sector(yaml_load):
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
     if 'reassign_airplane_emissions' in functions:
-        df = reassign_airplane_emissions(df, yaml_load['inventory_dict']['NEI'], NAICS_level_value)
+        df = reassign_airplane_emissions(df, yaml_load['inventory_dict']['NEI'],
+                                         NAICS_level_value)
         functions.remove('reassign_airplane_emissions')
 
     df['MetaSources'] = df['Source']
 
-    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'], yaml_load['NAICS_level'], yaml_load['geo_scale'])
+    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'], yaml_load['NAICS_level'],
+                            yaml_load['geo_scale'])
 
     for function in functions:
         fbs = getattr(sys.modules[__name__], function)(fbs)
@@ -129,7 +148,8 @@ def stewi_to_sector(yaml_load):
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'], yaml_load['NAICS_level'], yaml_load['geo_scale'])
+    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'], yaml_load['NAICS_level'],
+                            yaml_load['geo_scale'])
 
     for function in functions:
         fbs = getattr(sys.modules[__name__], function)(fbs)
@@ -201,7 +221,8 @@ def extract_facility_data(inventory_dict):
     """
     import stewi
     facility_mapping = pd.DataFrame()
-    # load facility data from stewi output directory, keeping only the facility IDs, and geographic information
+    # load facility data from stewi output directory, keeping only the facility IDs,
+    # and geographic information
     inventory_list = list(inventory_dict.keys())
 
     for i in range(len(inventory_dict)):
@@ -425,26 +446,3 @@ def check_for_missing_sector_data(df, target_sector_level):
 
     return df_allocated
 
-
-def remove_N_P_overlap(fbs):
-    """
-    Removes N and P flows from selected sectors to avoid overlap with
-    other satellite tables in USEEIOr
-    :param fbs: df, FBS format
-    :return: df, FBS format, modified
-    """
-
-    # Function is not complete
-
-    naics_list = ['1111',
-                  '1112',
-                  '1113',
-                  '1119',
-                  '112',
-                  ]
-
-    flow_list = ['Nitrogen',
-                 'Phosphorous',
-                 ]
-
-    return fbs

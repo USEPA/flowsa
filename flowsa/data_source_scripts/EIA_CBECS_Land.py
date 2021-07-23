@@ -185,6 +185,8 @@ def eia_cbecs_land_parse(**kwargs):
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
     df['FlowType'] = 'ELEMENTARY_FLOW'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     # drop any duplicates that arise from joining multiple excel files
     df = df.drop_duplicates()

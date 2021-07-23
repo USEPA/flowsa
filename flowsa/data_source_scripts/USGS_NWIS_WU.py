@@ -189,28 +189,31 @@ def usgs_parse(**kwargs):
     df['SourceName'] = 'USGS_NWIS_WU'
     # Assign data quality scores
     df.loc[df['ActivityConsumedBy'].isin(['Public Supply',
-                                          'Public supply']), 'DataReliability'] = '2'
+                                          'Public supply']), 'DataReliability'] = 2
     df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                           'Thermoelectric power',
                                           'Thermoelectric Power Once-through cooling',
                                           'Thermoelectric Power Closed-loop cooling',
-                                          'Wastewater Treatment']), 'DataReliability'] = '3'
+                                          'Wastewater Treatment']), 'DataReliability'] = 3
     df.loc[
         df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic',
                                        'Industrial', 'Self-supplied industrial',
                                        'Irrigation, Crop', 'Irrigation, Golf Courses',
                                        'Irrigation, Total',
-                                       'Irrigation', 'Mining']), 'DataReliability'] = '4'
+                                       'Irrigation', 'Mining']), 'DataReliability'] = 4
     df.loc[df['ActivityConsumedBy'].isin(['Total withdrawals', 'Total Groundwater',
-                                          'Total Surface water']), 'DataReliability'] = '5'
-    df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
+                                          'Total Surface water']), 'DataReliability'] = 5
+    df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = 2
     df.loc[df['ActivityProducedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                           'Thermoelectric Power Once-through cooling',
                                           'Thermoelectric Power Closed-loop cooling',
-                                          'Wastewater Treatment']), 'DataReliability'] = '3'
+                                          'Wastewater Treatment']), 'DataReliability'] = 3
     df.loc[df['ActivityProducedBy'].isin(['Domestic', 'Industrial',
                                           'Irrigation, Crop', 'Irrigation, Golf Courses',
-                                          'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
+                                          'Irrigation, Total', 'Mining']), 'DataReliability'] = 4
+
+    df['DataCollection'] = 5  # tmp
+
     # remove commas from activity names
     df.loc[:, 'ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
     df.loc[:, 'ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
