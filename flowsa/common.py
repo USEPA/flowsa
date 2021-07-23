@@ -769,3 +769,25 @@ def rename_log_file(filename, fb_meta):
     # rename the standard log file name (os.rename throws error if file already exists)
     shutil.copy(log_file, new_log_name)
     return None
+
+
+def find_true_file_path(filedirectory, filename, extension):
+    """
+    If filename does not match filename within flowsa due to added extensions onto the filename, cycle through
+    name, dropping strings after each underscore until the name is found
+    :param filedirectory: string, path to directory
+    :param filename: string, name of original file searching for
+    :param extension: string, type of file, such as "yaml" or "py"
+    :return:
+    """
+    # if a file does not exist modify file name, dropping ext after last underscore
+    if os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
+        # continue dropping last underscore/extension until file name does exist
+        for i in range(1, 5):
+            # reset file name after dropping part of name
+            filename = filename.rsplit("_", i)[0]
+            # if the file name does exist, exit the for loop
+            if os.path.exists(f"{filedirectory}{filename}.{extension}"):
+                break
+
+    return filename
