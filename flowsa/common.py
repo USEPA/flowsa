@@ -8,7 +8,7 @@ import shutil
 import sys
 import os
 import subprocess
-import logging as log
+import logging
 import yaml
 from ruamel.yaml import YAML
 import requests
@@ -21,11 +21,6 @@ from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 pkg_version_number = '0.1.1'
-
-log.basicConfig(level=log.DEBUG,
-                format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S',
-                stream=sys.stdout)
 
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -56,20 +51,87 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
              '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
+logging.basicConfig(level=logging.DEBUG,
+                format='%(asctime)s %(levelname)-8s %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S',
+                stream=sys.stdout)
+
+# # setup log file handler
+# create_paths_if_missing(logoutputpath)
+# fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
+# fh.setLevel(log.DEBUG)
+# formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
+#                           datefmt='%Y-%m-%d %H:%M:%S')
+# fh.setFormatter(formatter)
+# ch = log.StreamHandler(stream=sys.stdout)
+# ch.setLevel(log.INFO)
+# ch.setFormatter(formatter)
+# for hdlr in log.getLogger('').handlers[:]:
+#     log.getLogger('').removeHandler(hdlr)
+# log.getLogger('').addHandler(fh)
+# log.getLogger('').addHandler(ch)
+
+
+# formatter = log.Formatter('%(asctime)s %(levelname)s %(message)s')
 # setup log file handler
-create_paths_if_missing(logoutputpath)
-fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
-fh.setLevel(log.DEBUG)
-formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
+# create_paths_if_missing(logoutputpath)
+# fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
+# fh.setLevel(log.DEBUG)
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
                           datefmt='%Y-%m-%d %H:%M:%S')
-fh.setFormatter(formatter)
-ch = log.StreamHandler(stream=sys.stdout)
-ch.setLevel(log.INFO)
-ch.setFormatter(formatter)
-for hdlr in log.getLogger('').handlers[:]:
-    log.getLogger('').removeHandler(hdlr)
-log.getLogger('').addHandler(fh)
-log.getLogger('').addHandler(ch)
+
+
+# def setup_logger(name, log_file, level=logging.DEBUG): #(name, log_file, level=log.INFO)
+#     """To setup as many loggers as you want"""
+#
+#     # handler = log.FileHandler(log_file)
+#     # handler.setFormatter(formatter)
+#     #
+#     # logger = log.getLogger(name)
+#     # logger.setLevel(level)
+#     # logger.addHandler(handler)
+#
+#     create_paths_if_missing(logoutputpath)
+#     fh = logging.FileHandler(log_file, mode='w')
+#     fh.setLevel(level)
+#     fh.setFormatter(formatter)
+#
+#     ch = logging.StreamHandler(stream=sys.stdout)
+#     ch.setLevel(logging.INFO)
+#     ch.setFormatter(formatter)
+#     for hdlr in logging.getLogger('').handlers[:]:
+#         logging.getLogger('').removeHandler(hdlr)
+#     logging.getLogger('').addHandler(fh)
+#     logging.getLogger('').addHandler(ch)
+#
+#     return logging
+
+
+def setup_logger(logger_name, log_file, level=logging.INFO):
+    l = logging.getLogger(logger_name)
+    formatter = logging.Formatter('%(message)s')
+    fileHandler = logging.FileHandler(log_file, mode='w')
+    fileHandler.setFormatter(formatter)
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(formatter)
+
+    l.setLevel(level)
+    l.addHandler(fileHandler)
+    l.addHandler(streamHandler)
+
+
+setup_logger('log1', logoutputpath+'flowsa.log')
+setup_logger('log2', logoutputpath+'validation_flowsa.log')
+log = logging.getLogger('log1')
+validation_log = logging.getLogger('log2')
+
+
+
+# first file logger
+# log = setup_logger('all_log', logoutputpath+'flowsa.log')
+
+# second file logger
+# validation_log = setup_logger('validation_log', logoutputpath+'validation_flowsa.log')
 
 
 pkg = pkg_resources.get_distribution("flowsa")
