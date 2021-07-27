@@ -329,23 +329,23 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     """
 
     # modify national level compartment
-    flowbyactivity_df['Compartment'].loc[
+    flowbyactivity_df.loc[
         (flowbyactivity_df['Location'] == '00000') &
-        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'total'
-    flowbyactivity_df['FlowName'].loc[
+        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock'), 'Compartment'] = 'total'
+    flowbyactivity_df.loc[
         (flowbyactivity_df['Location'] == '00000') &
-        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
-    flowbyactivity_df['Compartment'].loc[
+        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock'), 'FlowName'] = 'fresh'
+    flowbyactivity_df.loc[
         (flowbyactivity_df['Compartment'] is None) &
-        (flowbyactivity_df['Location'] == '00000')] = 'total'
+        (flowbyactivity_df['Location'] == '00000'), 'Compartment'] = 'total'
 
     # standardize activity names across geoscales
     for f in fba_activity_fields:
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Public'] = 'Public Supply'
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Irrigation Total'] = 'Irrigation'
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] ==
-                                 'Total Thermoelectric Power'] = 'Thermoelectric Power'
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Thermoelectric'] = 'Thermoelectric Power'
+        flowbyactivity_df.loc[flowbyactivity_df[f] == 'Public', f] = 'Public Supply'
+        flowbyactivity_df.loc[flowbyactivity_df[f] == 'Irrigation Total', f] = 'Irrigation'
+        flowbyactivity_df.loc[flowbyactivity_df[f] ==
+                                 'Total Thermoelectric Power', f] = 'Thermoelectric Power'
+        flowbyactivity_df.loc[flowbyactivity_df[f] == 'Thermoelectric', f] = 'Thermoelectric Power'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
     return flowbyactivity_df
