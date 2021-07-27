@@ -8,11 +8,10 @@ https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
 Downloads the February 5, 2020 update
 """
 
-import pandas as pd
-import numpy as np
 import zipfile
 import io
-from flowsa.common import *
+import pandas as pd
+from flowsa.common import US_FIPS, get_all_state_FIPS_2, us_state_abbrev
 
 
 def fiws_call(**kwargs):
@@ -67,7 +66,8 @@ def fiws_parse(**kwargs):
     # drop "All" in variabledescription2
     df.loc[df['VariableDescriptionPart2'] == 'All', 'VariableDescriptionPart2'] = 'drop'
     # combine variable descriptions to create Activity name and remove ", drop"
-    df['ActivityProducedBy'] = df['VariableDescriptionPart1'] + ', ' + df['VariableDescriptionPart2']
+    df['ActivityProducedBy'] = df['VariableDescriptionPart1'] + \
+                               ', ' + df['VariableDescriptionPart2']
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", drop", "", regex=True)
     # trim whitespace
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.strip()

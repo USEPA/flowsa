@@ -2,15 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import pandas as pd
-import numpy as np
-import io
-from flowsa.common import *
-from string import digits
-from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
-from flowsa.common import fba_default_grouping_fields
-import math
-
 """
 SourceName: USGS_MYB_SodaAsh
 https://www.usgs.gov/centers/nmic/soda-ash-statistics-and-information
@@ -22,6 +13,12 @@ Interested in annual data, not quarterly
 Years = 2010+
 https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-pubs/soda-ash/myb1-2010-sodaa.pdf
 """
+
+import io
+import math
+from string import digits
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def description(value, code):
@@ -93,12 +90,15 @@ def soda_call(**kwargs):
     # load arguments necessary for function
     response_load = kwargs['r']
 
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='T4')  # .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content),
+                                         sheet_name='T4')
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
-    df_data.columns = ["NAICS code", "space_1", "End use", "space_2", "2009", "space_3", "First quarter", "space_4",
-                       "Second quarter", "space_5", "Third quarter", "space_6", "Fourth quarter", "space_7", "Total"]
+    df_data.columns = ["NAICS code", "space_1", "End use", "space_2",
+                       "2009", "space_3", "First quarter", "space_4",
+                       "Second quarter", "space_5", "Third quarter",
+                       "space_6", "Fourth quarter", "space_7", "Total"]
     for col in df_data.columns:
         if "space_" in str(col):
             del df_data[col]
@@ -140,7 +140,8 @@ def soda_parse(**kwargs):
 
         for index, row in df.iterrows():
             data["Description"] = ""
-            data['ActivityConsumedBy'] = description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
+            data['ActivityConsumedBy'] = description(df.iloc[index]["End use"],
+                                                     df.iloc[index]["NAICS code"])
 
             if df.iloc[index]["End use"].strip() == "Glass:":
                 total_glass = int(df.iloc[index]["NAICS code"])

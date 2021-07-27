@@ -253,10 +253,10 @@ def activity(name):
         n = name_split[0]
 
     if " to " in n:
-        activity = n.split(" to ")
-        name = split_name(activity[0])
+        act = n.split(" to ")
+        name = split_name(act[0])
         produced = name[0]
-        consumed = capitalize_first_letter(activity[1])
+        consumed = capitalize_first_letter(act[1])
     elif " from " in n:
         if ")" in n:
             open_paren_split = n.split("(")
@@ -266,9 +266,9 @@ def activity(name):
             produced = capitalize_first_letter(produced_split[1].strip())
             consumed = capitalized_string.strip() + " " + close_paren_split[0].strip()
         else:
-            activity = n.split(" from ")
-            name = split_name(activity[0])
-            produced = capitalize_first_letter(activity[1])
+            act = n.split(" from ")
+            name = split_name(act[0])
+            produced = capitalize_first_letter(act[1])
             consumed = name[0].strip()
     elif "consumptive" in n:
         if ")" in n:
