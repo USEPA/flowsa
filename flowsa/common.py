@@ -10,7 +10,6 @@ import os
 import subprocess
 import logging as log
 import yaml
-from ruamel.yaml import YAML
 import requests
 import requests_ftp
 import pandas as pd
@@ -772,7 +771,8 @@ def rename_log_file(filename, fb_meta):
 
 def find_true_file_path(filedirectory, filename, extension):
     """
-    If filename does not match filename within flowsa due to added extensions onto the filename, cycle through
+    If filename does not match filename within flowsa due to added extensions
+    onto the filename, cycle through
     name, dropping strings after each underscore until the name is found
     :param filedirectory: string, path to directory
     :param filename: string, name of original file searching for

@@ -146,7 +146,6 @@ def check_if_location_systems_match(df1, df2):
 
     if df1["LocationSystem"].all() != df2["LocationSystem"].all():
         log.warning("LocationSystems do not match, might lose county level data")
-    return None
 
 
 def check_if_losing_sector_data(df, target_sector_level):
@@ -278,7 +277,8 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
 
     ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
     if ua_count1 > 0:
-        log.info('There are %s instances at a sector length of 6 or less where the allocation ratio '
+        log.info('There are %s instances at a sector length of 6 or '
+                 'less where the allocation ratio '
                  'for a location and sector length is < 1', str(ua_count1))
     ua_count2 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 0.99])
     if ua_count2 > 0:
@@ -305,8 +305,6 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
                           method_name + '_' + source_name +
                           "_allocation_ratios_" + activity_set + ".csv", index=False)
 
-    return None
-
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                                                           activity_set, source_name, method_name):
@@ -328,8 +326,9 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                   'ratios will be different')
     else:
         # subset fba df
-        fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
-                        'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem', 'Year',
+        fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType',
+                        'ActivityProducedBy', 'ActivityConsumedBy', 'Context',
+                        'Location', 'LocationSystem', 'Year',
                         'FlowAmount']].drop_duplicates().reset_index(drop=True)
         fba.loc[:, 'Location'] = US_FIPS
         group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
@@ -388,7 +387,8 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                      'flowbyactivity to flowbysector ratio is < 0.99', str(ua_count2))
         oa_count1 = len(comparison[comparison['Ratio'] > 1])
         if oa_count1 > 0:
-            log.debug('There are %s combinations of flowable/context/sector length where the flowbyactivity '
+            log.debug('There are %s combinations of flowable/context/sector '
+                      'length where the flowbyactivity '
                      'to flowbysector ratio is > 1.0', str(oa_count1))
         oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
         if oa_count2 > 0:
@@ -519,8 +519,6 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
     except:
         log.info('Error occured when comparing total FlowAmounts'
                  'for FlowByActivity and FlowBySector')
-
-    return None
 
 
 def check_summation_at_sector_lengths(df):
@@ -824,4 +822,3 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
             df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" +
                         method_name + '_' + sourcename +
                         "_geographic_comparison_" + activity_set + ".csv", index=False)
-    return None

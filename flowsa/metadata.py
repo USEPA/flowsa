@@ -106,7 +106,8 @@ def return_fbs_method_data(source_name, config):
         for aset, attr in activities.items():
             if attr['allocation_method'] not in (['direct', 'allocation_function']):
                 # append fba meta
-                meta['primary_source_meta'][k]['allocation_source_meta'][attr['allocation_source']] = \
+                meta['primary_source_meta'][k]['allocation_source_meta'][
+                    attr['allocation_source']] = \
                     getMetadata(attr['allocation_source'],
                                 attr['allocation_source_year'], paths)
             if 'helper_source' in attr:
@@ -125,8 +126,8 @@ def return_fbs_method_data(source_name, config):
                 for fxn, fba_info in fxn_info.items():
                     for fba, y in fba_info.items():
                         fxn_config = load_functions_loading_fbas_config()[fxn][fba]
-                        meta['primary_source_meta'][k]['allocation_source_meta'][fxn_config['source']] = \
-                            getMetadata(fxn_config['source'], y, paths)
+                        meta['primary_source_meta'][k]['allocation_source_meta'][
+                            fxn_config['source']] = getMetadata(fxn_config['source'], y, paths)
         except KeyError:
             pass
 

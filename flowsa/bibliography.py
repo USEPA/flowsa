@@ -133,7 +133,8 @@ def generate_fbs_bibliography(methodname):
                         # append each entry to a list of BibDatabase entries
                         bib_list.append(db)
                 except:
-                    log.warning('Missing information needed to create bib for %s, %s', source[0], source[1])
+                    log.warning('Missing information needed to create bib for %s, %s',
+                                source[0], source[1])
                     continue
 
     # write out bibliography
