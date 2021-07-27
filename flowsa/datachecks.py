@@ -14,7 +14,7 @@ from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     load_sector_length_crosswalk, load_source_catalog, \
-    load_sector_crosswalk, sector_source_name, log, outputpath, fba_activity_fields, \
+    load_sector_crosswalk, SECTOR_SOURCE_NAME, log, outputpath, fba_activity_fields, \
     fbs_activity_fields, fbs_fill_na_dict
 
 
@@ -46,12 +46,12 @@ def check_if_activities_match_sectors(fba):
     #activities.remove("None")
 
     # Get list of module default sectors
-    flowsa_sector_list = list(load_sector_crosswalk()[sector_source_name])
+    flowsa_sector_list = list(load_sector_crosswalk()[SECTOR_SOURCE_NAME])
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
         log.debug("%s activities not matching sectors in default %s list",
-                  str(len(activities_missing_sectors)), sector_source_name)
+                  str(len(activities_missing_sectors)), SECTOR_SOURCE_NAME)
         return activities_missing_sectors
 
 

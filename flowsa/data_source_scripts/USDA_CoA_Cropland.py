@@ -9,7 +9,7 @@ Functions used to import and parse USDA Census of Ag Cropland data
 import json
 import numpy as np
 import pandas as pd
-from flowsa.common import US_FIPS, abbrev_us_state, withdrawn_keyword, \
+from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
     flow_by_sector_fields, fbs_default_grouping_fields, fbs_fill_na_dict, \
     fba_mapped_default_grouping_fields, fba_fill_na_dict
 from flowsa.flowbyfunctions import assign_fips_location_system, allocate_by_sector, \
@@ -207,8 +207,8 @@ def coa_cropland_parse(**kwargs):
     # modify contents of flowamount column, "D" is supressed data,
     # "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
-    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # USDA CoA 2017 states that (H) means CV >= 99.95,
     # therefore replacing with 99.95 so can convert column to int
@@ -217,7 +217,7 @@ def coa_cropland_parse(**kwargs):
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
     df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
-    df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == "(D)", 'Spread'] = WITHDRAWN_KEYWORD
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
     # Add hardcoded data

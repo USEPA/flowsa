@@ -7,7 +7,7 @@ Pulls EIA CBECS water use data for large buildings from 2012
 
 import io
 import pandas as pd
-from flowsa.common import US_FIPS, withdrawn_keyword
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -60,7 +60,7 @@ def eia_cbecs_water_parse(**kwargs):
     # rename column(s)
     df = df.rename(columns={'PBA': 'ActivityConsumedBy'})
     # replace withdrawn code
-    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = WITHDRAWN_KEYWORD
     # add unit based on flowname
     df.loc[df['FlowName'] == 'Number of Buildings', 'Unit'] = 'p'
     df.loc[df['FlowName'] == "Total Floor Space", 'Unit'] = 'million square feet'

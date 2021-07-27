@@ -9,8 +9,8 @@ FlowByActivity (FBA) and FlowBySector (FBS) datasets
 import logging as log
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, read_source_metadata
-from flowsa.common import paths, pkg, pkg_version_number, write_format,\
-    git_hash, git_hash_long, load_functions_loading_fbas_config, \
+from flowsa.common import paths, pkg, PKG_VERSION_NUMBER, WRITE_FORMAT,\
+    GIT_HASH, GIT_HASH_LONG, load_functions_loading_fbas_config, \
     load_fbs_methods_additional_fbas_config
 
 
@@ -25,9 +25,9 @@ def set_fb_meta(name_data, category):
     fb_meta.tool = pkg.project_name
     fb_meta.category = category
     fb_meta.name_data = name_data
-    fb_meta.tool_version = pkg_version_number
-    fb_meta.git_hash = git_hash
-    fb_meta.ext = write_format
+    fb_meta.tool_version = PKG_VERSION_NUMBER
+    fb_meta.git_hash = GIT_HASH
+    fb_meta.ext = WRITE_FORMAT
     fb_meta.date_created = pd.to_datetime('today').strftime('%Y-%m-%d %H:%M:%S')
     return fb_meta
 
@@ -62,7 +62,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     fb_dict = {}
 
     # add url of FlowBy method at time of commit
-    fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{git_hash_long}' \
+    fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{GIT_HASH_LONG}' \
                             f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
 
     if category == 'FlowBySector':

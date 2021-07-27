@@ -13,7 +13,7 @@ import io
 import zipfile
 import pycountry
 import pandas as pd
-from flowsa.common import withdrawn_keyword
+from flowsa.common import WITHDRAWN_KEYWORD
 
 
 def sc_lfs_call(**kwargs):
@@ -89,7 +89,7 @@ def sc_lfs_parse(**kwargs):
     df.loc[df['Spread'] == 'D', 'Spread'] = 20  # given range: 15 - 24.99%
     df.loc[df['Spread'] == 'E', 'Spread'] = 37.5  # given range:25 - 49.99%
     df.loc[df['Spread'] == 'F', 'Spread'] = 75  # given range: > 49.99%
-    df.loc[df['Spread'] == 'x', 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == 'x', 'Spread'] = WITHDRAWN_KEYWORD
     # hard code data
     df['Class'] = 'Employment'
     df['SourceName'] = 'StatCan_LFS'

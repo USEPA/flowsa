@@ -12,7 +12,7 @@ import io
 import yaml
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, withdrawn_keyword, datapath
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, datapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 
@@ -210,8 +210,8 @@ def eia_mecs_land_parse(**kwargs):
         lambda x: x + ' Manufacturing' if not x.endswith('Manufacturing') else x)
 
     # replace withdrawn code
-    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_MECS_Land'
     df['Year'] = args["year"]
@@ -383,8 +383,8 @@ def eia_mecs_energy_parse(**kwargs):
     # Q = withheld because relative standard error is greater than 50 percent
     # NA = not available
     df.loc[df['FlowAmount'] == '*', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = WITHDRAWN_KEYWORD
     df.loc[df['FlowAmount'] == 'NA', 'FlowAmount'] = None
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
@@ -393,8 +393,8 @@ def eia_mecs_energy_parse(**kwargs):
     # X = not defined because relative standard error corresponds to a value of zero
     # at least one 'empty' cell appears to contain a space
     df.loc[df['Spread'] == '*', 'Spread'] = None
-    df.loc[df['Spread'] == 'W', 'Spread'] = withdrawn_keyword
-    df.loc[df['Spread'] == 'Q', 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == 'W', 'Spread'] = WITHDRAWN_KEYWORD
+    df.loc[df['Spread'] == 'Q', 'Spread'] = WITHDRAWN_KEYWORD
     df.loc[df['Spread'] == 'NA', 'Spread'] = None
     df.loc[df['Spread'] == 'X', 'Spread'] = None
     df.loc[df['Spread'] == ' ', 'Spread'] = None

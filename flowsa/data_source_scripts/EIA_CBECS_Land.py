@@ -10,7 +10,7 @@ Last updated: Monday, August 17, 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, get_region_and_division_codes, withdrawn_keyword,\
+from flowsa.common import US_FIPS, get_region_and_division_codes, WITHDRAWN_KEYWORD,\
     clean_str_and_capitalize, fba_default_grouping_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.values_from_literature import \

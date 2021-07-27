@@ -9,7 +9,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 import logging as log
 from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath,\
-    default_download_if_missing
+    DEFAULT_DOWNLOAD_IF_MISSING
 from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
@@ -19,7 +19,7 @@ from flowsa.bibliography import generate_fbs_bibliography
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
-                      download_if_missing=default_download_if_missing):
+                      download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Retrieves stored data in the FlowByActivity format
     :param datasource: str, the code of the datasource.

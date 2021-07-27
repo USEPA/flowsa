@@ -12,7 +12,7 @@ import pandas as pd
 from flowsa.values_from_literature import get_Canadian_to_USD_exchange_rate
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
-    load_bea_crosswalk, call_country_code, withdrawn_keyword
+    load_bea_crosswalk, call_country_code, WITHDRAWN_KEYWORD
 from flowsa.dataclean import harmonize_units
 
 
@@ -84,7 +84,7 @@ def sc_parse(**kwargs):
     df.loc[df['Spread'] == 'D', 'Spread'] = 20  # given range: 15 - 24.99%
     df.loc[df['Spread'] == 'E', 'Spread'] = 37.5  # given range:25 - 49.99%
     df.loc[df['Spread'] == 'F', 'Spread'] = 75  # given range: > 49.99%
-    df.loc[df['Spread'] == 'x', 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == 'x', 'Spread'] = WITHDRAWN_KEYWORD
     # hard code data
     df['Class'] = 'Water'
     df['SourceName'] = 'StatCan_IWS_MI'

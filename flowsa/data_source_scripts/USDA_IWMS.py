@@ -8,7 +8,7 @@ Functions used to import and parse USDA Irrigation and Water Management Survey d
 
 import json
 import pandas as pd
-from flowsa.common import US_FIPS, withdrawn_keyword
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, \
     disaggregate_cropland
@@ -108,8 +108,8 @@ def iwms_parse(**kwargs):
     # modify contents of flowamount column, "D" is supressed data,
     # "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
-    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])

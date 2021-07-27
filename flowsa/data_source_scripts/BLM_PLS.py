@@ -12,7 +12,7 @@ import io
 import logging as log
 import tabula
 import pandas as pd
-from flowsa.common import withdrawn_keyword, get_all_state_FIPS_2
+from flowsa.common import WITHDRAWN_KEYWORD, get_all_state_FIPS_2
 
 
 def split(row, header, sub_header, next_line):
@@ -597,8 +597,8 @@ def blm_pls_parse(**kwargs):
     df = standardize_blm_pls_activity_names(df)
 
     # replace withdrawn code
-    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df['FlowName'] = df['ActivityConsumedBy'].copy()
     df['Location'] = Location
     df["Class"] = 'Land'

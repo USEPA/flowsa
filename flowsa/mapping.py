@@ -6,7 +6,7 @@ Contains mapping functions
 """
 import pandas as pd
 import numpy as np
-from flowsa.common import datapath, sector_source_name, activity_fields, load_source_catalog, \
+from flowsa.common import datapath, SECTOR_SOURCE_NAME, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, fba_activity_fields
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
@@ -28,7 +28,7 @@ def get_activitytosector_mapping(source):
     return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_source_name, **kwargs):
+def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOURCE_NAME, **kwargs):
     """
     Add Sectors from the Activity fields and mapped them to Sector from the crosswalk.
     No allocation is performed.
@@ -59,12 +59,12 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=sector_sou
     # if data are provided in NAICS format, use the mastercrosswalk
     if src_info['sector-like_activities']:
         cw = load_sector_crosswalk()
-        sectors = cw.loc[:, [sector_source_name]]
+        sectors = cw.loc[:, [SECTOR_SOURCE_NAME]]
         # Create mapping df that's just the sectors at first
         mapping = sectors.drop_duplicates()
         # Add the sector twice as activities so mapping is identical
-        mapping = mapping.assign(Activity=sectors[sector_source_name])
-        mapping = mapping.rename(columns={sector_source_name: "Sector"})
+        mapping = mapping.assign(Activity=sectors[SECTOR_SOURCE_NAME])
+        mapping = mapping.rename(columns={SECTOR_SOURCE_NAME: "Sector"})
         # add columns so can run expand_naics_list_fxn
         # if sector-like_activities = True, missing columns, so add
         mapping['ActivitySourceName'] = s

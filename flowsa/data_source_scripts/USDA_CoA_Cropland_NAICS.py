@@ -9,7 +9,7 @@ Functions used to import and parse USDA Census of Ag Cropland data in NAICS form
 import json
 import numpy as np
 import pandas as pd
-from flowsa.common import withdrawn_keyword, US_FIPS, abbrev_us_state
+from flowsa.common import WITHDRAWN_KEYWORD, US_FIPS, abbrev_us_state
 from flowsa.flowbyfunctions import assign_fips_location_system, estimate_suppressed_data
 
 
@@ -130,8 +130,8 @@ def coa_cropland_NAICS_parse(**kwargs):
     # modify contents of flowamount column, "D" is supressed data,
     # "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
-    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # USDA CoA 2017 states that (H) means CV >= 99.95,
     # therefore replacing with 99.95 so can convert column to int
@@ -140,7 +140,7 @@ def coa_cropland_NAICS_parse(**kwargs):
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
     df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
-    df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == "(D)", 'Spread'] = WITHDRAWN_KEYWORD
     # drop Descriptions that contain certain phrases, as these data are included in other categories
     df = df[~df['Description'].str.contains(
         'FRESH MARKET|PROCESSING|ENTIRE CROP|NONE OF CROP|PART OF CROP')]
