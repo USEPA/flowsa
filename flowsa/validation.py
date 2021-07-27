@@ -17,7 +17,6 @@ from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     load_sector_crosswalk, sector_source_name, log, outputpath, fba_activity_fields, \
     fbs_activity_fields, fbs_fill_na_dict, validation_log
 
-
 def check_flow_by_fields(flowby_df, flowbyfields):
     """
     Add in missing fields to have a complete and ordered
