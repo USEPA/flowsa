@@ -4,10 +4,10 @@
 """
 Pulls EPA National Emissions Inventory (NEI) data for nonpoint sources
 """
-import pandas as pd
-import numpy as np
-import zipfile
+
 import io
+import zipfile
+import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 

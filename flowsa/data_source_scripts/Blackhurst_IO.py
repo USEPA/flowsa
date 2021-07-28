@@ -77,12 +77,13 @@ def bh_parse(**kwargs):
     return df
 
 
-def convert_blackhurst_data_to_gal_per_year(df, attr):
+def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
     """
     Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
     :param df: df, FBA format
-    :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: kwargs includes "attr" - dictionary, attribute
+    data from method yaml for activity set
     :return: transformed fba df
     """
 

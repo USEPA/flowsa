@@ -29,7 +29,7 @@ def stewicombo_to_sector(yaml_load):
                 source a pregenerated stewicombo file stored locally (e.g.,
                 'CAP_HAP_national_2017_v0.9.7_5cf36c0.parquet' or
                 'CAP_HAP_national_2017')
-        inventory_dict: a dictionary of inventory types and years (e.g., 
+        inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
         NAICS_level: desired NAICS aggregation level, using sector_level_key,
                 should match target_sector_level
@@ -56,7 +56,7 @@ def stewicombo_to_sector(yaml_load):
         inventory_name = None
 
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
-       
+
     df = None
     if inventory_name is not None:
         df = stewicombo.getInventory(inventory_name, True)
@@ -107,7 +107,7 @@ def stewi_to_sector(yaml_load):
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
     :param yaml_load: which may contain the following elements:
-        inventory_dict: a dictionary of inventory types and years (e.g., 
+        inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
         NAICS_level: desired NAICS aggregation level, using sector_level_key,
                 should match target_sector_level
@@ -215,7 +215,7 @@ def extract_facility_data(inventory_dict):
     """
     Returns df of facilities from each inventory in inventory_dict,
     including FIPS code
-    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+    :param inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
     :return: df
     """
@@ -233,7 +233,7 @@ def extract_facility_data(inventory_dict):
         facilities = stewi.getInventoryFacilities(database, year)
         facilities = facilities[['FacilityID', 'State', 'County', 'NAICS']]
         if len(facilities[facilities.duplicated(subset='FacilityID', keep=False)]) > 0:
-            log.debug('Duplicate facilities in ' + inventory_name + ' - keeping first listed')
+            log.debug('Duplicate facilities in %s - keeping first listed', inventory_name)
             facilities.drop_duplicates(subset='FacilityID',
                                        keep='first', inplace=True)
         facility_mapping = facility_mapping.append(facilities)
@@ -253,8 +253,9 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     """
     import facilitymatcher
     ## Access NAICS From facility matcher and assign based on FRS_ID
-    all_NAICS = facilitymatcher.get_FRS_NAICSInfo_for_facility_list(frs_id_list=None,
-                                                                    inventories_of_interest_list=inventory_list)
+    all_NAICS = \
+        facilitymatcher.get_FRS_NAICSInfo_for_facility_list(
+            frs_id_list=None, inventories_of_interest_list=inventory_list)
     all_NAICS = all_NAICS.loc[all_NAICS['PRIMARY_INDICATOR'] == 'PRIMARY']
     all_NAICS.drop(columns=['PRIMARY_INDICATOR'], inplace=True)
     all_NAICS = naics_expansion(all_NAICS)
@@ -270,7 +271,7 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     Function to prepare an emissions df from stewi or stewicombo for use as FBS
     :param df: a dataframe of emissions and mapped faciliites from stewi
                 or stewicombo
-    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+    :param inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
     :param NAICS_level: desired NAICS aggregation level, using sector_level_key,
                 should match target_sector_level
@@ -361,7 +362,7 @@ def naics_expansion(facility_NAICS):
             sector_merge = "NAICS_5"
             sector_add = "NAICS_6"
 
-        # subset df to NAICS with length = i 
+        # subset df to NAICS with length = i
         df_subset = facility_NAICS.loc[facility_NAICS["NAICS"].apply(lambda x: len(x) == i)]
 
         # subset the df to the rows where the tmp sector columns are in naics list
@@ -417,7 +418,8 @@ def check_for_missing_sector_data(df, target_sector_level):
         df_x[activity_field] = df_x[target_sector_level]
         df_x = df_x.drop(columns=[nlength, target_sector_level])
 
-        # calculate new flow amounts, based on sector count, allocating equally to the new sector length codes
+        # calculate new flow amounts, based on sector count,
+        # allocating equally to the new sector length codes
         df_x['FlowAmount'] = df_x['FlowAmount'] / df_x['sector_count']
         df_x = df_x.drop(columns=['sector_count'])
         # replace null values with empty cells
@@ -426,23 +428,23 @@ def check_for_missing_sector_data(df, target_sector_level):
         # append to df
         sector_list = df_subset[activity_field].drop_duplicates()
         if len(df_x) != 0:
-            log.warning('Data found at ' + str(i) + ' digit NAICS to be allocated'
-                                                    ': {}'.format(' '.join(map(str, sector_list))))
+            log.warning('Data found at %s digit NAICS to '
+                        'be allocated: {}'.format(' '.join(map(str, sector_list))), str(i))
             rows_lost = rows_lost.append(df_x, ignore_index=True, sort=True)
 
     if len(rows_lost) == 0:
         log.info('No data loss from NAICS in dataframe')
     else:
-        log.info('Allocating FlowAmounts equally to each ' + target_sector_level)
+        log.info('Allocating FlowAmounts equally to each %s', target_sector_level)
 
     # add rows of missing data to the fbs sector subset
     df_allocated = pd.concat([df, rows_lost], ignore_index=True, sort=True)
     df_allocated = df_allocated.loc[
-        df_allocated[activity_field].apply(lambda x: len(x) == sector_level_key[target_sector_level])]
+        df_allocated[activity_field].apply(
+            lambda x: len(x) == sector_level_key[target_sector_level])]
     df_allocated.reset_index(inplace=True)
 
     # replace empty cells with NoneType (if dtype is object)
     df_allocated = replace_strings_with_NoneType(df_allocated)
 
     return df_allocated
-

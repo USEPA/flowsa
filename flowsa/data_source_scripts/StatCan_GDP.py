@@ -3,14 +3,16 @@
 # coding=utf-8
 
 """
-How to cite: Statistics Canada. Table 36-10-0401-01 Gross domestic product (GDP) at basic prices, by industry (x 1,000,000)
+How to cite: Statistics Canada. Table 36-10-0401-01 Gross domestic product
+(GDP) at basic prices, by industry (x 1,000,000)
 DOI: https://doi.org/10.25318/3610040101-eng
 
 """
-import pandas as pd
+
 import io
 import zipfile
-from flowsa.common import *
+import pandas as pd
+from flowsa.common import call_country_code
 
 
 def sc_gdp_call(**kwargs):
@@ -53,7 +55,8 @@ def sc_gdp_parse(**kwargs):
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
-    df = df.drop(columns=['COORDINATE', 'DECIMALS', 'DGUID', 'SYMBOL', 'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR',
+    df = df.drop(columns=['COORDINATE', 'DECIMALS', 'DGUID', 'SYMBOL',
+                          'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR',
                           'SCALAR_FACTOR'])
     # rename columns
     df = df.rename(columns={'GEO': 'Location',
@@ -68,7 +71,8 @@ def sc_gdp_parse(**kwargs):
     df['Class'] = 'Money'
     df.loc[:, 'FlowName'] = 'GDP'
     df.loc[:, 'Unit'] = 'Canadian Dollar'
-    df.loc[:, 'FlowAmount'] = df['FlowAmount'].astype(float) * 1000000  # original unit million canadian dollars
+    df.loc[:, 'FlowAmount'] = \
+        df['FlowAmount'].astype(float) * 1000000  # original unit million canadian dollars
     df['SourceName'] = 'StatCan_GDP'
     df.loc[:, 'Year'] = df['Year'].astype(str)
     # temp hardcode canada iso code

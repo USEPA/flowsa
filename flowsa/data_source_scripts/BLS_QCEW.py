@@ -249,7 +249,8 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     clean up bls df with sectors by estimating suppresed data
     :param df_w_sec: df, FBA format BLS QCEW data
-    :param kwargs: additional arguments can include 'attr', a dictionary of FBA method yaml parameters
+    :param kwargs: additional arguments can include 'attr', a
+    dictionary of FBA method yaml parameters
     :return: df, BLS QCEW FBA with estimated suppressed data
     """
     df_w_sec = df_w_sec.reset_index(drop=True)
