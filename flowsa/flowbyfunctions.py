@@ -16,6 +16,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     find_true_file_path
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType,\
     replace_NoneType_with_empty_cells
+from esupy.dqi import get_weighted_average
 
 
 def create_geoscale_list(df, geoscale, year='2015'):
@@ -82,27 +83,6 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     return fba_agg
 
 
-def weighted_average(df, data_col, weight_col, by_col):
-    """
-    Generates a weighted average result based on passed columns
-    Parameters
-    :param df: df, Dataframe prior to aggregating from which a weighted average is calculated
-    :param data_col: str, Name of column to be averaged.
-    :param weight_col: str, Name of column to serve as the weighting.
-    :param by_col: list, List of columns on which the dataframe is aggregated.
-    :return: series, Series reflecting the weighted average values for the data_col,
-             at length consistent with the aggregated dataframe, to be reapplied
-             to the data_col in the aggregated dataframe.
-    """
-
-    df = df.assign(_data_times_weight=df[data_col] * df[weight_col])
-    df = df.assign(_weight_where_notnull=df[weight_col] * pd.notnull(df[data_col]))
-    g = df.groupby(by_col)
-    result = g['_data_times_weight'].sum() / g['_weight_where_notnull'].sum()
-    del df['_data_times_weight'], df['_weight_where_notnull']
-    return result
-
-
 def aggregator(df, groupbycols):
     """
     Aggregates flowbyactivity or flowbysector 'FlowAmount' column in df and generate
@@ -133,7 +113,7 @@ def aggregator(df, groupbycols):
 
     # run through other columns creating weighted average
     for e in column_headers:
-        df_dfg[e] = weighted_average(df, e, 'FlowAmount', groupbycols)
+        df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
 
     df_dfg = df_dfg.reset_index()
     df_dfg.columns = df_dfg.columns.droplevel(level=1)
