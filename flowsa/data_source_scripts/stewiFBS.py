@@ -452,6 +452,18 @@ def check_for_missing_sector_data(df, target_sector_level):
     return df_allocated
 
 
+def add_stewi_metadata(inventory_dict):
+    """
+    Access stewi metadata for generating FBS metdata file
+    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+                {'NEI':'2017', 'TRI':'2017'})
+    :return meta: combined dictionary of metadata from each inventory
+    """
+    from stewicombo.globals import compile_metadata
+    meta = compile_metadata(inventory_dict)
+    return meta
+
+
 def remove_N_P_overlap(fbs):
     """
     Removes N and P flows from selected sectors to avoid overlap with
