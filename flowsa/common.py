@@ -824,7 +824,7 @@ def rename_log_file(filename, fb_meta):
     log_file = f'{logoutputpath}{"flowsa.log"}'
     # generate new log name
     new_log_name = f'{logoutputpath}{filename}{"_v"}' \
-                   f'{fb_meta.tool_version}{"_"}{fb_meta.GIT_HASH}{".log"}'
+                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file already exists)
