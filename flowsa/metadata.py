@@ -179,5 +179,7 @@ def getMetadata(source, year, paths):
 
     name = set_fba_name(source, year)
     meta = read_source_metadata(paths, set_fb_meta(name, 'FlowByActivity'))
+    if meta is None:
+        meta = {'source_meta': f'No metadata found for {source} {year}'}
 
     return meta
