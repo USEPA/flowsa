@@ -463,26 +463,3 @@ def add_stewi_metadata(inventory_dict):
     meta = compile_metadata(inventory_dict)
     return meta
 
-
-def remove_N_P_overlap(fbs):
-    """
-    Removes N and P flows from selected sectors to avoid overlap with
-    other satellite tables in USEEIOr
-    :param fbs: df, FBS format
-    :return: df, FBS format, modified
-    """
-
-    # Function is not complete
-
-    naics_list = ['1111',
-                  '1112',
-                  '1113',
-                  '1119',
-                  '112',
-                  ]
-
-    flow_list = ['Nitrogen',
-                 'Phosphorous',
-                 ]
-
-    return fbs
