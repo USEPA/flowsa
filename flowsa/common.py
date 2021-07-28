@@ -50,87 +50,38 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
              '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
+# logging configurataion for console pintout
 logging.basicConfig(level=logging.DEBUG,
                 format='%(asctime)s %(levelname)-8s %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S',
                 stream=sys.stdout)
 
-# # setup log file handler
-# create_paths_if_missing(logoutputpath)
-# fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
-# fh.setLevel(log.DEBUG)
-# formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
-#                           datefmt='%Y-%m-%d %H:%M:%S')
-# fh.setFormatter(formatter)
-# ch = log.StreamHandler(stream=sys.stdout)
-# ch.setLevel(log.INFO)
-# ch.setFormatter(formatter)
-# for hdlr in log.getLogger('').handlers[:]:
-#     log.getLogger('').removeHandler(hdlr)
-# log.getLogger('').addHandler(fh)
-# log.getLogger('').addHandler(ch)
-
-
-# formatter = log.Formatter('%(asctime)s %(levelname)s %(message)s')
-# setup log file handler
-# create_paths_if_missing(logoutputpath)
-# fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
-# fh.setLevel(log.DEBUG)
+# format for logging .txt generated
 formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
-                          datefmt='%Y-%m-%d %H:%M:%S')
+                              datefmt='%Y-%m-%d %H:%M:%S')
 
 
-# def setup_logger(name, log_file, level=logging.DEBUG): #(name, log_file, level=log.INFO)
-#     """To setup as many loggers as you want"""
-#
-#     # handler = log.FileHandler(log_file)
-#     # handler.setFormatter(formatter)
-#     #
-#     # logger = log.getLogger(name)
-#     # logger.setLevel(level)
-#     # logger.addHandler(handler)
-#
-#     create_paths_if_missing(logoutputpath)
-#     fh = logging.FileHandler(log_file, mode='w')
-#     fh.setLevel(level)
-#     fh.setFormatter(formatter)
-#
-#     ch = logging.StreamHandler(stream=sys.stdout)
-#     ch.setLevel(logging.INFO)
-#     ch.setFormatter(formatter)
-#     for hdlr in logging.getLogger('').handlers[:]:
-#         logging.getLogger('').removeHandler(hdlr)
-#     logging.getLogger('').addHandler(fh)
-#     logging.getLogger('').addHandler(ch)
-#
-#     return logging
-
-
-def setup_logger(logger_name, log_file, level=logging.INFO):
+def setup_logger(logger_name, log_file, logging_level=logging.INFO):
+    """
+    setup different loggers
+    :param logger_name: string, name of the logger
+    :param log_file: string, where to save the log file
+    :param logging_level: object, define level of logging output
+    :return: log method
+    """
+    create_paths_if_missing(logoutputpath)
     l = logging.getLogger(logger_name)
-    # formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
     fileHandler = logging.FileHandler(log_file, mode='w')
     fileHandler.setFormatter(formatter)
-    streamHandler = logging.StreamHandler()
-    streamHandler.setFormatter(formatter)
 
-    l.setLevel(level)
+    l.setLevel(logging_level)
     l.addHandler(fileHandler)
-    l.addHandler(streamHandler)
 
-
-setup_logger('log1', logoutputpath+'flowsa.log')
-setup_logger('log2', logoutputpath+'validation_flowsa.log')
-log = logging.getLogger('log1')
-validation_log = logging.getLogger('log2')
-
-
-
-# first file logger
-# log = setup_logger('all_log', logoutputpath+'flowsa.log')
-
-# second file logger
-# validation_log = setup_logger('validation_log', logoutputpath+'validation_flowsa.log')
+# define two logs, one for general information and the other for validataion
+setup_logger('allLog', logoutputpath+'flowsa.log', logging.DEBUG)
+setup_logger('validationLog', logoutputpath+'validation_flowsa.log', logging.DEBUG)
+log = logging.getLogger('allLog')
+validation_log = logging.getLogger('validationLog')
 
 
 pkg = pkg_resources.get_distribution("flowsa")
@@ -839,7 +790,7 @@ def find_true_file_path(filedirectory, filename, extension):
     :param filedirectory: string, path to directory
     :param filename: string, name of original file searching for
     :param extension: string, type of file, such as "yaml" or "py"
-    :return:
+    :return: string, corrected file path name
     """
     # if a file does not exist modify file name, dropping ext after last underscore
     if os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
