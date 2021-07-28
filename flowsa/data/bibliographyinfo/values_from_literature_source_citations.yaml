@@ -1,0 +1,64 @@
+US_urban_green_space_and_public_parks_ratio:
+  author: Larson, LR; Jennings, V; Cloutier, SA
+  source_name: Public Parks and Wellbeing in Urban Areas of the United States
+  source_url: https://doi.org/10.1371/journal.pone.0153211
+  date_accessed: '2021-03-11'
+  bib_id: Larson_PP
+Canadian_to_USD_exchange_rate:
+  author: Federal Reserve
+  source_name: Foreign Exchange Rates
+  source_url: https://www.federalreserve.gov/releases/h10/current/
+  date_accessed: '2020-09-07'
+  bib_id: Fed_Reserve_FER
+area_of_urban_land_occupied_by_houses_2013:
+  author: Bigelow, DP and Borchers, A
+  source_name: Major Uses of Land in the United States
+  source_url: https://www.ers.usda.gov/webdocs/publications/84880/eib-178.pdf?v=6791.3
+  date_accessed: '2020-11-02'
+  bib_id: Bigelow
+area_of_rural_land_occupied_by_houses_2013:
+  author: Bigelow, DP and Borchers, A
+  source_name: Major Uses of Land in the United States
+  source_url: https://www.ers.usda.gov/webdocs/publications/84880/eib-178.pdf?v=6791.3
+  date_accessed: '2020-11-02'
+  bib_id: Bigelow
+commercial_and_manufacturing_floorspace_to_land_area_ratio:
+  author: Yang, Y; Ingwersen, W; Hawkins, T; Srocka, M; Meyer, D
+  source_name: "USEEIO: a New and Transparent United States Environmentally Extended Input-Output Model"
+  source_url: https://doi.org/10.1016/j.jclepro.2017.04.150
+  date_accessed: '2020-11-02'
+  bib_id: Yang_USEEIO
+open_space_fraction_of_urban_area:
+  author: Zeng, L and Ramaswami, A
+  source_name: "Impact of Locational Choices and Consumer Behaviors on Personal
+  Land Footprints: An Exploration Across the Urban–Rural Continuum in the United States"
+  source_url: https://doi.org/10.1021/acs.est.9b06024
+  date_accessed: '2020-11-02'
+  bib_id: Zeng_Land
+urban_land_use_for_airports:
+  author: Zeng, L and Ramaswami, A
+  source_name: "Impact of Locational Choices and Consumer Behaviors on Personal
+  Land Footprints: An Exploration Across the Urban–Rural Continuum in the United States"
+  source_url: https://doi.org/10.1021/acs.est.9b06024
+  date_accessed: '2020-11-02'
+  bib_id: Zeng_Land
+urban_land_use_for_railroads:
+  author: Zeng, L and Ramaswami, A
+  source_name: "Impact of Locational Choices and Consumer Behaviors on Personal
+  Land Footprints: An Exploration Across the Urban–Rural Continuum in the United States"
+  source_url: https://doi.org/10.1021/acs.est.9b06024
+  date_accessed: '2020-11-02'
+  bib_id: Zeng_Land
+fraction_of_urban_local_road_area_for_parking:
+  author: Zeng, L and Ramaswami, A
+  source_name: "Impact of Locational Choices and Consumer Behaviors on Personal
+  Land Footprints: An Exploration Across the Urban–Rural Continuum in the United States"
+  source_url: https://doi.org/10.1021/acs.est.9b06024
+  date_accessed: '2020-11-02'
+  bib_id: Zeng_Land
+transportation_sectors_based_on_FHA_fees:
+  author: US Department of Transportation Federal Highway Administration
+  source_name: Addendum to the 1997 Federal Highway Cost Allocation Study Final Report
+  source_url: https://www.fhwa.dot.gov/policy/hcas/addendum.cfm
+  date_accessed: '2020-11-02'
+  bib_id: DOT_FHA

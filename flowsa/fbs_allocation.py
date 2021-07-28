@@ -322,12 +322,10 @@ def allocation_helper(df_w_sector, attr, method, v):
     # option to scale up fba values
     if 'scaled' in attr['helper_method']:
         log.info("Scaling " + attr['helper_source'] + ' to FBA values')
-        # tmp hard coded - need to generalize
-        if attr['helper_source'] == 'BLS_QCEW':
-            modified_fba_allocation = \
-                dynamically_import_fxn(attr['helper_source'],
-                                       attr["scale_helper_results"])(modified_fba_allocation,
-                                                                     attr)
+        modified_fba_allocation = \
+            dynamically_import_fxn(attr['allocation_source'],
+                                   attr["scale_helper_results"])(modified_fba_allocation,
+                                                                 attr)
     return modified_fba_allocation
 
 

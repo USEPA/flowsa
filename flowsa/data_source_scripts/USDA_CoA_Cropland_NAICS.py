@@ -107,7 +107,7 @@ def coa_cropland_NAICS_parse(**kwargs):
     # activity consumed/produced by
     df.loc[:, 'Activity'] = df['domaincat_desc']
     df.loc[:, 'Activity'] = df['Activity'].str.replace("NAICS CLASSIFICATION: ", "", regex=True)
-    df.loc[:, 'Activity'] = df['Activity'].str.replace('[()]+', '')
+    df.loc[:, 'Activity'] = df['Activity'].str.replace('[()]+', '', regex=True)
     df['ActivityProducedBy'] = np.where(df["unit_desc"] == 'OPERATIONS', df["Activity"], '')
     df['ActivityConsumedBy'] = np.where(df["unit_desc"] == 'ACRES', df["Activity"], '')
 

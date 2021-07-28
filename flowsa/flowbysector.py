@@ -27,10 +27,11 @@ from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
 from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, load_source_catalog, \
-    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity,\
-    set_fb_meta, paths, fba_activity_fields, rename_log_file, \
+    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, \
+    paths, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
     fbs_grouping_fields_w_activities
+from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
 from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, \
@@ -318,6 +319,7 @@ def main(**kwargs):
     # save parquet file
     meta = set_fb_meta(method_name, "FlowBySector")
     write_df_to_file(fbss, paths, meta)
+    write_metadata(method_name, method, meta, "FlowBySector")
     # rename the log file saved to local directory
     rename_log_file(method_name, meta)
 

@@ -1,7 +1,6 @@
 author: US Environmental Protection Agency
-source_name_bib: National Emissions Inventory Nonroad Sources
-citable_url: https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei
-date_generated: '2021-06-16' # updated automatically when flowbyactivity.py is run
+source_name: National Emissions Inventory Nonroad Sources
+source_url: https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei
 bib_id: EPA_NEI_Nonroad
 api_name: EPA_NEI
 api_key_required: false
