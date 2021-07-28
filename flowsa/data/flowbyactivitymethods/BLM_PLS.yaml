@@ -1,7 +1,6 @@
 author: Bureau of Land Management
-source_name_bib: Public Land Statistics
-citable_url: https://www.blm.gov/about/data/public-land-statistics
-date_generated: '2021-06-15' # updated automatically when flowbyactivity.py is run
+source_name: Public Land Statistics
+source_url: https://www.blm.gov/about/data/public-land-statistics
 bib_id: BLM_PLS
 api_name: BLM_PLS
 format: pfd
@@ -13,10 +12,10 @@ call_response_fxn: blm_pls_call
 parse_response_fxn: blm_pls_parse
 years:
 - 2007
-- 2010
+#- 2010
 - 2011
 - 2012
-- 2015
+#- 2015
 file_name:
   '2007': pls07.pdf
   '2010': pls10.pdf

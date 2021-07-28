@@ -17,10 +17,10 @@ import pandas as pd
 import numpy as np
 import pycountry
 import pkg_resources
-from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing
+from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-pkg_version_number = '0.1.1'
+pkg_version_number = '0.2'
 
 try:
     modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -140,6 +140,11 @@ try:
         'ascii')[0:7]
 except:
     git_hash = None
+
+# define long version of git hash
+git_hash_long = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+        'ascii')
+
 
 # Common declaration of write format for package data products
 write_format = "parquet"
@@ -284,31 +289,34 @@ def load_values_from_literature_citations_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = datapath + 'values_from_literature_source_citations.yaml'
+    sfile = datapath + 'bibliographyinfo/values_from_literature_source_citations.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
 
 
-def update_fba_yaml_date(source):
+def load_fbs_methods_additional_fbas_config():
     """
-    Update the Flow-By-Activity method yaml with the current date.
-    Updates everytime a FBA is run.
-    :param source: string, Flow-By-Activity Source
-    :return: string, updated date in the FBA method yaml
+    Load the config file that contains information on where the
+    values from the literature come from
+    :return: dictionary of the values from the literature information
     """
-    filename = sourceconfigpath + source + '.yaml'
+    sfile = datapath + 'bibliographyinfo/fbs_methods_additional_fbas.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
 
-    yml = YAML()
-    # open yaml
-    with open(filename) as f:
-        config = yml.load(f)
-        # update the method yaml with date generated
-        config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
 
-    # save yaml, preserving comments
-    with open(filename, "w") as file:
-        yml.dump(config, file)
+def load_functions_loading_fbas_config():
+    """
+    Load the config file that contains information on where the
+    values from the literature come from
+    :return: dictionary of the values from the literature information
+    """
+    sfile = datapath + 'bibliographyinfo/functions_loading_fbas.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
 
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
@@ -805,23 +813,6 @@ def convert_fba_unit(df):
     return df
 
 
-def set_fb_meta(name_data, category):
-    """
-    Create meta data for a parquet
-    :param name_data: name of df
-    :param category: 'FlowBySector' or 'FlowByActivity'
-    :return: metadata for parquet
-    """
-    fb_meta = FileMeta()
-    fb_meta.name_data = name_data
-    fb_meta.tool = pkg.project_name
-    fb_meta.tool_version = pkg_version_number
-    fb_meta.category = category
-    fb_meta.ext = write_format
-    fb_meta.git_hash = git_hash
-    return fb_meta
-
-
 def rename_log_file(filename, fb_meta):
     """
     Rename the log file saved to local directory using df meta for df
@@ -840,3 +831,25 @@ def rename_log_file(filename, fb_meta):
     # rename the standard log file name (os.rename throws error if file already exists)
     shutil.copy(log_file, new_log_name)
     return None
+
+
+def find_true_file_path(filedirectory, filename, extension):
+    """
+    If filename does not match filename within flowsa due to added extensions onto the filename, cycle through
+    name, dropping strings after each underscore until the name is found
+    :param filedirectory: string, path to directory
+    :param filename: string, name of original file searching for
+    :param extension: string, type of file, such as "yaml" or "py"
+    :return:
+    """
+    # if a file does not exist modify file name, dropping ext after last underscore
+    if os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
+        # continue dropping last underscore/extension until file name does exist
+        for i in range(1, 5):
+            # reset file name after dropping part of name
+            filename = filename.rsplit("_", i)[0]
+            # if the file name does exist, exit the for loop
+            if os.path.exists(f"{filedirectory}{filename}.{extension}"):
+                break
+
+    return filename

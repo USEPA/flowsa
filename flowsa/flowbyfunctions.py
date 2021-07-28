@@ -5,7 +5,6 @@
 Helper functions for flowbyactivity and flowbysector data
 """
 
-import os
 import pandas as pd
 import numpy as np
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
@@ -13,7 +12,8 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
-    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath
+    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
+    find_true_file_path
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType,\
     replace_NoneType_with_empty_cells
 
@@ -541,11 +541,11 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
             # if df is less aggregated than allocation df, aggregate
             # fba activity to allocation geoscale
             if fips_number_key[i] > fips_number_key[to_scale]:
-                log.info("Aggregating subset from " + i + " to " + to_scale)
+                log.info("Aggregating subset from %s to %s", i, to_scale)
                 df_sub = agg_by_geoscale(df3, i, to_scale, fba_default_grouping_fields)
             # else filter relevant rows
             else:
-                log.info("Subsetting " + i + " data")
+                log.info("Subsetting %s data", i)
                 df_sub = filter_by_geoscale(df3, i)
             df_subset_list.append(df_sub)
         df_subset = pd.concat(df_subset_list, ignore_index=True)
@@ -874,14 +874,7 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
     """
 
     # if a file does not exist modify file name, dropping ext after last underscore
-    if os.path.exists(f"{datasourcescriptspath}{data_source_scripts_file}{'.py'}") is False:
-        # continue dropping last underscore/extension until file name does exist
-        for i in range(1, 5):
-            # reset file name after dropping part of name
-            data_source_scripts_file = data_source_scripts_file.rsplit("_", i)[0]
-            # if the file name does exist, exit the for loop
-            if os.path.exists(f"{datasourcescriptspath}{data_source_scripts_file}{'.py'}"):
-                break
+    data_source_scripts_file = find_true_file_path(datasourcescriptspath, data_source_scripts_file, 'py')
 
     df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
                             fromlist=function_name), function_name)

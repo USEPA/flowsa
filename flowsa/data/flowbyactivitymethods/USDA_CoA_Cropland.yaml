@@ -1,7 +1,6 @@
 author: US Department of Agriculture
-source_name_bib: Census of Agriculture
-citable_url: https://www.nass.usda.gov/AgCensus/
-date_generated: '2021-06-16'  # updated automatically when flowbyactivity.py is run
+source_name: Census of Agriculture
+source_url: https://www.nass.usda.gov/AgCensus/
 bib_id: USDA_CoA
 api_name: USDA_Quickstats
 api_key_required: true

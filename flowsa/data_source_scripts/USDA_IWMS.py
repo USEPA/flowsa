@@ -119,7 +119,7 @@ def iwms_parse(**kwargs):
     return df
 
 
-def disaggregate_iwms_to_6_digit_naics(df, attr, method):
+def disaggregate_iwms_to_6_digit_naics(df, attr, method, **kwargs):
     """
     Disaggregate the data in the USDA Irrigation and Water Management Survey
     to 6-digit NAICS using Census of Agriculture 'Land in Farm' data
