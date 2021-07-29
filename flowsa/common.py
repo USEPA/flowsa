@@ -10,7 +10,6 @@ import os
 import subprocess
 import logging as log
 import yaml
-from ruamel.yaml import YAML
 import requests
 import requests_ftp
 import pandas as pd
@@ -20,7 +19,7 @@ import pkg_resources
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-pkg_version_number = '0.2'
+PKG_VERSION_NUMBER = '0.2'
 
 log.basicConfig(level=log.DEBUG,
                 format='%(asctime)s %(levelname)-8s %(message)s',
@@ -28,18 +27,18 @@ log.basicConfig(level=log.DEBUG,
                 stream=sys.stdout)
 
 try:
-    modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
+    MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
 except NameError:
-    modulepath = 'flowsa/'
+    MODULEPATH = 'flowsa/'
 
-datapath = modulepath + 'data/'
+datapath = MODULEPATH + 'data/'
 sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
 
-datasourcescriptspath = modulepath + 'data_source_scripts/'
+datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
 paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
@@ -49,7 +48,7 @@ fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
 logoutputpath = outputpath + 'Log/'
 
-default_download_if_missing = False
+DEFAULT_DOWNLOAD_IF_MISSING = False
 
 # paths to scripts
 scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
@@ -74,18 +73,18 @@ log.getLogger('').addHandler(ch)
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
-    git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+    GIT_HASH = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
         'ascii')[0:7]
 except:
-    git_hash = None
+    GIT_HASH = None
 
 # define long version of git hash
-git_hash_long = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+GIT_HASH_LONG = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
         'ascii')
 
 
 # Common declaration of write format for package data products
-write_format = "parquet"
+WRITE_FORMAT = "parquet"
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -100,12 +99,12 @@ sector_level_key = {"NAICS_2": 2,
 
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
-withdrawn_keyword = None
+WITHDRAWN_KEYWORD = None
 
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
 
 # Sets default Sector Source Name
-sector_source_name = 'NAICS_2012_Code'
+SECTOR_SOURCE_NAME = 'NAICS_2012_Code'
 
 
 def load_api_key(api_source):
@@ -145,7 +144,7 @@ def make_http_request(url):
         requests_ftp.monkeypatch_session()
         r = requests.Session().get(url)
     except requests.exceptions.ConnectionError:
-        log.error("URL Connection Error for " + url)
+        log.error("URL Connection Error for %s", url)
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError:
@@ -768,12 +767,12 @@ def rename_log_file(filename, fb_meta):
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file already exists)
     shutil.copy(log_file, new_log_name)
-    return None
 
 
 def find_true_file_path(filedirectory, filename, extension):
     """
-    If filename does not match filename within flowsa due to added extensions onto the filename, cycle through
+    If filename does not match filename within flowsa due to added extensions
+    onto the filename, cycle through
     name, dropping strings after each underscore until the name is found
     :param filedirectory: string, path to directory
     :param filename: string, name of original file searching for

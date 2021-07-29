@@ -9,7 +9,7 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 import logging as log
 from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath,\
-    default_download_if_missing
+    DEFAULT_DOWNLOAD_IF_MISSING
 from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
@@ -19,7 +19,7 @@ from flowsa.bibliography import generate_fbs_bibliography
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
-                      download_if_missing=default_download_if_missing):
+                      download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Retrieves stored data in the FlowByActivity format
     :param datasource: str, the code of the datasource.
@@ -78,8 +78,7 @@ def getFlowBySector(methodname):
     fbs_meta = set_fb_meta(methodname, "FlowBySector")
     fbs = load_preprocessed_output(fbs_meta, paths)
     if fbs is None:
-        log.info(methodname + ' not found in ' + fbsoutputpath +
-                 ', running functions to generate FBS')
+        log.info('%s not found in %s, running functions to generate FBS', methodname, fbsoutputpath)
         # Generate the fba
         flowsa.flowbysector.main(method=methodname)
         # Now load the fba
@@ -118,5 +117,5 @@ def writeFlowBySectorBibliography(methodname):
     """
     # Generate a single .bib file for a list of Flow-By-Sector method names
     # and save file to local directory
-    log.info('Write bibliography to %s%s.bib', biboutputpath,methodname)
+    log.info('Write bibliography to %s%s.bib', biboutputpath, methodname)
     generate_fbs_bibliography(methodname)

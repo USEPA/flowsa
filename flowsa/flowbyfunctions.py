@@ -58,7 +58,7 @@ def filter_by_geoscale(df, geoscale):
     df = df[df['Location'].isin(fips)].reset_index(drop=True)
 
     if len(df) == 0:
-        log.error("No flows found in the " + " flow dataset at the " + geoscale + " scale")
+        log.error("No flows found in the flow dataset at the %s scale", geoscale)
     else:
         return df
 
@@ -374,8 +374,7 @@ def assign_fips_location_system(df, year_of_data):
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
     elif year_of_data < '2010':
         log.warning(
-            "Missing FIPS codes from crosswalk for " + year_of_data +
-            ". Temporarily assigning to FIPS_2010")
+            "Missing FIPS codes from crosswalk for %s. Assigning to FIPS_2010", year_of_data)
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
 
     return df
@@ -505,7 +504,7 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
         unique_geoscales =\
             modified_from_scale['activity_from_scale'].drop_duplicates().values.tolist()
         if len(unique_geoscales) > 1:
-            log.info('Dataframe has a mix of geographic levels: ' + ', '.join(unique_geoscales))
+            log.info('Dataframe has a mix of geographic levels: %s', ', '.join(unique_geoscales))
 
         # to scale
         if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:

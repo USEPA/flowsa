@@ -14,11 +14,13 @@ from flowsa.flowbyfunctions import assign_fips_location_system, log
 
 DEFAULT_YEAR = 9999
 
-# Decided to add tables as a constant in the source code because the YML config isn't available in the ghg_call method.
+# Decided to add tables as a constant in the source code because
+# the YML config isn't available in the ghg_call method.
 # Only keeping years 2010-2018 for the following tables:
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
-    "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
+    "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21",
+                      "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
     "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101", "4-43", "4-80"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
     "Executive Summary": ["ES-5"]
@@ -28,7 +30,8 @@ ANNEX_TABLES = {
 }
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
 A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
-A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use', 'Emissions (MMT CO2 Eq.) from Energy Use']
+A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
+                   'Emissions (MMT CO2 Eq.) from Energy Use']
 
 SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
@@ -70,7 +73,8 @@ TBL_META = {
     "EPA_GHGI_T_3_22": {
         "class": "Energy", "unit": "Other", "compartment": "air",
         "flow_name": "2018 Adjusted Non-Energy Use Fossil Fuel - __type__",
-        "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions",
+        "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel "
+                "Consumption, Storage, and Emissions",
         "year": "2018"
     },
     "EPA_GHGI_T_3_37": {
@@ -116,7 +120,8 @@ TBL_META = {
     "EPA_GHGI_T_4_94": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture",
-        "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture [1] (MMT CO2 Eq.)"
+        "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
+                "Electronics Manufacture [1] (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_99": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
@@ -126,7 +131,8 @@ TBL_META = {
     "EPA_GHGI_T_4_101": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "Emissions of HFCs and PFCs from ODS Substitutes",
-        "desc": "Table 4-101:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.) by Sector"
+        "desc": "Table 4-101:  Emissions of HFCs and PFCs from "
+                "ODS Substitutes (MMT CO2 Eq.) by Sector"
     },
     "EPA_GHGI_T_5_3": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
@@ -140,7 +146,8 @@ TBL_META = {
     },
     "EPA_GHGI_T_5_18": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Direct N2O Emissions from Agricultural Soils by Land Use Type and N Input Type",
+        "flow_name": "Direct N2O Emissions from Agricultural Soils "
+                     "by Land Use Type and N Input Type",
         "desc": "Table 5-18:  Direct N2O Emissions from Agricultural " +
                 "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
     },
@@ -152,12 +159,15 @@ TBL_META = {
     "EPA_GHGI_T_5_30": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "flow_name": "CH4, N2O, CO, and NOx Emissions from Field Burning of Agricultural Residues",
-        "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field Burning of Agricultural Residues (kt)"
+        "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field "
+                "Burning of Agricultural Residues (kt)"
     },
     "EPA_GHGI_T_A_17": {
         "class": "Energy", "unit": "Other", "compartment": "air",
-        "flow_name": "2012 Energy Consumption Data and CO2 Emissions from Fossil Fuel Combustion - __type__",
-        "desc": "2012 Energy Consumption Data and CO2 Emissions from Fossil Fuel Combustion by Fuel Type"
+        "flow_name": "2012 Energy Consumption Data and CO2 Emissions from "
+                     "Fossil Fuel Combustion - __type__",
+        "desc": "2012 Energy Consumption Data and CO2 Emissions from "
+                "Fossil Fuel Combustion by Fuel Type"
     },
     "EPA_GHGI_T_A_93": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
@@ -325,7 +335,8 @@ def ghg_call(**kwargs):
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
                 elif '3-' in table:
                     # Skip first two rows, as usual, but make headers the next 3 rows:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1, 2], thousands=",")
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                     header=[0, 1, 2], thousands=",")
                     # The next two rows are headers and the third is units:
                     new_headers = []
                     for col in df.columns:
@@ -345,18 +356,22 @@ def ghg_call(**kwargs):
                     df.columns = new_headers
                     # print('break')
                 elif '4-' in table:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",", decimal=".")
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                     thousands=",", decimal=".")
                 elif 'A-' in table:
                     if table == 'A-17':
-                        # A-17  is similar to T 3-23, the entire table is 2012 and headings are completely different.
+                        # A-17  is similar to T 3-23, the entire table is 2012 and
+                        # headings are completely different.
                         if str(year) == '2012':
-                            df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1], thousands=",")
+                            df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                             header=[0, 1], thousands=",")
                             new_headers = []
                             header_grouping = ''
                             for col in df.columns:
                                 if 'Unnamed' in col[0]:
                                     # new_headers.append(f'{header_grouping}{col[1]}')
-                                    new_headers.append(f'{fix_a17_headers(col[1])}{header_grouping}')
+                                    new_headers.append(f'{fix_a17_headers(col[1])}'
+                                                       f'{header_grouping}')
                                 else:
                                     if len(col) == 2:
                                         # header_grouping = f'{col[0]}__'
@@ -365,7 +380,8 @@ def ghg_call(**kwargs):
                                         else:
                                             header_grouping = f' {A_17_CO2_HEADER[1].strip()}'
                                     # new_headers.append(f'{header_grouping}{col[1]}')
-                                    new_headers.append(f'{fix_a17_headers(col[1])}{header_grouping}')
+                                    new_headers.append(f'{fix_a17_headers(col[1])}'
+                                                       f'{header_grouping}')
                             df.columns = new_headers
                             nan_col = 'Electricity Power Emissions (MMT CO2 Eq.) from Energy Use'
                             fill_col = 'Unnamed: 12_level_1 Emissions (MMT CO2 Eq.) from Energy Use'
@@ -373,7 +389,8 @@ def ghg_call(**kwargs):
                             df.columns = [nan_col if x == fill_col else x for x in df.columns]
                             df['Year'] = year
                     else:
-                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1", thousands=",", decimal=".")
+                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                         thousands=",", decimal=".")
 
                 if df is not None and len(df.columns) > 1:
                     years = YEARS.copy()
@@ -424,7 +441,7 @@ def ghg_parse(**kwargs):
     for df in dataframe_list:
         special_format = False
         source_name = df["SourceName"][0]
-        log.info(f'Processing Source Name {source_name}')
+        log.info('Processing Source Name %s', source_name)
         for src in SRC_NAME_SPECIAL_FORMAT:
             if src in source_name:
                 special_format = True
@@ -501,7 +518,9 @@ def ghg_parse(**kwargs):
             df.loc[df["SourceName"] == source_name, "FlowName"] = meta["flow_name"]
         else:
             if "T_4_" not in source_name:
-                flow_name_units = series_separate_name_and_units(df["FlowName"], meta["flow_name"], meta["unit"])
+                flow_name_units = series_separate_name_and_units(df["FlowName"],
+                                                                 meta["flow_name"],
+                                                                 meta["unit"])
                 df['Unit'] = flow_name_units['units']
                 df.loc[df["SourceName"] == source_name, "FlowName"] = flow_name_units['names']
 
@@ -547,5 +566,4 @@ def ghg_parse(**kwargs):
         # df = pd.concat(cleaned_list)
     else:
         df = pd.DataFrame()
-
-    return df
+        return df

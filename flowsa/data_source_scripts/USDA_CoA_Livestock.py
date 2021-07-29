@@ -2,11 +2,13 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-import pandas as pd
+"""
+Functions used to import and parse USDA Census of Ag Livestock data
+"""
+
 import json
-import numpy as np
-from flowsa.common import *
+import pandas as pd
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, abbrev_us_state
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -97,18 +99,22 @@ def coa_livestock_parse(**kwargs):
     # drop unused columns
     df = df.drop(columns=['agg_level_desc', 'location_desc', 'state_alpha', 'sector_desc',
                           'country_code', 'begin_code', 'watershed_code', 'reference_period_desc',
-                          'asd_desc', 'county_name', 'source_desc', 'congr_district_code', 'asd_code',
-                          'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
-                          'state_ansi', 'state_name', 'country_name', 'county_ansi', 'end_code', 'group_desc',
+                          'asd_desc', 'county_name', 'source_desc', 'congr_district_code',
+                          'asd_code', 'week_ending', 'freq_desc', 'load_time', 'zip_5',
+                          'watershed_desc', 'region_desc', 'state_ansi', 'state_name',
+                          'country_name', 'county_ansi', 'end_code', 'group_desc',
                           'util_practice_desc'])
     # create FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
     df['Location'] = df['state_fips_code'] + df['county_code']
     df.loc[df['Location'] == '99000', 'Location'] = US_FIPS  # modify national level fips
-    # combine column information to create activity information, and create two new columns for activities
-    df['ActivityProducedBy'] = df['commodity_desc'] + ', ' + df['class_desc']  # drop this column later
+    # combine column information to create activity information,
+    # and create two new columns for activities
+    # drop this column later
+    df['ActivityProducedBy'] = df['commodity_desc'] + ', ' + df['class_desc']
+    # not interested in all class_desc data
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ALL CLASSES", "",
-                                                                    regex=True)  # not interested in all class_desc data
+                                                                    regex=True)
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount",
                             "unit_desc": "FlowName",
@@ -119,18 +125,20 @@ def coa_livestock_parse(**kwargs):
     # drop remaining unused columns
     df = df.drop(columns=['class_desc', 'commodity_desc', 'state_fips_code', 'county_code',
                           'statisticcat_desc', 'prodn_practice_desc'])
-    # modify contents of flowamount column, "D" is supressed data, "z" means less than half the unit is shown
+    # modify contents of flowamount column, "D" is supressed data,
+    # "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
-    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = WITHDRAWN_KEYWORD
     # df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
-    # # USDA CoA 2017 states that (H) means CV >= 99.95, therefore replacing with 99.95 so can convert column to int
+    # # USDA CoA 2017 states that (H) means CV >= 99.95,
+    # therefore replacing with 99.95 so can convert column to int
     # # (L) is a CV of <= 0.05
     df['Spread'] = df['Spread'].str.strip()  # trim whitespace
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
     df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
-    df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == "(D)", 'Spread'] = WITHDRAWN_KEYWORD
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
     # # Add hardcoded data
