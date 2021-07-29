@@ -19,7 +19,7 @@ from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
-
+from esupy.dqi import get_weighted_average
 
 def stewicombo_to_sector(yaml_load):
     """
@@ -67,6 +67,11 @@ def stewicombo_to_sector(yaml_load):
                                                filter_for_LCI=True,
                                                remove_overlap=True,
                                                compartments=yaml_load['compartments'])
+
+    if df is None:
+        ## Inventories not found for stewicombo, return empty FBS
+        return None
+
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
     inventory_list = list(yaml_load['inventory_dict'].keys())
@@ -179,12 +184,12 @@ def reassign_airplane_emissions(df, year, NAICS_level_value):
 
     # obtain and prepare SCC dataset
     df_airplanes = stewi.getInventory('NEI', year,
-                                      stewiformat='flowbySCC')
-    df_airplanes = df_airplanes[df_airplanes['SCC'] == air_transportation_SCC]
+                                      stewiformat='flowbyprocess')
+    df_airplanes = df_airplanes[df_airplanes['Process'] == air_transportation_SCC]
     df_airplanes['Source'] = 'NEI'
     df_airplanes = addChemicalMatches(df_airplanes)
     df_airplanes = remove_default_flow_overlaps(df_airplanes, SCC=True)
-    df_airplanes.drop(columns=['SCC'], inplace=True)
+    df_airplanes.drop(columns=['Process'], inplace=True)
 
     facility_mapping_air = df[['FacilityID', 'NAICS']]
     facility_mapping_air.drop_duplicates(keep='first', inplace=True)
@@ -279,8 +284,6 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
                 'county'), should match target_geoscale
     :return: df
     """
-    from stewi.globals import weighted_average
-
     # update location to appropriate geoscale prior to aggregating
     df.dropna(subset=['Location'], inplace=True)
     df['Location'] = df['Location'].astype(str)
@@ -297,7 +300,8 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
                                          'Unit': 'first'})
 
     # add reliability score
-    fbs['DataReliability'] = weighted_average(df, 'DataReliability', 'FlowAmount', grouping_vars)
+    fbs['DataReliability'] = get_weighted_average(df, 'DataReliability', 'FlowAmount',
+                                                  grouping_vars)
     fbs.reset_index(inplace=True)
 
     # apply flow mapping
@@ -448,3 +452,14 @@ def check_for_missing_sector_data(df, target_sector_level):
     df_allocated = replace_strings_with_NoneType(df_allocated)
 
     return df_allocated
+
+def add_stewi_metadata(inventory_dict):
+    """
+    Access stewi metadata for generating FBS metdata file
+    :param inventory_dict: a dictionary of inventory types and years (e.g.,
+                {'NEI':'2017', 'TRI':'2017'})
+    :return meta: combined dictionary of metadata from each inventory
+    """
+    from stewicombo.globals import compile_metadata
+    meta = compile_metadata(inventory_dict)
+    return meta
