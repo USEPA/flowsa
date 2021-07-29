@@ -12,5 +12,5 @@ xlrd >= 1.2.0                  # Extract data from xls files
 openpyxl >= 3.0.7              # Extract data from xlsm files
 requests_ftp == 0.3.1          # Requests implementation for FTP
 tabula-py >= 2.1.1             # PDF reader
-numpy >= 1.20.1                # Library used for arrays
+numpy<1.20                     # Library used for arrays
 bibtexparser>=1.2.0            # Generates bibtex
