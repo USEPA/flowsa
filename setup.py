@@ -23,7 +23,7 @@ setup(
         'openpyxl>=3.0.7',
         'requests_ftp==0.3.1',
         'tabula-py>=2.1.1',
-        'numpy<1.20',
+        'numpy>=1.20.1',
         'bibtexparser>=1.2.0'
     ],
     url='https://github.com/USEPA/FLOWSA',
