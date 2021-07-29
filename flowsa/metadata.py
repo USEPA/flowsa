@@ -12,6 +12,7 @@ from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, read_sou
 from flowsa.common import paths, pkg, PKG_VERSION_NUMBER, WRITE_FORMAT,\
     GIT_HASH, GIT_HASH_LONG, load_functions_loading_fbas_config, \
     load_fbs_methods_additional_fbas_config
+from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata
 
 
 def set_fb_meta(name_data, category):
@@ -87,7 +88,10 @@ def return_fbs_method_data(source_name, config):
     """
 
     # load the yaml that lists what additional fbas are used in creating the fbs
-    add_fbas = load_fbs_methods_additional_fbas_config()[source_name]
+    try:
+        add_fbas = load_fbs_methods_additional_fbas_config()[source_name]
+    except KeyError:
+        add_fbas = None
 
     # Create empty dictionary for storing meta data
     meta = {}
@@ -96,6 +100,10 @@ def return_fbs_method_data(source_name, config):
     # initiate nested dictionary
     meta['primary_source_meta'] = {}
     for k, v in fb.items():
+        if k == 'stewiFBS':
+            #get stewi metadata
+            meta['primary_source_meta'][k] = add_stewi_metadata(v['inventory_dict'])
+            continue
         # append source and year
         meta['primary_source_meta'][k] = getMetadata(k, v["year"], paths)
         # create dictionary of allocation datasets for different activities
@@ -120,16 +128,17 @@ def return_fbs_method_data(source_name, config):
                     # append fba meta
                     meta['primary_source_meta'][k]['allocation_source_meta'][s] = lit_meta
                     # subset the additional fbas to the source and activity set, if exists
-        try:
-            fbas = add_fbas[k]
-            for acts, fxn_info in fbas.items():
-                for fxn, fba_info in fxn_info.items():
-                    for fba, y in fba_info.items():
-                        fxn_config = load_functions_loading_fbas_config()[fxn][fba]
-                        meta['primary_source_meta'][k]['allocation_source_meta'][
-                            fxn_config['source']] = getMetadata(fxn_config['source'], y, paths)
-        except KeyError:
-            pass
+        if add_fbas is not None:
+            try:
+                fbas = add_fbas[k]
+                for acts, fxn_info in fbas.items():
+                    for fxn, fba_info in fxn_info.items():
+                        for fba, y in fba_info.items():
+                            fxn_config = load_functions_loading_fbas_config()[fxn][fba]
+                            meta['primary_source_meta'][k]['allocation_source_meta'][fxn_config['source']] = \
+                                getMetadata(fxn_config['source'], y, paths)
+            except KeyError:
+                pass
 
     return meta
 
@@ -180,5 +189,7 @@ def getMetadata(source, year, paths):
 
     name = set_fba_name(source, year)
     meta = read_source_metadata(paths, set_fb_meta(name, 'FlowByActivity'))
+    if meta is None:
+        meta = {'source_meta': f'No metadata found for {source} {year}'}
 
     return meta

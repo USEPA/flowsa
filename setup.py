@@ -16,7 +16,6 @@ setup(
         'pip>=9',
         'setuptools>=41',
         'pyyaml>=5.3',
-        'ruamel.yaml>=0.16.13',
         'requests>=2.22.0',
         'appdirs>=1.4.3',
         'pycountry>=19.8.18',
@@ -24,7 +23,7 @@ setup(
         'openpyxl>=3.0.7',
         'requests_ftp==0.3.1',
         'tabula-py>=2.1.1',
-        'numpy<1.20',
+        'numpy>=1.20.1',
         'bibtexparser>=1.2.0'
     ],
     url='https://github.com/USEPA/FLOWSA',

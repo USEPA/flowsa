@@ -66,13 +66,13 @@ def load_source_dict(sourcename):
     """
 
     try:
-        # first check if file exists, then try loading citation information from source yaml
-        sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
-        config = load_sourceconfig(sourcename)
-    except:
-        # if no source yaml, check if citation info is for values in the literature
+        # check if citation info is for values in the literature
         config_load = load_values_from_literature_citations_config()
         config = config_load[sourcename]
+    except KeyError:
+        # else check if file exists, then try loading citation information from source yaml
+        sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
+        config = load_sourceconfig(sourcename)
 
     return config
 
