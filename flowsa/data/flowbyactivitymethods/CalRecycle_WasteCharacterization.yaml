@@ -1,8 +1,7 @@
 author: California Commercial
-source_name_bib: CalRecycle_WasteCharacterization
-citable_url: ' '
-date_generated: '2021-06-15' # updated automatically when flowbyactivity.py is run
-date_downloaded: ' '
+source_name: CalRecycle_WasteCharacterization
+source_url: ' '
+original_data_download_date: ' '
 bib_id: CalRec_WasteChar
 api_name: None
 api_key_required: false

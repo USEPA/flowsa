@@ -71,22 +71,25 @@ def bh_parse(**kwargs):
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, '2002')
     df['Year'] = '2002'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     return df
 
 
-def convert_blackhurst_data_to_gal_per_year(df, attr):
+def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
     """
     Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
     :param df: df, FBA format
-    :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: kwargs includes "attr" - dictionary, attribute
+    data from method yaml for activity set
     :return: transformed fba df
     """
 
     # load the bea make table
     bmt = flowsa.getFlowByActivity(datasource='BEA_Make_AR',
-                                   year=2002, flowclass='Money')
+                                   year='year', flowclass='Money')
     # clean df
     bmt = clean_df(bmt, flow_by_activity_fields, fba_fill_na_dict)
     bmt = harmonize_units(bmt)
@@ -110,7 +113,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     return bh_df_revised
 
 
-def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
+def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs):
     """
     Load BLS employment data and use to transform original units to gallons per employee
     :param df_wsec: df, includes sector columns
@@ -120,7 +123,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     """
 
     # load 2002 employment data
-    bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
+    bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year='2002',
+                                   flowclass='Employment')
 
     bls = filter_by_geoscale(bls, 'national')
 

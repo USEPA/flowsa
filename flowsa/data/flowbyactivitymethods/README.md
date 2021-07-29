@@ -7,9 +7,8 @@ They are stored in YAML format using a .yaml extension
 #Source configuration format
 ---
 author: Data author, for use in bibliography entry
-source_name_bib: Data title, for use bibliography entry
-citable_url: Full data url, for use in bibliography entry
-date_generated: Date the dataset is imported and formatted, updated automatically when flowbyactivity.py is run
+source_name: Data title, for use bibliography entry
+source_url: Full data url, for use in bibliography entry
 bib_id: Shorthand data name used for citation purposes in a .bib entry
 api_name: Name internally for API used for identifying api keys
 api_key_required: true or false 
