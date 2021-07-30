@@ -7,7 +7,6 @@
 import shutil
 import sys
 import os
-import subprocess
 import logging as log
 import yaml
 import requests
@@ -17,6 +16,7 @@ import numpy as np
 import pycountry
 import pkg_resources
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
+from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 PKG_VERSION_NUMBER = '0.2'
@@ -72,16 +72,8 @@ log.getLogger('').addHandler(ch)
 
 
 pkg = pkg_resources.get_distribution("flowsa")
-try:
-    GIT_HASH = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
-        'ascii')[0:7]
-except:
-    GIT_HASH = None
-
-# define long version of git hash
-GIT_HASH_LONG = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
-        'ascii')
-
+GIT_HASH = get_git_hash()
+GIT_HASH_LONG = get_git_hash('long')
 
 # Common declaration of write format for package data products
 WRITE_FORMAT = "parquet"
