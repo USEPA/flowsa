@@ -12,7 +12,7 @@ import io
 import logging as log
 import tabula
 import pandas as pd
-from flowsa.common import withdrawn_keyword, get_all_state_FIPS_2
+from flowsa.common import WITHDRAWN_KEYWORD, get_all_state_FIPS_2
 
 
 def split(row, header, sub_header, next_line):
@@ -582,34 +582,34 @@ def blm_pls_parse(**kwargs):
 
     Location = []
     fips = get_all_state_FIPS_2()
-    for df in dataframe_list:
-        df = df.drop(df[df.FlowAmount == ""].index)
-        for index, row in df.iterrows():
-            if row['LocationStr'] == "Total":
-                Location.append("00000")
-            else:
-                for i, fips_row in fips.iterrows():
-                    if fips_row["State"] == row['LocationStr']:
-                        Location.append(fips_row["FIPS_2"] + "000")
-        df = df.drop(columns=["LocationStr"])
+    df = pd.concat(dataframe_list, sort=False)
+    df = df.drop(df[df.FlowAmount == ""].index)
+    for index, row in df.iterrows():
+        if row['LocationStr'] == "Total":
+            Location.append("00000")
+        else:
+            for i, fips_row in fips.iterrows():
+                if fips_row["State"] == row['LocationStr']:
+                    Location.append(fips_row["FIPS_2"] + "000")
+    df = df.drop(columns=["LocationStr"])
 
-        # standardize activity names
-        df = standardize_blm_pls_activity_names(df)
+    # standardize activity names
+    df = standardize_blm_pls_activity_names(df)
 
-        # replace withdrawn code
-        df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
-        df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
-        df['FlowName'] = df['ActivityConsumedBy'].copy()
-        df['Location'] = Location
-        df["Class"] = 'Land'
-        df['Compartment'] = "ground"
-        df["LocationSystem"] = "FIPS_2010"
-        df["SourceName"] = 'BLM_PLS'
-        df['Year'] = args["year"]
-        df['Unit'] = "Acres"
-        df['FlowType'] = 'ELEMENTARY_FLOW'
-        df['DataReliability'] = 5  # tmp
-        df['DataCollection'] = 5  #tmp
+    # replace withdrawn code
+    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df['FlowName'] = df['ActivityConsumedBy'].copy()
+    df['Location'] = Location
+    df["Class"] = 'Land'
+    df['Compartment'] = "ground"
+    df["LocationSystem"] = "FIPS_2010"
+    df["SourceName"] = 'BLM_PLS'
+    df['Year'] = args["year"]
+    df['Unit'] = "Acres"
+    df['FlowType'] = 'ELEMENTARY_FLOW'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     return df
 

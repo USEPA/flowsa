@@ -1,7 +1,6 @@
 author: US Department of Agriculture
-source_name_bib: Major Land Uses
-citable_url: https://www.ers.usda.gov/data-products/major-land-uses/
-date_generated: '2021-06-16' # updated automatically when flowbyactivity.py is run
+source_name: Major Land Uses
+source_url: https://www.ers.usda.gov/data-products/major-land-uses/
 bib_id: USDA_ERS_MLU_csv
 api_name: USDA_ERS_MLU
 api_key_required: false

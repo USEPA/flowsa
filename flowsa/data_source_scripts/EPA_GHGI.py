@@ -14,11 +14,13 @@ from flowsa.flowbyfunctions import assign_fips_location_system, log
 
 DEFAULT_YEAR = 9999
 
-# Decided to add tables as a constant in the source code because the YML config isn't available in the ghg_call method.
+# Decided to add tables as a constant in the source code because
+# the YML config isn't available in the ghg_call method.
 # Only keeping years 2010-2018 for the following tables:
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
-    "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21", "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
+    "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21",
+                      "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
     "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101", "4-43", "4-80"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
     "Executive Summary": ["ES-5"]
@@ -28,7 +30,8 @@ ANNEX_TABLES = {
 }
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
 A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
-A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use', 'Emissions (MMT CO2 Eq.) from Energy Use']
+A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
+                   'Emissions (MMT CO2 Eq.) from Energy Use']
 
 SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
@@ -37,144 +40,151 @@ DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
 
 TBL_META = {
-    "EPA_GHG_Inventory_T_2_1": {
+    "EPA_GHGI_T_2_1": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "Recent Trends in U.S. Greenhouse Gas Emissions and Sinks",
         "desc": "Table 2-1:  Recent Trends in U.S. Greenhouse Gas Emissions and Sinks (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_3_10": {
+    "EPA_GHGI_T_3_10": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CH4 Emissions from Stationary Combustion",
         "desc": "Table 3-10:  CH4 Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_3_11": {
+    "EPA_GHGI_T_3_11": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "N2O Emissions from Stationary Combustion",
         "desc": "Table 3-11:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_3_14": {
+    "EPA_GHGI_T_3_14": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CH4 Emissions from Mobile Combustion",
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_3_15": {
+    "EPA_GHGI_T_3_15": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CH4 Emissions from Mobile Combustion",
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_3_21": {
+    "EPA_GHGI_T_3_21": {
         "class": "Energy", "unit": "TBtu", "compartment": "air",
         "flow_name": "Adjusted Consumption of Fossil Fuels for Non-Energy Uses",
         "desc": "Table 3-21:  Adjusted Consumption of Fossil Fuels for Non-Energy Uses (TBtu)"
     },
-    "EPA_GHG_Inventory_T_3_22": {
+    "EPA_GHGI_T_3_22": {
         "class": "Energy", "unit": "Other", "compartment": "air",
         "flow_name": "2018 Adjusted Non-Energy Use Fossil Fuel - __type__",
-        "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions",
+        "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel "
+                "Consumption, Storage, and Emissions",
         "year": "2018"
     },
-    "EPA_GHG_Inventory_T_3_37": {
+    "EPA_GHGI_T_3_37": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CH4 Emissions from Petroleum Systems",
         "desc": "Table 3-37:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_3_38": {
+    "EPA_GHGI_T_3_38": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "flow_name": "CH4 Emissions from Petroleum Systems",
         "desc": "Table 3-38:  CH4 Emissions from Petroleum Systems (kt CH4)"
     },
-    "EPA_GHG_Inventory_T_3_39": {
+    "EPA_GHGI_T_3_39": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CO2 Emissions from Petroleum Systems",
         "desc": "Table 3-39:  CO2 Emissions from Petroleum Systems (MMT CO2)"
     },
-    "EPA_GHG_Inventory_T_3_57": {
+    "EPA_GHGI_T_3_57": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CH4 Emissions from Natural Gas Systems",
         "desc": "Table 3-57:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_3_59": {
+    "EPA_GHGI_T_3_59": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "Non-combustion CO2 Emissions from Natural Gas Systems",
         "desc": "Table 3-59:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
     },
-    "EPA_GHG_Inventory_T_4_43": {
+    "EPA_GHGI_T_4_43": {
         "class": "Chemicals", "unit": "Other", "compartment": "air",
         "flow_name": "CO2 Emissions from Soda Ash Production",
         "desc": "Table 4-43:  CO2 Emissions from Soda Ash Production"
     },
-    "EPA_GHG_Inventory_T_4_80": {
+    "EPA_GHGI_T_4_80": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "PFC Emissions from Aluminum Production",
         "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_4_48": {
+    "EPA_GHGI_T_4_48": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "flow_name": "Production of Selected Petrochemicals",
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
     },
-    "EPA_GHG_Inventory_T_4_94": {
+    "EPA_GHGI_T_4_94": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture",
-        "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture [1] (MMT CO2 Eq.)"
+        "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
+                "Electronics Manufacture [1] (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_4_99": {
+    "EPA_GHGI_T_4_99": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "Emissions of HFCs and PFCs from ODS Substitutes",
         "desc": "Table 4-99:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_4_101": {
+    "EPA_GHGI_T_4_101": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "Emissions of HFCs and PFCs from ODS Substitutes",
-        "desc": "Table 4-101:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.) by Sector"
+        "desc": "Table 4-101:  Emissions of HFCs and PFCs from "
+                "ODS Substitutes (MMT CO2 Eq.) by Sector"
     },
-    "EPA_GHG_Inventory_T_5_3": {
+    "EPA_GHGI_T_5_3": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CH4 Emissions from Enteric Fermentation",
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_5_7": {
+    "EPA_GHGI_T_5_7": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "CH4 and N2O Emissions from Manure Management",
         "desc": "Table 5-7:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_5_18": {
+    "EPA_GHGI_T_5_18": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Direct N2O Emissions from Agricultural Soils by Land Use Type and N Input Type",
+        "flow_name": "Direct N2O Emissions from Agricultural Soils "
+                     "by Land Use Type and N Input Type",
         "desc": "Table 5-18:  Direct N2O Emissions from Agricultural " +
                 "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_5_19": {
+    "EPA_GHGI_T_5_19": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "Indirect N2O Emissions from Agricultural Soils",
         "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
     },
-    "EPA_GHG_Inventory_T_5_30": {
+    "EPA_GHGI_T_5_30": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "flow_name": "CH4, N2O, CO, and NOx Emissions from Field Burning of Agricultural Residues",
-        "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field Burning of Agricultural Residues (kt)"
+        "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field "
+                "Burning of Agricultural Residues (kt)"
     },
-    "EPA_GHG_Inventory_T_A_17": {
+    "EPA_GHGI_T_A_17": {
         "class": "Energy", "unit": "Other", "compartment": "air",
-        "flow_name": "2012 Energy Consumption Data and CO2 Emissions from Fossil Fuel Combustion - __type__",
-        "desc": "2012 Energy Consumption Data and CO2 Emissions from Fossil Fuel Combustion by Fuel Type"
+        "flow_name": "2012 Energy Consumption Data and CO2 Emissions from "
+                     "Fossil Fuel Combustion - __type__",
+        "desc": "2012 Energy Consumption Data and CO2 Emissions from "
+                "Fossil Fuel Combustion by Fuel Type"
     },
-    "EPA_GHG_Inventory_T_A_93": {
+    "EPA_GHGI_T_A_93": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "flow_name": "NOx Emissions from Stationary Combustion",
         "desc": "NOx Emissions from Stationary Combustion (kt)"
     },
-    "EPA_GHG_Inventory_T_A_94": {
+    "EPA_GHGI_T_A_94": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "flow_name": "CO Emissions from Stationary Combustion",
         "desc": "CO Emissions from Stationary Combustion (kt)"
     },
-    "EPA_GHG_Inventory_T_A_118": {
+    "EPA_GHGI_T_A_118": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "flow_name": "NMVOCs Emissions from Mobile Combustion",
         "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
     },
-    "EPA_GHG_Inventory_T_ES_5": {
+    "EPA_GHGI_T_ES_5": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "flow_name": "U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
                      "from Land Use, Land-Use Change, and Forestry",
@@ -325,7 +335,8 @@ def ghg_call(**kwargs):
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
                 elif '3-' in table:
                     # Skip first two rows, as usual, but make headers the next 3 rows:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1, 2], thousands=",")
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                     header=[0, 1, 2], thousands=",")
                     # The next two rows are headers and the third is units:
                     new_headers = []
                     for col in df.columns:
@@ -345,18 +356,22 @@ def ghg_call(**kwargs):
                     df.columns = new_headers
                     # print('break')
                 elif '4-' in table:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",", decimal=".")
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                     thousands=",", decimal=".")
                 elif 'A-' in table:
                     if table == 'A-17':
-                        # A-17  is similar to T 3-23, the entire table is 2012 and headings are completely different.
+                        # A-17  is similar to T 3-23, the entire table is 2012 and
+                        # headings are completely different.
                         if str(year) == '2012':
-                            df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", header=[0, 1], thousands=",")
+                            df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                             header=[0, 1], thousands=",")
                             new_headers = []
                             header_grouping = ''
                             for col in df.columns:
                                 if 'Unnamed' in col[0]:
                                     # new_headers.append(f'{header_grouping}{col[1]}')
-                                    new_headers.append(f'{fix_a17_headers(col[1])}{header_grouping}')
+                                    new_headers.append(f'{fix_a17_headers(col[1])}'
+                                                       f'{header_grouping}')
                                 else:
                                     if len(col) == 2:
                                         # header_grouping = f'{col[0]}__'
@@ -365,7 +380,8 @@ def ghg_call(**kwargs):
                                         else:
                                             header_grouping = f' {A_17_CO2_HEADER[1].strip()}'
                                     # new_headers.append(f'{header_grouping}{col[1]}')
-                                    new_headers.append(f'{fix_a17_headers(col[1])}{header_grouping}')
+                                    new_headers.append(f'{fix_a17_headers(col[1])}'
+                                                       f'{header_grouping}')
                             df.columns = new_headers
                             nan_col = 'Electricity Power Emissions (MMT CO2 Eq.) from Energy Use'
                             fill_col = 'Unnamed: 12_level_1 Emissions (MMT CO2 Eq.) from Energy Use'
@@ -373,14 +389,15 @@ def ghg_call(**kwargs):
                             df.columns = [nan_col if x == fill_col else x for x in df.columns]
                             df['Year'] = year
                     else:
-                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1", thousands=",", decimal=".")
+                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                         thousands=",", decimal=".")
 
                 if df is not None and len(df.columns) > 1:
                     years = YEARS.copy()
                     years.remove(str(year))
                     df = df.drop(columns=(DROP_COLS + years), errors='ignore')
                     # Assign SourceName now while we still have access to the table name:
-                    source_name = f"EPA_GHG_Inventory_T_{table.replace('-', '_')}"
+                    source_name = f"EPA_GHGI_T_{table.replace('-', '_')}"
                     df["SourceName"] = source_name
                     frames.append(df)
 
@@ -424,7 +441,7 @@ def ghg_parse(**kwargs):
     for df in dataframe_list:
         special_format = False
         source_name = df["SourceName"][0]
-        log.info(f'Processing Source Name {source_name}')
+        log.info('Processing Source Name %s', source_name)
         for src in SRC_NAME_SPECIAL_FORMAT:
             if src in source_name:
                 special_format = True
@@ -501,7 +518,9 @@ def ghg_parse(**kwargs):
             df.loc[df["SourceName"] == source_name, "FlowName"] = meta["flow_name"]
         else:
             if "T_4_" not in source_name:
-                flow_name_units = series_separate_name_and_units(df["FlowName"], meta["flow_name"], meta["unit"])
+                flow_name_units = series_separate_name_and_units(df["FlowName"],
+                                                                 meta["flow_name"],
+                                                                 meta["unit"])
                 df['Unit'] = flow_name_units['units']
                 df.loc[df["SourceName"] == source_name, "FlowName"] = flow_name_units['names']
 
@@ -547,5 +566,4 @@ def ghg_parse(**kwargs):
         # df = pd.concat(cleaned_list)
     else:
         df = pd.DataFrame()
-
-    return df
+        return df

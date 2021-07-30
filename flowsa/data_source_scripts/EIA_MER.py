@@ -10,7 +10,7 @@ Last updated: September 8, 2020
 """
 
 import io
-from flowsa.common import *
+import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -65,13 +65,13 @@ def decide_flow_name(desc):
     """
     if 'Production' in desc:
         return 'Production'
-    elif 'Consumed' in desc:
+    if 'Consumed' in desc:
         return 'Consumed'
-    elif 'Sales' in desc:
+    if 'Sales' in desc:
         return 'Sales'
-    elif 'Losses' in desc:
+    if 'Losses' in desc:
         return 'Losses'
-    return None
+    return 'None'
 
 
 def decide_produced(desc):
@@ -93,9 +93,9 @@ def decide_consumed(desc):
     """
     if 'Consumed' in desc:
         return desc.split('Consumed')[0].strip()
-    elif 'Sales' in desc:
+    if 'Sales' in desc:
         return desc.split('Sales')[0].strip()
-    elif 'Losses' in desc:
+    if 'Losses' in desc:
         return desc.split('Losses')[0].strip()
     return 'None'
 

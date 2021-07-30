@@ -12,7 +12,8 @@ import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
-    convert_fba_unit, set_fb_meta, paths, update_fba_yaml_date, rename_log_file
+    convert_fba_unit, paths, rename_log_file
+from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
     dynamically_import_fxn
 from flowsa.dataclean import clean_df
@@ -108,7 +109,7 @@ def call_urls(url_list, args, config):
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
-            log.info("Calling " + url)
+            log.info("Calling %s", url)
             r = make_http_request(url)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
@@ -138,7 +139,7 @@ def parse_data(dataframe_list, args, config):
     return df
 
 
-def process_data_frame(df, source, year):
+def process_data_frame(df, source, year, config):
     """
     Process the given dataframe, cleaning, converting data, and writing the final parquet.
     This method was written to move code into a shared method, which was necessary to support
@@ -149,7 +150,7 @@ def process_data_frame(df, source, year):
     :return: df, FBA format, standardized
     """
     # log that data was retrieved
-    log.info("Retrieved data for " + source + ' ' + year)
+    log.info("Retrieved data for %s %s", source, year)
     # add any missing columns of data and cast to appropriate data type
     log.info("Add any missing columns and check field datatypes")
     flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
@@ -162,7 +163,8 @@ def process_data_frame(df, source, year):
     name_data = set_fba_name(source, year)
     meta = set_fb_meta(name_data, "FlowByActivity")
     write_df_to_file(flow_df,paths,meta)
-    log.info("FBA generated and saved for " + name_data)
+    write_metadata(source, config, meta, "FlowByActivity", year=year)
+    log.info("FBA generated and saved for %s", name_data)
     # rename the log file saved to local directory
     rename_log_file(name_data, meta)
 
@@ -179,10 +181,6 @@ def main(**kwargs):
 
     # assign yaml parameters (common.py fxn)
     config = load_sourceconfig(kwargs['source'])
-    # update the local config with today's date
-    config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
-    # update the method yaml with date generated
-    update_fba_yaml_date(kwargs['source'])
 
     log.info("Creating dataframe list")
     # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
@@ -214,9 +212,9 @@ def main(**kwargs):
                         source_name = source_names.iloc[0]
                     except KeyError:
                         source_name = kwargs['source']
-                    process_data_frame(frame, source_name, kwargs['year'])
+                    process_data_frame(frame, source_name, kwargs['year'], config)
         else:
-            process_data_frame(df, kwargs['source'], kwargs['year'])
+            process_data_frame(df, kwargs['source'], kwargs['year'], config)
 
 
 if __name__ == '__main__':

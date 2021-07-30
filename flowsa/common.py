@@ -10,17 +10,16 @@ import os
 import subprocess
 import logging as log
 import yaml
-from ruamel.yaml import YAML
 import requests
 import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
 import pkg_resources
-from esupy.processed_data_mgmt import Paths, FileMeta, create_paths_if_missing
+from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-pkg_version_number = '0.1.1'
+PKG_VERSION_NUMBER = '0.2'
 
 log.basicConfig(level=log.DEBUG,
                 format='%(asctime)s %(levelname)-8s %(message)s',
@@ -28,18 +27,18 @@ log.basicConfig(level=log.DEBUG,
                 stream=sys.stdout)
 
 try:
-    modulepath = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
+    MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
 except NameError:
-    modulepath = 'flowsa/'
+    MODULEPATH = 'flowsa/'
 
-datapath = modulepath + 'data/'
+datapath = MODULEPATH + 'data/'
 sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
 
-datasourcescriptspath = modulepath + 'data_source_scripts/'
+datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
 paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
@@ -49,7 +48,7 @@ fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
 logoutputpath = outputpath + 'Log/'
 
-default_download_if_missing = False
+DEFAULT_DOWNLOAD_IF_MISSING = False
 
 # paths to scripts
 scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
@@ -74,13 +73,18 @@ log.getLogger('').addHandler(ch)
 
 pkg = pkg_resources.get_distribution("flowsa")
 try:
-    git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+    GIT_HASH = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
         'ascii')[0:7]
 except:
-    git_hash = None
+    GIT_HASH = None
+
+# define long version of git hash
+GIT_HASH_LONG = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode(
+        'ascii')
+
 
 # Common declaration of write format for package data products
-write_format = "parquet"
+WRITE_FORMAT = "parquet"
 
 US_FIPS = "00000"
 fips_number_key = {"national": 0,
@@ -95,12 +99,12 @@ sector_level_key = {"NAICS_2": 2,
 
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
-withdrawn_keyword = None
+WITHDRAWN_KEYWORD = None
 
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
 
 # Sets default Sector Source Name
-sector_source_name = 'NAICS_2012_Code'
+SECTOR_SOURCE_NAME = 'NAICS_2012_Code'
 
 
 def load_api_key(api_source):
@@ -140,7 +144,7 @@ def make_http_request(url):
         requests_ftp.monkeypatch_session()
         r = requests.Session().get(url)
     except requests.exceptions.ConnectionError:
-        log.error("URL Connection Error for " + url)
+        log.error("URL Connection Error for %s", url)
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError:
@@ -222,31 +226,34 @@ def load_values_from_literature_citations_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = datapath + 'values_from_literature_source_citations.yaml'
+    sfile = datapath + 'bibliographyinfo/values_from_literature_source_citations.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
 
 
-def update_fba_yaml_date(source):
+def load_fbs_methods_additional_fbas_config():
     """
-    Update the Flow-By-Activity method yaml with the current date.
-    Updates everytime a FBA is run.
-    :param source: string, Flow-By-Activity Source
-    :return: string, updated date in the FBA method yaml
+    Load the config file that contains information on where the
+    values from the literature come from
+    :return: dictionary of the values from the literature information
     """
-    filename = sourceconfigpath + source + '.yaml'
+    sfile = datapath + 'bibliographyinfo/fbs_methods_additional_fbas.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
 
-    yml = YAML()
-    # open yaml
-    with open(filename) as f:
-        config = yml.load(f)
-        # update the method yaml with date generated
-        config['date_generated'] = pd.to_datetime('today').strftime('%Y-%m-%d')
 
-    # save yaml, preserving comments
-    with open(filename, "w") as file:
-        yml.dump(config, file)
+def load_functions_loading_fbas_config():
+    """
+    Load the config file that contains information on where the
+    values from the literature come from
+    :return: dictionary of the values from the literature information
+    """
+    sfile = datapath + 'bibliographyinfo/functions_loading_fbas.yaml'
+    with open(sfile, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
 
 
 flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
@@ -743,23 +750,6 @@ def convert_fba_unit(df):
     return df
 
 
-def set_fb_meta(name_data, category):
-    """
-    Create meta data for a parquet
-    :param name_data: name of df
-    :param category: 'FlowBySector' or 'FlowByActivity'
-    :return: metadata for parquet
-    """
-    fb_meta = FileMeta()
-    fb_meta.name_data = name_data
-    fb_meta.tool = pkg.project_name
-    fb_meta.tool_version = pkg_version_number
-    fb_meta.category = category
-    fb_meta.ext = write_format
-    fb_meta.git_hash = git_hash
-    return fb_meta
-
-
 def rename_log_file(filename, fb_meta):
     """
     Rename the log file saved to local directory using df meta for df
@@ -777,4 +767,26 @@ def rename_log_file(filename, fb_meta):
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file already exists)
     shutil.copy(log_file, new_log_name)
-    return None
+
+
+def find_true_file_path(filedirectory, filename, extension):
+    """
+    If filename does not match filename within flowsa due to added extensions
+    onto the filename, cycle through
+    name, dropping strings after each underscore until the name is found
+    :param filedirectory: string, path to directory
+    :param filename: string, name of original file searching for
+    :param extension: string, type of file, such as "yaml" or "py"
+    :return:
+    """
+    # if a file does not exist modify file name, dropping ext after last underscore
+    if os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
+        # continue dropping last underscore/extension until file name does exist
+        for i in range(1, 5):
+            # reset file name after dropping part of name
+            filename = filename.rsplit("_", i)[0]
+            # if the file name does exist, exit the for loop
+            if os.path.exists(f"{filedirectory}{filename}.{extension}"):
+                break
+
+    return filename
