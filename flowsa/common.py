@@ -136,15 +136,25 @@ def load_api_key(api_source):
     return key
 
 
-def make_http_request(url):
+def make_http_request(url, **kwargs):
     """
     Makes http request using requests library
     :param url: URL to query
     :return: request Object
     """
+    if 'requests_session' in kwargs:
+        s = kwargs['requests_session']
+    else:
+        s = requests
+
     r = []
     try:
-        r = requests.get(url)
+        r = s.get(url) #requests.get(url)
+        # determine if require request.post to set cookies
+        if 'set_cookies' in kwargs:
+            if kwargs['set_cookies'] == 'yes':
+                cookies = dict(r.cookies)
+                r = s.post(url, verify=True, cookies=cookies)
     except requests.exceptions.InvalidSchema:  # if url is ftp rather than http
         requests_ftp.monkeypatch_session()
         r = requests.Session().get(url)
