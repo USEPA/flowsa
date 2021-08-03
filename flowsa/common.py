@@ -60,30 +60,53 @@ logging.basicConfig(level=logging.DEBUG,
 formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
                               datefmt='%Y-%m-%d %H:%M:%S')
 
-
-def setup_logger(logger_name, log_file, logging_level=logging.INFO):
-    """
-    setup different loggers
-    :param logger_name: string, name of the logger
-    :param log_file: string, where to save the log file
-    :param logging_level: object, define level of logging output
-    :return: log method
-    """
-    create_paths_if_missing(logoutputpath)
-    l = logging.getLogger(logger_name)
-    fileHandler = logging.FileHandler(log_file, mode='w')
-    fileHandler.setFormatter(formatter)
-
-    l.setLevel(logging_level)
-    l.addHandler(fileHandler)
-
-# define two logs, one for general information and the other for validataion
-setup_logger('allLog', logoutputpath+'flowsa.log', logging.DEBUG)
-setup_logger('validationLog', logoutputpath+'validation_flowsa.log', logging.DEBUG)
+# define two logs, one for general information and the other for validation only
+create_paths_if_missing(logoutputpath)
+# create overall logger
+l = logging.getLogger('allLog')
+l_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
+l_fh.setFormatter(formatter)
+l.setLevel(logging.DEBUG)
+l.addHandler(l_fh)
 log = logging.getLogger('allLog')
+# create validation logger
+vl = logging.getLogger('validationLog')
+vl_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
+vl_fh.setFormatter(formatter)
+vl.setLevel(logging.DEBUG)
+# add the validation log to the overall logger and to its own log file
+vl.addHandler(l_fh)
+vl.addHandler(vl_fh)
 validation_log = logging.getLogger('validationLog')
 
+def rename_log_file(filename, fb_meta):
+    """
+    Rename the log file saved to local directory using df meta for df
+    :param filename: str, name of dataset
+    :param fb_meta: metadata for parquet
+    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
+    :return: modified log file name
+    """
+    # original log file name - all log statements
+    log_file = f'{logoutputpath}{"flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
+                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
+    # original log file name - validation
+    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}_v' \
+                   f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
 
+# metadata
 pkg = pkg_resources.get_distribution("flowsa")
 GIT_HASH = get_git_hash()
 GIT_HASH_LONG = get_git_hash('long')
@@ -763,25 +786,6 @@ def convert_fba_unit(df):
                                  'kg', df['Unit'])
 
     return df
-
-
-def rename_log_file(filename, fb_meta):
-    """
-    Rename the log file saved to local directory using df meta for df
-    :param filename: str, name of dataset
-    :param fb_meta: metadata for parquet
-    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
-    :return: modified log file name
-    """
-    # original log file name
-    log_file = f'{logoutputpath}{"flowsa.log"}'
-    # generate new log name
-    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
-                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file already exists)
-    shutil.copy(log_file, new_log_name)
 
 
 def find_true_file_path(filedirectory, filename, extension):
