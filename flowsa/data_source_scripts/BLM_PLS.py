@@ -9,10 +9,9 @@ Bureau of Land Management Public Land Statistics data
 
 import re
 import io
-import logging as log
 import tabula
 import pandas as pd
-from flowsa.common import WITHDRAWN_KEYWORD, get_all_state_FIPS_2
+from flowsa.common import WITHDRAWN_KEYWORD, get_all_state_FIPS_2, log
 
 
 def split(row, header, sub_header, next_line):

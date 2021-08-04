@@ -6,12 +6,11 @@ Functions to allocate data using additional data sources
 """
 
 import sys
-import logging as log
 import numpy as np
 import pandas as pd
 import flowsa
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
-    fba_activity_fields, fbs_activity_fields, \
+    fba_activity_fields, fbs_activity_fields, log, \
     fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict
 from flowsa.validation import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
