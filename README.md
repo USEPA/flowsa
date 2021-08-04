@@ -1,4 +1,4 @@
-# flowsa
+# flowsa  
 
 flowsa attributes resource use, waste, emissions, and loss to economic sectors. It produces standard tabular formats with
 sector attribution data using pandas dataframes.
