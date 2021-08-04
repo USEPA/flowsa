@@ -50,31 +50,30 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
              '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
-# logging configurataion for console pintout
-logging.basicConfig(level=logging.DEBUG,
-                format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S',
-                stream=sys.stdout)
-
-# format for logging .txt generated
-formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
-                              datefmt='%Y-%m-%d %H:%M:%S')
 
 # define 4 logs, one for general information, one for major validation logs that are also included
 # in the gerneral info log, one for very specific validation that is only included in the validation log,
 # and a console printout that includes general and validation, but not detailed validation
 create_paths_if_missing(logoutputpath)
 
+# format for logging .txt generated
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
+                              datefmt='%Y-%m-%d %H:%M:%S')
+
 # create loggers
 # general logger
 log = logging.getLogger('allLog')
 log.setLevel(logging.DEBUG)
+log.propagate=False
+# log.propagate=False
 # general validation logger
 vLog = logging.getLogger('validationLog')
 vLog.setLevel(logging.DEBUG)
+vLog.propagate=False
 # detailed validation logger
 vLogDetailed = logging.getLogger('validationLogDetailed')
 vLogDetailed.setLevel(logging.DEBUG)
+vLogDetailed.propagate=False
 
 # create handlers
 # create handler for overall logger
@@ -84,14 +83,17 @@ log_fh.setFormatter(formatter)
 vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
 vLog_fh.setFormatter(formatter)
 # create console handler
-ch = logging.StreamHandler()
+ch = logging.StreamHandler(sys.stdout)
 ch.setLevel(logging.INFO)
+ch.setFormatter(formatter)
 
 # add handlers to various loggers
 # general logger
+log.addHandler(ch) # print to console
 log.addHandler(log_fh)
 vLog.addHandler(log_fh)
 # validation logger
+vLog.addHandler(ch) # print to console
 vLog.addHandler(vLog_fh)
 vLogDetailed.addHandler(vLog_fh)
 
