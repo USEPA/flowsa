@@ -11,8 +11,8 @@ import io
 import pandas as pd
 #import numpy as np
 #import flowsa
-# from flowsa.common import US_FIPS, flow_by_activity_fields, fba_fill_na_dict
-# from flowsa.flowbyfunctions import assign_fips_location_system, \
+from flowsa.common import US_FIPS #, flow_by_activity_fields, fba_fill_na_dict
+from flowsa.flowbyfunctions import assign_fips_location_system #, \
 #     proportional_allocation_by_location_and_activity, filter_by_geoscale
 # from flowsa.dataclean import harmonize_units, clean_df
 # from flowsa.mapping import add_sectors_to_flowbyactivity
@@ -68,26 +68,24 @@ def epa_cddpath_parse(**kwargs):
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # load arguments necessary for function
+    args = kwargs['args']
     dataframe_list = kwargs['dataframe_list']
 
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
     
     # hardcode
-    # [AB] commented out lines I wasn't relatively sure of
     df['Class'] = 'Land'  # confirm this
     df['SourceName'] = 'EPA_CDDPath'  # confirm this
-    df['FlowName'] = 'CDD Disposition Estimates, US 2014'  # confirm this
-    df['Unit'] = 'gal/USD'
+    df['Unit'] = 'short tons'
     df['FlowType'] = 'WASTE_FLOW'
-    # df['ActivityProducedBy'] = "Construction and Demolition"  # confirm this
-    # df['ActivityConsumedBy'] = "Waste Management"  # confirm this
+    df['ActivityProducedBy'] = "Construction Activities"  # placeholder category
     # df['Compartment'] = 'ground'  # confirm this
-    # df['Location'] = US_FIPS
-    # df = assign_fips_location_system(df, '2002')
-    df['Year'] = '2014'
+    df['Location'] = US_FIPS
+    df = assign_fips_location_system(df, args['year'])
+    df['Year'] = args['year']
     # df['MeasureofSpread'] = "NA"  # none available
-    df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataReliability'] = 5  # confirm this
+    df['DataCollection'] = 5  # confirm this
 
     return df
