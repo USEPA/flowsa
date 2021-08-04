@@ -60,24 +60,41 @@ logging.basicConfig(level=logging.DEBUG,
 formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
                               datefmt='%Y-%m-%d %H:%M:%S')
 
-# define two logs, one for general information and the other for validation only
+# define 4 logs, one for general information, one for major validation logs that are also included
+# in the gerneral info log, one for very specific validation that is only included in the validation log,
+# and a console printout that includes general and validation, but not detailed validation
 create_paths_if_missing(logoutputpath)
-# create overall logger
-l = logging.getLogger('allLog')
-l_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
-l_fh.setFormatter(formatter)
-l.setLevel(logging.DEBUG)
-l.addHandler(l_fh)
+
+# create loggers
+# general logger
 log = logging.getLogger('allLog')
-# create validation logger
-vl = logging.getLogger('validationLog')
-vl_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
-vl_fh.setFormatter(formatter)
-vl.setLevel(logging.DEBUG)
-# add the validation log to the overall logger and to its own log file
-vl.addHandler(l_fh)
-vl.addHandler(vl_fh)
-validation_log = logging.getLogger('validationLog')
+log.setLevel(logging.DEBUG)
+# general validation logger
+vLog = logging.getLogger('validationLog')
+vLog.setLevel(logging.DEBUG)
+# detailed validation logger
+vLogDetailed = logging.getLogger('validationLogDetailed')
+vLogDetailed.setLevel(logging.DEBUG)
+
+# create handlers
+# create handler for overall logger
+log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
+log_fh.setFormatter(formatter)
+# create handler for general validation information
+vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
+vLog_fh.setFormatter(formatter)
+# create console handler
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+
+# add handlers to various loggers
+# general logger
+log.addHandler(log_fh)
+vLog.addHandler(log_fh)
+# validation logger
+vLog.addHandler(vLog_fh)
+vLogDetailed.addHandler(vLog_fh)
+
 
 def rename_log_file(filename, fb_meta):
     """

@@ -15,7 +15,7 @@ from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     load_sector_length_crosswalk, load_source_catalog, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, log, outputpath, fba_activity_fields, \
-    fbs_activity_fields, fbs_fill_na_dict, validation_log
+    fbs_activity_fields, fbs_fill_na_dict, vLog, vLogDetailed
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -27,10 +27,10 @@ def check_flow_by_fields(flowby_df, flowbyfields):
     """
     for k, v in flowbyfields.items():
         try:
-            validation_log.debug("fba activity %s data type is %s", k, str(flowby_df[k].values.dtype))
-            validation_log.debug("standard %s data type is %s", k, str(v[0]['dtype']))
+            vLog.debug("fba activity %s data type is %s", k, str(flowby_df[k].values.dtype))
+            vLog.debug("standard %s data type is %s", k, str(v[0]['dtype']))
         except:
-            validation_log.debug("Failed to find field %s in fba", k)
+            vLog.debug("Failed to find field %s in fba", k)
 
 
 def check_if_activities_match_sectors(fba):
@@ -50,7 +50,7 @@ def check_if_activities_match_sectors(fba):
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
-        validation_log.debug("%s activities not matching sectors in default %s list",
+        vLog.debug("%s activities not matching sectors in default %s list",
                   str(len(activities_missing_sectors)), SECTOR_SOURCE_NAME)
         return activities_missing_sectors
 
@@ -83,11 +83,11 @@ def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
     df = df[df['Location'].isin(fips)]
 
     if len(df) == 0:
-        validation_log.info(
+        vLog.info(
             "No flows found for %s at the %s scale", ', '.join(activity_list), geoscale)
         exists = "No"
     else:
-        validation_log.info("Flows found for %s at the %s scale", ', '.join(activity_list), geoscale)
+        vLog.info("Flows found for %s at the %s scale", ', '.join(activity_list), geoscale)
         exists = "Yes"
 
     return exists
@@ -110,17 +110,17 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
         fips = create_geoscale_list(df, 'state')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            validation_log.info("No flows found for %s at the state scale", activityname)
+            vLog.info("No flows found for %s at the state scale", activityname)
             fips = create_geoscale_list(df, 'county')
             df = df[df['Location'].isin(fips)]
             if len(df) == 0:
-                validation_log.info("No flows found for %s at the county scale", activityname)
+                vLog.info("No flows found for %s at the county scale", activityname)
             else:
-                validation_log.info("Flow-By-Activity data exists for %s at the county level", activityname)
+                vLog.info("Flow-By-Activity data exists for %s at the county level", activityname)
                 new_geoscale_to_use = 'county'
                 return new_geoscale_to_use
         else:
-            validation_log.info("Flow-By-Activity data exists for %s at the state level", activityname)
+            vLog.info("Flow-By-Activity data exists for %s at the state level", activityname)
             new_geoscale_to_use = 'state'
             return new_geoscale_to_use
     if geoscale == 'state':
@@ -129,9 +129,9 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
         fips = create_geoscale_list(df, 'county')
         df = df[df['Location'].isin(fips)]
         if len(df) == 0:
-            validation_log.info("No flows found for %s at the county scale", activityname)
+            vLog.info("No flows found for %s at the county scale", activityname)
         else:
-            validation_log.info("Flow-By-Activity data exists for %s at the county level", activityname)
+            vLog.info("Flow-By-Activity data exists for %s at the county level", activityname)
             new_geoscale_to_use = 'county'
             return new_geoscale_to_use
 
@@ -145,7 +145,7 @@ def check_if_location_systems_match(df1, df2):
     """
 
     if df1["LocationSystem"].all() != df2["LocationSystem"].all():
-        validation_log.warning("LocationSystems do not match, might lose county level data")
+        vLog.warning("LocationSystems do not match, might lose county level data")
 
 
 def check_if_losing_sector_data(df, target_sector_level):
@@ -236,14 +236,14 @@ def check_if_losing_sector_data(df, target_sector_level):
 
         # append to df
         if len(rl) != 0:
-            validation_log.warning('Data found at %s digit NAICS not represented in current '
+            vLog.warning('Data found at %s digit NAICS not represented in current '
                         'data subset: {}'.format(' '.join(map(str, rl_list))), str(i))
             rows_lost = rows_lost.append(rl_m3, ignore_index=True, sort=True)
 
     if len(rows_lost) == 0:
-        validation_log.debug('Data exists at %s', target_sector_level)
+        vLog.debug('Data exists at %s', target_sector_level)
     else:
-        validation_log.info('Allocating FlowAmounts equally to each %s associated with'
+        vLog.info('Allocating FlowAmounts equally to each %s associated with'
                  'the sectors previously dropped', target_sector_level)
 
     # add rows of missing data to the fbs sector subset
@@ -277,26 +277,26 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
 
     ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
     if ua_count1 > 0:
-        validation_log.info('There are %s instances at a sector length of 6 or '
+        vLog.info('There are %s instances at a sector length of 6 or '
                  'less where the allocation ratio '
                  'for a location and sector length is < 1', str(ua_count1))
     ua_count2 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 0.99])
     if ua_count2 > 0:
-        validation_log.debug('There are %s instances at a sector length of 6 or '
+        vLog.debug('There are %s instances at a sector length of 6 or '
                   'less where the allocation ratio '
                  'for a location and sector length is < 0.99', str(ua_count2))
     ua_count3 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1])
     if ua_count3 > 0:
-        validation_log.debug('There are %s instances at a sector length of '
+        vLog.debug('There are %s instances at a sector length of '
                   '6 or less where the allocation ratio '
                  'for a location and sector length is > 1', str(ua_count3))
     ua_count4 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1.01])
     if ua_count4 > 0:
-        validation_log.info('There are %s instances at a sector length of 6 or less where the allocation'
+        vLog.info('There are %s instances at a sector length of 6 or less where the allocation'
                  ' ratio for a location and sector length is > 1.01', str(ua_count4))
 
     # save csv to output folder
-    validation_log.info('Save the summary table of flow allocation ratios for each sector length for'
+    vLog.info('Save the summary table of flow allocation ratios for each sector length for'
              '%s in output folder', activity_set)
     # create directory if missing
     os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
@@ -320,7 +320,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
              save results as csv in local directory
     """
     if load_source_catalog()[source_name]['sector-like_activities']:
-        validation_log.debug('Not comparing loaded FlowByActivity to FlowBySector ratios '
+        vLog.debug('Not comparing loaded FlowByActivity to FlowBySector ratios '
                   'for a dataset with sector-like activities because if there '
                   'are modifications to flowamounts for a sector, then the '
                   'ratios will be different')
@@ -379,24 +379,24 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
 
         ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
         if ua_count1 > 0:
-            validation_log.info('There are %s combinations of flowable/context/sector length where the '
+            vLog.info('There are %s combinations of flowable/context/sector length where the '
                      'flowbyactivity to flowbysector ratio is < 0.95', str(ua_count1))
         ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
         if ua_count2 > 0:
-            validation_log.debug('There are %s combinations of flowable/context/sector length where the '
+            vLog.debug('There are %s combinations of flowable/context/sector length where the '
                      'flowbyactivity to flowbysector ratio is < 0.99', str(ua_count2))
         oa_count1 = len(comparison[comparison['Ratio'] > 1])
         if oa_count1 > 0:
-            validation_log.debug('There are %s combinations of flowable/context/sector '
+            vLog.debug('There are %s combinations of flowable/context/sector '
                       'length where the flowbyactivity '
                      'to flowbysector ratio is > 1.0', str(oa_count1))
         oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
         if oa_count2 > 0:
-            validation_log.info('There are %s combinations of flowable/context/sector length where the '
+            vLog.info('There are %s combinations of flowable/context/sector length where the '
                      'flowbyactivity to flowbysector ratio is > 1.01', str(oa_count2))
 
         # save csv to output folder
-        validation_log.info('Save the comparison of FlowByActivity load to FlowBySector ratios '
+        vLog.info('Save the comparison of FlowByActivity load to FlowBySector ratios '
                  'for %s in output folder', activity_set)
         # create directory if missing
         os.makedirs(outputpath + '/FlowBySectorMethodAnalysis', exist_ok=True)
@@ -425,7 +425,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
     from flowsa.mapping import map_elementary_flows
 
-    validation_log.info('Comparing loaded Flow-By-Activity FlowAmount total to'
+    vLog.info('Comparing loaded Flow-By-Activity FlowAmount total to'
              'subset Flow-By-Sector FlowAmount total')
 
     # load source catalog
@@ -488,7 +488,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
                                        (df_merge['Location'] == j)].reset_index(drop=True)
             diff_per = df_merge_subset['Percent_difference'][0]
             if np.isnan(diff_per):
-                validation_log.info('The total FlowBySector FlowAmount for %s %s %s '
+                vLog.info('The total FlowBySector FlowAmount for %s %s %s '
                          'can not be calculated', source_name, activity_set, i)
                 continue
             # make reporting more manageable
@@ -499,16 +499,16 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
             # diff_units = df_merge_subset['FBS_unit'][0]
             if diff_per > 0:
-                validation_log.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
+                vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
                          'less than the total FlowByActivity FlowAmount',
                          source_name, activity_set, i, j, str(abs(diff_per)))
             elif diff_per < 0:
-                validation_log.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
+                vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
                          'more than the total FlowByActivity FlowAmount',
                          source_name, activity_set, i, j, str(abs(diff_per)))
 
         # save csv to output folder
-        validation_log.info('Save the comparison of FlowByActivity load to FlowBySector'
+        vLog.info('Save the comparison of FlowByActivity load to FlowBySector'
                  'total FlowAmounts for %s in output folder', activity_set)
         # output data at all sector lengths
         df_merge.to_csv(outputpath + "FlowBySectorMethodAnalysis/" +
@@ -517,7 +517,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
                         activity_set + ".csv", index=False)
 
     except:
-        validation_log.info('Error occured when comparing total FlowAmounts'
+        vLog.info('Error occured when comparing total FlowAmounts'
                  'for FlowByActivity and FlowBySector')
 
 
@@ -570,7 +570,7 @@ def check_for_nonetypes_in_sector_col(df):
     """
     # if datatypes are strings, return warning message
     if df['Sector'].isnull().any():
-        validation_log.warning("There are NoneType values in the 'Sector' column")
+        vLog.warning("There are NoneType values in the 'Sector' column")
     return df
 
 
@@ -582,7 +582,7 @@ def check_for_negative_flowamounts(df):
     """
     # return a warning if there are negative flowamount values
     if (df['FlowAmount'].values < 0).any():
-        validation_log.warning('There are negative FlowAmounts')
+        vLog.warning('There are negative FlowAmounts')
 
     return df
 
@@ -618,10 +618,10 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         ns_list = pd.concat(non_sectors_list, sort=False, ignore_index=True)
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
-        validation_log.debug('There are sectors that are not NAICS 2012 Codes')
-        validation_log.debug(non_sectors)
+        vLog.debug('There are sectors that are not NAICS 2012 Codes')
+        vLog.debug(non_sectors)
     else:
-        validation_log.debug('All sectors are NAICS 2012 Codes')
+        vLog.debug('All sectors are NAICS 2012 Codes')
 
     return non_sectors
 
@@ -691,7 +691,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
 
     # loop through the df headers and determine if value is not in crosswalk list
     if len(non_naics) != 0:
-        validation_log.debug('Checking if sectors represent a different'
+        vLog.debug('Checking if sectors represent a different'
                   'NAICS year, if so, replace with %s', sectorsourcename)
         for c in column_headers:
             # merge df with the melted sector crosswalk
@@ -706,13 +706,13 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
                    'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
             # drop columns
             df = df.drop(columns=[sectorsourcename, 'NAICS', 'allocation_ratio'])
-        validation_log.debug('Replaced NAICS with %s', sectorsourcename)
+        vLog.debug('Replaced NAICS with %s', sectorsourcename)
 
         # check if there are any sectors that are not in the naics 2012 crosswalk
-        validation_log.debug('Check again for non NAICS 2012 Codes')
+        vLog.debug('Check again for non NAICS 2012 Codes')
         nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
-            validation_log.debug('Dropping non-NAICS from dataframe')
+            vLog.debug('Dropping non-NAICS from dataframe')
             for c in column_headers:
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
@@ -733,7 +733,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
             activities_dropped = pd.unique(df_drop[['ActivityConsumedBy',
                                                     'ActivityProducedBy']].values.ravel('K'))
             activities_dropped = list(filter(lambda x: x is not None, activities_dropped))
-            validation_log.debug('Dropping rows where the Activity columns contain %s',
+            vLog.debug('Dropping rows where the Activity columns contain %s',
                       ', '.join(activities_dropped))
         df = df[~((df['SectorConsumedBy'].isnull()) &
                   (df['SectorProducedBy'].isnull()))].reset_index(drop=True)
@@ -771,9 +771,9 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
     if len(df_m) == 0:
-        validation_log.debug('No differences between dataframes')
+        vLog.debug('No differences between dataframes')
     else:
-        validation_log.debug('Differences exist between dataframes')
+        vLog.debug('Differences exist between dataframes')
         df_m = df_m.sort_values(['Location', 'SectorProducedBy',
                                  'SectorConsumedBy', 'Flowable',
                                  'Context', ]).reset_index(drop=True)
@@ -814,9 +814,9 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
         df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
 
         if len(df_m) == 0:
-            validation_log.info('No data loss between national level data and df subset')
+            vLog.info('No data loss between national level data and df subset')
         else:
-            validation_log.info('There are data differences between published national values'
+            vLog.info('There are data differences between published national values'
                      ' and dataframe subset, saving as csv')
             # save as csv
             df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" +
