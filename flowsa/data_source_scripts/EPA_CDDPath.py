@@ -80,7 +80,7 @@ def epa_cddpath_parse(**kwargs):
     df['Unit'] = 'short tons'
     df['FlowType'] = 'WASTE_FLOW'
     df['ActivityProducedBy'] = "Construction Activities"  # placeholder category
-    # df['Compartment'] = 'ground'  # confirm this
+    # df['Compartment'] = 'waste'  # confirm this
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, args['year'])
     df['Year'] = args['year']
