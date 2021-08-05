@@ -294,8 +294,8 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
 
         # merge fba with flows
         fba_mapped_df = pd.merge(fba, flowmapping,
-                                 left_on=["Flowable", "Context"],
-                                 right_on=["SourceFlowName", "SourceFlowContext"],
+                                 left_on=["SourceName", "Flowable", "Context", "Unit"],
+                                 right_on=["SourceListName", "SourceFlowName", "SourceFlowContext", "SourceUnit"],
                                  how=merge_type)
         fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] =\
             fba_mapped_df["TargetFlowName"]
