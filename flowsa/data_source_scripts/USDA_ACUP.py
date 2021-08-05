@@ -5,7 +5,7 @@
 import json
 import numpy as np
 import pandas as pd
-from flowsa.common import US_FIPS, withdrawn_keyword, abbrev_us_state
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, abbrev_us_state, log
 from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields, allocate_by_sector
 
 
@@ -62,7 +62,7 @@ def acup_call(**kwargs):
     try:
         df = pd.DataFrame(data=response_json["data"])
     except KeyError:
-        # log.info('No data exists for state')
+        log.info('No data exists for state')
         df = []
 
     return df
@@ -106,16 +106,20 @@ def acup_parse(**kwargs):
                                                 regex=True)  # not interested in all data from class_desc
 
     # rename columns to match flowbyactivity format
-    df = df.rename(columns={"Value": "FlowAmount", "unit_desc": "Unit",
-                            "year": "Year", "CV (%)": "Spread",
-                            "short_desc": "Description"})
+    df = df.rename(columns={"Value": "FlowAmount",
+                            "unit_desc": "Unit",
+                            "year": "Year",
+                            "CV (%)": "Spread",
+                            "short_desc": "Description"
+                            }
+                   )
     # drop remaining unused columns
     df = df.drop(columns=['class_desc', 'commodity_desc', 'domain_desc', 'state_fips_code', 'county_code',
                           'statisticcat_desc', 'prodn_practice_desc', 'domaincat_desc', 'util_practice_desc'])
     # modify contents of flowamount column, "D" is supressed data, "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
-    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
-    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df.loc[df['FlowAmount'] == "(NA)", 'FlowAmount'] = 0
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # USDA CoA 2017 states that (H) means CV >= 99.95, therefore replacing with 99.95 so can convert column to int
@@ -124,7 +128,7 @@ def acup_parse(**kwargs):
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
     df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
-    df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == "(D)", 'Spread'] = WITHDRAWN_KEYWORD
 
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
