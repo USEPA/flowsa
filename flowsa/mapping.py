@@ -255,6 +255,19 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     return fba_allocation_subset
 
 
+def convert_units_to_annual(df):
+    """
+    Convert data and units to annual flows
+    :param df: df with 'FlowAmount' and 'Unit' column
+    :return: df with annual FlowAmounts
+    """
+    # convert unit per day to year
+    df['FlowAmount'] = np.where(df['Unit'].str.contains('/d'), df['FlowAmount'] * 365, df['FlowAmount'])
+    df['Unit'] = df['Unit'].apply(lambda x: x.replace('/d', ""))
+
+    return df
+
+
 def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
     """
     Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
@@ -265,6 +278,9 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
     """
 
     from fedelemflowlist import get_flowmapping
+
+    # prior to mapping elementary flows, ensure all data are in an annual format
+    fba = convert_units_to_annual(fba)
 
     # rename columns to match FBS formatting
     fba = fba.rename(columns={"FlowName": 'Flowable',
