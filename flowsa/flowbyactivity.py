@@ -12,7 +12,7 @@ import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
-    convert_fba_unit, paths, rename_log_file
+    paths, rename_log_file
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
     dynamically_import_fxn
@@ -154,8 +154,6 @@ def process_data_frame(df, source, year, config):
     # add any missing columns of data and cast to appropriate data type
     log.info("Add any missing columns and check field datatypes")
     flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-    # modify flow units
-    flow_df = convert_fba_unit(flow_df)
     # sort df and reset index
     flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
                                    'FlowName', 'Compartment']).reset_index(drop=True)

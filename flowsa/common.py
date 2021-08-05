@@ -685,63 +685,6 @@ def call_country_code(country):
     return country_numeric_iso
 
 
-def convert_fba_unit(df):
-    """
-    Convert unit to standard
-    :param df: df, FBA flowbyactivity
-    :return: df, FBA with standarized units
-    """
-    # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
-    days_in_year = 365
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d',
-                                       df['FlowAmount'] * 1000 * days_in_year, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
-
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d',
-                                       df['FlowAmount'] * days_in_year, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
-
-    # Convert Land unit 'Thousand Acres' to 'Acres
-    acres_in_thousand_acres = 1000
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand Acres',
-                                       df['FlowAmount'] * acres_in_thousand_acres,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres', 'Acres', df['Unit'])
-
-    # Convert Energy unit "Quadrillion Btu" to MJ
-    mj_in_btu = .0010550559
-    # 1 Quad = .0010550559 x 10^15
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
-                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
-
-    # Convert Energy unit "Trillion Btu" to MJ
-    # 1 Tril = .0010550559 x 10^14
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
-                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
-
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year',
-                                       df['FlowAmount'] * 264.172, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
-
-    # Convert mass units (LB or TON) to kg
-    ton_to_kg = 907.185
-    lb_to_kg = 0.45359
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
-                                       df['FlowAmount'] * ton_to_kg,
-                                       df['FlowAmount'])
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
-                                       df['FlowAmount'] * lb_to_kg,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where((df['Unit'] == 'TON') | (df['Unit'] == 'LB'),
-                                 'kg', df['Unit'])
-
-    return df
-
-
 def rename_log_file(filename, fb_meta):
     """
     Rename the log file saved to local directory using df meta for df
