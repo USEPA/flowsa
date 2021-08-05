@@ -93,6 +93,10 @@ def harmonize_units(df):
     gallon_water_to_kg = 3.79  # rounded to match USGS_NWIS_WU mapping file on FEDEFL
     ac_ft_water_to_kg = 1233481.84
     acre_to_m2 = 4046.8564224
+    acres_in_thousand_acres = 1000
+    mj_in_btu = .0010550559
+    ton_to_kg = 907.185
+    lb_to_kg = 0.45359
 
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
@@ -134,6 +138,53 @@ def harmonize_units(df):
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal', 'kg', df['Unit'])
 
     # class = other, unit varies
+
+
+
+
+
+    # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d',
+                                       df['FlowAmount'] * 1000 * days_in_year, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d',
+                                       df['FlowAmount'] * days_in_year, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
+
+    # Convert Land unit 'Thousand Acres' to 'Acres
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand Acres',
+                                       df['FlowAmount'] * acres_in_thousand_acres,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres', 'Acres', df['Unit'])
+
+    # Convert Energy unit "Quadrillion Btu" to MJ
+    # 1 Quad = .0010550559 x 10^15
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
+
+    # Convert Energy unit "Trillion Btu" to MJ
+    # 1 Tril = .0010550559 x 10^14
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year',
+                                       df['FlowAmount'] * 264.172, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
+
+    # Convert mass units (LB or TON) to kg
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
+                                       df['FlowAmount'] * ton_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
+                                       df['FlowAmount'] * lb_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where((df['Unit'] == 'TON') | (df['Unit'] == 'LB'),
+                                 'kg', df['Unit'])
 
     return df
 
