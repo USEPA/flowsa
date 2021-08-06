@@ -15,6 +15,7 @@ import numpy as np
 from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, datapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+from flowsa.datachecks import compare_df_units
 
 
 def eia_mecs_URL_helper(**kwargs):
@@ -609,6 +610,8 @@ def determine_flows_requiring_disaggregation(df_load, attr, method, sector_colum
         dfn2[dfn2[sector_column].apply(lambda x: len(x) == 6)].reset_index(
             drop=True).sort_values([sector_column])
 
+    # check units
+    compare_df_units(dfn2, df_merged)
     # merge revised flowamounts back with modified original df
     df_to_allocate = dfn2.merge(df_merged, how='left')
     # replace FlowAmount with newly calculated FlowAmount,

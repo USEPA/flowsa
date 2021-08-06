@@ -18,6 +18,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.dataclean import harmonize_units, clean_df
 from flowsa.mapping import add_sectors_to_flowbyactivity
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
+from flowsa.datachecks import compare_df_units
 
 
 # Read pdf into list of DataFrame
@@ -96,6 +97,8 @@ def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
     # drop rows with flowamount = 0
     bmt = bmt[bmt['FlowAmount'] != 0]
 
+    # check on units of dfs before merge
+    compare_df_units(df, bmt)
     bh_df_revised = pd.merge(df, bmt[['FlowAmount', 'ActivityProducedBy', 'Location']],
                              left_on=['ActivityConsumedBy', 'Location'],
                              right_on=['ActivityProducedBy', 'Location']
@@ -140,6 +143,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs)
     bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector',
                                         'FlowAmount': 'HelperFlow'})
 
+    # check units before merge
+    compare_df_units(df_wsec, bls_wsec)
     # merge the two dfs
     df = pd.merge(df_wsec,
                   bls_wsec[['Location', 'Sector', 'HelperFlow']],

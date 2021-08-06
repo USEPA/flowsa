@@ -17,6 +17,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, allocate_by_sect
 from flowsa.dataclean import harmonize_units, replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
 from flowsa.mapping import add_sectors_to_flowbyactivity
+from flowsa.datachecks import compare_df_units
 
 
 def CoA_Cropland_URL_helper(**kwargs):
@@ -373,6 +374,8 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         # drop 000 in location
         df_f = df_f.assign(Location=df_f['Location'].apply(lambda x: x[0:2]))
 
+        # check units before merge
+        compare_df_units(p, df_f)
         # merge the coa pastureland data with land in farm data
         df = p.merge(df_f[[sector_column, 'Location', 'FlowAmountRatio']], how='left',
                      left_on="Location_tmp", right_on="Location")
@@ -459,6 +462,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     # tmp drop Nonetypes
     naics4 = replace_NoneType_with_empty_cells(naics4)
 
+    # check units in prep for merge
+    compare_df_units(crop, naics4)
     # for loop through naics lengths to determine naics 4 and 5 digits to disaggregate
     for i in range(4, 6):
         # subset df to sectors with length = i and length = i + 1

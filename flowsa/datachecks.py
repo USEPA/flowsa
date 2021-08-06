@@ -454,6 +454,8 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
     # subset/agg dfs
     col_subset = ['Class', 'FlowAmount', 'Unit', 'Context', 'Location', 'LocationSystem']
     group_cols = ['Class', 'Unit', 'Context', 'Location', 'LocationSystem']
+    # check units
+    compare_df_units(fba, fbs_load)
     # fba
     fba = fba[col_subset]
     fba_agg = aggregator(fba, group_cols).reset_index(drop=True)
@@ -763,6 +765,8 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     merge_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
        'SectorSourceName', 'Context', 'Location', 'LocationSystem',
        'Unit', 'FlowType', 'Year', 'MetaSources']
+    # check units
+    compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
                     df2[merge_cols + ['FlowAmount_fbs2']],
                     how='outer')
@@ -806,6 +810,8 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
         merge_cols = ['Class', 'SourceName', 'FlowName', 'Unit',
                       'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
                       'Compartment', 'Location', 'LocationSystem', 'Year']
+        # comapare units
+        compare_df_units(nat, sub2)
         df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
                         sub2[merge_cols + ['FlowAmount_sub']],
                         how='outer')

@@ -14,6 +14,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
     load_bea_crosswalk, call_country_code, WITHDRAWN_KEYWORD
 from flowsa.dataclean import harmonize_units
+from flowsa.datachecks import compare_df_units
 
 
 def sc_call(**kwargs):
@@ -123,6 +124,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
     gdp = gdp.rename(columns={"FlowAmount": "CanDollar"})
 
+    # check units before merge
+    compare_df_units(df, gdp)
     # merge df
     df_m = pd.merge(df, gdp[['CanDollar', 'ActivityProducedBy']],
                     how='left', left_on='ActivityConsumedBy',
@@ -156,6 +159,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
     cw = cw[cw['NAICS_2012_Code'].apply(lambda x:
                                         len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)
 
+    # compare df units
+    compare_df_units(us_gdp_load, cw)
     # merge
     us_gdp = pd.merge(us_gdp_load, cw, how='left',
                       left_on='ActivityProducedBy', right_on='BEA_2012_Detail_Code')

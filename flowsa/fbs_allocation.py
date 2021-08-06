@@ -80,6 +80,9 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     :param aset_names: list, activity set names
     :return: df, allocated activity names
     """
+
+    from flowsa.datachecks import compare_df_units
+
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
     if 'allocation_flow' in attr:
@@ -153,6 +156,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     # merge fba df w/flow allocation dataset
     log.info("Merge %s and subset of %s", k, attr['allocation_source'])
     for i, j in activity_fields.items():
+        # check units
+        compare_df_units(flow_subset_mapped, flow_allocation)
         flow_subset_mapped = flow_subset_mapped.merge(
             flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']],
             left_on=['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]],
@@ -187,6 +192,7 @@ def allocation_helper(df_w_sector, attr, method, v):
     :param v: dictionary, the datasource parameters
     :return: df, with modified fba allocation values
     """
+    from flowsa.datachecks import compare_df_units
 
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
@@ -235,6 +241,7 @@ def allocation_helper(df_w_sector, attr, method, v):
             helper_allocation['Location'].apply(lambda x: x[0:2])
         df_w_sector.loc[:, 'Location_tmp'] = df_w_sector['Location'].apply(lambda x: x[0:2])
         # merge_columns.append('Location_tmp')
+        compare_df_units(df_w_sector, helper_allocation)
         modified_fba_allocation =\
             df_w_sector.merge(helper_allocation[['Location_tmp', 'Sector', 'HelperFlow']],
                               how='left',
@@ -243,11 +250,14 @@ def allocation_helper(df_w_sector, attr, method, v):
         modified_fba_allocation = modified_fba_allocation.drop(columns=['Location_tmp'])
     elif (attr['helper_from_scale'] == 'national') and \
             (attr['allocation_from_scale'] != 'national'):
+        compare_df_units(df_w_sector, helper_allocation)
         modified_fba_allocation = df_w_sector.merge(helper_allocation[['Sector', 'HelperFlow']],
                                                     how='left',
                                                     left_on=[sector_col_to_merge],
                                                     right_on=['Sector'])
     else:
+
+        compare_df_units(df_w_sector, helper_allocation)
         modified_fba_allocation =\
             df_w_sector.merge(helper_allocation[['Location', 'Sector', 'HelperFlow']],
                               left_on=['Location', sector_col_to_merge],
@@ -262,6 +272,7 @@ def allocation_helper(df_w_sector, attr, method, v):
             helper_allocation[helper_allocation['Location'] ==
                               US_FIPS].reset_index(drop=True)
         replacement_values = replacement_values.rename(columns={"HelperFlow": 'ReplacementValue'})
+        compare_df_units(modified_fba_allocation, replacement_values)
         modified_fba_allocation = modified_fba_allocation.merge(
             replacement_values[['Sector', 'ReplacementValue']], how='left')
         modified_fba_allocation.loc[:, 'HelperFlow'] = modified_fba_allocation['HelperFlow'].fillna(
