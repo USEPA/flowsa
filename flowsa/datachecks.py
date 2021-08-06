@@ -822,3 +822,18 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
             df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" +
                         method_name + '_' + sourcename +
                         "_geographic_comparison_" + activity_set + ".csv", index=False)
+
+
+def compare_df_units(df1_load, df2_load):
+    """
+    Determine what units are in each df prior to merge
+    :param df1_load:
+    :param df2_load:
+    :return:
+    """
+    df1 = df1_load['Unit'].drop_duplicates().tolist()
+    df2 = df2_load['Unit'].drop_duplicates().tolist()
+    # todo: change to logvalidation when merge with validation branch
+
+    #todo: modify so only prints out to main screen if units are different
+    log.info('Merging df with %s and df with %s units', df1, df2)
