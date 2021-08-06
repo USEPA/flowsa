@@ -526,7 +526,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
         # subset the df to include in the validation log
         # only print rows where the percent difference does not round to 0
-        df_v = df_merge[df_merge['Percent_difference'].apply(lambda x: 0 < round(x, 3) < 0)].reset_index(drop=True)
+        df_v = df_merge[df_merge['Percent_difference'].apply(lambda x: round(x, 3) != 0)].reset_index(drop=True)
 
         # log output
         vLog.info('Save the comparison of FlowByActivity load to FlowBySector'
