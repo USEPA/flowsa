@@ -266,14 +266,14 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
 
     # create column of sector lengths
     flow_alloc_df =\
-        flow_alloc_df_load.assign(slength=flow_alloc_df_load['Sector'].str.len())
+        flow_alloc_df_load.assign(SectorLength=flow_alloc_df_load['Sector'].str.len())
     # subset df
-    flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'slength', 'FlowAmountRatio']]
+    flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'SectorLength', 'FlowAmountRatio']]
     # sum the flow amount ratios by location and sector length
-    flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'slength'],
+    flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'SectorLength'],
                                             as_index=False)[["FlowAmountRatio"]].agg("sum")
     # not interested in sector length > 6
-    flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['slength'] <= 6]
+    flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['SectorLength'] <= 6]
 
     ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
     if ua_count1 > 0:
@@ -297,7 +297,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
 
     # subset the df to include in the validation log
     # keep onlyrows of specified sector length
-    df_v = flow_alloc_df3[flow_alloc_df3['slength'] ==
+    df_v = flow_alloc_df3[flow_alloc_df3['SectorLength'] ==
                           sector_level_key[config['target_sector_level']
                           ]].reset_index(drop=True)
     # only print rows where flowamount ratio is less than 1 (round flowamountratio)
@@ -562,13 +562,13 @@ def check_summation_at_sector_lengths(df):
     # rename columns and clean up df
     df2 = df2[~df2['Sector'].isnull()]
 
-    df2 = df2.assign(slength=len(df2['Sector']))
-    # df2 = df2.assign(slength=df2['Sector'].apply(lambda x: len(x)))
+    df2 = df2.assign(SectorLength=len(df2['Sector']))
+    # df2 = df2.assign(SectorLength=df2['Sector'].apply(lambda x: len(x)))
 
     # sum flowamounts by sector length
     denom_df = df2.copy()
     denom_df.loc[:, 'Denominator'] = denom_df.groupby(['Location',
-                                                       'slength'])['FlowAmount'].transform('sum')
+                                                       'SectorLength'])['FlowAmount'].transform('sum')
 
     summed_df = denom_df.drop(columns=['Sector',
                                        'FlowAmount']).drop_duplicates().reset_index(drop=True)
@@ -579,7 +579,7 @@ def check_summation_at_sector_lengths(df):
     # percent of total accounted for
     summed_df = summed_df.assign(percentOfTot=summed_df['Denominator']/maxv)
 
-    summed_df = summed_df.sort_values(['slength']).reset_index(drop=True)
+    summed_df = summed_df.sort_values(['SectorLength']).reset_index(drop=True)
 
     return summed_df
 
