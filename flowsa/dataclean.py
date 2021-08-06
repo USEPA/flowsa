@@ -101,12 +101,9 @@ def harmonize_units(df):
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * acre_to_m2,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['ACRES', 'Acres']), df['FlowAmount'] * acre_to_m2,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRES', 'm2', df['Unit'])
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Acres', df['FlowAmount'] * acre_to_m2,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Acres', 'm2', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['ACRES', 'Acres']), 'm2', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
                                        df['FlowAmount'] * sq_ft_to_sq_m_multiplier * 1000000,
@@ -142,22 +139,6 @@ def harmonize_units(df):
 
 
 
-
-    # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d',
-                                       df['FlowAmount'] * 1000 * days_in_year, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
-
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d',
-                                       df['FlowAmount'] * days_in_year, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
-
-    # Convert Land unit 'Thousand Acres' to 'Acres
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand Acres',
-                                       df['FlowAmount'] * acres_in_thousand_acres,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres', 'Acres', df['Unit'])
-
     # Convert Energy unit "Quadrillion Btu" to MJ
     # 1 Quad = .0010550559 x 10^15
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
@@ -183,7 +164,7 @@ def harmonize_units(df):
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
                                        df['FlowAmount'] * lb_to_kg,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where((df['Unit'] == 'TON') | (df['Unit'] == 'LB'),
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['TON', 'LB']),
                                  'kg', df['Unit'])
 
     return df
