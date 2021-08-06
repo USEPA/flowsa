@@ -258,8 +258,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
     Check for issues with the flow allocation ratios
     :param flow_alloc_df_load: df, includes 'FlowAmountRatio' column
     :param activity_set: str, activity set
-    :param source_name: str, source name
-    :param method_name: str, method name
+    :param config: dictionary, method yaml
     :return: print out information regarding allocation ratios,
              save csv of results to local directory
     """
@@ -324,7 +323,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
     :param fbs_load: df, final FBS df
     :param activity_set: str, activity set
     :param source_name: str, source name
-    :param method_name: str, method name
+    :param config: dictionary, method yaml
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
