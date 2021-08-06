@@ -839,7 +839,13 @@ def compare_df_units(df1_load, df2_load):
     """
     df1 = df1_load['Unit'].drop_duplicates().tolist()
     df2 = df2_load['Unit'].drop_duplicates().tolist()
-    # todo: change to logvalidation when merge with validation branch
 
-    #todo: modify so only prints out to main screen if units are different
-    log.info('Merging df with %s and df with %s units', df1, df2)
+    # identify differnces between unit lists
+    list_comp = list(set(df1) ^ set(df2))
+    # if list is not empty, print warning that units are different
+    if list_comp:
+        log.info('Merging df with %s and df with %s units', df1, df2)
+    # else, if list is empty, only print comparision in detailed validation log
+    # todo: comment in/change to logvalidation when merge with validation branch
+    # else:
+    #     log.info('Units in merged dataframe are the same')
