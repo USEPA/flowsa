@@ -37,6 +37,7 @@ def census_vip_call(**kwargs):
     df_private = df.iloc[index_1+1:index_2, :]
     df_public = df.iloc[index_2+1:, :]
     
+    #TODO  fix setting with copy warning
     df_public['Type of Construction:'] = 'Public, ' + df_public['Type of Construction:']
     df_private['Type of Construction:'] = 'Private, ' + df_private['Type of Construction:']
     
@@ -57,6 +58,7 @@ def census_vip_parse(**kwargs):
     df = pd.concat(dataframe_list, sort=False)
     
     # parse data
+    # millions of dollars
     
     return df
 
