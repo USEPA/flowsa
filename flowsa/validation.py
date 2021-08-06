@@ -253,7 +253,7 @@ def check_if_losing_sector_data(df, target_sector_level):
     return df_w_lost_data
 
 
-def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, method_name):
+def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
     """
     Check for issues with the flow allocation ratios
     :param flow_alloc_df_load: df, includes 'FlowAmountRatio' column
@@ -295,15 +295,28 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, source_name, metho
         vLog.info('There are %s instances at a sector length of 6 or less where the allocation'
                  ' ratio for a location and sector length is > 1.01', str(ua_count4))
 
+    # subset the df to include in the validation log
+    # keep onlyrows of specified sector length
+    df_v = flow_alloc_df3[flow_alloc_df3['slength'] ==
+                          sector_level_key[config['target_sector_level']
+                          ]].reset_index(drop=True)
+    # only print rows where flowamount ratio is less than 1 (round flowamountratio)
+    df_v = df_v[df_v['FlowAmountRatio'].apply(lambda x: round(x, 3) < 1)].reset_index(drop=True)
+
     # save data to validation log
-    vLog.info('Save the summary table of flow allocation ratios for each sector length for'
-             '%s in validation log', activity_set)
-    vLogDetailed.info('Flow allocation ratios for %s: '
-                      '\n {}'.format(flow_alloc_df3.to_string()), activity_set)
+    vLog.info('Save the summary table of flow allocation ratios for each sector length for '
+              '%s in validation log', activity_set)
+    # if df not empty, print, if empty, print string
+    if df_v.empty:
+        vLogDetailed.info('Flow allocation ratios for %s all round to 1', activity_set)
+
+    else:
+        vLogDetailed.info('Flow allocation ratios for %s: '
+                          '\n {}'.format(df_v.to_string()), activity_set)
 
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
-                                                          activity_set, source_name, method_name):
+                                                          activity_set, source_name, config):
     """
     Function to compare the loaded flowbyactivity with the final flowbysector at all sector levels
     output, checking for data loss
@@ -391,15 +404,27 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
             vLog.info('There are %s combinations of flowable/context/sector length where the '
                      'flowbyactivity to flowbysector ratio is > 1.01', str(oa_count2))
 
+        # subset the df to include in the validation log
+        # keep onlyrows of specified sector length
+        df_v = df_merge[df_merge['SectorLength'] ==
+                        sector_level_key[config['target_sector_level']
+                        ]].reset_index(drop=True)
+        # only print rows where flowamount ratio is less than 1 (round flowamountratio)
+        df_v = df_v[df_v['Ratio'].apply(lambda x: round(x, 3) < 1)].reset_index(drop=True)
+
         # save csv to validation log
         vLog.info('Save the comparison of FlowByActivity load to FlowBySector ratios '
                  'for %s in validation log', activity_set)
-        vLogDetailed.info('Comparison of FlowByActivity load to FlowBySector ratios for %s: '
-                          '\n {}'.format(df_merge.to_string()), activity_set)
+        # if df not empty, print, if empty, print string
+        if df_v.empty:
+            vLogDetailed.info('Ratios for %s all round to 1', activity_set)
+        else:
+            vLogDetailed.info('Comparison of FlowByActivity load to FlowBySector ratios for %s: '
+                              '\n {}'.format(df_v.to_string()), activity_set)
 
 
 def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
-                                           source_name, method_name, attr, method, mapping_files):
+                                           source_name, attr, method, mapping_files):
     """
     Function to compare the loaded flowbyactivity total with the final flowbysector output total
     for the target sector level
@@ -499,12 +524,20 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
                          'more than the total FlowByActivity FlowAmount',
                          source_name, activity_set, i, j, str(abs(diff_per)))
 
+        # subset the df to include in the validation log
+        # only print rows where the percent difference does not round to 0
+        df_v = df_merge[df_merge['Percent_difference'].apply(lambda x: 0 < round(x, 3) < 0)].reset_index(drop=True)
+
         # log output
         vLog.info('Save the comparison of FlowByActivity load to FlowBySector'
                   'total FlowAmounts for %s in validation log file', activity_set)
-        vLogDetailed.info('Comparison of FBA load to FBS total'
+        # if df not empty, print, if empty, print string
+        if df_v.empty:
+            vLogDetailed.info('Percent difference for %s all round to 0', activity_set)
+        else:
+            vLogDetailed.info('Comparison of FBA load to FBS total'
                           'FlowAmounts for %s: '
-                          '\n {}'.format(df_merge.to_string()), activity_set)
+                          '\n {}'.format(df_v.to_string()), activity_set)
     except:
         vLog.info('Error occured when comparing total FlowAmounts'
                  'for FlowByActivity and FlowBySector')

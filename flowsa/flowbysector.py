@@ -261,7 +261,7 @@ def main(**kwargs):
 
                 # compare flowbysector with flowbyactivity
                 check_for_differences_between_fba_load_and_fbs_output(
-                    flow_subset_mapped, fbs_agg_2, aset, k, method_name)
+                    flow_subset_mapped, fbs_agg_2, aset, k, method)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
@@ -287,7 +287,7 @@ def main(**kwargs):
 
                 # save comparison of FBA total to FBS total for an activity set
                 compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
-                                                       method_name, attr, method, mapping_files)
+                                                       attr, method, mapping_files)
 
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)
