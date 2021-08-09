@@ -874,13 +874,12 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     # determine if any addtional parameters required to load a Flow-By-Activity
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
-    if 'allocation_flow' in kwargs:
+    if 'flowclass' in kwargs:
         fba_dict['flowclass'] = kwargs['flowclass']
     if 'geographic_level' in kwargs:
-        fba_dict['compartment_subset'] = kwargs['geographic_level']
-
+        fba_dict['geographic_level'] = kwargs['geographic_level']
     # load the allocation FBA
-    fba = flowsa.getFlowByActivity(datasource, year, **fba_dict)
+    fba = flowsa.getFlowByActivity(datasource, year, **fba_dict).reset_index(drop=True)
     # ensure df loaded correctly/has correct dtypes
     fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
     # convert to standardized units
