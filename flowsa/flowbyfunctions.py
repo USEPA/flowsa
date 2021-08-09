@@ -16,7 +16,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
     find_true_file_path
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
-    replace_NoneType_with_empty_cells, harmonize_units
+    replace_NoneType_with_empty_cells, standardize_units
 from esupy.dqi import get_weighted_average
 
 
@@ -884,6 +884,6 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     # ensure df loaded correctly/has correct dtypes
     fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
     # convert to standardized units
-    fba = harmonize_units(fba)
+    fba = standardize_units(fba)
 
     return fba

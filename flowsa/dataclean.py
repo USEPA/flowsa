@@ -28,7 +28,7 @@ def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
         df = df.drop(columns='Description')
     if flowbyfields == 'flow_by_sector_fields':
         # harmonize units across dfs
-        df = harmonize_units(df)
+        df = standardize_units(df)
     # if datatypes are strings, ensure that Null values remain NoneType
     df = replace_strings_with_NoneType(df)
 
@@ -80,7 +80,7 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
     return flowby_partial_df
 
 
-def harmonize_units(df):
+def standardize_units(df):
     """
     Convert unit to standard
     Timeframe is over one year
