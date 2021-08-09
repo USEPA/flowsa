@@ -395,31 +395,3 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                                                                      sourcename=fba_sourcename)
 
     return fba_wsec
-
-
-def load_fba_w_standardized_units(datasource, year, **kwargs):
-    """
-    Standardize how a FBA is loaded for allocation purposes when generating a FBS.
-    Important to immediately convert the df units to standardized units.
-    :param datasource: string, FBA source name
-    :param year: int, year of data
-    :param kwargs: optional parameters include flowclass, geographic_level,
-           and download_if_missing
-    :return: fba df with standardized units
-    """
-    # determine if any addtional parameters required to load a Flow-By-Activity
-    # add parameters to dictionary if exist in method yaml
-    fba_dict = {}
-    if 'allocation_flow' in kwargs:
-        fba_dict['flowclass'] = kwargs['flowclass']
-    if 'geographic_level' in kwargs:
-        fba_dict['compartment_subset'] = kwargs['geographic_level']
-
-    # load the allocation FBA
-    fba = flowsa.getFlowByActivity(datasource, year, **fba_dict)
-    # ensure df loaded correctly/has correct dtypes
-    fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
-    # convert to standardized units
-    fba = harmonize_units(fba)
-
-    return fba
