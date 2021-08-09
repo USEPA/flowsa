@@ -8,17 +8,17 @@ Functions to allocate data using additional data sources
 import logging as log
 import numpy as np
 import pandas as pd
-import flowsa
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, \
-    fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict
+    fba_mapped_default_grouping_fields
 from flowsa.datachecks import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
     sector_aggregation, sector_disaggregation, allocate_by_sector, \
-    proportional_allocation_by_location_and_activity, subset_df_by_geoscale
+    proportional_allocation_by_location_and_activity, subset_df_by_geoscale, \
+    load_fba_w_standardized_units
 from flowsa.mapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
-from flowsa.dataclean import replace_strings_with_NoneType, clean_df, harmonize_units
+from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.datachecks import check_if_data_exists_at_geoscale
 
 
@@ -356,9 +356,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     """
 
     log.info("Loading allocation flowbyactivity %s for year %s", fba_sourcename, str(df_year))
-    fba = flowsa.getFlowByActivity(datasource=fba_sourcename, year=df_year, flowclass=flowclass)
-    fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
-    fba = harmonize_units(fba)
+    fba = load_fba_w_standardized_units(datasource=fba_sourcename, year=df_year, flowclass=flowclass)
 
     # check if allocation data exists at specified geoscale to use
     log.info("Checking if allocation data exists at the %s level", geoscale_from)
