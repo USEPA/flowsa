@@ -425,7 +425,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
 
     # load the relevant state level harvested cropland by naics
     naics = load_fba_w_standardized_units(datasource="USDA_CoA_Cropland_NAICS", year=year,
-                                          flowclass='Land').reset_index(drop=True)
+                                          flowclass='Land')
     # subset the harvested cropland by naics
     naics = naics[naics['FlowName'] == 'AG LAND, CROPLAND, HARVESTED'].reset_index(drop=True)
     # drop the activities that include '&'
