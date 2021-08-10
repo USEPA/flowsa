@@ -7,7 +7,7 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from flowsa.common import datapath, SECTOR_SOURCE_NAME, activity_fields, load_source_catalog, \
-    load_sector_crosswalk, log, fba_activity_fields
+    load_sector_crosswalk, log, fba_activity_fields, flow_by_activity_mapped_fields
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
 from flowsa.datachecks import replace_naics_w_naics_from_another_year
 
@@ -279,14 +279,24 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
 
     from fedelemflowlist import get_flowmapping
 
+    # test
+    fba = flows.copy()
+    from_fba_source = mapping_files
+
     # prior to mapping elementary flows, ensure all data are in an annual format
     fba = convert_units_to_annual(fba)
 
-    # rename columns to match FBS formatting
-    fba = fba.rename(columns={"FlowName": 'Flowable',
-                              "Compartment": "Context"})
+    # create copies of columns
+    fba['Flowable'] = fba['FlowName']
+    fba['Context'] = fba['Compartment']
 
-    flowmapping = get_flowmapping(from_fba_source)
+    # Default field dictionary for mapping
+    field_dict = {'FlowableName': 'Flowable',
+                  'FlowableUnit': 'Unit',
+                  'FlowableContext': 'Context',
+                  'FlowableQuantity': 'FlowAmount',
+                  'UUID': 'FlowUUID'}
+
     mapping_fields = ["SourceListName",
                       "SourceFlowName",
                       "SourceFlowContext",
@@ -294,11 +304,16 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
                       "ConversionFactor",
                       "TargetFlowName",
                       "TargetFlowContext",
-                      "TargetUnit"]
+                      "TargetUnit",
+                      "TargetFlowUUID"]
+
+    # get flowmapping
+    flowmapping = get_flowmapping(from_fba_source)
+
     if flowmapping.empty:
         log.warning("No mapping file in fedelemflowlist found for %s", ' '.join(from_fba_source))
         # return the original df but with columns renamed so can continue working on the FBS
-        fba_mapped_df = fba.copy()
+        mapped_df = fba.copy()
     else:
         flowmapping = flowmapping[mapping_fields]
 
@@ -309,23 +324,30 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
             merge_type = 'left'
 
         # merge fba with flows
-        fba_mapped_df = pd.merge(fba, flowmapping,
-                                 left_on=["SourceName", "Flowable", "Context", "Unit"],
-                                 right_on=["SourceListName", "SourceFlowName", "SourceFlowContext", "SourceUnit"],
-                                 how=merge_type)
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Flowable"] =\
-            fba_mapped_df["TargetFlowName"]
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Context"] =\
-            fba_mapped_df["TargetFlowContext"]
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "Unit"] =\
-            fba_mapped_df["TargetUnit"]
-        fba_mapped_df.loc[fba_mapped_df["TargetFlowName"].notnull(), "FlowAmount"] = \
-            fba_mapped_df["FlowAmount"] * fba_mapped_df["ConversionFactor"]
+        mapped_df = pd.merge(fba, flowmapping,
+                             left_on=[field_dict['FlowableName'],
+                                      field_dict['FlowableContext'],
+                                      field_dict['FlowableUnit']],
+                             right_on=["SourceFlowName",
+                                       "SourceFlowContext",
+                                       "SourceUnit"],
+                             how=merge_type)
 
-        # drop
-        fba_mapped_df = fba_mapped_df.drop(columns=mapping_fields)
+        criteria = mapped_df['TargetFlowName'].notnull()
 
-    return fba_mapped_df
+        mapped_df.loc[criteria, field_dict['FlowableName']] = mapped_df["TargetFlowName"]
+        mapped_df.loc[criteria, field_dict['FlowableContext']] = mapped_df["TargetFlowContext"]
+        mapped_df.loc[criteria, field_dict['FlowableUnit']] = mapped_df["TargetUnit"]
+        mapped_df.loc[criteria, field_dict["FlowableQuantity"]] = \
+            mapped_df[field_dict["FlowableQuantity"]] * mapped_df["ConversionFactor"]
+        mapped_df.loc[criteria, field_dict['UUID']] = mapped_df["TargetFlowUUID"]
+
+        # drop mapping fields
+        mapped_df = mapped_df.drop(columns=mapping_fields)
+        # sort columns
+        mapped_df = mapped_df[flow_by_activity_mapped_fields.keys()]
+
+    return mapped_df
 
 
 def get_sector_list(sector_level):
