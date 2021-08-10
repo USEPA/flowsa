@@ -279,10 +279,6 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
 
     from fedelemflowlist import get_flowmapping
 
-    # test
-    fba = flows.copy()
-    from_fba_source = mapping_files
-
     # prior to mapping elementary flows, ensure all data are in an annual format
     fba = convert_units_to_annual(fba)
 
