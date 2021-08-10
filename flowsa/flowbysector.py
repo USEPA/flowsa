@@ -131,6 +131,15 @@ def main(**kwargs):
             flows = clean_df(flows, flow_by_activity_fields,
                              fba_fill_na_dict, drop_description=False)
 
+            # map df to elementary flows, changing units
+            log.info("Mapping flows in %s to federal elementary flow list", k)
+            if 'fedefl_mapping' in v:
+                mapping_files = v['fedefl_mapping']
+            else:
+                mapping_files = k
+
+            flows = map_elementary_flows(flows, mapping_files)
+
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
                 log.info("Cleaning up %s FlowByActivity", k)
@@ -186,38 +195,29 @@ def main(**kwargs):
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
                                                                                attr=attr)
 
-                # map df to elementary flows
-                log.info("Mapping flows in %s to federal elementary flow list", k)
-                if 'fedefl_mapping' in v:
-                    mapping_files = v['fedefl_mapping']
-                else:
-                    mapping_files = k
-
-                flow_subset_mapped = map_elementary_flows(flow_subset_wsec, mapping_files)
-
                 # clean up mapped fba with sectors, if specified in yaml
-                if "clean_mapped_fba_w_sec_df_fxn" in v:
-                    log.info("Cleaning up %s FlowByActivity with sectors", k)
-                    flow_subset_mapped = \
-                        dynamically_import_fxn(k, v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped,
-                                                                                      attr, method)
+                # if "clean_mapped_fba_w_sec_df_fxn" in v:
+                #     log.info("Cleaning up %s FlowByActivity with sectors", k)
+                #     flow_subset_mapped = \
+                #         dynamically_import_fxn(k, v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped,
+                #                                                                       attr, method)
                 # rename SourceName to MetaSources
-                flow_subset_mapped = flow_subset_mapped.\
+                flow_subset_wsec = flow_subset_wsec.\
                     rename(columns={'SourceName': 'MetaSources'})
 
                 # if allocation method is "direct", then no need to create alloc ratios,
                 # else need to use allocation
                 # dataframe to create sector allocation ratios
                 if attr['allocation_method'] == 'direct':
-                    fbs = direct_allocation_method(flow_subset_mapped, k, names, method)
+                    fbs = direct_allocation_method(flow_subset_wsec, k, names, method)
                 # if allocation method for an activity set requires a specific
                 # function due to the complicated nature
                 # of the allocation, call on function here
                 elif attr['allocation_method'] == 'allocation_function':
-                    fbs = function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list)
+                    fbs = function_allocation_method(flow_subset_wsec, k, names, attr, fbs_list)
                 else:
                     fbs =\
-                        dataset_allocation_method(flow_subset_mapped, attr,
+                        dataset_allocation_method(flow_subset_wsec, attr,
                                                   names, method, k, v, aset,
                                                   method_name, aset_names)
 
@@ -261,7 +261,7 @@ def main(**kwargs):
 
                 # compare flowbysector with flowbyactivity
                 check_for_differences_between_fba_load_and_fbs_output(
-                    flow_subset_mapped, fbs_agg_2, aset, k, method_name)
+                    flow_subset_wsec, fbs_agg_2, aset, k, method_name)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
