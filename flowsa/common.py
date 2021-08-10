@@ -248,27 +248,28 @@ def load_functions_loading_fbas_config():
     return config
 
 
-flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
-                           'SourceName': [{'dtype': 'str'}, {'required': True}],
-                           'FlowName': [{'dtype': 'str'}, {'required': True}],
-                           'FlowAmount': [{'dtype': 'float'}, {'required': True}],
-                           'Unit': [{'dtype': 'str'}, {'required': True}],
-                           'FlowType': [{'dtype': 'str'}, {'required': True}],
-                           'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
-                           'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
-                           'Compartment': [{'dtype': 'str'}, {'required': False}],
-                           'Location': [{'dtype': 'str'}, {'required': True}],
-                           'LocationSystem': [{'dtype': 'str'}, {'required': True}],
-                           'Year': [{'dtype': 'int'}, {'required': True}],
-                           'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
-                           'Spread': [{'dtype': 'float'}, {'required': False}],
-                           'DistributionType': [{'dtype': 'str'}, {'required': False}],
-                           'Min': [{'dtype': 'float'}, {'required': False}],
-                           'Max': [{'dtype': 'float'}, {'required': False}],
-                           'DataReliability': [{'dtype': 'float'}, {'required': True}],
-                           'DataCollection': [{'dtype': 'float'}, {'required': True}],
-                           'Description': [{'dtype': 'str'}, {'required': True}]
-                           }
+flow_by_activity_fields = \
+    {'Class': [{'dtype': 'str'}, {'required': True}],
+     'SourceName': [{'dtype': 'str'}, {'required': True}],
+     'FlowName': [{'dtype': 'str'}, {'required': True}],
+     'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+     'Unit': [{'dtype': 'str'}, {'required': True}],
+     'FlowType': [{'dtype': 'str'}, {'required': True}],
+     'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'Compartment': [{'dtype': 'str'}, {'required': False}],
+     'Location': [{'dtype': 'str'}, {'required': True}],
+     'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+     'Year': [{'dtype': 'int'}, {'required': True}],
+     'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+     'Spread': [{'dtype': 'float'}, {'required': False}],
+     'DistributionType': [{'dtype': 'str'}, {'required': False}],
+     'Min': [{'dtype': 'float'}, {'required': False}],
+     'Max': [{'dtype': 'float'}, {'required': False}],
+     'DataReliability': [{'dtype': 'float'}, {'required': True}],
+     'DataCollection': [{'dtype': 'float'}, {'required': True}],
+     'Description': [{'dtype': 'str'}, {'required': True}]
+     }
 
 flow_by_sector_fields = \
     {'Flowable': [{'dtype': 'str'}, {'required': True}],
@@ -325,18 +326,20 @@ flow_by_sector_collapsed_fields = \
      'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
      'MetaSources': [{'dtype': 'str'}, {'required': True}]
-                                   }
+     }
 
-flow_by_activity_wsec_mapped_fields = \
+flow_by_activity_mapped_fields = \
     {'Class': [{'dtype': 'str'}, {'required': True}],
      'SourceName': [{'dtype': 'str'}, {'required': True}],
      'FlowName': [{'dtype': 'str'}, {'required': True}],
+     'Flowable': [{'dtype': 'str'}, {'required': True}],
      'FlowAmount': [{'dtype': 'float'}, {'required': True}],
      'Unit': [{'dtype': 'str'}, {'required': True}],
      'FlowType': [{'dtype': 'str'}, {'required': True}],
      'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
      'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
      'Compartment': [{'dtype': 'str'}, {'required': False}],
+     'Context': [{'dtype': 'str'}, {'required': False}],
      'Location': [{'dtype': 'str'}, {'required': True}],
      'LocationSystem': [{'dtype': 'str'}, {'required': True}],
      'Year': [{'dtype': 'int'}, {'required': True}],
@@ -347,7 +350,34 @@ flow_by_activity_wsec_mapped_fields = \
      'Max': [{'dtype': 'float'}, {'required': False}],
      'DataReliability': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
-     # 'Description': [{'dtype': 'str'}, {'required': True}],
+     'Description': [{'dtype': 'str'}, {'required': True}],
+     'FlowUUID': [{'dtype': 'str'}, {'required': True}]
+     }
+
+flow_by_activity_mapped_wsec_fields = \
+    {'Class': [{'dtype': 'str'}, {'required': True}],
+     'SourceName': [{'dtype': 'str'}, {'required': True}],
+     'FlowName': [{'dtype': 'str'}, {'required': True}],
+     'Flowable': [{'dtype': 'str'}, {'required': True}],
+     'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+     'Unit': [{'dtype': 'str'}, {'required': True}],
+     'FlowType': [{'dtype': 'str'}, {'required': True}],
+     'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'Compartment': [{'dtype': 'str'}, {'required': False}],
+     'Context': [{'dtype': 'str'}, {'required': False}],
+     'Location': [{'dtype': 'str'}, {'required': True}],
+     'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+     'Year': [{'dtype': 'int'}, {'required': True}],
+     'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+     'Spread': [{'dtype': 'float'}, {'required': False}],
+     'DistributionType': [{'dtype': 'str'}, {'required': False}],
+     'Min': [{'dtype': 'float'}, {'required': False}],
+     'Max': [{'dtype': 'float'}, {'required': False}],
+     'DataReliability': [{'dtype': 'float'}, {'required': True}],
+     'DataCollection': [{'dtype': 'float'}, {'required': True}],
+     'Description': [{'dtype': 'str'}, {'required': True}],
+     'FlowUUID': [{'dtype': 'str'}, {'required': True}],
      'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
@@ -410,7 +440,7 @@ fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 fbs_grouping_fields_w_activities = fbs_default_grouping_fields + \
                                    (['ActivityProducedBy', 'ActivityConsumedBy'])
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
-fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_wsec_fields)
 
 
 def read_stored_FIPS(year='2015'):
