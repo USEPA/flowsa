@@ -140,6 +140,10 @@ def main(**kwargs):
 
             flows = map_elementary_flows(flows, mapping_files)
 
+            # subset out the mapping information, add back in after cleaning up FBA data
+            flows_mapped = flows[['FlowName', 'Flowable', 'Compartment', 'Context', 'FlowUUID']]
+            flows = flows[flow_by_activity_fields]
+
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
                 log.info("Cleaning up %s FlowByActivity", k)
@@ -193,17 +197,14 @@ def main(**kwargs):
                     log.info("Cleaning up %s FlowByActivity with sectors", k)
                     flow_subset_wsec = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
-                                                                               attr=attr)
+                                                                               attr=attr, method=method)
 
-                # clean up mapped fba with sectors, if specified in yaml
-                # if "clean_mapped_fba_w_sec_df_fxn" in v:
-                #     log.info("Cleaning up %s FlowByActivity with sectors", k)
-                #     flow_subset_mapped = \
-                #         dynamically_import_fxn(k, v["clean_mapped_fba_w_sec_df_fxn"])(flow_subset_mapped,
-                #                                                                       attr, method)
-                # rename SourceName to MetaSources
+                # add mapping columns back
+                flow_subset_wsec = flow_subset_wsec.merge(flows_mapped)
+                # rename SourceName to MetaSources and drop columns
                 flow_subset_wsec = flow_subset_wsec.\
-                    rename(columns={'SourceName': 'MetaSources'})
+                    rename(columns={'SourceName': 'MetaSources'}).\
+                    drop(columns=['FlowName', 'Compartment'])
 
                 # if allocation method is "direct", then no need to create alloc ratios,
                 # else need to use allocation
