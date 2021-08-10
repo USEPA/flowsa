@@ -481,9 +481,6 @@ def mecs_land_clean_allocation_mapped_fba_w_sec(df, attr, method):
     :return: df, with additional column flagging rows where sectors should be disaggregated
     """
 
-    # test
-    # df = flow_subset_wsec.copy()
-
     sector_column = 'SectorConsumedBy'
     df = determine_flows_requiring_disaggregation(df, attr, method, sector_column)
 
@@ -513,21 +510,11 @@ def determine_flows_requiring_disaggregation(df_load, attr, method, sector_colum
 
     from flowsa.mapping import add_sectors_to_flowbyactivity
 
-    # test
-    # df_load = df.copy()
-
     df_load = replace_NoneType_with_empty_cells(df_load)
     # drop rows where there is no value in sector column, which might occur if
     # sector-like activities have a "-" in them
     df_load = df_load[df_load[sector_column] != '']
 
-    # modify to work with mapped vs unmapped dfs
-    # if 'Compartment' in df_load:
-    #     c_col = 'Compartment'
-    #     flow_col = 'FlowName'
-    # else:
-    #     c_col = 'Context'
-    #     flow_col = 'Flowable'
     # determine activity column
     if sector_column == 'SectorConsumedBy':
         activity_column = 'ActivityConsumedBy'

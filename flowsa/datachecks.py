@@ -425,7 +425,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
     from flowsa.mapping import map_elementary_flows
 
-    log.info('Comparing loaded Flow-By-Activity FlowAmount total to'
+    log.info('Comparing loaded Flow-By-Activity FlowAmount total to '
              'subset Flow-By-Sector FlowAmount total')
 
     # load source catalog
