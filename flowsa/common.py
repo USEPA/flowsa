@@ -354,18 +354,16 @@ flow_by_activity_mapped_fields = \
      'FlowUUID': [{'dtype': 'str'}, {'required': True}]
      }
 
-flow_by_activity_mapped_wsec_fields = \
+flow_by_activity_wsec_fields = \
     {'Class': [{'dtype': 'str'}, {'required': True}],
      'SourceName': [{'dtype': 'str'}, {'required': True}],
      'FlowName': [{'dtype': 'str'}, {'required': True}],
-     'Flowable': [{'dtype': 'str'}, {'required': True}],
      'FlowAmount': [{'dtype': 'float'}, {'required': True}],
      'Unit': [{'dtype': 'str'}, {'required': True}],
      'FlowType': [{'dtype': 'str'}, {'required': True}],
      'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
      'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
      'Compartment': [{'dtype': 'str'}, {'required': False}],
-     'Context': [{'dtype': 'str'}, {'required': False}],
      'Location': [{'dtype': 'str'}, {'required': True}],
      'LocationSystem': [{'dtype': 'str'}, {'required': True}],
      'Year': [{'dtype': 'int'}, {'required': True}],
@@ -377,7 +375,6 @@ flow_by_activity_mapped_wsec_fields = \
      'DataReliability': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
      'Description': [{'dtype': 'str'}, {'required': True}],
-     'FlowUUID': [{'dtype': 'str'}, {'required': True}],
      'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
@@ -440,7 +437,7 @@ fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 fbs_grouping_fields_w_activities = fbs_default_grouping_fields + \
                                    (['ActivityProducedBy', 'ActivityConsumedBy'])
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
-fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_wsec_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_fields)
 
 
 def read_stored_FIPS(year='2015'):
