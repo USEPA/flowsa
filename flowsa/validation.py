@@ -271,8 +271,10 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
     # sum the flow amount ratios by location and sector length
     flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'SectorLength'],
                                             as_index=False)[["FlowAmountRatio"]].agg("sum")
-    # not interested in sector length > 6
-    flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['SectorLength'] <= 6]
+    # keep only rows of specified sector length
+    flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['SectorLength'] ==
+                          sector_level_key[config['target_sector_level']
+                          ]].reset_index(drop=True)
 
     ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
     if ua_count1 > 0:
@@ -294,13 +296,10 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
         vLog.info('There are %s instances at a sector length of 6 or less where the allocation'
                  ' ratio for a location and sector length is > 1.01', str(ua_count4))
 
-    # subset the df to include in the validation log
-    # keep onlyrows of specified sector length
-    df_v = flow_alloc_df3[flow_alloc_df3['SectorLength'] ==
-                          sector_level_key[config['target_sector_level']
-                          ]].reset_index(drop=True)
+    # include only the df subset by sector length to include in the validation log
     # only print rows where flowamount ratio is less than 1 (round flowamountratio)
-    df_v = df_v[df_v['FlowAmountRatio'].apply(lambda x: round(x, 3) < 1)].reset_index(drop=True)
+    df_v = flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'].apply(
+        lambda x: round(x, 3) < 1)].reset_index(drop=True)
 
     # save data to validation log
     vLog.info('Save the summary table of flow allocation ratios for each sector length for '
@@ -380,10 +379,10 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                              'FlowType', 'Context', 'Location', 'LocationSystem', 'Year',
                              'SectorLength', 'FBA_amount', 'FBS_amount', 'Ratio']]
 
-        # only report difference at sector length <= 6
-        comparison = df_merge[df_merge['SectorLength'] <= 6]
-
-        # todo: address the duplicated rows/data that occur for non-naics household sector length
+        # keep onlyrows of specified sector length
+        comparison = df_merge[df_merge['SectorLength'] ==
+                              sector_level_key[config['target_sector_level']
+                              ]].reset_index(drop=True)
 
         ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
         if ua_count1 > 0:
@@ -403,13 +402,9 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
             vLog.info('There are %s combinations of flowable/context/sector length where the '
                      'flowbyactivity to flowbysector ratio is > 1.01', str(oa_count2))
 
-        # subset the df to include in the validation log
-        # keep onlyrows of specified sector length
-        df_v = df_merge[df_merge['SectorLength'] ==
-                        sector_level_key[config['target_sector_level']
-                        ]].reset_index(drop=True)
+        # include df subset in the validation log
         # only print rows where flowamount ratio is less than 1 (round flowamountratio)
-        df_v = df_v[df_v['Ratio'].apply(lambda x: round(x, 3) < 1)].reset_index(drop=True)
+        df_v = comparison[comparison['Ratio'].apply(lambda x: round(x, 3) < 1)].reset_index(drop=True)
 
         # save csv to validation log
         vLog.info('Save the comparison of FlowByActivity load to FlowBySector ratios '
