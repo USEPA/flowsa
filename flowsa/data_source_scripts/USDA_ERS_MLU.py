@@ -1,4 +1,4 @@
-# USDA_CoA_Cropland.py (flowsa)
+# USDA_ERS_MLU.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
