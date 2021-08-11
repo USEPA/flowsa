@@ -68,20 +68,33 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname):
+def getFlowBySector(methodname, download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Loads stored FlowBySector output or generates it if it doesn't exist, then loads
     :param methodname: string, Name of an available method for the given class
+    :param download_if_missing: bool, if True will attempt to load from remote server
+        prior to generating if file not found locally
     :return: dataframe in flow by sector format
     """
+    from esupy.processed_data_mgmt import download_from_remote
+
     fbs_meta = set_fb_meta(methodname, "FlowBySector")
     fbs = load_preprocessed_output(fbs_meta, paths)
+
+    # Remote download
+    if fbs is None and download_if_missing:
+        log.info('%s not found in %s, downloading from remote source',
+                 methodname, fbsoutputpath)
+        download_from_remote(fbs_meta, paths)
+        fbs = load_preprocessed_output(fbs_meta, paths)
+
+    # If remote download not specified and no FBS, generate the FBS
     if fbs is None:
         log.info('%s not found in %s, running functions to generate FBS', methodname, fbsoutputpath)
         # Generate the fba
         flowsa.flowbysector.main(method=methodname)
         # Now load the fba
-        fbs = load_preprocessed_output(fbs_meta,paths)
+        fbs = load_preprocessed_output(fbs_meta, paths)
         if fbs is None:
             log.error('getFlowBySector failed, FBS not found')
         else:
