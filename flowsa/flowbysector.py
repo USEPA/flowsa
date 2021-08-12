@@ -184,7 +184,7 @@ def main(**kwargs):
                     log.info("Cleaning up %s FlowByActivity with sectors", k)
                     flow_subset_wsec = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
-                                                                               attr=attr)
+                                                                               attr=attr, sourcename=k)
 
                 # map df to elementary flows
                 log.info("Mapping flows in %s to federal elementary flow list", k)
