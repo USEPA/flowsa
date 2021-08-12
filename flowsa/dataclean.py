@@ -5,8 +5,8 @@
 Common functions to clean and harmonize dataframes
 """
 
-import logging as log
 import numpy as np
+from flowsa.common import log
 
 
 def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):

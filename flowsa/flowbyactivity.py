@@ -8,6 +8,7 @@ source (yaml file name) as parameters
 EX: --year 2015 --source USGS_NWIS_WU
 """
 
+import requests
 import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
@@ -105,12 +106,20 @@ def call_urls(url_list, args, config):
     :param config: dictionary, FBA yaml
     :return: list, dfs to concat and parse
     """
+    # start requests session
+    s = requests.Session()
+    # identify if url request requires cookies set
+    if 'allow_http_request_cookies' in config:
+        set_cookies = 'yes'
+    else:
+        set_cookies = 'no'
 
+    # create dataframes list by iterating through url list
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
             log.info("Calling %s", url)
-            r = make_http_request(url)
+            r = make_http_request(url, requests_session=s, set_cookies=set_cookies)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
                 df = dynamically_import_fxn(args['source'], config["call_response_fxn"])(url=url, r=r, args=args)

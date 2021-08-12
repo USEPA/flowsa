@@ -6,13 +6,12 @@ Public API for flowsa
 For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/format%20specs
 """
 
-import logging as log
 from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath,\
-    DEFAULT_DOWNLOAD_IF_MISSING
+    DEFAULT_DOWNLOAD_IF_MISSING, log
 from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
-from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
+from flowsa.validation import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography

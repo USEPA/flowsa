@@ -5,21 +5,21 @@
 Functions to allocate data using additional data sources
 """
 
-import logging as log
+import sys
 import numpy as np
 import pandas as pd
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
-    fba_activity_fields, fbs_activity_fields, \
-    fba_mapped_default_grouping_fields
-from flowsa.datachecks import check_if_losing_sector_data, check_allocation_ratios, \
+    fba_activity_fields, fbs_activity_fields, log, \
+    fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict
+from flowsa.validation import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
     sector_aggregation, sector_disaggregation, allocate_by_sector, \
     proportional_allocation_by_location_and_activity, subset_df_by_geoscale, \
     load_fba_w_standardized_units
 from flowsa.mapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
-from flowsa.dataclean import replace_strings_with_NoneType
-from flowsa.datachecks import check_if_data_exists_at_geoscale
+from flowsa.dataclean import replace_strings_with_NoneType, clean_df, harmonize_units
+from flowsa.validation import check_if_data_exists_at_geoscale
 
 
 def direct_allocation_method(flow_subset_mapped, k, names, method):
@@ -137,7 +137,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     flow_allocation = collapse_activity_fields(flow_allocation)
 
     # check for issues with allocation ratios
-    check_allocation_ratios(flow_allocation, aset, k, method_name)
+    check_allocation_ratios(flow_allocation, aset, method)
 
     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
     # aren't in list

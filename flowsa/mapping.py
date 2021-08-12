@@ -9,7 +9,7 @@ import numpy as np
 from flowsa.common import datapath, SECTOR_SOURCE_NAME, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, fba_activity_fields, flow_by_activity_mapped_fields
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
-from flowsa.datachecks import replace_naics_w_naics_from_another_year
+from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
 def get_activitytosector_mapping(source):

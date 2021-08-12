@@ -39,7 +39,7 @@ from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, 
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
-from flowsa.datachecks import check_if_losing_sector_data,\
+from flowsa.validation import check_if_losing_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year
@@ -262,7 +262,7 @@ def main(**kwargs):
 
                 # compare flowbysector with flowbyactivity
                 check_for_differences_between_fba_load_and_fbs_output(
-                    flow_subset_wsec, fbs_agg_2, aset, k, method_name)
+                    flow_subset_wsec, fbs_agg_2, aset, k, method)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
@@ -288,7 +288,7 @@ def main(**kwargs):
 
                 # save comparison of FBA total to FBS total for an activity set
                 compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
-                                                       method_name, attr, method, mapping_files)
+                                                       attr, method, mapping_files)
 
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)

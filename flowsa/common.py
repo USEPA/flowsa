@@ -7,7 +7,7 @@
 import shutil
 import sys
 import os
-import logging as log
+import logging
 import yaml
 import requests
 import requests_ftp
@@ -19,12 +19,7 @@ from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-PKG_VERSION_NUMBER = '0.2.1'
-
-log.basicConfig(level=log.DEBUG,
-                format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S',
-                stream=sys.stdout)
+PKG_VERSION_NUMBER = '0.2'
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -55,22 +50,82 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
              '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
-# setup log file handler
+
+# define 4 logs, one for general information, one for major validation logs that are also included
+# in the gerneral info log, one for very specific validation that is only included in the validation log,
+# and a console printout that includes general and validation, but not detailed validation
 create_paths_if_missing(logoutputpath)
-fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
-fh.setLevel(log.DEBUG)
-formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
-                          datefmt='%Y-%m-%d %H:%M:%S')
-fh.setFormatter(formatter)
-ch = log.StreamHandler(stream=sys.stdout)
-ch.setLevel(log.INFO)
+
+# format for logging .txt generated
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
+                              datefmt='%Y-%m-%d %H:%M:%S')
+
+# create loggers
+# general logger
+log = logging.getLogger('allLog')
+log.setLevel(logging.DEBUG)
+log.propagate=False
+# log.propagate=False
+# general validation logger
+vLog = logging.getLogger('validationLog')
+vLog.setLevel(logging.DEBUG)
+vLog.propagate=False
+# detailed validation logger
+vLogDetailed = logging.getLogger('validationLogDetailed')
+vLogDetailed.setLevel(logging.DEBUG)
+vLogDetailed.propagate=False
+
+# create handlers
+# create handler for overall logger
+log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
+log_fh.setFormatter(formatter)
+# create handler for general validation information
+vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
+vLog_fh.setFormatter(formatter)
+# create console handler
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.INFO)
 ch.setFormatter(formatter)
-for hdlr in log.getLogger('').handlers[:]:
-    log.getLogger('').removeHandler(hdlr)
-log.getLogger('').addHandler(fh)
-log.getLogger('').addHandler(ch)
+
+# add handlers to various loggers
+# general logger
+log.addHandler(ch) # print to console
+log.addHandler(log_fh)
+vLog.addHandler(log_fh)
+# validation logger
+vLog.addHandler(ch) # print to console
+vLog.addHandler(vLog_fh)
+vLogDetailed.addHandler(vLog_fh)
 
 
+def rename_log_file(filename, fb_meta):
+    """
+    Rename the log file saved to local directory using df meta for df
+    :param filename: str, name of dataset
+    :param fb_meta: metadata for parquet
+    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
+    :return: modified log file name
+    """
+    # original log file name - all log statements
+    log_file = f'{logoutputpath}{"flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
+                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
+    # original log file name - validation
+    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}_v' \
+                   f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
+
+# metadata
 pkg = pkg_resources.get_distribution("flowsa")
 GIT_HASH = get_git_hash()
 GIT_HASH_LONG = get_git_hash('long')
@@ -123,15 +178,25 @@ def load_api_key(api_source):
     return key
 
 
-def make_http_request(url):
+def make_http_request(url, **kwargs):
     """
     Makes http request using requests library
     :param url: URL to query
     :return: request Object
     """
+    if 'requests_session' in kwargs:
+        s = kwargs['requests_session']
+    else:
+        s = requests
+
     r = []
     try:
-        r = requests.get(url)
+        r = s.get(url) #requests.get(url)
+        # determine if require request.post to set cookies
+        if 'set_cookies' in kwargs:
+            if kwargs['set_cookies'] == 'yes':
+                cookies = dict(r.cookies)
+                r = s.post(url, verify=True, cookies=cookies)
     except requests.exceptions.InvalidSchema:  # if url is ftp rather than http
         requests_ftp.monkeypatch_session()
         r = requests.Session().get(url)
@@ -714,23 +779,61 @@ def call_country_code(country):
     return country_numeric_iso
 
 
-def rename_log_file(filename, fb_meta):
+def convert_fba_unit(df):
     """
-    Rename the log file saved to local directory using df meta for df
-    :param filename: str, name of dataset
-    :param fb_meta: metadata for parquet
-    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
-    :return: modified log file name
+    Convert unit to standard
+    :param df: df, FBA flowbyactivity
+    :return: df, FBA with standarized units
     """
-    # original log file name
-    log_file = f'{logoutputpath}{"flowsa.log"}'
-    # generate new log name
-    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
-                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file already exists)
-    shutil.copy(log_file, new_log_name)
+    # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
+    days_in_year = 365
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d',
+                                       df['FlowAmount'] * 1000 * days_in_year, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d',
+                                       df['FlowAmount'] * days_in_year, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
+
+    # Convert Land unit 'Thousand Acres' to 'Acres
+    acres_in_thousand_acres = 1000
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand Acres',
+                                       df['FlowAmount'] * acres_in_thousand_acres,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres', 'Acres', df['Unit'])
+
+    # Convert Energy unit "Quadrillion Btu" to MJ
+    mj_in_btu = .0010550559
+    # 1 Quad = .0010550559 x 10^15
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
+
+    # Convert Energy unit "Trillion Btu" to MJ
+    # 1 Tril = .0010550559 x 10^14
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year',
+                                       df['FlowAmount'] * 264.172, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
+
+    # Convert mass units (LB or TON) to kg
+    ton_to_kg = 907.185
+    lb_to_kg = 0.45359
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
+                                       df['FlowAmount'] * ton_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
+                                       df['FlowAmount'] * lb_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where((df['Unit'] == 'TON') | (df['Unit'] == 'LB'),
+                                 'kg', df['Unit'])
+
+    return df
 
 
 def find_true_file_path(filedirectory, filename, extension):
@@ -741,7 +844,7 @@ def find_true_file_path(filedirectory, filename, extension):
     :param filedirectory: string, path to directory
     :param filename: string, name of original file searching for
     :param extension: string, type of file, such as "yaml" or "py"
-    :return:
+    :return: string, corrected file path name
     """
     # if a file does not exist modify file name, dropping ext after last underscore
     if os.path.exists(f"{filedirectory}{filename}.{extension}") is False:

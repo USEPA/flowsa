@@ -18,9 +18,8 @@ from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.mapping import map_elementary_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk
-from flowsa.datachecks import replace_naics_w_naics_from_another_year
+from flowsa.validation import replace_naics_w_naics_from_another_year
 from esupy.dqi import get_weighted_average
-
 
 def stewicombo_to_sector(yaml_load):
     """
@@ -68,11 +67,11 @@ def stewicombo_to_sector(yaml_load):
                                                filter_for_LCI=True,
                                                remove_overlap=True,
                                                compartments=yaml_load['compartments'])
-    
+
     if df is None:
         ## Inventories not found for stewicombo, return empty FBS
         return None
-    
+
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
     inventory_list = list(yaml_load['inventory_dict'].keys())
@@ -391,7 +390,7 @@ def naics_expansion(facility_NAICS):
 
 def check_for_missing_sector_data(df, target_sector_level):
     """
-    Modeled after datachecks.py check_if_losing_sector_data
+    Modeled after validation.py check_if_losing_sector_data
     Allocates flow amount equally across child NAICS when parent NAICS is not target_level
     :param df: df
     :param target_sector_level: str, final sector level of FBS (ex. NAICS_6)
@@ -457,7 +456,7 @@ def check_for_missing_sector_data(df, target_sector_level):
 def add_stewi_metadata(inventory_dict):
     """
     Access stewi metadata for generating FBS metdata file
-    :param inventory_dict: a dictionary of inventory types and years (e.g., 
+    :param inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
     :return meta: combined dictionary of metadata from each inventory
     """
