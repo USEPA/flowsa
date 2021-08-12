@@ -723,7 +723,6 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
                                    'DataCollection', 'Description')
         # list of column headers to group aggregation by
         groupby_cols = [e for e in df.columns.values.tolist() if e not in possible_column_headers]
-        # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
     # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
