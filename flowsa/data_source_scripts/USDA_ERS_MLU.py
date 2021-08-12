@@ -18,7 +18,7 @@ from flowsa.values_from_literature import get_area_of_rural_land_occupied_by_hou
     get_area_of_urban_land_occupied_by_houses_2013, \
     get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
-from flowsa.datachecks import compare_df_units
+from flowsa.validation import compare_df_units
 
 
 def mlu_call(**kwargs):

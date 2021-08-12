@@ -18,7 +18,7 @@ from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_
     proportional_allocation_by_location_and_activity, subset_df_by_geoscale, \
     load_fba_w_standardized_units
 from flowsa.mapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
-from flowsa.dataclean import replace_strings_with_NoneType, clean_df, harmonize_units
+from flowsa.dataclean import replace_strings_with_NoneType, clean_df
 from flowsa.validation import check_if_data_exists_at_geoscale
 
 
@@ -80,7 +80,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     :return: df, allocated activity names
     """
 
-    from flowsa.datachecks import compare_df_units
+    from flowsa.validation import compare_df_units
 
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
@@ -191,7 +191,7 @@ def allocation_helper(df_w_sector, attr, method, v):
     :param v: dictionary, the datasource parameters
     :return: df, with modified fba allocation values
     """
-    from flowsa.datachecks import compare_df_units
+    from flowsa.validation import compare_df_units
 
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}

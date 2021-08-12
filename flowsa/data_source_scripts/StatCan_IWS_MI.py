@@ -13,7 +13,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, aggregator,\
     load_fba_w_standardized_units
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
     load_bea_crosswalk, call_country_code, WITHDRAWN_KEYWORD
-from flowsa.datachecks import compare_df_units
+from flowsa.validation import compare_df_units
 
 
 def sc_call(**kwargs):

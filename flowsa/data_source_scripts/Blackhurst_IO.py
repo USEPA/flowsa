@@ -17,7 +17,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
 from flowsa.mapping import add_sectors_to_flowbyactivity
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
-from flowsa.datachecks import compare_df_units
+from flowsa.validation import compare_df_units
 
 
 # Read pdf into list of DataFrame

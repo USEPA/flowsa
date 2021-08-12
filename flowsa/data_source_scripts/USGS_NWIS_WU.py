@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first_letter, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.datachecks import compare_df_units
+from flowsa.validation import compare_df_units
 
 def usgs_URL_helper(**kwargs):
     """

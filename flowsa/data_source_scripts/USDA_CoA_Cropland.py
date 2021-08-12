@@ -18,7 +18,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, allocate_by_sect
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
 from flowsa.mapping import add_sectors_to_flowbyactivity
-from flowsa.datachecks import compare_df_units
+from flowsa.validation import compare_df_units
 
 
 def CoA_Cropland_URL_helper(**kwargs):
