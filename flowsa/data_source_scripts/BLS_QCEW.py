@@ -275,6 +275,6 @@ def bls_clean_allocation_fba_w_sec_state(df_w_sec, **kwargs):
     # estimate the suppressed data by equally allocating parent naics to child
     log.info('Estimating suppressed data by equally allocating '
              'parent NAICS to child NAICS')
-    df = estimate_suppressed_data(df, 'SectorProducedBy', 3, kwargs['sourcename'])
+    df = estimate_suppressed_data(df, 'SectorProducedBy', 2, kwargs['sourcename'])
 
     return df
