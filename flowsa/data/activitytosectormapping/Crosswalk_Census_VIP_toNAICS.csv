@@ -1,0 +1,29 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+Census_VIP,"Private, Residential",NAICS_2012_Code,2361,I
+Census_VIP,"Public, Residential",NAICS_2012_Code,2361,I
+Census_VIP,"Private, Nonresidential - Manufacturing",NAICS_2012_Code,236210,I
+Census_VIP,"Private, Nonresidential - Amusement and recreation",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Commercial",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Educational",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Health care",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Lodging",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Office",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Public safety",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Religious",NAICS_2012_Code,236220,I
+Census_VIP,"Public, Nonresidential - Amusement and recreation",NAICS_2012_Code,236220,I
+Census_VIP,"Public, Nonresidential - Commercial",NAICS_2012_Code,236220,I
+Census_VIP,"Public, Nonresidential - Educational",NAICS_2012_Code,236220,I
+Census_VIP,"Public, Nonresidential - Health care",NAICS_2012_Code,236220,I
+Census_VIP,"Public, Nonresidential - Office",NAICS_2012_Code,236220,I
+Census_VIP,"Public, Nonresidential - Public safety",NAICS_2012_Code,236220,I
+Census_VIP,"Private, Nonresidential - Sewage and waste disposal",NAICS_2012_Code,237110,I
+Census_VIP,"Private, Nonresidential - Water supply",NAICS_2012_Code,237110,I
+Census_VIP,"Public, Nonresidential - Sewage and waste disposal",NAICS_2012_Code,237110,I
+Census_VIP,"Public, Nonresidential - Water supply",NAICS_2012_Code,237110,I
+Census_VIP,"Private, Nonresidential - Communication",NAICS_2012_Code,237130,I
+Census_VIP,"Private, Nonresidential - Power",NAICS_2012_Code,237130,I
+Census_VIP,"Public, Nonresidential - Power",NAICS_2012_Code,237130,I
+Census_VIP,"Public, Nonresidential - Highway and street",NAICS_2012_Code,237310,I
+Census_VIP,"Private, Nonresidential - Transportation",NAICS_2012_Code,237990,I
+Census_VIP,"Public, Nonresidential - Conservation and development",NAICS_2012_Code,237990,I
+Census_VIP,"Public, Nonresidential - Transportation",NAICS_2012_Code,237990,I
