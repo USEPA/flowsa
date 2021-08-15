@@ -11,7 +11,7 @@ import io
 import pandas as pd
 #import numpy as np
 #import flowsa
-from flowsa.common import US_FIPS #, flow_by_activity_fields, fba_fill_na_dict
+from flowsa.common import US_FIPS, externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system #, \
 #     proportional_allocation_by_location_and_activity, filter_by_geoscale
 # from flowsa.dataclean import harmonize_units, clean_df
@@ -79,7 +79,6 @@ def epa_cddpath_parse(**kwargs):
     df['SourceName'] = 'EPA_CDDPath'  # confirm this
     df['Unit'] = 'short tons'
     df['FlowType'] = 'WASTE_FLOW'
-    df['ActivityProducedBy'] = "Construction Activities"  # placeholder category
     # df['Compartment'] = 'waste'  # confirm this
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, args['year'])
@@ -89,3 +88,14 @@ def epa_cddpath_parse(**kwargs):
     df['DataCollection'] = 5  # confirm this
 
     return df
+
+
+def write_cdd_path_from_csv(**kwargs):
+    file = 'EPA_2016_Table5_CNHWCGenerationbySource_Extracted_UsingCNHWCPathNames.csv'
+    df = pd.read_csv(externaldatapath + file, header = 0,
+                     names = ['FlowName', 'ActivityProducedBy',
+                              'FlowAmount'])
+    return df
+
+        
+    
