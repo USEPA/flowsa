@@ -75,7 +75,7 @@ def epa_cddpath_parse(**kwargs):
     df = pd.concat(dataframe_list, sort=False)
     
     # hardcode
-    df['Class'] = 'Land'  # confirm this
+    df['Class'] = 'Other'  # confirm this
     df['SourceName'] = 'EPA_CDDPath'  # confirm this
     df['Unit'] = 'short tons'
     df['FlowType'] = 'WASTE_FLOW'

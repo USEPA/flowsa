@@ -67,6 +67,11 @@ Census_PEP_Population:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: ""
+Census_VIP:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: ""
 EIA_CBECS_Land:
   class: Land
   sector-like_activities: False
@@ -93,6 +98,12 @@ EIA_MECS_Land:
 EIA_MER:
   class:
   - Energy
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "disaggregated"
+EPA_CDDPath:
+  class:
+    - Other
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
