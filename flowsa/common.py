@@ -441,7 +441,6 @@ flow_by_activity_wsec_fields = \
      'Max': [{'dtype': 'float'}, {'required': False}],
      'DataReliability': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
-     'Description': [{'dtype': 'str'}, {'required': True}],
      'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
