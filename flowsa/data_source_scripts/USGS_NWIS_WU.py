@@ -549,12 +549,14 @@ def check_golf_and_crop_irrigation_totals(df_load):
     return df_w_missing_crop
 
 
-def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
+def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
     """
     Call on functions to modify the fba with sectors df before being allocated to sectors
     Used in flowbysector.py
     :param df_wsec: an FBA dataframe with sectors
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: includes "method", a parameter required in other 'clean_fba_w_sec_df_fxn'
+           function calls when building a FBS
     :return: df, FBA modified
     """
 
