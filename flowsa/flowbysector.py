@@ -138,16 +138,17 @@ def main(**kwargs):
             else:
                 mapping_files = k
 
-            flows = map_elementary_flows(flows, mapping_files)
+            flows_mapped = map_elementary_flows(flows, mapping_files)
 
             # subset out the mapping information, add back in after cleaning up FBA data
-            flows_mapped = flows[['FlowName', 'Flowable', 'Compartment', 'Context', 'FlowUUID']]
-            flows = flows[flow_by_activity_fields]
+            mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',
+                                      'Context', 'FlowUUID']].drop_duplicates()
+            flows_fba = flows_mapped[flow_by_activity_fields]
 
             # clean up fba, if specified in yaml
             if v["clean_fba_df_fxn"] != 'None':
                 log.info("Cleaning up %s FlowByActivity", k)
-                flows = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows)
+                flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_fba)
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
@@ -170,8 +171,9 @@ def main(**kwargs):
                 log.debug("Preparing to handle subset of activities: %s", ', '.join(map(str, names)))
                 # subset fba data by activity
                 flows_subset =\
-                    flows[(flows[fba_activity_fields[0]].isin(names)) |
-                          (flows[fba_activity_fields[1]].isin(names))].reset_index(drop=True)
+                    flows_fba[(flows_fba[fba_activity_fields[0]].isin(names)) |
+                              (flows_fba[fba_activity_fields[1]].isin(names)
+                               )].reset_index(drop=True)
 
                 # if activities are sector-like, check sectors are valid
                 if load_source_catalog()[k]['sector-like_activities']:
@@ -188,37 +190,39 @@ def main(**kwargs):
 
                 # Add sectors to df activity, depending on level of specified sector aggregation
                 log.info("Adding sectors to %s", k)
-                flow_subset_wsec =\
+                flows_subset_wsec =\
                     add_sectors_to_flowbyactivity(flows_subset_geo,
                                                   sectorsourcename=method['target_sector_source'],
                                                   allocationmethod=attr['allocation_method'])
                 # clean up fba with sectors, if specified in yaml
                 if v["clean_fba_w_sec_df_fxn"] != 'None':
                     log.info("Cleaning up %s FlowByActivity with sectors", k)
-                    flow_subset_wsec = \
-                        dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
+                    flows_subset_wsec = \
+                        dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
                                                                                attr=attr, method=method)
 
                 # add mapping columns back
-                flow_subset_wsec = flow_subset_wsec.merge(flows_mapped)
+                log.info('Readding the mapped data columns')
+                flows_mapped_wsec = flows_subset_wsec.merge(mapped_df)
                 # rename SourceName to MetaSources and drop columns
-                flow_subset_wsec = flow_subset_wsec.\
+                flows_mapped_wsec = flows_mapped_wsec.\
                     rename(columns={'SourceName': 'MetaSources'}).\
                     drop(columns=['FlowName', 'Compartment'])
 
                 # if allocation method is "direct", then no need to create alloc ratios,
                 # else need to use allocation
                 # dataframe to create sector allocation ratios
+                log.info('Allocating Data')
                 if attr['allocation_method'] == 'direct':
-                    fbs = direct_allocation_method(flow_subset_wsec, k, names, method)
+                    fbs = direct_allocation_method(flows_mapped_wsec, k, names, method)
                 # if allocation method for an activity set requires a specific
                 # function due to the complicated nature
                 # of the allocation, call on function here
                 elif attr['allocation_method'] == 'allocation_function':
-                    fbs = function_allocation_method(flow_subset_wsec, k, names, attr, fbs_list)
+                    fbs = function_allocation_method(flows_mapped_wsec, k, names, attr, fbs_list)
                 else:
                     fbs =\
-                        dataset_allocation_method(flow_subset_wsec, attr,
+                        dataset_allocation_method(flows_mapped_wsec, attr,
                                                   names, method, k, v, aset,
                                                   method_name, aset_names)
 
