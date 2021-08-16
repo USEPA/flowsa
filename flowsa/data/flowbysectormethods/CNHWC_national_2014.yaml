@@ -9,6 +9,7 @@ source_names:
     year: 2014
     clean_fba_df_fxn: None
     clean_fba_w_sec_df_fxn: None
+    mfl_mapping: 'EPA_CDDPath'
     activity_sets:
       activity_set_1:
         names:
