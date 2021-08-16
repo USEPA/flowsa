@@ -260,12 +260,14 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
 def map_flows(fba, from_fba_source, flow_type = 'ELEMENTARY_FLOW', 
                          keep_unmapped_rows=False):
     """
-    Applies mapping from fedelemflowlist or material flow list to convert flows to 
+    Applies mapping via esupy from fedelemflowlist or material flow list to convert flows to 
     standardized list of flows
-    :param fba: df flow-by-activity or flow-by-sector with 'Flowable', 'Context', and 'Unit' fields
+    :param fba: df flow-by-activity or flow-by-sector
     :param from_fba_source: str Source name of fba list to look for mappings
+    :param flow_type: str either 'ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW',
+        or 'WASTE_FLOW'
     :param keep_unmapped_rows: False if want unmapped rows dropped, True if want to retain
-    :return: df, with flows mapped using federal elementary flow list
+    :return: df, with flows mapped using federal elementary flow list or material flow list
     """
     # rename columns to match FBS formatting
     fba = fba.rename(columns={"FlowName": 'Flowable',
@@ -285,6 +287,31 @@ def map_flows(fba, from_fba_source, flow_type = 'ELEMENTARY_FLOW',
 
     return fba_mapped_df
 
+
+def map_fbs_flows(fbs, from_fba_source, v):
+    """
+    Identifies the mapping file and applies mapping to fbs flows
+    :param fbs: flow-by-sector dataframe
+    :param from_fba_source: str Source name of fba list to look for mappings
+    :param v: dictionary, The datasource parameters
+    :return fbs_mapped: df, with flows mapped using federal elementary flow list or material flow list
+    :return mapping_files: str, name of mapping file
+    """    
+    if 'mfl_mapping' in v:
+        mapping_files = v['mfl_mapping']
+        log.info("Mapping flows in " + from_fba_source + ' to material flow list')
+        flow_type = 'WASTE_FLOW'
+    else:
+        log.info("Mapping flows in " + from_fba_source + ' to federal elementary flow list')
+        if 'fedefl_mapping' in v:
+            mapping_files = v['fedefl_mapping']
+        else:
+            mapping_files = from_fba_source
+        flow_type = 'ELEMENTARY_FLOW'
+
+    fbs_mapped = map_flows(fbs, mapping_files, flow_type)
+    
+    return fbs_mapped, mapping_files
 
 def get_sector_list(sector_level):
     """

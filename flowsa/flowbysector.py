@@ -33,7 +33,7 @@ from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
     fbs_grouping_fields_w_activities
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
-from flowsa.mapping import add_sectors_to_flowbyactivity, map_flows, \
+from flowsa.mapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
@@ -185,14 +185,9 @@ def main(**kwargs):
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flow_subset_wsec,
                                                                                attr=attr)
 
-                # map df to elementary flows
-                log.info("Mapping flows in " + k + ' to federal elementary flow list')
-                if 'fedefl_mapping' in v:
-                    mapping_files = v['fedefl_mapping']
-                else:
-                    mapping_files = k
-
-                flow_subset_mapped = map_flows(flow_subset_wsec, mapping_files)
+                # map flows to federal flow list or material flow list
+                flow_subset_mapped, mapping_files = map_fbs_flows(flow_subset_wsec,
+                                                                  k, v)
 
                 # clean up mapped fba with sectors, if specified in yaml
                 if "clean_mapped_fba_w_sec_df_fxn" in v:
