@@ -307,6 +307,7 @@ def map_flows(fba, from_fba_source, flow_type = 'ELEMENTARY_FLOW', **kwargs):
     if mapped_df is None:
         # return the original df but with columns renamed so can continue working on the FBS
         mapped_df = fba.copy()
+        mapped_df['FlowUUID'] = None
 
     # sort columns
     mapped_df = mapped_df[flow_by_activity_mapped_fields.keys()]

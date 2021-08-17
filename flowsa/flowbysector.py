@@ -196,7 +196,7 @@ def main(**kwargs):
                                                                                attr=attr, method=method)
 
                 # add mapping columns back
-                flows_mapped_wsec = flows_subset_wsec.merge(mapped_df)
+                flows_mapped_wsec = flows_subset_wsec.merge(mapped_df, how='left')
                 # rename SourceName to MetaSources and drop columns
                 flows_mapped_wsec = flows_mapped_wsec.\
                     rename(columns={'SourceName': 'MetaSources'}).\
