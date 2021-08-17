@@ -269,7 +269,7 @@ def convert_units_to_annual(df):
     return df
 
 
-def map_flows(fba, from_fba_source, flow_type = 'ELEMENTARY_FLOW', **kwargs):
+def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW', **kwargs):
     """
     Applies mapping via esupy from fedelemflowlist or material flow list to convert flows to
     standardized list of flows
@@ -287,16 +287,18 @@ def map_flows(fba, from_fba_source, flow_type = 'ELEMENTARY_FLOW', **kwargs):
     # prior to mapping elementary flows, ensure all data are in an annual format
     fba = convert_units_to_annual(fba)
     # if need to maintain FBA columns, create copies of columns
-    if ('keep_fba_columns' in kwargs) & (kwargs['keep_fba_columns'] is True):
-        fba['Flowable'] = fba['FlowName']
-        fba['Context'] = fba['Compartment']
+    if kwargs != {}:
+        if ('keep_fba_columns' in kwargs) & (kwargs['keep_fba_columns'] is True):
+            fba['Flowable'] = fba['FlowName']
+            fba['Context'] = fba['Compartment']
     # else, rename
     else:
         fba = fba.rename(columns={'FlowName': 'Flowable',
                                   'Compartment': 'Context'})
     # if keep unmapped rows identified in kwargs, then use, if not, set to false
-    if 'keep_unmapped_rows' in kwargs:
-        keep_unmapped_rows = kwargs['keep_unmapped_rows']
+    if kwargs != {}:
+        if 'keep_unmapped_rows' in kwargs:
+            keep_unmapped_rows = kwargs['keep_unmapped_rows']
     else:
         keep_unmapped_rows = False
 
