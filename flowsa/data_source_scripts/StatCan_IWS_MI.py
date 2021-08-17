@@ -158,8 +158,6 @@ def convert_statcan_data_to_US_water_use(df, attr):
     cw = cw[cw['NAICS_2012_Code'].apply(lambda x:
                                         len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)
 
-    # compare df units
-    compare_df_units(us_gdp_load, cw)
     # merge
     us_gdp = pd.merge(us_gdp_load, cw, how='left',
                       left_on='ActivityProducedBy', right_on='BEA_2012_Detail_Code')
