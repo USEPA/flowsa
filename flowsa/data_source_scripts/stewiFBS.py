@@ -308,14 +308,24 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     fbs['FlowType'] = 'ELEMENTARY_FLOW'
     fbs.loc[fbs['MetaSources']=='RCRAInfo', 'FlowType'] = 'WASTE_FLOW'
     
+    # Add 'SourceName' for mapping purposes
+    fbs['SourceName'] = fbs['MetaSources']
     fbs_elem = fbs.loc[fbs['FlowType'] == 'ELEMENTARY_FLOW']
     fbs_waste = fbs.loc[fbs['FlowType'] == 'WASTE_FLOW']
-    fbs_elem = map_flows(fbs_elem, list(inventory_dict.keys()),
-                         flow_type = 'ELEMENTARY_FLOW')
-    fbs_waste = map_flows(fbs_waste, list(inventory_dict.keys()),
-                          flow_type = 'WASTE_FLOW')
+    fbs_list = []
+    if len(fbs_elem) > 0:
+        fbs_elem = map_flows(fbs_elem, list(inventory_dict.keys()),
+                             flow_type = 'ELEMENTARY_FLOW')
+        fbs_list.append(fbs_elem)
+    if len(fbs_waste) > 0:
+        fbs_waste = map_flows(fbs_waste, list(inventory_dict.keys()),
+                              flow_type = 'WASTE_FLOW')
+        fbs_list.append(fbs_waste)
     
-    fbs_mapped = pd.concat[fbs_elem, fbs_waste].reset_index(drop = True)
+    if len(fbs_list) == 1:
+        fbs_mapped = fbs_list[0]
+    else:
+        fbs_mapped = pd.concat[fbs_list].reset_index(drop = True)
 
     # rename columns to match flowbysector format
     fbs_mapped = fbs_mapped.rename(columns={"NAICS_lvl": "SectorProducedBy"})
@@ -338,7 +348,7 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     # check the sector codes to make sure NAICS 2012 codes
     fbs_mapped = replace_naics_w_naics_from_another_year(fbs_mapped, 'NAICS_2012_Code')
 
-    return fbs
+    return fbs_mapped
 
 
 def naics_expansion(facility_NAICS):
