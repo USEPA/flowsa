@@ -108,17 +108,35 @@ def calR_parse(**kwargs):
     return output
 
 def generate_BLS_QCEW_tons_per_year(fbs, attr, fbs_list):
+    """
+    Calculates tons per employee per year based on BLS_QCEW employees by sector and
+    applies that quantity to employees in all states
+    """
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW',
                                    year=attr['allocation_source_year'],
                                    flowclass=attr['allocation_source_class'],
                                    geographic_level=attr['allocation_from_scale'])
-    bls = bls[bls['Location']=='06000'] # California
     bls = bls[bls['FlowName'].isin(attr['allocation_flow'])]
     # clean df
     bls = flowsa.dataclean.clean_df(bls, flow_by_activity_fields, fba_fill_na_dict) 
     bls = clean_bls_qcew_fba(bls)
     bls = flowsa.mapping.add_sectors_to_flowbyactivity(bls)
-    bls2 = flowsa.mapping.get_fba_allocation_subset(bls, 'BLS_QCEW',attr['names'])
+    
+    # Subset BLS dataset
+    sector_list = list(filter(None, fbs['SectorProducedBy'].unique()))
+    bls = flowsa.mapping.get_fba_allocation_subset(bls, 'BLS_QCEW', sector_list)
+    bls = bls.rename(columns={'FlowAmount':'Employees'})
+    bls = bls[['Employees','Location','Year','SectorProducedBy']]
+    
+    # Calculate tons per employee per year per material and sector in CA
+    bls_CA = bls[bls['Location']=='06000'] # California
+    tpepy = fbs.merge(bls_CA, how = 'inner')
+    tpepy['TPEPY'] = tpepy['FlowAmount']/tpepy['Employees']
+    tpepy = tpepy.drop(columns = ['Employees','FlowAmount','Location'])
+    
+    # Apply TPEPY back to all employees in all states
+    national_waste = tpepy.merge(bls, how = 'outer')
+    national_waste['FlowAmount'] = national_waste['Employees'] * national_waste['TPEPY']
 
-    return df
+    return national_waste
 
