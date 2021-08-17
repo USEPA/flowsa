@@ -89,7 +89,8 @@ def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
 
     # load the bea make table
     bmt = load_fba_w_standardized_units(datasource='BEA_Make_AR',
-                                        year='year', flowclass='Money')
+                                        year=kwargs['attr']['allocation_source_year'],
+                                        flowclass='Money')
     # drop rows with flowamount = 0
     bmt = bmt[bmt['FlowAmount'] != 0]
 
