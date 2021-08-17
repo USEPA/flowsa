@@ -202,7 +202,6 @@ def main(**kwargs):
                                                                                attr=attr, method=method)
 
                 # add mapping columns back
-                log.info('Readding the mapped data columns')
                 flows_mapped_wsec = flows_subset_wsec.merge(mapped_df)
                 # rename SourceName to MetaSources and drop columns
                 flows_mapped_wsec = flows_mapped_wsec.\
@@ -212,7 +211,6 @@ def main(**kwargs):
                 # if allocation method is "direct", then no need to create alloc ratios,
                 # else need to use allocation
                 # dataframe to create sector allocation ratios
-                log.info('Allocating Data')
                 if attr['allocation_method'] == 'direct':
                     fbs = direct_allocation_method(flows_mapped_wsec, k, names, method)
                 # if allocation method for an activity set requires a specific
@@ -291,7 +289,8 @@ def main(**kwargs):
                                                            axis=1, errors='ignore')
 
                 # save comparison of FBA total to FBS total for an activity set
-                compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset, aset, k,
+                compare_fba_load_and_fbs_output_totals(flows_subset_geo, mapped_df,
+                                                       fbs_sector_subset, aset, k,
                                                        attr, method, mapping_files)
 
                 log.info("Completed flowbysector for %s", aset)

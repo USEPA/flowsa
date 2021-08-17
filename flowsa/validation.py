@@ -417,12 +417,13 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                               '\n {}'.format(df_v.to_string()), activity_set)
 
 
-def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
+def compare_fba_load_and_fbs_output_totals(fba_load, fba_mapping_data, fbs_load, activity_set,
                                            source_name, attr, method, mapping_files):
     """
     Function to compare the loaded flowbyactivity total with the final flowbysector output total
     for the target sector level
     :param fba_load: df, FBA loaded, before being mapped
+    :param fba_mapping_data: df, the subset mapped data that contains mapped columns
     :param fbs_load: df, final FBS df at target sector level
     :param activity_set: str, activity set
     :param source_name: str, source name
@@ -446,7 +447,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
     # extract relevant geoscale data or aggregate existing data
     fba = subset_df_by_geoscale(fba_load, attr['allocation_from_scale'], method['target_geoscale'])
     # map loaded fba
-    fba = map_elementary_flows(fba, mapping_files, keep_unmapped_rows=True)
+    fba = fba.merge(fba_mapping_data)
     if src_info['sector-like_activities']:
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
