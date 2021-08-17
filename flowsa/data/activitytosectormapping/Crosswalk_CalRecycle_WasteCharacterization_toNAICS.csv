@@ -1,0 +1,18 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+CalRecycle_WasteCharacterization,Electronic Equipment,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Food Beverage Stores,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Food Nondurable Wholesale,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Hotel Lodging,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Medical Health,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Multifamily,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Not Elsewhere Classified,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Other Manufacturing,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Other Retail Trade,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Public Administration,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Restaurants,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Services Management Administration Support Social,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Services Repair Personal,NAICS_2012_Code,,I
+CalRecycle_WasteCharacterization,Arts Entertainment Recreation,NAICS_2012_Code,111,I
+CalRecycle_WasteCharacterization,Durable Wholesale Trucking,NAICS_2012_Code,112,I
+CalRecycle_WasteCharacterization,Education,NAICS_2012_Code,333,I
+CalRecycle_WasteCharacterization,Services Professional Technical  Financial,NAICS_2012_Code,,I
