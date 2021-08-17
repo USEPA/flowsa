@@ -85,7 +85,9 @@ def getFlowBySector(methodname, download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING)
     if fbs is None and download_if_missing:
         log.info('%s not found in %s, downloading from remote source',
                  methodname, fbsoutputpath)
-        download_from_remote(fbs_meta, paths)
+        # download and load the FBS parquet
+        subdirectory_dict = {'.log': 'Log'}
+        download_from_remote(fbs_meta, paths, subdirectory_dict=subdirectory_dict)
         fbs = load_preprocessed_output(fbs_meta, paths)
 
     # If remote download not specified and no FBS, generate the FBS
