@@ -48,6 +48,12 @@ BLS_QCEW:
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
+CalRecycle_WasteCharacterization:
+  class:
+    - Other
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: ""
 Census_AHS:
   class:
     - Land
