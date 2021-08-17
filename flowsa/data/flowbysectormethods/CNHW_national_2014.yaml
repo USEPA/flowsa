@@ -7,7 +7,7 @@ source_names:
     class: Other
     geoscale_to_use: state
     year: 2014
-    clean_fba_df_fxn: None
+    clean_fba_df_fxn: keep_generated_quantity
     clean_fba_w_sec_df_fxn: None
     mfl_mapping: 'CalRecycle_WasteCharacterization'
     activity_sets:

@@ -74,38 +74,48 @@ def calR_parse(**kwargs):
 
     data = {}
     output = pd.DataFrame()
+    
+    data["Class"] = "Other"
+    data['FlowType'] = "WASTE_FLOW"
+    data["Location"] = "06000"
+    data["Compartment"] = "ground"
+    data["SourceName"] = "CalRecycle_WasteCharacterization"
+    data["Year"] = args['year']
+    data['DataReliability'] = 5  # tmp
+    data['DataCollection'] = 5  # tmp
 
     for entry in os.listdir(externaldatapath):
         if os.path.isfile(os.path.join(externaldatapath, entry)):
-            data["Class"] = "Other"
-            data['FlowType'] = "WASTE_FLOW"
-            data["Location"] = "06000"
-            data["Compartment"] = "ground"
-            data["SourceName"] = "CalRecycle_WasteCharacterization"
-            data["Year"] = args['year']
-            data['DataReliability'] = 5  # tmp
-            data['DataCollection'] = 5  # tmp
-
             if "California_Commercial_bySector_2014" in entry and "Map" not in entry:
                 data["ActivityProducedBy"] = produced_by(entry)
-                data["ActivityConsumedBy"] = None
                 dataframe = pd.read_csv(externaldatapath + "/" + entry, header=0, dtype=str)
                 for col in dataframe.columns:
                     if "Percent" in str(col):
                         del dataframe[col]
 
                 for index, row in dataframe.iterrows():
-                    for column in dataframe.columns:
-                        if column != "Material":
-                            col_string = column.split()
-                            data["Unit"] = col_string[1]
-                            data['FlowName'] = dataframe.iloc[index]["Material"] + \
-                                               " " + col_string[0]
-                            if dataframe.iloc[index][column] != "-":
-                                data["FlowAmount"] = int(dataframe.iloc[index][column])
-                                output = output.append(data, ignore_index=True)
-                                output = assign_fips_location_system(output, '2014')
+                    data['FlowName'] = row["Material"]
+                    for field, value in row[1:].items():
+                        col_string = field.split()
+                        data["Unit"] = col_string[1]
+                        data['Description'] = col_string[0]
+                        if value != "-":
+                            data["FlowAmount"] = int(value)
+                            output = output.append(data, ignore_index=True)
+    output = assign_fips_location_system(output, args['year'])
     return output
+
+
+def keep_generated_quantity(fba, **kwargs):
+    """
+    Function to clean CalRecycles FBA to remove quantities not assigned as Generated
+    :param fba_df: df, FBA format
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
+    :return: df, modified CalRecycles FBA
+    """
+    fba = fba[fba['Description']=='Generated']
+    return fba
+    
 
 def generate_BLS_QCEW_tons_per_year(fbs, attr, fbs_list):
     """
