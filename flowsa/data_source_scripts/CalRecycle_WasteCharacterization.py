@@ -12,8 +12,11 @@ Last updated:
 
 import os
 import pandas as pd
+import flowsa
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import externaldatapath
+from flowsa.common import externaldatapath, flow_by_activity_fields,\
+    fba_fill_na_dict
+from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba    
 
 
 def produced_by(entry):
@@ -53,7 +56,7 @@ def produced_by(entry):
     if "ServicesManagementAdminSupportSocial" in entry:
         return "Services Management Administration Support Social"
     if "ServicesProfessionalTechFinancial" in entry:
-        return "Services Professional Technical  Financial"
+        return "Services Professional Technical Financial"
     if "ServicesRepairPersonal" in entry:
         return "Services Repair Personal"
 
@@ -75,11 +78,10 @@ def calR_parse(**kwargs):
     for entry in os.listdir(externaldatapath):
         if os.path.isfile(os.path.join(externaldatapath, entry)):
             data["Class"] = "Other"
-            data['FlowType'] = "Waste Flow"
+            data['FlowType'] = "WASTE_FLOW"
             data["Location"] = "06000"
             data["Compartment"] = "ground"
-            data["LocationSystem"] = "FIPS"
-            data["SourceName"] = "California_Commercial_bySector"
+            data["SourceName"] = "CalRecycle_WasteCharacterization"
             data["Year"] = args['year']
             data['DataReliability'] = 5  # tmp
             data['DataCollection'] = 5  # tmp
@@ -104,3 +106,19 @@ def calR_parse(**kwargs):
                                 output = output.append(data, ignore_index=True)
                                 output = assign_fips_location_system(output, '2014')
     return output
+
+def generate_BLS_QCEW_tons_per_year(fbs, attr, fbs_list):
+    bls = flowsa.getFlowByActivity(datasource='BLS_QCEW',
+                                   year=attr['allocation_source_year'],
+                                   flowclass=attr['allocation_source_class'],
+                                   geographic_level=attr['allocation_from_scale'])
+    bls = bls[bls['Location']=='06000'] # California
+    bls = bls[bls['FlowName'].isin(attr['allocation_flow'])]
+    # clean df
+    bls = flowsa.dataclean.clean_df(bls, flow_by_activity_fields, fba_fill_na_dict) 
+    bls = clean_bls_qcew_fba(bls)
+    bls = flowsa.mapping.add_sectors_to_flowbyactivity(bls)
+    bls2 = flowsa.mapping.get_fba_allocation_subset(bls, 'BLS_QCEW',attr['names'])
+
+    return df
+
