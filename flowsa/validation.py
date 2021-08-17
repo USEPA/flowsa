@@ -435,7 +435,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fba_mapping_data, fbs_load,
              save results as csv in local directory
     """
 
-    from flowsa.mapping import map_elementary_flows
+    from flowsa.mapping import map_flows
 
     vLog.info('Comparing loaded Flow-By-Activity FlowAmount total to '
              'subset Flow-By-Sector FlowAmount total')

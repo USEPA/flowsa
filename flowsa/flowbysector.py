@@ -34,7 +34,7 @@ from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
-from flowsa.mapping import add_sectors_to_flowbyactivity, map_elementary_flows, \
+from flowsa.mapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
@@ -131,14 +131,8 @@ def main(**kwargs):
             flows = clean_df(flows, flow_by_activity_fields,
                              fba_fill_na_dict, drop_description=False)
 
-            # map df to elementary flows, changing units
-            log.info("Mapping flows in %s to federal elementary flow list", k)
-            if 'fedefl_mapping' in v:
-                mapping_files = v['fedefl_mapping']
-            else:
-                mapping_files = k
-
-            flows_mapped = map_elementary_flows(flows, mapping_files)
+            # map flows to federal flow list or material flow list
+            flows_mapped, mapping_files = map_fbs_flows(flows, k, v)
 
             # subset out the mapping information, add back in after cleaning up FBA data
             mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',

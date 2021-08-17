@@ -6,6 +6,7 @@ Contains mapping functions
 """
 import pandas as pd
 import numpy as np
+from esupy.mapping import apply_flow_mapping
 from flowsa.common import datapath, SECTOR_SOURCE_NAME, activity_fields, load_source_catalog, \
     load_sector_crosswalk, log, fba_activity_fields, flow_by_activity_mapped_fields
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
@@ -268,16 +269,18 @@ def convert_units_to_annual(df):
     return df
 
 
-def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
+def map_flows(fba, from_fba_source, flow_type = 'ELEMENTARY_FLOW',
+                         keep_unmapped_rows=False):
     """
-    Applies mapping from fedelemflowlist to convert flows to fedelemflowlist flows
-    :param fba: df flow-by-activity or flow-by-sector with 'Flowable', 'Context', and 'Unit' fields
+    Applies mapping via esupy from fedelemflowlist or material flow list to convert flows to
+    standardized list of flows
+    :param fba: df flow-by-activity or flow-by-sector
     :param from_fba_source: str Source name of fba list to look for mappings
+    :param flow_type: str either 'ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW',
+        or 'WASTE_FLOW'
     :param keep_unmapped_rows: False if want unmapped rows dropped, True if want to retain
-    :return: df, with flows mapped using federal elementary flow list
+    :return: df, with flows mapped using federal elementary flow list or material flow list
     """
-
-    from fedelemflowlist import get_flowmapping
 
     # prior to mapping elementary flows, ensure all data are in an annual format
     fba = convert_units_to_annual(fba)
@@ -286,65 +289,44 @@ def map_elementary_flows(fba, from_fba_source, keep_unmapped_rows=False):
     fba['Flowable'] = fba['FlowName']
     fba['Context'] = fba['Compartment']
 
-    # Default field dictionary for mapping
-    field_dict = {'FlowableName': 'Flowable',
-                  'FlowableUnit': 'Unit',
-                  'FlowableContext': 'Context',
-                  'FlowableQuantity': 'FlowAmount',
-                  'UUID': 'FlowUUID'}
+    mapped_df = apply_flow_mapping(fba, from_fba_source,
+                                       flow_type=flow_type,
+                                       keep_unmapped_rows = keep_unmapped_rows)
 
-    mapping_fields = ["SourceListName",
-                      "SourceFlowName",
-                      "SourceFlowContext",
-                      "SourceUnit",
-                      "ConversionFactor",
-                      "TargetFlowName",
-                      "TargetFlowContext",
-                      "TargetUnit",
-                      "TargetFlowUUID"]
-
-    # get flowmapping
-    flowmapping = get_flowmapping(from_fba_source)
-
-    if flowmapping.empty:
-        log.warning("No mapping file in fedelemflowlist found for %s", ' '.join(from_fba_source))
+    if mapped_df is None:
         # return the original df but with columns renamed so can continue working on the FBS
         mapped_df = fba.copy()
-    else:
-        flowmapping = flowmapping[mapping_fields]
 
-        # define merge type based on keeping or dropping unmapped data
-        if keep_unmapped_rows is False:
-            merge_type = 'inner'
-        else:
-            merge_type = 'left'
-
-        # merge fba with flows
-        mapped_df = pd.merge(fba, flowmapping,
-                             left_on=[field_dict['FlowableName'],
-                                      field_dict['FlowableContext'],
-                                      field_dict['FlowableUnit']],
-                             right_on=["SourceFlowName",
-                                       "SourceFlowContext",
-                                       "SourceUnit"],
-                             how=merge_type)
-
-        criteria = mapped_df['TargetFlowName'].notnull()
-
-        mapped_df.loc[criteria, field_dict['FlowableName']] = mapped_df["TargetFlowName"]
-        mapped_df.loc[criteria, field_dict['FlowableContext']] = mapped_df["TargetFlowContext"]
-        mapped_df.loc[criteria, field_dict['FlowableUnit']] = mapped_df["TargetUnit"]
-        mapped_df.loc[criteria, field_dict["FlowableQuantity"]] = \
-            mapped_df[field_dict["FlowableQuantity"]] * mapped_df["ConversionFactor"]
-        mapped_df.loc[criteria, field_dict['UUID']] = mapped_df["TargetFlowUUID"]
-
-        # drop mapping fields
-        mapped_df = mapped_df.drop(columns=mapping_fields)
         # sort columns
         mapped_df = mapped_df[flow_by_activity_mapped_fields.keys()]
 
     return mapped_df
 
+
+def map_fbs_flows(fbs, from_fba_source, v):
+    """
+    Identifies the mapping file and applies mapping to fbs flows
+    :param fbs: flow-by-sector dataframe
+    :param from_fba_source: str Source name of fba list to look for mappings
+    :param v: dictionary, The datasource parameters
+    :return fbs_mapped: df, with flows mapped using federal elementary flow list or material flow list
+    :return mapping_files: str, name of mapping file
+    """
+    if 'mfl_mapping' in v:
+        mapping_files = v['mfl_mapping']
+        log.info("Mapping flows in " + from_fba_source + ' to material flow list')
+        flow_type = 'WASTE_FLOW'
+    else:
+        log.info("Mapping flows in " + from_fba_source + ' to federal elementary flow list')
+        if 'fedefl_mapping' in v:
+            mapping_files = v['fedefl_mapping']
+        else:
+            mapping_files = from_fba_source
+        flow_type = 'ELEMENTARY_FLOW'
+
+    fbs_mapped = map_flows(fbs, mapping_files, flow_type)
+
+    return fbs_mapped, mapping_files
 
 def get_sector_list(sector_level):
     """

@@ -15,7 +15,7 @@ import sys
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import add_missing_flow_by_fields
-from flowsa.mapping import map_elementary_flows
+from flowsa.mapping import map_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
@@ -304,30 +304,39 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
                                                   grouping_vars)
     fbs.reset_index(inplace=True)
 
-    # apply flow mapping
-    fbs = map_elementary_flows(fbs, list(inventory_dict.keys()))
+    # apply flow mapping separately for elementary and waste flows
+    fbs['FlowType'] = 'ELEMENTARY_FLOW'
+    fbs.loc[fbs['MetaSources']=='RCRAInfo', 'FlowType'] = 'WASTE_FLOW'
+    
+    fbs_elem = fbs.loc[fbs['FlowType'] == 'ELEMENTARY_FLOW']
+    fbs_waste = fbs.loc[fbs['FlowType'] == 'WASTE_FLOW']
+    fbs_elem = map_flows(fbs_elem, list(inventory_dict.keys()),
+                         flow_type = 'ELEMENTARY_FLOW')
+    fbs_waste = map_flows(fbs_waste, list(inventory_dict.keys()),
+                          flow_type = 'WASTE_FLOW')
+    
+    fbs_mapped = pd.concat[fbs_elem, fbs_waste].reset_index(drop = True)
 
     # rename columns to match flowbysector format
-    fbs = fbs.rename(columns={"NAICS_lvl": "SectorProducedBy"})
+    fbs_mapped = fbs_mapped.rename(columns={"NAICS_lvl": "SectorProducedBy"})
 
     # add hardcoded data, depending on the source data, some of these fields may need to change
-    fbs['Class'] = 'Chemicals'
-    fbs['SectorConsumedBy'] = 'None'
-    fbs['SectorSourceName'] = 'NAICS_2012_Code'
-    fbs['FlowType'] = 'ELEMENTARY_FLOW'
+    fbs_mapped['Class'] = 'Chemicals'
+    fbs_mapped['SectorConsumedBy'] = 'None'
+    fbs_mapped['SectorSourceName'] = 'NAICS_2012_Code'
 
-    fbs = assign_fips_location_system(fbs, list(inventory_dict.values())[0])
+    fbs_mapped = assign_fips_location_system(fbs_mapped, list(inventory_dict.values())[0])
 
     # add missing flow by sector fields
-    fbs = add_missing_flow_by_fields(fbs, flow_by_sector_fields)
+    fbs_mapped = add_missing_flow_by_fields(fbs_mapped, flow_by_sector_fields)
 
-    fbs = check_for_missing_sector_data(fbs, NAICS_level)
+    fbs_mapped = check_for_missing_sector_data(fbs_mapped, NAICS_level)
 
     # sort dataframe and reset index
-    fbs = fbs.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
+    fbs_mapped = fbs_mapped.sort_values(list(flow_by_sector_fields.keys())).reset_index(drop=True)
 
     # check the sector codes to make sure NAICS 2012 codes
-    fbs = replace_naics_w_naics_from_another_year(fbs, 'NAICS_2012_Code')
+    fbs_mapped = replace_naics_w_naics_from_another_year(fbs_mapped, 'NAICS_2012_Code')
 
     return fbs
 
