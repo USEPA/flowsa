@@ -12,6 +12,9 @@ from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):
     """
+    Function to assign NAICS codes to each dataframe activity
+    :param df: df, a FlowByActivity subset that contains unique activity names
+    :return: df with assigned Sector columns
     """
 
     cw = pd.read_csv(externaldatapath + 'VIPNametoNAICStoFF.csv',

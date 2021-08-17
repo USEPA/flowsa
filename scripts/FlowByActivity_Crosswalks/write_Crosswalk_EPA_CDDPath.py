@@ -1,9 +1,9 @@
-# write_Crosswalk_Census_VIP.py (scripts)
+# write_Crosswalk_EPA_CDDPath.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 
 """
-Create a crosswalk for EPA CDD Path to NAICS 2012.
+Create a crosswalk for EPA CDDPath to NAICS 2012.
 """
 import pandas as pd
 from flowsa.common import datapath, externaldatapath
@@ -12,6 +12,9 @@ from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):
     """
+    Function to assign NAICS codes to each dataframe activity
+    :param df: df, a FlowByActivity subset that contains unique activity names
+    :return: df with assigned Sector columns
     """
 
     cw = pd.read_csv(externaldatapath + 'VIPNametoNAICStoFF.csv',
@@ -28,7 +31,7 @@ if __name__ == '__main__':
     years = ['2014']
     # datasource
     datasource = 'EPA_CDDPath'
-    # df of unique ers activity names
+    # df of unique activity names
     df_list = []
     for y in years:
         dfy = unique_activity_names(datasource, y)
