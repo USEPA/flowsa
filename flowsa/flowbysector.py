@@ -132,7 +132,7 @@ def main(**kwargs):
                              fba_fill_na_dict, drop_description=False)
 
             # map flows to federal flow list or material flow list
-            flows_mapped, mapping_files = map_fbs_flows(flows, k, v)
+            flows_mapped, mapping_files = map_fbs_flows(flows, k, v, keep_fba_columns=True)
 
             # subset out the mapping information, add back in after cleaning up FBA data
             mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',
