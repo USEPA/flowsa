@@ -18,12 +18,10 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 4. _geoscale_to_use_: the geoscale of the FBA set to use for sector allocation
    (national, state, or county)
 5. _year_: year of available dataset (ex. 2015)
-6. _clean_fba_df_fxn_: calls on function in the source.py file to clean up/modify
-   the FBA data prior to allocating data to sectors. If FBA does not need to be modified,
-   this parameter should be 'None'
-7. _clean_fba_w_sec_df_fxn_: calls on function in the source.py file to clean up/modify the
+6. _clean_fba_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
+   the FBA data prior to allocating data to sectors. 
+7. _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py file to clean up/modify the
    FBA dataframe, after sector columns are added but prior to allocating data to sectors.
-   If FBA _with sectors_ does not need to be modified, this parameter should be 'None'
 8. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
    the source_names
 9. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
