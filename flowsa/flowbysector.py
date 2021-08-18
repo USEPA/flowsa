@@ -42,7 +42,7 @@ from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_score
 from flowsa.validation import check_if_losing_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals, compare_geographic_totals,\
-    replace_naics_w_naics_from_another_year
+    replace_naics_w_naics_from_another_year, calculate_flowamount_differences
 
 
 def parse_args():
@@ -137,13 +137,16 @@ def main(**kwargs):
             # subset out the mapping information, add back in after cleaning up FBA data
             mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',
                                       'Context', 'FlowUUID']].drop_duplicates()
-            flows_fba = flows_mapped[flow_by_activity_fields]
+            flows_mapped = flows_mapped[flow_by_activity_fields]
 
             # clean up fba, if specified in yaml
             if "clean_fba_df_fxn" in v:
                 log.info("Cleaning up %s FlowByActivity", k)
-                flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_fba)
+                flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
                 # calculate expected data loss
+                calculate_flowamount_differences(flows_mapped, flows_fba)
+            else:
+                flows_fba = flows_mapped.copy()
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:

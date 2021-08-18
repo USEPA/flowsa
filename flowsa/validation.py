@@ -313,6 +313,35 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                           '\n {}'.format(df_v.to_string()), activity_set)
 
 
+def calculate_flowamount_differences(df1_load, df2_load):
+    """
+    Calculate the differences in FlowAmounts between two dfs
+    :param fba1:
+    :param fba2:
+    :return:
+    """
+    # subset the dataframes, only keeping data for easy comparision of flowamounts
+    cols = ['Class', 'SourceName', 'FlowName', 'FlowAmount', 'Unit', 'ActivityProducedBy', 'ActivityConsumedBy',
+            'Compartment', 'Location', 'Year', 'Description']
+    merge_cols = [e for e in cols if e not in ['FlowAmount']]
+    # rename cols
+    df1 = df1_load[cols].rename(columns={'FlowAmount': 'FlowAmount_Original'})
+    df2 = df2_load[cols].rename(columns={'FlowAmount': 'FlowAmount_Modified'})
+    # merge the two dataframes
+    df = df1.merge(df2,
+                   left_on=merge_cols,
+                   right_on=merge_cols,
+                   how='outer')
+    # column calculating difference
+    df['FlowAmount_Difference'] = df['FlowAmount_Original'] - df['FlowAmount_Modified']
+    df['Percent_Difference'] = (df['FlowAmount_Difference']/df['FlowAmount_Modified']) * 100
+
+    # determine if any new data is negative
+    dfn = df[df['FlowAmount_Modified'] <0].reset_index(drop=True)
+
+    return df
+
+
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                                                           activity_set, source_name, config):
     """
