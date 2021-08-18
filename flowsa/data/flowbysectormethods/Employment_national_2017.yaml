@@ -24,4 +24,3 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'

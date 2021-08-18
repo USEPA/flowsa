@@ -243,7 +243,7 @@ def check_if_losing_sector_data(df, target_sector_level):
     if len(rows_lost) == 0:
         vLog.debug('Data exists at %s', target_sector_level)
     else:
-        vLog.info('Allocating FlowAmounts equally to each %s associated with'
+        vLog.info('Allocating FlowAmounts equally to each %s associated with '
                  'the sectors previously dropped', target_sector_level)
 
     # add rows of missing data to the fbs sector subset

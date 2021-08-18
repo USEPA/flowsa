@@ -26,7 +26,6 @@ source_names:
         allocation_fba_load_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-        allocation_helper: 'no'
   "EIA_MECS_Land": # manufacturing land use
     data_format: 'FBA'
     class: Land
@@ -48,7 +47,6 @@ source_names:
         allocation_fba_load_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-        allocation_helper: 'no'
   "BLM_PLS": # used for mining data
     data_format: 'FBA'
     class: Land
@@ -64,7 +62,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_2: # hardrock leases
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
@@ -77,7 +74,6 @@ source_names:
         allocation_fba_load_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-        allocation_helper: 'no'
   "USDA_ERS_MLU":
     data_format: 'FBA'
     class: Land
@@ -101,7 +97,6 @@ source_names:
         allocation_from_scale: state
         clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-        allocation_helper: 'no'
       activity_set_2:
         names:
           - 'Cropland idled'
@@ -119,7 +114,6 @@ source_names:
         allocation_from_scale: state
         clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-        allocation_helper: 'no'
       activity_set_3:
         names:
           - 'Cropland used for pasture'
@@ -134,7 +128,6 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba_w_sec: coa_cropland_naics_fba_wsec_cleanup
-        allocation_helper: 'no'
       activity_set_4:
         names:
           - 'Forest-use land not grazed'
@@ -145,7 +138,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: 'no'
       activity_set_5:
         names:
           - 'Land in defense and industrial areas'
@@ -156,7 +148,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: 'no'
       activity_set_6:
         names:
           - 'Land in rural parks and wildlife areas'
@@ -167,7 +158,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: 'no'
       activity_set_7:
         names:
           - 'Land in rural transportation facilities'
@@ -181,7 +171,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_8:
         names:
           - 'Land in urban areas'
@@ -197,7 +186,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_9:
         names:
           - 'Other land'
@@ -209,4 +197,3 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
