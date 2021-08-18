@@ -11,12 +11,14 @@ import numpy as np
 import pandas as pd
 from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
     flow_by_sector_fields, fbs_default_grouping_fields, fbs_fill_na_dict, \
-    fba_mapped_default_grouping_fields, fba_fill_na_dict
+    fba_mapped_default_grouping_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, allocate_by_sector, \
-    sector_aggregation, sector_disaggregation, sector_ratios, flow_by_activity_fields
-from flowsa.dataclean import harmonize_units, replace_NoneType_with_empty_cells, \
+    sector_aggregation, sector_disaggregation, sector_ratios, \
+    load_fba_w_standardized_units
+from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
 from flowsa.mapping import add_sectors_to_flowbyactivity
+from flowsa.validation import compare_df_units
 
 
 def CoA_Cropland_URL_helper(**kwargs):
@@ -345,12 +347,9 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         df_sourcename = pd.unique(p['SourceName'])[0]
 
         # load usda coa cropland naics
-        df_class = 'Land'
-        df_year = year
-        df_allocation = 'USDA_CoA_Cropland_NAICS'
-        df_f = flowsa.getFlowByActivity(datasource=df_allocation, year=df_year, flowclass=df_class)
-        df_f = clean_df(df_f, flow_by_activity_fields, fba_fill_na_dict)
-        df_f = harmonize_units(df_f)
+        df_f = load_fba_w_standardized_units(datasource='USDA_CoA_Cropland_NAICS',
+                                             year=year,
+                                             flowclass='Land')
         # subset to land in farms data
         df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
         # subset to rows related to pastureland
@@ -373,6 +372,8 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         # drop 000 in location
         df_f = df_f.assign(Location=df_f['Location'].apply(lambda x: x[0:2]))
 
+        # check units before merge
+        compare_df_units(p, df_f)
         # merge the coa pastureland data with land in farm data
         df = p.merge(df_f[[sector_column, 'Location', 'FlowAmountRatio']], how='left',
                      left_on="Location_tmp", right_on="Location")
@@ -423,11 +424,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     crop = crop.assign(Location_tmp=crop['Location'].apply(lambda x: x[0:2])) \
 
     # load the relevant state level harvested cropland by naics
-    naics_load = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland_NAICS", year=year,
-                                          flowclass='Land').reset_index(drop=True)
-    # clean df
-    naics = clean_df(naics_load, flow_by_activity_fields, fba_fill_na_dict)
-    naics = harmonize_units(naics)
+    naics = load_fba_w_standardized_units(datasource="USDA_CoA_Cropland_NAICS", year=year,
+                                          flowclass='Land')
     # subset the harvested cropland by naics
     naics = naics[naics['FlowName'] == 'AG LAND, CROPLAND, HARVESTED'].reset_index(drop=True)
     # drop the activities that include '&'
@@ -459,6 +457,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     # tmp drop Nonetypes
     naics4 = replace_NoneType_with_empty_cells(naics4)
 
+    # check units in prep for merge
+    compare_df_units(crop, naics4)
     # for loop through naics lengths to determine naics 4 and 5 digits to disaggregate
     for i in range(4, 6):
         # subset df to sectors with length = i and length = i + 1

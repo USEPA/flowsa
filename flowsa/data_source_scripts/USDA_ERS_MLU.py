@@ -1,4 +1,4 @@
-# USDA_CoA_Cropland.py (flowsa)
+# USDA_ERS_MLU.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -18,6 +18,7 @@ from flowsa.values_from_literature import get_area_of_rural_land_occupied_by_hou
     get_area_of_urban_land_occupied_by_houses_2013, \
     get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
+from flowsa.validation import compare_df_units
 
 
 def mlu_call(**kwargs):
@@ -158,7 +159,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
         df_non_urban_transport_area.groupby(
             ['Location', 'Unit'], as_index=False)['FlowAmount'].sum().rename(
             columns={'FlowAmount': 'NonTransport'})
-
+    # compare units
+    compare_df_units(df, df_non_urban_transport_area)
     # calculate total urban transportation by subtracting calculated areas from total urban land
     df_transport = df.merge(non_urban_transport_area_sum, how='left')
     df_transport = df_transport.assign(FlowAmount=df_transport['FlowAmount'] -
@@ -248,6 +250,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount'] \
         .sum().rename(columns={'FlowAmount': 'AirRail'})
 
+    # compare units
+    compare_df_units(df, air_rail_area)
     df_highway = df.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
     df_highway.drop(columns=['AirRail'], inplace=True)

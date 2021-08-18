@@ -6,13 +6,12 @@ Public API for flowsa
 For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/format%20specs
 """
 
-import logging as log
 from esupy.processed_data_mgmt import load_preprocessed_output
 from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath,\
-    DEFAULT_DOWNLOAD_IF_MISSING
+    DEFAULT_DOWNLOAD_IF_MISSING, log
 from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
-from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
+from flowsa.validation import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
@@ -69,20 +68,35 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname):
+def getFlowBySector(methodname, download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Loads stored FlowBySector output or generates it if it doesn't exist, then loads
     :param methodname: string, Name of an available method for the given class
+    :param download_if_missing: bool, if True will attempt to load from remote server
+        prior to generating if file not found locally
     :return: dataframe in flow by sector format
     """
+    from esupy.processed_data_mgmt import download_from_remote
+
     fbs_meta = set_fb_meta(methodname, "FlowBySector")
     fbs = load_preprocessed_output(fbs_meta, paths)
+
+    # Remote download
+    if fbs is None and download_if_missing:
+        log.info('%s not found in %s, downloading from remote source',
+                 methodname, fbsoutputpath)
+        # download and load the FBS parquet
+        subdirectory_dict = {'.log': 'Log'}
+        download_from_remote(fbs_meta, paths, subdirectory_dict=subdirectory_dict)
+        fbs = load_preprocessed_output(fbs_meta, paths)
+
+    # If remote download not specified and no FBS, generate the FBS
     if fbs is None:
         log.info('%s not found in %s, running functions to generate FBS', methodname, fbsoutputpath)
         # Generate the fba
         flowsa.flowbysector.main(method=methodname)
         # Now load the fba
-        fbs = load_preprocessed_output(fbs_meta,paths)
+        fbs = load_preprocessed_output(fbs_meta, paths)
         if fbs is None:
             log.error('getFlowBySector failed, FBS not found')
         else:
