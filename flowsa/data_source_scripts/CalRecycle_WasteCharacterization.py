@@ -122,6 +122,7 @@ def generate_BLS_QCEW_tons_per_year(fbs, attr, fbs_list):
     Calculates tons per employee per year based on BLS_QCEW employees by sector and
     applies that quantity to employees in all states
     """
+    # update to (Load FBA for allocation)
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW',
                                    year=attr['allocation_source_year'],
                                    flowclass=attr['allocation_source_class'],
