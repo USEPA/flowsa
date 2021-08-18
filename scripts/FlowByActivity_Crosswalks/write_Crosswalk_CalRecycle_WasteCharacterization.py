@@ -6,8 +6,9 @@
 Create a crosswalk for CalRecycle Waste Characterization to NAICS 2012.
 """
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.common import datapath, externaldatapath
 from common_scripts import unique_activity_names, order_crosswalk
+from flowsa.data_source_scripts.CalRecycle_WasteCharacterization import produced_by
 
 
 def assign_naics(df):
@@ -16,24 +17,15 @@ def assign_naics(df):
     :param df: df, a FlowByActivity subset that contains unique activity names
     :return: df with assigned Sector columns
     """
-
-    df.loc[df['Activity'] == 'Arts Entertainment Recreation', 'Sector'] = '111'
-    df.loc[df['Activity'] == 'Durable Wholesale Trucking', 'Sector'] = '112'
-    df.loc[df['Activity'] == 'Education', 'Sector'] = '333'
-    df.loc[df['Activity'] == 'Electronic Equipment', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Food Beverage Stores', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Food Nondurable Wholesale', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Hotel Lodging', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Medical Health', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Multifamily', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Other Manufacturing', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Other Retail Trade', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Public Administration', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Restaurants', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Services Management Administration Support Social', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Services Professional Technical Financial', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Services Repair Personal', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Not Elsewhere Classified', 'Sector'] = ''
+    
+    mapping = pd.read_csv(externaldatapath + "California_Commercial_bySector_2014_Mapping.csv",
+                          dtype = 'str')
+    mapping = mapping.melt(var_name = 'Activity',
+                           value_name = 'Sector'
+                           ).dropna().reset_index(drop=True)
+    mapping['Sector'] = mapping['Sector'].astype(str)
+    mapping['Activity'] = mapping['Activity'].map(lambda x: produced_by(x))
+    df = df.merge(mapping, on = 'Activity')
     
     return df
 
