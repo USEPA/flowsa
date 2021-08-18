@@ -140,9 +140,10 @@ def main(**kwargs):
             flows_fba = flows_mapped[flow_by_activity_fields]
 
             # clean up fba, if specified in yaml
-            if v["clean_fba_df_fxn"] != 'None':
+            if "clean_fba_df_fxn" in v:
                 log.info("Cleaning up %s FlowByActivity", k)
                 flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_fba)
+                # calculate expected data loss
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
@@ -189,7 +190,7 @@ def main(**kwargs):
                                                   sectorsourcename=method['target_sector_source'],
                                                   allocationmethod=attr['allocation_method'])
                 # clean up fba with sectors, if specified in yaml
-                if v["clean_fba_w_sec_df_fxn"] != 'None':
+                if "clean_fba_w_sec_df_fxn" in v:
                     log.info("Cleaning up %s FlowByActivity with sectors", k)
                     flows_subset_wsec = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
