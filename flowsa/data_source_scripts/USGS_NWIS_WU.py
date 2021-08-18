@@ -9,7 +9,7 @@ Helper functions for importing, parsing, formatting USGS Water Use data
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first_letter, US_FIPS
+from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first_letter, US_FIPS, vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.validation import compare_df_units
 
@@ -360,12 +360,18 @@ def usgs_fba_data_cleanup(df):
 
     # drop rows of commercial data (because only exists for 3 states),
     # causes issues because linked with public supply
+    vLogDetailed('Removing all rows for Commercial Data because only exists for three states '
+                 'and causes issues as information on Public Supply deliveries')
     df = df[~df['Description'].str.lower().str.contains('commercial')]
 
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
+    vLogDetailed('Modify the public supply values to generate NET public supply '
+                 'by subtracting out deliveries to domestic')
     df = calculate_net_public_supply(df)
 
     # check that golf + crop = total irrigation, if not, assign all of total irrigation to crop
+    vLogDetailed('If states do not distinguish between golf and crop irrigation as a subset of '
+                 'total irrigation, assign all of total irrigation to crop')
     df = check_golf_and_crop_irrigation_totals(df)
 
     # national
@@ -373,6 +379,8 @@ def usgs_fba_data_cleanup(df):
 
     # drop flowname = 'total' rows when possible to prevent double counting
     # subset data where flowname = total and where it does not
+    vLogDetailed('Drop rows where the FlowName is total to prevent double counting at the state and '
+                 'county levels. Retain rows at national level')
     df2 = df[df['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
     c1 = df2['Location'] != US_FIPS
