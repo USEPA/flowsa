@@ -6,12 +6,11 @@ Functions for creating and loading metadata files for
 FlowByActivity (FBA) and FlowBySector (FBS) datasets
 """
 
-import logging as log
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, read_source_metadata
 from flowsa.common import paths, pkg, PKG_VERSION_NUMBER, WRITE_FORMAT,\
     GIT_HASH, GIT_HASH_LONG, load_functions_loading_fbas_config, \
-    load_fbs_methods_additional_fbas_config
+    load_fbs_methods_additional_fbas_config, log
 from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata
 
 
@@ -190,6 +189,7 @@ def getMetadata(source, year, paths):
     name = set_fba_name(source, year)
     meta = read_source_metadata(paths, set_fb_meta(name, 'FlowByActivity'))
     if meta is None:
+        log.warning('No metadata found for %s', source)
         meta = {'source_meta': f'No metadata found for {source} {year}'}
 
     return meta

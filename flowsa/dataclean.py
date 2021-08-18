@@ -5,8 +5,8 @@
 Common functions to clean and harmonize dataframes
 """
 
-import logging as log
 import numpy as np
+from flowsa.common import log
 
 
 def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
@@ -28,7 +28,7 @@ def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
         df = df.drop(columns='Description')
     if flowbyfields == 'flow_by_sector_fields':
         # harmonize units across dfs
-        df = harmonize_units(df)
+        df = standardize_units(df)
     # if datatypes are strings, ensure that Null values remain NoneType
     df = replace_strings_with_NoneType(df)
 
@@ -80,7 +80,7 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
     return flowby_partial_df
 
 
-def harmonize_units(df):
+def standardize_units(df):
     """
     Convert unit to standard
     Timeframe is over one year
@@ -93,16 +93,17 @@ def harmonize_units(df):
     gallon_water_to_kg = 3.79  # rounded to match USGS_NWIS_WU mapping file on FEDEFL
     ac_ft_water_to_kg = 1233481.84
     acre_to_m2 = 4046.8564224
+    acres_in_thousand_acres = 1000
+    mj_in_btu = .0010550559
+    ton_to_kg = 907.185
+    lb_to_kg = 0.45359
 
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRES', df['FlowAmount'] * acre_to_m2,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['ACRES', 'Acres']), df['FlowAmount'] * acre_to_m2,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRES', 'm2', df['Unit'])
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Acres', df['FlowAmount'] * acre_to_m2,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Acres', 'm2', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['ACRES', 'Acres']), 'm2', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
                                        df['FlowAmount'] * sq_ft_to_sq_m_multiplier * 1000000,
@@ -134,6 +135,37 @@ def harmonize_units(df):
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal', 'kg', df['Unit'])
 
     # class = other, unit varies
+
+
+
+
+    # Convert Energy unit "Quadrillion Btu" to MJ
+    # 1 Quad = .0010550559 x 10^15
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
+
+    # Convert Energy unit "Trillion Btu" to MJ
+    # 1 Tril = .0010550559 x 10^14
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
+                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year',
+                                       df['FlowAmount'] * 264.172, df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
+
+    # Convert mass units (LB or TON) to kg
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
+                                       df['FlowAmount'] * ton_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
+                                       df['FlowAmount'] * lb_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['TON', 'LB']),
+                                 'kg', df['Unit'])
 
     return df
 

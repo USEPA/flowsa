@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first_letter, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.validation import compare_df_units
 
 def usgs_URL_helper(**kwargs):
     """
@@ -430,11 +430,15 @@ def calculate_net_public_supply(df_load):
     # temporary assumption that water withdrawal taken evenly from ground and surface
     df_w1 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] != 'total')]
     df_w2 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] == 'total')]
-    df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location']], how='left',
-                     left_on='Location', right_on='Location')
+    # compare units
+    compare_df_units(df_w1, df_w2)
+    df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location', 'Unit']], how='left',
+                     left_on=['Location', 'Unit'], right_on=['Location', 'Unit'])
     df_wm = df_wm.rename(columns={"FlowAmount_x": "FlowAmount",
                                   "FlowAmount_y": "FlowTotal"
                                   })
+    # compare units
+    compare_df_units(df_wm, df_d)
     # merge the deliveries to domestic
     df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']],
                              how='left', left_on='Location',
@@ -453,6 +457,8 @@ def calculate_net_public_supply(df_load):
 
     net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
 
+    # compare units
+    compare_df_units(df_d, net_ps)
     # because assumiming domestic is all fresh, change flow name.
     # Also allocate to ground/surface from state ratios
     df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']],
@@ -491,6 +497,8 @@ def check_golf_and_crop_irrigation_totals(df_load):
     df_c = df[(df[fba_activity_fields[0]] == 'Irrigation Crop') |
               (df[fba_activity_fields[1]] == 'Irrigation Crop')]
 
+    # unit check
+    compare_df_units(df_i, df_g)
     # merge the golf and total irrigation into crop df and modify crop FlowAmounts if necessary
     df_m = pd.merge(df_i, df_g[['FlowName', 'FlowAmount', 'ActivityProducedBy',
                                 'ActivityConsumedBy', 'Compartment',
@@ -505,6 +513,7 @@ def check_golf_and_crop_irrigation_totals(df_load):
                                 "ActivityProducedBy_y": "Golf_APB",
                                 "ActivityConsumedBy_y": "Golf_ACB",
                                 })
+    compare_df_units(df_m, df_c)
     df_m2 = pd.merge(df_m, df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy',
                                  'ActivityConsumedBy', 'Compartment',
                                  'Location', 'Year']],
@@ -540,12 +549,14 @@ def check_golf_and_crop_irrigation_totals(df_load):
     return df_w_missing_crop
 
 
-def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
+def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
     """
     Call on functions to modify the fba with sectors df before being allocated to sectors
     Used in flowbysector.py
     :param df_wsec: an FBA dataframe with sectors
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: includes "method", a parameter required in other 'clean_fba_w_sec_df_fxn'
+           function calls when building a FBS
     :return: df, FBA modified
     """
 
