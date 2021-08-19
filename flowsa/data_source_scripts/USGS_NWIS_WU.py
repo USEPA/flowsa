@@ -220,15 +220,7 @@ def usgs_parse(**kwargs):
 
     # add FlowType
     df['FlowType'] = np.where(df["Description"].str.contains('wastewater'),
-                              "WASTE_FLOW", None)
-    df['FlowType'] = np.where(df["Description"].str.contains('self-supplied'),
-                              "ELEMENTARY_FLOW", df['FlowType'])
-    df['FlowType'] = np.where(df["Description"].str.contains('Self-supplied'),
-                              "ELEMENTARY_FLOW", df['FlowType'])
-    df['FlowType'] = np.where(df["Description"].str.contains('conveyance'),
-                              "ELEMENTARY_FLOW", df['FlowType'])
-    df['FlowType'] = np.where(df["Description"].str.contains('consumptive'),
-                              "ELEMENTARY_FLOW", df['FlowType'])
+                              "WASTE_FLOW", "ELEMENTARY_FLOW")
     df['FlowType'] = np.where(df["Description"].str.contains('deliveries'),
                               "ELEMENTARY_FLOW", df['FlowType'])  # is really a "TECHNOSPHERE_FLOW"
 
