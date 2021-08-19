@@ -831,7 +831,7 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     return df_m
 
 
-def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activity_set):
+def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activity_set, activity_names):
     """
     Check for any data loss between the geoscale used and published national data
     :param df_subset: df, after subset by geography
@@ -839,6 +839,8 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
     :param sourcename: str, source name
     :param method_name: str, method name
     :param activity_set: str, activity set
+    :param activity_names: list of names in the activity set by which
+           to subset national level data
     :return: df, comparing published national level data to df subset
     """
 
@@ -847,8 +849,14 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
                   US_FIPS].reset_index(drop=True).rename(columns={'FlowAmount': 'FlowAmount_nat'})
     # if df len is not 0, continue with comparision
     if len(nat) != 0:
+        # subset national level data by activity set names
+        nat = nat[(nat[fba_activity_fields[0]].isin(activity_names)) |
+                  (nat[fba_activity_fields[1]].isin(activity_names)
+                   )].reset_index(drop=True)
         # drop the geoscale in df_subset and sum
         sub = df_subset.assign(Location=US_FIPS)
+        # depending on the datasource, might need to rename some strings for national comparison
+        sub = rename_column_values_for_comparison(sub, sourcename)
         sub2 = aggregator(sub,fba_default_grouping_fields).rename(
             columns={'FlowAmount': 'FlowAmount_sub'})
 
@@ -862,18 +870,43 @@ def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activ
                         sub2[merge_cols + ['FlowAmount_sub']],
                         how='outer')
         df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_nat'] - df_m['FlowAmount_sub'])
-        df_m = df_m.assign(Percent_Diff=(df_m['FlowAmount_diff'] / df_m['FlowAmount_nat']) * 100)
+        df_m = df_m.assign(Percent_Diff=(abs(df_m['FlowAmount_diff'] / df_m['FlowAmount_nat']) * 100))
         df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
+        # subset the merged df to what to include in the validation df
+        # include data where percent difference is > 1 or where value is nan
+        df_m_sub = df_m[(df_m['Percent_Diff'] > 1) |
+                        (df_m['Percent_Diff'].isna())].reset_index(drop=True)
 
-        if len(df_m) == 0:
-            vLog.info('No data loss between national level data and df subset')
+        if len(df_m_sub) == 0:
+            vLog.info('No data loss greater than 1% between national level data and df subset')
         else:
-            vLog.info('There are data differences between published national values'
-                     ' and dataframe subset, saving as csv')
-            # save as csv
-            df_m.to_csv(outputpath + "FlowBySectorMethodAnalysis/" +
-                        method_name + '_' + sourcename +
-                        "_geographic_comparison_" + activity_set + ".csv", index=False)
+            vLog.info('There are data differences between published national values '
+                      'and dataframe subset, saving to validation log')
+
+            vLogDetailed.info('Comparison of National FlowAmounts to aggregated Data Subset for %s: '
+                              '\n {}'.format(df_m_sub.to_string()), activity_set)
+
+
+def rename_column_values_for_comparison(df, sourcename):
+    """
+    To compare some datasets at different geographic scales, must rename FlowName and Compartments
+    to those available at national level
+    :param df: df with FlowName and Compartment columns
+    :param sourcename: string, datasource name
+    :return:
+    """
+
+    # at the national level, only have information for 'FlowName' = 'total' and
+    # 'Compartment' = 'total'. At state/county level, have information for fresh/saline
+    # and ground/surface water. Therefore, to compare subset data to national level, rename
+    # to match national values.
+    if sourcename == 'USGS_NWIS_WU':
+        df['FlowName'] = df['FlowName'].str.replace('fresh', 'total', regex=True)
+        df['FlowName'] = df['FlowName'].str.replace('saline', 'total', regex=True)
+        df['Compartment'] = df['Compartment'].str.replace('ground', 'total', regex=True)
+        df['Compartment'] = df['Compartment'].str.replace('surface', 'total', regex=True)
+
+    return df
 
 
 def compare_df_units(df1_load, df2_load):
