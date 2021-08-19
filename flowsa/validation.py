@@ -831,13 +831,12 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     return df_m
 
 
-def compare_geographic_totals(df_subset, df_load, sourcename, method_name, activity_set, activity_names):
+def compare_geographic_totals(df_subset, df_load, sourcename, activity_set, activity_names):
     """
     Check for any data loss between the geoscale used and published national data
     :param df_subset: df, after subset by geography
     :param df_load: df, loaded data, including published national data
     :param sourcename: str, source name
-    :param method_name: str, method name
     :param activity_set: str, activity set
     :param activity_names: list of names in the activity set by which
            to subset national level data
