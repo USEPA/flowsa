@@ -555,17 +555,17 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fba_mapping_data, fbs_load,
         df_v = df_merge[df_merge['Percent_difference'].apply(lambda x: round(x, 3) != 0)].reset_index(drop=True)
 
         # log output
-        vLog.info('Save the comparison of FlowByActivity load to FlowBySector'
+        vLog.info('Save the comparison of FlowByActivity load to FlowBySector '
                   'total FlowAmounts for %s in validation log file', activity_set)
         # if df not empty, print, if empty, print string
         if df_v.empty:
             vLogDetailed.info('Percent difference for %s all round to 0', activity_set)
         else:
-            vLogDetailed.info('Comparison of FBA load to FBS total'
+            vLogDetailed.info('Comparison of FBA load to FBS total '
                           'FlowAmounts for %s: '
                           '\n {}'.format(df_v.to_string()), activity_set)
     except:
-        vLog.info('Error occured when comparing total FlowAmounts'
+        vLog.info('Error occured when comparing total FlowAmounts '
                  'for FlowByActivity and FlowBySector')
 
 
