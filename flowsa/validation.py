@@ -321,23 +321,23 @@ def calculate_flowamount_differences(df1_load, df2_load):
     :return:
     """
     # subset the dataframes, only keeping data for easy comparision of flowamounts
-    cols = ['Class', 'SourceName', 'FlowName', 'FlowAmount', 'Unit', 'ActivityProducedBy', 'ActivityConsumedBy',
-            'Compartment', 'Location', 'Year', 'Description']
-    merge_cols = [e for e in cols if e not in ['FlowAmount']]
-    # rename cols
-    df1 = df1_load[cols].rename(columns={'FlowAmount': 'FlowAmount_Original'})
-    df2 = df2_load[cols].rename(columns={'FlowAmount': 'FlowAmount_Modified'})
-    # merge the two dataframes
-    df = df1.merge(df2,
-                   left_on=merge_cols,
-                   right_on=merge_cols,
-                   how='outer')
+    drop_cols = ['MeasureofSpread', 'Spread', 'DistributionType',
+                 'Min', 'Max', 'DataReliability', 'DataCollection',
+                 'FlowAmount']
+    # drop cols and rename
+    df1 = df1_load.drop(drop_cols, axis=1).rename(columns={'FlowAmount': 'FlowAmount_Original'})
+    df2 = df2_load.drop(drop_cols, axis=1).rename(columns={'FlowAmount': 'FlowAmount_Modified'})
+     # merge the two dataframes
+    df = df1.merge(df2, how='outer')
     # column calculating difference
     df['FlowAmount_Difference'] = df['FlowAmount_Original'] - df['FlowAmount_Modified']
     df['Percent_Difference'] = (df['FlowAmount_Difference']/df['FlowAmount_Modified']) * 100
 
     # determine if any new data is negative
     dfn = df[df['FlowAmount_Modified'] <0].reset_index(drop=True)
+    if len(dfn) > 0:
+        vLogDetailed.info('There are negative FlowAmounts in new dataframe: '
+                          '\n {}'.format(dfn.to_string()))
 
     return df
 

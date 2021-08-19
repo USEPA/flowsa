@@ -175,12 +175,16 @@ def main(**kwargs):
 
                 # if activities are sector-like, check sectors are valid
                 if load_source_catalog()[k]['sector-like_activities']:
-                    flows_subset =\
+                    flows_subset2 =\
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
+                    # check impact on df FlowAmounts
+                    calculate_flowamount_differences(flows_subset, flows_subset2)
+                else:
+                    flows_subset2 = flows_subset.copy()
 
                 # extract relevant geoscale data or aggregate existing data
-                flows_subset_geo = subset_df_by_geoscale(flows_subset, v['geoscale_to_use'],
+                flows_subset_geo = subset_df_by_geoscale(flows_subset2, v['geoscale_to_use'],
                                                          attr['allocation_from_scale'])
                 # if loading data subnational geoscale, check for data loss
                 if attr['allocation_from_scale'] != 'national':
