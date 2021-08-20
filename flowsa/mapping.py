@@ -310,7 +310,7 @@ def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
                                    keep_unmapped_rows=keep_unmapped_rows,
                                    ignore_source_name = ignore_source_name)
 
-    if ((mapped_df is None) | (len(mapped_df)==0)):
+    if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so can continue working on the FBS
         log.warning("Error in flow mapping")
         mapped_df = fba.copy()
