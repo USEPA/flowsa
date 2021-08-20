@@ -445,28 +445,27 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                               '\n {}'.format(df_v.to_string()), activity_set)
 
 
-def compare_fba_load_and_fbs_output_totals(fba_load, fba_mapping_data, fbs_load, activity_set,
-                                           source_name, attr, method, mapping_files):
+def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
+                                           source_name, attr, method):
     """
     Function to compare the loaded flowbyactivity total with the final flowbysector output total
     for the target sector level
     :param fba_load: df, FBA loaded, before being mapped
-    :param fba_mapping_data: df, the subset mapped data that contains mapped columns
     :param fbs_load: df, final FBS df at target sector level
     :param activity_set: str, activity set
     :param source_name: str, source name
     :param method_name: str, method name
     :param attr: dictionary, attribute data from method yaml for activity set
     :param method: dictionary, FBS method yaml
-    :param mapping_files: df, fedefl mapping for data source
     :return: printout data differences between loaded FBA and FBS output totals by location,
              save results as csv in local directory
     """
 
     from flowsa.mapping import map_flows
 
-    vLog.info('Comparing loaded Flow-By-Activity FlowAmount total to '
-             'subset Flow-By-Sector FlowAmount total')
+    vLog.info('Comparing Flow-By-Activity after loading and cleaning FlowAmount total to '
+              'the subset Flow-By-Sector FlowAmount total. Not a comparison of original '
+              'loaded flows.')
 
     # load source catalog
     cat = load_source_catalog()
