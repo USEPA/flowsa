@@ -322,8 +322,7 @@ def calculate_flowamount_differences(df1_load, df2_load):
     """
     # subset the dataframes, only keeping data for easy comparision of flowamounts
     drop_cols = ['MeasureofSpread', 'Spread', 'DistributionType',
-                 'Min', 'Max', 'DataReliability', 'DataCollection',
-                 'FlowAmount']
+                 'Min', 'Max', 'DataReliability', 'DataCollection']
     # drop cols and rename
     df1 = df1_load.drop(drop_cols, axis=1).rename(columns={'FlowAmount': 'FlowAmount_Original'})
     df2 = df2_load.drop(drop_cols, axis=1).rename(columns={'FlowAmount': 'FlowAmount_Modified'})
@@ -476,7 +475,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fba_mapping_data, fbs_load,
     # extract relevant geoscale data or aggregate existing data
     fba = subset_df_by_geoscale(fba_load, attr['allocation_from_scale'], method['target_geoscale'])
     # map loaded fba
-    fba = fba.merge(fba_mapping_data, how='left')
+    # fba = fba.merge(fba_mapping_data, how='left')
     if src_info['sector-like_activities']:
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2

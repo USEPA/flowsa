@@ -14,7 +14,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
     fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
-    find_true_file_path
+    find_true_file_path, flow_by_activity_mapped_fields, fba_mapped_default_grouping_fields
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells, standardize_units
 from esupy.dqi import get_weighted_average
@@ -522,7 +522,7 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
             # fba activity to allocation geoscale
             if fips_number_key[i] > fips_number_key[to_scale]:
                 log.info("Aggregating subset from %s to %s", i, to_scale)
-                df_sub = agg_by_geoscale(df3, i, to_scale, fba_default_grouping_fields)
+                df_sub = agg_by_geoscale(df3, i, to_scale, fba_mapped_default_grouping_fields)
             # else filter relevant rows
             else:
                 log.info("Subsetting %s data", i)
@@ -530,8 +530,8 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
             df_subset_list.append(df_sub)
         df_subset = pd.concat(df_subset_list, ignore_index=True)
 
-        # only keep cols associated with FBA
-        df_subset = clean_df(df_subset, flow_by_activity_fields,
+        # only keep cols associated with FBA mapped
+        df_subset = clean_df(df_subset, flow_by_activity_mapped_fields,
                              fba_fill_na_dict, drop_description=False)
 
     # right now, the only other location system is for Statistics Canada data

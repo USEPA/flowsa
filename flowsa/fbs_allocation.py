@@ -10,7 +10,8 @@ import numpy as np
 import pandas as pd
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, log, \
-    fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict
+    fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict, \
+    fba_wsec_default_grouping_fields
 from flowsa.validation import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
@@ -114,7 +115,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     # create flow allocation ratios for each activity
     # if load_source_catalog()[k]['sector-like_activities']
     flow_alloc_list = []
-    group_cols = fba_mapped_default_grouping_fields
+    group_cols = fba_wsec_default_grouping_fields
     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
     for n in names:
         log.debug("Creating allocation ratios for %s", n)
@@ -210,7 +211,7 @@ def allocation_helper(df_w_sector, attr, method, v):
                                            geoscale_to=v['geoscale_to_use'], **fba_dict)
 
     # run sector disagg to capture any missing lower level naics
-    helper_allocation = sector_disaggregation(helper_allocation, fba_mapped_default_grouping_fields)
+    helper_allocation = sector_disaggregation(helper_allocation, fba_wsec_default_grouping_fields)
 
     # generalize activity field names to enable link to water withdrawal table
     helper_allocation = collapse_activity_fields(helper_allocation)

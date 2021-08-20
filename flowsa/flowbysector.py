@@ -135,9 +135,9 @@ def main(**kwargs):
             flows_mapped, mapping_files = map_fbs_flows(flows, k, v, keep_fba_columns=True)
 
             # subset out the mapping information, add back in after cleaning up FBA data
-            mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',
-                                      'Context', 'FlowUUID']].drop_duplicates()
-            flows_mapped = flows_mapped[flow_by_activity_fields]
+            # mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',
+            #                           'Context', 'FlowUUID']].drop_duplicates()
+            # flows_mapped = flows_mapped[flow_by_activity_fields]
 
             # clean up fba, if specified in yaml
             if "clean_fba_df_fxn" in v:
@@ -205,9 +205,9 @@ def main(**kwargs):
                                                                                attr=attr, method=method)
 
                 # add mapping columns back
-                flows_mapped_wsec = flows_subset_wsec.merge(mapped_df, how='left')
+                # flows_mapped_wsec = flows_subset_wsec.merge(mapped_df, how='left')
                 # rename SourceName to MetaSources and drop columns
-                flows_mapped_wsec = flows_mapped_wsec.\
+                flows_mapped_wsec = flows_subset_wsec.\
                     rename(columns={'SourceName': 'MetaSources'}).\
                     drop(columns=['FlowName', 'Compartment'])
 
@@ -292,7 +292,7 @@ def main(**kwargs):
                                                            axis=1, errors='ignore')
 
                 # save comparison of FBA total to FBS total for an activity set
-                compare_fba_load_and_fbs_output_totals(flows_subset_geo, mapped_df,
+                compare_fba_load_and_fbs_output_totals(flows_subset_geo, flows_mapped,
                                                        fbs_sector_subset, aset, k,
                                                        attr, method, mapping_files)
 

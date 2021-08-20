@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
     flow_by_sector_fields, fbs_default_grouping_fields, fbs_fill_na_dict, \
-    fba_mapped_default_grouping_fields
+    fba_wsec_default_grouping_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, allocate_by_sector, \
     sector_aggregation, sector_disaggregation, sector_ratios, \
     load_fba_w_standardized_units
@@ -361,7 +361,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         # estimate suppressed data by equal allocation
         # df_f = coa_cropland_naics_fba_wsec_cleanup(df_f)
         # create proportional ratios
-        group_cols = fba_mapped_default_grouping_fields
+        group_cols = fba_wsec_default_grouping_fields
         group_cols = [e for e in group_cols if
                       e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
         df_f = allocate_by_sector(df_f, 'proportional', group_cols)
