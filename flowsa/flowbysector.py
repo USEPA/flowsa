@@ -134,11 +134,6 @@ def main(**kwargs):
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = map_fbs_flows(flows, k, v, keep_fba_columns=True)
 
-            # subset out the mapping information, add back in after cleaning up FBA data
-            # mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',
-            #                           'Context', 'FlowUUID']].drop_duplicates()
-            # flows_mapped = flows_mapped[flow_by_activity_fields]
-
             # clean up fba, if specified in yaml
             if "clean_fba_df_fxn" in v:
                 log.info("Cleaning up %s FlowByActivity", k)
@@ -204,8 +199,6 @@ def main(**kwargs):
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
                                                                                attr=attr, method=method)
 
-                # add mapping columns back
-                # flows_mapped_wsec = flows_subset_wsec.merge(mapped_df, how='left')
                 # rename SourceName to MetaSources and drop columns
                 flows_mapped_wsec = flows_subset_wsec.\
                     rename(columns={'SourceName': 'MetaSources'}).\

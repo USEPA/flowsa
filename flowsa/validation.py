@@ -481,8 +481,6 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
     # extract relevant geoscale data or aggregate existing data
     fba = subset_df_by_geoscale(fba_load, attr['allocation_from_scale'], method['target_geoscale'])
-    # map loaded fba
-    # fba = fba.merge(fba_mapping_data, how='left')
     if src_info['sector-like_activities']:
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
