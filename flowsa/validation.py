@@ -5,16 +5,16 @@
 Functions to check data is loaded and transformed correctly
 """
 
-import os
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
-    fba_default_grouping_fields, subset_df_by_geoscale, sector_aggregation
+    fba_default_grouping_fields, subset_df_by_geoscale, sector_aggregation,\
+    filter_by_geoscale
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     load_sector_length_crosswalk, load_source_catalog, \
-    load_sector_crosswalk, SECTOR_SOURCE_NAME, log, outputpath, fba_activity_fields, \
+    load_sector_crosswalk, SECTOR_SOURCE_NAME, log, fba_activity_fields, \
     fbs_activity_fields, fbs_fill_na_dict, vLog, vLogDetailed
 
 
@@ -313,7 +313,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                           '\n {}'.format(df_v.to_string()), activity_set)
 
 
-def calculate_flowamount_differences(dfa_load, dfb_load):
+def calculate_flowamount_differences(dfa_load, dfb_load, geoscale):
     """
     Calculate the differences in FlowAmounts between two dfs
     :param fba1:
@@ -321,23 +321,17 @@ def calculate_flowamount_differences(dfa_load, dfb_load):
     :return:
     """
 
-    # test
-    # dfa_load = flows_mapped.copy()
-    # dfb_load = flows_fba.copy()
-
-    # subset the dataframes, only keeping data for easy comparision of flowamounts
+    # subset the dataframes, only keeping data for easy comparison of flowamounts
     drop_cols = ['MeasureofSpread', 'Spread', 'DistributionType',
                  'Min', 'Max', 'DataReliability', 'DataCollection', 'Description']
     # drop cols and rename, ignore error if a df does not contain a column to drop
     dfa = dfa_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Original'})
     dfb = dfb_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Modified'})
+    # subset by geoscale
+    dfa = filter_by_geoscale(dfa, geoscale)
+    dfb = filter_by_geoscale(dfb, geoscale)
      # merge the two dataframes
     df = dfa.merge(dfb, how='outer')
-    # column calculating difference
-    df['FlowAmount_Difference'] = df['FlowAmount_Original'] - df['FlowAmount_Modified']
-    df['Percent_Difference'] = (df['FlowAmount_Difference']/df['FlowAmount_Modified']) * 100
-    # drop rows where difference is 0
-    df1 = df[df['FlowAmount_Difference'] != 0].reset_index(drop=True)
 
     # determine if any new data is negative
     dfn = df[df['FlowAmount_Modified'] < 0].reset_index(drop=True)
@@ -346,6 +340,17 @@ def calculate_flowamount_differences(dfa_load, dfb_load):
         vLogDetailed.info('Negative FlowAmounts in new dataframe: '
                           '\n {}'.format(dfn.to_string()))
 
+    # Because code will sometimes change terminology, aggregate data by context and flowable to compare df differences
+    # subset df
+    dfs = df[['Flowable', 'Context', 'Year', 'FlowAmount_Original', 'FlowAmount_Modified', 'Unit']]
+    agg_cols = ['Flowable', 'Context', 'Year', 'Unit']
+    dfagg = dfs.groupby(agg_cols, as_index=False)[['FlowAmount_Original', 'FlowAmount_Modified']].agg("sum")
+    # column calculating difference
+    dfagg['FlowAmount_Difference'] = dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
+    dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference']/dfagg['FlowAmount_Original']) * 100
+    # save output in log file
+    vLogDetailed.info('Comparison of %s FlowAmounts after modifying df: '
+                      '\n {}'.format(dfagg.to_string()), geoscale)
     return df
 
 
@@ -850,7 +855,7 @@ def compare_geographic_totals(df_subset, df_load, sourcename, activity_set, acti
     # subset df_load to national level
     nat = df_load[df_load['Location'] ==
                   US_FIPS].reset_index(drop=True).rename(columns={'FlowAmount': 'FlowAmount_nat'})
-    # if df len is not 0, continue with comparision
+    # if df len is not 0, continue with comparison
     if len(nat) != 0:
         # subset national level data by activity set names
         nat = nat[(nat[fba_activity_fields[0]].isin(activity_names)) |

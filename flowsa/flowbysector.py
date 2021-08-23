@@ -139,7 +139,7 @@ def main(**kwargs):
                 log.info("Cleaning up %s FlowByActivity", k)
                 flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
                 # calculate expected data loss
-                calculate_flowamount_differences(flows_mapped, flows_fba)
+                calculate_flowamount_differences(flows_mapped, flows_fba, v['geoscale_to_use'])
             else:
                 flows_fba = flows_mapped.copy()
 
@@ -174,7 +174,7 @@ def main(**kwargs):
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
                     # check impact on df FlowAmounts
-                    calculate_flowamount_differences(flows_subset, flows_subset2)
+                    calculate_flowamount_differences(flows_subset, flows_subset2, attr['allocation_from_scale'])
                 else:
                     flows_subset2 = flows_subset.copy()
 

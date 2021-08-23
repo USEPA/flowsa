@@ -34,3 +34,6 @@ usgs_water_fba_2015 =\
 usgs_water_fba_2015.Location =\
     usgs_water_fba_2015.Location.apply('="{}"'.format)  # maintain leading 0s in location col
 usgs_water_fba_2015.to_csv(fbaoutputpath + ds + "_" + str(year_fba) + ".csv", index=False)
+
+
+df = flowsa.getFlowByActivity(datasource="EPA_GHGI_T_4_94", year=2017)
