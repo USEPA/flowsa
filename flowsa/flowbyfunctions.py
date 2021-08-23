@@ -7,6 +7,7 @@ Helper functions for flowbyactivity and flowbysector data
 
 import pandas as pd
 import numpy as np
+import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, log, load_source_catalog, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
@@ -14,8 +15,8 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
     fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
     find_true_file_path
-from flowsa.dataclean import clean_df, replace_strings_with_NoneType,\
-    replace_NoneType_with_empty_cells
+from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
+    replace_NoneType_with_empty_cells, standardize_units
 from esupy.dqi import get_weighted_average
 
 
@@ -858,3 +859,30 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
     df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
                             fromlist=function_name), function_name)
     return df
+
+
+def load_fba_w_standardized_units(datasource, year, **kwargs):
+    """
+    Standardize how a FBA is loaded for allocation purposes when generating a FBS.
+    Important to immediately convert the df units to standardized units.
+    :param datasource: string, FBA source name
+    :param year: int, year of data
+    :param kwargs: optional parameters include flowclass, geographic_level,
+           and download_if_missing
+    :return: fba df with standardized units
+    """
+    # determine if any addtional parameters required to load a Flow-By-Activity
+    # add parameters to dictionary if exist in method yaml
+    fba_dict = {}
+    if 'flowclass' in kwargs:
+        fba_dict['flowclass'] = kwargs['flowclass']
+    if 'geographic_level' in kwargs:
+        fba_dict['geographic_level'] = kwargs['geographic_level']
+    # load the allocation FBA
+    fba = flowsa.getFlowByActivity(datasource, year, **fba_dict).reset_index(drop=True)
+    # ensure df loaded correctly/has correct dtypes
+    fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
+    # convert to standardized units
+    fba = standardize_units(fba)
+
+    return fba

@@ -7,7 +7,7 @@
 import shutil
 import sys
 import os
-import logging as log
+import logging
 import yaml
 import requests
 import requests_ftp
@@ -20,11 +20,6 @@ from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 PKG_VERSION_NUMBER = '0.2'
-
-log.basicConfig(level=log.DEBUG,
-                format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S',
-                stream=sys.stdout)
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -55,22 +50,82 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
              '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
-# setup log file handler
+
+# define 4 logs, one for general information, one for major validation logs that are also included
+# in the gerneral info log, one for very specific validation that is only included in the validation log,
+# and a console printout that includes general and validation, but not detailed validation
 create_paths_if_missing(logoutputpath)
-fh = log.FileHandler(logoutputpath+'flowsa.log', mode='w')
-fh.setLevel(log.DEBUG)
-formatter = log.Formatter('%(asctime)s %(levelname)-8s %(message)s',
-                          datefmt='%Y-%m-%d %H:%M:%S')
-fh.setFormatter(formatter)
-ch = log.StreamHandler(stream=sys.stdout)
-ch.setLevel(log.INFO)
+
+# format for logging .txt generated
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
+                              datefmt='%Y-%m-%d %H:%M:%S')
+
+# create loggers
+# general logger
+log = logging.getLogger('allLog')
+log.setLevel(logging.DEBUG)
+log.propagate=False
+# log.propagate=False
+# general validation logger
+vLog = logging.getLogger('validationLog')
+vLog.setLevel(logging.DEBUG)
+vLog.propagate=False
+# detailed validation logger
+vLogDetailed = logging.getLogger('validationLogDetailed')
+vLogDetailed.setLevel(logging.DEBUG)
+vLogDetailed.propagate=False
+
+# create handlers
+# create handler for overall logger
+log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
+log_fh.setFormatter(formatter)
+# create handler for general validation information
+vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
+vLog_fh.setFormatter(formatter)
+# create console handler
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.INFO)
 ch.setFormatter(formatter)
-for hdlr in log.getLogger('').handlers[:]:
-    log.getLogger('').removeHandler(hdlr)
-log.getLogger('').addHandler(fh)
-log.getLogger('').addHandler(ch)
+
+# add handlers to various loggers
+# general logger
+log.addHandler(ch) # print to console
+log.addHandler(log_fh)
+vLog.addHandler(log_fh)
+# validation logger
+vLog.addHandler(ch) # print to console
+vLog.addHandler(vLog_fh)
+vLogDetailed.addHandler(vLog_fh)
 
 
+def rename_log_file(filename, fb_meta):
+    """
+    Rename the log file saved to local directory using df meta for df
+    :param filename: str, name of dataset
+    :param fb_meta: metadata for parquet
+    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
+    :return: modified log file name
+    """
+    # original log file name - all log statements
+    log_file = f'{logoutputpath}{"flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
+                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
+    # original log file name - validation
+    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}_v' \
+                   f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
+
+# metadata
 pkg = pkg_resources.get_distribution("flowsa")
 GIT_HASH = get_git_hash()
 GIT_HASH_LONG = get_git_hash('long')
@@ -123,15 +178,25 @@ def load_api_key(api_source):
     return key
 
 
-def make_http_request(url):
+def make_http_request(url, **kwargs):
     """
     Makes http request using requests library
     :param url: URL to query
     :return: request Object
     """
+    if 'requests_session' in kwargs:
+        s = kwargs['requests_session']
+    else:
+        s = requests
+
     r = []
     try:
-        r = requests.get(url)
+        r = s.get(url) #requests.get(url)
+        # determine if require request.post to set cookies
+        if 'set_cookies' in kwargs:
+            if kwargs['set_cookies'] == 'yes':
+                cookies = dict(r.cookies)
+                r = s.post(url, verify=True, cookies=cookies)
     except requests.exceptions.InvalidSchema:  # if url is ftp rather than http
         requests_ftp.monkeypatch_session()
         r = requests.Session().get(url)
@@ -248,27 +313,28 @@ def load_functions_loading_fbas_config():
     return config
 
 
-flow_by_activity_fields = {'Class': [{'dtype': 'str'}, {'required': True}],
-                           'SourceName': [{'dtype': 'str'}, {'required': True}],
-                           'FlowName': [{'dtype': 'str'}, {'required': True}],
-                           'FlowAmount': [{'dtype': 'float'}, {'required': True}],
-                           'Unit': [{'dtype': 'str'}, {'required': True}],
-                           'FlowType': [{'dtype': 'str'}, {'required': True}],
-                           'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
-                           'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
-                           'Compartment': [{'dtype': 'str'}, {'required': False}],
-                           'Location': [{'dtype': 'str'}, {'required': True}],
-                           'LocationSystem': [{'dtype': 'str'}, {'required': True}],
-                           'Year': [{'dtype': 'int'}, {'required': True}],
-                           'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
-                           'Spread': [{'dtype': 'float'}, {'required': False}],
-                           'DistributionType': [{'dtype': 'str'}, {'required': False}],
-                           'Min': [{'dtype': 'float'}, {'required': False}],
-                           'Max': [{'dtype': 'float'}, {'required': False}],
-                           'DataReliability': [{'dtype': 'float'}, {'required': True}],
-                           'DataCollection': [{'dtype': 'float'}, {'required': True}],
-                           'Description': [{'dtype': 'str'}, {'required': True}]
-                           }
+flow_by_activity_fields = \
+    {'Class': [{'dtype': 'str'}, {'required': True}],
+     'SourceName': [{'dtype': 'str'}, {'required': True}],
+     'FlowName': [{'dtype': 'str'}, {'required': True}],
+     'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+     'Unit': [{'dtype': 'str'}, {'required': True}],
+     'FlowType': [{'dtype': 'str'}, {'required': True}],
+     'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'Compartment': [{'dtype': 'str'}, {'required': False}],
+     'Location': [{'dtype': 'str'}, {'required': True}],
+     'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+     'Year': [{'dtype': 'int'}, {'required': True}],
+     'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+     'Spread': [{'dtype': 'float'}, {'required': False}],
+     'DistributionType': [{'dtype': 'str'}, {'required': False}],
+     'Min': [{'dtype': 'float'}, {'required': False}],
+     'Max': [{'dtype': 'float'}, {'required': False}],
+     'DataReliability': [{'dtype': 'float'}, {'required': True}],
+     'DataCollection': [{'dtype': 'float'}, {'required': True}],
+     'Description': [{'dtype': 'str'}, {'required': True}]
+     }
 
 flow_by_sector_fields = \
     {'Flowable': [{'dtype': 'str'}, {'required': True}],
@@ -293,7 +359,8 @@ flow_by_sector_fields = \
      'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
-     'MetaSources': [{'dtype': 'str'}, {'required': True}]
+     'MetaSources': [{'dtype': 'str'}, {'required': True}],
+     'FlowUUID': [{'dtype': 'str'}, {'required': True}]
      }
 
 flow_by_sector_fields_w_activity = flow_by_sector_fields.copy()
@@ -324,10 +391,37 @@ flow_by_sector_collapsed_fields = \
      'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
-     'MetaSources': [{'dtype': 'str'}, {'required': True}]
-                                   }
+     'MetaSources': [{'dtype': 'str'}, {'required': True}],
+     'FlowUUID': [{'dtype': 'str'}, {'required': True}]
+     }
 
-flow_by_activity_wsec_mapped_fields = \
+flow_by_activity_mapped_fields = \
+    {'Class': [{'dtype': 'str'}, {'required': True}],
+     'SourceName': [{'dtype': 'str'}, {'required': True}],
+     'FlowName': [{'dtype': 'str'}, {'required': True}],
+     'Flowable': [{'dtype': 'str'}, {'required': True}],
+     'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+     'Unit': [{'dtype': 'str'}, {'required': True}],
+     'FlowType': [{'dtype': 'str'}, {'required': True}],
+     'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'Compartment': [{'dtype': 'str'}, {'required': False}],
+     'Context': [{'dtype': 'str'}, {'required': False}],
+     'Location': [{'dtype': 'str'}, {'required': True}],
+     'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+     'Year': [{'dtype': 'int'}, {'required': True}],
+     'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+     'Spread': [{'dtype': 'float'}, {'required': False}],
+     'DistributionType': [{'dtype': 'str'}, {'required': False}],
+     'Min': [{'dtype': 'float'}, {'required': False}],
+     'Max': [{'dtype': 'float'}, {'required': False}],
+     'DataReliability': [{'dtype': 'float'}, {'required': True}],
+     'DataCollection': [{'dtype': 'float'}, {'required': True}],
+     'Description': [{'dtype': 'str'}, {'required': True}],
+     'FlowUUID': [{'dtype': 'str'}, {'required': True}]
+     }
+
+flow_by_activity_wsec_fields = \
     {'Class': [{'dtype': 'str'}, {'required': True}],
      'SourceName': [{'dtype': 'str'}, {'required': True}],
      'FlowName': [{'dtype': 'str'}, {'required': True}],
@@ -347,7 +441,6 @@ flow_by_activity_wsec_mapped_fields = \
      'Max': [{'dtype': 'float'}, {'required': False}],
      'DataReliability': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
-     # 'Description': [{'dtype': 'str'}, {'required': True}],
      'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
      'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
@@ -410,7 +503,7 @@ fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 fbs_grouping_fields_w_activities = fbs_default_grouping_fields + \
                                    (['ActivityProducedBy', 'ActivityConsumedBy'])
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
-fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_mapped_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_fields)
 
 
 def read_stored_FIPS(year='2015'):
@@ -742,25 +835,6 @@ def convert_fba_unit(df):
     return df
 
 
-def rename_log_file(filename, fb_meta):
-    """
-    Rename the log file saved to local directory using df meta for df
-    :param filename: str, name of dataset
-    :param fb_meta: metadata for parquet
-    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
-    :return: modified log file name
-    """
-    # original log file name
-    log_file = f'{logoutputpath}{"flowsa.log"}'
-    # generate new log name
-    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
-                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file already exists)
-    shutil.copy(log_file, new_log_name)
-
-
 def find_true_file_path(filedirectory, filename, extension):
     """
     If filename does not match filename within flowsa due to added extensions
@@ -769,7 +843,7 @@ def find_true_file_path(filedirectory, filename, extension):
     :param filedirectory: string, path to directory
     :param filename: string, name of original file searching for
     :param extension: string, type of file, such as "yaml" or "py"
-    :return:
+    :return: string, corrected file path name
     """
     # if a file does not exist modify file name, dropping ext after last underscore
     if os.path.exists(f"{filedirectory}{filename}.{extension}") is False:

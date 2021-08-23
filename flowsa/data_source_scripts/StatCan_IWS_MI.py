@@ -1,19 +1,19 @@
 # Stat_Canada.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-'''
+"""
 Pulls Statistics Canada data on water intake and discharge for 3 digit NAICS from 2005 - 2015
-'''
-
+"""
 
 import io
 import zipfile
 import pandas as pd
 from flowsa.values_from_literature import get_Canadian_to_USD_exchange_rate
-from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator,\
+    load_fba_w_standardized_units
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
     load_bea_crosswalk, call_country_code, WITHDRAWN_KEYWORD
-from flowsa.dataclean import harmonize_units
+from flowsa.validation import compare_df_units
 
 
 def sc_call(**kwargs):
@@ -115,14 +115,16 @@ def convert_statcan_data_to_US_water_use(df, attr):
     import flowsa
 
     # load Canadian GDP data
-    gdp = flowsa.getFlowByActivity(datasource='StatCan_GDP',
-                                   year=attr['allocation_source_year'],
-                                   flowclass='Money')
-    gdp = harmonize_units(gdp)
+    gdp = load_fba_w_standardized_units(datasource='StatCan_GDP',
+                                        year=attr['allocation_source_year'],
+                                        flowclass='Money')
+
     # drop 31-33
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
     gdp = gdp.rename(columns={"FlowAmount": "CanDollar"})
 
+    # check units before merge
+    compare_df_units(df, gdp)
     # merge df
     df_m = pd.merge(df, gdp[['CanDollar', 'ActivityProducedBy']],
                     how='left', left_on='ActivityConsumedBy',
@@ -146,10 +148,10 @@ def convert_statcan_data_to_US_water_use(df, attr):
 
     # load us gdp
     # load Canadian GDP data
-    us_gdp_load = flowsa.getFlowByActivity(datasource='BEA_GDP_GrossOutput',
-                                           year=attr['allocation_source_year'],
-                                           flowclass='Money')
-    us_gdp_load = harmonize_units(us_gdp_load)
+    us_gdp_load = load_fba_w_standardized_units(datasource='BEA_GDP_GrossOutput',
+                                                year=attr['allocation_source_year'],
+                                                flowclass='Money')
+
     # load bea crosswalk
     cw_load = load_bea_crosswalk()
     cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates()

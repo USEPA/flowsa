@@ -34,8 +34,7 @@ source_names:
     geoscale_to_use: national
     year: 2014
     clean_fba_df_fxn: mecs_land_fba_cleanup_for_land_2012_fbs
-    clean_fba_w_sec_df_fxn: None
-    clean_mapped_fba_w_sec_df_fxn: mecs_land_clean_allocation_mapped_fba_w_sec
+    clean_fba_w_sec_df_fxn: mecs_land_clean_allocation_mapped_fba_w_sec
     activity_set_file: 'EIA_MECS_Land_2014_asets.csv'
     activity_sets:
       activity_set_1: # all activities in eia mecs land crosswalk

@@ -6,12 +6,11 @@ Functions to generate .bib file for a FlowBySector method
 """
 
 import os
-import logging as log
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations_config, paths, \
+    load_values_from_literature_citations_config, paths, log, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
     find_true_file_path, sourceconfigpath
 
