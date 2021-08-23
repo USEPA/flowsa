@@ -146,7 +146,7 @@ sector_level_key = {"NAICS_2": 2,
 
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
-WITHDRAWN_KEYWORD = None
+WITHDRAWN_KEYWORD = np.nan
 
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
 
