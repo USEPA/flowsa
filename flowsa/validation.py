@@ -313,29 +313,37 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                           '\n {}'.format(df_v.to_string()), activity_set)
 
 
-def calculate_flowamount_differences(df1_load, df2_load):
+def calculate_flowamount_differences(dfa_load, dfb_load):
     """
     Calculate the differences in FlowAmounts between two dfs
     :param fba1:
     :param fba2:
     :return:
     """
+
+    # test
+    # dfa_load = flows_mapped.copy()
+    # dfb_load = flows_fba.copy()
+
     # subset the dataframes, only keeping data for easy comparision of flowamounts
     drop_cols = ['MeasureofSpread', 'Spread', 'DistributionType',
-                 'Min', 'Max', 'DataReliability', 'DataCollection']
-    # drop cols and rename
-    df1 = df1_load.drop(drop_cols, axis=1).rename(columns={'FlowAmount': 'FlowAmount_Original'})
-    df2 = df2_load.drop(drop_cols, axis=1).rename(columns={'FlowAmount': 'FlowAmount_Modified'})
+                 'Min', 'Max', 'DataReliability', 'DataCollection', 'Description']
+    # drop cols and rename, ignore error if a df does not contain a column to drop
+    dfa = dfa_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Original'})
+    dfb = dfb_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Modified'})
      # merge the two dataframes
-    df = df1.merge(df2, how='outer')
+    df = dfa.merge(dfb, how='outer')
     # column calculating difference
     df['FlowAmount_Difference'] = df['FlowAmount_Original'] - df['FlowAmount_Modified']
     df['Percent_Difference'] = (df['FlowAmount_Difference']/df['FlowAmount_Modified']) * 100
+    # drop rows where difference is 0
+    df1 = df[df['FlowAmount_Difference'] != 0].reset_index(drop=True)
 
     # determine if any new data is negative
-    dfn = df[df['FlowAmount_Modified'] <0].reset_index(drop=True)
+    dfn = df[df['FlowAmount_Modified'] < 0].reset_index(drop=True)
     if len(dfn) > 0:
-        vLogDetailed.info('There are negative FlowAmounts in new dataframe: '
+        vLog.info('There are negative FlowAmounts in new dataframe, see Validation Log')
+        vLogDetailed.info('Negative FlowAmounts in new dataframe: '
                           '\n {}'.format(dfn.to_string()))
 
     return df
