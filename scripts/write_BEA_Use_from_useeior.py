@@ -1,7 +1,6 @@
 # write_BEA_Use_from_useeior.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 A script to get Use table transactions from a useeior EEIOmodel.
@@ -11,7 +10,8 @@ A script to get Use table transactions from a useeior EEIOmodel.
 
 
 
-The BEA_2012_Detail_Use_PRO_BeforeRedef was pulled from USEEIOR's Detail_Use_2012_PRO_BeforeRedef.rda on 09/06/2020.
+The BEA_2012_Detail_Use_PRO_BeforeRedef was pulled from
+USEEIOR's Detail_Use_2012_PRO_BeforeRedef.rda on 09/06/2020.
 
 The original file is found here:
 https://github.com/USEPA/useeior/blob/master/data/Detail_Use_2012_PRO_BeforeRedef.rda
@@ -22,7 +22,8 @@ write.csv(bea, file='BEA_2012_Detail_Use_PRO_BeforeRedef.csv')
 
 CSV manually added to flowsa
 ---
-The BEA_2012_Detail_Make_BeforeRedef was pulled from USEEIOR's Detail_Make_2012_BeforeRedef.rda on 09/17/2020.
+The BEA_2012_Detail_Make_BeforeRedef was pulled from USEEIOR's
+Detail_Make_2012_BeforeRedef.rda on 09/17/2020.
 The original file is found here:
 https://github.com/USEPA/useeior/blob/master/data/Detail_Make_2012_BeforeRedef.rda
 
@@ -44,9 +45,11 @@ CSV manually added to flowsa
 
 """
 
-from flowsa.common import datapath
+
 from rpy2.robjects.packages import importr
 from rpy2.robjects import pandas2ri
+from flowsa.common import datapath
+
 pandas2ri.activate()
 
 useeior = importr('useeior')

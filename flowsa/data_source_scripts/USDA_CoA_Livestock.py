@@ -2,24 +2,34 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-import pandas as pd
+"""
+Functions used to import and parse USDA Census of Ag Livestock data
+"""
+
 import json
-import numpy as np
-from flowsa.common import *
+import pandas as pd
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, abbrev_us_state
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def CoA_Livestock_URL_helper(build_url, config, args):
+def CoA_Livestock_URL_helper(**kwargs):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
-    that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+
     # initiate url list for coa cropland data
     urls_livestock = []
 
@@ -47,28 +57,37 @@ def CoA_Livestock_URL_helper(build_url, config, args):
     return urls_livestock
 
 
-def coa_livestock_call(url, coa_response, args):
+def coa_livestock_call(**kwargs):
     """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
+    # load arguments necessary for function
+    response_load = kwargs['r']
 
-    :param url:
-    :param coa_response:
-    :param args:
-    :return:
-    """
-    livestock_json = json.loads(coa_response.text)
+    livestock_json = json.loads(response_load.text)
     # Convert response to dataframe
     df_livestock = pd.DataFrame(data=livestock_json["data"])
     return df_livestock
 
 
-def coa_livestock_parse(dataframe_list, args):
+def coa_livestock_parse(**kwargs):
     """
-    Modify the imported data so it meets the flowbyactivity criteria and only includes data on harvested acreage
-    (irrigated and total).
-    :param dataframe_list:
-    :param args:
-    :return:
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
     """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
+
     df = pd.concat(dataframe_list, sort=False)
     # # specify desired data based on domain_desc
     df = df[df['domain_desc'].str.contains("INVENTORY|TOTAL")]
@@ -80,18 +99,22 @@ def coa_livestock_parse(dataframe_list, args):
     # drop unused columns
     df = df.drop(columns=['agg_level_desc', 'location_desc', 'state_alpha', 'sector_desc',
                           'country_code', 'begin_code', 'watershed_code', 'reference_period_desc',
-                          'asd_desc', 'county_name', 'source_desc', 'congr_district_code', 'asd_code',
-                          'week_ending', 'freq_desc', 'load_time', 'zip_5', 'watershed_desc', 'region_desc',
-                          'state_ansi', 'state_name', 'country_name', 'county_ansi', 'end_code', 'group_desc',
+                          'asd_desc', 'county_name', 'source_desc', 'congr_district_code',
+                          'asd_code', 'week_ending', 'freq_desc', 'load_time', 'zip_5',
+                          'watershed_desc', 'region_desc', 'state_ansi', 'state_name',
+                          'country_name', 'county_ansi', 'end_code', 'group_desc',
                           'util_practice_desc'])
     # create FIPS column by combining existing columns
     df.loc[df['county_code'] == '', 'county_code'] = '000'  # add county fips when missing
     df['Location'] = df['state_fips_code'] + df['county_code']
     df.loc[df['Location'] == '99000', 'Location'] = US_FIPS  # modify national level fips
-    # combine column information to create activity information, and create two new columns for activities
-    df['ActivityProducedBy'] = df['commodity_desc'] + ', ' + df['class_desc']  # drop this column later
+    # combine column information to create activity information,
+    # and create two new columns for activities
+    # drop this column later
+    df['ActivityProducedBy'] = df['commodity_desc'] + ', ' + df['class_desc']
+    # not interested in all class_desc data
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ALL CLASSES", "",
-                                                                    regex=True)  # not interested in all class_desc data
+                                                                    regex=True)
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount",
                             "unit_desc": "FlowName",
@@ -102,18 +125,20 @@ def coa_livestock_parse(dataframe_list, args):
     # drop remaining unused columns
     df = df.drop(columns=['class_desc', 'commodity_desc', 'state_fips_code', 'county_code',
                           'statisticcat_desc', 'prodn_practice_desc'])
-    # modify contents of flowamount column, "D" is supressed data, "z" means less than half the unit is shown
+    # modify contents of flowamount column, "D" is supressed data,
+    # "z" means less than half the unit is shown
     df['FlowAmount'] = df['FlowAmount'].str.strip()  # trim whitespace
-    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = withdrawn_keyword
+    df.loc[df['FlowAmount'] == "(D)", 'FlowAmount'] = WITHDRAWN_KEYWORD
     # df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = withdrawn_keyword
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
-    # # USDA CoA 2017 states that (H) means CV >= 99.95, therefore replacing with 99.95 so can convert column to int
+    # # USDA CoA 2017 states that (H) means CV >= 99.95,
+    # therefore replacing with 99.95 so can convert column to int
     # # (L) is a CV of <= 0.05
     df['Spread'] = df['Spread'].str.strip()  # trim whitespace
     df.loc[df['Spread'] == "(H)", 'Spread'] = 99.95
     df.loc[df['Spread'] == "(L)", 'Spread'] = 0.05
     df.loc[df['Spread'] == "", 'Spread'] = None  # for instances where data is missing
-    df.loc[df['Spread'] == "(D)", 'Spread'] = withdrawn_keyword
+    df.loc[df['Spread'] == "(D)", 'Spread'] = WITHDRAWN_KEYWORD
     # add location system based on year of data
     df = assign_fips_location_system(df, args['year'])
     # # Add hardcoded data
@@ -121,6 +146,6 @@ def coa_livestock_parse(dataframe_list, args):
     df['SourceName'] = "USDA_CoA_Livestock"
     df['Unit'] = "p"
     df['MeasureofSpread'] = "RSD"
-    df['DataReliability'] = None
+    df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
     return df

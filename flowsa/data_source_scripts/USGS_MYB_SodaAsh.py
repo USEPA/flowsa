@@ -2,12 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-import math
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 SourceName: USGS_MYB_SodaAsh
 https://www.usgs.gov/centers/nmic/soda-ash-statistics-and-information
@@ -22,10 +16,24 @@ Interested in annual data, not quarterly
 Years = 2010+
 https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-pubs/soda-ash/myb1-2010-sodaa.pdf
 """
+
+import io
+import math
+from string import digits
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2013-2017"
 SPAN_YEARS_T4 = ["2016", "2017"]
 
 def description(value, code):
+    """
+    Create string for column based on row description
+    :param value: str, description column for a row
+    :param code: str, NAICS code
+    :return: str, to use as column value
+    """
     glass_list = ["Container", "Flat", "Fiber", "Other", "Total"]
     other_list = ["Total domestic consumption4"]
     export_list = ["Canada"]
@@ -46,14 +54,43 @@ def description(value, code):
     return return_val
 
 
-def sa_url_helper(build_url, config, args):
-    """Used to substitute in components of usgs urls"""
+def soda_url_helper(**kwargs):
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    """
+
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+    args = kwargs['args']
+
+    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
     return [url]
 
 
-def sa_call(url, usgs_response, args):
-    """TODO."""
+def soda_call(**kwargs):
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
+    # load arguments necessary for function
+    response_load = kwargs['r']
+
     col_to_use = ["Production", "NAICS code", "End use"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
 
@@ -96,11 +133,20 @@ def sa_call(url, usgs_response, args):
     return df_data
 
 
+def soda_parse(**kwargs):
+    """
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
 
-
-def sa_parse(dataframe_list, args):
     total_glass = 0
-    """Parsing the USGS data into flowbyactivity format."""
+
     data = {}
     row_to_use = ["Quantity", "Quantity2"]
     prod = ""
@@ -159,4 +205,3 @@ def sa_parse(dataframe_list, args):
                     dataframe = dataframe.append(data, ignore_index=True)
                     dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

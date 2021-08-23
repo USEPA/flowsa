@@ -1,36 +1,30 @@
-# EIA_CBECS_Land.py (flowsa)
+# BLM_PLS.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
-import pandas as pd
-import numpy as np
-import tabula
-import io
-from flowsa.common import *
-import re
-from flowsa.flowbyfunctions import assign_fips_location_system
+"""
+Supporting functions for importing and transforming
+Bureau of Land Management Public Land Statistics data
+"""
 
-"""
-2012 Commercial Buildings Energy Consumption Survey (CBECS)
-https://www.eia.gov/consumption/commercial/reports/2012/energyusage/index.php 
-Last updated: Monday, August 17, 2020
-"""
+import re
+import io
+import tabula
+import pandas as pd
+from flowsa.common import WITHDRAWN_KEYWORD, get_all_state_FIPS_2, log
 
 
 def split(row, header, sub_header, next_line):
     """
-
-    :param row:
-    :param header:
-    :param sub_header:
-    :param next_line:
-    :return:
+    Helper function for parsing df
+    :param row: df row
+    :param header: df column header
+    :param sub_header: df column subheader
+    :param next_line: next row
+    :return: data appropriately split
     """
-    location_str = ""
-    flow_name = ""
+
     flow_amount = ""
-    flow_amount_no_comma = ""
-    df = pd.DataFrame()
     num_in_state = False
     split_str_one = row["one"].split(" ")
     split_str_two = ""
@@ -108,7 +102,8 @@ def split(row, header, sub_header, next_line):
             elif len(split_str_one) >= 3:
                 if "FFMC" in split_str_one:
                     column = 7
-                elif "Leases" in split_str_one[2] or "III" in split_str_one[2] or "Act" in split_str_one:
+                elif "Leases" in split_str_one[2] or "III" in \
+                        split_str_one[2] or "Act" in split_str_one:
                     if next_line:
 
                         column = 6
@@ -126,7 +121,7 @@ def split(row, header, sub_header, next_line):
                     column = 6
                 elif next_line:
                     column = 5
-                elif "" == split_str_one[1]:
+                elif split_str_one[1] == "":
                     if len(split_str_one) == 3:
                         if "/" in split_str_one[2]:
                             column = 2
@@ -182,8 +177,6 @@ def split(row, header, sub_header, next_line):
     elif column == 8:
         flow_amount = split_str_one[6]
 
-    # if "Geothermal Leases" in flow_name:
-    #   print(flow_amount)
     if next_line:
         location_str = "Total"
 
@@ -195,22 +188,29 @@ def split(row, header, sub_header, next_line):
         flow_amount_no_comma = "".join(flow_amount.split(","))
     else:
         flow_amount_no_comma = float(flow_amount)
-    # print(location_str, flow_name, flow_amount_no_comma)
     return location_str, flow_name, flow_amount_no_comma
 
 
-def blm_pls_URL_helper(build_url, config, args):
+def blm_pls_URL_helper(**kwargs):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which is a base url for coa cropland data
-    that requires parts of the url text string to be replaced with info specific to the usda nass quickstats API.
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
 
-    # initiate url list for coa cropland data
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+    args = kwargs['args']
+
+    # initiate url list for blm pls
     urls = []
     year = args["year"]
     if year == '2015':
@@ -225,43 +225,31 @@ def blm_pls_URL_helper(build_url, config, args):
     return urls
 
 
-def blm_pls_call(url, response_load, args):
+def blm_pls_call(**kwargs):
     """
-
-    :param url:
-    :param response_load:
-    :param args:
-    :return:
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
     """
-    # test
-    # response_load = r
+    # load arguments necessary for function
+    response_load = kwargs['r']
+    args = kwargs['args']
 
-    dataframe = pd.DataFrame()
     df = pd.DataFrame()
-    header = ""
     sub_headers = {}
-    df_list = []
-    LocationStr = []
-    FlowName = []
-    FlowAmount = []
-    FlowAmount_No_Comma = []
-
-    last_header = ""
 
     skip = False
     last_row_header = ""
-    sub_header = ""
-    split_row = ""
-    row_one_sub_header = ""
-    sub_head = False
     next_line = False
     copy = False
-    data_frame_list = []
     location_str = []
     flow_value = []
     flow_name = []
     number_of_sub_headers = 0
-    page_value = 0
 
     duplicate_headers = [
         "Pre-Reform Act Future Interest Leases",
@@ -271,14 +259,16 @@ def blm_pls_call(url, response_load, args):
     if args["year"] == "2007":
         sub_headers = {
             "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [99], "Acquired Lands": [99]},
-            "Pre-Reform Act Future Interest Leases": {"Public Domain & Acquired Lands": [100, 109, 110]},
+            "Pre-Reform Act Future Interest Leases":
+                {"Public Domain & Acquired Lands": [100, 109, 110]},
             "Reform Act Leases": {"Public Domain": [101, 110], "Acquired Lands": [101, 102]},
             "Reform Act Leases—continued": {"Acquired Lands": [111]},
             "Reform Act Future Interest Leases": {
                 "Public Domain & Acquired Lands": [103],
                 "Acquired Lands": [112]
             },
-            "Competitive General Services Administration (GSA) Oil & Gas Leases": {"Public Domain": [103]},
+            "Competitive General Services Administration (GSA) Oil & Gas Leases":
+                {"Public Domain": [103]},
             "Competitive Protective Leases": {"Public Domain & Acquired Lands": [103]},
             "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [104]},
             "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [104]},
@@ -288,17 +278,20 @@ def blm_pls_call(url, response_load, args):
                                                                    "Acquired Lands": [106, 107]
                                                                    },
             "Pre-Reform Act Simultaneous Leases": {"Acquired Lands": [108, 109]},
-            "Summary: Pre-Reform Act Simultaneous Leases": {"Public Domain & Acquired Lands": [109]},
+            "Summary: Pre-Reform Act Simultaneous Leases":
+                {"Public Domain & Acquired Lands": [109]},
             "Geothermal Leases": {"Public Domain & Acquired Lands": [112]},
             "Private Leases": {"Acquired Lands": [114]},
             "Exchange Leases": {"Public Domain": [114]},
             "Renewal Leases": {"Public Domain": [114]},
             "Class III Reinstatement Leases": {"Public Domain": [115]},
             "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [115]},
-            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [115]},
+            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934":
+                {"Acquired Lands": [115]},
             "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [115]},
             "Federal Coal Leases": {"Competitive Nonregional Lease-by-Application Leases": [122],
-                                    "Competitive Pre-Federal Coal Leasing Amendment Act (FCLAA) Leases": [122],
+                                    "Competitive Pre-Federal Coal Leasing"
+                                    "Amendment Act (FCLAA) Leases": [122],
                                     "Competitive Regional Emergency/Bypass Leases": [122],
                                     "Competitive Regional Leases": [123], "Exchange Leases": [123],
                                     "Preference Right Leases": [123]
@@ -330,11 +323,14 @@ def blm_pls_call(url, response_load, args):
         no_header_page_numbers = [123, 129]
     elif args["year"] == "2011":
         sub_headers = {
-            "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [111], "Acquired Lands": [111, 112]},
-            "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [113, 122]},
+            "Oil and Gas Pre-Reform Act Leases":
+                {"Public Domain": [111], "Acquired Lands": [111, 112]},
+            "Pre-Reform Act Future Interest Leases":
+                {"Public Domain and Acquired Lands": [113, 122]},
             "Reform Act Leases": {"Public Domain": [113, 123], "Acquired Lands": [123, 124]},
             "Reform Act Leases—continued": {"Acquired Lands": [114]},
-            "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [116]},
+            "Competitive General Services Administration (GSA) Oil and Gas Leases":
+                {"Public Domain": [116]},
             "Competitive Protective Leases": {"Public Domain and Acquired Lands": [116]},
             "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [116]},
             "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [116]},
@@ -343,7 +339,8 @@ def blm_pls_call(url, response_load, args):
             "Oil and Gas Pre-Reform Act Over-the-Counter Leases": {"Public Domain": [119],
                                                                    "Acquired Lands": [119]},
             "Pre-Reform Act Simultaneous Leases—continued": {"Acquired Lands": [120, 121]},
-            "Summary:  Pre-Reform Act Simultaneous Leases": {"Public Domain and Acquired Lands": [122]},
+            "Summary:  Pre-Reform Act Simultaneous Leases":
+                {"Public Domain and Acquired Lands": [122]},
             "Reform Act Future Interest Leases": {"Acquired Lands": [125]},
             "Geothermal Leases": {"Public Domain and Acquired Lands": [125]},
             "Private Leases": {"Acquired Lands": [126]},
@@ -351,7 +348,8 @@ def blm_pls_call(url, response_load, args):
             "Renewal Leases": {"Public Domain": [126, 127]},
             "Class III Reinstatement Leases": {"Public Domain": [127]},
             "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [127, 128]},
-            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [128]},
+            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934":
+                {"Acquired Lands": [128]},
             "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [128]},
             "Federal Coal Leases": {
                 "Competitive Nonregional Lease-by-Application Leases": [135],
@@ -396,11 +394,14 @@ def blm_pls_call(url, response_load, args):
         no_header_page_numbers = [136]
     elif args["year"] == "2012":
         sub_headers = {
-            "Oil and Gas Pre-Reform Act Leases": {"Public Domain": [108], "Acquired Lands": [108, 109]},
-            "Pre-Reform Act Future Interest Leases": {"Public Domain and Acquired Lands": [110, 119]},
+            "Oil and Gas Pre-Reform Act Leases":
+                {"Public Domain": [108], "Acquired Lands": [108, 109]},
+            "Pre-Reform Act Future Interest Leases":
+                {"Public Domain and Acquired Lands": [110, 119]},
             "Reform Act Leases": {"Public Domain": [110, 120], "Acquired Lands": [110]},
             "Reform Act Leases—continued": {"Acquired Lands": [111]},
-            "Competitive General Services Administration (GSA) Oil and Gas Leases": {"Public Domain": [113]},
+            "Competitive General Services Administration (GSA) Oil and Gas Leases":
+                {"Public Domain": [113]},
             "Competitive Protective Leases": {"Public Domain and Acquired Lands": [113]},
             "Competitive National Petroleum Reserve—Alaska Leases": {"Public Domain": [113]},
             "Competitive Naval Oil Shale Reserve Leases": {"Public Domain": [113]},
@@ -411,7 +412,8 @@ def blm_pls_call(url, response_load, args):
             "Pre-Reform Act Simultaneous Leases": {"Public Domain": [117]},
             "Pre-Reform Act Simultaneous Leases—continued": {"Public Domain": [118],
                                                              "Acquired Lands": [118]},
-            "Summary: Pre-Reform Act Simultaneous Leases": {"Public Domain and Acquired Lands": [119]},
+            "Summary: Pre-Reform Act Simultaneous Leases":
+                {"Public Domain and Acquired Lands": [119]},
             "Reform Act Future Interest Leases": {"Acquired Lands": [122]},
             "Geothermal Leases": {"Public Domain and Acquired Lands": [122]},
             "Private Leases": {"Acquired Lands": [124]},
@@ -419,7 +421,8 @@ def blm_pls_call(url, response_load, args):
             "Renewal Leases": {"Public Domain": [124, 125]},
             "Class III Reinstatement Leases": {"Public Domain": [125]},
             "Oil and Gas Special Act – Rights-of-Way of 1930": {"Public Domain": [125, 126]},
-            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934": {"Acquired Lands": [126]},
+            "Oil and Gas Special Act – Federal Farm Mortgage Corporation Act of 1934":
+                {"Acquired Lands": [126]},
             "Oil and Gas Special Act – Texas Relinquishment Act of 1919": {"Acquired Lands": [126]},
             "Federal Coal Leases": {
                 "Competitive Nonregional Lease-by-Application Leases": [133],
@@ -472,10 +475,10 @@ def blm_pls_call(url, response_load, args):
             pdf_pages = []
             for page_number in pg:
                 found_header = False
-                found_sub_header = False
 
                 pdf_page = \
-                tabula.read_pdf(io.BytesIO(response_load.content), pages=page_number, stream=True, guess=False, )[0]
+                tabula.read_pdf(io.BytesIO(response_load.content),
+                                pages=page_number, stream=True, guess=False, )[0]
 
                 if pdf_page.shape[1] == 1:
                     pdf_page.columns = ["one"]
@@ -524,12 +527,11 @@ def blm_pls_call(url, response_load, args):
                                 flow_name.append(lists[1])
                             location_str.append(lists[0])
                             flow_value.append(lists[2])
-                            if next_line == True:
+                            if next_line:
                                 copy = False
                                 next_line = False
                                 header = "Nothing"
                             if "Total" in row["one"]:
-                                #  print(header, sub_header)
                                 row_one_str = ""
                                 if any(i.isdigit() for i in row["one"]):
                                     #   row split based on space
@@ -542,7 +544,8 @@ def blm_pls_call(url, response_load, args):
 
                                 if pdf_page.shape[1] == 1 and row["one"] == "Total":
                                     next_line = True
-                                elif row_one_str.strip() == "Total" or "Leases" in row["one"] or "None" in row["one"]:
+                                elif row_one_str.strip() == "Total" or "Leases" \
+                                        in row["one"] or "None" in row["one"]:
                                     number_of_sub_headers = number_of_sub_headers + 1
                                     copy = False
                                     found_header = False
@@ -564,61 +567,69 @@ def blm_pls_call(url, response_load, args):
     return df
 
 
-def blm_pls_parse(dataframe_list, args):
+def blm_pls_parse(**kwargs):
     """
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
 
-    :param dataframe_list:
-    :param args:
-    :return:
-    """
     Location = []
     fips = get_all_state_FIPS_2()
-    for df in dataframe_list:
-        df = df.drop(df[df.FlowAmount == ""].index)
-        for index, row in df.iterrows():
-            if (row['LocationStr'] == "Total"):
-                Location.append("00000")
-            else:
-                for i, fips_row in fips.iterrows():
-                    if (fips_row["State"] == row['LocationStr']):
-                        Location.append(fips_row["FIPS_2"] + "000")
-        df = df.drop(columns=["LocationStr"])
+    df = pd.concat(dataframe_list, sort=False)
+    df = df.drop(df[df.FlowAmount == ""].index)
+    for index, row in df.iterrows():
+        if row['LocationStr'] == "Total":
+            Location.append("00000")
+        else:
+            for i, fips_row in fips.iterrows():
+                if fips_row["State"] == row['LocationStr']:
+                    Location.append(fips_row["FIPS_2"] + "000")
+    df = df.drop(columns=["LocationStr"])
 
-        # standardize activity names
-        df = standardize_blm_pls_activity_names(df)
+    # standardize activity names
+    df = standardize_blm_pls_activity_names(df)
 
-        # replace withdrawn code
-        df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = withdrawn_keyword
-        df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = withdrawn_keyword
-        df['FlowName'] = df['ActivityConsumedBy'].copy()
-        df['Location'] = Location
-        df["Class"] = 'Land'
-        df['Compartment'] = "ground"
-        df["LocationSystem"] = "FIPS_2010"
-        df["SourceName"] = 'BLM_PLS'
-        df['Year'] = args["year"]
-        df['Unit'] = "Acres"
-        df['FlowType'] = 'ELEMENTARY_FLOW'
+    # replace withdrawn code
+    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df['FlowName'] = df['ActivityConsumedBy'].copy()
+    df['Location'] = Location
+    df["Class"] = 'Land'
+    df['Compartment'] = "ground"
+    df["LocationSystem"] = "FIPS_2010"
+    df["SourceName"] = 'BLM_PLS'
+    df['Year'] = args["year"]
+    df['Unit'] = "Acres"
+    df['FlowType'] = 'ELEMENTARY_FLOW'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     return df
 
 
 def standardize_blm_pls_activity_names(df):
     """
-    Over the years, BLM PLS activities have minor syntax differences. Standardize the names over the years
-    :param df: BLM PLS df
-    :return: BLM PLS df with standaridized activity names
+    Over the years, BLM PLS activities have minor syntax differences.
+    Standardize the names over the years
+    :param df: df, BLM PLS
+    :return: df, BLM PLS with standardized activity names
     """
 
     standardize_column = 'ActivityConsumedBy'
 
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(' & ', ' and ', x))
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(' to ', ' To ', x))
-    df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('\bLease\b', 'Leases', x))
+    df[standardize_column] = df[standardize_column].apply(lambda x:
+                                                          re.sub('\bLease\b', 'Leases', x))
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub(':  ', ': ', x))
 
     # standardize dashes so do not corrupt in csvs
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('–', '-', x))
     df[standardize_column] = df[standardize_column].apply(lambda x: re.sub('—', '-', x))
-
     return df

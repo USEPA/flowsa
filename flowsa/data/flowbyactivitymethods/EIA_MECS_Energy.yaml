@@ -1,8 +1,8 @@
 author: US Energy Information Administration
 source_name: Manufacturing Energy Consumption Survey
-citable_url: https://www.eia.gov/consumption/manufacturing/
-date_generated: '2021-03-11' # updated automatically when flowbyactivity.py is run
-api_name: EIA_MECS
+source_url: https://www.eia.gov/consumption/manufacturing/
+bib_id: EIA_MECS
+api_name: EIA_MECS_Energy
 api_key_required: false
 format: xlsx
 url:

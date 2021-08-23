@@ -34,8 +34,7 @@ source_names:
     geoscale_to_use: national
     year: 2014
     clean_fba_df_fxn: mecs_land_fba_cleanup_for_land_2012_fbs
-    clean_fba_w_sec_df_fxn: None
-    clean_mapped_fba_w_sec_df_fxn: mecs_land_clean_allocation_mapped_fba_w_sec
+    clean_fba_w_sec_df_fxn: mecs_land_clean_allocation_mapped_fba_w_sec
     activity_set_file: 'EIA_MECS_Land_2014_asets.csv'
     activity_sets:
       activity_set_1: # all activities in eia mecs land crosswalk
@@ -100,9 +99,12 @@ source_names:
         allocation_flow:
           - "AREA HARVESTED"
           - "AREA"
+          - "AREA IN PRODUCTION"
+          - 'AREA BEARING & NON-BEARING'
+          - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'no'
       activity_set_2:
@@ -113,11 +115,14 @@ source_names:
         allocation_source_class: "Land"
         allocation_source_year: 2012
         allocation_flow:
-          - "AREA HARVESTED"    # todo: modify allocation flows to use unharvested data
+          - "AREA HARVESTED"
           - "AREA"
+          - "AREA IN PRODUCTION"
+          - 'AREA BEARING & NON-BEARING'
+          - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
         allocation_helper: 'no'
       activity_set_3:
@@ -133,6 +138,7 @@ source_names:
           - "FARM OPERATIONS"
         allocation_compartment: None
         allocation_from_scale: state
+        clean_allocation_fba_w_sec: coa_cropland_naics_fba_wsec_cleanup
         allocation_helper: 'no'
       activity_set_4:
         names:
@@ -172,6 +178,9 @@ source_names:
           - 'Land in rural transportation facilities'
         allocation_method: allocation_function
         allocation_source: allocate_usda_ers_mlu_land_in_rural_transportation_areas
+        literature_sources: {"urban_land_use_for_airports": "2020",
+                             "urban_land_use_for_railroads": "2020",
+                             "transportation_sectors_based_on_FHA_fees": "1997"}
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None
@@ -183,6 +192,11 @@ source_names:
           - 'Land in urban areas'
         allocation_method: allocation_function
         allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
+        literature_sources: {"area_of_urban_land_occupied_by_houses_2013": "2017",
+                             "transportation_sectors_based_on_FHA_fees": "1997",
+                             "urban_land_use_for_airports": "2020",
+                             "urban_land_use_for_railroads": "2020",
+                             "open_space_fraction_of_urban_area": "2020"}
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None
@@ -194,6 +208,7 @@ source_names:
           - 'Other land'
         allocation_method: allocation_function
         allocation_source: allocate_usda_ers_mlu_other_land
+        literature_sources: {"area_of_rural_land_occupied_by_houses_2013": "2017" }
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None

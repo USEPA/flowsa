@@ -1,8 +1,4 @@
-%YAML 1.1
-
----
-
-target_sector_level: NAICS_6
+target_sector_level: NAICS_4
 target_sector_source: NAICS_2012_Code
 target_geoscale: state
 source_names:
@@ -16,10 +12,10 @@ source_names:
     activity_sets:
       activity_set_1:
         names:
-          - "Aquaculture"
-          - "Irrigation Golf Courses"
-          - "Public Supply"
-          - "Thermoelectric Power"
+        - "Aquaculture"
+        - "Irrigation Golf Courses"
+        - "Public Supply"
+        - "Thermoelectric Power"
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -41,8 +37,8 @@ source_names:
         allocation_helper: 'no'
       activity_set_3:
         names:
-          - "Industrial"
-          - "Mining"
+        - "Industrial"
+        - "Mining"
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
@@ -56,7 +52,7 @@ source_names:
         allocation_helper: 'no'
       activity_set_4:
         names:
-          - "Irrigation Crop"
+        - "Irrigation Crop"
         allocation_method: proportional
         allocation_source: "USDA_CoA_Cropland"
         allocation_source_class: "Land"
@@ -66,6 +62,7 @@ source_names:
           - "AREA IN PRODUCTION, IRRIGATED"
           - "AREA, IRRIGATED"
           - 'AREA BEARING & NON-BEARING, IRRIGATED'
+          - 'AREA GROWN, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
@@ -79,7 +76,7 @@ source_names:
         helper_from_scale: state
       activity_set_5:
         names:
-          - "Livestock"
+        - "Livestock"
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
         allocation_source_class: "Other"

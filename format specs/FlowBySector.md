@@ -25,9 +25,22 @@ GeographicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on
 TechnologicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
 DataCollection | Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
 MetaSources | String | Y | The major data source(s) value is based on, usually a FlowByActivity set.
+FlowUUID| String| Y | UUID from Federal Commons Flow List. 
 
 * At minimum, either SectorProducedBy or SectorConsumedBy must be present. 
 If there is a transfer between sectors, both must be present.
 
 For FlowType 'ELEMENTARY_FLOW', flows by default will use the Federal LCA Commons Elementary Flow List from [fedelemflowlist](https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List),
 which specifies the fields `Flowable`,`Class`,`Context`, and `Unit` in common with this specification.
+
+## Variants
+
+### Flow-By-Sector Collapsed Format
+
+In this variant, the fields `SectorProducedBy` and `SectorConsumedBy` are replaced by a `Sector` field. All other fields are identical.
+
+| Field | Type | Required? | Description |
+| --- | --- | ---  | --- |
+| Sector | String | Y | A valid code from the SectorSourceName system |
+
+

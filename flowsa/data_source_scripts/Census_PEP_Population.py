@@ -1,30 +1,36 @@
-# Census_CBP.py (flowsa)
+# Census_PEP_Population.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Pulls County Business Patterns data in NAICS from the Census Bureau
-Writes out to various FlowBySector class files for these data items
-EMP = Number of employees, Class = Employment
-PAYANN = Annual payroll ($1,000), Class = Money
-ESTAB = Number of establishments, Class = Other
-This script is designed to run with a configuration parameter
---year = 'year' e.g. 2015
+Pulls Population data from US Census Bureau
+Inclues helper functions for calling and parsing data
 """
 
-import pandas as pd
 import json
+import pandas as pd
 from flowsa.common import US_FIPS, load_api_key, get_all_state_FIPS_2
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def Census_pop_URL_helper(build_url, config, args):
+def Census_pop_URL_helper(**kwargs):
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param kwargs: potential arguments include:
+                   build_url: string, base url
+                   config: dictionary, items in FBA method yaml
+                   args: dictionary, arguments specified when running flowbyactivity.py
+                   flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
 
-    :param build_url:
-    :param config:
-    :param args:
-    :return:
-    """
+    # load the arguments necessary for function
+    build_url = kwargs['build_url']
+    config = kwargs['config']
+    args = kwargs['args']
+
     urls = []
 
     # get date code for july 1 population numbers
@@ -33,7 +39,8 @@ def Census_pop_URL_helper(build_url, config, args):
             dc = str(v)
 
     # the url for 2010 and earlier is different
-    url2000 = 'https://api.census.gov/data/2000/pep/int_population?get=POP,DATE_DESC&for=__aggLevel__:*&DATE_=12&key=__apiKey__'
+    url2000 = 'https://api.census.gov/data/2000/pep/int_population?get=' \
+              'POP,DATE_DESC&for=__aggLevel__:*&DATE_=12&key=__apiKey__'
 
     # state fips required for county level 13-14
     FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
@@ -75,27 +82,37 @@ def Census_pop_URL_helper(build_url, config, args):
     return urls
 
 
-def census_pop_call(url, response_load, args):
+def census_pop_call(**kwargs):
     """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: potential arguments include:
+                   url: string, url
+                   response_load: df, response from url call
+                   args: dictionary, arguments specified when running
+                   flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
+    # load arguments necessary for function
+    response_load = kwargs['r']
 
-    :param url:
-    :param response_load:
-    :param args:
-    :return:
-    """
     json_load = json.loads(response_load.text)
     # convert response to dataframe
     df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])
     return df
 
 
-def census_pop_parse(dataframe_list, args):
+def census_pop_parse(**kwargs):
     """
+    Combine, parse, and format the provided dataframes
+    :param kwargs: potential arguments include:
+                   dataframe_list: list of dataframes to concat and format
+                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
+    # load arguments necessary for function
+    dataframe_list = kwargs['dataframe_list']
+    args = kwargs['args']
 
-    :param dataframe_list:
-    :param args:
-    :return:
-    """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # Add year
@@ -121,8 +138,8 @@ def census_pop_parse(dataframe_list, args):
     df['Unit'] = 'p'
     df['ActivityConsumedBy'] = 'All'
     # temporary data quality scores
-    df['DataReliability'] = None
-    df['DataCollection'] = None
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
     # sort df
     df = df.sort_values(['Location'])
     # reset index

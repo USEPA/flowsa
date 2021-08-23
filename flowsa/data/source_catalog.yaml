@@ -46,7 +46,6 @@ BLS_QCEW:
     - Money
     - Other
   sector-like_activities: True
-#  modify_sector-like_activities: True # Not all of the sector-like activities exist, so create mapping file
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 Census_AHS:
@@ -97,7 +96,7 @@ EIA_MER:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
-EPA_GHG_Inventory:
+EPA_GHGI:
   class:
     - Chemicals
     - Energy

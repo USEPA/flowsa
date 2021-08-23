@@ -1,8 +1,6 @@
-# write_FBS_activity_set_BLM_PLS.py (scripts)
+# write_FBS_activity_set_EIA_MECS_Land.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-
-
 """
 Write the csv called on in flowbysectormethods yaml files for land use related to EIA MECS
 """
@@ -16,13 +14,11 @@ as_year = '2014'
 
 if __name__ == '__main__':
 
-    # define mecs land fba parameters
-    land_flowclass = 'Land'
-    land_years = as_year
+    # define fba parameters
     datasource = 'EIA_MECS_Land'
 
     # Read BLM PLS crosswalk
-    df_import = flowsa.getFlowByActivity(datasource, land_years, land_flowclass)
+    df_import = flowsa.getFlowByActivity(datasource, as_year)
 
     # drop unused columns
     df = df_import[['ActivityConsumedBy']].drop_duplicates()
