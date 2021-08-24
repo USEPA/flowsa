@@ -275,42 +275,27 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
     flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['SectorLength'] ==
                           sector_level_key[config['target_sector_level']
                           ]].reset_index(drop=True)
+    # keep data where the flowamountratio is greater than or less than 1 by 0.005
+    tolerance = 0.005
+    flow_alloc_df5 = flow_alloc_df4[(flow_alloc_df4['FlowAmountRatio'] < 1 - tolerance) |
+                                    (flow_alloc_df4['FlowAmountRatio'] > 1 + tolerance)]
 
-    ua_count1 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 1])
-    if ua_count1 > 0:
-        vLog.info('There are %s instances at a sector length of 6 or '
-                 'less where the allocation ratio '
-                 'for a location and sector length is < 1', str(ua_count1))
-    ua_count2 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] < 0.99])
-    if ua_count2 > 0:
-        vLog.debug('There are %s instances at a sector length of 6 or '
-                  'less where the allocation ratio '
-                 'for a location and sector length is < 0.99', str(ua_count2))
-    ua_count3 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1])
-    if ua_count3 > 0:
-        vLog.debug('There are %s instances at a sector length of '
-                  '6 or less where the allocation ratio '
-                 'for a location and sector length is > 1', str(ua_count3))
-    ua_count4 = len(flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'] > 1.01])
-    if ua_count4 > 0:
-        vLog.info('There are %s instances at a sector length of 6 or less where the allocation'
-                 ' ratio for a location and sector length is > 1.01', str(ua_count4))
+    if len(flow_alloc_df5) > 0:
+        vLog.info('There are %s instances at a sector length of %s '
+                  'where the allocation ratio for a location is greater than or less than 1 by %s. '
+                  'See Validation Log',
+                  len(flow_alloc_df5), config["target_sector_level"], str(tolerance))
 
-    # include only the df subset by sector length to include in the validation log
-    # only print rows where flowamount ratio is less than 1 (round flowamountratio)
-    df_v = flow_alloc_df4[flow_alloc_df4['FlowAmountRatio'].apply(
-        lambda x: round(x, 3) < 1)].reset_index(drop=True)
-
-    # save data to validation log
+    # add to validation log
     vLog.info('Save the summary table of flow allocation ratios for each sector length for '
               '%s in validation log', activity_set)
     # if df not empty, print, if empty, print string
-    if df_v.empty:
+    if flow_alloc_df5.empty:
         vLogDetailed.info('Flow allocation ratios for %s all round to 1', activity_set)
 
     else:
         vLogDetailed.info('Flow allocation ratios for %s: '
-                          '\n {}'.format(df_v.to_string()), activity_set)
+                          '\n {}'.format(flow_alloc_df5.to_string()), activity_set)
 
 
 def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load, geoscale):
