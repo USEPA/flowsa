@@ -481,7 +481,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
     from flowsa.mapping import map_flows
 
-    vLog.info('Comparing Flow-By-Activity after loading and cleaning FlowAmount total to '
+    vLog.info('Comparing Flow-By-Activity after loading standardizing units FlowAmount total to '
               'the subset Flow-By-Sector FlowAmount total. Not a comparison of original '
               'loaded flows.')
 
@@ -549,7 +549,7 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
                          'can not be calculated', source_name, activity_set, i)
                 continue
             # make reporting more manageable
-            if abs(diff_per) > 0.001:
+            if abs(diff_per) > 0.005:
                 diff_per = round(diff_per, 2)
             else:
                 diff_per = round(diff_per, 6)
@@ -557,12 +557,19 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
             # diff_units = df_merge_subset['FBS_unit'][0]
             if diff_per > 0:
                 vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
-                         'less than the total FlowByActivity FlowAmount',
+                          'less than the total FlowByActivity FlowAmount (might include '
+                          'expected data loss)',
                          source_name, activity_set, i, j, str(abs(diff_per)))
             elif diff_per < 0:
                 vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
-                         'more than the total FlowByActivity FlowAmount',
+                          'more than the total FlowByActivity FlowAmount (might include '
+                          'expected data loss)',
                          source_name, activity_set, i, j, str(abs(diff_per)))
+            elif diff_per == 0:
+                vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is '
+                          'equal to the total FlowByActivity FlowAmount (might include '
+                          'expected data loss)',
+                         source_name, activity_set, i, j)
 
         # subset the df to include in the validation log
         # only print rows where the percent difference does not round to 0
