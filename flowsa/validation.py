@@ -313,12 +313,13 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                           '\n {}'.format(df_v.to_string()), activity_set)
 
 
-def calculate_flowamount_differences(dfa_load, dfb_load, geoscale):
+def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load, geoscale):
     """
     Calculate the differences in FlowAmounts between two dfs
-    :param fba1:
-    :param fba2:
-    :return:
+    :param fba1: df, initial df
+    :param fba2: df, modified df
+    :param geoscale: str, 'national', 'state', 'county' by which to subset df
+    :return: df, comparing changes in flowamounts between 2 dfs
     """
 
     # subset the dataframes, only keeping data for easy comparison of flowamounts
@@ -348,9 +349,14 @@ def calculate_flowamount_differences(dfa_load, dfb_load, geoscale):
     # column calculating difference
     dfagg['FlowAmount_Difference'] = dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
     dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference']/dfagg['FlowAmount_Original']) * 100
-    # save output in log file
-    vLogDetailed.info('Comparison of %s FlowAmounts after modifying df: '
-                      '\n {}'.format(dfagg.to_string()), geoscale)
+    # drop rows where difference = 0
+    dfagg = dfagg[dfagg['FlowAmount_Difference'] != 0]
+    if len(dfagg) == 0:
+        vLog.info('No FlowAmount differences')
+    else:
+        # save output in log file
+        vLog.info('Comparison of %s FlowAmounts after modifying df: '
+                  '\n {}'.format(dfagg.to_string()), geoscale)
     return df
 
 
@@ -467,7 +473,6 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
     :param fbs_load: df, final FBS df at target sector level
     :param activity_set: str, activity set
     :param source_name: str, source name
-    :param method_name: str, method name
     :param attr: dictionary, attribute data from method yaml for activity set
     :param method: dictionary, FBS method yaml
     :return: printout data differences between loaded FBA and FBS output totals by location,

@@ -25,7 +25,7 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
+from flowsa.common import log, vLog, flowbysectormethodpath, flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, load_source_catalog, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, \
     paths, fba_activity_fields, rename_log_file, \
@@ -42,7 +42,7 @@ from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_score
 from flowsa.validation import check_if_losing_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_load_and_fbs_output_totals, compare_geographic_totals,\
-    replace_naics_w_naics_from_another_year, calculate_flowamount_differences
+    replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
 
 
 def parse_args():
@@ -139,7 +139,8 @@ def main(**kwargs):
                 log.info("Cleaning up %s FlowByActivity", k)
                 flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
                 # calculate expected data loss
-                calculate_flowamount_differences(flows_mapped, flows_fba, v['geoscale_to_use'])
+                vLog.info('Calculate FlowAmount differences caused by cleaning FBA')
+                calculate_flowamount_diff_between_dfs(flows_mapped, flows_fba, v['geoscale_to_use'])
             else:
                 flows_fba = flows_mapped.copy()
 
@@ -174,7 +175,8 @@ def main(**kwargs):
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
                     # check impact on df FlowAmounts
-                    calculate_flowamount_differences(flows_subset, flows_subset2, attr['allocation_from_scale'])
+                    vLog.info('Calculate FlowAmount difference caused by replacing NAICS Codes with %s', method['target_sector_source'])
+                    calculate_flowamount_diff_between_dfs(flows_subset, flows_subset2, attr['allocation_from_scale'])
                 else:
                     flows_subset2 = flows_subset.copy()
 
@@ -195,12 +197,19 @@ def main(**kwargs):
                 # clean up fba with sectors, if specified in yaml
                 if "clean_fba_w_sec_df_fxn" in v:
                     log.info("Cleaning up %s FlowByActivity with sectors", k)
-                    flows_subset_wsec = \
+                    flows_subset_wsec_clean = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
                                                                                attr=attr, method=method)
+                    # determine if any changes to the data
+                    vLog.info('Calculate changes in FlowAmounts from cleaning the FBA with sectors df')
+                    calculate_flowamount_diff_between_dfs(flows_subset_wsec,
+                                                          flows_subset_wsec_clean,
+                                                          attr['allocation_from_scale'])
+                else:
+                    flows_subset_wsec_clean = flows_subset_wsec.copy()
 
                 # rename SourceName to MetaSources and drop columns
-                flows_mapped_wsec = flows_subset_wsec.\
+                flows_mapped_wsec = flows_subset_wsec_clean.\
                     rename(columns={'SourceName': 'MetaSources'}).\
                     drop(columns=['FlowName', 'Compartment'])
 
@@ -321,6 +330,7 @@ def main(**kwargs):
     write_metadata(method_name, method, meta, "FlowBySector")
     # rename the log file saved to local directory
     rename_log_file(method_name, meta)
+    log.info('See the Validation log for detailed assessment of model results')
 
 
 if __name__ == '__main__':
