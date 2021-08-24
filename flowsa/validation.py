@@ -236,14 +236,14 @@ def check_if_losing_sector_data(df, target_sector_level):
 
         # append to df
         if len(rl) != 0:
-            vLog.warning('Data found at %s digit NAICS not represented in current '
+            vLogDetailed.warning('Data found at %s digit NAICS not represented in current '
                         'data subset: {}'.format(' '.join(map(str, rl_list))), str(i))
             rows_lost = rows_lost.append(rl_m3, ignore_index=True, sort=True)
 
     if len(rows_lost) == 0:
-        vLog.debug('Data exists at %s', target_sector_level)
+        vLogDetailed.debug('Data exists at %s', target_sector_level)
     else:
-        vLog.info('Allocating FlowAmounts equally to each %s associated with '
+        vLogDetailed.info('Allocating FlowAmounts equally to each %s associated with '
                  'the sectors previously dropped', target_sector_level)
 
     # add rows of missing data to the fbs sector subset

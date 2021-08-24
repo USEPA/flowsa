@@ -264,7 +264,9 @@ def main(**kwargs):
                 # check if any sector information is lost before reaching
                 # the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                log.debug('Checking for data at %s', method['target_sector_level'])
+                vLog.info( 'Searching for and allocating FlowAmounts for any parent '
+                           'NAICS that were dropped in the subset to '
+                           '%s child NAICS', method['target_sector_level'])
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
