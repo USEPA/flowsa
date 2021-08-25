@@ -140,7 +140,7 @@ def main(**kwargs):
                 flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
                 # calculate expected data loss
                 vLog.info('Calculate FlowAmount differences caused by cleaning FBA')
-                calculate_flowamount_diff_between_dfs(flows_mapped, flows_fba, v['geoscale_to_use'])
+                calculate_flowamount_diff_between_dfs(flows_mapped, flows_fba)
             else:
                 flows_fba = flows_mapped.copy()
 
@@ -176,7 +176,7 @@ def main(**kwargs):
                                                                 method['target_sector_source'])
                     # check impact on df FlowAmounts
                     vLog.info('Calculate FlowAmount difference caused by replacing NAICS Codes with %s', method['target_sector_source'])
-                    calculate_flowamount_diff_between_dfs(flows_subset, flows_subset2, attr['allocation_from_scale'])
+                    calculate_flowamount_diff_between_dfs(flows_subset, flows_subset2)
                 else:
                     flows_subset2 = flows_subset.copy()
 
@@ -203,8 +203,7 @@ def main(**kwargs):
                     # determine if any changes to the data
                     vLog.info('Calculate changes in FlowAmounts from cleaning the FBA with sectors df')
                     calculate_flowamount_diff_between_dfs(flows_subset_wsec,
-                                                          flows_subset_wsec_clean,
-                                                          attr['allocation_from_scale'])
+                                                          flows_subset_wsec_clean)
                 else:
                     flows_subset_wsec_clean = flows_subset_wsec.copy()
 

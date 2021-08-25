@@ -15,7 +15,8 @@ from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     load_sector_length_crosswalk, load_source_catalog, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, log, fba_activity_fields, \
-    fbs_activity_fields, fbs_fill_na_dict, vLog, vLogDetailed
+    fbs_activity_fields, fbs_fill_na_dict, vLog, vLogDetailed, \
+    get_county_FIPS, get_state_FIPS
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -298,12 +299,11 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                           '\n {}'.format(flow_alloc_df5.to_string()), activity_set)
 
 
-def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load, geoscale):
+def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     """
     Calculate the differences in FlowAmounts between two dfs
-    :param fba1: df, initial df
-    :param fba2: df, modified df
-    :param geoscale: str, 'national', 'state', 'county' by which to subset df
+    :param dfa_load: df, initial df
+    :param dfb_load: df, modified df
     :return: df, comparing changes in flowamounts between 2 dfs
     """
 
@@ -313,11 +313,20 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load, geoscale):
     # drop cols and rename, ignore error if a df does not contain a column to drop
     dfa = dfa_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Original'})
     dfb = dfb_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Modified'})
-    # subset by geoscale
-    dfa = filter_by_geoscale(dfa, geoscale)
-    dfb = filter_by_geoscale(dfb, geoscale)
+    # create df dict for modified dfs created in for loop
+    df_list = []
+    for d in ['a', 'b']:
+        df_name = f'df{d}'
+        # assign new column of geoscale by which to aggregate
+        vars()[df_name+'2'] = vars()[df_name].assign(
+            geoscale=np.where(vars()[df_name]['Location'].
+                              apply(lambda x: x.endswith('000')), 'state', 'county'))
+        vars()[df_name+'2'] = vars()[df_name+'2'].assign(
+            geoscale=np.where(vars()[df_name+'2']['Location'] == '00000',
+                              'national', vars()[df_name+'2']['geoscale']))
+        df_list.append(vars()[df_name+'2'])
      # merge the two dataframes
-    df = dfa.merge(dfb, how='outer')
+    df = df_list[0].merge(df_list[1], how='outer')
 
     # determine if any new data is negative
     dfn = df[df['FlowAmount_Modified'] < 0].reset_index(drop=True)
@@ -328,21 +337,20 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load, geoscale):
 
     # Because code will sometimes change terminology, aggregate data by context and flowable to compare df differences
     # subset df
-    dfs = df[['Flowable', 'Context', 'Year', 'FlowAmount_Original', 'FlowAmount_Modified', 'Unit']]
-    agg_cols = ['Flowable', 'Context', 'Year', 'Unit']
+    dfs = df[['Flowable', 'Context', 'Year', 'FlowAmount_Original', 'FlowAmount_Modified', 'Unit', 'geoscale']]
+    agg_cols = ['Flowable', 'Context', 'Year', 'Unit', 'geoscale']
     dfagg = dfs.groupby(agg_cols, as_index=False)[['FlowAmount_Original', 'FlowAmount_Modified']].agg("sum")
     # column calculating difference
     dfagg['FlowAmount_Difference'] = dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
     dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference']/dfagg['FlowAmount_Original']) * 100
     # drop rows where difference = 0
-    dfagg = dfagg[dfagg['FlowAmount_Difference'] != 0]
-    if len(dfagg) == 0:
+    dfagg2 = dfagg[dfagg['FlowAmount_Difference'] != 0]
+    if len(dfagg2) == 0:
         vLog.info('No FlowAmount differences')
     else:
         # save output in log file
         vLog.info('Comparison of %s FlowAmounts after modifying df: '
-                  '\n {}'.format(dfagg.to_string()), geoscale)
-    return df
+                  '\n {}'.format(dfagg2.to_string()))
 
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
