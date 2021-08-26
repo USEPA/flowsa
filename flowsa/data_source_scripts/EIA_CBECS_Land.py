@@ -15,6 +15,7 @@ from flowsa.common import US_FIPS, get_region_and_division_codes, WITHDRAWN_KEYW
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.values_from_literature import \
     get_commercial_and_manufacturing_floorspace_to_land_area_ratio
+from flowsa.validation import calculate_flowamount_diff_between_dfs
 
 def eia_cbecs_land_URL_helper(**kwargs):
     """
@@ -241,7 +242,7 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
     return df
 
 
-def cbecs_land_fba_cleanup(fba):
+def cbecs_land_fba_cleanup(fba_load):
     """
     Clean up the land fba for use in allocation
     :param fba: df, eia cbecs land flowbyactivity format
@@ -249,15 +250,20 @@ def cbecs_land_fba_cleanup(fba):
     """
 
     # estimate floor space using number of floors
-    fba = calculate_floorspace_based_on_number_of_floors(fba)
+    fba = calculate_floorspace_based_on_number_of_floors(fba_load)
 
     # calculate the land area in addition to building footprint
-    fba = calculate_total_facility_land_area(fba)
+    fba1 = calculate_total_facility_land_area(fba)
 
-    return fba
+    # drop activities of 'all buildings' to avoid double counting
+    fba2 = fba1[fba1['ActivityConsumedBy'] != 'All buildings'].reset_index(drop=True)
+    vLogDetailed.info('Drop the principle building activity "All buildings" to avoid double counting')
+    calculate_flowamount_diff_between_dfs(fba1, fba2)
+
+    return fba2
 
 
-def calculate_floorspace_based_on_number_of_floors(fba):
+def calculate_floorspace_based_on_number_of_floors(fba_load):
     """
     Estimate total floorspace for each building type based on data
     on the number of floors for each building type.
@@ -269,16 +275,28 @@ def calculate_floorspace_based_on_number_of_floors(fba):
     """
 
     # disaggregate mercentile to malls and non malls
-    fba = disaggregate_eia_cbecs_mercentile(fba)
+    fba = disaggregate_eia_cbecs_mercentile(fba_load)
+    vLogDetailed.info('Calculate floorspace for mall and nonmall buildings with different '
+                      'number of floors. Once calculated, drop mercantile data from dataframe '
+                      'to avoid double counting.')
+    calculate_flowamount_diff_between_dfs(fba_load, fba)
 
     # disaggregate other and vacant
-    fba = disaggregate_eia_cbecs_vacant_and_other(fba)
+    fba2 = disaggregate_eia_cbecs_vacant_and_other(fba)
+    vLogDetailed.info('Due to data suppression for floorspace by building number of floors, '
+                      'some data is lost when dropping floorspace for all buildings within a '
+                      'principle building activity. To avoid this data loss, all remaining floorspace '
+                      'for "All buildings" by number of floors is allocated to "Vacant" and "Other" '
+                      'principle building activities, as these activities are allocated to all commercial '
+                      'building sectors. This assumption results in a total floorspace increase for'
+                      '"Vacant" and "Other" activities.')
+    calculate_flowamount_diff_between_dfs(fba, fba2)
 
     # drop data for 'all buildings'
-    fba = fba[fba['Description'] != 'All buildings']
+    fba3 = fba2[fba2['Description'] != 'All buildings']
     # add column 'DivisionFactor' based on description
-    fba = fba.assign(DivisionFactor=
-                     fba['Description'].apply(lambda x: (1 if 'One' in x
+    fba3 = fba3.assign(DivisionFactor=
+                     fba3['Description'].apply(lambda x: (1 if 'One' in x
                                                          else (2 if 'Two' in x
                                                                else (3 if 'Three' in x
                                                                      else (6 if 'Four' in x
@@ -286,15 +304,21 @@ def calculate_floorspace_based_on_number_of_floors(fba):
                                                                                  else ""
                                                                                  )))))))
     # modify flowamounts to represent building footprint rather than total floorspace
-    fba['FlowAmount'] = fba['FlowAmount'] / fba['DivisionFactor']
+    fba3['FlowAmount'] = fba3['FlowAmount'] / fba3['DivisionFactor']
     # sum values for single flowamount for each bulding type
+    vLogDetailed.info('Drop flows for "All Buildings" to avoid double counting, as maintain '
+                      'floorspace by buildings based on number of floors. Also dividing total floorspace '
+                      'by number of floors to calculate a building footprint. Calculates result in reduced '
+                      'FlowAmount for all categories.')
+    calculate_flowamount_diff_between_dfs(fba2, fba3)
+    # rename the FlowAmounts and sum so total floorspace, rather than have multiple rows based on floors
+    fba3 = fba3.assign(FlowName=fba3['FlowName'].apply(lambda x: ','.join(x.split(',')[:-1])))
+    # modify the description
+    fba3 = fba3.assign(Description='Building Footprint')
     groupbycols = fba_mapped_default_grouping_fields
-    fba2 = aggregator(fba, groupbycols)
+    fba4 = aggregator(fba3, groupbycols)
 
-    # add description
-    fba2 = fba2.assign(Description='Building Footprint')
-
-    return fba2
+    return fba4
 
 
 def disaggregate_eia_cbecs_mercentile(df_load):
@@ -326,6 +350,8 @@ def disaggregate_eia_cbecs_mercentile(df_load):
     df_mall3 = df_mall2.merge(df_merc_floors)
     df_mall3['FlowAmount'] = df_mall3['FlowAmount'] * df_mall3['Mercantile']
     df_mall3 = df_mall3.drop(columns='Mercantile')
+    # update flownames
+    df_mall3['FlowName'] = df_mall3['FlowName'] + ', ' + df_mall3['Description']
 
     # repeat with non mall categories
     df_nonmall = df_load[df_load['ActivityConsumedBy'].isin(['Retail (other than mall)'
@@ -337,6 +363,8 @@ def disaggregate_eia_cbecs_mercentile(df_load):
     df_nonmall3 = df_nonmall2.merge(df_merc_floors)
     df_nonmall3['FlowAmount'] = df_nonmall3['FlowAmount'] * df_nonmall3['Mercantile']
     df_nonmall3 = df_nonmall3.drop(columns='Mercantile')
+    # update flownames
+    df_nonmall3['FlowName'] = df_nonmall3['FlowName'] + ', ' + df_nonmall3['Description']
 
     # concat dfs
     df = pd.concat([df_load, df_mall3, df_nonmall3], ignore_index=True, sort=False)
@@ -383,6 +411,7 @@ def disaggregate_eia_cbecs_vacant_and_other(df_load):
     df_vo2 = df_vo.merge(df_rem[['Unit', 'Location', 'LocationSystem', 'Remainder', 'Description']])
     df_vo2['FlowAmount'] = df_vo2['FlowAmount'] * df_vo2['Remainder']
     df_vo2 = df_vo2.drop(columns='Remainder')
+    df_vo2['FlowName'] = df_vo2['FlowName'] + ', ' + df_vo2['Description']
 
     # concat with original df
     df = pd.concat([df_load, df_vo2], ignore_index=True, sort=False)
