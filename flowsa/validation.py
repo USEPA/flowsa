@@ -710,7 +710,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
 
     # loop through the df headers and determine if value is not in crosswalk list
     if len(non_naics) != 0:
-        vLog.debug('Checking if sectors represent a different'
+        vLog.debug('Checking if sectors represent a different '
                   'NAICS year, if so, replace with %s', sectorsourcename)
         for c in column_headers:
             # merge df with the melted sector crosswalk
