@@ -11,7 +11,7 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.common import US_FIPS, get_region_and_division_codes, WITHDRAWN_KEYWORD,\
-    clean_str_and_capitalize, fba_default_grouping_fields
+    clean_str_and_capitalize, fba_mapped_default_grouping_fields, vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.values_from_literature import \
     get_commercial_and_manufacturing_floorspace_to_land_area_ratio
@@ -187,7 +187,9 @@ def eia_cbecs_land_parse(**kwargs):
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
     df['Year'] = args["year"]
-    df['FlowName'] = "Commercial, " + df["ActivityConsumedBy"] + ", Total floorspace"
+    df['FlowName'] = "Commercial, " + df["ActivityConsumedBy"] + ", Total floorspace, " + df['Description']
+    # if 'all buildings' at end of flowname, drop
+    df['FlowName'] = df['FlowName'].apply(lambda x: x.replace('Total floorspace, All buildings', 'Total floorspace'))
     df['Compartment'] = 'ground'
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
@@ -286,7 +288,7 @@ def calculate_floorspace_based_on_number_of_floors(fba):
     # modify flowamounts to represent building footprint rather than total floorspace
     fba['FlowAmount'] = fba['FlowAmount'] / fba['DivisionFactor']
     # sum values for single flowamount for each bulding type
-    groupbycols = fba_default_grouping_fields
+    groupbycols = fba_mapped_default_grouping_fields
     fba2 = aggregator(fba, groupbycols)
 
     # add description
@@ -398,12 +400,10 @@ def calculate_total_facility_land_area(df):
     for each activity
     """
 
-    # from flowsa.values_from_literature import
-    # get_commercial_and_manufacturing_floorspace_to_land_area_ratio
-
     floor_space_to_land_area_ratio = \
         get_commercial_and_manufacturing_floorspace_to_land_area_ratio()
 
+    vLogDetailed.info('Modifying FlowAmounts - Assuming the floor space to land area ratio is 1:4')
     df = df.assign(FlowAmount=(df['FlowAmount'] / floor_space_to_land_area_ratio)
                               - df['FlowAmount'])
 
