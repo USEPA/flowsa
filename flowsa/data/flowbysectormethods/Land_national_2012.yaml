@@ -10,6 +10,7 @@ source_names:
     data_format: 'FBA'
     class: Land
     geoscale_to_use: national
+    source_fba_load_scale: national
     year: 2012
     clean_fba_df_fxn: cbecs_land_fba_cleanup
     activity_set_file: 'EIA_CBECS_Land_2012_asets.csv'
