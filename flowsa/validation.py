@@ -309,7 +309,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
 
     # subset the dataframes, only keeping data for easy comparison of flowamounts
     drop_cols = ['MeasureofSpread', 'Spread', 'DistributionType',
-                 'Min', 'Max', 'DataReliability', 'DataCollection', 'Description']
+                 'Min', 'Max', 'DataReliability', 'DataCollection']
     # drop cols and rename, ignore error if a df does not contain a column to drop
     dfa = dfa_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Original'})
     dfb = dfb_load.drop(drop_cols, axis=1, errors='ignore').rename(columns={'FlowAmount': 'FlowAmount_Modified'})
@@ -337,8 +337,9 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
 
     # Because code will sometimes change terminology, aggregate data by context and flowable to compare df differences
     # subset df
-    dfs = df[['Flowable', 'Context', 'Year', 'FlowAmount_Original', 'FlowAmount_Modified', 'Unit', 'geoscale']]
-    agg_cols = ['Flowable', 'Context', 'Year', 'Unit', 'geoscale']
+    dfs = df[['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Year',
+              'FlowAmount_Original', 'FlowAmount_Modified', 'Unit', 'geoscale']]
+    agg_cols = ['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Year', 'Unit', 'geoscale']
     dfagg = dfs.groupby(agg_cols, as_index=False)[['FlowAmount_Original', 'FlowAmount_Modified']].agg("sum")
     # column calculating difference
     dfagg['FlowAmount_Difference'] = dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
