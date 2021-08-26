@@ -340,18 +340,19 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     dfs = df[['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Year',
               'FlowAmount_Original', 'FlowAmount_Modified', 'Unit', 'geoscale']]
     agg_cols = ['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Year', 'Unit', 'geoscale']
-    dfagg = dfs.groupby(agg_cols, as_index=False)[['FlowAmount_Original', 'FlowAmount_Modified']].agg("sum")
+    dfagg = dfs.groupby(agg_cols, dropna=False, as_index=False)[
+        ['FlowAmount_Original', 'FlowAmount_Modified']].agg("sum")
     # column calculating difference
     dfagg['FlowAmount_Difference'] = dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
     dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference']/dfagg['FlowAmount_Original']) * 100
     # drop rows where difference = 0
-    dfagg2 = dfagg[dfagg['FlowAmount_Difference'] != 0]
+    dfagg2 = dfagg[dfagg['FlowAmount_Difference'] != 0].reset_index(drop=True)
     if len(dfagg2) == 0:
         vLog.info('No FlowAmount differences')
     else:
         # save output in log file
         vLog.info('Comparison of %s FlowAmounts after modifying df: '
-                  '\n {}'.format(dfagg2.to_string()))
+                  '\n {}'.format(dfagg2.to_string(), index=False))
 
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
