@@ -12,6 +12,7 @@ Last updated:
 
 import os
 import pandas as pd
+import numpy as np
 import flowsa
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import externaldatapath, flow_by_activity_fields,\
@@ -142,7 +143,9 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     # Calculate tons per employee per year per material and sector in CA
     bls_CA = bls[bls['Location']=='06000'] # California
     tpepy = fbs.merge(bls_CA, how = 'inner')
-    tpepy['TPEPY'] = tpepy['FlowAmount']/tpepy['Employees']
+    tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'],tpepy['Employees'],
+                               out = np.zeros_like(tpepy['Employees']),
+                               where= tpepy['Employees']!=0)
     tpepy = tpepy.drop(columns = ['Employees','FlowAmount','Location'])
     
     # Apply TPEPY back to all employees in all states
