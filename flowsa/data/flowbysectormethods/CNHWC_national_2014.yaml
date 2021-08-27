@@ -24,5 +24,14 @@ source_names:
         - "Construction spending"
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
+        allocation_helper: 'yes'
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2014
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
 
