@@ -53,7 +53,7 @@ CalRecycle_WasteCharacterization:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_aggregation_level: "aggregated"
 Census_AHS:
   class:
     - Land
@@ -77,7 +77,7 @@ Census_VIP:
   class: Money
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_aggregation_level: "aggregated"
 EIA_CBECS_Land:
   class: Land
   sector-like_activities: False
@@ -112,7 +112,7 @@ EPA_CDDPath:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_aggregation_level: "aggregated"
 EPA_GHGI:
   class:
     - Chemicals

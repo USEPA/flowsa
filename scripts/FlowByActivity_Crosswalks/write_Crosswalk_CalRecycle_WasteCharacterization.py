@@ -18,7 +18,7 @@ def assign_naics(df):
     :return: df with assigned Sector columns
     """
     
-    mapping = pd.read_csv(externaldatapath + "California_Commercial_bySector_2014_Mapping_6digit.csv",
+    mapping = pd.read_csv(externaldatapath + "California_Commercial_bySector_2014_Mapping.csv",
                           dtype = 'str')
     mapping = mapping.melt(var_name = 'Activity',
                            value_name = 'Sector'
