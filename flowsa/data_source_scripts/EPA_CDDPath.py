@@ -95,4 +95,17 @@ def combine_cdd_path(**kwargs):
     df = pd.concat([df_csv, df_excel], ignore_index=True)
     return df
 
-    
+
+def assign_wood_to_engineering(df_w_sec, **kwargs):
+    """clean_fba_w_sec_df_fxn that manually assigns Wood from 'Other' to
+    237990/Heavy engineering NAICS according to method in Meyer et al. 2020
+    :param df_w_sec: df, FBA format BLS QCEW data
+    :param kwargs: additional arguments can include 'attr', a
+    dictionary of FBA method yaml parameters
+    :return: df, CDDPath FBA with wood reassigned
+    """
+    df_w_sec.loc[(df_w_sec['FlowName']=='Wood') &
+                 (df_w_sec['ActivityProducedBy']=='Other'),
+                 'SectorProducedBy']='237990'
+
+    return df_w_sec
