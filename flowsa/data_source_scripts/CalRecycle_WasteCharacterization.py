@@ -78,7 +78,7 @@ def calR_parse(**kwargs):
     data["Class"] = "Other"
     data['FlowType'] = "WASTE_FLOW"
     data["Location"] = "06000"
-    data["Compartment"] = "ground"
+    # data["Compartment"] = "ground"
     data["SourceName"] = "CalRecycle_WasteCharacterization"
     data["Year"] = args['year']
     data['DataReliability'] = 5  # tmp
@@ -97,7 +97,7 @@ def calR_parse(**kwargs):
                     data['FlowName'] = row["Material"]
                     for field, value in row[1:].items():
                         col_string = field.split()
-                        data["Unit"] = col_string[1]
+                        data["Unit"] = col_string[1].lower()
                         data['Description'] = col_string[0]
                         if value != "-":
                             data["FlowAmount"] = int(value)
@@ -117,17 +117,17 @@ def keep_generated_quantity(fba, **kwargs):
     return fba
     
 
-def generate_BLS_QCEW_tons_per_year(fbs, attr, fbs_list):
+def apply_tons_per_employee_per_year_to_states(fbs):
     """
     Calculates tons per employee per year based on BLS_QCEW employees by sector and
     applies that quantity to employees in all states
     """
     # update to (Load FBA for allocation)
     bls = flowsa.getFlowByActivity(datasource='BLS_QCEW',
-                                   year=attr['allocation_source_year'],
-                                   flowclass=attr['allocation_source_class'],
-                                   geographic_level=attr['allocation_from_scale'])
-    bls = bls[bls['FlowName'].isin(attr['allocation_flow'])]
+                                   year=fbs['Year'].unique()[0],
+                                   flowclass='Employment',
+                                   geographic_level='state')
+    bls = bls[bls['FlowName'] == 'Number of employees']
     # clean df
     bls = flowsa.dataclean.clean_df(bls, flow_by_activity_fields, fba_fill_na_dict) 
     bls = clean_bls_qcew_fba(bls)
