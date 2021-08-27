@@ -9,7 +9,7 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
    Recommend NAICS_2012_Code, as the majority of datasets use this version of NAICS
 3. _target_geoscale_: level of geographic aggregation in output parquet (national, state, or county)
 
-### Source specifications (in FBA or FBS format)
+### Source specifications (in FBA format)
 1. _source_names_: The name of the FBS dataset or the FBA dataset requiring allocation to sectors
 2. _data_format_: 'FBA', 'FBS', 'FBS_outside_flowsa', loads a FlowByActivity or a FlowBySector
    parquet stored in flowsa, or calls on a specified function to load data from outside flowsa in FBS format
@@ -72,6 +72,11 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
     the source.py file
 22. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
     allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
+
+### Source specifications (in FBS format)
+If source data format is specified as 'FBS':
+1. _clean_fbs_df_fxn_: (optional) apply function to clean the FBS after it is accessed
+2. _clean_fbs_df_fxn_source: (if clean_fbs_df_fxn is used) identifies the location of the function
 
 ### FBS_outside_flows specifications
 If source data_format is specified as 'FBS_outside_flowsa':

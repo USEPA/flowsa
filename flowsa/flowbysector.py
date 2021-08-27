@@ -290,6 +290,9 @@ def main(**kwargs):
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)
         else:
+            if 'clean_fbs_df_fxn' in v:
+                flows = dynamically_import_fxn(v["clean_fbs_df_fxn_source"],
+                                               v["clean_fbs_df_fxn"])(flows)
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append %s to FBS list", k)
             # ensure correct field datatypes and add any missing fields
