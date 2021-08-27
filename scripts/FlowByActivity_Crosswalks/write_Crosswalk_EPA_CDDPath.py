@@ -18,11 +18,21 @@ def assign_naics(df):
     """
 
     cw = pd.read_csv(externaldatapath + 'VIPNametoNAICStoFF.csv',
-                     usecols=['FF Source Category','2012_NAICS_Code']).drop_duplicates()
+                     usecols=['FF Source Category','2012_NAICS_Code'],
+                     dtype='str').drop_duplicates()
     df = df.merge(cw, how = 'left', left_on = ['Activity'],
                   right_on = ['FF Source Category'])
     df = df.drop(columns='FF Source Category')
+    
+    # append additional mapping for Wood see EPA_CDDPath.py
+    # function assign_wood_to_engineering()
+    df = df.append({'Activity':'Other - Wood',
+                    'ActivitySourceName':'EPA_CDDPath',
+                    '2012_NAICS_Code':'237990'},
+                   ignore_index=True)
+    
     df = df.rename(columns={'2012_NAICS_Code':'Sector'})
+
     
     return df
 

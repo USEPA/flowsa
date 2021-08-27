@@ -96,18 +96,19 @@ def combine_cdd_path(**kwargs):
     return df
 
 
-def assign_wood_to_engineering(df_w_sec, **kwargs):
-    """clean_fba_w_sec_df_fxn that manually assigns Wood from 'Other' to
+def assign_wood_to_engineering(df, **kwargs):
+    """clean_fba_df_fxn that reclassifies Wood from 'Other' to
+    'Other - Wood' so that its mapping can be adjusted to only use
     237990/Heavy engineering NAICS according to method in Meyer et al. 2020
-    :param df_w_sec: df, FBA format BLS QCEW data
+    :param df: df, FBA of CDDPath
     :param kwargs: additional arguments can include 'attr', a
     dictionary of FBA method yaml parameters
     :return: df, CDDPath FBA with wood reassigned
     """
     
-    # Drop other sectors that would have been mapped from 'Other'
-    df_w_sec = df_w_sec[~((df_w_sec['FlowName']=='Wood') &
-                 (df_w_sec['ActivityProducedBy']=='Other') &
-                 (df_w_sec['SectorProducedBy']!='237990'))].reset_index(drop=True)
+    # Update wood to a new activity for improved mapping
+    df.loc[((df.FlowName == 'Wood') &
+           (df.ActivityProducedBy == 'Other')),
+           'ActivityProducedBy'] = 'Other - Wood'
 
-    return df_w_sec
+    return df
