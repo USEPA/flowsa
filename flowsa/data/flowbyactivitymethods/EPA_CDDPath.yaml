@@ -4,10 +4,10 @@ citable_url: https://doi.org/10.23719/1503167
 bib_id: EPA_CDDPath
 api_name: EPA_CDDPath
 api_key_required: false
-format: pdf  # comma delineated data
+format: csv, excel
 url:
   base_url: https://pasteur.epa.gov/uploads/10.23719/1503167/CDD_2014_US_Disposition_Estimates_Using_CDDPath_v2.xlsx
-call_response_fxn: write_cdd_path_from_csv
+call_response_fxn: combine_cdd_path
 parse_response_fxn: epa_cddpath_parse
 years:
 - 2014

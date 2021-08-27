@@ -9,23 +9,8 @@ Last updated: 2018-11-07
 
 import io
 import pandas as pd
-#import numpy as np
-#import flowsa
 from flowsa.common import US_FIPS, externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system #, \
-#     proportional_allocation_by_location_and_activity, filter_by_geoscale
-# from flowsa.dataclean import harmonize_units, clean_df
-# from flowsa.mapping import add_sectors_to_flowbyactivity
-# from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
-
-# =============================================================================
-# ## Import statements from EIA_CBECS_Land.py: ##
-# from flowsa.common import US_FIPS, get_region_and_division_codes, withdrawn_keyword,\
-#     clean_str_and_capitalize, fba_default_grouping_fields
-# from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
-# from flowsa.values_from_literature import \
-#     get_commercial_and_manufacturing_floorspace_to_land_area_ratio
-# =============================================================================
 
 
 # Read pdf into list of DataFrame
@@ -79,6 +64,7 @@ def epa_cddpath_parse(**kwargs):
     df['SourceName'] = 'EPA_CDDPath'  # confirm this
     df['Unit'] = 'short tons'
     df['FlowType'] = 'WASTE_FLOW'
+    df.loc[df['ActivityProducedBy'].isna(), 'ActivityProducedBy'] = 'Buildings'
     # df['Compartment'] = 'waste'  # confirm this
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, args['year'])
@@ -97,5 +83,16 @@ def write_cdd_path_from_csv(**kwargs):
                               'FlowAmount'])
     return df
 
-        
+
+def combine_cdd_path(**kwargs):
+    """Call function to generate combined dataframe from csv file and excel dataset,
+    bringing only those flows from the excel file that are not in the csv file
+    """
+    df_csv = write_cdd_path_from_csv()
+    df_excel = epa_cddpath_call(**kwargs)
+    df_excel = df_excel[~df_excel['FlowName'].isin(df_csv['FlowName'])]
+    
+    df = pd.concat([df_csv, df_excel], ignore_index=True)
+    return df
+
     
