@@ -7,7 +7,7 @@ Create a crosswalk for CalRecycle Waste Characterization to NAICS 2012.
 """
 import pandas as pd
 from flowsa.common import datapath, externaldatapath
-from common_scripts import unique_activity_names, order_crosswalk
+from scripts.common_scripts import unique_activity_names, order_crosswalk
 from flowsa.data_source_scripts.CalRecycle_WasteCharacterization import produced_by
 
 
@@ -26,6 +26,12 @@ def assign_naics(df):
     mapping['Sector'] = mapping['Sector'].astype(str)
     mapping['Activity'] = mapping['Activity'].map(lambda x: produced_by(x))
     df = df.merge(mapping, on = 'Activity')
+
+    # append Multifamily Sector to PCE
+    df = df.append({'Activity':'Multifamily',
+                    'ActivitySourceName':'CalRecycle_WasteCharacterization',
+                    'Sector':'F010'},
+                   ignore_index=True)
     
     return df
 
