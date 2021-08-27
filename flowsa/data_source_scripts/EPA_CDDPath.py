@@ -104,8 +104,10 @@ def assign_wood_to_engineering(df_w_sec, **kwargs):
     dictionary of FBA method yaml parameters
     :return: df, CDDPath FBA with wood reassigned
     """
-    df_w_sec.loc[(df_w_sec['FlowName']=='Wood') &
-                 (df_w_sec['ActivityProducedBy']=='Other'),
-                 'SectorProducedBy']='237990'
+    
+    # Drop other sectors that would have been mapped from 'Other'
+    df_w_sec = df_w_sec[~((df_w_sec['FlowName']=='Wood') &
+                 (df_w_sec['ActivityProducedBy']=='Other') &
+                 (df_w_sec['SectorProducedBy']!='237990'))].reset_index(drop=True)
 
     return df_w_sec
