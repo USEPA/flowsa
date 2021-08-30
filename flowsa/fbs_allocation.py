@@ -5,13 +5,11 @@
 Functions to allocate data using additional data sources
 """
 
-import sys
 import numpy as np
 import pandas as pd
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, log, \
-    fba_mapped_default_grouping_fields, flow_by_activity_fields, fba_fill_na_dict, \
-    fba_wsec_default_grouping_fields
+    fba_mapped_default_grouping_fields, fba_wsec_default_grouping_fields
 from flowsa.validation import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
@@ -19,7 +17,7 @@ from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_
     proportional_allocation_by_location_and_activity, subset_df_by_geoscale, \
     load_fba_w_standardized_units
 from flowsa.mapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
-from flowsa.dataclean import replace_strings_with_NoneType, clean_df
+from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.validation import check_if_data_exists_at_geoscale
 
 

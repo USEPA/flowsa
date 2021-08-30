@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 from flowsa.common import datapath, SECTOR_SOURCE_NAME, activity_fields, load_source_catalog, \
-    load_sector_crosswalk, log, fba_activity_fields, flow_by_activity_mapped_fields
+    load_sector_crosswalk, log, fba_activity_fields
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
