@@ -106,7 +106,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
                                                       allocMethod=attr['allocation_method'])
 
     # if there is an allocation helper dataset, modify allocation df
-    if 'helper source' in attr:
+    if 'helper_source' in attr:
         log.info("Using the specified allocation help for subset of %s", attr['allocation_source'])
         fba_allocation_subset = allocation_helper(fba_allocation_subset, attr, method, v)
 
