@@ -79,10 +79,10 @@ def eia_mecs_land_call(**kwargs):
         df_rse = pd.DataFrame(df_raw_rse.loc[12:93]).reindex()
         df_data = pd.DataFrame(df_raw_data.loc[16:97]).reindex()
         df_description = pd.DataFrame(df_raw_data.loc[16:97]).reindex()
-        # pull first 12 columns
-        df_rse = df_rse.iloc[:, 0:12]
-        df_data = df_data.iloc[:, 0:12]
-        df_description = df_description.iloc[:, 0:12]
+        # pull first 7 columns
+        df_rse = df_rse.iloc[:, 0:7]
+        df_data = df_data.iloc[:, 0:7]
+        df_description = df_description.iloc[:, 0:7]
 
         df_description.columns = ["NAICS Code(a)", "Subsector and Industry",
                                   "Approximate Enclosed Floorspace of All "
@@ -90,23 +90,23 @@ def eia_mecs_land_call(**kwargs):
                                   "Establishments(b) (counts)",
                                   "Average Enclosed Floorspace per Establishment (sq ft)",
                                   "Approximate Number of All Buildings Onsite (counts)",
-                                  "Average Number of Buildings Onsite per Establishment (counts)",
-                                  "n8", "n9", "n10", "n11", "n12"]
+                                  "Average Number of Buildings Onsite per Establishment (counts)"
+                                  ]
         df_data.columns = ["NAICS Code(a)", "Subsector and Industry",
                            "Approximate Enclosed Floorspace of All "
                            "Buildings Onsite (million sq ft)",
                            "Establishments(b) (counts)",
                            "Average Enclosed Floorspace per Establishment (sq ft)",
                            "Approximate Number of All Buildings Onsite (counts)",
-                           "Average Number of Buildings Onsite per Establishment (counts)",
-                           "n8", "n9", "n10", "n11", "n12"]
+                           "Average Number of Buildings Onsite per Establishment (counts)"
+                           ]
         df_rse.columns = ["NAICS Code(a)", "Subsector and Industry",
                           "Approximate Enclosed Floorspace of All Buildings Onsite (million sq ft)",
                           "Establishments(b) (counts)",
                           "Average Enclosed Floorspace per Establishment (sq ft)",
                           "Approximate Number of All Buildings Onsite (counts)",
-                          "Average Number of Buildings Onsite per Establishment (counts)",
-                          "n8", "n9", "n10", "n11", "n12"]
+                          "Average Number of Buildings Onsite per Establishment (counts)"
+                          ]
 
         # Drop unused columns
         df_description = df_description.drop(
@@ -114,11 +114,11 @@ def eia_mecs_land_call(**kwargs):
                      "Establishments(b) (counts)",
                      "Average Enclosed Floorspace per Establishment (sq ft)",
                      "Approximate Number of All Buildings Onsite (counts)",
-                     "Average Number of Buildings Onsite per Establishment (counts)",
-                     "n8", "n9", "n10", "n11", "n12"])
+                     "Average Number of Buildings Onsite per Establishment (counts)"
+                     ])
 
-        df_data = df_data.drop(columns=["Subsector and Industry", "n8", "n9", "n10", "n11", "n12"])
-        df_rse = df_rse.drop(columns=["Subsector and Industry", "n8", "n9", "n10", "n11", "n12"])
+        df_data = df_data.drop(columns=["Subsector and Industry"])
+        df_rse = df_rse.drop(columns=["Subsector and Industry"])
     else:
         df_rse = pd.DataFrame(df_raw_rse.loc[14:97]).reindex()
         df_data = pd.DataFrame(df_raw_data.loc[16:99]).reindex()
