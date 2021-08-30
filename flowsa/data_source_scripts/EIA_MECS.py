@@ -15,6 +15,7 @@ import numpy as np
 from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, datapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+from flowsa.data_source_scripts.EIA_CBECS_Land import calculate_total_facility_land_area
 
 
 def eia_mecs_URL_helper(**kwargs):
@@ -444,7 +445,6 @@ def mecs_land_fba_cleanup(fba):
     :param fba: df, EIA MECS Land FBA format
     :return: df, EA MECS Land FBA
     """
-    from flowsa.data_source_scripts.EIA_CBECS_Land import calculate_total_facility_land_area
 
     fba = fba[fba['FlowName'].str.contains(
         'Approximate Enclosed Floorspace of All Buildings Onsite')]
@@ -542,7 +542,7 @@ def determine_flows_requiring_disaggregation(df_load, attr, method, sector_colum
         df_name_2 = 'dfo_naics' + str(s)
         # concat df 1 with df_not_merged
         df2 = pd.concat([vars()[df_name_2], df_not_merged])
-        df2 = df2.rename(columns={'FlowAmount': 'SubtractFlow', sector_column: 'Sector'}) #.drop(columns='Sector')
+        df2 = df2.rename(columns={'FlowAmount': 'SubtractFlow', sector_column: 'Sector'})
         df_m = pd.merge(vars()[df_name_1][['FlowAmount', 'Location', sector_column]],
                         df2,
                         left_on=['Location', sector_column],

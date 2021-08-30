@@ -209,7 +209,7 @@ def allocation_helper(df_w_sector, attr, method, v):
                                            geoscale_to=v['geoscale_to_use'], **fba_dict)
 
     # run sector disagg to capture any missing lower level naics
-    helper_allocation = sector_disaggregation(helper_allocation, fba_wsec_default_grouping_fields)
+    helper_allocation = sector_disaggregation(helper_allocation)
 
     # generalize activity field names to enable link to water withdrawal table
     helper_allocation = collapse_activity_fields(helper_allocation)
@@ -355,7 +355,9 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     """
 
     log.info("Loading allocation flowbyactivity %s for year %s", fba_sourcename, str(df_year))
-    fba = load_fba_w_standardized_units(datasource=fba_sourcename, year=df_year, flowclass=flowclass)
+    fba = load_fba_w_standardized_units(datasource=fba_sourcename,
+                                        year=df_year,
+                                        flowclass=flowclass)
 
     # check if allocation data exists at specified geoscale to use
     log.info("Checking if allocation data exists at the %s level", geoscale_from)

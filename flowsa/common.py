@@ -8,8 +8,8 @@ import shutil
 import sys
 import os
 import logging
-import yaml
 import pprint
+import yaml
 import requests
 import requests_ftp
 import pandas as pd
@@ -52,9 +52,10 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
 
-# define 4 logs, one for general information, one for major validation logs that are also included
-# in the gerneral info log, one for very specific validation that is only included in the validation log,
-# and a console printout that includes general and validation, but not detailed validation
+# define 4 logs, one for general information, one for major validation logs that are
+# also included in the general info log, one for very specific validation that is only
+# included in the validation log, and a console printout that includes general and
+# validation, but not detailed validation
 create_paths_if_missing(logoutputpath)
 
 # format for logging .txt generated

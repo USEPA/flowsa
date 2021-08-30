@@ -8,8 +8,8 @@ source (yaml file name) as parameters
 EX: --year 2015 --source USGS_NWIS_WU
 """
 
-import requests
 import argparse
+import requests
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
@@ -122,7 +122,8 @@ def call_urls(url_list, args, config):
             r = make_http_request(url, requests_session=s, set_cookies=set_cookies)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
-                df = dynamically_import_fxn(args['source'], config["call_response_fxn"])(url=url, r=r, args=args)
+                df = dynamically_import_fxn(args['source'],
+                                            config["call_response_fxn"])(url=url, r=r, args=args)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):

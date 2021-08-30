@@ -162,7 +162,8 @@ def main(**kwargs):
                     names = attr['names']
 
                 log.info("Preparing to handle %s in %s", aset, k)
-                log.debug("Preparing to handle subset of activities: %s", ', '.join(map(str, names)))
+                log.debug("Preparing to handle subset of activities: %s",
+                          ', '.join(map(str, names)))
                 # subset fba data by activity
                 flows_subset =\
                     flows_fba[(flows_fba[fba_activity_fields[0]].isin(names)) |
@@ -175,7 +176,8 @@ def main(**kwargs):
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
                     # check impact on df FlowAmounts
-                    vLog.info('Calculate FlowAmount difference caused by replacing NAICS Codes with %s', method['target_sector_source'])
+                    vLog.info('Calculate FlowAmount difference caused by '
+                              'replacing NAICS Codes with %s', method['target_sector_source'])
                     calculate_flowamount_diff_between_dfs(flows_subset, flows_subset2)
                 else:
                     flows_subset2 = flows_subset.copy()
@@ -199,9 +201,11 @@ def main(**kwargs):
                     log.info("Cleaning up %s FlowByActivity with sectors", k)
                     flows_subset_wsec_clean = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
-                                                                               attr=attr, method=method)
+                                                                               attr=attr,
+                                                                               method=method)
                     # determine if any changes to the data
-                    vLog.info('Calculate changes in FlowAmounts from cleaning the FBA with sectors df')
+                    vLog.info('Calculate changes in FlowAmounts from cleaning '
+                              'the FBA with sectors df')
                     calculate_flowamount_diff_between_dfs(flows_subset_wsec,
                                                           flows_subset_wsec_clean)
                 else:
@@ -258,7 +262,7 @@ def main(**kwargs):
                 log.info("Aggregating flowbysector to all sector levels")
                 fbs_sec_agg = sector_aggregation(fbs_geo_agg, groupingcols)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
-                fbs_agg = sector_disaggregation(fbs_sec_agg, groupingdict)
+                fbs_agg = sector_disaggregation(fbs_sec_agg)
 
                 # check if any sector information is lost before reaching
                 # the target sector length, if so,

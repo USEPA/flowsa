@@ -249,7 +249,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
             col_to_subset = asn_subset['allocation_subset_col'][0]
             val_to_subset = asn_subset['allocation_subset'][0]
             # subset fba_allocation_subset further
-            log.debug('Subset the allocation dataset where %s = %s', str(col_to_subset), str(val_to_subset))
+            log.debug('Subset the allocation dataset where %s = %s',
+                      str(col_to_subset), str(val_to_subset))
             fba_allocation_subset = fba_allocation_subset[fba_allocation_subset[col_to_subset]
                                                           == val_to_subset].reset_index(drop=True)
 
@@ -263,14 +264,16 @@ def convert_units_to_annual(df):
     :return: df with annual FlowAmounts
     """
     # convert unit per day to year
-    df['FlowAmount'] = np.where(df['Unit'].str.contains('/d'), df['FlowAmount'] * 365, df['FlowAmount'])
+    df['FlowAmount'] = np.where(df['Unit'].str.contains('/d'),
+                                df['FlowAmount'] * 365,
+                                df['FlowAmount'])
     df['Unit'] = df['Unit'].apply(lambda x: x.replace('/d', ""))
 
     return df
 
 
-def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW', 
-              ignore_source_name = False, **kwargs):
+def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
+              ignore_source_name=False, **kwargs):
     """
     Applies mapping via esupy from fedelemflowlist or material flow list to convert flows to
     standardized list of flows
@@ -288,9 +291,9 @@ def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
 
     # prior to mapping elementary flows, ensure all data are in an annual format
     fba = convert_units_to_annual(fba)
-    
+
     keep_unmapped_rows = False
-    
+
     # if need to maintain FBA columns, create copies of columns
     if kwargs != {}:
         if ('keep_fba_columns' in kwargs) & (kwargs['keep_fba_columns'] is True):
@@ -326,17 +329,18 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
     :param from_fba_source: str Source name of fba list to look for mappings
     :param v: dictionary, The datasource parameters
     :param kwargs: includes keep_unmapped_columns and keep_fba_columns
-    :return fbs_mapped: df, with flows mapped using federal elementary flow list or material flow list
+    :return fbs_mapped: df, with flows mapped using federal elementary
+           flow list or material flow list
     :return mapping_files: str, name of mapping file
     """
     ignore_source_name = False
     if 'mfl_mapping' in v:
         mapping_files = v['mfl_mapping']
-        log.info("Mapping flows in " + from_fba_source + ' to material flow list')
+        log.info("Mapping flows in %s to material flow list", from_fba_source)
         flow_type = 'WASTE_FLOW'
         ignore_source_name = True
     else:
-        log.info("Mapping flows in " + from_fba_source + ' to federal elementary flow list')
+        log.info("Mapping flows in %s to federal elementary flow list", from_fba_source)
         if 'fedefl_mapping' in v:
             mapping_files = v['fedefl_mapping']
             ignore_source_name = True
@@ -344,7 +348,7 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
             mapping_files = from_fba_source
         flow_type = 'ELEMENTARY_FLOW'
 
-    fbs_mapped = map_flows(fbs, mapping_files, flow_type, 
+    fbs_mapped = map_flows(fbs, mapping_files, flow_type,
                            ignore_source_name, **kwargs)
 
     return fbs_mapped, mapping_files

@@ -8,7 +8,7 @@ FlowByActivity (FBA) and FlowBySector (FBS) datasets
 
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, read_source_metadata
-from flowsa.common import paths, pkg, PKG_VERSION_NUMBER, WRITE_FORMAT,\
+from flowsa.common import paths, pkg, PKG_VERSION_NUMBER, WRITE_FORMAT, \
     GIT_HASH, GIT_HASH_LONG, load_functions_loading_fbas_config, \
     load_fbs_methods_additional_fbas_config, log
 from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata
@@ -100,11 +100,11 @@ def return_fbs_method_data(source_name, config):
     meta['primary_source_meta'] = {}
     for k, v in fb.items():
         if k == 'stewiFBS':
-            #get stewi metadata
+            # get stewi metadata
             meta['primary_source_meta'][k] = add_stewi_metadata(v['inventory_dict'])
             continue
         # append source and year
-        meta['primary_source_meta'][k] = getMetadata(k, v["year"], paths)
+        meta['primary_source_meta'][k] = getMetadata(k, v["year"])
         # create dictionary of allocation datasets for different activities
         activities = v['activity_sets']
         # initiate nested dictionary
@@ -115,11 +115,10 @@ def return_fbs_method_data(source_name, config):
                 # append fba meta
                 meta['primary_source_meta'][k]['allocation_source_meta'][
                     attr['allocation_source']] = \
-                    getMetadata(attr['allocation_source'],
-                                attr['allocation_source_year'], paths)
+                    getMetadata(attr['allocation_source'], attr['allocation_source_year'])
             if 'helper_source' in attr:
                 meta['primary_source_meta'][k]['allocation_source_meta'][attr['helper_source']] = \
-                    getMetadata(attr['helper_source'], attr['helper_source_year'], paths)
+                    getMetadata(attr['helper_source'], attr['helper_source_year'])
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 for s, y in lit.items():
@@ -134,8 +133,8 @@ def return_fbs_method_data(source_name, config):
                     for fxn, fba_info in fxn_info.items():
                         for fba, y in fba_info.items():
                             fxn_config = load_functions_loading_fbas_config()[fxn][fba]
-                            meta['primary_source_meta'][k]['allocation_source_meta'][fxn_config['source']] = \
-                                getMetadata(fxn_config['source'], y, paths)
+                            meta['primary_source_meta'][k]['allocation_source_meta'][
+                                fxn_config['source']] = getMetadata(fxn_config['source'], y)
             except KeyError:
                 pass
 
@@ -175,7 +174,7 @@ def return_fba_method_meta(sourcename, **kwargs):
     return fba_dict
 
 
-def getMetadata(source, year, paths):
+def getMetadata(source, year):
     """
     Use the esupy package functions to return the metadata for
     a FBA used to generate a FBS

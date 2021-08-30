@@ -7,17 +7,17 @@ Helper functions for flowbyactivity and flowbysector data
 
 import pandas as pd
 import numpy as np
+from esupy.dqi import get_weighted_average
 import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, log, load_source_catalog, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
-    fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
+    fbs_collapsed_fill_na_dict, fba_activity_fields, \
     fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
     find_true_file_path, flow_by_activity_mapped_fields, fba_mapped_default_grouping_fields
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells, standardize_units
-from esupy.dqi import get_weighted_average
 
 
 def create_geoscale_list(df, geoscale, year='2015'):
@@ -273,12 +273,11 @@ def sector_aggregation(df_load, group_cols):
     return df
 
 
-def sector_disaggregation(df, group_cols):
+def sector_disaggregation(df):
     """
     function to disaggregate sectors if there is only one naics at a lower level
     works for lower than naics 4
-    :param df_load: A FBS df, must have sector columns
-    :param group_cols: columns by which to disaggregate sectors
+    :param df: A FBS df, must have sector columns
     :return: A FBS df with values for the missing naics5 and naics6
     """
 
@@ -739,12 +738,12 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
     else:
         df1 = sector_aggregation(df_w_sectors, group_cols)
         # run sector disaggregation to capture one-to-one naics4/5/6 relationships
-        df2 = sector_disaggregation(df1, group_cols)
+        df2 = sector_disaggregation(df1)
 
         # if statements for method of allocation
         # either 'proportional' or 'proportional-flagged'
         allocation_df = []
-        if allocation_method == 'proportional' or allocation_method == 'proportional-flagged':
+        if allocation_method in ('proportional', 'proportional-flagged'):
             allocation_df = proportional_allocation_by_location(df2)
         else:
             log.error('Must create function for specified method of allocation')
@@ -854,7 +853,9 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
     """
 
     # if a file does not exist modify file name, dropping ext after last underscore
-    data_source_scripts_file = find_true_file_path(datasourcescriptspath, data_source_scripts_file, 'py')
+    data_source_scripts_file = find_true_file_path(datasourcescriptspath,
+                                                   data_source_scripts_file,
+                                                   'py')
 
     df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
                             fromlist=function_name), function_name)

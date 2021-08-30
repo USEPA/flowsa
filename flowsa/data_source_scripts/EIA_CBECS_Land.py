@@ -188,9 +188,11 @@ def eia_cbecs_land_parse(**kwargs):
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
     df['Year'] = args["year"]
-    df['FlowName'] = "Commercial, " + df["ActivityConsumedBy"] + ", Total floorspace, " + df['Description']
+    df['FlowName'] = "Commercial, " + df["ActivityConsumedBy"] + \
+                     ", Total floorspace, " + df['Description']
     # if 'all buildings' at end of flowname, drop
-    df['FlowName'] = df['FlowName'].apply(lambda x: x.replace('Total floorspace, All buildings', 'Total floorspace'))
+    df['FlowName'] = df['FlowName'].apply(lambda x: x.replace('Total floorspace, All buildings',
+                                                              'Total floorspace'))
     df['Compartment'] = 'ground'
     df['Unit'] = "million square feet"
     df['MeasureofSpread'] = "RSE"
@@ -257,7 +259,8 @@ def cbecs_land_fba_cleanup(fba_load):
 
     # drop activities of 'all buildings' to avoid double counting
     fba2 = fba1[fba1['ActivityConsumedBy'] != 'All buildings'].reset_index(drop=True)
-    vLogDetailed.info('Drop the principle building activity "All buildings" to avoid double counting')
+    vLogDetailed.info('Drop the principle building activity "All buildings" to '
+                      'avoid double counting')
     calculate_flowamount_diff_between_dfs(fba1, fba2)
 
     return fba2
@@ -285,11 +288,11 @@ def calculate_floorspace_based_on_number_of_floors(fba_load):
     fba2 = disaggregate_eia_cbecs_vacant_and_other(fba)
     vLogDetailed.info('Due to data suppression for floorspace by building number of floors, '
                       'some data is lost when dropping floorspace for all buildings within a '
-                      'principle building activity. To avoid this data loss, all remaining floorspace '
-                      'for "All buildings" by number of floors is allocated to "Vacant" and "Other" '
-                      'principle building activities, as these activities are allocated to all commercial '
-                      'building sectors. This assumption results in a total floorspace increase for'
-                      '"Vacant" and "Other" activities.')
+                      'principle building activity. To avoid this data loss, all remaining '
+                      'floorspace for "All buildings" by number of floors is allocated to '
+                      '"Vacant" and "Other" principle building activities, as these activities '
+                      'are allocated to all commercial building sectors. This assumption results '
+                      'in a total floorspace increase for "Vacant" and "Other" activities.')
     calculate_flowamount_diff_between_dfs(fba, fba2)
 
     # drop data for 'all buildings'
@@ -307,11 +310,12 @@ def calculate_floorspace_based_on_number_of_floors(fba_load):
     fba3['FlowAmount'] = fba3['FlowAmount'] / fba3['DivisionFactor']
     # sum values for single flowamount for each bulding type
     vLogDetailed.info('Drop flows for "All Buildings" to avoid double counting, as maintain '
-                      'floorspace by buildings based on number of floors. Also dividing total floorspace '
-                      'by number of floors to calculate a building footprint. Calculates result in reduced '
-                      'FlowAmount for all categories.')
+                      'floorspace by buildings based on number of floors. Also dividing total '
+                      'floorspace by number of floors to calculate a building footprint. '
+                      'Calculates result in reduced FlowAmount for all categories.')
     calculate_flowamount_diff_between_dfs(fba2, fba3)
-    # rename the FlowAmounts and sum so total floorspace, rather than have multiple rows based on floors
+    # rename the FlowAmounts and sum so total floorspace, rather than have
+    # multiple rows based on floors
     fba3 = fba3.assign(FlowName=fba3['FlowName'].apply(lambda x: ','.join(x.split(',')[:-1])))
     # modify the description
     fba3 = fba3.assign(Description='Building Footprint')

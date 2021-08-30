@@ -1,3 +1,7 @@
+"""
+Setup for flowsa package
+"""
+
 from setuptools import setup
 
 setup(
@@ -28,7 +32,7 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',
-    author='Catherine Birney, Ben Young, Wesley Ingwersen, Melissa Conner, Jacob Specht, Mo Li',
+    author='Catherine Birney, Wesley Ingwersen, Ben Young, Mo Li, Melissa Conner, Jacob Specht',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 1 - Alpha",
@@ -38,5 +42,6 @@ setup(
         "Programming Language :: Python :: 3.x",
         "Topic :: Utilities",
     ],
-    description='Complies and provides a standardized list of elementary flows and flow mappings for life cycle assessment data'
+    description='Complies and provides a standardized list of elementary flows and '
+                'flow mappings for life cycle assessment data'
 )

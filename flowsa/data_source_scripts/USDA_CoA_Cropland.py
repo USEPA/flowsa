@@ -344,7 +344,6 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
     if len(p) != 0:
         # add temp loc column for state fips
         p = p.assign(Location_tmp=p['Location'].apply(lambda x: x[0:2]))
-        df_sourcename = pd.unique(p['SourceName'])[0]
 
         # load usda coa cropland naics
         df_f = load_fba_w_standardized_units(datasource='USDA_CoA_Cropland_NAICS',
@@ -410,8 +409,6 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     :return: df, CoA cropland data disaggregated
     """
 
-    import flowsa
-
     # tmp drop NoneTypes
     fba_w_sector = replace_NoneType_with_empty_cells(fba_w_sector)
 
@@ -446,7 +443,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     # group_cols.append(sector_column)
     naics2 = sector_aggregation(naics, group_cols)
     # add missing naics5/6 when only one naics5/6 associated with a naics4
-    naics3 = sector_disaggregation(naics2, group_cols)
+    naics3 = sector_disaggregation(naics2)
     # drop rows where FlowAmount 0
     # naics3 = naics3[~((naics3['SectorProducedBy'] == '') & (naics3['SectorConsumedBy'] == ''))]
     naics3 = naics3.loc[naics3['FlowAmount'] != 0]

@@ -9,7 +9,8 @@ Helper functions for importing, parsing, formatting USGS Water Use data
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first_letter, US_FIPS, vLogDetailed
+from flowsa.common import abbrev_us_state, fba_activity_fields,\
+    capitalize_first_letter, US_FIPS, vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.validation import compare_df_units, calculate_flowamount_diff_between_dfs
 
@@ -354,17 +355,19 @@ def usgs_fba_data_cleanup(df):
     # causes issues because linked with public supply
     # also drop closed-loop or once-through cooling (thermoelectric power) due to limited data
     vLogDetailed.info('Removing all rows for Commercial Data because only exists for three states '
-                 'and causes issues as information on Public Supply deliveries')
-    dfa = df[~df['Description'].str.lower().str.contains('commercial|closed-loop cooling|once-through')]
+                      'and causes issues as information on Public Supply deliveries')
+    dfa = df[~df['Description'].str.lower().str.contains(
+        'commercial|closed-loop cooling|once-through')]
     calculate_flowamount_diff_between_dfs(df, dfa)
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
     vLogDetailed.info('Modify the public supply values to generate NET public supply '
-                 'by subtracting out deliveries to domestic')
+                      'by subtracting out deliveries to domestic')
     dfb = calculate_net_public_supply(dfa)
 
     # check that golf + crop = total irrigation, if not, assign all of total irrigation to crop
-    vLogDetailed.info('If states do not distinguish between golf and crop irrigation as a subset of '
-                 'total irrigation, assign all of total irrigation to crop')
+    vLogDetailed.info('If states do not distinguish between golf and crop '
+                      'irrigation as a subset of total irrigation, assign '
+                      'all of total irrigation to crop')
     dfc = check_golf_and_crop_irrigation_totals(dfb)
 
     # national
@@ -372,8 +375,9 @@ def usgs_fba_data_cleanup(df):
 
     # drop flowname = 'total' rows when possible to prevent double counting
     # subset data where flowname = total and where it does not
-    vLogDetailed.info('Drop rows where the FlowName is total to prevent double counting at the state and '
-                 'county levels. Retain rows at national level')
+    vLogDetailed.info('Drop rows where the FlowName is total to prevent'
+                      'double counting at the state and county levels. '
+                      'Retain rows at national level')
     df2 = dfc[dfc['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
     c1 = df2['Location'] != US_FIPS
@@ -462,9 +466,11 @@ def calculate_net_public_supply(df_load):
                                          (df_w_modified['FlowRatio'] *
                                           df_w_modified['DomesticDeliveries'])
     # drop county level values because cannot use county data
-    df_w_modified_clean = df_w_modified[df_w_modified['Location'].apply(lambda x: x[2:6] == '000')].reset_index(drop=True)
-    vLogDetailed.info('Dropping county level public supply withdrawals because will end up with negative '
-                      'values due to instances of water deliveries combin from surrounding counties')
+    df_w_modified_clean = df_w_modified[df_w_modified['Location'].apply(
+        lambda x: x[2:6] == '000')].reset_index(drop=True)
+    vLogDetailed.info('Dropping county level public supply withdrawals because'
+                      'will end up with negative values due to instances of water '
+                      'deliveries coming from surrounding counties')
     calculate_flowamount_diff_between_dfs(df_w_modified, df_w_modified_clean)
 
     net_ps = df_w_modified_clean.drop(columns=["FlowTotal", "DomesticDeliveries"])

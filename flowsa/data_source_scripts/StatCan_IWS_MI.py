@@ -112,7 +112,6 @@ def convert_statcan_data_to_US_water_use(df, attr):
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: df, FBA format, flowamounts converted
     """
-    import flowsa
 
     # load Canadian GDP data
     gdp = load_fba_w_standardized_units(datasource='StatCan_GDP',
