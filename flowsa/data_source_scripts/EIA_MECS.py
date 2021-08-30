@@ -556,7 +556,7 @@ def determine_flows_requiring_disaggregation(df_load, attr, method, sector_colum
             # aggregate before subtracting
             df_both2 = df_both1.groupby(['FlowAmount',
                                          'Location', sector_column],
-                                        as_index=False)[["SubtractFlow"]].agg("sum")
+                                        as_index=False).agg({"SubtractFlow": sum})
             df_both3 = df_both2.assign(FlowAmount=df_both2['FlowAmount'] - df_both2['SubtractFlow'])
             df_both3 = df_both3.drop(columns=['SubtractFlow'])
             # drop rows where 0

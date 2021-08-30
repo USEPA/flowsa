@@ -340,8 +340,8 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     dfs = df[['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Year',
               'FlowAmount_Original', 'FlowAmount_Modified', 'Unit', 'geoscale']]
     agg_cols = ['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Year', 'Unit', 'geoscale']
-    dfagg = dfs.groupby(agg_cols, dropna=False, as_index=False)[
-        ['FlowAmount_Original', 'FlowAmount_Modified']].agg("sum")
+    dfagg = dfs.groupby(agg_cols, dropna=False, as_index=False).agg({'FlowAmount_Original': sum,
+                                                                     'FlowAmount_Modified': sum})
     # column calculating difference
     dfagg['FlowAmount_Difference'] = dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
     dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference']/dfagg['FlowAmount_Original']) * 100

@@ -149,7 +149,7 @@ def sector_ratios(df, sectorcolumn):
         # subset df to create denominator
         df_denom = df_subset[['FlowAmount', 'Location', 'Sector_group']]
         df_denom = df_denom.groupby(['Location', 'Sector_group'],
-                                    as_index=False)[["FlowAmount"]].agg("sum")
+                                    as_index=False).agg({"FlowAmount": sum})
         df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
         # merge the denominator column with fba_w_sector df
         ratio_df = df_subset.merge(df_denom, how='left')

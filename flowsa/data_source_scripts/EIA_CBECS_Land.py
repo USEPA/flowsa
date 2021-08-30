@@ -392,7 +392,7 @@ def disaggregate_eia_cbecs_vacant_and_other(df_load):
     df_nvno = df_load[df_load['Description'].str.contains('floors')]
     df_nvno = df_nvno[df_nvno['ActivityConsumedBy'] != 'All buildings']
     df_nvno = df_nvno.groupby(['Unit', 'Location', 'LocationSystem', 'Year',
-                               'Description'], as_index=False)[['FlowAmount']].agg("sum")
+                               'Description'], as_index=False).agg({'FlowAmount': sum})
     df_act = df_nvno.rename(columns={'FlowAmount': 'NonVacantNonOther'})
 
     # merge df and subtract to determine FlowAmount to allocate to vacant and other activities
