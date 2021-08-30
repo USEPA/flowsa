@@ -30,7 +30,7 @@ from flowsa.common import log, vLog, flowbysectormethodpath, flow_by_sector_fiel
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, \
     paths, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
-    fbs_grouping_fields_w_activities
+    fbs_grouping_fields_w_activities, logoutputpath
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
@@ -331,7 +331,7 @@ def main(**kwargs):
     write_metadata(method_name, method, meta, "FlowBySector")
     # rename the log file saved to local directory
     rename_log_file(method_name, meta)
-    log.info('See the Validation log for detailed assessment of model results')
+    log.info('See the Validation log for detailed assessment of model results in %s', logoutputpath)
 
 
 if __name__ == '__main__':
