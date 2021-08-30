@@ -271,7 +271,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
     flow_alloc_df2 = flow_alloc_df[['FBA_Activity', 'Location', 'SectorLength', 'FlowAmountRatio']]
     # sum the flow amount ratios by location and sector length
     flow_alloc_df3 = flow_alloc_df2.groupby(['FBA_Activity', 'Location', 'SectorLength'],
-                                            as_index=False)[["FlowAmountRatio"]].agg("sum")
+                                            dropna=False, as_index=False).agg({"FlowAmountRatio": sum})
     # keep only rows of specified sector length
     flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['SectorLength'] ==
                           sector_level_key[config['target_sector_level']
