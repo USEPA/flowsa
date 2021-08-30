@@ -351,8 +351,9 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
         vLog.info('No FlowAmount differences')
     else:
         # save output in log file
-        vLog.info('Comparison of %s FlowAmounts after modifying df: '
-                  '\n {}'.format(dfagg2.to_string(), index=False))
+        vLog.info('Saving comparision of FlowAmount differences in Validation Log')
+        vLogDetailed.info('Comparison of FlowAmounts after modifying df: '
+                          '\n {}'.format(dfagg2.to_string(), index=False))
 
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
