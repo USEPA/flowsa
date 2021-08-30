@@ -188,7 +188,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
     if src_info['sector-like_activities'] is False:
         # read in source crosswalk
         df = get_activitytosector_mapping(source)
-        sec_source_name = df['SectorSourceName'].all()
+        sec_source_name = df['SectorSourceName'][0]
         df = expand_naics_list(df, sec_source_name)
         # subset source crosswalk to only contain values pertaining to list of activity names
         df = df.loc[df['Activity'].isin(activitynames)]
