@@ -132,7 +132,7 @@ def stewi_to_sector(yaml_load):
         functions = yaml_load['functions']
 
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
-    # run stewicombo to combine inventories, filter for LCI, remove overlap
+    # run stewi to generate inventory and filter for LCI
     df = pd.DataFrame()
     for database, year in yaml_load['inventory_dict'].items():
         inv = stewi.getInventory(database, year, filter_for_LCI=True, US_States_Only=True)

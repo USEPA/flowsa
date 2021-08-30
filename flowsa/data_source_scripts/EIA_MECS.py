@@ -71,8 +71,8 @@ def eia_mecs_land_call(**kwargs):
     args = kwargs['args']
 
     # Convert response to dataframe
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='Table 9.1')
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='RSE 9.1')
+    df_raw_data = pd.read_excel(io.BytesIO(response_load.content), sheet_name='Table 9.1')
+    df_raw_rse = pd.read_excel(io.BytesIO(response_load.content), sheet_name='RSE 9.1')
     if args["year"] == "2014":
         # skip rows and remove extra rows at end of dataframe
         df_rse = pd.DataFrame(df_raw_rse.loc[12:93]).reindex()
@@ -253,10 +253,10 @@ def eia_mecs_energy_call(**kwargs):
 
     ## read raw data into dataframe
     ## (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content),
-                                         sheet_name=0, header=None)
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(response_load.content),
-                                        sheet_name=1, header=None)
+    df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
+                                sheet_name=0, header=None)
+    df_raw_rse = pd.read_excel(io.BytesIO(response_load.content),
+                               sheet_name=1, header=None)
 
     ## retrieve table name from cell A3 of Excel file
     table = df_raw_data.iloc[2][0]

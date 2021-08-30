@@ -9,7 +9,7 @@ setup(
         "data/*.*", "output/*.*"]},
     include_package_data=True,
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.7#egg=fedelemflowlist',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.8#egg=fedelemflowlist',
         'esupy @ git+https://github.com/USEPA/esupy@v0.1.7#egg=esupy',
         'StEWI @ git+https://github.com/USEPA/standardizedinventories@v0.9.9#egg=StEWI',
         'pandas>=1.1.0',
