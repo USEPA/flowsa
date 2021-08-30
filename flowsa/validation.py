@@ -283,7 +283,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
 
     if len(flow_alloc_df5) > 0:
         vLog.info('There are %s instances at a sector length of %s '
-                  'where the allocation ratio for a location is greater than or less than 1 by %s. '
+                  'where the allocation ratio for a location is greater than or less than 1 by at least %s. '
                   'See Validation Log',
                   len(flow_alloc_df5), config["target_sector_level"], str(tolerance))
 
