@@ -60,8 +60,8 @@ def eia_cbecs_land_call(**kwargs):
     response_load = kwargs['r']
 
     # Convert response to dataframe
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data')
-    df_raw_rse = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='rse')
+    df_raw_data = pd.read_excel(io.BytesIO(response_load.content), sheet_name='data')
+    df_raw_rse = pd.read_excel(io.BytesIO(response_load.content), sheet_name='rse')
 
     if "b5.xlsx" in url:
         # skip rows and remove extra rows at end of dataframe
