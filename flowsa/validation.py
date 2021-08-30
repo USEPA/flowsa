@@ -322,6 +322,8 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
         vars()[df_name+'2'] = vars()[df_name+'2'].assign(
             geoscale=np.where(vars()[df_name+'2']['Location'] == '00000',
                               'national', vars()[df_name+'2']['geoscale']))
+        # ensure all nan/nones filled/match
+        vars()[df_name + '2'] = replace_strings_with_NoneType(vars()[df_name+'2'])
         df_list.append(vars()[df_name+'2'])
      # merge the two dataframes
     df = df_list[0].merge(df_list[1], how='outer')

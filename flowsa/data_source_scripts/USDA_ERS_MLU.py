@@ -129,9 +129,9 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
 
     # read in the cbecs and mecs df from df_list
     for df_i in fbs_list:
-        if df_i['MetaSources'].all() == 'EIA_CBECS_Land':
+        if (df_i['MetaSources'] == 'EIA_CBECS_Land').all():
             cbecs = df_i
-        elif df_i['MetaSources'].all() == 'EIA_MECS_Land':
+        elif (df_i['MetaSources'] == 'EIA_MECS_Land').all():
             mecs = df_i
 
     # load the federal highway administration fees dictionary
@@ -157,7 +157,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     df_non_urban_transport_area = df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
     non_urban_transport_area_sum =\
         df_non_urban_transport_area.groupby(
-            ['Location', 'Unit'], as_index=False)['FlowAmount'].sum().rename(
+            ['Location', 'Unit'], as_index=False).agg({'FlowAmount': sum}).rename(
             columns={'FlowAmount': 'NonTransport'})
     # compare units
     compare_df_units(df, df_non_urban_transport_area)
@@ -182,8 +182,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     # first subtract area for airports and railroads
     air_rail_area = pd.concat([df_airport, df_railroad], sort=False)
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
-    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount'] \
-        .sum().rename(columns={'FlowAmount': 'AirRail'})
+    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)\
+        .agg({'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
 
     df_highway = df_transport.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])

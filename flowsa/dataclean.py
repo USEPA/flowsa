@@ -216,7 +216,7 @@ def harmonize_FBS_columns(df):
     # combining MetaSources string in process
     df_sub = df_sub.groupby(group_no_meta)['MetaSources'].apply(', '.join).reset_index()
     # drop the MetaSources col in original df and replace with the MetaSources col in df_sub
-    df = df.drop('MetaSources', 1)
+    df = df.drop(columns='MetaSources')
     harmonized_df = df.merge(df_sub, how='left')
     harmonized_df = replace_strings_with_NoneType(harmonized_df)
 
