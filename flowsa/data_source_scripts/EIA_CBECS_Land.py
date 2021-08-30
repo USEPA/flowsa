@@ -181,8 +181,8 @@ def eia_cbecs_land_parse(**kwargs):
     df = standardize_eia_cbecs_land_activity_names(df, column_to_standardize='ActivityConsumedBy')
 
     # replace withdrawn code
-    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = 0 #withdrawn_keyword
-    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = 0 #withdrawn_keyword
+    df.loc[df['FlowAmount'] == "Q", 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df.loc[df['FlowAmount'].isin(["nan", np.nan]), 'FlowAmount'] = 0
     df.loc[df['Spread'].isin(["", " "]), 'Spread'] = 0
     df["Class"] = 'Land'
