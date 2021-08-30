@@ -247,8 +247,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     # first subtract area for airports and railroads
     air_rail_area = pd.concat([df_airport, df_railroad], sort=False)
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
-    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)['FlowAmount'] \
-        .sum().rename(columns={'FlowAmount': 'AirRail'})
+    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)\
+        .agg({'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
 
     # compare units
     compare_df_units(df, air_rail_area)
