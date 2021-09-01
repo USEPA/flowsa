@@ -41,7 +41,7 @@ from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.validation import check_if_losing_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
-    compare_fba_load_and_fbs_output_totals, compare_geographic_totals,\
+    compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
 
 
@@ -139,7 +139,8 @@ def main(**kwargs):
                 log.info("Cleaning up %s FlowByActivity", k)
                 flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
                 # calculate expected data loss
-                vLog.info('Calculate FlowAmount differences caused by cleaning FBA')
+                vLog.info('Calculate FlowAmount differences caused by cleaning FBA,'
+                          'saving difference in Validation log')
                 calculate_flowamount_diff_between_dfs(flows_mapped, flows_fba)
             else:
                 flows_fba = flows_mapped.copy()
@@ -177,7 +178,8 @@ def main(**kwargs):
                                                                 method['target_sector_source'])
                     # check impact on df FlowAmounts
                     vLog.info('Calculate FlowAmount difference caused by '
-                              'replacing NAICS Codes with %s', method['target_sector_source'])
+                              'replacing NAICS Codes with %s, saving difference in Validation log',
+                              method['target_sector_source'],)
                     calculate_flowamount_diff_between_dfs(flows_subset, flows_subset2)
                 else:
                     flows_subset2 = flows_subset.copy()
@@ -205,7 +207,7 @@ def main(**kwargs):
                                                                                method=method)
                     # determine if any changes to the data
                     vLog.info('Calculate changes in FlowAmounts from cleaning '
-                              'the FBA with sectors df')
+                              'the FBA with sectors df, saving difference in Validation log')
                     calculate_flowamount_diff_between_dfs(flows_subset_wsec,
                                                           flows_subset_wsec_clean)
                 else:
@@ -299,8 +301,8 @@ def main(**kwargs):
                                                            axis=1, errors='ignore')
 
                 # save comparison of FBA total to FBS total for an activity set
-                compare_fba_load_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset,
-                                                       aset, k, attr, method)
+                compare_fba_geo_subset_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset,
+                                                             aset, k, attr, method)
 
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)

@@ -329,7 +329,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
         # ensure all nan/nones filled/match
         vars()[df_name + '2'] = replace_strings_with_NoneType(vars()[df_name+'2'])
         df_list.append(vars()[df_name+'2'])
-     # merge the two dataframes
+    # merge the two dataframes
     df = df_list[0].merge(df_list[1], how='outer')
 
     # determine if any new data is negative
@@ -355,7 +355,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     # drop rows where difference = 0
     dfagg2 = dfagg[dfagg['FlowAmount_Difference'] != 0].reset_index(drop=True)
     if len(dfagg2) == 0:
-        vLog.info('No FlowAmount differences')
+        vLogDetailed.info('No FlowAmount differences')
     else:
         # subset df and aggregate, also print out the total aggregate diff at the geoscale
         dfagg3 = replace_strings_with_NoneType(dfagg).drop(
@@ -370,14 +370,12 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
                                         dfagg4['FlowAmount_Original']) * 100
         # drop rows where difference = 0
         dfagg5 = dfagg4[dfagg4['FlowAmount_Difference'] != 0].reset_index(drop=True)
-        vLog.info('Total FlowAmount differences between dataframes below, see Validation log for details: '
-                  '\n {}'.format(dfagg5.to_string(), index=False))
+        vLogDetailed.info('Total FlowAmount differences between dataframes: '
+                          '\n {}'.format(dfagg5.to_string(), index=False))
 
         # save detail output in log file
-        vLog.info('Saving comparison of FlowAmount differences in Validation Log')
-        vLogDetailed.info('Comparison of FlowAmounts after modifying df: '
+        vLogDetailed.info('Total FlowAmount differences by Activity Columns: '
                           '\n {}'.format(dfagg2.to_string(), index=False))
-
 
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
@@ -485,10 +483,12 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                               '\n {}'.format(df_v.to_string()), activity_set)
 
 
-def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
-                                           source_name, attr, method):
+def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_set,
+                                                 source_name, attr, method):
     """
-    Function to compare the loaded flowbyactivity total with the final flowbysector output total
+    Function to compare the loaded flowbyactivity total after subsetting by activity
+    and geography with the final flowbysector output total. Not a direct comparison
+    of the loaded FBA because FBAs are modified before being subset by activity.
     for the target sector level
     :param fba_load: df, FBA loaded, before being mapped
     :param fbs_load: df, final FBS df at target sector level
@@ -500,9 +500,8 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
              save results as csv in local directory
     """
 
-    vLog.info('Comparing Flow-By-Activity after loading standardizing units FlowAmount total to '
-              'the subset Flow-By-Sector FlowAmount total. Not a comparison of original '
-              'loaded flows.')
+    vLog.info('Comparing Flow-By-Activity subset by activity and geogrpaphy to '
+              'the subset Flow-By-Sector FlowAmount total.')
 
     # load source catalog
     cat = load_source_catalog()
@@ -559,13 +558,15 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
         context_list = df_merge[['Context', 'Location']].values.tolist()
 
         # loop through the contexts and print results of comparison
+        vLog.info('Comparing FBA %s %s subset to FBS results. Details in Validation Log',
+                  activity_set, attr['geoscale_to_use'])
         for i, j in context_list:
             df_merge_subset = df_merge[(df_merge['Context'] == i) &
                                        (df_merge['Location'] == j)].reset_index(drop=True)
             diff_per = df_merge_subset['Percent_difference'][0]
             if np.isnan(diff_per):
-                vLog.info('The total FlowBySector FlowAmount for %s %s %s '
-                         'can not be calculated', source_name, activity_set, i)
+                vLog.info('FlowBySector FlowAmount for %s %s %s '
+                          'does not exist in the FBS', source_name, activity_set, i)
                 continue
             # make reporting more manageable
             if abs(diff_per) > 0.005:
@@ -575,20 +576,17 @@ def compare_fba_load_and_fbs_output_totals(fba_load, fbs_load, activity_set,
 
             # diff_units = df_merge_subset['FBS_unit'][0]
             if diff_per > 0:
-                vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
-                          'less than the total FlowByActivity FlowAmount (might include '
-                          'expected data loss)',
-                         source_name, activity_set, i, j, str(abs(diff_per)))
+                vLog.info('FlowBySector FlowAmount for %s %s %s at %s is %s%% '
+                          'less than the FlowByActivity FlowAmount',
+                          source_name, activity_set, i, j, str(abs(diff_per)))
             elif diff_per < 0:
-                vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is %s%% '
-                          'more than the total FlowByActivity FlowAmount (might include '
-                          'expected data loss)',
-                         source_name, activity_set, i, j, str(abs(diff_per)))
+                vLog.info('FlowBySector FlowAmount for %s %s %s at %s is %s%% '
+                          'more than the FlowByActivity FlowAmount',
+                          source_name, activity_set, i, j, str(abs(diff_per)))
             elif diff_per == 0:
-                vLog.info('The total FlowBySector FlowAmount for %s %s %s at %s is '
-                          'equal to the total FlowByActivity FlowAmount (might include '
-                          'expected data loss)',
-                         source_name, activity_set, i, j)
+                vLogDetailed.info('FlowBySector FlowAmount for %s %s %s at %s is '
+                                  'equal to the FlowByActivity FlowAmount',
+                                  source_name, activity_set, i, j)
 
         # subset the df to include in the validation log
         # only print rows where the percent difference does not round to 0
