@@ -8,13 +8,14 @@ Functions to check data is loaded and transformed correctly
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
-    fba_default_grouping_fields, subset_df_by_geoscale, sector_aggregation
+    subset_df_by_geoscale, sector_aggregation
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
     load_sector_length_crosswalk, load_source_catalog, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, log, fba_activity_fields, \
-    fbs_activity_fields, fbs_fill_na_dict, vLog, vLogDetailed
+    fbs_activity_fields, fbs_fill_na_dict, vLog, vLogDetailed,\
+    fba_default_grouping_fields
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
