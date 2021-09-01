@@ -1,7 +1,6 @@
 author: US Department of Agriculture
-source_name_bib: Farm Income and Wealth Statistics
-citable_url: https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
-date_generated: '2021-06-16' # updated automatically when flowbyactivity.py is run
+source_name: Farm Income and Wealth Statistics
+source_url: https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
 bib_id: USDA_ERS_FIWS
 # api_name: USDA_ERS_FIWS
 # api_key_required: false

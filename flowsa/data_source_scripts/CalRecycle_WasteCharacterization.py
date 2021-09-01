@@ -81,6 +81,8 @@ def calR_parse(**kwargs):
             data["LocationSystem"] = "FIPS"
             data["SourceName"] = "California_Commercial_bySector"
             data["Year"] = args['year']
+            data['DataReliability'] = 5  # tmp
+            data['DataCollection'] = 5  # tmp
 
             if "California_Commercial_bySector_2014" in entry and "Map" not in entry:
                 data["ActivityProducedBy"] = produced_by(entry)

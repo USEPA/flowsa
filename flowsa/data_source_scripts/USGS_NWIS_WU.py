@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 from flowsa.common import abbrev_us_state, fba_activity_fields, capitalize_first_letter, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-
+from flowsa.validation import compare_df_units
 
 def usgs_URL_helper(**kwargs):
     """
@@ -189,28 +189,31 @@ def usgs_parse(**kwargs):
     df['SourceName'] = 'USGS_NWIS_WU'
     # Assign data quality scores
     df.loc[df['ActivityConsumedBy'].isin(['Public Supply',
-                                          'Public supply']), 'DataReliability'] = '2'
+                                          'Public supply']), 'DataReliability'] = 2
     df.loc[df['ActivityConsumedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                           'Thermoelectric power',
                                           'Thermoelectric Power Once-through cooling',
                                           'Thermoelectric Power Closed-loop cooling',
-                                          'Wastewater Treatment']), 'DataReliability'] = '3'
+                                          'Wastewater Treatment']), 'DataReliability'] = 3
     df.loc[
         df['ActivityConsumedBy'].isin(['Domestic', 'Self-supplied domestic',
                                        'Industrial', 'Self-supplied industrial',
                                        'Irrigation, Crop', 'Irrigation, Golf Courses',
                                        'Irrigation, Total',
-                                       'Irrigation', 'Mining']), 'DataReliability'] = '4'
+                                       'Irrigation', 'Mining']), 'DataReliability'] = 4
     df.loc[df['ActivityConsumedBy'].isin(['Total withdrawals', 'Total Groundwater',
-                                          'Total Surface water']), 'DataReliability'] = '5'
-    df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = '2'
+                                          'Total Surface water']), 'DataReliability'] = 5
+    df.loc[df['ActivityProducedBy'].isin(['Public Supply']), 'DataReliability'] = 2
     df.loc[df['ActivityProducedBy'].isin(['Aquaculture', 'Livestock', 'Total Thermoelectric Power',
                                           'Thermoelectric Power Once-through cooling',
                                           'Thermoelectric Power Closed-loop cooling',
-                                          'Wastewater Treatment']), 'DataReliability'] = '3'
+                                          'Wastewater Treatment']), 'DataReliability'] = 3
     df.loc[df['ActivityProducedBy'].isin(['Domestic', 'Industrial',
                                           'Irrigation, Crop', 'Irrigation, Golf Courses',
-                                          'Irrigation, Total', 'Mining']), 'DataReliability'] = '4'
+                                          'Irrigation, Total', 'Mining']), 'DataReliability'] = 4
+
+    df['DataCollection'] = 5  # tmp
+
     # remove commas from activity names
     df.loc[:, 'ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ", " ", regex=True)
     df.loc[:, 'ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", ", " ", regex=True)
@@ -250,10 +253,10 @@ def activity(name):
         n = name_split[0]
 
     if " to " in n:
-        activity = n.split(" to ")
-        name = split_name(activity[0])
+        act = n.split(" to ")
+        name = split_name(act[0])
         produced = name[0]
-        consumed = capitalize_first_letter(activity[1])
+        consumed = capitalize_first_letter(act[1])
     elif " from " in n:
         if ")" in n:
             open_paren_split = n.split("(")
@@ -263,9 +266,9 @@ def activity(name):
             produced = capitalize_first_letter(produced_split[1].strip())
             consumed = capitalized_string.strip() + " " + close_paren_split[0].strip()
         else:
-            activity = n.split(" from ")
-            name = split_name(activity[0])
-            produced = capitalize_first_letter(activity[1])
+            act = n.split(" from ")
+            name = split_name(act[0])
+            produced = capitalize_first_letter(act[1])
             consumed = name[0].strip()
     elif "consumptive" in n:
         if ")" in n:
@@ -326,23 +329,23 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     """
 
     # modify national level compartment
-    flowbyactivity_df['Compartment'].loc[
+    flowbyactivity_df.loc[
         (flowbyactivity_df['Location'] == '00000') &
-        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'total'
-    flowbyactivity_df['FlowName'].loc[
+        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock'), 'Compartment'] = 'total'
+    flowbyactivity_df.loc[
         (flowbyactivity_df['Location'] == '00000') &
-        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock')] = 'fresh'
-    flowbyactivity_df['Compartment'].loc[
+        (flowbyactivity_df['ActivityConsumedBy'] == 'Livestock'), 'FlowName'] = 'fresh'
+    flowbyactivity_df.loc[
         (flowbyactivity_df['Compartment'] is None) &
-        (flowbyactivity_df['Location'] == '00000')] = 'total'
+        (flowbyactivity_df['Location'] == '00000'), 'Compartment'] = 'total'
 
     # standardize activity names across geoscales
     for f in fba_activity_fields:
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Public'] = 'Public Supply'
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Irrigation Total'] = 'Irrigation'
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] ==
-                                 'Total Thermoelectric Power'] = 'Thermoelectric Power'
-        flowbyactivity_df[f].loc[flowbyactivity_df[f] == 'Thermoelectric'] = 'Thermoelectric Power'
+        flowbyactivity_df.loc[flowbyactivity_df[f] == 'Public', f] = 'Public Supply'
+        flowbyactivity_df.loc[flowbyactivity_df[f] == 'Irrigation Total', f] = 'Irrigation'
+        flowbyactivity_df.loc[flowbyactivity_df[f] ==
+                                 'Total Thermoelectric Power', f] = 'Thermoelectric Power'
+        flowbyactivity_df.loc[flowbyactivity_df[f] == 'Thermoelectric', f] = 'Thermoelectric Power'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
     return flowbyactivity_df
@@ -427,11 +430,15 @@ def calculate_net_public_supply(df_load):
     # temporary assumption that water withdrawal taken evenly from ground and surface
     df_w1 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] != 'total')]
     df_w2 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] == 'total')]
-    df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location']], how='left',
-                     left_on='Location', right_on='Location')
+    # compare units
+    compare_df_units(df_w1, df_w2)
+    df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location', 'Unit']], how='left',
+                     left_on=['Location', 'Unit'], right_on=['Location', 'Unit'])
     df_wm = df_wm.rename(columns={"FlowAmount_x": "FlowAmount",
                                   "FlowAmount_y": "FlowTotal"
                                   })
+    # compare units
+    compare_df_units(df_wm, df_d)
     # merge the deliveries to domestic
     df_w_modified = pd.merge(df_wm, df_d[['FlowAmount', 'Location']],
                              how='left', left_on='Location',
@@ -450,6 +457,8 @@ def calculate_net_public_supply(df_load):
 
     net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
 
+    # compare units
+    compare_df_units(df_d, net_ps)
     # because assumiming domestic is all fresh, change flow name.
     # Also allocate to ground/surface from state ratios
     df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']],
@@ -488,6 +497,8 @@ def check_golf_and_crop_irrigation_totals(df_load):
     df_c = df[(df[fba_activity_fields[0]] == 'Irrigation Crop') |
               (df[fba_activity_fields[1]] == 'Irrigation Crop')]
 
+    # unit check
+    compare_df_units(df_i, df_g)
     # merge the golf and total irrigation into crop df and modify crop FlowAmounts if necessary
     df_m = pd.merge(df_i, df_g[['FlowName', 'FlowAmount', 'ActivityProducedBy',
                                 'ActivityConsumedBy', 'Compartment',
@@ -502,6 +513,7 @@ def check_golf_and_crop_irrigation_totals(df_load):
                                 "ActivityProducedBy_y": "Golf_APB",
                                 "ActivityConsumedBy_y": "Golf_ACB",
                                 })
+    compare_df_units(df_m, df_c)
     df_m2 = pd.merge(df_m, df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy',
                                  'ActivityConsumedBy', 'Compartment',
                                  'Location', 'Year']],
@@ -537,12 +549,14 @@ def check_golf_and_crop_irrigation_totals(df_load):
     return df_w_missing_crop
 
 
-def usgs_fba_w_sectors_data_cleanup(df_wsec, attr):
+def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
     """
     Call on functions to modify the fba with sectors df before being allocated to sectors
     Used in flowbysector.py
     :param df_wsec: an FBA dataframe with sectors
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: includes "method", a parameter required in other 'clean_fba_w_sec_df_fxn'
+           function calls when building a FBS
     :return: df, FBA modified
     """
 

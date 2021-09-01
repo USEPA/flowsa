@@ -46,5 +46,7 @@ def usgs_coef_parse(**kwargs):
     df['Year'] = args['year']
     df = assign_fips_location_system(df, '2005')
     df["Unit"] = "gallons/animal/day"
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
 
     return df

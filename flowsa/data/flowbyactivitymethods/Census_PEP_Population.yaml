@@ -1,7 +1,6 @@
 author: US Census Bureau
-source_name_bib: Population and Housing Unit Estimates
-citable_url: https://www.census.gov/programs-surveys/popest.html
-date_generated: '2021-06-15' # updated automatically when flowbyactivity.py is run
+source_name: Population and Housing Unit Estimates
+source_url: https://www.census.gov/programs-surveys/popest.html
 bib_id: Census_PEP_Pop
 api_name: Census
 api_key_required: true
@@ -22,9 +21,10 @@ agg_levels:
 - state
 - us
 # want all population estimates from july 1
+# Data for 2011 and 2012 are not available.
 datecodes:
-  2011: 4
-  2012: 5
+#  2011: 4
+#  2012: 5
   2013: 6
   2014: 7
   2015: 8
@@ -34,8 +34,6 @@ datecodes:
   2019: 12
 years:
 - 2010
-- 2011
-- 2012
 - 2013
 - 2014
 - 2015

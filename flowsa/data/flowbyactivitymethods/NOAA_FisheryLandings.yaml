@@ -1,8 +1,7 @@
 author: NOAA
-source_name_bib: NOAA_Landings
-citable_url: ' '
-date_generated: '2021-06-16' # updated automatically when flowbyactivity.py is run
-date_downloaded: '2020-04-28'
+source_name: NOAA_Landings
+source_url: ' '
+original_data_download_date: '2020-04-28'
 bib_id: NOAA_Landings
 api_name: None
 api_key_required: false

@@ -1,13 +1,13 @@
 author: Blackhurst, Michael, Hendrickson, Chris and Vidal, Jordi Sels I
-source_name_bib: Direct and Indirect Water Withdrawals for US Industrial sectors
-citable_url: https://pubs.acs.org/doi/abs/10.1021/es903147k
-date_generated: '2021-04-05' # updated automatically when flowbyactivity.py is run
+source_name: Direct and Indirect Water Withdrawals for US Industrial sectors
+source_url: https://pubs.acs.org/doi/abs/10.1021/es903147k
 bib_id: Blackhurst_IO
 api_name: Blackhurst_IO
 api_key_required: false
 format: pdf  # comma delineated data
 url:
   base_url: https://pubs.acs.org/doi/suppl/10.1021/es903147k/suppl_file/es903147k_si_001.pdf
+allow_http_request_cookies: yes
 call_response_fxn: bh_call
 parse_response_fxn: bh_parse
 years:

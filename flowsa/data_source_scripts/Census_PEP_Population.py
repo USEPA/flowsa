@@ -138,8 +138,8 @@ def census_pop_parse(**kwargs):
     df['Unit'] = 'p'
     df['ActivityConsumedBy'] = 'All'
     # temporary data quality scores
-    df['DataReliability'] = None
-    df['DataCollection'] = None
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
     # sort df
     df = df.sort_values(['Location'])
     # reset index

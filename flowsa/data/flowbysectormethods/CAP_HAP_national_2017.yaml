@@ -234,12 +234,13 @@ source_names:
         helper_from_scale: national
         clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-  "StEWI":
+  "stewiFBS":
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: stewicombo_to_sector
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
     NAICS_level: 'NAICS_6'
     geo_scale: 'national'
+    local_inventory_name: 'NEI_TRI_air_2017'
     compartments:
      - 'air'
     functions:

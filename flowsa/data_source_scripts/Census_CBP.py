@@ -13,7 +13,7 @@ This script is designed to run with a configuration parameter
 import json
 import pandas as pd
 import numpy as np
-from flowsa.common import get_all_state_FIPS_2
+from flowsa.common import get_all_state_FIPS_2, get_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -36,18 +36,68 @@ def Census_CBP_URL_helper(**kwargs):
     args = kwargs['args']
 
     urls_census = []
-    FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
-    for c in FIPS_2:
-        url = build_url
-        url = url.replace("__stateFIPS__", c)
-        # specified NAICS code year depends on year of data
-        if args["year"] in ['2017']:
-            url = url.replace("__NAICS__", "NAICS2017")
-        if args["year"] in ['2012', '2013', '2014', '2015', '2016']:
-            url = url.replace("__NAICS__", "NAICS2012")
-        if args["year"] in ['2010', '2011']:
+    # This section gets the census data by county instead of by state.
+    # This is only for years 2010 and 2011.
+    # This is done because the State query that gets all counties returns too many results and errors out.
+    if args["year"] in ['2010', '2011']:
+        if args["year"] == '2011':
+            fips_year = '2010'
+        else:
+            fips_year = '2010'
+        county_fips_df = get_county_FIPS(fips_year)
+        county_fips = county_fips_df.FIPS
+        for d in county_fips:
+            url = build_url
+            state_digit = str(d[0]) + str(d[1])
+            county_digit = str(d[2]) + str(d[3]) + str(d[4])
             url = url.replace("__NAICS__", "NAICS2007")
-        urls_census.append(url)
+            url = url.replace("__stateFIPS__", state_digit)
+            url = url.replace("__countyFIPS__", county_digit)
+
+            if args["year"] == "2010":
+                # These are the counties where data is not available.
+                # s signifies state code and y indicates year.
+                s_02_y_10 = ["105", "195", "198", "230", "275"]
+                s_15_y_10 = ["005"]
+                s_48_y_10 = ["269"]
+
+                # There are specific counties in various states for the year 2010 that do not have data.
+                # For these counties a URL is not generated as if there is no data then an error occurs.
+                if state_digit == "02" and county_digit in s_02_y_10 or \
+                        state_digit == "15" and county_digit in s_15_y_10 or \
+                        state_digit == "48" and county_digit in s_48_y_10:
+                    pass
+                else:
+                    urls_census.append(url)
+            else:
+                # These are the counties where data is not available.
+                # s signifies state code and y indicates year.
+                s_02_y_11 = ["105", "195", "198", "230", "275"]
+                s_15_y_11 = ["005"]
+                s_48_y_11 = ["269", "301"]
+
+                # There are specific counties in various states for the year 2011 that do not have data.
+                # For these counties a URL is not generated as if there is no data then an error occurs.
+                if state_digit == "02" and county_digit in s_02_y_11 or \
+                        state_digit == "15" and county_digit in s_15_y_11 or \
+                        state_digit == "48" and county_digit in s_48_y_11:
+                    pass
+                else:
+                    urls_census.append(url)
+    else:
+        FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
+        for c in FIPS_2:
+            url = build_url
+            url = url.replace("__stateFIPS__", c)
+            # specified NAICS code year depends on year of data
+            if args["year"] in ['2017']:
+                url = url.replace("__NAICS__", "NAICS2017")
+                url = url.replace("__countyFIPS__", "*")
+            if args["year"] in ['2012', '2013', '2014', '2015', '2016']:
+                url = url.replace("__NAICS__", "NAICS2012")
+                url = url.replace("__countyFIPS__", "*")
+            urls_census.append(url)
+
     return urls_census
 
 

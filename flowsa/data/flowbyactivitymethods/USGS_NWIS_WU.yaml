@@ -1,7 +1,6 @@
 author: US Geological Survey
-source_name_bib: Water Data for the Nation
-citable_url: https://waterdata.usgs.gov/nwis
-date_generated: '2021-06-16'   # updated automatically when flowbyactivity.py is run
+source_name: Water Data for the Nation
+source_url: https://waterdata.usgs.gov/nwis
 bib_id: USGS_NWIS_WU
 api_name: USGS
 api_key_required: false
