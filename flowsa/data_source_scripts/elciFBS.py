@@ -20,6 +20,7 @@ def get_elci_emissions(yaml_load):
     config.model_specs.regional_aggregation = 'US'
     config.model_specs.include_renewable_generation = False
     config.model_specs.include_netl_water = True
+    config.model_specs.stewicombo_file = 'ELCI_1'
     if 'DMR' not in config.model_specs.inventories_of_interest.keys():
         config.model_specs.inventories_of_interest['DMR'] = 2016
 
