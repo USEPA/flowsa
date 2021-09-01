@@ -1,8 +1,7 @@
 author: Bureau of Economic Analysis
-source_name_bib: Gross Output by Industry
-citable_url: https://www.bea.gov/data/industries/gross-output-by-industry
-date_generated: '2021-06-15' # updated automatically when flowbyactivity.py is run
-date_downloaded: '2020-07-14'
+source_name: Gross Output by Industry
+source_url: https://www.bea.gov/data/industries/gross-output-by-industry
+original_data_download_date: '2020-07-14'
 bib_id: BEA_GDP
 api_name: None
 api_key_required: false

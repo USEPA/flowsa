@@ -11,13 +11,13 @@ import io
 import tabula
 import pandas as pd
 import numpy as np
-import flowsa
-from flowsa.common import US_FIPS, flow_by_activity_fields, fba_fill_na_dict
+from flowsa.common import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    proportional_allocation_by_location_and_activity, filter_by_geoscale
-from flowsa.dataclean import harmonize_units, clean_df
+    proportional_allocation_by_location_and_activity, \
+    load_fba_w_standardized_units
 from flowsa.mapping import add_sectors_to_flowbyactivity
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
+from flowsa.validation import compare_df_units
 
 
 # Read pdf into list of DataFrame
@@ -71,28 +71,31 @@ def bh_parse(**kwargs):
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, '2002')
     df['Year'] = '2002'
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  #tmp
 
     return df
 
 
-def convert_blackhurst_data_to_gal_per_year(df, attr):
+def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
     """
     Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
     :param df: df, FBA format
-    :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: kwargs includes "attr" - dictionary, attribute
+    data from method yaml for activity set
     :return: transformed fba df
     """
 
     # load the bea make table
-    bmt = flowsa.getFlowByActivity(datasource='BEA_Make_AR',
-                                   year=2002, flowclass='Money')
-    # clean df
-    bmt = clean_df(bmt, flow_by_activity_fields, fba_fill_na_dict)
-    bmt = harmonize_units(bmt)
+    bmt = load_fba_w_standardized_units(datasource='BEA_Make_AR',
+                                        year=kwargs['attr']['allocation_source_year'],
+                                        flowclass='Money')
     # drop rows with flowamount = 0
     bmt = bmt[bmt['FlowAmount'] != 0]
 
+    # check on units of dfs before merge
+    compare_df_units(df, bmt)
     bh_df_revised = pd.merge(df, bmt[['FlowAmount', 'ActivityProducedBy', 'Location']],
                              left_on=['ActivityConsumedBy', 'Location'],
                              right_on=['ActivityProducedBy', 'Location']
@@ -110,7 +113,7 @@ def convert_blackhurst_data_to_gal_per_year(df, attr):
     return bh_df_revised
 
 
-def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
+def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs):
     """
     Load BLS employment data and use to transform original units to gallons per employee
     :param df_wsec: df, includes sector columns
@@ -120,13 +123,10 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     """
 
     # load 2002 employment data
-    bls = flowsa.getFlowByActivity(datasource='BLS_QCEW', year=2002, flowclass='Employment')
-
-    bls = filter_by_geoscale(bls, 'national')
+    bls = load_fba_w_standardized_units(datasource='BLS_QCEW', year='2002',
+                                        flowclass='Employment', geographic_level='national')
 
     # clean df
-    bls = clean_df(bls, flow_by_activity_fields, fba_fill_na_dict)
-    bls = harmonize_units(bls)
     bls = clean_bls_qcew_fba(bls, attr=attr)
 
     # assign naics to allocation dataset
@@ -136,6 +136,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method):
     bls_wsec = bls_wsec.rename(columns={'SectorProducedBy': 'Sector',
                                         'FlowAmount': 'HelperFlow'})
 
+    # check units before merge
+    compare_df_units(df_wsec, bls_wsec)
     # merge the two dfs
     df = pd.merge(df_wsec,
                   bls_wsec[['Location', 'Sector', 'HelperFlow']],
@@ -180,11 +182,11 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     """
 
     # determine national level published withdrawal data for usgs mining in FBS method year
-    pv_load = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
-                                       year=str(attr['helper_source_year']),
-                                       flowclass='Water'
-                                       )
-    pv_load = harmonize_units(pv_load)
+    pv_load = load_fba_w_standardized_units(datasource="USGS_NWIS_WU",
+                                            year=str(attr['helper_source_year']),
+                                            flowclass='Water'
+                                            )
+
     pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) &
                      (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
     pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal

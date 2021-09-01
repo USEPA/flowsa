@@ -5,17 +5,19 @@
 Helper functions for flowbyactivity and flowbysector data
 """
 
-import os
 import pandas as pd
 import numpy as np
+import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, log, load_source_catalog, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
-    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath
-from flowsa.dataclean import clean_df, replace_strings_with_NoneType,\
-    replace_NoneType_with_empty_cells
+    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
+    find_true_file_path
+from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
+    replace_NoneType_with_empty_cells, standardize_units
+from esupy.dqi import get_weighted_average
 
 
 def create_geoscale_list(df, geoscale, year='2015'):
@@ -57,7 +59,7 @@ def filter_by_geoscale(df, geoscale):
     df = df[df['Location'].isin(fips)].reset_index(drop=True)
 
     if len(df) == 0:
-        log.error("No flows found in the " + " flow dataset at the " + geoscale + " scale")
+        log.error("No flows found in the flow dataset at the %s scale", geoscale)
     else:
         return df
 
@@ -80,27 +82,6 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     fba_agg = aggregator(df, groupbycols)
 
     return fba_agg
-
-
-def weighted_average(df, data_col, weight_col, by_col):
-    """
-    Generates a weighted average result based on passed columns
-    Parameters
-    :param df: df, Dataframe prior to aggregating from which a weighted average is calculated
-    :param data_col: str, Name of column to be averaged.
-    :param weight_col: str, Name of column to serve as the weighting.
-    :param by_col: list, List of columns on which the dataframe is aggregated.
-    :return: series, Series reflecting the weighted average values for the data_col,
-             at length consistent with the aggregated dataframe, to be reapplied
-             to the data_col in the aggregated dataframe.
-    """
-
-    df = df.assign(_data_times_weight=df[data_col] * df[weight_col])
-    df = df.assign(_weight_where_notnull=df[weight_col] * pd.notnull(df[data_col]))
-    g = df.groupby(by_col)
-    result = g['_data_times_weight'].sum() / g['_weight_where_notnull'].sum()
-    del df['_data_times_weight'], df['_weight_where_notnull']
-    return result
 
 
 def aggregator(df, groupbycols):
@@ -133,7 +114,7 @@ def aggregator(df, groupbycols):
 
     # run through other columns creating weighted average
     for e in column_headers:
-        df_dfg[e] = weighted_average(df, e, 'FlowAmount', groupbycols)
+        df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
 
     df_dfg = df_dfg.reset_index()
     df_dfg.columns = df_dfg.columns.droplevel(level=1)
@@ -394,8 +375,7 @@ def assign_fips_location_system(df, year_of_data):
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
     elif year_of_data < '2010':
         log.warning(
-            "Missing FIPS codes from crosswalk for " + year_of_data +
-            ". Temporarily assigning to FIPS_2010")
+            "Missing FIPS codes from crosswalk for %s. Assigning to FIPS_2010", year_of_data)
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
 
     return df
@@ -525,7 +505,7 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
         unique_geoscales =\
             modified_from_scale['activity_from_scale'].drop_duplicates().values.tolist()
         if len(unique_geoscales) > 1:
-            log.info('Dataframe has a mix of geographic levels: ' + ', '.join(unique_geoscales))
+            log.info('Dataframe has a mix of geographic levels: %s', ', '.join(unique_geoscales))
 
         # to scale
         if fips_number_key[activity_from_scale] > fips_number_key[activity_to_scale]:
@@ -541,11 +521,11 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
             # if df is less aggregated than allocation df, aggregate
             # fba activity to allocation geoscale
             if fips_number_key[i] > fips_number_key[to_scale]:
-                log.info("Aggregating subset from " + i + " to " + to_scale)
+                log.info("Aggregating subset from %s to %s", i, to_scale)
                 df_sub = agg_by_geoscale(df3, i, to_scale, fba_default_grouping_fields)
             # else filter relevant rows
             else:
-                log.info("Subsetting " + i + " data")
+                log.info("Subsetting %s data", i)
                 df_sub = filter_by_geoscale(df3, i)
             df_subset_list.append(df_sub)
         df_subset = pd.concat(df_subset_list, ignore_index=True)
@@ -874,15 +854,35 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
     """
 
     # if a file does not exist modify file name, dropping ext after last underscore
-    if os.path.exists(f"{datasourcescriptspath}{data_source_scripts_file}{'.py'}") is False:
-        # continue dropping last underscore/extension until file name does exist
-        for i in range(1, 5):
-            # reset file name after dropping part of name
-            data_source_scripts_file = data_source_scripts_file.rsplit("_", i)[0]
-            # if the file name does exist, exit the for loop
-            if os.path.exists(f"{datasourcescriptspath}{data_source_scripts_file}{'.py'}"):
-                break
+    data_source_scripts_file = find_true_file_path(datasourcescriptspath, data_source_scripts_file, 'py')
 
     df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
                             fromlist=function_name), function_name)
     return df
+
+
+def load_fba_w_standardized_units(datasource, year, **kwargs):
+    """
+    Standardize how a FBA is loaded for allocation purposes when generating a FBS.
+    Important to immediately convert the df units to standardized units.
+    :param datasource: string, FBA source name
+    :param year: int, year of data
+    :param kwargs: optional parameters include flowclass, geographic_level,
+           and download_if_missing
+    :return: fba df with standardized units
+    """
+    # determine if any addtional parameters required to load a Flow-By-Activity
+    # add parameters to dictionary if exist in method yaml
+    fba_dict = {}
+    if 'flowclass' in kwargs:
+        fba_dict['flowclass'] = kwargs['flowclass']
+    if 'geographic_level' in kwargs:
+        fba_dict['geographic_level'] = kwargs['geographic_level']
+    # load the allocation FBA
+    fba = flowsa.getFlowByActivity(datasource, year, **fba_dict).reset_index(drop=True)
+    # ensure df loaded correctly/has correct dtypes
+    fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
+    # convert to standardized units
+    fba = standardize_units(fba)
+
+    return fba

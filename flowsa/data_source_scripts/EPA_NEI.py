@@ -4,10 +4,10 @@
 """
 Pulls EPA National Emissions Inventory (NEI) data for nonpoint sources
 """
-import pandas as pd
-import numpy as np
-import zipfile
+
 import io
+import zipfile
+import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -193,24 +193,6 @@ def epa_nei_nonpoint_parse(**kwargs):
     # a function of facility coverage from point source data
 
     return df
-
-
-def assign_nonpoint_dqi(args):
-    """
-    Compares facility coverage data between NEI point and Census to estimate
-    facility coverage in NEI nonpoint
-    :param args:
-    :return:
-    """
-    import stewi
-    import flowsa
-    nei_facility_list = stewi.getInventoryFacilities('NEI', args['year'])
-    nei_count = nei_facility_list.groupby('NAICS')['FacilityID'].count()
-    census = flowsa.getFlowByActivity(datasource="Census_CBP", year=args['year'], flowclass='Other')
-    census = census[census['FlowName'] == 'Number of establishments']
-    census_count = census.groupby('ActivityProducedBy')['FlowAmount'].sum()
-
-    # TODO compare counts across NAICS depending on granularity of fbs method
 
 
 def clean_NEI_fba(fba):

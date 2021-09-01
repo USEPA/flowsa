@@ -78,5 +78,7 @@ def noaa_parse(**kwargs):
     df4 = assign_fips_location_system(df4, args['year'])
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
+    df4['DataReliability'] = 5  # tmp
+    df4['DataCollection'] = 5  #tmp
 
     return df4

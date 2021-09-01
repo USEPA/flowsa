@@ -26,7 +26,8 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
    If FBA _with sectors_ does not need to be modified, this parameter should be 'None'
 8. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
    the source_names
-9. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
+9. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
+10. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
    which contains list of names for one or more activity_sets. If not supplied
    _names_ should be listed below within each activity set
 
