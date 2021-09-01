@@ -357,10 +357,27 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     if len(dfagg2) == 0:
         vLog.info('No FlowAmount differences')
     else:
-        # save output in log file
-        vLog.info('Saving comparision of FlowAmount differences in Validation Log')
+        # subset df and aggregate, also print out the total aggregate diff at the geoscale
+        dfagg3 = replace_strings_with_NoneType(dfagg).drop(
+            columns=['ActivityProducedBy', 'ActivityConsumedBy',
+                     'FlowAmount_Difference', 'Percent_Difference'])
+        dfagg4 = dfagg3.groupby(['Flowable', 'Context', 'Year', 'Unit', 'geoscale'],
+                                dropna=False, as_index=False).agg({'FlowAmount_Original': sum,
+                                                                   'FlowAmount_Modified': sum})
+        # column calculating difference
+        dfagg4['FlowAmount_Difference'] = dfagg4['FlowAmount_Modified'] - dfagg4['FlowAmount_Original']
+        dfagg4['Percent_Difference'] = (dfagg4['FlowAmount_Difference'] /
+                                        dfagg4['FlowAmount_Original']) * 100
+        # drop rows where difference = 0
+        dfagg5 = dfagg4[dfagg4['FlowAmount_Difference'] != 0].reset_index(drop=True)
+        vLog.info('Total FlowAmount differences between dataframes below, see Validation log for details: '
+                  '\n {}'.format(dfagg5.to_string(), index=False))
+
+        # save detail output in log file
+        vLog.info('Saving comparison of FlowAmount differences in Validation Log')
         vLogDetailed.info('Comparison of FlowAmounts after modifying df: '
                           '\n {}'.format(dfagg2.to_string(), index=False))
+
 
 
 def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
