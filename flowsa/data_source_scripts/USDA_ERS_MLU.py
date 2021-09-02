@@ -142,8 +142,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     # calculate total residential area from the American Housing Survey
     residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
     df_residential = df[df[sector_col] == 'F01000']
-    df_residential = df_residential.assign(
-        FlowAmount=df_residential['FlowAmount'] - residential_land_area)
+    df_residential = df_residential.assign(FlowAmount=residential_land_area)
 
     # make an assumption about the percent of urban area that is open space
     openspace_multiplier = get_open_space_fraction_of_urban_area()
