@@ -12,9 +12,9 @@ import pandas as pd
 from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
     flow_by_sector_fields, fbs_default_grouping_fields, fbs_fill_na_dict, \
     fba_wsec_default_grouping_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, allocate_by_sector, \
-    sector_aggregation, sector_disaggregation, sector_ratios, \
+from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, sector_disaggregation, sector_ratios, \
     load_fba_w_standardized_units
+from flowsa.allocation import allocate_by_sector
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
 from flowsa.mapping import add_sectors_to_flowbyactivity

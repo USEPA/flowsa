@@ -13,9 +13,9 @@ from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
 from flowsa.validation import check_if_losing_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
-    sector_aggregation, sector_disaggregation, allocate_by_sector, \
-    proportional_allocation_by_location_and_activity, subset_df_by_geoscale, \
+    sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
     load_fba_w_standardized_units
+from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity
 from flowsa.mapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.validation import check_if_data_exists_at_geoscale
