@@ -1,5 +1,11 @@
-import pandas as pd
+# allocation.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
 
+"""
+Methods of allocating datasets
+"""
+import pandas as pd
 from flowsa import log
 from flowsa.common import fbs_activity_fields
 from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
