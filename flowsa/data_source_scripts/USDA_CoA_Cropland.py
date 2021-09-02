@@ -17,7 +17,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregati
 from flowsa.allocation import allocate_by_sector
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
-from flowsa.mapping import add_sectors_to_flowbyactivity
+from flowsa.sectormapping import add_sectors_to_flowbyactivity
 from flowsa.validation import compare_df_units
 
 

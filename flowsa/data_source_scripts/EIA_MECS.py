@@ -507,7 +507,7 @@ def determine_flows_requiring_disaggregation(df_load, attr, method, sector_colum
              FlowAmount, if '0' FlowAmount does not require modifications
     """
 
-    from flowsa.mapping import add_sectors_to_flowbyactivity
+    from flowsa.sectormapping import add_sectors_to_flowbyactivity
 
     df_load = replace_NoneType_with_empty_cells(df_load)
     # drop rows where there is no value in sector column, which might occur if

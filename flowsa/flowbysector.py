@@ -34,7 +34,7 @@ from flowsa.common import log, vLog, flowbysectormethodpath, flow_by_sector_fiel
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
-from flowsa.mapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
+from flowsa.sectormapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn

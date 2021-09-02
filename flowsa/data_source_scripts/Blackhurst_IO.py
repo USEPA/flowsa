@@ -15,7 +15,7 @@ from flowsa.common import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
 from flowsa.allocation import proportional_allocation_by_location_and_activity
-from flowsa.mapping import add_sectors_to_flowbyactivity
+from flowsa.sectormapping import add_sectors_to_flowbyactivity
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.validation import compare_df_units
 
