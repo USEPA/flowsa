@@ -14,7 +14,7 @@ import numpy as np
 from flowsa.common import get_all_state_FIPS_2
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import load_household_sector_codes
-from flowsa.values_from_literature import get_area_of_rural_land_occupied_by_houses_2013, \
+from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2013, \
     get_area_of_urban_land_occupied_by_houses_2013, \
     get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
@@ -107,7 +107,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     """
     This function is used to allocate the USDA_ERS_MLU activity 'land in urban areas'
     to NAICS 2012 sectors. Allocation is dependent on assumptions defined in
-    'values_from_literature.py' as well as results from allocating
+    'literature_values.py' as well as results from allocating
     'EIA_CBECS_Land' and 'EIA_MECS_Land' to land based sectors.
 
     Methodology is based on the manuscript:
@@ -208,7 +208,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     """
     This function is used to allocate the USDA_ERS_MLU activity
     'land in urban areas' to NAICS 2012 sectors. Allocation
-    is dependent on assumptions defined in 'values_from_literature.py'.
+    is dependent on assumptions defined in 'literature_values.py'.
 
     Methodology is based on the manuscript:
     Lin Zeng and Anu Ramaswami

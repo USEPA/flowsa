@@ -1,4 +1,4 @@
-# values_from_literature.py (flowsa)
+# literature_values.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
