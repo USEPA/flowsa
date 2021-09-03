@@ -2,6 +2,7 @@ source_name: USGS Minneral Yearbook Peat
 citable_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-peat-advrel.xlsx
 date_generated: '2021-03-26'
 years_available: 2014-2018
+years: 2014-2018
 # api_name: USGS_MYB_Peat
 # api_key_required: false
 format: xls
