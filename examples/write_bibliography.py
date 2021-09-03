@@ -10,7 +10,7 @@ pkg_resources.DistributionNotFound: The 'flowsa' distribution was not
 found and is required by the application
 
 See the flowsa wiki:
-https://github.com/USEPA/flowsa/wiki/GitHub-Contributors#troubleshooting
+https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#troubleshooting
 """
 
 import flowsa
