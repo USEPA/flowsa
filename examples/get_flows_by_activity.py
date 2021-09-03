@@ -13,12 +13,6 @@ Examples of use of flowsa. Read parquet files as dataframes.
     Optional. E.g. 'national', 'state', 'county'.
     :return: a pandas DataFrame in FlowByActivity format
 
-If you encounter the error:
-pkg_resources.DistributionNotFound: The 'flowsa' distribution was
-not found and is required by the application
-
-See the flowsa wiki:
-https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#troubleshooting
 """
 
 import flowsa
