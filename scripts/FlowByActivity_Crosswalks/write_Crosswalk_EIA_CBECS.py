@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # make url requestl, as defined in common.py
     r = make_http_request(url)
     # Convert response to dataframe, skipping first three rows
-    df_raw = pd.io.excel.read_excel(io.BytesIO(r.content), skiprows=3)
+    df_raw = pd.read_excel(io.BytesIO(r.content), skiprows=3)
 
     # Rename first column to sector (naics 2002)
     df = df_raw.rename(columns={df_raw.columns[0]: "Sector"})

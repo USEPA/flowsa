@@ -37,8 +37,8 @@ def Census_CBP_URL_helper(**kwargs):
 
     urls_census = []
     # This section gets the census data by county instead of by state.
-    # This is only for years 2010 and 2011.
-    # This is done because the State query that gets all counties returns too many results and errors out.
+    # This is only for years 2010 and 2011. This is done because the State
+    # query that gets all counties returns too many results and errors out.
     if args["year"] in ['2010', '2011']:
         if args["year"] == '2011':
             fips_year = '2010'
@@ -61,8 +61,9 @@ def Census_CBP_URL_helper(**kwargs):
                 s_15_y_10 = ["005"]
                 s_48_y_10 = ["269"]
 
-                # There are specific counties in various states for the year 2010 that do not have data.
-                # For these counties a URL is not generated as if there is no data then an error occurs.
+                # There are specific counties in various states for the year
+                # 2010 that do not have data. For these counties a URL is not
+                # generated as if there is no data then an error occurs.
                 if state_digit == "02" and county_digit in s_02_y_10 or \
                         state_digit == "15" and county_digit in s_15_y_10 or \
                         state_digit == "48" and county_digit in s_48_y_10:
@@ -76,8 +77,9 @@ def Census_CBP_URL_helper(**kwargs):
                 s_15_y_11 = ["005"]
                 s_48_y_11 = ["269", "301"]
 
-                # There are specific counties in various states for the year 2011 that do not have data.
-                # For these counties a URL is not generated as if there is no data then an error occurs.
+                # There are specific counties in various states for the year 2011
+                # that do not have data. For these counties a URL is not generated
+                # as if there is no data then an error occurs.
                 if state_digit == "02" and county_digit in s_02_y_11 or \
                         state_digit == "15" and county_digit in s_15_y_11 or \
                         state_digit == "48" and county_digit in s_48_y_11:

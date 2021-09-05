@@ -217,5 +217,3 @@ def update_naics_crosswalk():
 
     # save as csv
     naics_cw.to_csv(datapath + "NAICS_Crosswalk.csv", index=False)
-
-    return None

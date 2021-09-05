@@ -25,24 +25,24 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import log, flowbysectormethodpath, flow_by_sector_fields, \
+from flowsa.common import log, vLog, flowbysectormethodpath, flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, load_source_catalog, \
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, \
     paths, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
-    fbs_grouping_fields_w_activities
+    fbs_grouping_fields_w_activities, logoutputpath
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
-from flowsa.mapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
+from flowsa.sectormapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.validation import check_if_losing_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
-    compare_fba_load_and_fbs_output_totals, compare_geographic_totals,\
-    replace_naics_w_naics_from_another_year
+    compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
+    replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
 
 
 def parse_args():
@@ -134,15 +134,16 @@ def main(**kwargs):
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = map_fbs_flows(flows, k, v, keep_fba_columns=True)
 
-            # subset out the mapping information, add back in after cleaning up FBA data
-            mapped_df = flows_mapped[['FlowName', 'Flowable', 'Compartment',
-                                      'Context', 'FlowUUID']].drop_duplicates()
-            flows_fba = flows_mapped[flow_by_activity_fields]
-
             # clean up fba, if specified in yaml
-            if v["clean_fba_df_fxn"] != 'None':
+            if "clean_fba_df_fxn" in v:
                 log.info("Cleaning up %s FlowByActivity", k)
-                flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_fba)
+                flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
+                # calculate expected data loss
+                vLog.info('Calculate FlowAmount differences caused by cleaning FBA,'
+                          'saving difference in Validation log')
+                calculate_flowamount_diff_between_dfs(flows_mapped, flows_fba)
+            else:
+                flows_fba = flows_mapped.copy()
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
@@ -162,7 +163,8 @@ def main(**kwargs):
                     names = attr['names']
 
                 log.info("Preparing to handle %s in %s", aset, k)
-                log.debug("Preparing to handle subset of activities: %s", ', '.join(map(str, names)))
+                log.debug("Preparing to handle subset of activities: %s",
+                          ', '.join(map(str, names)))
                 # subset fba data by activity
                 flows_subset =\
                     flows_fba[(flows_fba[fba_activity_fields[0]].isin(names)) |
@@ -171,16 +173,24 @@ def main(**kwargs):
 
                 # if activities are sector-like, check sectors are valid
                 if load_source_catalog()[k]['sector-like_activities']:
-                    flows_subset =\
+                    flows_subset2 =\
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
+                    # check impact on df FlowAmounts
+                    vLog.info('Calculate FlowAmount difference caused by '
+                              'replacing NAICS Codes with %s, saving difference in Validation log',
+                              method['target_sector_source'],)
+                    calculate_flowamount_diff_between_dfs(flows_subset, flows_subset2)
+                else:
+                    flows_subset2 = flows_subset.copy()
 
                 # extract relevant geoscale data or aggregate existing data
-                flows_subset_geo = subset_df_by_geoscale(flows_subset, v['geoscale_to_use'],
+                flows_subset_geo = subset_df_by_geoscale(flows_subset2, v['geoscale_to_use'],
                                                          attr['allocation_from_scale'])
                 # if loading data subnational geoscale, check for data loss
                 if attr['allocation_from_scale'] != 'national':
-                    compare_geographic_totals(flows_subset_geo, flows_subset, k, method_name, aset)
+                    compare_geographic_totals(flows_subset_geo, flows_mapped, k,
+                                              attr, aset, names)
 
                 # Add sectors to df activity, depending on level of specified sector aggregation
                 log.info("Adding sectors to %s", k)
@@ -189,16 +199,22 @@ def main(**kwargs):
                                                   sectorsourcename=method['target_sector_source'],
                                                   allocationmethod=attr['allocation_method'])
                 # clean up fba with sectors, if specified in yaml
-                if v["clean_fba_w_sec_df_fxn"] != 'None':
+                if "clean_fba_w_sec_df_fxn" in v:
                     log.info("Cleaning up %s FlowByActivity with sectors", k)
-                    flows_subset_wsec = \
+                    flows_subset_wsec_clean = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
-                                                                               attr=attr, method=method)
+                                                                               attr=attr,
+                                                                               method=method)
+                    # determine if any changes to the data
+                    vLog.info('Calculate changes in FlowAmounts from cleaning '
+                              'the FBA with sectors df, saving difference in Validation log')
+                    calculate_flowamount_diff_between_dfs(flows_subset_wsec,
+                                                          flows_subset_wsec_clean)
+                else:
+                    flows_subset_wsec_clean = flows_subset_wsec.copy()
 
-                # add mapping columns back
-                flows_mapped_wsec = flows_subset_wsec.merge(mapped_df, how='left')
                 # rename SourceName to MetaSources and drop columns
-                flows_mapped_wsec = flows_mapped_wsec.\
+                flows_mapped_wsec = flows_subset_wsec_clean.\
                     rename(columns={'SourceName': 'MetaSources'}).\
                     drop(columns=['FlowName', 'Compartment'])
 
@@ -248,12 +264,14 @@ def main(**kwargs):
                 log.info("Aggregating flowbysector to all sector levels")
                 fbs_sec_agg = sector_aggregation(fbs_geo_agg, groupingcols)
                 # add missing naics5/6 when only one naics5/6 associated with a naics4
-                fbs_agg = sector_disaggregation(fbs_sec_agg, groupingdict)
+                fbs_agg = sector_disaggregation(fbs_sec_agg)
 
                 # check if any sector information is lost before reaching
                 # the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                log.debug('Checking for data at %s', method['target_sector_level'])
+                vLog.info( 'Searching for and allocating FlowAmounts for any parent '
+                           'NAICS that were dropped in the subset to '
+                           '%s child NAICS', method['target_sector_level'])
                 fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
@@ -283,9 +301,8 @@ def main(**kwargs):
                                                            axis=1, errors='ignore')
 
                 # save comparison of FBA total to FBS total for an activity set
-                compare_fba_load_and_fbs_output_totals(flows_subset_geo, mapped_df,
-                                                       fbs_sector_subset, aset, k,
-                                                       attr, method, mapping_files)
+                compare_fba_geo_subset_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset,
+                                                             aset, k, attr, method)
 
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)
@@ -320,6 +337,7 @@ def main(**kwargs):
     write_metadata(method_name, method, meta, "FlowBySector")
     # rename the log file saved to local directory
     rename_log_file(method_name, meta)
+    log.info('See the Validation log for detailed assessment of model results in %s', logoutputpath)
 
 
 if __name__ == '__main__':

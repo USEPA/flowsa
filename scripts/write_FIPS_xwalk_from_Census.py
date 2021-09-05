@@ -43,7 +43,7 @@ def annual_fips(years):
                   year + "/all-geocodes-v" + year + ".xlsx"
 
         r = make_http_request(url)
-        raw_df = pd.io.excel.read_excel(io.BytesIO(r.content)).dropna().reset_index(drop=True)
+        raw_df = pd.read_excel(io.BytesIO(r.content)).dropna().reset_index(drop=True)
 
         # skip the first few rows
         FIPS_df = pd.DataFrame(raw_df.loc[1:]).reindex()
@@ -124,7 +124,7 @@ def read_fips_2010():
     :return: df with FIPS 2010 codes
     """
     # read in 2010 fips county names
-    names_10 = pd.io.excel.read_excel(
+    names_10 = pd.read_excel(
         'https://www2.census.gov/programs-surveys/demo/reference-files'
         '/eeo/time-series/eeo-county-sets-2010.xls')
     # Assign the column titles

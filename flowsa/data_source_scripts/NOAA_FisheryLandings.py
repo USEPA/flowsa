@@ -55,7 +55,7 @@ def noaa_parse(**kwargs):
     # sum florida data after casting rows as numeric
     df['Sum Dollars'] = df['Sum Dollars'].str.replace(r',', '')
     df["Sum Dollars"] = df["Sum Dollars"].apply(pd.to_numeric)
-    df2 = df.groupby(['Year', 'State'], as_index=False)[["Sum Dollars"]].agg("sum")
+    df2 = df.groupby(['Year', 'State'], as_index=False).agg({"Sum Dollars": sum})
 
     # new column includes state fips
     df3 = df2.merge(df_state[["State", "FIPS"]], how="left", left_on="State", right_on="State")

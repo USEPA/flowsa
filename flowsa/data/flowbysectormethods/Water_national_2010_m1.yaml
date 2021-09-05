@@ -27,7 +27,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: 'no'
       activity_set_2:
         names:
           - "Domestic"
@@ -38,7 +37,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: 'no'
       activity_set_3:
         names:
           - "Industrial"
@@ -53,7 +51,6 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-        allocation_helper: 'no'
       activity_set_4:
         names:
           - "Irrigation Crop"
@@ -71,7 +68,6 @@ source_names:
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-        allocation_helper: 'yes'
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
@@ -92,7 +88,6 @@ source_names:
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
-        allocation_helper: 'yes'
         helper_source: "USGS_WU_Coef"
         helper_method: multiplication
         helper_source_class: "Water"
