@@ -21,7 +21,6 @@ source_names:
           - "Food Nondurable Wholesale"
           - "Hotel Lodging"
           - "Medical Health"
-          - "Multifamily"
           - "Other Manufacturing"
           - "Other Retail Trade"
           - "Public Administration"
@@ -42,4 +41,9 @@ source_names:
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
         allocation_helper: 'no'
+      activity_set_2:
+        names:
+          - "Multifamily"
+        allocation_method: direct
+        allocation_from_scale: state
 
