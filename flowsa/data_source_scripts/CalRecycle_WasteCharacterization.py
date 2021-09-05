@@ -14,7 +14,7 @@ import os
 import pandas as pd
 import numpy as np
 import flowsa
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, load_fba_w_standardized_units
 from flowsa.common import externaldatapath, flow_by_activity_fields,\
     fba_fill_na_dict
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba    
@@ -123,14 +123,12 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     Calculates tons per employee per year based on BLS_QCEW employees by sector and
     applies that quantity to employees in all states
     """
-    # update to (Load FBA for allocation)
-    bls = flowsa.getFlowByActivity(datasource='BLS_QCEW',
-                                   year=fbs['Year'].unique()[0],
-                                   flowclass='Employment',
-                                   geographic_level='state')
+    bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
+                                        year=fbs['Year'].unique()[0],
+                                        flowclass='Employment',
+                                        geographic_level='state')
     bls = bls[bls['FlowName'] == 'Number of employees']
     # clean df
-    bls = flowsa.dataclean.clean_df(bls, flow_by_activity_fields, fba_fill_na_dict) 
     bls = clean_bls_qcew_fba(bls)
     bls = flowsa.mapping.add_sectors_to_flowbyactivity(bls)
     
