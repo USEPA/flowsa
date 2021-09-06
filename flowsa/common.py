@@ -8,18 +8,18 @@ import shutil
 import sys
 import os
 import logging
+import pprint
 import yaml
 import requests
 import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
-import pkg_resources
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-PKG_VERSION_NUMBER = '0.2'
+PKG_VERSION_NUMBER = '0.2.1'
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -51,9 +51,10 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
 
-# define 4 logs, one for general information, one for major validation logs that are also included
-# in the gerneral info log, one for very specific validation that is only included in the validation log,
-# and a console printout that includes general and validation, but not detailed validation
+# define 4 logs, one for general information, one for major validation logs that are
+# also included in the general info log, one for very specific validation that is only
+# included in the validation log, and a console printout that includes general and
+# validation, but not detailed validation
 create_paths_if_missing(logoutputpath)
 
 # format for logging .txt generated
@@ -126,7 +127,7 @@ def rename_log_file(filename, fb_meta):
     shutil.copy(log_file, new_log_name)
 
 # metadata
-pkg = pkg_resources.get_distribution("flowsa")
+PKG = "flowsa"
 GIT_HASH = get_git_hash()
 GIT_HASH_LONG = get_git_hash('long')
 
@@ -146,7 +147,7 @@ sector_level_key = {"NAICS_2": 2,
 
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
-WITHDRAWN_KEYWORD = None
+WITHDRAWN_KEYWORD = np.nan
 
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
 
@@ -499,11 +500,12 @@ fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 fbs_grouping_fields_w_activities = fbs_default_grouping_fields + \
                                    (['ActivityProducedBy', 'ActivityConsumedBy'])
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
-fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_fields)
+fba_wsec_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_fields)
 
 
 def read_stored_FIPS(year='2015'):
@@ -856,3 +858,43 @@ def find_true_file_path(filedirectory, filename, extension):
                 break
 
     return filename
+
+
+def seeAvailableFlowByModels(flowbytype):
+    """
+    Return available available Flow-By-Activity or Flow-By-Sector models
+    :param flowbytype: 'FBA' or 'FBS'
+    :return: dict, fba models
+    """
+
+    # return fba directory path dependent on FBA or FBS
+    if flowbytype == 'FBA':
+        fb_directory = sourceconfigpath
+    else:
+        fb_directory = flowbysectormethodpath
+
+    # empty dictionary
+    fb_dict = {}
+    # empty df
+    fb_df = []
+    # run through all files and append
+    for file in os.listdir(fb_directory):
+        if file.endswith(".yaml"):
+            # drop file extension
+            f = os.path.splitext(file)[0]
+            if flowbytype == 'FBA':
+                s = load_sourceconfig(f)
+                years = s['years']
+                fb_dict.update({f: years})
+            # else if FBS
+            else:
+                fb_df.append(f)
+
+    # determine format of data to print
+    if flowbytype == 'FBA':
+        data_print = fb_dict
+    else:
+        data_print = fb_df
+
+    # print data in human-readable format
+    pprint.pprint(data_print, width=79, compact=True)

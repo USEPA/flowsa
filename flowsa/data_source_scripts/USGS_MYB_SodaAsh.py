@@ -90,7 +90,7 @@ def soda_call(**kwargs):
     # load arguments necessary for function
     response_load = kwargs['r']
 
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(response_load.content),
+    df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
                                          sheet_name='T4')
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()

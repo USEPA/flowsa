@@ -21,9 +21,10 @@ agg_levels:
 - state
 - us
 # want all population estimates from july 1
+# Data for 2011 and 2012 are not available.
 datecodes:
-  2011: 4
-  2012: 5
+#  2011: 4
+#  2012: 5
   2013: 6
   2014: 7
   2015: 8
@@ -33,8 +34,6 @@ datecodes:
   2019: 12
 years:
 - 2010
-- 2011
-- 2012
 - 2013
 - 2014
 - 2015

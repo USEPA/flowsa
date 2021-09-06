@@ -238,7 +238,7 @@ def remove_duplicate_NEI_flows(df):
 
 def drop_GHGs(df):
     """
-    GHGs are included in some NEI datasets. If these data are not compiled together 
+    GHGs are included in some NEI datasets. If these data are not compiled together
     with GHGRP, need to remove them as they will be tracked from a different source
     :param df: df, FBA format
     :return: df
@@ -299,7 +299,8 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     match_conditions = ['ActivityProducedBy', 'Compartment', 'Location', 'Year']
 
     df_contributing_flows = df.loc[df['FlowName'].isin(contributing_flows)]
-    df_contributing_flows = df_contributing_flows.groupby(match_conditions, as_index=False)['FlowAmount'].sum()
+    df_contributing_flows = df_contributing_flows.groupby(match_conditions,
+                                                          as_index=False)['FlowAmount'].sum()
 
     df_contributing_flows['FlowName'] = aggregate_flow
     df_contributing_flows['ContributingAmount'] = df_contributing_flows['FlowAmount']
