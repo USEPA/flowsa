@@ -39,7 +39,7 @@ from flowsa.sectormapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
-from flowsa.validation import check_if_losing_sector_data,\
+from flowsa.validation import allocate_dropped_sector_data,\
     check_for_differences_between_fba_load_and_fbs_output, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
@@ -261,7 +261,7 @@ def main(**kwargs):
                 vLog.info( 'Searching for and allocating FlowAmounts for any parent '
                            'NAICS that were dropped in the subset to '
                            '%s child NAICS', method['target_sector_level'])
-                fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
+                fbs_agg_2 = allocate_dropped_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
                 check_for_differences_between_fba_load_and_fbs_output(
