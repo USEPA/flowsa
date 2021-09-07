@@ -8,7 +8,7 @@ Pulls Statistics Canada data on water intake and discharge for 3 digit NAICS fro
 import io
 import zipfile
 import pandas as pd
-from flowsa.values_from_literature import get_Canadian_to_USD_exchange_rate
+from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator,\
     load_fba_w_standardized_units
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
@@ -112,7 +112,6 @@ def convert_statcan_data_to_US_water_use(df, attr):
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: df, FBA format, flowamounts converted
     """
-    import flowsa
 
     # load Canadian GDP data
     gdp = load_fba_w_standardized_units(datasource='StatCan_GDP',

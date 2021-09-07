@@ -30,7 +30,7 @@ def generate_list_of_sources_in_fbs_method(methodname):
     for fbs_k, fbs_v in fbs.items():
         try:
             sources.append([fbs_k, fbs_v['year']])
-        except:
+        except KeyError:
             log.info('Could not append %s to datasource list', fbs_k)
             continue
         activities = fbs_v['activity_sets']
@@ -99,7 +99,7 @@ def generate_fbs_bibliography(methodname):
                 config = load_values_from_literature_citations_config()[source[0]]
             except KeyError:
                 try:
-                    config = getMetadata(source[0], source[1], paths)
+                    config = getMetadata(source[0], source[1])
                 except KeyError or AttributeError:
                     log.info('Could not find metadata for %s', source[0])
                     continue
@@ -131,7 +131,7 @@ def generate_fbs_bibliography(methodname):
                         }]
                         # append each entry to a list of BibDatabase entries
                         bib_list.append(db)
-                except:
+                except KeyError:
                     log.warning('Missing information needed to create bib for %s, %s',
                                 source[0], source[1])
                     continue
