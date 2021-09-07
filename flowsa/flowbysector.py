@@ -201,11 +201,6 @@ def main(**kwargs):
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
                                                                                attr=attr,
                                                                                method=method)
-                    # determine if any changes to the data
-                    vLog.info('Calculate changes in FlowAmounts from cleaning '
-                              'the FBA with sectors df, saving difference in Validation log')
-                    calculate_flowamount_diff_between_dfs(flows_subset_wsec,
-                                                          flows_subset_wsec_clean)
                 else:
                     flows_subset_wsec_clean = flows_subset_wsec.copy()
 
