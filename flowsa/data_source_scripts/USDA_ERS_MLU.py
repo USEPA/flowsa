@@ -11,7 +11,7 @@ Last updated: Thursday, April 16, 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import get_all_state_FIPS_2
+from flowsa.common import get_all_state_FIPS_2, vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import load_household_sector_codes
 from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2013, \
@@ -127,6 +127,9 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     # define sector column to base calculations
     sector_col = 'SectorConsumedBy'
 
+    vLogDetailed.info('Assuming total land use from MECS and CBECS included '
+                      'in urban land area, so subtracting out calculated '
+                      'MECS and CBECS land from MLU urban land area')
     # read in the cbecs and mecs df from df_list
     for df_i in fbs_list:
         if (df_i['MetaSources'] == 'EIA_CBECS_Land').all():
@@ -231,7 +234,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(
         columns={'NAICS_2012_Code': sector_col})
 
-    # make an assumption about the percent of urban transport area used by airports
+    # make an assumption about the percent of rural transport area used by airports
     airport_multiplier = get_urban_land_use_for_airports()
     df_airport = df[df[sector_col] == '488119']
     df_airport = df_airport.assign(FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
@@ -295,6 +298,9 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
 
     # in df, where sector is a personal expenditure value, and
     # location = 00000, replace with rural res value
+    vLogDetailed.info('The only category for MLU other land use is rural land '
+                      'occupation. All other land area in this category is unassigned to'
+                      'sectors, resulting in unaccounted land area.')
     df['FlowAmount'] = np.where(df['SectorConsumedBy'].isin(household), rural_res, df['FlowAmount'])
 
     return df
