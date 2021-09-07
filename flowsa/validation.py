@@ -308,7 +308,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     """
 
     # subset the dataframes, only keeping data for easy comparison of flowamounts
-    drop_cols = ['MeasureofSpread', 'Spread', 'DistributionType',
+    drop_cols = ['Year', 'MeasureofSpread', 'Spread', 'DistributionType',
                  'Min', 'Max', 'DataReliability', 'DataCollection']
     # drop cols and rename, ignore error if a df does not contain a column to drop
     dfa = dfa_load.drop(drop_cols, axis=1, errors='ignore'
@@ -342,10 +342,10 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     # Because code will sometimes change terminology, aggregate
     # data by context and flowable to compare df differences
     # subset df
-    dfs = df[['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy', 'Year',
+    dfs = df[['Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy',
               'FlowAmount_Original', 'FlowAmount_Modified', 'Unit', 'geoscale']]
     agg_cols = ['Flowable', 'Context', 'ActivityProducedBy',
-                'ActivityConsumedBy', 'Year', 'Unit', 'geoscale']
+                'ActivityConsumedBy', 'Unit', 'geoscale']
     dfagg = dfs.groupby(agg_cols, dropna=False, as_index=False).agg({'FlowAmount_Original': sum,
                                                                      'FlowAmount_Modified': sum})
     # column calculating difference
@@ -361,7 +361,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
         dfagg3 = replace_strings_with_NoneType(dfagg).drop(
             columns=['ActivityProducedBy', 'ActivityConsumedBy',
                      'FlowAmount_Difference', 'Percent_Difference'])
-        dfagg4 = dfagg3.groupby(['Flowable', 'Context', 'Year', 'Unit', 'geoscale'],
+        dfagg4 = dfagg3.groupby(['Flowable', 'Context', 'Unit', 'geoscale'],
                                 dropna=False, as_index=False).agg({'FlowAmount_Original': sum,
                                                                    'FlowAmount_Modified': sum})
         # column calculating difference
