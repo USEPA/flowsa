@@ -376,10 +376,11 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
                           '\n {}'.format(dfagg2.to_string(), index=False))
 
 
-def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
-                                                          activity_set, source_name, config):
+def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
+                                           activity_set, source_name, config):
     """
-    Function to compare the loaded flowbyactivity with the final flowbysector at all sector levels
+    Function to compare the loaded flowbyactivity with the final flowbysector
+    by activityname (if exists) to target sector level
     output, checking for data loss
     :param fba_load: df, FBA loaded and mapped using FEDEFL
     :param fbs_load: df, final FBS df

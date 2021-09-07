@@ -40,7 +40,7 @@ from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.validation import allocate_dropped_sector_data,\
-    check_for_differences_between_fba_load_and_fbs_output, \
+    compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
 
@@ -264,7 +264,7 @@ def main(**kwargs):
                 fbs_agg_2 = allocate_dropped_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(
+                compare_activity_to_sector_flowamounts(
                     flows_mapped_wsec, fbs_agg_2, aset, k, method)
 
                 # return sector level specified in method yaml
