@@ -11,10 +11,9 @@ Retrieves stored data in the FlowBySector format
 """
 
 import flowsa
-from flowsa.common import seeAvailableFlowByModels
 
 # see available FBS models
-seeAvailableFlowByModels('FBS')
+flowsa.seeAvailableFlowByModels('FBS')
 
 # load FBS from local directory, if does not exist, method will run
 fbs_water = flowsa.getFlowBySector('Water_national_2015_m1')
