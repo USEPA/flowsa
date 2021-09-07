@@ -263,8 +263,6 @@ def allocation_helper(df_w_sector, attr, method, v):
 
     # modify flow amounts using helper data
     if 'multiplication' in attr['helper_method']:
-        # todo: modify so if missing data, replaced with
-        #  value from one geoscale up instead of national
         # if missing values (na or 0), replace with national level values
         replacement_values =\
             helper_allocation[helper_allocation['Location'] ==
