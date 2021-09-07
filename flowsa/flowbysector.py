@@ -138,10 +138,6 @@ def main(**kwargs):
             if "clean_fba_df_fxn" in v:
                 log.info("Cleaning up %s FlowByActivity", k)
                 flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
-                # calculate expected data loss
-                vLog.info('Calculate FlowAmount differences caused by cleaning FBA,'
-                          'saving difference in Validation log')
-                calculate_flowamount_diff_between_dfs(flows_mapped, flows_fba)
             else:
                 flows_fba = flows_mapped.copy()
 
