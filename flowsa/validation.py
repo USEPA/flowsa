@@ -484,7 +484,7 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
 
 
 def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_set,
-                                                 source_name, attr, method):
+                                                 source_name, source_attr, activity_attr, method):
     """
     Function to compare the loaded flowbyactivity total after subsetting by activity
     and geography with the final flowbysector output total. Not a direct comparison
@@ -494,13 +494,14 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
     :param fbs_load: df, final FBS df at target sector level
     :param activity_set: str, activity set
     :param source_name: str, source name
-    :param attr: dictionary, attribute data from method yaml for activity set
+    :param source_attr: dictionary, attribute data from method yaml for source data
+    :param activity_attr: dictionary, attribute data from method yaml for activity set
     :param method: dictionary, FBS method yaml
     :return: printout data differences between loaded FBA and FBS output totals by location,
              save results as csv in local directory
     """
 
-    vLog.info('Comparing Flow-By-Activity subset by activity and geogrpaphy to '
+    vLog.info('Comparing Flow-By-Activity subset by activity and geography to '
               'the subset Flow-By-Sector FlowAmount total.')
 
     # load source catalog
@@ -508,12 +509,12 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
     src_info = cat[source_name]
 
     # extract relevant geoscale data or aggregate existing data
-    fba = subset_df_by_geoscale(fba_load, attr['allocation_from_scale'], method['target_geoscale'])
+    fba = subset_df_by_geoscale(fba_load, activity_attr['allocation_from_scale'], method['target_geoscale'])
     if src_info['sector-like_activities']:
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
         fba = fba[['Class', 'FlowAmount', 'Unit', 'Context', 'ActivityProducedBy',
-                   'ActivityConsumedBy', 'Location', 'LocationSystem']]
+                        'ActivityConsumedBy', 'Location', 'LocationSystem']]
         # rename the activity cols to sector cols for purposes of aggregation
         fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
                                     'ActivityConsumedBy': 'SectorConsumedBy'})
@@ -559,7 +560,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
 
         # loop through the contexts and print results of comparison
         vLog.info('Comparing FBA %s %s subset to FBS results. Details in Validation Log',
-                  activity_set, attr['geoscale_to_use'])
+                  activity_set, source_attr['geoscale_to_use'])
         for i, j in context_list:
             df_merge_subset = df_merge[(df_merge['Context'] == i) &
                                        (df_merge['Location'] == j)].reset_index(drop=True)
