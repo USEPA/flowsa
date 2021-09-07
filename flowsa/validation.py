@@ -199,7 +199,7 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
                                   'Year', 'spb_tmp', 'scb_tmp'])
 
         # extract the rows that are not disaggregated to more specific naics
-        rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())]
+        rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())].reset_index(drop=True)
         # clean df
         rl = replace_strings_with_NoneType(rl)
         rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']].drop_duplicates().values.tolist()
@@ -275,7 +275,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                           sector_level_key[config['target_sector_level']
                           ]].reset_index(drop=True)
     # keep data where the flowamountratio is greater than or less than 1 by 0.005
-    tolerance = 0.005
+    tolerance = 0.01
     flow_alloc_df5 = flow_alloc_df4[(flow_alloc_df4['FlowAmountRatio'] < 1 - tolerance) |
                                     (flow_alloc_df4['FlowAmountRatio'] > 1 + tolerance)]
 
@@ -448,30 +448,21 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
                               sector_level_key[config['target_sector_level']
                               ]].reset_index(drop=True)
 
-        ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
-        if ua_count1 > 0:
+        tolerance = 0.01
+        comparison2 = comparison[(comparison['Ratio'] < 1 - tolerance) |
+                                 (comparison['Ratio'] > 1 + tolerance)]
+
+        if len(comparison2) > 0:
             vLog.info('There are %s combinations of flowable/context/sector length where the '
-                     'flowbyactivity to flowbysector ratio is < 0.95', str(ua_count1))
-        ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
-        if ua_count2 > 0:
-            vLog.debug('There are %s combinations of flowable/context/sector length where the '
-                     'flowbyactivity to flowbysector ratio is < 0.99', str(ua_count2))
-        oa_count1 = len(comparison[comparison['Ratio'] > 1])
-        if oa_count1 > 0:
-            vLog.debug('There are %s combinations of flowable/context/sector '
-                      'length where the flowbyactivity '
-                     'to flowbysector ratio is > 1.0', str(oa_count1))
-        oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
-        if oa_count2 > 0:
-            vLog.info('There are %s combinations of flowable/context/sector length where the '
-                     'flowbyactivity to flowbysector ratio is > 1.01', str(oa_count2))
+                      'flowbyactivity to flowbysector ratio is less than or greater than 1 by %s',
+                      len(comparison2), str(tolerance))
 
         # include df subset in the validation log
         # only print rows where flowamount ratio is less than 1 (round flowamountratio)
-        df_v = comparison[comparison['Ratio'].apply(
+        df_v = comparison2[comparison2['Ratio'].apply(
             lambda x: round(x, 3) < 1)].reset_index(drop=True)
 
-        # save csv to validation log
+        # save to validation log
         log.info('Save the comparison of FlowByActivity load to FlowBySector ratios '
                  'for %s in validation log', activity_set)
         # if df not empty, print, if empty, print string
@@ -569,7 +560,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
                           'does not exist in the FBS', source_name, activity_set, i)
                 continue
             # make reporting more manageable
-            if abs(diff_per) > 0.005:
+            if abs(diff_per) > 0.01:
                 diff_per = round(diff_per, 2)
             else:
                 diff_per = round(diff_per, 6)
