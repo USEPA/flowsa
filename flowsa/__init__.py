@@ -139,9 +139,9 @@ def writeFlowBySectorBibliography(methodname):
 
 def seeAvailableFlowByModels(flowbytype):
     """
-    Return available available Flow-By-Activity or Flow-By-Sector models
+    Return available Flow-By-Activity or Flow-By-Sector models
     :param flowbytype: 'FBA' or 'FBS'
-    :return: dict, fba models
+    :return: console printout of available models
     """
 
     # return fba directory path dependent on FBA or FBS
