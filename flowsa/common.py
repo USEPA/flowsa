@@ -8,7 +8,6 @@ import shutil
 import sys
 import os
 import logging
-import pprint
 import yaml
 import requests
 import requests_ftp
@@ -19,7 +18,7 @@ from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-PKG_VERSION_NUMBER = '0.2.1'
+PKG_VERSION_NUMBER = '0.3'
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -860,41 +859,3 @@ def find_true_file_path(filedirectory, filename, extension):
     return filename
 
 
-def seeAvailableFlowByModels(flowbytype):
-    """
-    Return available available Flow-By-Activity or Flow-By-Sector models
-    :param flowbytype: 'FBA' or 'FBS'
-    :return: dict, fba models
-    """
-
-    # return fba directory path dependent on FBA or FBS
-    if flowbytype == 'FBA':
-        fb_directory = sourceconfigpath
-    else:
-        fb_directory = flowbysectormethodpath
-
-    # empty dictionary
-    fb_dict = {}
-    # empty df
-    fb_df = []
-    # run through all files and append
-    for file in os.listdir(fb_directory):
-        if file.endswith(".yaml"):
-            # drop file extension
-            f = os.path.splitext(file)[0]
-            if flowbytype == 'FBA':
-                s = load_sourceconfig(f)
-                years = s['years']
-                fb_dict.update({f: years})
-            # else if FBS
-            else:
-                fb_df.append(f)
-
-    # determine format of data to print
-    if flowbytype == 'FBA':
-        data_print = fb_dict
-    else:
-        data_print = fb_df
-
-    # print data in human-readable format
-    pprint.pprint(data_print, width=79, compact=True)

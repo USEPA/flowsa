@@ -40,8 +40,8 @@ from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn, \
     update_geoscale
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
-from flowsa.validation import check_if_losing_sector_data,\
-    check_for_differences_between_fba_load_and_fbs_output, \
+from flowsa.validation import allocate_dropped_sector_data,\
+    compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
 
@@ -89,17 +89,17 @@ def load_source_dataframe(k, v):
             geo_level = v['source_fba_load_scale']
         else:
             geo_level = None
-        log.info("Retrieving flowbyactivity for datasource %s in year %s", k, str(v['year']))
+        vLog.info("Retrieving flowbyactivity for datasource %s in year %s", k, str(v['year']))
         flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'], flowclass=v['class'],
                                             geographic_level=geo_level)
     elif v['data_format'] == 'FBS':
-        log.info("Retrieving flowbysector for datasource %s", k)
+        vLog.info("Retrieving flowbysector for datasource %s", k)
         flows_df = flowsa.getFlowBySector(k)
     elif v['data_format'] == 'FBS_outside_flowsa':
-        log.info("Retrieving flowbysector for datasource %s", k)
+        vLog.info("Retrieving flowbysector for datasource %s", k)
         flows_df = dynamically_import_fxn(k, v["FBS_datapull_fxn"])(v)
     else:
-        log.error("Data format not specified in method file for datasource %s", k)
+        vLog.error("Data format not specified in method file for datasource %s", k)
 
     return flows_df
 
@@ -116,7 +116,7 @@ def main(**kwargs):
 
     method_name = kwargs['method']
     # assign arguments
-    log.info("Initiating flowbysector creation for %s", method_name)
+    vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
     method = load_method(method_name)
     # create dictionary of data and allocation datasets
@@ -137,14 +137,8 @@ def main(**kwargs):
 
             # clean up fba, if specified in yaml
             if "clean_fba_df_fxn" in v:
-                log.info("Cleaning up %s FlowByActivity", k)
-                flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
-                # calculate expected data loss
-                vLog.info('Calculate FlowAmount differences caused by cleaning FBA,'
-                          'saving difference in Validation log')
-                calculate_flowamount_diff_between_dfs(flows_mapped, flows_fba)
-            else:
-                flows_fba = flows_mapped.copy()
+                vLog.info("Cleaning up %s FlowByActivity", k)
+                flows_mapped = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
@@ -163,13 +157,11 @@ def main(**kwargs):
                 else:
                     names = attr['names']
 
-                log.info("Preparing to handle %s in %s", aset, k)
-                log.debug("Preparing to handle subset of activities: %s",
-                          ', '.join(map(str, names)))
+                vLog.info("Preparing to handle %s in %s", aset, k)
                 # subset fba data by activity
                 flows_subset =\
-                    flows_fba[(flows_fba[fba_activity_fields[0]].isin(names)) |
-                              (flows_fba[fba_activity_fields[1]].isin(names)
+                    flows_mapped[(flows_mapped[fba_activity_fields[0]].isin(names)) |
+                              (flows_mapped[fba_activity_fields[1]].isin(names)
                                )].reset_index(drop=True)
 
                 # if activities are sector-like, check sectors are valid
@@ -201,21 +193,14 @@ def main(**kwargs):
                                                   allocationmethod=attr['allocation_method'])
                 # clean up fba with sectors, if specified in yaml
                 if "clean_fba_w_sec_df_fxn" in v:
-                    log.info("Cleaning up %s FlowByActivity with sectors", k)
-                    flows_subset_wsec_clean = \
+                    vLog.info("Cleaning up %s FlowByActivity with sectors", k)
+                    flows_subset_wsec = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
                                                                                attr=attr,
                                                                                method=method)
-                    # determine if any changes to the data
-                    vLog.info('Calculate changes in FlowAmounts from cleaning '
-                              'the FBA with sectors df, saving difference in Validation log')
-                    calculate_flowamount_diff_between_dfs(flows_subset_wsec,
-                                                          flows_subset_wsec_clean)
-                else:
-                    flows_subset_wsec_clean = flows_subset_wsec.copy()
 
                 # rename SourceName to MetaSources and drop columns
-                flows_mapped_wsec = flows_subset_wsec_clean.\
+                flows_mapped_wsec = flows_subset_wsec.\
                     rename(columns={'SourceName': 'MetaSources'}).\
                     drop(columns=['FlowName', 'Compartment'])
 
@@ -270,13 +255,13 @@ def main(**kwargs):
                 # check if any sector information is lost before reaching
                 # the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                vLog.info( 'Searching for and allocating FlowAmounts for any parent '
-                           'NAICS that were dropped in the subset to '
-                           '%s child NAICS', method['target_sector_level'])
-                fbs_agg_2 = check_if_losing_sector_data(fbs_agg, method['target_sector_level'])
+                vLog.info('Searching for and allocating FlowAmounts for any parent '
+                          'NAICS that were dropped in the subset to '
+                          '%s child NAICS', method['target_sector_level'])
+                fbs_agg_2 = allocate_dropped_sector_data(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
-                check_for_differences_between_fba_load_and_fbs_output(
+                compare_activity_to_sector_flowamounts(
                     flows_mapped_wsec, fbs_agg_2, aset, k, method)
 
                 # return sector level specified in method yaml
@@ -303,7 +288,7 @@ def main(**kwargs):
 
                 # save comparison of FBA total to FBS total for an activity set
                 compare_fba_geo_subset_and_fbs_output_totals(flows_subset_geo, fbs_sector_subset,
-                                                             aset, k, attr, method)
+                                                             aset, k, v, attr, method)
 
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)

@@ -10,7 +10,7 @@ import pandas as pd
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, log, \
     fba_mapped_default_grouping_fields, fba_wsec_default_grouping_fields
-from flowsa.validation import check_if_losing_sector_data, check_allocation_ratios, \
+from flowsa.validation import allocate_dropped_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
@@ -41,7 +41,7 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
                               (fbs[fba_activity_fields[1]] == n)) |
                              (fbs[fba_activity_fields[0]] == n) |
                              (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
-            fbs_subset = check_if_losing_sector_data(fbs_subset, method['target_sector_level'])
+            fbs_subset = allocate_dropped_sector_data(fbs_subset, method['target_sector_level'])
             activity_list.append(fbs_subset)
         fbs = pd.concat(activity_list, ignore_index=True)
     return fbs
@@ -263,8 +263,6 @@ def allocation_helper(df_w_sector, attr, method, v):
 
     # modify flow amounts using helper data
     if 'multiplication' in attr['helper_method']:
-        # todo: modify so if missing data, replaced with
-        #  value from one geoscale up instead of national
         # if missing values (na or 0), replace with national level values
         replacement_values =\
             helper_allocation[helper_allocation['Location'] ==

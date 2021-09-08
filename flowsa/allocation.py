@@ -29,11 +29,14 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
             if 'flowSubsetMapped' in kwargs:
                 fsm = kwargs['flowSubsetMapped']
                 flagged = fsm[fsm['disaggregate_flag'] == 1]
-                #todo: change col to be generalized, not SEctorConsumedBy specific
-                flagged_names = flagged['SectorConsumedBy'].tolist()
+                if flagged['SectorProducedBy'].isna().all():
+                    sector_col = 'SectorConsumedBy'
+                else:
+                    sector_col = 'SectorProducedBy'
+                flagged_names = flagged[sector_col].tolist()
 
                 nonflagged = fsm[fsm['disaggregate_flag'] == 0]
-                nonflagged_names = nonflagged['SectorConsumedBy'].tolist()
+                nonflagged_names = nonflagged[sector_col].tolist()
 
                 # subset the original df so rows of data that run through the
                 # proportional allocation process are
