@@ -8,7 +8,6 @@ source_names:
     geoscale_to_use: state
     year: 2014
     clean_fba_df_fxn: keep_generated_quantity
-    clean_fba_w_sec_df_fxn: None
     mfl_mapping: 'CalRecycle'
     activity_sets:
       activity_set_1:
@@ -40,7 +39,6 @@ source_names:
         allocation_fba_load_scale: state
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-        allocation_helper: 'no'
       activity_set_2:
         names:
           - "Multifamily"
