@@ -6,5 +6,6 @@ source_names:
     data_format: 'FBS'
     clean_fbs_df_fxn: apply_tons_per_employee_per_year_to_states
     clean_fbs_df_fxn_source: CalRecycle_WasteCharacterization
+    year: 2014
 
 

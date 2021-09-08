@@ -103,6 +103,9 @@ def return_fbs_method_data(source_name, config):
             # get stewi metadata
             meta['primary_source_meta'][k] = add_stewi_metadata(v['inventory_dict'])
             continue
+        if v['data_format'] == 'FBS':
+            # TODO get FBS metadata
+            continue
         # append source and year
         meta['primary_source_meta'][k] = getMetadata(k, v["year"])
         # create dictionary of allocation datasets for different activities
