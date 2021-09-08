@@ -137,9 +137,7 @@ def main(**kwargs):
             # clean up fba, if specified in yaml
             if "clean_fba_df_fxn" in v:
                 vLog.info("Cleaning up %s FlowByActivity", k)
-                flows_fba = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
-            else:
-                flows_fba = flows_mapped.copy()
+                flows_mapped = dynamically_import_fxn(k, v["clean_fba_df_fxn"])(flows_mapped)
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
@@ -161,8 +159,8 @@ def main(**kwargs):
                 vLog.info("Preparing to handle %s in %s", aset, k)
                 # subset fba data by activity
                 flows_subset =\
-                    flows_fba[(flows_fba[fba_activity_fields[0]].isin(names)) |
-                              (flows_fba[fba_activity_fields[1]].isin(names)
+                    flows_mapped[(flows_mapped[fba_activity_fields[0]].isin(names)) |
+                              (flows_mapped[fba_activity_fields[1]].isin(names)
                                )].reset_index(drop=True)
 
                 # if activities are sector-like, check sectors are valid
@@ -195,15 +193,13 @@ def main(**kwargs):
                 # clean up fba with sectors, if specified in yaml
                 if "clean_fba_w_sec_df_fxn" in v:
                     vLog.info("Cleaning up %s FlowByActivity with sectors", k)
-                    flows_subset_wsec_clean = \
+                    flows_subset_wsec = \
                         dynamically_import_fxn(k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
                                                                                attr=attr,
                                                                                method=method)
-                else:
-                    flows_subset_wsec_clean = flows_subset_wsec.copy()
 
                 # rename SourceName to MetaSources and drop columns
-                flows_mapped_wsec = flows_subset_wsec_clean.\
+                flows_mapped_wsec = flows_subset_wsec.\
                     rename(columns={'SourceName': 'MetaSources'}).\
                     drop(columns=['FlowName', 'Compartment'])
 
