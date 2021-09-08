@@ -316,7 +316,6 @@ def ghg_call(**kwargs):
     year = args['year']
     with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
         frames = []
-        # TODO: replace this TABLES constant with kwarg['tables']
         if 'annex' in url:
             is_annex = True
             t_tables = ANNEX_TABLES
@@ -508,7 +507,6 @@ def ghg_parse(**kwargs):
         df["Unit"] = "Other"
 
         # Update classes:
-        # TODO: replace this TBL_META constant with kwargs['tbl_meta']
         meta = TBL_META[source_name]
         df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
         df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]

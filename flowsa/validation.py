@@ -9,13 +9,12 @@ import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
     subset_df_by_geoscale, sector_aggregation
-from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
+from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
-from flowsa.common import US_FIPS, sector_level_key, flow_by_sector_fields,\
+from flowsa.common import US_FIPS, sector_level_key, \
     load_sector_length_crosswalk, load_source_catalog, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, log, fba_activity_fields, \
-    fbs_activity_fields, fbs_fill_na_dict, vLog, vLogDetailed,\
-    fba_default_grouping_fields
+    fbs_activity_fields, vLog, vLogDetailed, fba_default_grouping_fields
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -148,7 +147,7 @@ def check_if_location_systems_match(df1, df2):
         vLog.warning("LocationSystems do not match, might lose county level data")
 
 
-def check_if_losing_sector_data(df, target_sector_level):
+def allocate_dropped_sector_data(df_load, target_sector_level):
     """
     Determine rows of data that will be lost if subset data at target sector level
     Equally allocate parent NAICS to child NAICS where child NAICS missing
@@ -158,7 +157,7 @@ def check_if_losing_sector_data(df, target_sector_level):
     """
 
     # exclude nonsectors
-    df = replace_NoneType_with_empty_cells(df)
+    df = replace_NoneType_with_empty_cells(df_load)
 
     rows_lost = pd.DataFrame()
     for i in range(2, sector_level_key[target_sector_level]):
@@ -181,9 +180,10 @@ def check_if_losing_sector_data(df, target_sector_level):
         # create temp sector columns in df y, that are i digits in length
         df_y.loc[:, 'spb_tmp'] = df_y[fbs_activity_fields[0]].apply(lambda x: x[0:i])
         df_y.loc[:, 'scb_tmp'] = df_y[fbs_activity_fields[1]].apply(lambda x: x[0:i])
-        # don't modify household sector lengths
+        # don't modify household sector lengths or gov't transport
         df_y = df_y.replace({'F0': 'F010',
-                             'F01': 'F010'})
+                             'F01': 'F010'
+                             })
 
         # merge the two dfs
         df_m = pd.merge(df_x,
@@ -199,9 +199,9 @@ def check_if_losing_sector_data(df, target_sector_level):
                                   'Year', 'spb_tmp', 'scb_tmp'])
 
         # extract the rows that are not disaggregated to more specific naics
-        rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())]
+        rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())].reset_index(drop=True)
         # clean df
-        rl = clean_df(rl, flow_by_sector_fields, fbs_fill_na_dict)
+        rl = replace_strings_with_NoneType(rl)
         rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']].drop_duplicates().values.tolist()
 
         # match sectors with target sector length sectors
@@ -238,13 +238,11 @@ def check_if_losing_sector_data(df, target_sector_level):
         if len(rl) != 0:
             vLogDetailed.warning('Data found at %s digit NAICS not represented in current '
                         'data subset: {}'.format(' '.join(map(str, rl_list))), str(i))
-            rows_lost = rows_lost.append(rl_m3, ignore_index=True, sort=True)
+            rows_lost = rows_lost.append(rl_m3, ignore_index=True)
 
-    if len(rows_lost) == 0:
-        vLogDetailed.debug('Data exists at %s', target_sector_level)
-    else:
+    if len(rows_lost) != 0:
         vLogDetailed.info('Allocating FlowAmounts equally to each %s associated with '
-                 'the sectors previously dropped', target_sector_level)
+                          'the sectors previously dropped', target_sector_level)
 
     # add rows of missing data to the fbs sector subset
     df_w_lost_data = pd.concat([df, rows_lost], ignore_index=True, sort=True)
@@ -277,7 +275,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                           sector_level_key[config['target_sector_level']
                           ]].reset_index(drop=True)
     # keep data where the flowamountratio is greater than or less than 1 by 0.005
-    tolerance = 0.005
+    tolerance = 0.01
     flow_alloc_df5 = flow_alloc_df4[(flow_alloc_df4['FlowAmountRatio'] < 1 - tolerance) |
                                     (flow_alloc_df4['FlowAmountRatio'] > 1 + tolerance)]
 
@@ -288,7 +286,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                   len(flow_alloc_df5), config["target_sector_level"], str(tolerance))
 
     # add to validation log
-    vLog.info('Save the summary table of flow allocation ratios for each sector length for '
+    log.info('Save the summary table of flow allocation ratios for each sector length for '
               '%s in validation log', activity_set)
     # if df not empty, print, if empty, print string
     if flow_alloc_df5.empty:
@@ -378,10 +376,11 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
                           '\n {}'.format(dfagg2.to_string(), index=False))
 
 
-def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
-                                                          activity_set, source_name, config):
+def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
+                                           activity_set, source_name, config):
     """
-    Function to compare the loaded flowbyactivity with the final flowbysector at all sector levels
+    Function to compare the loaded flowbyactivity with the final flowbysector
+    by activityname (if exists) to target sector level
     output, checking for data loss
     :param fba_load: df, FBA loaded and mapped using FEDEFL
     :param fbs_load: df, final FBS df
@@ -449,31 +448,22 @@ def check_for_differences_between_fba_load_and_fbs_output(fba_load, fbs_load,
                               sector_level_key[config['target_sector_level']
                               ]].reset_index(drop=True)
 
-        ua_count1 = len(comparison[comparison['Ratio'] < 0.95])
-        if ua_count1 > 0:
+        tolerance = 0.01
+        comparison2 = comparison[(comparison['Ratio'] < 1 - tolerance) |
+                                 (comparison['Ratio'] > 1 + tolerance)]
+
+        if len(comparison2) > 0:
             vLog.info('There are %s combinations of flowable/context/sector length where the '
-                     'flowbyactivity to flowbysector ratio is < 0.95', str(ua_count1))
-        ua_count2 = len(comparison[comparison['Ratio'] < 0.99])
-        if ua_count2 > 0:
-            vLog.debug('There are %s combinations of flowable/context/sector length where the '
-                     'flowbyactivity to flowbysector ratio is < 0.99', str(ua_count2))
-        oa_count1 = len(comparison[comparison['Ratio'] > 1])
-        if oa_count1 > 0:
-            vLog.debug('There are %s combinations of flowable/context/sector '
-                      'length where the flowbyactivity '
-                     'to flowbysector ratio is > 1.0', str(oa_count1))
-        oa_count2 = len(comparison[comparison['Ratio'] > 1.01])
-        if oa_count2 > 0:
-            vLog.info('There are %s combinations of flowable/context/sector length where the '
-                     'flowbyactivity to flowbysector ratio is > 1.01', str(oa_count2))
+                      'flowbyactivity to flowbysector ratio is less than or greater than 1 by %s',
+                      len(comparison2), str(tolerance))
 
         # include df subset in the validation log
         # only print rows where flowamount ratio is less than 1 (round flowamountratio)
-        df_v = comparison[comparison['Ratio'].apply(
+        df_v = comparison2[comparison2['Ratio'].apply(
             lambda x: round(x, 3) < 1)].reset_index(drop=True)
 
-        # save csv to validation log
-        vLog.info('Save the comparison of FlowByActivity load to FlowBySector ratios '
+        # save to validation log
+        log.info('Save the comparison of FlowByActivity load to FlowBySector ratios '
                  'for %s in validation log', activity_set)
         # if df not empty, print, if empty, print string
         if df_v.empty:
@@ -570,7 +560,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
                           'does not exist in the FBS', source_name, activity_set, i)
                 continue
             # make reporting more manageable
-            if abs(diff_per) > 0.005:
+            if abs(diff_per) > 0.01:
                 diff_per = round(diff_per, 2)
             else:
                 diff_per = round(diff_per, 6)
@@ -595,7 +585,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
             lambda x: round(x, 3) != 0)].reset_index(drop=True)
 
         # log output
-        vLog.info('Save the comparison of FlowByActivity load to FlowBySector '
+        log.info('Save the comparison of FlowByActivity load to FlowBySector '
                   'total FlowAmounts for %s in validation log file', activity_set)
         # if df not empty, print, if empty, print string
         if df_v.empty:
@@ -605,7 +595,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
                           'FlowAmounts for %s: '
                           '\n {}'.format(df_v.to_string()), activity_set)
     except:
-        vLog.info('Error occured when comparing total FlowAmounts '
+        vLog.info('Error occurred when comparing total FlowAmounts '
                   'for FlowByActivity and FlowBySector')
 
 
@@ -966,6 +956,3 @@ def compare_df_units(df1_load, df2_load):
     # if list is not empty, print warning that units are different
     if list_comp:
         log.info('Merging df with %s and df with %s units', df1, df2)
-    # else, if list is empty, only print comparison in detailed validation log
-    else:
-        vLogDetailed.info('Units in merged dataframe are the same')
