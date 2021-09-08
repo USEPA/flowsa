@@ -71,8 +71,11 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 
 ### Source specifications (in FBS format)
 If source data format is specified as 'FBS':
-1. _clean_fbs_df_fxn_: (optional) apply function to clean the FBS after it is accessed
-2. _clean_fbs_df_fxn_source: (if clean_fbs_df_fxn is used) identifies the location of the function
+1. _source_names_: The name of the FBS dataset
+2. _data_format_: 'FBS', loads a FlowBySector
+3. _year_: year of available dataset (ex. 2015)
+4. _clean_fbs_df_fxn_: (optional) apply function to clean the FBS after it is accessed
+5. _clean_fbs_df_fxn_source: (if clean_fbs_df_fxn is used) identifies the location of the function
 
 ### FBS_outside_flows specifications
 If source data_format is specified as 'FBS_outside_flowsa':
