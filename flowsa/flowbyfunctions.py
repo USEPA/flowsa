@@ -100,7 +100,7 @@ def aggregator(df, groupbycols):
     df = replace_NoneType_with_empty_cells(df)
 
     # drop columns with flowamount = 0
-    # df = df[df['FlowAmount'] != 0]
+    df = df[df['FlowAmount'] != 0]
 
     # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
     possible_column_headers = ('Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
