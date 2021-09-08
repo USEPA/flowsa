@@ -286,7 +286,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config):
                   len(flow_alloc_df5), config["target_sector_level"], str(tolerance))
 
     # add to validation log
-    vLog.info('Save the summary table of flow allocation ratios for each sector length for '
+    log.info('Save the summary table of flow allocation ratios for each sector length for '
               '%s in validation log', activity_set)
     # if df not empty, print, if empty, print string
     if flow_alloc_df5.empty:

@@ -100,7 +100,7 @@ def aggregator(df, groupbycols):
     df = replace_NoneType_with_empty_cells(df)
 
     # drop columns with flowamount = 0
-    df = df[df['FlowAmount'] != 0]
+    # df = df[df['FlowAmount'] != 0]
 
     # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
     possible_column_headers = ('Spread', 'Min', 'Max', 'DataReliability', 'TemporalCorrelation',
@@ -635,9 +635,11 @@ def estimate_suppressed_data(df, sector_column, naics_level, sourcename):
                             right_on=['Class', 'Compartment', 'FlowType', 'FlowName',
                                       'Location', 'LocationSystem', 'Unit', 'Year', 's_tmp'],
                             how='right')
+            # drop any rows where flowamount is none
+            df_m = df_m[~df_m['FlowAmount'].isna()]
             # calculate estimated flows by subtracting the flow
             # amount already allocated from total flow of
-            # sector one level up and divide by number of sectors with suppresed data
+            # sector one level up and divide by number of sectors with suppressed data
             df_m.loc[:, 'FlowAmount'] = \
                 (df_m['FlowAmount'] - df_m['alloc_flow']) / df_m['sector_count']
             # only keep the suppressed sector subset activity columns
