@@ -13,11 +13,11 @@ Last updated:
 import os
 import pandas as pd
 import numpy as np
-import flowsa
-from flowsa.flowbyfunctions import assign_fips_location_system, load_fba_w_standardized_units
-from flowsa.common import externaldatapath, flow_by_activity_fields,\
-    fba_fill_na_dict
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba    
+from flowsa.flowbyfunctions import assign_fips_location_system, \
+    load_fba_w_standardized_units
+from flowsa.common import externaldatapath
+from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
+from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 
 
 def produced_by(entry):
@@ -89,7 +89,8 @@ def calR_parse(**kwargs):
         if os.path.isfile(os.path.join(externaldatapath, entry)):
             if "California_Commercial_bySector_2014" in entry and "Map" not in entry:
                 data["ActivityProducedBy"] = produced_by(entry)
-                dataframe = pd.read_csv(externaldatapath + "/" + entry, header=0, dtype=str)
+                dataframe = pd.read_csv(externaldatapath + "/" + entry,
+                                        header=0, dtype=str)
                 for col in dataframe.columns:
                     if "Percent" in str(col):
                         del dataframe[col]
@@ -111,7 +112,8 @@ def keep_generated_quantity(fba, **kwargs):
     """
     Function to clean CalRecycles FBA to remove quantities not assigned as Generated
     :param fba_df: df, FBA format
-    :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in 
+        the FBA method yaml
     :return: df, modified CalRecycles FBA
     """
     fba = fba[fba['Description']=='Generated']
@@ -130,11 +132,11 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     bls = bls[bls['FlowName'] == 'Number of employees']
     # clean df
     bls = clean_bls_qcew_fba(bls)
-    bls = flowsa.mapping.add_sectors_to_flowbyactivity(bls)
+    bls = add_sectors_to_flowbyactivity(bls)
     
     # Subset BLS dataset
     sector_list = list(filter(None, fbs['SectorProducedBy'].unique()))
-    bls = flowsa.mapping.get_fba_allocation_subset(bls, 'BLS_QCEW', sector_list)
+    bls = get_fba_allocation_subset(bls, 'BLS_QCEW', sector_list)
     bls = bls.rename(columns={'FlowAmount':'Employees'})
     bls = bls[['Employees','Location','Year','SectorProducedBy']]
     
