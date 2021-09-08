@@ -15,7 +15,6 @@ https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019JG005110
 
 Years = 2002, 2007, 2012
 """
-SPAN_YEARS = "2002"
 
 
 def ni_parse(**kwargs):
@@ -31,51 +30,74 @@ def ni_parse(**kwargs):
 
     # Read directly into a pandas df
     df_raw_2002 = pd.io.excel.read_excel(externaldatapath + "jgrg21492-sup-0002-2019jg005110-ds01.xlsx", sheet_name='2002')
-  #  df_raw_2007 = pd.io.excel.read_excel(externaldatapath + "jgrg21492-sup-0002-2019jg005110-ds01.xlsx",
-   #                                      sheet_name='2007')
-  #  df_raw_2012 = pd.io.excel.read_excel(externaldatapath + "jgrg21492-sup-0002-2019jg005110-ds01.xlsx",
- #                                        sheet_name='2012')
+    df_raw_2007 = pd.io.excel.read_excel(externaldatapath + "jgrg21492-sup-0002-2019jg005110-ds01.xlsx",
+                                         sheet_name='2007')
+    df_raw_2012 = pd.io.excel.read_excel(externaldatapath + "jgrg21492-sup-0002-2019jg005110-ds01.xlsx",
+                                         sheet_name='2012')
     df_raw_legend = pd.io.excel.read_excel(externaldatapath + "jgrg21492-sup-0002-2019jg005110-ds01.xlsx", sheet_name='Legend')
-    if args['year']
-    for col_name in df_raw_2002.columns:
-        for i in range(len(df_raw_legend)):
-            if col_name == df_raw_legend.loc[i, "HUC8_1"]:
-                df_raw_2002 = df_raw_2002.rename(columns={col_name: df_raw_legend.loc[i, "HUC8 CODE"]})
-    # use "melt" fxn to convert colummns into rows
-    df = df_raw_2002.melt(id_vars=["HUC8_1"],
-                 var_name="ActivityProducedBy",
-                 value_name="FlowAmount")
+    if args['year'] == '2002':
+        for col_name in df_raw_2002.columns:
+            for i in range(len(df_raw_legend)):
+                if col_name == df_raw_legend.loc[i, "HUC8_1"]:
+                    df_raw_2002 = df_raw_2002.rename(columns={col_name: df_raw_legend.loc[i, "HUC8_1"]})
+        # use "melt" fxn to convert colummns into rows
+        df = df_raw_2002.melt(id_vars=["HUC8_1"],
+                     var_name="ActivityProducedBy",
+                     value_name="FlowAmount")
+    if args['year'] == '2007':
+        for col_name in df_raw_2007.columns:
+            for i in range(len(df_raw_legend)):
+                if col_name == df_raw_legend.loc[i, "HUC8_1"]:
+                    df_raw_2007 = df_raw_2007.rename(columns={col_name: df_raw_legend.loc[i, "HUC8_1"]})
+        # use "melt" fxn to convert colummns into rows
+        df = df_raw_2007.melt(id_vars=["HUC8_1"],
+                     var_name="ActivityProducedBy",
+                     value_name="FlowAmount")
+    if args['year'] == '2012':
+        for col_name in df_raw_2012.columns:
+            for i in range(len(df_raw_legend)):
+                if col_name == df_raw_legend.loc[i, "HUC8_1"]:
+                    df_raw_2012 = df_raw_2012.rename(columns={col_name: df_raw_legend.loc[i, "HUC8_1"]})
+        # use "melt" fxn to convert colummns into rows
+        df = df_raw_2012.melt(id_vars=["HUC8_1"],
+                              var_name="ActivityProducedBy",
+                              value_name="FlowAmount")
+
+    df = df.rename(columns={"HUC8_1": "Location"})
 
 
+    for i in range(len(df)):
 
+        apb = df.loc[i, "ActivityProducedBy"]
+        apb_str = str(apb)
+        if '(' in apb_str:
+            apb_split = apb_str.split('(')
+            activity = apb_split[0]
+            unit_str = apb_split[1]
+            unit_list = unit_str.split(')')
+            unit = unit_list[0]
+            df.loc[i, "ActivityProducedBy"] = activity
+            df.loc[i, "Units"] = unit
+        else:
+            df.loc[i, "Units"] = None
 
+        if 'N2' in apb_str:
+            df.loc[i, "FlowName"] = 'N2'
+        elif 'NOx' in apb_str:
+            df.loc[i, "FlowName"] = 'NOx'
+        elif 'N2O' in apb_str:
+            df.loc[i, "FlowName"] = 'N2O'
+        else:
+            df.loc[i, "FlowName"] = 'Nitrogen'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    df = df[df['Year'] == args['year']]
-    # hardcode data
-    df["Class"] = "Money"
-    df["FlowType"] = "TECHNOSPHERE_FLOW"
-    df['Description'] = 'BEA_2012_Detail_Code'
-    df['FlowName'] = 'Gross Output'
-    df["SourceName"] = "BEA_GDP_GrossOutput"
-    df["Location"] = US_FIPS
-    df['LocationSystem'] = "FIPS_2015"  # state FIPS codes have not changed over last decade
-    df["Unit"] = "USD"
-    df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5 # tmp
-
+        if 'emissions' in apb_str:
+            df.loc[i, "Compartment "] = "air"
+        else:
+            df.loc[i, "Compartment "] = "ground"
+    df["Class"] = "Chemicals"
+    df["SourceName"] = "EPA_NI"
+    df["LocationSystem"] = 'HUC'
+    df["Year"] = str(args["year"])
     return df
 
 

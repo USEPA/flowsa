@@ -27,93 +27,87 @@ def pi_call(**kwargs):
     """TODO."""
     # load arguments necessary for function
     url = kwargs['url']
-    usgs_response = kwargs['r']
+    response = kwargs['r']
     args = kwargs['args']
     """Calls for the years 2002, 2007, and 2012"""
-    df_raw_data_02 = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='2002')
-    df_raw_data_07 = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='2007')
-    df_raw_data_12 = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='2012')
+    df_legend = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='Legend')
+    df_legend = pd.DataFrame(df_legend.loc[0:18]).reindex()
+    df_legend.columns = ["HUC_8", "HUC8 CODE"]
+    if args['year'] == '2002':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2002')
+        df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition', 'livestock_Waste_2007': 'livestock_Waste',
+                                        'livestock_demand_2007': 'livestock_demand',
+                                        'livestock_production_2007': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
+                                        'Surplus_2002': 'surplus'})
+    elif args['year'] == '2007':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2007')
+        df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition', 'Crop_removal_2007': 'Crop_removal',
+                                        'livestock_Waste_2007': 'livestock_Waste',
+                                        'livestock_demand_2007': 'livestock_demand',
+                                        'livestock_production_2007': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
+                                        'Surplus_2007': 'surplus'})
+    else:
+       df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2012')
+       df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition',  'Crop_removal_2012': 'Crop_removal',
+           'livestock_Waste_2012': 'livestock_Waste', 'livestock_demand_2012': 'livestock_demand',
+           'livestock_production_2012': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
+           'Surplus_2012': 'surplus'})
 
+    for col_name in df_raw.columns:
+        for i in range(len(df_legend)):
+            if '_20' in df_legend.loc[i, "HUC_8"]:
+                legend_str = str(df_legend.loc[i, "HUC_8"])
+                list = legend_str.split('_20')
+                df_legend.loc[i, "HUC_8"] = list[0]
 
+            if col_name == df_legend.loc[i, "HUC_8"]:
+                df_raw = df_raw.rename(columns={col_name: df_legend.loc[i, "HUC8 CODE"]})
+    df_des = df_raw.filter(['HUC8 CODE', 'State Name'])
+    df_raw = df_raw.drop(columns=['State Name', 'State FP Code'])
 
+    # use "melt" fxn to convert colummns into rows
+    df = df_raw.melt(id_vars=["HUC8 CODE"],
+                          var_name="ActivityProducedBy",
+                          value_name="FlowAmount")
 
-
-
-
-
-
-
-
-
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='2012')
-
-
-
-
-    #df_data_02 pd.DataFrame(df_raw_data_02.loc[1:7]).reindex()
-    #df_data_07
-    #df_data_12
-    df_data_1 = pd.DataFrame(df_raw_data.loc[4:7]).reindex()
-    df_data_1 = df_data_1.reset_index()
-    del df_data_1["index"]
-
-    df_data_2 = pd.DataFrame(df_raw_data.loc[12:15]).reindex()
-    df_data_2 = df_data_2.reset_index()
-    del df_data_2["index"]
-
-    if len(df_data_1. columns) == 13:
-        df_data_1.columns = ["Production", "space_1", "Unit", "space_6", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
-        df_data_2.columns = ["Production", "space_1", "Unit", "space_6", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
-
-    col_to_use = ["Production"]
-    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
-    for col in df_data_2.columns:
-        if col not in col_to_use:
-            del df_data_2[col]
-            del df_data_1[col]
-
-    frames = [df_data_1, df_data_2]
-    df_data = pd.concat(frames)
-    df_data = df_data.reset_index()
-    del df_data["index"]
-    return df_data
+    df = df.merge(df_des, left_on='HUC8 CODE', right_on='HUC8 CODE')
+    df = df.rename(columns={"HUC8 CODE": "Location"})
+    df = df.rename(columns={"State Name": "Description"})
+    return df
 
 
 def pi_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     data = {}
     row_to_use = ["Production2", "Production", "Imports for consumption"]
-    dataframe = pd.DataFrame()
-    name = ""
+    df = pd.DataFrame()
+
+
 
     for df in dataframe_list:
-        for index, row in df.iterrows():
-            if df.iloc[index]["Production"].strip() == "Imports for consumption":
-                product = "imports"
-            elif df.iloc[index]["Production"].strip() == "Production2" or df.iloc[index]["Production"].strip() == "Production":
-                product = "production"
-            if df.iloc[index]["Production"].strip() == "Mineral concentrates:":
-                name = "Titanium"
-            elif df.iloc[index]["Production"].strip() == "Titanium dioxide pigment:":
-                name = "Titanium dioxide"
+        for i in range(len(df)):
+            apb = df.loc[i, "ActivityProducedBy"]
+            apb_str = str(apb)
+            if '(' in apb_str:
+                apb_split = apb_str.split('(')
+                activity = apb_split[0].strip()
+                unit_str = apb_split[1]
+                unit_list = unit_str.split(')')
+                unit = unit_list[0]
+                df.loc[i, "ActivityProducedBy"] = activity
+                df.loc[i, "ActivityConsumedBy"] = None
+                df.loc[i, "Units"] = unit
+                if activity == 'Livestock Waste recovered and applied to fields':
+                    df.loc[i, "ActivityProducedBy"] = None
+                    df.loc[i, "ActivityConsumedBy"] = activity
+            else:
+                df.loc[i, "Units"] = None
+        df["Compartment "] = "ground"
+        df["Class"] = "Chemicals"
+        df["SourceName"] = "EPA_NI"
+        df["LocationSystem"] = 'HUC'
+        df["Year"] = str(args["year"])
+        df["FlowName"] = 'Phosphorus'
 
-
-            if df.iloc[index]["Production"].strip() in row_to_use:
-                data = usgs_myb_static_varaibles()
-                data["SourceName"] = args["source"]
-                data["Year"] = str(args["year"])
-                data["Unit"] = "Metric Tons"
-                data['FlowName'] = name + " " + product
-                data["Description"] = name
-                data["ActivityProducedBy"] = name
-                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
-                if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
-                    data["FlowAmount"] = str(0)
-                else:
-                    data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
-    return dataframe
+    return df
 

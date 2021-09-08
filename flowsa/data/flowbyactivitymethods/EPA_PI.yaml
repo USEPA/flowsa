@@ -4,8 +4,7 @@ source_url: https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?do
 bib_id: EPA_PI
 format: excel
 url:
-  base_url: https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1029%2F2020JG005684&file=2020JG005684-sup-0002-Data+Set+SI-S01.xlsx
-allow_http_request_cookies: yes
+  base_url: https://pasteur.epa.gov/uploads/10.23719/1504278/Master_Inventory_Final_v2.xlsx
 url_replace_fxn: pi_url_helper
 call_response_fxn: pi_call
 parse_response_fxn: pi_parse
