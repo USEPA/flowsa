@@ -24,7 +24,6 @@ source_names:
         - "Construction spending"
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
