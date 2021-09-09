@@ -37,7 +37,8 @@ from flowsa.fbs_allocation import direct_allocation_method, function_allocation_
 from flowsa.sectormapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
-    aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
+    aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn, \
+    update_geoscale
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.validation import allocate_dropped_sector_data,\
     compare_activity_to_sector_flowamounts, \
@@ -292,6 +293,10 @@ def main(**kwargs):
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)
         else:
+            if 'clean_fbs_df_fxn' in v:
+                flows = dynamically_import_fxn(v["clean_fbs_df_fxn_source"],
+                                               v["clean_fbs_df_fxn"])(flows)
+            flows = update_geoscale(flows, method['target_geoscale'])
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append %s to FBS list", k)
             # ensure correct field datatypes and add any missing fields
