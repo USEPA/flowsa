@@ -208,9 +208,20 @@ def clean_NEI_fba(fba):
     """
     fba = remove_duplicate_NEI_flows(fba)
     fba = drop_GHGs(fba)
-    # Remove the portion of PM10 that is PM2.5 to eliminate double counting and rename flow
+    # Remove the portion of PM10 that is PM2.5 to eliminate double counting,
+    # rename FlowName and Flowable, and update UUID
     fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)', ['PM2.5 Primary (Filt + Cond)'])
-    fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'), 'FlowName'] = 'PM10-PM2.5'
+    # # link to FEDEFL
+    # import fedelemflowlist
+    # mapping = fedelemflowlist.get_flowmapping('NEI')
+    # PM_df = mapping[['TargetFlowName',
+    #                  'TargetFlowUUID']][mapping['SourceFlowName']=='PM10-PM2.5']
+    # PM_list = PM_df.values.flatten().tolist()
+    PM_list = ['Particulate matter, > 2.5μm and ≤ 10μm',
+               'a320e284-d276-3167-89b3-19d790081c08']
+    fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
+            ['FlowName','Flowable','FlowUUID']] = ['PM10-PM2.5',
+                                                   PM_list[0], PM_list[1]]
     return fba
 
 
