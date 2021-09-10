@@ -9,6 +9,7 @@ import io
 import zipfile
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import convert_fba_unit
 
 
 def epa_nei_url_helper(**kwargs):
@@ -129,6 +130,10 @@ def epa_nei_global_parse(**kwargs):
                                    'Unit',
                                    'Description']), 1, inplace=True)
 
+    # to align with other processed NEI data (Point from StEWI), units are
+    # converted during FBA creation instead of maintained
+    df = convert_fba_unit(df)
+
     # add hardcoded data
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Class'] = "Chemicals"
@@ -243,7 +248,8 @@ def drop_GHGs(df):
     :param df: df, FBA format
     :return: df
     """""
-    # Flow names reflect source data prior to FEDEFL mapping
+    # Flow names reflect source data prior to FEDEFL mapping, using 'FlowName'
+    # instead of 'Flowable'
     flowlist = [
         'Carbon Dioxide',
         'Methane',
@@ -263,7 +269,8 @@ def drop_pesticides(df):
     :param df: df, FBA format
     :return: df
     """
-    # Flow names reflect source data prior to FEDEFL mapping
+    # Flow names reflect source data prior to FEDEFL mapping, using 'FlowName'
+    # instead of 'Flowable'
     flowlist = [
         '2,4-Dichlorophenoxy Acetic Acid',
         'Captan',
