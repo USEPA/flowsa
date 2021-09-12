@@ -834,7 +834,7 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     import flowsa
 
     # load remote file
-    df1 = flowsa.getFlowBySector(fbs1_load).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
+    df1 = flowsa.getFlowBySector(fbs1_load, download_if_missing=True).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
     # load local file
     df2 = flowsa.getFlowBySector(fbs2_load).rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
     # compare df
@@ -848,7 +848,8 @@ def compare_FBS_results(fbs1_load, fbs2_load):
                     how='outer')
     df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs1'] - df_m['FlowAmount_fbs2'])
     df_m = df_m.assign(Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fbs1']) * 100)
-    df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
+    df_m = df_m[df_m['FlowAmount_diff'].apply(
+        lambda x: round(abs(x), 2) != 0)].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
     if len(df_m) == 0:
         vLog.debug('No differences between dataframes')
