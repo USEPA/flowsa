@@ -833,20 +833,22 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     """
     import flowsa
 
-    # load remote file
-    df1 = flowsa.getFlowBySector(fbs1_load, download_if_missing=True).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
-    # load local file
+    # load first file (must be saved locally)
+    df1 = flowsa.getFlowBySector(fbs1_load).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
+    df1 = replace_strings_with_NoneType(df1)
+    # load second file (must be saved locally)
     df2 = flowsa.getFlowBySector(fbs2_load).rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
+    df2 = replace_strings_with_NoneType(df2)
     # compare df
     merge_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
-       'SectorSourceName', 'Context', 'Location', 'LocationSystem',
-       'Unit', 'FlowType', 'Year', 'MetaSources']
+                  'SectorSourceName', 'Context', 'Location', 'LocationSystem',
+                  'Unit', 'FlowType', 'Year', 'MetaSources']
     # check units
     compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
                     df2[merge_cols + ['FlowAmount_fbs2']],
                     how='outer')
-    df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs1'] - df_m['FlowAmount_fbs2'])
+    df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2'] - df_m['FlowAmount_fbs1'])
     df_m = df_m.assign(Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fbs1']) * 100)
     df_m = df_m[df_m['FlowAmount_diff'].apply(
         lambda x: round(abs(x), 2) != 0)].reset_index(drop=True)
