@@ -8,6 +8,8 @@ import shutil
 import sys
 import os
 import logging
+from pathlib import Path
+
 import yaml
 import requests
 import requests_ftp
@@ -165,15 +167,16 @@ def load_api_key(api_source):
     :return: the users API key as a string
     """
     # create directory if missing
-    os.makedirs(outputpath + '/API_Keys', exist_ok=True)
+    api_keys_path = Path(outputpath) / 'API_Keys'
+    api_keys_path.mkdir(exist_ok=True)
     # key path
-    keyfile = outputpath + '/API_Keys/' + api_source + '_API_KEY.txt'
+    keyfile = str(api_keys_path / (api_source + '_API_KEY.txt'))
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
-            key = keyfilecontents.read()
+            key = keyfilecontents.read().strip()
     except IOError:
-        log.error("Key file not found in 'API_Keys' directory. See github wiki for help"
+        log.error(f"Key file {keyfile} not found in 'API_Keys' directory. See github wiki for help"
                   "https://github.com/USEPA/flowsa/wiki/GitHub-Contributors#api-keys")
     return key
 
