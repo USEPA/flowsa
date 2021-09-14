@@ -824,11 +824,12 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     return df
 
 
-def compare_FBS_results(fbs1_load, fbs2_load):
+def compare_FBS_results(fbs1_load, fbs2_load, ignore_metasources=False):
     """
     Compare a parquet on Data Commons to a parquet stored locally
     :param fbs1_load: df, fbs format
     :param fbs2_load: df, fbs format
+    :param ignore_metasources: bool, True to compare fbs without matching metasources
     :return: df, comparison of the two dfs
     """
     import flowsa
@@ -843,6 +844,7 @@ def compare_FBS_results(fbs1_load, fbs2_load):
     merge_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
                   'SectorSourceName', 'Context', 'Location', 'LocationSystem',
                   'Unit', 'FlowType', 'Year', 'MetaSources']
+    if ignore_metasources: merge_cols.remove('MetaSources')
     # check units
     compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
