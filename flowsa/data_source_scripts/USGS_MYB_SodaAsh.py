@@ -91,21 +91,15 @@ def soda_call(**kwargs):
     response_load = kwargs['r']
 
     df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
-                                         sheet_name='T4')
-    df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
-    df_data = df_data.reset_index()
-    del df_data["index"]
-    df_data.columns = ["NAICS code", "space_1", "End use", "space_2",
-                       "2009", "space_3", "First quarter", "space_4",
-                       "Second quarter", "space_5", "Third quarter",
-                       "space_6", "Fourth quarter", "space_7", "Total"]
-    for col in df_data.columns:
-        if "space_" in str(col):
-            del df_data[col]
-        elif "quarter" in str(col):
-            del df_data[col]
-        elif "2009" in str(col):
-            del df_data[col]
+                                sheet_name='T4')
+    if kwargs['args']['year'] == '2017':
+        df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
+        df_data = df_data.iloc[:, [0, 2, 22]]
+    else:
+        df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
+        df_data = df_data.iloc[:, [0, 2, 14]]
+    df_data = df_data.reset_index(drop=True)
+    df_data.columns = ["NAICS code", "End use", "Total"]
     return df_data
 
 
