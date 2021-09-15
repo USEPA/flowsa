@@ -433,6 +433,13 @@ def calculate_net_public_supply(df_load):
                       'counting with rows of "Public Supply deliveries to"')
     calculate_flowamount_diff_between_dfs(df1, df1_sub)
 
+    # drop county level values because cannot use county data
+    vLogDetailed.info('Dropping county level public supply withdrawals because'
+                      'will end up with negative values due to instances of water '
+                      'deliveries coming from surrounding counties')
+    df1_sub = df1_sub[df1_sub['Location'].apply(
+        lambda x: x[2:6] == '000')].reset_index(drop=True)
+
     # df of ps delivered and ps withdrawn and us total
     df_d = df1_sub[df1_sub[fba_activity_fields[0]] == 'Public Supply']
     df_w = df1_sub[df1_sub[fba_activity_fields[1]] == 'Public Supply']
@@ -465,28 +472,23 @@ def calculate_net_public_supply(df_load):
     df_w_modified.loc[:, 'FlowAmount'] = df_w_modified['FlowAmount'] - \
                                          (df_w_modified['FlowRatio'] *
                                           df_w_modified['DomesticDeliveries'])
-    # drop county level values because cannot use county data
-    df_w_modified_clean = df_w_modified[df_w_modified['Location'].apply(
-        lambda x: x[2:6] == '000')].reset_index(drop=True)
-    vLogDetailed.info('Dropping county level public supply withdrawals because'
-                      'will end up with negative values due to instances of water '
-                      'deliveries coming from surrounding counties')
-    calculate_flowamount_diff_between_dfs(df_w_modified, df_w_modified_clean)
 
-    net_ps = df_w_modified_clean.drop(columns=["FlowTotal", "DomesticDeliveries"])
+    net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
 
     # compare units
     compare_df_units(df_d, net_ps)
-    # because assuming domestic is all fresh, change flow name.
+    # because assuming domestic is all fresh, drop flowname/flowable/Compartment/context
+    # and instead use those column data from the net_ps df
+    df_d_modified = df_d.drop(columns=['FlowName', 'Flowable', 'Compartment',
+                                       'Context', 'FlowUUID'])
     # Also allocate to ground/surface from state ratios
-    df_d_modified = pd.merge(df_d, net_ps[['Compartment', 'Location', 'FlowRatio']],
+    df_d_modified = pd.merge(df_d_modified, net_ps[['FlowName', 'Flowable', 'Compartment',
+                                           'Context', 'FlowUUID', 'Location', 'FlowRatio']],
                              how='left',
                              left_on='Location',
                              right_on='Location')
     df_d_modified.loc[:, 'FlowAmount'] = df_d_modified['FlowAmount'] * df_d_modified['FlowRatio']
-    df_d_modified.loc[:, 'FlowName'] = 'fresh'
-    df_d_modified = df_d_modified.rename(columns={"Compartment_y": "Compartment"})
-    df_d_modified = df_d_modified.drop(columns=["Compartment_x", "FlowRatio"])
+    df_d_modified = df_d_modified.drop(columns=["FlowRatio"])
 
     net_ps = net_ps.drop(columns=["FlowRatio"])
 

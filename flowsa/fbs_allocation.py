@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, log, \
-    fba_mapped_default_grouping_fields, fba_wsec_default_grouping_fields
+    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields
 from flowsa.validation import allocate_dropped_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
@@ -318,7 +318,7 @@ def allocation_helper(df_w_sector, attr, method, v):
                                                   'Denominator', 'FlowAmountRatio'])
         # run sector aggregation
         modified_fba_allocation = sector_aggregation(modified_fba_allocation,
-                                                     fba_mapped_default_grouping_fields)
+                                                     fba_mapped_wsec_default_grouping_fields)
 
     # drop rows of 0
     modified_fba_allocation =\

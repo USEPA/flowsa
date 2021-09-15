@@ -18,7 +18,7 @@ from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-PKG_VERSION_NUMBER = '0.3'
+PKG_VERSION_NUMBER = '0.3.1'
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -448,6 +448,37 @@ flow_by_activity_wsec_fields = \
      'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}]
      }
 
+flow_by_activity_mapped_wsec_fields = \
+    {'Class': [{'dtype': 'str'}, {'required': True}],
+     'SourceName': [{'dtype': 'str'}, {'required': True}],
+     'FlowName': [{'dtype': 'str'}, {'required': True}],
+     'Flowable': [{'dtype': 'str'}, {'required': True}],
+     'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+     'Unit': [{'dtype': 'str'}, {'required': True}],
+     'FlowType': [{'dtype': 'str'}, {'required': True}],
+     'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'Compartment': [{'dtype': 'str'}, {'required': False}],
+     'Context': [{'dtype': 'str'}, {'required': False}],
+     'Location': [{'dtype': 'str'}, {'required': True}],
+     'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+     'Year': [{'dtype': 'int'}, {'required': True}],
+     'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+     'Spread': [{'dtype': 'float'}, {'required': False}],
+     'DistributionType': [{'dtype': 'str'}, {'required': False}],
+     'Min': [{'dtype': 'float'}, {'required': False}],
+     'Max': [{'dtype': 'float'}, {'required': False}],
+     'DataReliability': [{'dtype': 'float'}, {'required': True}],
+     'DataCollection': [{'dtype': 'float'}, {'required': True}],
+     'Description': [{'dtype': 'str'}, {'required': True}],
+     'FlowUUID': [{'dtype': 'str'}, {'required': True}],
+     'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
+     'ProducedBySectorType': [{'dtype': 'str'}, {'required': False}],
+     'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}]
+     }
+
 # A list of activity fields in each flow data format
 activity_fields = {'ProducedBy': [{'flowbyactivity': 'ActivityProducedBy'},
                                   {'flowbysector': 'SectorProducedBy'}],
@@ -500,6 +531,7 @@ fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
 fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_fields)
+fba_mapped_wsec_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_wsec_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 fbs_grouping_fields_w_activities = fbs_default_grouping_fields + \
                                    (['ActivityProducedBy', 'ActivityConsumedBy'])
