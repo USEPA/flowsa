@@ -15,7 +15,6 @@ FLOWSA
 
 Years = 2002, 2007, 2012
 """
-SPAN_YEARS = "2002"
 
 def pi_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
