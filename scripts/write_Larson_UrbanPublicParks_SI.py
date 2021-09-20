@@ -26,6 +26,6 @@ if __name__ == '__main__':
 
     response = make_http_request(csv_load)
     # Read directly into a pandas df
-    raw_df = pd.io.excel.read_excel(io.BytesIO(response.content)).dropna().reset_index(drop=True)
+    raw_df = pd.read_excel(io.BytesIO(response.content)).dropna().reset_index(drop=True)
     # save data to csv
     raw_df.to_csv(datapath + "Larson_UrbanPublicParks_SI.csv", index=False)

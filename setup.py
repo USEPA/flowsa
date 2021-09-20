@@ -1,25 +1,29 @@
+"""
+Setup for flowsa package
+"""
+
 from setuptools import setup
 
 setup(
     name='flowsa',
-    version='0.2.1',
+    version='0.3.1',
     packages=['flowsa'],
     package_dir={'flowsa': 'flowsa'},
     package_data={'flowsa': [
         "data/*.*", "output/*.*"]},
     include_package_data=True,
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.7#egg=fedelemflowlist',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.8#egg=fedelemflowlist',
         'esupy @ git+https://github.com/USEPA/esupy@v0.1.7#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories@v0.9.8#egg=StEWI',
-        'pandas>=1.1.0',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories@v0.10.0#egg=StEWI',
+        'pandas>=1.3.2',
         'pip>=9',
         'setuptools>=41',
         'pyyaml>=5.3',
         'requests>=2.22.0',
         'appdirs>=1.4.3',
         'pycountry>=19.8.18',
-        'xlrd>=1.2.0',
+        'xlrd>=2.0.1',
         'openpyxl>=3.0.7',
         'requests_ftp==0.3.1',
         'tabula-py>=2.1.1',
@@ -38,5 +42,6 @@ setup(
         "Programming Language :: Python :: 3.x",
         "Topic :: Utilities",
     ],
-    description='Complies and provides a standardized list of elementary flows and flow mappings for life cycle assessment data'
+    description='Complies and provides a standardized list of elementary flows and '
+                'flow mappings for life cycle assessment data'
 )
