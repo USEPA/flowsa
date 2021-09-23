@@ -15,6 +15,32 @@ FLOWSA
 
 Years = 2002, 2007, 2012
 """
+def name_and_unit_split(df_legend):
+    for i in range(len(df_legend)):
+        apb = df_legend.loc[i, "name"]
+        apb_str = str(apb)
+        if '(' in apb_str:
+            apb_split = apb_str.split('(')
+            activity = apb_split[0].strip()
+            unit_str = apb_split[1]
+            unit_list = unit_str.split(')')
+            unit = unit_list[0]
+            df_legend.loc[i, "ActivityProducedBy"] = activity
+            df_legend.loc[i, "ActivityConsumedBy"] = None
+            df_legend.loc[i, "Unit"] = unit
+        else:
+            df_legend.loc[i, "Unit"] = None
+            df_legend.loc[i, "ActivityProducedBy"] = apb_str
+            df_legend.loc[i, "ActivityConsumedBy"] = None
+
+        if apb_str == 'Livestock Waste recovered and applied to fields':
+            df_legend.loc[i, "ActivityProducedBy"] = None
+            df_legend.loc[i, "ActivityConsumedBy"] = activity
+        if 'emissions' in apb_str:
+            df_legend.loc[i, "Compartment "] = "air"
+        else:
+            df_legend.loc[i, "Compartment "] = "ground"
+    return df_legend
 
 def pi_url_helper(build_url, config, args):
     """Used to substitute in components of usgs urls"""
@@ -66,12 +92,16 @@ def pi_call(**kwargs):
 
     # use "melt" fxn to convert colummns into rows
     df = df_raw.melt(id_vars=["HUC8 CODE"],
-                          var_name="ActivityProducedBy",
-                          value_name="FlowAmount")
+                     var_name="name",
+                     value_name="FlowAmount")
 
+    df_legend = df_legend.rename(columns={"HUC8 CODE": "name"})
+    df_legend = name_and_unit_split(df_legend)
+
+    df = pd.merge(df, df_legend, on="name")
+    df = df.drop(columns=["HUC_8", "name"])
     df = df.merge(df_des, left_on='HUC8 CODE', right_on='HUC8 CODE')
-    df = df.rename(columns={"HUC8 CODE": "Location"})
-    df = df.rename(columns={"State Name": "Description"})
+    df = df.rename(columns={"HUC8 CODE": "Location", "State Name": "Description"})
     return df
 
 
@@ -80,33 +110,11 @@ def pi_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Production2", "Production", "Imports for consumption"]
     df = pd.DataFrame()
-
-
-
     for df in dataframe_list:
-        for i in range(len(df)):
-            apb = df.loc[i, "ActivityProducedBy"]
-            apb_str = str(apb)
-            if '(' in apb_str:
-                apb_split = apb_str.split('(')
-                activity = apb_split[0].strip()
-                unit_str = apb_split[1]
-                unit_list = unit_str.split(')')
-                unit = unit_list[0]
-                df.loc[i, "ActivityProducedBy"] = activity
-                df.loc[i, "ActivityConsumedBy"] = None
-                df.loc[i, "Units"] = unit
-                if activity == 'Livestock Waste recovered and applied to fields':
-                    df.loc[i, "ActivityProducedBy"] = None
-                    df.loc[i, "ActivityConsumedBy"] = activity
-            else:
-                df.loc[i, "Units"] = None
-        df["Compartment "] = "ground"
         df["Class"] = "Chemicals"
         df["SourceName"] = "EPA_NI"
         df["LocationSystem"] = 'HUC'
         df["Year"] = str(args["year"])
         df["FlowName"] = 'Phosphorus'
-
     return df
 
