@@ -16,7 +16,8 @@ FLOWSA
 /
 
 
-Years = 2002, 2007, 2012
+Years = 2012
+Eliminated all columns with fraction in the title. 
 """
 
 def url_file(url):
@@ -73,9 +74,9 @@ def name_and_unit_split(df_legend):
             unit_list = unit_str.split('/')
             unit = unit_list[0]
             df_legend.loc[i, "name"] = activity
-            df_legend.loc[i, "Units"] = unit
+            df_legend.loc[i, "Unit"] = unit
         else:
-            df_legend.loc[i, "Units"] = None
+            df_legend.loc[i, "Unit"] = None
     return df_legend
 
 def name_replace(df_legend, df_raw):
@@ -133,10 +134,31 @@ def sparrow_call(**kwargs):
           '5d4192aee4b01d82ce8da477?f=__disk__c2%2F02%2F06%2Fc20206078520c5ec87394a3499eea073f472a27d',
           '5f8f1f1282ce06b040efc90e?f=__disk__f8%2Fb8%2Ff9%2Ff8b8f9bdc2a07f014ed6dced8feb2dd7bc63e056',
           '5d6e70e5e4b0c4f70cf635a1?f=__disk__fb%2Fdb%2F92%2Ffbdb9281872069b23bcd134a4c5fa1ddc7280b53']
+    comid_cap = ["5f8f1f1282ce06b040efc90e?f=__disk__8e%2F8e%2Fb8%2F8e8eb8203ea14ab19a45372919a0dbf667d033b2",
+                       "5f8f1f1282ce06b040efc90e?f=__disk__f8%2Fb8%2Ff9%2Ff8b8f9bdc2a07f014ed6dced8feb2dd7bc63e056"]
     url_file_name = url_file(url)
     legend = column_names(url_file_name)
-
     legend = name_and_unit_split(legend)
+
+    if url_file_name in ph:
+        chem_type = "Phosphorus"
+    else:
+        chem_type = "Nitrogen"
+
+    for i in range(len(legend)):
+        if "incremental" in legend.loc[i, "name"].lower():
+            legend.loc[i, "FlowName"] = chem_type + ' incremental'
+        elif "accumulated" in legend.loc[i, "name"].lower():
+            legend.loc[i, "FlowName"] = chem_type + ' accumulated'
+        elif "cumulated" in legend.loc[i, "name"].lower():
+            legend.loc[i, "FlowName"] = chem_type + ' cumulated'
+        elif "mean" in legend.loc[i, "name"].lower():
+            legend.loc[i, "FlowName"] = chem_type + ' mean'
+        elif "Total upstream watershed area" in legend.loc[i, "name"].lower():
+            legend.loc[i, "FlowName"] = chem_type + ' total'
+        else:
+            legend.loc[i, "FlowName"] = chem_type
+
 
     if "5d407318e4b01d82ce8d9b3c?f=__disk__2b%2F75%2F2b%2F2b752b0c5decf8e83c035d559a2688c481bb0cfe" in url:
         df_raw = pd.read_csv(io.StringIO(text.decode('utf-8')), sep='\t')
@@ -147,39 +169,75 @@ def sparrow_call(**kwargs):
     legend = legend.drop(columns=['label'])
     legend = legend.rename(columns={"name": "ActivityProducedBy"})
 
+    if url_file_name in comid_cap:
+        df_raw = df_raw.rename(columns={"COMID": "comid"})
 
-    if "5f8f1f1282ce06b040efc90e?f=__disk__f8%2Fb8%2Ff9%2Ff8b8f9bdc2a07f014ed6dced8feb2dd7bc63e056" in url:
-        # use "melt" fxn to convert colummns into rows
-        df = df_raw.melt(id_vars=["COMID"],
-                         var_name="ActivityProducedBy",
-                         value_name="FlowAmount")
-        df = df.rename(columns={"COMID": "Location"})
-    else:
-        # use "melt" fxn to convert colummns into rows
-        df = df_raw.melt(id_vars=["comid"],
-                              var_name="ActivityProducedBy",
-                              value_name="FlowAmount")
-        df = df.rename(columns={"comid": "Location"})
+    df_spread = pd.DataFrame()
+    df_no_spread = pd.DataFrame()
+    for column_name in df_raw.columns:
+       if "fraction" in column_name.lower() or "flux" in column_name.lower():
+            df_raw = df_raw.drop(columns=[column_name])
+       elif "standard error" in column_name.lower():
+           df_spread[column_name] = df_raw[column_name]
+           df_raw = df_raw.drop(columns=[column_name])
+    spread_coul = []
+    for cn in df_spread.columns:
+        if "Standard error for " in cn:
+            c_name = cn.split("Standard error for ")
+            df_spread = df_spread.rename(columns={cn: c_name[1].capitalize()})
+            spread_coul.append(c_name[1].capitalize())
+        else:
+            c_name = cn.split("standard error")
+            spread_coul.append(c_name[0].capitalize())
 
-        if url_file_name in ph:
-            df["FlowName"] = 'Phosphorus'
-        elif url_file_name in ni:
-            df["FlowName"] = 'Phosphorus'
+    for column_name in df_raw.columns:
+        if column_name not in spread_coul and column_name != "comid":
+            df_no_spread[column_name] = df_raw[column_name]
+            df_raw = df_raw.drop(columns=[column_name])
 
-        df = pd.merge(df, legend, on="ActivityProducedBy")
-    return df
+    df_no_spread["comid"] = df_raw["comid"]
+    df_spread["comid"] = df_raw["comid"]
+
+    # use "melt" fxn to convert colummns into rows
+    df = df_raw.melt(id_vars=["comid"],
+                          var_name="ActivityProducedBy",
+                          value_name="FlowAmount")
+    df = df.rename(columns={"comid": "Location"})
+
+    df_spread = df_spread.melt(id_vars=["comid"],
+                     var_name="spread_name",
+                     value_name="Spread")
+    df_spread = df_spread.rename(columns={"comid": "Location"})
+    df_spread = df_spread.rename(columns={"spread_name": "ActivityProducedBy"})
+    df_spread["MeasureofSpread"] = 'SE'
+
+    df_no_spread = df_no_spread.melt(id_vars=["comid"],
+                               var_name="ActivityProducedBy",
+                               value_name="FlowAmount")
+    df_no_spread = df_no_spread.rename(columns={"comid": "Location"})
+    df_no_spread = pd.merge(df_no_spread, legend, on="ActivityProducedBy")
+    df = pd.merge(df, legend, on="ActivityProducedBy")
+    df = pd.merge(df, df_spread, left_on=["ActivityProducedBy", "Location"], right_on=["ActivityProducedBy", "Location"])
+    dataframes = [df, df_no_spread]
+    df1 = pd.concat(dataframes)
+    df1.reset_index(drop=True)
+    return df1
 
 
 def sparrow_parse(dataframe_list, args):
     """Parsing the USGS data into flowbyactivity format."""
     df = pd.DataFrame()
+    dataframe = pd.DataFrame()
     for df in dataframe_list:
         df["Compartment "] = "ground"
         df["Class"] = "Chemicals"
         df["SourceName"] = "USGS_SPARROW"
         df["LocationSystem"] = 'HUC'
         df["Year"] = str(args["year"])
+        df["ActivityConsumedBy"] = None
+
+    dataframe = pd.concat(dataframe_list, ignore_index=True)
 
 
-    return df
+    return dataframe
 
