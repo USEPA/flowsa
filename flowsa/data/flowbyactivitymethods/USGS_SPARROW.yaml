@@ -1,0 +1,27 @@
+author: USGS
+source_name: USGS SPARROW
+source_url: https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1029%2F2020JG005684&file=2020JG005684-sup-0002-Data+Set+SI-S01.xlsx
+bib_id: USGS_SPARROW
+format: txt
+url:
+  base_url: https://www.sciencebase.gov/catalog/file/get/__txt__
+url_replace_fxn: sparrow_url_helper
+call_response_fxn: sparrow_call
+parse_response_fxn: sparrow_parse
+years:
+- 2012
+txt:
+- 5d407318e4b01d82ce8d9b3c?f=__disk__22%2F5c%2Fe3%2F225ce31141477eb0904f38f95f1d472bbe2a2a11
+- 5d407318e4b01d82ce8d9b3c?f=__disk__2b%2F75%2F2b%2F2b752b0c5decf8e83c035d559a2688c481bb0cfe
+- 5cbf5150e4b09b8c0b700df3?f=__disk__66%2F4f%2Ff2%2F664ff289064560bbce748082f7b34593dad49ca2
+- 5cbf5150e4b09b8c0b700df3?f=__disk__bf%2F73%2F1f%2Fbf731fdf4e984a5cf50c0f1a140cda366cb8c1d3
+- 5d4192aee4b01d82ce8da477?f=__disk__c2%2F02%2F06%2Fc20206078520c5ec87394a3499eea073f472a27d
+- 5d4192aee4b01d82ce8da477?f=__disk__b0%2Fb9%2F35%2Fb0b935021a47ccf57f7584cc7f14d82aacc491d1
+- 5f8f1f1282ce06b040efc90e?f=__disk__f8%2Fb8%2Ff9%2Ff8b8f9bdc2a07f014ed6dced8feb2dd7bc63e056
+- 5f8f1f1282ce06b040efc90e?f=__disk__8e%2F8e%2Fb8%2F8e8eb8203ea14ab19a45372919a0dbf667d033b2
+- 5d6e70e5e4b0c4f70cf635a1?f=__disk__fb%2Fdb%2F92%2Ffbdb9281872069b23bcd134a4c5fa1ddc7280b53
+- 5d6e70e5e4b0c4f70cf635a1?f=__disk__14%2Fc1%2F63%2F14c1636eef91529f548d5fe29ff3f426d3b4b996
+
+
+
+
