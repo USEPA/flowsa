@@ -18,7 +18,7 @@ from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-PKG_VERSION_NUMBER = '0.3.1'
+PKG_VERSION_NUMBER = '0.3.2'
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
