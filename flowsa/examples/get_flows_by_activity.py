@@ -24,22 +24,18 @@ def main():
     flowsa.seeAvailableFlowByModels('FBA')
 
     # Load all information for USDA Cropland
-    usda_cropland_fba_2017 = flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017)
+    fba_mecs = flowsa.getFlowByActivity(datasource="EIA_MECS_Land", year=2014)
 
     # only load state level data and save as csv
-    # set parameters
-    ds = "USGS_NWIS_WU"
-    year_fba = 2015
-    fc = 'Water'
-    geo_level_fba = 'state'
-    # load FBA
-    usgs_water_fba_2015 = \
-        flowsa.getFlowByActivity(datasource=ds, year=year_fba, flowclass=fc,
-                                 geographic_level=geo_level_fba).reset_index(drop=True)
-    # save output to csv
-    usgs_water_fba_2015.Location = \
-        usgs_water_fba_2015.Location.apply('="{}"'.format)  # maintain leading 0s in location col
-    usgs_water_fba_2015.to_csv(fbaoutputpath + ds + "_" + str(year_fba) + ".csv", index=False)
+    fba_usgs = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
+                                        year=2015,
+                                        flowclass='Water',
+                                        geographic_level='state'
+                                        ).reset_index(drop=True)
+
+    # save output to csv, maintain leading 0s in location col
+    fba_usgs.Location = fba_usgs.Location.apply('="{}"'.format)
+    fba_usgs.to_csv(f"{fbaoutputpath}USGS_NWIS_WU_2015.csv", index=False)
 
 
 if __name__ == "__main__":
