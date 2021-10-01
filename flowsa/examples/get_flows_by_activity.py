@@ -20,13 +20,13 @@ from flowsa.common import fbaoutputpath
 
 
 def main():
-    # see available FBA models
+    # see all datasources and years available in flowsa
     flowsa.seeAvailableFlowByModels('FBA')
 
-    # Load all information for USDA Cropland
+    # Load all information for EIA MECS Land
     fba_mecs = flowsa.getFlowByActivity(datasource="EIA_MECS_Land", year=2014)
 
-    # only load state level data and save as csv
+    # only load state level water data and save as csv
     fba_usgs = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
                                         year=2015,
                                         flowclass='Water',
