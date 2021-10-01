@@ -25,12 +25,14 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import log, vLog, flowbysectormethodpath, flow_by_sector_fields, \
+from flowsa.common import flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, load_source_catalog, \
-    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, \
-    paths, fba_activity_fields, rename_log_file, \
+    flow_by_sector_fields_w_activity, \
+    fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
     fbs_grouping_fields_w_activities, logoutputpath
+from flowsa.settings import log, vLog, flowbysectormethodpath, \
+    flowbysectoractivitysetspath, paths
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method

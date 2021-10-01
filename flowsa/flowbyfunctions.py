@@ -10,12 +10,13 @@ import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
-    get_county_FIPS, update_geoscale, log, load_source_catalog, \
+    get_county_FIPS, update_geoscale, load_source_catalog, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, \
-    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
-    find_true_file_path, flow_by_activity_mapped_fields, fba_mapped_default_grouping_fields
+    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, find_true_file_path, \
+    flow_by_activity_mapped_fields, fba_mapped_default_grouping_fields
+from flowsa.settings import datasourcescriptspath, log
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells, standardize_units
 

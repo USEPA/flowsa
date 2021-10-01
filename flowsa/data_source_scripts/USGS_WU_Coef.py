@@ -10,7 +10,8 @@ Data output manually saved as csv, "data/external_data/USGS_WU_Coef_Raw.csv"
 """
 
 import pandas as pd
-from flowsa.common import US_FIPS, externaldatapath
+from flowsa.common import US_FIPS
+from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 

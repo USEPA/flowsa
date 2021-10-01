@@ -6,8 +6,7 @@ Write the csv called on in flowbysectormethods yaml files for land use related t
 """
 
 import flowsa
-from flowsa.common import flowbysectoractivitysetspath
-
+from flowsa.settings import flowbysectoractivitysetspath
 
 # as_year = '2010'
 as_year = '2014'

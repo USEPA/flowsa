@@ -9,10 +9,11 @@ import os
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
-from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations_config, paths, log, \
+from flowsa.common import load_sourceconfig, \
+    load_values_from_literature_citations_config, log, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
     find_true_file_path, sourceconfigpath
+from flowsa.settings import outputpath, biboutputpath
 
 
 def generate_list_of_sources_in_fbs_method(methodname):
@@ -134,7 +135,7 @@ def generate_fbs_bibliography(methodname):
                         bib_list.append(db)
                 except KeyError:
                     log.exception('Missing information needed to create bib for %s, %s',
-                                source[0], source[1])
+                                  source[0], source[1])
                     continue
 
     # write out bibliography

@@ -8,8 +8,8 @@ Functions to allocate data using additional data sources
 import numpy as np
 import pandas as pd
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
-    fba_activity_fields, fbs_activity_fields, log, \
-    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields
+    fba_activity_fields, fbs_activity_fields, fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields
+from flowsa.settings import log
 from flowsa.validation import allocate_dropped_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \

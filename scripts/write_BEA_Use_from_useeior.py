@@ -48,7 +48,7 @@ CSV manually added to flowsa
 
 from rpy2.robjects.packages import importr
 from rpy2.robjects import pandas2ri
-from flowsa.common import datapath
+from flowsa.settings import datapath
 
 pandas2ri.activate()
 

@@ -5,137 +5,24 @@
 """Common variables and functions used across flowsa"""
 
 import shutil
-import sys
 import os
-import logging
 from pathlib import Path
-
 import yaml
 import requests
 import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
-from esupy.processed_data_mgmt import Paths, create_paths_if_missing
-from esupy.util import get_git_hash
-
-# set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-PKG_VERSION_NUMBER = '0.3.2'
-
-try:
-    MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
-except NameError:
-    MODULEPATH = 'flowsa/'
-
-datapath = MODULEPATH + 'data/'
-sourceconfigpath = datapath + 'flowbyactivitymethods/'
-crosswalkpath = datapath + 'activitytosectormapping/'
-flowbysectormethodpath = datapath + 'flowbysectormethods/'
-flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
-externaldatapath = datapath + 'external_data/'
-
-datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
-
-paths = Paths()
-paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
-outputpath = paths.local_path.replace('\\', '/') + '/'
-fbaoutputpath = outputpath + 'FlowByActivity/'
-fbsoutputpath = outputpath + 'FlowBySector/'
-biboutputpath = outputpath + 'Bibliography/'
-logoutputpath = outputpath + 'Log/'
-
-DEFAULT_DOWNLOAD_IF_MISSING = False
-
-# paths to scripts
-scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
-             '/scripts/'
-scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
+from esupy.processed_data_mgmt import create_paths_if_missing
+from flowsa.settings import datapath, outputpath, logoutputpath, sourceconfigpath, log
 
 
-# define 4 logs, one for general information, one for major validation logs that are
-# also included in the general info log, one for very specific validation that is only
-# included in the validation log, and a console printout that includes general and
-# validation, but not detailed validation
-create_paths_if_missing(logoutputpath)
-
-# format for logging .txt generated
-formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
-                              datefmt='%Y-%m-%d %H:%M:%S')
-
-# create loggers
-# general logger
-log = logging.getLogger('allLog')
-log.setLevel(logging.DEBUG)
-log.propagate=False
-# log.propagate=False
-# general validation logger
-vLog = logging.getLogger('validationLog')
-vLog.setLevel(logging.DEBUG)
-vLog.propagate=False
-# detailed validation logger
-vLogDetailed = logging.getLogger('validationLogDetailed')
-vLogDetailed.setLevel(logging.DEBUG)
-vLogDetailed.propagate=False
-
-# create handlers
-# create handler for overall logger
-log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
-log_fh.setFormatter(formatter)
-# create handler for general validation information
-vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
-vLog_fh.setFormatter(formatter)
-# create console handler
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.INFO)
-ch.setFormatter(formatter)
-
-# add handlers to various loggers
-# general logger
-log.addHandler(ch) # print to console
-log.addHandler(log_fh)
-vLog.addHandler(log_fh)
-# validation logger
-vLog.addHandler(ch) # print to console
-vLog.addHandler(vLog_fh)
-vLogDetailed.addHandler(vLog_fh)
-
-
-def rename_log_file(filename, fb_meta):
-    """
-    Rename the log file saved to local directory using df meta for df
-    :param filename: str, name of dataset
-    :param fb_meta: metadata for parquet
-    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
-    :return: modified log file name
-    """
-    # original log file name - all log statements
-    log_file = f'{logoutputpath}{"flowsa.log"}'
-    # generate new log name
-    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
-                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file already exists)
-    shutil.copy(log_file, new_log_name)
-    # original log file name - validation
-    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
-    # generate new log name
-    new_log_name = f'{logoutputpath}{filename}_v' \
-                   f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log'
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file already exists)
-    shutil.copy(log_file, new_log_name)
-
-# metadata
-PKG = "flowsa"
-GIT_HASH = get_git_hash()
-GIT_HASH_LONG = get_git_hash('long')
-
-# Common declaration of write format for package data products
-WRITE_FORMAT = "parquet"
+# Sets default Sector Source Name
+SECTOR_SOURCE_NAME = 'NAICS_2012_Code'
+flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
 
 US_FIPS = "00000"
+
 fips_number_key = {"national": 0,
                    "state": 2,
                    "county": 5}
@@ -149,11 +36,6 @@ sector_level_key = {"NAICS_2": 2,
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
 WITHDRAWN_KEYWORD = np.nan
-
-flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
-
-# Sets default Sector Source Name
-SECTOR_SOURCE_NAME = 'NAICS_2012_Code'
 
 
 def load_api_key(api_source):
@@ -194,7 +76,7 @@ def make_http_request(url, **kwargs):
 
     r = []
     try:
-        r = s.get(url) #requests.get(url)
+        r = s.get(url)
         # determine if require request.post to set cookies
         if 'set_cookies' in kwargs:
             if kwargs['set_cookies'] == 'yes':
@@ -894,3 +776,29 @@ def find_true_file_path(filedirectory, filename, extension):
     return filename
 
 
+def rename_log_file(filename, fb_meta):
+    """
+    Rename the log file saved to local directory using df meta for df
+    :param filename: str, name of dataset
+    :param fb_meta: metadata for parquet
+    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
+    :return: modified log file name
+    """
+    # original log file name - all log statements
+    log_file = f'{logoutputpath}{"flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
+                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)
+    # original log file name - validation
+    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
+    # generate new log name
+    new_log_name = f'{logoutputpath}{filename}_v' \
+                   f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log'
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file already exists)
+    shutil.copy(log_file, new_log_name)

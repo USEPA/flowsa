@@ -6,7 +6,7 @@ Common functions to clean and harmonize dataframes
 """
 
 import numpy as np
-from flowsa.common import log
+from flowsa import log
 
 
 def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):

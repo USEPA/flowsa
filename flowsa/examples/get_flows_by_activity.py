@@ -16,7 +16,7 @@ Examples of use of flowsa. Read parquet files as dataframes.
 """
 
 import flowsa
-from flowsa.common import fbaoutputpath
+from flowsa.settings import fbaoutputpath
 
 
 def main():

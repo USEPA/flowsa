@@ -13,7 +13,7 @@ Last updated:
 import os
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import externaldatapath
+from flowsa.settings import externaldatapath
 
 
 def produced_by(entry):
