@@ -12,7 +12,7 @@ Flow-By-Activity datasets are formatted tables from a variety of sources. They a
 `flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017)`
 
 ### Flow-By-Sector Datasets
-Flow-By-Sector datasets are tables of environmental and other data attributed to [industries](https://www.census.gov/naics/).
+Flow-By-Sector datasets are tables of environmental and other data attributed to [sectors](https://www.census.gov/naics/).
 
 `import flowsa` \
 `flowsa.seeAvailableFlowByModels('FBS')` \
