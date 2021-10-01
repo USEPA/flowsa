@@ -57,7 +57,7 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
     if len(df_w_sectors) == 0:
-        allocation_df = df_w_sectors_nonflagged.copy()
+        return df_w_sectors_nonflagged
     else:
         df1 = sector_aggregation(df_w_sectors, group_cols)
         # run sector disaggregation to capture one-to-one naics4/5/6 relationships
@@ -82,7 +82,7 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
                 pd.concat([allocation_df, df_w_sectors_nonflagged],
                           ignore_index=True).sort_values(['SectorProducedBy', 'SectorConsumedBy'])
 
-    return allocation_df
+        return allocation_df
 
 
 def proportional_allocation_by_location(df):
