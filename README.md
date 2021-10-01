@@ -1,4 +1,4 @@
-# FLOWSA
+# flowsa
 `flowsa` is a data processing library that attributes resource use, waste, emissions, and loss to economic sectors. `flowsa` aggregates, combines, and allocates data from a variety of sources. The sources can be found in the [GitHub wiki](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-activity-datasets) under "Flow-By-Activity Datasets".
 
 `flowsa` helps support [USEEIO](https://www.epa.gov/land-research/us-environmentally-extended-input-output-useeio-technical-content) as part of the [USEEIO modeling](https://www.epa.gov/land-research/us-environmentally-extended-input-output-useeio-models) framework. The USEEIO models estimate potential impacts of goods and services in the US economy. The [Flow-By-Sector datasets](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-sector-datasets) created in FLOWSA are the environmental inputs to [`useeior`](https://github.com/USEPA/useeior).
