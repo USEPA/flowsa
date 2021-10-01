@@ -31,7 +31,7 @@ def generate_list_of_sources_in_fbs_method(methodname):
         try:
             sources.append([fbs_k, fbs_v['year']])
         except KeyError:
-            log.info('Could not append %s to datasource list', fbs_k)
+            log.info('Could not append %s to datasource list because missing year', fbs_k)
             continue
         activities = fbs_v['activity_sets']
         for aset, attr in activities.items():
@@ -52,6 +52,7 @@ def generate_list_of_sources_in_fbs_method(methodname):
                         fxn_config = load_functions_loading_fbas_config()[fxn][fba]
                         sources.append([fxn_config['source'], y])
     except KeyError:
+        # if no additional fbas than pass
         pass
 
     return sources
@@ -132,7 +133,7 @@ def generate_fbs_bibliography(methodname):
                         # append each entry to a list of BibDatabase entries
                         bib_list.append(db)
                 except KeyError:
-                    log.warning('Missing information needed to create bib for %s, %s',
+                    log.exception('Missing information needed to create bib for %s, %s',
                                 source[0], source[1])
                     continue
 
