@@ -19,16 +19,45 @@ def name_and_unit_split(df_legend):
     for i in range(len(df_legend)):
         apb = df_legend.loc[i, "name"]
         apb_str = str(apb)
+        estimate = ""
+        if 'low estimate' in apb_str.lower():
+            estimate = ' low estimate'
+            apb_str_split = apb_str.lower().split('low estimate')
+            apb_str = apb_str_split[0] + apb_str_split[1]
+        elif 'high estimate' in apb_str.lower():
+            estimate = ' high estimate'
+            apb_str_split = apb_str.lower().split('high estimate')
+            apb_str = apb_str_split[0] + apb_str_split[1]
+
+        if 'area' in apb_str.lower():
+            df_legend.loc[i, "Class"] = "Land "
+            df_legend.loc[i, "FlowName"] = 'Area' + estimate
+
+        else:
+            df_legend.loc[i, "Class"] = "Chemicals "
+            df_legend.loc[i, "FlowName"] = 'Phosphorus' + estimate
+
         if '(' in apb_str:
             apb_split = apb_str.split('(')
             activity = apb_split[0].strip()
             unit_str = apb_split[1]
             unit_list = unit_str.split(')')
             unit = unit_list[0]
+            if ' p ' in unit.lower():
+                unit_split = unit.lower().split(' p ')
+                new_unit = ""
+                new_unit = unit_split[0] + unit_split[1]
+            else:
+                new_unit = unit
+            if 'kg' in new_unit.lower():
+                unit_split = new_unit.lower().split('kg')
+                new_unit = ""
+                new_unit = unit_split[0] + "/kg " + unit_split[1]
             df_legend.loc[i, "ActivityProducedBy"] = activity
             df_legend.loc[i, "ActivityConsumedBy"] = None
-            df_legend.loc[i, "Unit"] = unit
+            df_legend.loc[i, "Unit"] = new_unit
         else:
+
             df_legend.loc[i, "Unit"] = None
             df_legend.loc[i, "ActivityProducedBy"] = apb_str
             df_legend.loc[i, "ActivityConsumedBy"] = None
@@ -111,10 +140,11 @@ def pi_parse(dataframe_list, args):
     row_to_use = ["Production2", "Production", "Imports for consumption"]
     df = pd.DataFrame()
     for df in dataframe_list:
-        df["Class"] = "Chemicals"
+
         df["SourceName"] = "EPA_NI"
         df["LocationSystem"] = 'HUC'
         df["Year"] = str(args["year"])
-        df["FlowName"] = 'Phosphorus'
+        df["FlowType"] = "ELEMENTARY_FLOW"
+        df["Compartment"] = "ground"
     return df
 
