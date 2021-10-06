@@ -47,6 +47,7 @@ def elci_parse(**kwargs):
     df2['Unit'] = df2['FlowName'].str.split('(').str[1]
     df2['Unit'] = df2['Unit'].apply(lambda x: x.replace(")", "").replace(" ", ""))
     df2['FlowName'] = df2['FlowName'].str.split('(').str[0]
+    df2['FlowName'] = df2['FlowName'].str.strip()
 
     # Assign ACB and APB columns
     df2['ActivityConsumedBy'] = np.where(df2['FlowName'].isin(['Water Consumption Intensity Rate',
