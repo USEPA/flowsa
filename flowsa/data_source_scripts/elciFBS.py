@@ -8,7 +8,30 @@ These functions are called if referenced in flowbysectormethods as
 data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
 
 """
+import pandas as pd
 from flowsa.mapping import get_activitytosector_mapping
+from flowsa.flowbyfunctions import aggregator
+from flowsa.common import US_FIPS, fbs_default_grouping_fields
+
+
+def generate_elci_model_specs():
+    """
+    To prevent errors when loading elci files, first generate the model specs
+    :return:
+    """
+    import electricitylci.model_config as config
+
+    config.model_specs = config.build_model_class('ELCI_1')
+    config.model_specs.include_upstream_processes = False
+    config.model_specs.regional_aggregation = 'US'
+    config.model_specs.include_renewable_generation = False
+    config.model_specs.include_netl_water = True
+    config.model_specs.stewicombo_file = 'ELCI_1'
+    if 'DMR' not in config.model_specs.inventories_of_interest.keys():
+        config.model_specs.inventories_of_interest['DMR'] = 2016
+
+    return config
+
 
 def get_elci_emissions(yaml_load):
     import electricitylci
@@ -69,6 +92,27 @@ def get_elci_emissions(yaml_load):
                                inplace=True)
 
     return emissions_df_mapped
+
+
+def get_plant_water_use():
+    """
+    Load the 2016 plant water use from electricityLCI and format into FBS
+    :return:
+    """
+
+    # first generate elci model specs
+    generate_elci_model_specs()
+
+    # after loading model specs, import water fxn
+    from electricitylci.plant_water_use import generate_plant_water_use
+    df_load = generate_plant_water_use(2016)
+
+    # loaded data is a FBA with UUID
+    # aggregate by location and month and set location at national level
+    # df = aggregator(df_load, fbs_default_grouping_fields)
+    # df['Location'] = US_FIPS
+
+
 
 
 
