@@ -1,13 +1,18 @@
-from examples import get_flows_by_sector, write_bibliography, get_flows_by_activity
+"""
+Test functions work
+"""
 
-
-def test_write_bibliography():
-    write_bibliography.main()
-
-
-def test_get_flows_by_sector():
-    get_flows_by_sector.main()
+import flowsa
 
 
 def test_get_flows_by_activity():
-    get_flows_by_activity.main()
+    flowsa.getFlowByActivity(datasource="EIA_MECS_Land", year=2014)
+
+
+def test_get_flows_by_sector():
+    # set function to download any FBAs that are missing
+    flowsa.getFlowBySector('Water_national_2015_m1')
+
+
+def test_write_bibliography():
+    flowsa.writeFlowBySectorBibliography('Water_national_2015_m1')
