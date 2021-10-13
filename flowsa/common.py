@@ -691,9 +691,7 @@ def call_country_code(country):
     :param country: str, name of country
     :return: str, ISO code
     """
-    country_info = pycountry.countries.get(name=country)
-    country_numeric_iso = country_info.numeric
-    return country_numeric_iso
+    return pycountry.countries.get(name=country).numeric
 
 
 def convert_fba_unit(df):
