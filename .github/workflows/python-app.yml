@@ -1,36 +1,72 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# This workflow will install Python dependencies, run tests and lint 
+# across operating systems, select versions of Python, and user + dev environments
+# For more info see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python application
+name: Python CI/CD test
 
 on:
   push:
-    branches: [ master ]
+    branches: [master, develop]
+    paths-ignore: # prevents workflow execution when only these types of files are modified
+      - '**.md'  # prevent md files (e.g., README.md) in any repo dir from trigering workflow
+      - 'LICENSE'
+      - '.gitignore'
   pull_request:
-    branches: [ master ]
+    branches: [master, develop]
+    types: [opened, reopened]  # excluding syncronize to prevent commits to PR's from duplicating tests
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+  workflow_dispatch:  # also allow manual trigger, for testing purposes
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:  # max 256 jobs per workflow
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        py-version: [3.8, 3.9]
+        build-type: [user, dev]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    # general Python setup
+    - name: Set up Python ${{ matrix.py-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
-    - name: Install dependencies
+        python-version: ${{ matrix.py-version }}
+    - name: Update pip & install testing pkgs
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        python -VV
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pytest pytest-cov flake8
+    # developer environment, install specific packages from requirements.txt
+    - name: Install dev dependencies
+      if: matrix.build-type == 'dev'
+      run: |
+        pip install -r requirements.txt
+        pip install .
+    # user environment, install from setup.py
+    - name: Install user dependencies
+      if: matrix.build-type == 'user'
+      run: |
+        pip install .
+    # import USDS key
     - name: Save api key
       env:
         USDS_KEY: ${{ secrets.USDS_KEY }}
       run: | 
         mkdir -p /home/runner/.local/share/flowsa/API_Keys/
         echo "$USDS_KEY" > /home/runner/.local/share/flowsa/API_Keys/USDA_Quickstats_API_KEY.txt
+    # linting & pytest
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
         pytest --doctest-modules
