@@ -18,25 +18,20 @@ Examples of use of flowsa. Read parquet files as dataframes.
 import flowsa
 from flowsa.settings import fbaoutputpath
 
+# see all datasources and years available in flowsa
+flowsa.seeAvailableFlowByModels('FBA')
 
-def main():
-    # see all datasources and years available in flowsa
-    flowsa.seeAvailableFlowByModels('FBA')
+# Load all information for EIA MECS Land
+fba_mecs = flowsa.getFlowByActivity(datasource="EIA_MECS_Land", year=2014)
 
-    # Load all information for EIA MECS Land
-    fba_mecs = flowsa.getFlowByActivity(datasource="EIA_MECS_Land", year=2014)
+# only load state level water data and save as csv
+fba_usgs = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
+                                    year=2015,
+                                    flowclass='Water',
+                                    geographic_level='state'
+                                    ).reset_index(drop=True)
 
-    # only load state level water data and save as csv
-    fba_usgs = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
-                                        year=2015,
-                                        flowclass='Water',
-                                        geographic_level='state'
-                                        ).reset_index(drop=True)
+# save output to csv, maintain leading 0s in location col
+fba_usgs.Location = fba_usgs.Location.apply('="{}"'.format)
+fba_usgs.to_csv(f"{fbaoutputpath}USGS_NWIS_WU_2015.csv", index=False)
 
-    # save output to csv, maintain leading 0s in location col
-    fba_usgs.Location = fba_usgs.Location.apply('="{}"'.format)
-    fba_usgs.to_csv(f"{fbaoutputpath}USGS_NWIS_WU_2015.csv", index=False)
-
-
-if __name__ == "__main__":
-    main()
