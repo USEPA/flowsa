@@ -33,18 +33,30 @@ def name_and_unit_split(df_legend):
             df_legend.loc[i, "Unit"] = None
             df_legend.loc[i, "ActivityProducedBy"] = apb_str
             df_legend.loc[i, "ActivityConsumedBy"] = None
+        if 'difference' in apb_str.lower():
+            df_legend.loc[i, "FlowName"] = 'Nitrogen'
+            df_legend.loc[i, "ActivityProducedBy"] = activity
+        elif 'agricultural' in apb_str.lower():
+            abs_split = activity.lower().split('agricultural')
+            df_legend.loc[i, "FlowName"] = abs_split[0].strip() + abs_split[1]
+            df_legend.loc[i, "ActivityProducedBy"] = 'Agricultural'
+        elif 'area' in apb_str.lower():
+            df_legend.loc[i, "FlowName"] = "Area"
+            df_legend.loc[i, "ActivityProducedBy"] = activity
 
 
-        if 'N2' in apb_str:
-            df_legend.loc[i, "FlowName"] = 'N2'
-        elif 'NOx' in apb_str:
-            df_legend.loc[i, "FlowName"] = 'NOx'
         elif 'N2O' in apb_str:
             df_legend.loc[i, "FlowName"] = 'N2O'
+        elif 'NOx' in apb_str:
+            df_legend.loc[i, "FlowName"] = 'NOx'
+        elif 'N2' in apb_str:
+            df_legend.loc[i, "FlowName"] = 'N2'
+        elif 'land area' in apb_str.lower():
+            df_legend.loc[i, "FlowName"] = 'Area'
         else:
             df_legend.loc[i, "FlowName"] = 'Nitrogen'
 
-        if 'emissions' in apb_str:
+        if 'emissions' in apb_str.lower():
             df_legend.loc[i, "Compartment "] = "air"
         else:
             df_legend.loc[i, "Compartment "] = "ground"
@@ -110,6 +122,7 @@ def ni_parse(dataframe_list, args):
         df["SourceName"] = "EPA_NI"
         df["LocationSystem"] = 'HUC'
         df["Year"] = str(args["year"])
+        df["FlowType"] = "ELEMENTARY_FLOW"
     return df
 
 
