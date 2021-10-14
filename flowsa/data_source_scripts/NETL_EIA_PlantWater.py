@@ -9,7 +9,7 @@ as eLCI conducted water withdrawal modifications
 
 import pandas as pd
 import numpy as np
-from flowsa.common import get_state_FIPS, get_county_FIPS, us_state_abbrev
+from flowsa.common import get_state_FIPS, get_county_FIPS, us_state_abbrev, externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -22,12 +22,11 @@ def elci_parse(**kwargs):
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
 
-    from electricitylci.globals import data_dir
     from flowsa.flowbyfunctions import aggregator
     args = kwargs['args']
     # load the csv file
-    DATA_FILE = "NETL-EIA_powerplants_water_withdraw_consume_data_2016.csv"
-    df_load = pd.read_csv(f"{data_dir}/{DATA_FILE}", index_col=0, low_memory=False)
+    DATA_FILE = f"NETL-EIA_powerplants_water_withdraw_consume_data_{args['year']}.csv"
+    df_load = pd.read_csv(f"{externaldatapath}{DATA_FILE}", index_col=0, low_memory=False)
 
     compartment_list = []
 
@@ -108,4 +107,5 @@ def elci_parse(**kwargs):
     df2 = df2.drop(columns=['Month', '860 Cooling Type 1', 'Generator Primary Technology', 'Water Type', 'County',
                       'State', 'State_y', 'Water Source Name'])
     df2 = assign_fips_location_system(df2, str(args["year"]))
+
     return df2
