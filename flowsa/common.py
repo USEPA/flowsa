@@ -14,12 +14,11 @@ import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
-import pkg_resources
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
 # set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
-PKG_VERSION_NUMBER = '0.2.1'
+PKG_VERSION_NUMBER = '0.3.2'
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -51,9 +50,10 @@ scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
 
-# define 4 logs, one for general information, one for major validation logs that are also included
-# in the gerneral info log, one for very specific validation that is only included in the validation log,
-# and a console printout that includes general and validation, but not detailed validation
+# define 4 logs, one for general information, one for major validation logs that are
+# also included in the general info log, one for very specific validation that is only
+# included in the validation log, and a console printout that includes general and
+# validation, but not detailed validation
 create_paths_if_missing(logoutputpath)
 
 # format for logging .txt generated
@@ -126,7 +126,7 @@ def rename_log_file(filename, fb_meta):
     shutil.copy(log_file, new_log_name)
 
 # metadata
-pkg = pkg_resources.get_distribution("flowsa")
+PKG = "flowsa"
 GIT_HASH = get_git_hash()
 GIT_HASH_LONG = get_git_hash('long')
 
@@ -146,7 +146,7 @@ sector_level_key = {"NAICS_2": 2,
 
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
-WITHDRAWN_KEYWORD = None
+WITHDRAWN_KEYWORD = np.nan
 
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
 
@@ -448,6 +448,37 @@ flow_by_activity_wsec_fields = \
      'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}]
      }
 
+flow_by_activity_mapped_wsec_fields = \
+    {'Class': [{'dtype': 'str'}, {'required': True}],
+     'SourceName': [{'dtype': 'str'}, {'required': True}],
+     'FlowName': [{'dtype': 'str'}, {'required': True}],
+     'Flowable': [{'dtype': 'str'}, {'required': True}],
+     'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+     'Unit': [{'dtype': 'str'}, {'required': True}],
+     'FlowType': [{'dtype': 'str'}, {'required': True}],
+     'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'Compartment': [{'dtype': 'str'}, {'required': False}],
+     'Context': [{'dtype': 'str'}, {'required': False}],
+     'Location': [{'dtype': 'str'}, {'required': True}],
+     'LocationSystem': [{'dtype': 'str'}, {'required': True}],
+     'Year': [{'dtype': 'int'}, {'required': True}],
+     'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
+     'Spread': [{'dtype': 'float'}, {'required': False}],
+     'DistributionType': [{'dtype': 'str'}, {'required': False}],
+     'Min': [{'dtype': 'float'}, {'required': False}],
+     'Max': [{'dtype': 'float'}, {'required': False}],
+     'DataReliability': [{'dtype': 'float'}, {'required': True}],
+     'DataCollection': [{'dtype': 'float'}, {'required': True}],
+     'Description': [{'dtype': 'str'}, {'required': True}],
+     'FlowUUID': [{'dtype': 'str'}, {'required': True}],
+     'SectorProducedBy': [{'dtype': 'str'}, {'required': False}],
+     'SectorConsumedBy': [{'dtype': 'str'}, {'required': False}],
+     'SectorSourceName': [{'dtype': 'str'}, {'required': False}],
+     'ProducedBySectorType': [{'dtype': 'str'}, {'required': False}],
+     'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}]
+     }
+
 # A list of activity fields in each flow data format
 activity_fields = {'ProducedBy': [{'flowbyactivity': 'ActivityProducedBy'},
                                   {'flowbysector': 'SectorProducedBy'}],
@@ -499,11 +530,13 @@ fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
 fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_fields)
+fba_mapped_wsec_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_wsec_fields)
 fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
 fbs_grouping_fields_w_activities = fbs_default_grouping_fields + \
                                    (['ActivityProducedBy', 'ActivityConsumedBy'])
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
-fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_fields)
+fba_wsec_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_fields)
 
 
 def read_stored_FIPS(year='2015'):
@@ -856,3 +889,5 @@ def find_true_file_path(filedirectory, filename, extension):
                 break
 
     return filename
+
+
