@@ -68,9 +68,6 @@ def assign_naics(df):
     # Wood/Wood Waste Biomass
     df.loc[df['Activity'] == 'WB', 'Sector'] = '221117'
 
-
-
-
     return df
 
 
