@@ -37,7 +37,7 @@ source_names:
         allocation_compartment:
           - 'Surface'
           - 'Ground'
-        allocation_from_scale: state
+        allocation_from_scale: county
 #      activity_set_3:
 #        names:
 #          - "Industrial"
