@@ -2,15 +2,14 @@
 Setup for flowsa package
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
     version='0.3.2',
-    packages=['flowsa'],
+    packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
-    package_data={'flowsa': [
-        "data/*.*", "output/*.*"]},
+    package_data={'flowsa': ["data/*.*"]},
     include_package_data=True,
     install_requires=[
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.8#egg=fedelemflowlist',
