@@ -55,6 +55,9 @@ def elci_parse(**kwargs):
                             'Total net generation (MWh)': 'sum',
                             'Total water discharge (million gallons) calc': 'sum'}
                            ).reset_index()
+    # drop 'calc' from column name
+    df2 = df2.rename(columns={'Total water discharge (million gallons) calc':
+                                  'Total water discharge (million gallons)'})
     # drop rows where no water withdrawal data
     df3 = df2[df2['Water Withdrawal (gal)'] != 0].reset_index(drop=True)
 
@@ -72,62 +75,64 @@ def elci_parse(**kwargs):
 
     # assign compartments
     df3['Compartment'] = ''
-    df3['Compartment'] = np.where(df3["Water Type"] == 'Reclaimed', "reclaimed", df3['Compartment'])
+    df3['Compartment'] = np.where(df3["Water Type"] == 'Reclaimed', "Reclaimed", df3['Compartment'])
     df3['Compartment'] = np.where((df3['Compartment'] == '') &
                                   (df3['Water Source Name'].str.contains(ground)),
-                                  "ground", df3['Compartment'])
+                                  "Ground", df3['Compartment'])
     df3['Compartment'] = np.where((df3['Compartment'] == '') &
                                   (df3['Water Source Name'].str.contains(surface)),
-                                  "surface", df3['Compartment'])
+                                  "Surface", df3['Compartment'])
     df3['Compartment'] = np.where((df3['Compartment'] == '') &
                                   (df3['Water Source Name'].str.contains(public_supply)),
-                                  "public supply", df3['Compartment'])
+                                  "Public Supply", df3['Compartment'])
     df3['Compartment'] = np.where((df3['Compartment'] == '') &
                                   (df3['Water Source Name'].str.contains(reclaimed)),
-                                  "reclaimed", df3['Compartment'])
+                                  "Reclaimed", df3['Compartment'])
     df3['Compartment'] = np.where((df3['Compartment'] == '') &
                                   (df3['Water Source Name'].str.contains(storm)),
-                                  "stormwater", df3['Compartment'])
-    df3['Compartment'] = np.where(df3["Water Source Name"] == 'lake wells', "surface", df3['Compartment'])
+                                  "Stormwater", df3['Compartment'])
+    df3['Compartment'] = np.where(df3["Water Source Name"] == 'lake wells', "Surface", df3['Compartment'])
 
-
-    df['Water Type'] = df['Water Type'].fillna('Total')
-    df['Water Source Name'] = df['Water Source Name'].fillna('Total')
+    # assign fips
     fips = get_county_FIPS()
     us_abb = pd.DataFrame(us_state_abbrev.items(), columns=['State', 'State_y'])
     fips = fips.merge(us_abb, left_on='State', right_on='State')
-    df = df.merge(fips, left_on=['State_y', 'County'], right_on=['State_y', 'County'])
+    df3 = df3.merge(fips, left_on=['State_y', 'County'], right_on=['State_y', 'County'])
 
     # melt df
-    df2 = pd.melt(df, id_vars=['Year', 'Month', '860 Cooling Type 1',
-                               'Generator Primary Technology', 'Water Type',
-                               'County', 'State_y', 'Water Source Name', 'State', 'FIPS', 'Compartment'
-                               ], var_name='FlowName')
+    df4 = pd.melt(df3, id_vars=['Year', '860 Cooling Type 1',
+                                'Generator Primary Technology', 'Water Type',
+                                'County', 'State_y', 'Water Source Name', 'State', 'FIPS', 'Compartment'
+                                ], var_name='FlowName')
+
+    # Assign ACB and APB columns
+    df4['ActivityConsumedBy'] = np.where(df4['FlowName'].isin(['Water Consumption (gal)',
+                                                               'Water Withdrawal (gal)']),
+                                         df4['Generator Primary Technology'],
+                                         None)
+    df4['ActivityProducedBy'] = np.where(df4['ActivityConsumedBy'].isnull(),
+                                         df4['Generator Primary Technology'],
+                                         None)
 
     # split flowname col into flowname and unit
-    df2['Unit'] = df2['FlowName'].str.split('(').str[1]
-    df2['Unit'] = df2['Unit'].apply(lambda x: x.replace(")", "").replace(" ", ""))
-    df2['FlowName'] = df2['FlowName'].str.split('(').str[0]
-    df2['FlowName'] = df2['FlowName'].str.strip()
-    df2['FlowName'] = df2['FlowName'] + " " + df2['Water Type']
-    # Assign ACB and APB columns
-    df2['ActivityConsumedBy'] = np.where(df2['FlowName'].isin(['Water Consumption',
-                                                               'Water Withdrawal']),
-                                         df2['Generator Primary Technology'],
-                                         None)
+    df4['Unit'] = df4['FlowName'].str.split('(').str[1]
+    df4['Unit'] = df4['Unit'].apply(lambda x: x.replace(")", "")).str.strip()
+    df4['FlowName'] = df4['FlowName'].str.split('(').str[0]
+    df4['FlowName'] = df4['FlowName'].str.strip()
+    df4['FlowName'] = np.where(df4['FlowName'].str.contains('Water|water'),
+                               df4['FlowName'] + " " + df4['Water Type'],
+                               df4['FlowName'])
+    df4['FlowName'] = df4['FlowName'].apply(lambda x: x.title())
 
-    df2['ActivityProducedBy'] = np.where(df2['ActivityConsumedBy'].isnull(),
-                                         df2['Generator Primary Technology'],
-                                         None)
+    df4['Class'] = np.where(df4['FlowName'].str.contains('Water'), "Water", "Energy")
+    df4['SourceName'] = args['source']
+    df4['DataReliability'] = 1
+    df4['DataCollection'] = 5
+    df4['FlowType'] = "ELEMENTARY_FLOW"
+    df4['Description'] = 'Cooling Type: ' + df4['860 Cooling Type 1']
+    df4 = df4.rename(columns={"value": "FlowAmount", "FIPS": "Location"})
+    df4 = df4.drop(columns=['860 Cooling Type 1', 'Generator Primary Technology',
+                            'Water Type', 'County', 'State', 'State_y', 'Water Source Name'])
+    df4 = assign_fips_location_system(df4, str(args["year"]))
 
-    df2['Class'] = np.where(np.char.find("Water", df2['FlowName']), "Water", "Energy")
-    df2['Source'] = args['source']
-    df2['DataReliability'] = 1
-    df2['DataCollection'] = 5
-    df2['FlowType'] = "ELEMENTARY_FLOW"
-    df2 = df2.rename(columns={"value": "FlowAmount", "FIPS": "Location"})
-    df2 = df2.drop(columns=['Month', '860 Cooling Type 1', 'Generator Primary Technology', 'Water Type', 'County',
-                      'State', 'State_y', 'Water Source Name'])
-    df2 = assign_fips_location_system(df2, str(args["year"]))
-
-    return df2
+    return df4
