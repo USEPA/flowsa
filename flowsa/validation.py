@@ -502,7 +502,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
     # determine from scale
     if fips_number_key[source_attr['geoscale_to_use']] < \
             fips_number_key[activity_attr['allocation_from_scale']]:
-        from_scale = v['geoscale_to_use']
+        from_scale = source_attr['geoscale_to_use']
     else:
         from_scale = activity_attr['allocation_from_scale']
 
