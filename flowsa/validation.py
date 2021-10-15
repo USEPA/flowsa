@@ -14,7 +14,8 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
 from flowsa.common import US_FIPS, sector_level_key, \
     load_sector_length_crosswalk, load_source_catalog, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, log, fba_activity_fields, \
-    fbs_activity_fields, vLog, vLogDetailed, fba_default_grouping_fields
+    fbs_activity_fields, vLog, vLogDetailed, fba_default_grouping_fields, \
+    fba_mapped_default_grouping_fields
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -499,7 +500,8 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
     src_info = cat[source_name]
 
     # extract relevant geoscale data or aggregate existing data
-    fba = subset_df_by_geoscale(fba_load, activity_attr['allocation_from_scale'], method['target_geoscale'])
+    fba = subset_df_by_geoscale(fba_load, source_attr['geoscale_to_use'],
+                                method['target_geoscale'], fba_mapped_default_grouping_fields)
     if src_info['sector-like_activities']:
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2

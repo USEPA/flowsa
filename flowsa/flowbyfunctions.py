@@ -446,7 +446,7 @@ def return_activity_from_scale(df, provided_from_scale):
     elif provided_from_scale == 'state':
         geoscales = ['county']
     elif provided_from_scale == 'county':
-        log.info('No data - skipping')
+        log.warning('There should not be missing data at county level')
 
     if len(df_missing) > 0:
         for i in geoscales:
@@ -481,7 +481,7 @@ def return_activity_from_scale(df, provided_from_scale):
     return df_existing
 
 
-def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
+def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale, groupbycols):
     """
     Subset a df by geoscale or agg to create data specified in method yaml
     :param df: df, FBA format
@@ -521,7 +521,7 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
             # fba activity to allocation geoscale
             if fips_number_key[i] > fips_number_key[to_scale]:
                 log.info("Aggregating subset from %s to %s", i, to_scale)
-                df_sub = agg_by_geoscale(df3, i, to_scale, fba_mapped_default_grouping_fields)
+                df_sub = agg_by_geoscale(df3, i, to_scale, groupbycols)
             # else filter relevant rows
             else:
                 log.info("Subsetting %s data", i)

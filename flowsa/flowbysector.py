@@ -30,7 +30,7 @@ from flowsa.common import log, vLog, flowbysectormethodpath, flow_by_sector_fiel
     flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, \
     paths, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
-    fbs_grouping_fields_w_activities, logoutputpath
+    fbs_grouping_fields_w_activities, logoutputpath, fba_mapped_default_grouping_fields
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
@@ -178,7 +178,8 @@ def main(**kwargs):
 
                 # extract relevant geoscale data or aggregate existing data
                 flows_subset_geo = subset_df_by_geoscale(flows_subset2, v['geoscale_to_use'],
-                                                         attr['allocation_from_scale'])
+                                                         attr['allocation_from_scale'],
+                                                         fba_mapped_default_grouping_fields)
                 # if loading data subnational geoscale, check for data loss
                 if attr['allocation_from_scale'] != 'national':
                     compare_geographic_totals(flows_subset_geo, flows_mapped, k,

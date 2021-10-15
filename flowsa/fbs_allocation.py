@@ -9,7 +9,8 @@ import numpy as np
 import pandas as pd
 from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, log, \
-    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields
+    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields, \
+    fba_default_grouping_fields
 from flowsa.validation import allocate_dropped_sector_data, check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
@@ -362,7 +363,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     check_if_data_exists_at_geoscale(fba, geoscale_from)
 
     # aggregate geographically to the scale of the flowbyactivty source, if necessary
-    fba = subset_df_by_geoscale(fba, geoscale_from, geoscale_to)
+    fba = subset_df_by_geoscale(fba, geoscale_from, geoscale_to, fba_default_grouping_fields)
 
     # subset based on yaml settings
     if 'flowname_subset' in kwargs:
