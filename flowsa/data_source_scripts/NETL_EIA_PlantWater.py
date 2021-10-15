@@ -24,23 +24,73 @@ def elci_parse(**kwargs):
 
     from flowsa.flowbyfunctions import aggregator
     args = kwargs['args']
+
     # load the csv file
     DATA_FILE = f"NETL-EIA_powerplants_water_withdraw_consume_data_{args['year']}.csv"
     df_load = pd.read_csv(f"{externaldatapath}{DATA_FILE}", index_col=0, low_memory=False)
 
-    compartment_list = []
-
     # subset df
     df = df_load[['Year', 'Month', '860 Cooling Type 1', 'Generator Primary Technology',
-                  'Water Consumption Intensity Rate (Gallons / MWh)',
                   'Water Consumption Intensity Adjusted (gal/MWh)',
-                  'Water Withdrawal Intensity Rate (Gallons / MWh)',
                   'Water Withdrawal Intensity Adjusted (gal/MWh)',
-                  'Total net generation (MWh)', 'Water Source Name',
-                  'Summer Capacity of Steam Turbines (MW)',
-                  'Water Type', 'County', 'State_y'
+                  'Total net generation (MWh)',
+                  'Total water discharge (million gallons) calc',
+                  'Water Source Name', 'Water Type', 'County', 'State_y'
                   ]].copy(deep=True)
-  #  df['Water Type'] = df.loc[:, 'Water Type']
+
+    # multiply to get total water rather than rate so can sum to national level
+    cols_to_multiply = ['Water Consumption Intensity Adjusted (gal/MWh)',
+                        'Water Withdrawal Intensity Adjusted (gal/MWh)']
+    for c in cols_to_multiply:
+        df[c] = df[c] * df['Total net generation (MWh)']
+        # strip 'intensity' and '/MWh' from col name
+        df = df.rename(columns={c: c.replace('Intensity Adjusted ', '').replace('/MWh', '')})
+
+    # aggregate to annual
+    df = df.drop(columns=['Month'])
+    df2 = df.groupby(['Year', '860 Cooling Type 1', 'Generator Primary Technology',
+                      'Water Source Name', 'Water Type', 'County', 'State_y']
+                     ).agg({'Water Consumption (gal)': 'sum',
+                            'Water Withdrawal (gal)': 'sum',
+                            'Total net generation (MWh)': 'sum',
+                            'Total water discharge (million gallons) calc': 'sum'}
+                           ).reset_index()
+    # drop rows where no water withdrawal data
+    df3 = df2[df2['Water Withdrawal (gal)'] != 0].reset_index(drop=True)
+
+    # make column lower case
+    df3['Water Source Name'] = df3['Water Source Name'].apply(lambda x: x.lower())
+
+    ground = 'wells|well|ground|gw|aquifer'
+    surface = 'river|lake|reservoir|ocean|canal|creek|pond|bay|neosho|stanton|gulf|' \
+              'pool|waterway|trinity|harbor|mississippi|channel|laguna|sound|water way|' \
+              'coastal water authority|folsom south'
+    public_supply = 'municipal|muncpl|municipality|potw|city|muncipality|' \
+                    'municiple|city|west kern|wheeler ridge|sayreville'
+    reclaimed = 'water treatment|chemicals|nwtp'
+    storm = 'storm water'
+
+    # assign compartments
+    df3['Compartment'] = ''
+    df3['Compartment'] = np.where(df3["Water Type"] == 'Reclaimed', "reclaimed", df3['Compartment'])
+    df3['Compartment'] = np.where((df3['Compartment'] == '') &
+                                  (df3['Water Source Name'].str.contains(ground)),
+                                  "ground", df3['Compartment'])
+    df3['Compartment'] = np.where((df3['Compartment'] == '') &
+                                  (df3['Water Source Name'].str.contains(surface)),
+                                  "surface", df3['Compartment'])
+    df3['Compartment'] = np.where((df3['Compartment'] == '') &
+                                  (df3['Water Source Name'].str.contains(public_supply)),
+                                  "public supply", df3['Compartment'])
+    df3['Compartment'] = np.where((df3['Compartment'] == '') &
+                                  (df3['Water Source Name'].str.contains(reclaimed)),
+                                  "reclaimed", df3['Compartment'])
+    df3['Compartment'] = np.where((df3['Compartment'] == '') &
+                                  (df3['Water Source Name'].str.contains(storm)),
+                                  "stormwater", df3['Compartment'])
+    df3['Compartment'] = np.where(df3["Water Source Name"] == 'lake wells', "surface", df3['Compartment'])
+
+
     df['Water Type'] = df['Water Type'].fillna('Total')
     df['Water Source Name'] = df['Water Source Name'].fillna('Total')
     fips = get_county_FIPS()
@@ -48,32 +98,7 @@ def elci_parse(**kwargs):
     fips = fips.merge(us_abb, left_on='State', right_on='State')
     df = df.merge(fips, left_on=['State_y', 'County'], right_on=['State_y', 'County'])
 
-    surface = ['river', 'lake', 'reservoir', 'ocean', 'canal', 'aquifer', 'creek', 'pond', 'bay', 'neosho', 'stanton'
-               'gulf', 'pool', 'waterway', 'trinity', 'harbor', 'mississippi', 'channel', 'laguna']
-    total = ['municipal', 'wells', 'total', 'well', 'ground', 'muncpl']
-
-
-    for index, row in df.iterrows():
-        compartment_value = ""
-        if "lake wells" in df.iloc[index]['Water Source Name'].lower():
-          compartment_value = "surface"
-        elif "river water" in df.iloc[index]['Water Source Name'].lower():
-            compartment_value = "total"
-        elif "sewage" in df.iloc[index]['Water Source Name'].lower():
-            compartment_value = "sewage"
-        else:
-            for sur in surface:
-                if sur in df.iloc[index]['Water Source Name'].lower():
-                    compartment_value = "surface"
-            for tot in total:
-                if tot in df.iloc[index]['Water Source Name'].lower():
-                    compartment_value = "total"
-        compartment_list.append(compartment_value)
-
-
-
     # melt df
-    df['Compartment'] = compartment_list
     df2 = pd.melt(df, id_vars=['Year', 'Month', '860 Cooling Type 1',
                                'Generator Primary Technology', 'Water Type',
                                'County', 'State_y', 'Water Source Name', 'State', 'FIPS', 'Compartment'
@@ -85,11 +110,9 @@ def elci_parse(**kwargs):
     df2['FlowName'] = df2['FlowName'].str.split('(').str[0]
     df2['FlowName'] = df2['FlowName'].str.strip()
     df2['FlowName'] = df2['FlowName'] + " " + df2['Water Type']
-        # Assign ACB and APB columns
-    df2['ActivityConsumedBy'] = np.where(df2['FlowName'].isin(['Water Consumption Intensity Rate',
-                                                               'Water Consumption Intensity Adjusted',
-                                                               'Water Withdrawal Intensity Rate',
-                                                               'Water Withdrawal Intensity Adjusted']),
+    # Assign ACB and APB columns
+    df2['ActivityConsumedBy'] = np.where(df2['FlowName'].isin(['Water Consumption',
+                                                               'Water Withdrawal']),
                                          df2['Generator Primary Technology'],
                                          None)
 
@@ -98,7 +121,6 @@ def elci_parse(**kwargs):
                                          None)
 
     df2['Class'] = np.where(np.char.find("Water", df2['FlowName']), "Water", "Energy")
-   # df2['Compartment'] = np.where(np.char.find("Withdrawal", df2['FlowName']), "Water", "Air")
     df2['Source'] = args['source']
     df2['DataReliability'] = 1
     df2['DataCollection'] = 5
