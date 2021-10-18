@@ -8,6 +8,8 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 2. _target_sector_source_: specify NAICS version 2007, 2012, 2017 (ex. NAICS_2012_Code).
    Recommend NAICS_2012_Code, as the majority of datasets use this version of NAICS
 3. _target_geoscale_: level of geographic aggregation in output parquet (national, state, or county)
+4. _download_if_missing_: (optional) Add and set to 'True' if you would like to download all required
+   FBAs from Data Commons rather than generating FBAs locally.
 
 ### Source specifications (in FBA or FBS format)
 1. _source_names_: The name of the FBS dataset or the FBA dataset requiring allocation to sectors
@@ -52,21 +54,23 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
     helpful when an FBA ia large
 12. _clean_allocation_fba_: (optional) Function to clean up the allocation FBA, as defined in
     the source.py file
-13. _clean_allocation_fba_w_sec: (optional) Function to clean up the allocation FBA, after
-    allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
-14. _helper_source_: (optional) secondary df for sector allocation
-15. _helper_method_: currently written for 'multiplication', 'proportional', and 'proportional-flagged'
-16. _helper_source_class_: specific 'FlowClass' found in the allocation source
+13. _clean_allocation_fba_w_sec_: (optional) Function to clean up the allocation FBA, after
+    allocation activities are assigned SectorProducedBy and SectorConsumedBy columns    
+14. _allocation_map_to_flow_list_: (optional) If the allocation df and source df need to be matched
+    on Context and/or Flowable, set to 'True'
+15. _helper_source_: (optional) secondary df for sector allocation
+16. _helper_method_: currently written for 'multiplication', 'proportional', and 'proportional-flagged'
+17. _helper_source_class_: specific 'FlowClass' found in the allocation source
     flowbyactivity parquet
-17. _helper_source_year_: specific to the allocation datasets, use the year relevant
+18. _helper_source_year_: specific to the allocation datasets, use the year relevant
     to the main FBA dataframe
-18. _helper_flow_: (list) the relevant 'FlowName' values, as found in the source
+19. _helper_flow_: (list) the relevant 'FlowName' values, as found in the source
     flowbyactivity parquet
-19. _helper_from_scale_: national, state, or county - dependent on allocation source,
+20. _helper_from_scale_: national, state, or county - dependent on allocation source,
     as not every level exits for sources
-20. _clean_helper_fba_: (optional) Function to clean up the helper FBA, as defined in
+21. _clean_helper_fba_: (optional) Function to clean up the helper FBA, as defined in
     the source.py file
-21. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
+22. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
     allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
 
 ### FBS_outside_flows specifications
