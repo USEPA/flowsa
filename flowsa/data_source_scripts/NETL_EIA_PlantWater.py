@@ -114,17 +114,60 @@ def elci_parse(**kwargs):
                                          df4['Generator Primary Technology'],
                                          None)
 
+    df4['Class'] = np.where(df4['FlowName'].str.contains('Water|discharge'), "Water", "Energy")
+
     # split flowname col into flowname and unit
     df4['Unit'] = df4['FlowName'].str.split('(').str[1]
     df4['Unit'] = df4['Unit'].apply(lambda x: x.replace(")", "")).str.strip()
     df4['FlowName'] = df4['FlowName'].str.split('(').str[0]
     df4['FlowName'] = df4['FlowName'].str.strip()
+    # update water flownames
     df4['FlowName'] = np.where(df4['FlowName'].str.contains('Water|water'),
                                df4['FlowName'] + " " + df4['Water Type'],
                                df4['FlowName'])
+    # include technology in energy flow names
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['CGCC', 'CSC'])),
+                               df4['FlowName'] + ' Coal',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['MSW'])),
+                               df4['FlowName'] + ' Municipal Solid Waste',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['NGCC', 'NGSC'])),
+                               df4['FlowName'] + ' Natural Gas',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['NU'])),
+                               df4['FlowName'] + ' Nuclear',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['OG'])),
+                               df4['FlowName'] + ' Other Gases',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['OT'])),
+                               df4['FlowName'] + ' Other',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['OWB'])),
+                               df4['FlowName'] + ' Other Waste Biomass',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['PC, PL'])),
+                               df4['FlowName'] + ' Petroleum',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['ST'])),
+                               df4['FlowName'] + ' Solar Thermal',
+                               df4['FlowName'])
+    df4['FlowName'] = np.where((df4['Class'] == 'Energy') &
+                               (df4['Generator Primary Technology'].isin(['WB'])),
+                               df4['FlowName'] + ' Wood Biomass',
+                               df4['FlowName'])
     df4['FlowName'] = df4['FlowName'].apply(lambda x: x.title())
 
-    df4['Class'] = np.where(df4['FlowName'].str.contains('Water'), "Water", "Energy")
     df4['SourceName'] = args['source']
     df4['DataReliability'] = 1
     df4['DataCollection'] = 5
