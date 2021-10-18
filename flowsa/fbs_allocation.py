@@ -363,7 +363,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     check_if_data_exists_at_geoscale(fba, geoscale_from)
 
     # aggregate geographically to the scale of the flowbyactivty source, if necessary
-    fba = subset_df_by_geoscale(fba, geoscale_from, geoscale_to, fba_default_grouping_fields)
+    fba = subset_df_by_geoscale(fba, geoscale_from, geoscale_to)
 
     # subset based on yaml settings
     if 'flowname_subset' in kwargs:

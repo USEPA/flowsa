@@ -481,7 +481,7 @@ def return_activity_from_scale(df, provided_from_scale):
     return df_existing
 
 
-def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale, groupbycols):
+def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
     """
     Subset a df by geoscale or agg to create data specified in method yaml
     :param df: df, FBA format
@@ -491,6 +491,14 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale, groupbycol
                               aggregate to ('national', 'state', 'county')
     :return: df, FBA, subset or aggregated to a single geoscale for all rows
     """
+
+    # detect grouping cols by columns
+    if 'Context' in df.columns:
+        groupbycols = fba_mapped_default_grouping_fields
+        cols_to_keep = flow_by_activity_mapped_fields
+    else:
+        groupbycols = fba_default_grouping_fields
+        cols_to_keep = flow_by_activity_fields
 
     # method of subset dependent on LocationSystem
     if df['LocationSystem'].str.contains('FIPS').any():
@@ -529,8 +537,8 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale, groupbycol
             df_subset_list.append(df_sub)
         df_subset = pd.concat(df_subset_list, ignore_index=True)
 
-        # only keep cols associated with FBA mapped
-        df_subset = clean_df(df_subset, flow_by_activity_mapped_fields,
+        # drop unused columns
+        df_subset = clean_df(df_subset, cols_to_keep,
                              fba_fill_na_dict, drop_description=False)
 
     # right now, the only other location system is for Statistics Canada data
