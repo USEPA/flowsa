@@ -13,7 +13,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, log, load_source_catalog, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
-    fbs_collapsed_fill_na_dict, fba_activity_fields, \
+    fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
     fips_number_key, flow_by_activity_fields, fba_fill_na_dict, datasourcescriptspath, \
     find_true_file_path, flow_by_activity_mapped_fields, fba_mapped_default_grouping_fields
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
@@ -727,9 +727,12 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     :param datasource: string, FBA source name
     :param year: int, year of data
     :param kwargs: optional parameters include flowclass, geographic_level,
-           and download_if_missing
+           download_if_missing, allocation_map_to_flow_list
     :return: fba df with standardized units
     """
+
+    from sectormapping import map_fbs_flows
+
     # determine if any addtional parameters required to load a Flow-By-Activity
     # add parameters to dictionary if exist in method yaml
     fba_dict = {}
@@ -743,7 +746,12 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     fba = flowsa.getFlowByActivity(datasource, year, **fba_dict).reset_index(drop=True)
     # ensure df loaded correctly/has correct dtypes
     fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
-    # convert to standardized units
-    fba = standardize_units(fba)
+    # convert to standardized units either by mapping to federal flow list/material flow list
+    # or by using function. Mapping will add context and flowable columns
+    if ('allocation_map_to_flow_list' in kwargs) & (kwargs['allocation_map_to_flow_list'] == True):
+        fba, mapping_files = map_fbs_flows(fba, datasource, kwargs, keep_fba_columns=True)
+    else:
+        print('no')
+        fba = standardize_units(fba)
 
     return fba

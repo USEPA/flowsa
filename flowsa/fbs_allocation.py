@@ -352,11 +352,19 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                    'allocation_compartment','clean_allocation_fba', 'clean_allocation_fba_w_sec'
     :return: df, fba format
     """
+    # dictionary to load/standardize fba
+    kwargs_dict = {}
+    kwargs_dict['flowclass'] = flowclass
+    if 'download_if_missing' in method:
+        kwargs_dict['download_if_missing'] = method['download_if_missing']
+    if 'allocation_map_to_flow_list' in attr:
+        kwargs_dict['allocation_map_to_flow_list'] = attr['allocation_map_to_flow_list']
+
 
     log.info("Loading allocation flowbyactivity %s for year %s", fba_sourcename, str(df_year))
     fba = load_fba_w_standardized_units(datasource=fba_sourcename,
                                         year=df_year,
-                                        flowclass=flowclass)
+                                        **kwargs_dict)
 
     # check if allocation data exists at specified geoscale to use
     log.info("Checking if allocation data exists at the %s level", geoscale_from)
