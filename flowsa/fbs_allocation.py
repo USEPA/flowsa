@@ -159,10 +159,17 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     for i, j in activity_fields.items():
         # check units
         compare_df_units(flow_subset_mapped, flow_allocation)
+        # create list of columns to merge on
+        if 'allocation_merge_columns' in attr:
+            fa_cols = ['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity'] + attr['allocation_merge_columns']
+            l_cols = ['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]] + attr['allocation_merge_columns']
+            r_cols = ['Location', 'Sector', 'FBA_Activity'] + attr['allocation_merge_columns']
+        else:
+            fa_cols = ['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']
+            l_cols = ['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]]
+            r_cols = ['Location', 'Sector', 'FBA_Activity']
         flow_subset_mapped = flow_subset_mapped.merge(
-            flow_allocation[['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']],
-            left_on=['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]],
-            right_on=['Location', 'Sector', 'FBA_Activity'], how='left')
+            flow_allocation[fa_cols], left_on=l_cols, right_on=r_cols, how='left')
 
     # merge the flowamount columns
     flow_subset_mapped.loc[:, 'FlowAmountRatio'] =\
