@@ -37,7 +37,7 @@ source_names:
         allocation_compartment:
           - 'Surface'
           - 'Ground'
-        allocation_from_scale: county
+        allocation_from_scale: national
         allocation_map_to_flow_list: True
         allocation_merge_columns:
           - 'Context'
