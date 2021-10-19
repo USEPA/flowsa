@@ -229,8 +229,6 @@ def sector_aggregation(df_load, group_cols):
             dfm = df1.merge(df2[merge_cols], how='outer',
                             on=merge_cols, indicator=True
                             ).query('_merge=="left_only"').drop('_merge', axis=1)
-            if len(dfm) > 0:
-                print('check this merge for length ' + str(i))
         else:
             dfm = df1.copy(deep=True)
 
