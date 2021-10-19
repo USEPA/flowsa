@@ -170,6 +170,8 @@ def sector_aggregation(df_load, group_cols):
     :param group_cols: columns by which to aggregate
     :return: df, with aggregated sector values
     """
+    # ensure None values are not strings
+    df = replace_NoneType_with_empty_cells(df_load)
 
     # determine if activities are sector-like, if aggregating a df with a 'SourceName'
     sector_like_activities = False
@@ -181,9 +183,6 @@ def sector_aggregation(df_load, group_cols):
         # load catalog info for source
         src_info = cat[s]
         sector_like_activities = src_info['sector-like_activities']
-
-    # ensure None values are not strings
-    df = replace_NoneType_with_empty_cells(df_load)
 
     # if activities are source like, drop from df and group calls,
     # add back in as copies of sector columns columns to keep
@@ -201,55 +200,47 @@ def sector_aggregation(df_load, group_cols):
     length = int(length)
     # for loop in reverse order longest length naics minus 1 to 2
     # appends missing naics levels to df
-    for i in range(length - 1, 1, -1):
-        # subset df to sectors with length = i and length = i + 1
-        df_subset = df.loc[df[fbs_activity_fields[0]].apply(lambda x: i + 1 >= len(x) >= i) |
-                           df[fbs_activity_fields[1]].apply(lambda x: i + 1 >= len(x) >= i)]
-        # create a list of i digit sectors in df subset
-        sector_subset = df_subset[
-            ['Location', fbs_activity_fields[0],
-             fbs_activity_fields[1]]].drop_duplicates().reset_index(drop=True)
-        df_sectors = sector_subset.copy()
-        df_sectors.loc[:, 'SectorProducedBy'] = \
-            df_sectors['SectorProducedBy'].apply(lambda x: x[0:i])
-        df_sectors.loc[:, 'SectorConsumedBy'] = \
-            df_sectors['SectorConsumedBy'].apply(lambda x: x[0:i])
-        sector_list = df_sectors.drop_duplicates().values.tolist()
-        # create a list of sectors that are exactly i digits long
-        # where either sector column is i digits in length
-        df_existing_1 = \
-            sector_subset.loc[(sector_subset['SectorProducedBy'].apply(lambda x: len(x) == i)) |
-                              (sector_subset['SectorConsumedBy'].apply(lambda x: len(x) == i))]
-        # where both sector columns are i digits in length
-        df_existing_2 = \
-            sector_subset.loc[(sector_subset['SectorProducedBy'].apply(lambda x: len(x) == i)) &
-                              (sector_subset['SectorConsumedBy'].apply(lambda x: len(x) == i))]
-        # concat existing dfs
-        df_existing = pd.concat([df_existing_1, df_existing_2], sort=False)
-        existing_sectors = df_existing.drop_duplicates().dropna().values.tolist()
-        # list of sectors of length i that are not in sector list
-        missing_sectors = [e for e in sector_list if e not in existing_sectors]
-        if len(missing_sectors) != 0:
-            # new df of sectors that start with missing sectors.
-            # drop last digit of the sector and sum flows
-            # set conditions
-            agg_sectors_list = []
-            for q, r, s in missing_sectors:
-                c1 = df_subset['Location'] == q
-                c2 = df_subset[fbs_activity_fields[0]].apply(lambda x: x[0:i] == r)
-                c3 = df_subset[fbs_activity_fields[1]].apply(lambda x: x[0:i] == s)
-                # subset data
-                agg_sectors_list.append(df_subset.loc[c1 & c2 & c3])
-            agg_sectors = pd.concat(agg_sectors_list, sort=False)
-            agg_sectors = agg_sectors.loc[
-                (agg_sectors[fbs_activity_fields[0]].apply(lambda x: len(x) > i)) |
-                (agg_sectors[fbs_activity_fields[1]].apply(lambda x: len(x) > i))]
-            agg_sectors.loc[:, fbs_activity_fields[0]] = agg_sectors[fbs_activity_fields[0]].apply(
-                lambda x: x[0:i])
-            agg_sectors.loc[:, fbs_activity_fields[1]] = agg_sectors[fbs_activity_fields[1]].apply(
-                lambda x: x[0:i])
+    for i in range(length, 2, -1):
+        # df where either sector column is length or both columns are
+        df1 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i)) |
+                 (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))
+            |
+                 ((df['SectorProducedBy'].apply(lambda x: len(x) == i)) &
+                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))
+        ]
+
+        # add new columns dropping last digit of sectors
+        df1 = df1.assign(SPB=df1['SectorProducedBy'].apply(lambda x: x[0:i - 1]))
+        df1 = df1.assign(SCB=df1['SectorConsumedBy'].apply(lambda x: x[0:i - 1]))
+
+        # second dataframe where length is l - 1
+        df2 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) |
+                 (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1)))
+            |
+                 ((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) &
+                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1)))
+        ].rename(columns = {'SectorProducedBy': 'SPB',
+                            'SectorConsumedBy': 'SCB'})
+
+        # merge the dfs
+        merge_cols = [col for col in df2.columns if hasattr(df2[col], 'str')]
+
+        if len(df2) > 0:
+            dfm = df1.merge(df2[merge_cols], how='outer',
+                            on=merge_cols, indicator=True
+                            ).query('_merge=="left_only"').drop('_merge', axis=1)
+            if len(dfm) > 0:
+                print('check this merge for length ' + str(i))
+        else:
+            dfm = df1.copy(deep=True)
+
+        if len(dfm) > 0:
+            # replace the SCB and SPB columns then aggregate and add to df
+            dfm['SectorProducedBy'] = dfm['SPB']
+            dfm['SectorConsumedBy'] = dfm['SCB']
+            dfm = dfm.drop(columns=(['SPB', 'SCB']))
             # aggregate the new sector flow amounts
-            agg_sectors = aggregator(agg_sectors, group_cols)
+            agg_sectors = aggregator(dfm, group_cols)
             # append to df
             agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
@@ -261,6 +252,7 @@ def sector_aggregation(df_load, group_cols):
                                              'F010', df['SectorProducedBy'])  # domestic/household
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
+
     # if activities are source-like, set col values as copies of the sector columns
     if sector_like_activities:
         df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
