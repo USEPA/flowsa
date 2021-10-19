@@ -736,14 +736,20 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
         fba_dict['download_if_missing'] = kwargs['download_if_missing']
     # load the allocation FBA
     fba = flowsa.getFlowByActivity(datasource, year, **fba_dict).reset_index(drop=True)
-    # ensure df loaded correctly/has correct dtypes
-    fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
     # convert to standardized units either by mapping to federal flow list/material flow list
     # or by using function. Mapping will add context and flowable columns
-    if ('allocation_map_to_flow_list' in kwargs) & (kwargs['allocation_map_to_flow_list'] == True):
-        fba, mapping_files = map_fbs_flows(fba, datasource, kwargs, keep_fba_columns=True)
+    if 'allocation_map_to_flow_list' in kwargs:
+        if kwargs['allocation_map_to_flow_list'] == True:
+            # ensure df loaded correctly/has correct dtypes
+            fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+            fba, mapping_files = map_fbs_flows(fba, datasource, kwargs, keep_fba_columns=True)
+        else:
+            # ensure df loaded correctly/has correct dtypes
+            fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
+            fba = standardize_units(fba)
     else:
-        print('no')
+        # ensure df loaded correctly/has correct dtypes
+        fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
         fba = standardize_units(fba)
 
     return fba
