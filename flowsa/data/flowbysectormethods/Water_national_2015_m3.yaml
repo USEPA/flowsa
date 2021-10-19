@@ -33,7 +33,7 @@ source_names:
         allocation_flow:
           - 'Fresh Water Withdrawal'
           - 'Saline Water Withdrawal'
-#          - 'Brackish Water Withdrawal'
+          - 'Brackish Water Withdrawal'
         allocation_compartment:
           - 'Surface'
           - 'Ground'
