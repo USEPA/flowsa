@@ -432,15 +432,15 @@ def return_activity_from_scale(df, provided_from_scale):
     df_existing = df_existing.drop(columns='_merge')
     df_existing['activity_from_scale'] = provided_from_scale
 
-    # for loop through geoscales until find data for each activity combo
-    if provided_from_scale == 'national':
-        geoscales = ['state', 'county']
-    elif provided_from_scale == 'state':
-        geoscales = ['county']
-    elif provided_from_scale == 'county':
-        log.warning('There should not be missing data at county level')
-
     if len(df_missing) > 0:
+        # for loop through geoscales until find data for each activity combo
+        if provided_from_scale == 'national':
+            geoscales = ['state', 'county']
+        elif provided_from_scale == 'state':
+            geoscales = ['county']
+        elif provided_from_scale == 'county':
+            log.error('Missing county level data')
+
         for i in geoscales:
             # filter by geoscale
             fips_i = create_geoscale_list(df, i)
