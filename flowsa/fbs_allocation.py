@@ -112,9 +112,11 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         fba_allocation_subset = allocation_helper(fba_allocation_subset, attr, method, v)
 
     # create flow allocation ratios for each activity
-    # if load_source_catalog()[k]['sector-like_activities']
     flow_alloc_list = []
-    group_cols = fba_wsec_default_grouping_fields
+    if 'Context' in fba_allocation_subset.columns:
+        group_cols = fba_mapped_wsec_default_grouping_fields
+    else:
+        group_cols = fba_wsec_default_grouping_fields
     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
     for n in names:
         log.debug("Creating allocation ratios for %s", n)
@@ -377,10 +379,10 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     if 'flowname_subset' in kwargs:
         if kwargs['flowname_subset'] != 'None':
             fba = fba.loc[fba['FlowName'].isin(kwargs['flowname_subset'])]
-
     if 'compartment_subset' in kwargs:
         if kwargs['compartment_subset'] != 'None':
             fba = fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
+
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning %s", fba_sourcename)
