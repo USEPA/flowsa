@@ -11,12 +11,13 @@ from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, log, \
     fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields, \
     fba_default_grouping_fields
-from flowsa.validation import allocate_dropped_sector_data, check_allocation_ratios, \
+from flowsa.validation import check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
     load_fba_w_standardized_units
-from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity
+from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
+    allocate_dropped_sector_data
 from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.validation import check_if_data_exists_at_geoscale
@@ -368,7 +369,6 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         kwargs_dict['download_if_missing'] = method['download_if_missing']
     if 'allocation_map_to_flow_list' in attr:
         kwargs_dict['allocation_map_to_flow_list'] = attr['allocation_map_to_flow_list']
-
 
     log.info("Loading allocation flowbyactivity %s for year %s", fba_sourcename, str(df_year))
     fba = load_fba_w_standardized_units(datasource=fba_sourcename,

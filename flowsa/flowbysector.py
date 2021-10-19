@@ -39,10 +39,10 @@ from flowsa.sectormapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
-from flowsa.validation import allocate_dropped_sector_data,\
-    compare_activity_to_sector_flowamounts, \
+from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
+from flowsa.allocation import allocate_dropped_sector_data
 
 
 def parse_args():
