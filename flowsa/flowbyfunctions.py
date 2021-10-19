@@ -258,7 +258,7 @@ def sector_aggregation(df_load, group_cols):
         # reindex columns
         df = df.reindex(df_load.columns, axis=1)
     # replace null values
-    df = replace_strings_with_NoneType(df)
+    df = replace_strings_with_NoneType(df).reset_index(drop=True)
 
     return df
 
