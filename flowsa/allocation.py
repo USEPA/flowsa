@@ -200,73 +200,77 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
                        (df[fbs_activity_fields[1]].apply(lambda x: len(x) == i))]
         df_x = pd.concat([df_x1, df_x2, df_x3], ignore_index=True, sort=False)
 
-        # create df of i + 1 length
-        df_y1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) |
-                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
-        df_y2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) &
-                       df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
-        df_y = pd.concat([df_y1, df_y2], ignore_index=True, sort=False)
+        if len(df_x) > 0:
+            # create df of i + 1 length
+            df_y1 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) |
+                           df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
+            df_y2 = df.loc[df[fbs_activity_fields[0]].apply(lambda x: len(x) == i + 1) &
+                           df[fbs_activity_fields[1]].apply(lambda x: len(x) == i + 1)]
+            df_y = pd.concat([df_y1, df_y2], ignore_index=True, sort=False)
 
-        # create temp sector columns in df y, that are i digits in length
-        df_y.loc[:, 'spb_tmp'] = df_y[fbs_activity_fields[0]].apply(lambda x: x[0:i])
-        df_y.loc[:, 'scb_tmp'] = df_y[fbs_activity_fields[1]].apply(lambda x: x[0:i])
-        # don't modify household sector lengths or gov't transport
-        df_y = df_y.replace({'F0': 'F010',
-                             'F01': 'F010'
-                             })
+            # create temp sector columns in df y, that are i digits in length
+            df_y.loc[:, 'spb_tmp'] = df_y[fbs_activity_fields[0]].apply(lambda x: x[0:i])
+            df_y.loc[:, 'scb_tmp'] = df_y[fbs_activity_fields[1]].apply(lambda x: x[0:i])
+            # don't modify household sector lengths or gov't transport
+            df_y = df_y.replace({'F0': 'F010',
+                                 'F01': 'F010'
+                                 })
 
-        # merge the two dfs
-        if 'Context' in df_y.columns:
-            merge_cols = 'Class', 'Context', 'FlowType', 'Flowable', 'Location', 'LocationSystem', 'Unit', 'Year'
-        else:
-            merge_cols = 'Class', 'FlowType', 'Location', 'LocationSystem', 'Unit', 'Year'
+            # merge the two dfs
+            if 'Context' in df_y.columns:
+                merge_cols = ['Class', 'Context', 'FlowType', 'Flowable', \
+                              'Location', 'LocationSystem', 'Unit', 'Year']
+            else:
+                merge_cols = ['Class', 'FlowType', \
+                              'Location', 'LocationSystem', 'Unit', 'Year']
 
-        df_m = pd.merge(df_x, df_y[[merge_cols, 'spb_tmp', 'scb_tmp']],
-                        how='left',
-                        left_on=[merge_cols, 'SectorProducedBy', 'SectorConsumedBy'],
-                        right_on=[merge_cols, 'spb_tmp', 'scb_tmp'])
+            df_m = pd.merge(df_x, df_y[merge_cols + ['spb_tmp', 'scb_tmp']],
+                            how='left',
+                            left_on=merge_cols + ['SectorProducedBy', 'SectorConsumedBy'],
+                            right_on=merge_cols + ['spb_tmp', 'scb_tmp']
+                            )
 
-        # extract the rows that are not disaggregated to more specific naics
-        rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())].reset_index(drop=True)
-        # clean df
-        rl = replace_strings_with_NoneType(rl)
-        rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']].drop_duplicates().values.tolist()
+            # extract the rows that are not disaggregated to more specific naics
+            rl = df_m[(df_m['scb_tmp'].isnull()) & (df_m['spb_tmp'].isnull())].reset_index(drop=True)
+            # clean df
+            rl = replace_strings_with_NoneType(rl)
+            rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']].drop_duplicates().values.tolist()
 
-        # match sectors with target sector length sectors
+            # match sectors with target sector length sectors
 
-        # import cw and subset to current sector length and target sector length
-        cw_load = load_sector_length_crosswalk()
-        nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
-        cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
-        # add column with counts
-        cw['sector_count'] = cw.groupby(nlength)[nlength].transform('count')
+            # import cw and subset to current sector length and target sector length
+            cw_load = load_sector_length_crosswalk()
+            nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
+            cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
+            # add column with counts
+            cw['sector_count'] = cw.groupby(nlength)[nlength].transform('count')
 
-        # merge df & conditionally replace sector produced/consumed columns
-        rl_m = pd.merge(rl, cw, how='left', left_on=[fbs_activity_fields[0]], right_on=[nlength])
-        rl_m.loc[rl_m[fbs_activity_fields[0]] != '',
-                 fbs_activity_fields[0]] = rl_m[target_sector_level]
-        rl_m = rl_m.drop(columns=[nlength, target_sector_level])
+            # merge df & conditionally replace sector produced/consumed columns
+            rl_m = pd.merge(rl, cw, how='left', left_on=[fbs_activity_fields[0]], right_on=[nlength])
+            rl_m.loc[rl_m[fbs_activity_fields[0]] != '',
+                     fbs_activity_fields[0]] = rl_m[target_sector_level]
+            rl_m = rl_m.drop(columns=[nlength, target_sector_level])
 
-        rl_m2 = pd.merge(rl_m, cw, how='left', left_on=[fbs_activity_fields[1]], right_on=[nlength])
-        rl_m2.loc[rl_m2[fbs_activity_fields[1]] != '',
-                  fbs_activity_fields[1]] = rl_m2[target_sector_level]
-        rl_m2 = rl_m2.drop(columns=[nlength, target_sector_level])
+            rl_m2 = pd.merge(rl_m, cw, how='left', left_on=[fbs_activity_fields[1]], right_on=[nlength])
+            rl_m2.loc[rl_m2[fbs_activity_fields[1]] != '',
+                      fbs_activity_fields[1]] = rl_m2[target_sector_level]
+            rl_m2 = rl_m2.drop(columns=[nlength, target_sector_level])
 
-        # create one sector count column
-        rl_m2['sector_count_x'] = rl_m2['sector_count_x'].fillna(rl_m2['sector_count_y'])
-        rl_m3 = rl_m2.rename(columns={'sector_count_x': 'sector_count'})
-        rl_m3 = rl_m3.drop(columns=['sector_count_y'])
+            # create one sector count column
+            rl_m2['sector_count_x'] = rl_m2['sector_count_x'].fillna(rl_m2['sector_count_y'])
+            rl_m3 = rl_m2.rename(columns={'sector_count_x': 'sector_count'})
+            rl_m3 = rl_m3.drop(columns=['sector_count_y'])
 
-        # calculate new flow amounts, based on sector count,
-        # allocating equally to the new sector length codes
-        rl_m3['FlowAmount'] = rl_m3['FlowAmount'] / rl_m3['sector_count']
-        rl_m3 = rl_m3.drop(columns=['sector_count'])
+            # calculate new flow amounts, based on sector count,
+            # allocating equally to the new sector length codes
+            rl_m3['FlowAmount'] = rl_m3['FlowAmount'] / rl_m3['sector_count']
+            rl_m3 = rl_m3.drop(columns=['sector_count'])
 
-        # append to df
-        if len(rl) != 0:
-            vLogDetailed.warning('Data found at %s digit NAICS not represented in current '
-                        'data subset: {}'.format(' '.join(map(str, rl_list))), str(i))
-            rows_lost = rows_lost.append(rl_m3, ignore_index=True)
+            # append to df
+            if len(rl) != 0:
+                vLogDetailed.warning('Data found at %s digit NAICS not represented in current '
+                            'data subset: {}'.format(' '.join(map(str, rl_list))), str(i))
+                rows_lost = rows_lost.append(rl_m3, ignore_index=True)
 
     if len(rows_lost) != 0:
         vLogDetailed.info('Allocating FlowAmounts equally to each %s associated with '
