@@ -139,7 +139,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     flow_allocation = collapse_activity_fields(flow_allocation)
 
     # check for issues with allocation ratios
-    check_allocation_ratios(flow_allocation, aset, method)
+    check_allocation_ratios(flow_allocation, aset, method, attr)
 
     # create list of sectors in the flow allocation df, drop any rows of data in the flow df that \
     # aren't in list
