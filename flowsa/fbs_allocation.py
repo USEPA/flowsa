@@ -127,7 +127,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         if len(fba_allocation_subset_2) == 0:
             log.info("No data found to allocate %s", n)
         else:
-            flow_alloc = allocate_by_sector(fba_allocation_subset_2,
+            flow_alloc = allocate_by_sector(fba_allocation_subset_2, attr,
                                             attr['allocation_method'], group_cols,
                                             flowSubsetMapped=flow_subset_mapped)
             flow_alloc = flow_alloc.assign(FBA_Activity=n)

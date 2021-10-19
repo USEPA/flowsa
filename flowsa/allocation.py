@@ -12,10 +12,11 @@ from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_
 from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation
 
 
-def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
+def allocate_by_sector(df_w_sectors, attr, allocation_method, group_cols, **kwargs):
     """
     Create an allocation ratio for df
     :param df_w_sectors: df with column of sectors
+    :param attr: dictionary, attributes of activity set
     :param allocation_method: currently written for 'proportional' and 'proportional-flagged'
     :param group_cols: columns on which to base aggregation and disaggregation
     :return: df with FlowAmountRatio for each sector
@@ -57,7 +58,7 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
     if len(df_w_sectors) == 0:
-        allocation_df = df_w_sectors_nonflagged.copy()
+        allocation_df = df_w_sectors_nonflagged.copy(deep=True)
     else:
         df1 = sector_aggregation(df_w_sectors, group_cols)
         # run sector disaggregation to capture one-to-one naics4/5/6 relationships
@@ -67,7 +68,7 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
         # either 'proportional' or 'proportional-flagged'
         allocation_df = []
         if allocation_method in ('proportional', 'proportional-flagged'):
-            allocation_df = proportional_allocation_by_location(df2)
+            allocation_df = proportional_allocation(df2, attr)
         else:
             log.error('Must create function for specified method of allocation')
 
@@ -85,27 +86,36 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
     return allocation_df
 
 
-def proportional_allocation_by_location(df):
+def proportional_allocation(df, attr):
     """
     Creates a proportional allocation based on all the most
     aggregated sectors within a location
     Ensure that sectors are at 2 digit level - can run sector_aggregation()
     prior to using this function
     :param df: df, includes sector columns
-    :param sectorcolumn: str, sector column by which to base allocation
+    :param attr: dictionary, attributes for an activity set
     :return: df, with 'FlowAmountRatio' column
     """
 
     # tmp drop NoneType
     df = replace_NoneType_with_empty_cells(df)
 
-    # find the shortest length sector
+    # determine if any additional columns beyond location and sector by which
+    # to base allocation ratios
+    if 'allocation_merge_columns' in attr:
+        groupby_cols = ['Location'] + attr['allocation_merge_columns']
+        denom_subset_cols = ['Location', 'LocationSystem', 'Year', 'Denominator'] + attr['allocation_merge_columns']
+    else:
+        groupby_cols = ['Location']
+        denom_subset_cols = ['Location', 'LocationSystem', 'Year', 'Denominator']
 
     denom_df = df.loc[(df['SectorProducedBy'].apply(lambda x: len(x) == 2)) |
                       (df['SectorConsumedBy'].apply(lambda x: len(x) == 2))]
-    denom_df = denom_df.assign(Denominator=denom_df['FlowAmount'].groupby(
-        denom_df['Location']).transform('sum'))
-    denom_df_2 = denom_df[['Location', 'LocationSystem', 'Year', 'Denominator']].drop_duplicates()
+
+    # generate denominator based on identified groupby cols
+    denom_df['Denominator'] = denom_df.groupby(groupby_cols)['FlowAmount'].transform('sum')
+    # subset select columns by which to generate ratios
+    denom_df_2 = denom_df[denom_subset_cols].drop_duplicates()
     # merge the denominator column with fba_w_sector df
     allocation_df = df.merge(denom_df_2, how='left')
     # calculate ratio
