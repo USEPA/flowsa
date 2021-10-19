@@ -13,7 +13,7 @@ from flowsa.common import get_state_FIPS, get_county_FIPS, us_state_abbrev, exte
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def elci_parse(**kwargs):
+def netl_eia_parse(**kwargs):
     """
     Combine, parse, and format the provided dataframes
     :param kwargs: potential arguments include:
@@ -22,7 +22,6 @@ def elci_parse(**kwargs):
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
 
-    from flowsa.flowbyfunctions import aggregator
     args = kwargs['args']
 
     # load the csv file
