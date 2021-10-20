@@ -33,28 +33,58 @@ def name_and_unit_split(df_legend):
             df_legend.loc[i, "Unit"] = None
             df_legend.loc[i, "ActivityProducedBy"] = apb_str
             df_legend.loc[i, "ActivityConsumedBy"] = None
-        if 'difference' in apb_str.lower():
-            df_legend.loc[i, "FlowName"] = 'Nitrogen'
-            df_legend.loc[i, "ActivityProducedBy"] = activity
-        elif 'agricultural' in apb_str.lower():
+
+        if 'agricultural' in apb_str.lower():
             abs_split = activity.lower().split('agricultural')
             df_legend.loc[i, "FlowName"] = abs_split[0].strip() + abs_split[1]
             df_legend.loc[i, "ActivityProducedBy"] = 'Agricultural'
         elif 'area' in apb_str.lower():
             df_legend.loc[i, "FlowName"] = "Area"
             df_legend.loc[i, "ActivityProducedBy"] = activity
-
-
-        elif 'N2O' in apb_str:
-            df_legend.loc[i, "FlowName"] = 'N2O'
-        elif 'NOx' in apb_str:
-            df_legend.loc[i, "FlowName"] = 'NOx'
-        elif 'N2' in apb_str:
-            df_legend.loc[i, "FlowName"] = 'N2'
-        elif 'land area' in apb_str.lower():
-            df_legend.loc[i, "FlowName"] = 'Area'
+        elif 'emissions' in apb_str.lower():
+            abs_split = activity.lower().split('emissions')
+            activity = abs_split[0].strip() + abs_split[1]
+            if ':' in activity:
+                activity_split = activity.lower().split(':')
+                df_legend.loc[i, "FlowName"] = activity_split[1]
+                df_legend.loc[i, "ActivityProducedBy"] = activity_split[0]
+            else:
+                df_legend.loc[i, "FlowName"] = "Nitrogen"
+                df_legend.loc[i, "ActivityProducedBy"] = activity
+        elif 'n content' in apb_str.lower():
+            abs_split = activity.lower().split('n content')
+            activity = abs_split[0].strip() + abs_split[1]
+            df_legend.loc[i, "FlowName"] = "Nitrogen Content"
+            df_legend.loc[i, "ActivityProducedBy"] = activity
+        elif 'n recovered' in apb_str.lower():
+            abs_split = activity.lower().split('n recovered')
+            activity = abs_split[0].strip() + abs_split[1]
+            df_legend.loc[i, "FlowName"] = "Nitrogen Recovered"
+            df_legend.loc[i, "ActivityProducedBy"] = activity
+        elif 'n fixation' in apb_str.lower():
+            abs_split = activity.lower().split('n fixation')
+            activity = abs_split[0].strip() + abs_split[1]
+            df_legend.loc[i, "FlowName"] = "Nitrogen Fixation"
+            df_legend.loc[i, "ActivityProducedBy"] = activity
+        elif 'n-fixing' in apb_str.lower():
+            abs_split = activity.lower().split('n-fixing')
+            activity = abs_split[0].strip() + abs_split[1]
+            df_legend.loc[i, "FlowName"] = "N Fixing"
+            df_legend.loc[i, "ActivityProducedBy"] = activity
         else:
-            df_legend.loc[i, "FlowName"] = 'Nitrogen'
+            df_legend.loc[i, "ActivityProducedBy"] = activity
+            if 'NOX-N' in apb_str:
+                df_legend.loc[i, "FlowName"] = 'NOX-N'
+            elif 'N2O' in apb_str:
+                df_legend.loc[i, "FlowName"] = 'N2O'
+            elif 'NOx' in apb_str:
+                df_legend.loc[i, "FlowName"] = 'NOx'
+            elif 'N2' in apb_str:
+                df_legend.loc[i, "FlowName"] = 'N2'
+            elif 'land area' in apb_str.lower():
+                df_legend.loc[i, "FlowName"] = 'Area'
+            else:
+                df_legend.loc[i, "FlowName"] = 'Nitrogen'
 
         if 'emissions' in apb_str.lower():
             df_legend.loc[i, "Compartment "] = "air"

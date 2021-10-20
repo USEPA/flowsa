@@ -1,7 +1,6 @@
 author: US Environmental Protection Agency
-source_name: 'Phosphorus FBA import - Sabo'
-source_url: https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1029%2F2020JG005684&file=2020JG005684-sup-0002-Data+Set+SI-S01.xlsx
-bib_id: USGS_SPARROW_MW
+source_name: 'USGS SPARROW MW N'
+bib_id: USGS_SPARROW_MW_N
 api_name: USGS_SPARROW
 api_key_required: false
 format: txt
