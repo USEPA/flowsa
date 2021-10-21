@@ -1,103 +1,28 @@
 # flowsa
+`flowsa` is a data processing library that attributes resource use, waste, emissions, and loss to economic sectors. `flowsa` aggregates, combines, and allocates data from a variety of sources. The sources can be found in the [GitHub wiki](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-activity-datasets) under "Flow-By-Activity Datasets".
 
-flowsa attributes resource use, waste, emissions, and loss to economic sectors. It produces standard tabular formats with
-sector attribution data using pandas dataframes.
+`flowsa` helps support [USEEIO](https://www.epa.gov/land-research/us-environmentally-extended-input-output-useeio-technical-content) as part of the [USEEIO modeling](https://www.epa.gov/land-research/us-environmentally-extended-input-output-useeio-models) framework. The USEEIO models estimate potential impacts of goods and services in the US economy. The [Flow-By-Sector datasets](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-sector-datasets) created in FLOWSA are the environmental inputs to [`useeior`](https://github.com/USEPA/useeior).
 
-## Installation, Examples, Detailed Documentation
-For installation instructions, example code, and further explanation of the code, see the [wiki](https://github.com/USEPA/flowsa/wiki).
+## Usage
+### Flow-By-Activity Datasets
+Flow-By-Activity datasets are formatted tables from a variety of sources. They are largely unchanged from the original data source, with the exception of formatting.
 
-## Terms
+`import flowsa` \
+`flowsa.seeAvailableFlowByModels('FBA')` \
+`flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017)`
 
-_flows_: represent the physical movement of material, energy, entities or money as input or output to or between activities.
-The terms __flows__ comes from life cycle assessment (ISO 14044).
+### Flow-By-Sector Datasets
+Flow-By-Sector datasets are tables of environmental and other data attributed to [sectors](https://www.census.gov/naics/).
 
-_sectors_: generally these are economic sectors generating economic activity, but are extended
-here to include households and institutional end users. Using the BEA definitions in input-output
-tables, these can be either _industries_ or _commodities_.
+`import flowsa` \
+`flowsa.seeAvailableFlowByModels('FBS')` \
+`flowsa.getFlowBySector('Water_national_2015_m1')`
 
-_attribution_: The sectors through which activity uses, produces or receives the flows (input or output).
+## Installation
+`pip install https://github.com/USEPA/flowsa/archive/refs/tags/v0.3.2.zip`
 
-## Flow Classes
-
-Class | Description | FlowBySector Reference Unit | [Flow Types](./formatspecs/FlowBySector.md) |
---- | --- | --- | --- |
-Chemicals | Chemicals and groups of chemicals as defined in the [Federal Elementary Flow List](https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List) | kg | Modeled as ELEMENTARY_FLOWS produced by sectors |
-Employment | Jobs | p | Modeled as ELEMENTARY_FLOWS produced by sectors |
-Energy | Energy consumption, transfer as electricity or waste heat  | MJ | All types |
-Geological | Mineral and metal use | kg | All types |
-Land | Land area occupied | m2 | Modeled as ELEMENTARY_FLOWS consumed by sectors |
-Money | Purchases | USDyear* | Modeled as TECHNOSPHERE_FLOWS with producing and consuming sectors | 
-Water | Water use and release data, including wastewater | kg | All types |
-Other | Misc flows used for supporting data | _varies_ | All types |
-
-*USD unit value varies by year and is reported like 'USD2012'
-
-## FlowByActivity Datasets
- 
-Source data are imported and formatted into FlowByActivity datasets. The source data are only modified to meet column 
-formatting criteria, meaning units are not standardized across "Class" types.
- 
-Code | Dataset | Class | Geographic Scale | Description | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 |
---- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
-Blackhurst_IO | [Input-Output Vector of 2002 Water Withdrawals for the United States](https://pubs.acs.org/doi/abs/10.1021/es903147k?journalCode=esthag) | Water| National | |  |  |  |  |  | |  | |  |  | 
-BLM_PLS | [Bureau of Land Management Public Land Statistics](https://www.blm.gov/about/data/public-land-statistics) | Land | National | |  | X |  |  |  | |  | |  |  | 
-BEA_GDP | [Bureau of Economic Analysis GDP](https://www.bea.gov/data/gdp) | Money| National | |  |  |  |  |  | |  | |  |  | 
-BEA_GDP_GrossOutput | [Bureau of Economic Analysis GDP Gross Output](https://www.bea.gov/data/industries/gross-output-by-industry) | Money | National | |  |  |  |  |  | |  | |  |  | 
-BEA_Use | [Bureau of Economic Analysis Use](https://www.bea.gov/industry/input-output-accounts-data) | Money | National | |  | X |  |  |  | | X | |  |  | 
-BEA_Use_Detail_PRO_BeforeRedef |Bureau of Economic Analysis Use Before Redefinitions | Money | National | |  |  |  |  |  | |  | |  |  | 
-BEA_Make_Detail_BeforeRedef |Bureau of Economic Analysis Make Before Redefinitions | Money | National | |  |  |  |  |  | |  | |  |  | 
-BLS_QCEW | [Bureau of Labor Statistics Quarterly Census of Employment and Wages](https://www.bls.gov/cew/) | Employment, Money, Other | County | Number of employees per industry |  |  |  |  | X | X |  |  |  |  |
-Census_CBP | [Census Bureau County Business Patterns](https://www.census.gov/programs-surveys/cbp.html) | Employment, Money, Other | County | Number of employees per industry, Annual payroll per industry, Number of establishments per industry |  |  |  |  | X |  |  |  |  |  |
-Census_PEP_Population | [Census Bureau Population Estimates](https://www.census.gov/programs-surveys/popest.html) | Other | County | Population | X | X | X | X | X | X | X | X | X | X | 
-EIA_CBECS_Land | Energy Information Administration Commercial Buildings Energy Consumption Survey | |  | |  |  |  |  |  | |  | |  |  |
-EIA_CBECS_Water| [Energy Information Administration Commercial Buildings Energy Consumption Survey](https://www.eia.gov/consumption/commercial/reports/2012/water/) | Water | Country | Water consumption in large buildings |  |  | X |  |  |  |  |  |  |  | 
-EIA_MECS_Energy| [Energy Information Administration Manufacturing Energy Consumption Survey](https://www.eia.gov/consumption/manufacturing/) | Energy, Other | Region | Fuel and nonfuel consumption of energy flows by manufacturing industries | X |  |  |  | X |  |  |  |  |  | 
-EIA_MECS_Land | Energy Information Administration Manufacturing Energy Consumption Survey | Land | National, Regional | |  |  |  |  |  | |  | |  |  |
-EIA_MER | Energy Information Administration Monthly Energy Review  | Energy | National | |  |  |  |  |  | |  | |  |  |
-EPA_GHGI | Inventory of U.S. Greenhouse Gas Emissions and Sinks | Chemicals, Energy, Other| National | |  |  |  |  |  | |  | |  |  |
-EPA_NEI_Nonpoint |[Environmental Protection Agency National Emissions Inventory Nonpoint sources](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei) | Chemicals | County | Air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants |  |  |  |  |  |  |  | X |  |  | 
-EPA_NEI_Nonroad |[Environmental Protection Agency National Emissions Inventory Nonroad sources](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei) | Chemicals | County | Air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants |  |  |  |  |  |  |  | X |  |  |
-EPA_NEI_Onroad |[Environmental Protection Agency National Emissions Inventory Onroad sources](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei) | Chemicals | County |  Air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants |  |  |  |  |  |  |  | X |  |  |
-NOAA_FisheryLandings | [National Oceanic and Atmospheric Administration Fisheries](https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200) | Money | State | Fishery landings | X | X | X | X | X | X | X | X | X | X | 
-StatCan_GDP | Statistics Canada Gross Domestic Product | Money | Canada | |  |  |  |  |  | |  | |  |  |
-StatCan_IWS_MI | [Statistics Canada Industrial Water Survey](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701) | Water | Country | Water use by NAICS |  | X |  | X |  | X |  |  |  |  | 
-StatCan_LFS | Statistics Canada Labour Force Study | Employment | Canada  | |  |  |  |  |  | |  | |  |  |
-USDA_CoA_Cropland | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) | Land, Other | County | Crop area by farm size and irrigation status | | | X | | | |  | X | | |
-USDA_CoA_Cropland_NAICS | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report)  | |  | |  |  |  |  |  | |  | |  |  |
-USDA_CoA_Livestock | [USDA Census of Agriculture](https://www.nass.usda.gov/Publications/AgCensus/2017/index.php#full_report) | Other | County | Livestock count by farm size | | | X | | | |  | X | | | 
-USDA_ERS_FIWS | USDA Farm Income and Wealth Statistics | Money | National | |  |  |  |  |  | |  | |  |  |
-USDA_ERS_MLU | USDA Major Land Use | Land | National | |  |  |  |  |  | |  | |  |  |
-USDA_IWMS | [USDA Irrigation and Water Management Survey](https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Farm_and_Ranch_Irrigation/) | Water | State | Water application rate by state and crop |  |  |  | X |  |  |  |  | X |  | 
-USGS_NWIS_WU | [US Geological Survey Water Use in the US](https://www.usgs.gov/mission-areas/water-resources/science/water-use-united-states?qt-science_center_objects=0#qt-science_center_objects) | Water | County | Annual national level water use by various activities | X |  |  | | | X | | | | |
-USGS_WU_Coef | USDA Water Use Coefficients | Water | National | |  |  |  |  |  | |  | |  |  |
-
-### FlowByActivity Naming Convention
-Source dataset names are consistent across (1) the FlowByActivity dataset 'SourceName' columns, (2) the parquet file names,
-(3) the Crosswalk file names, and (4) the Source Catalog information. Source names are comprised of two or three components.
-The first part of the name is the agency that published the data. The second component is the name or acronym
-of the published dataset. The third piece of the naming schema, if it exists, is the topic of data parsed from the 
-original dataset. Of the four FlowByActivity datasets imported from the U.S. Department of Agriculture (USDA), three are
-data pulled from the same dataset, the Census of Agriculture (CoA). To make data easier to find, the CoA data is separated 
-by topic (Cropland, Livestock, Product Market Value). As the FlowByActivity datasets are grouped by topic, some of the 
-parquets contain multiple class types, meaning the Class type should be specified when calling on the data. The
-USDA_CoA_Cropland dataframe includes acreage information for crops (Class = Land) and the number of farms that grow a
-particular crop (Class = Other). 
-
-## FlowBySector Datasets
-
-Environmental data attributed to North American Industrial Classification (NAICS) Codes, formatted into standard 
-FlowBySector datasets. 
- 
-Description | Code | Years | Number of methods of sector allocation |
---- | --- | --- | --- |
-Criteria and hazardous air emissions | CAP_HAP_national |  2017 | 1 |
-Employment | Employment_national | 2017 | 1 |
-Land use | Land_national |  2012 | 1 |
-Water withdrawal | Water_national |  2010, 2015 | 2 |
-Water withdrawal | Water_state |  2015 | 1 |
-Point source releases to water | TRI_DMR_national | 2017 | 1 |
-Commercial RCRA-defined hazardous waste | CRHW_national | 2017 | 1 |
-Point source industrial releases to ground | GRDREL_national | 2017 | 1 | 
+### Additional Information on Installation, Examples, Detailed Documentation
+For more information on `flowsa` see the [wiki](https://github.com/USEPA/flowsa/wiki).
 
 ## Disclaimer
 

@@ -13,13 +13,13 @@ Requires StEWI >= 0.9.5. https://github.com/USEPA/standardizedinventories
 
 import sys
 import pandas as pd
+from esupy.dqi import get_weighted_average
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import add_missing_flow_by_fields
-from flowsa.mapping import map_flows
+from flowsa.sectormapping import map_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
-from esupy.dqi import get_weighted_average
 
 def stewicombo_to_sector(yaml_load):
     """
@@ -132,7 +132,7 @@ def stewi_to_sector(yaml_load):
         functions = yaml_load['functions']
 
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
-    # run stewicombo to combine inventories, filter for LCI, remove overlap
+    # run stewi to generate inventory and filter for LCI
     df = pd.DataFrame()
     for database, year in yaml_load['inventory_dict'].items():
         inv = stewi.getInventory(database, year, filter_for_LCI=True, US_States_Only=True)
@@ -307,7 +307,7 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     # apply flow mapping separately for elementary and waste flows
     fbs['FlowType'] = 'ELEMENTARY_FLOW'
     fbs.loc[fbs['MetaSources']=='RCRAInfo', 'FlowType'] = 'WASTE_FLOW'
-    
+
     # Add 'SourceName' for mapping purposes
     fbs['SourceName'] = fbs['MetaSources']
     fbs_elem = fbs.loc[fbs['FlowType'] == 'ELEMENTARY_FLOW']
@@ -321,7 +321,7 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
         fbs_waste = map_flows(fbs_waste, list(inventory_dict.keys()),
                               flow_type = 'WASTE_FLOW')
         fbs_list.append(fbs_waste)
-    
+
     if len(fbs_list) == 1:
         fbs_mapped = fbs_list[0]
     else:

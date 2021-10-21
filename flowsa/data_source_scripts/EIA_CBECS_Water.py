@@ -25,7 +25,7 @@ def eia_cbecs_water_call(**kwargs):
     response_load = kwargs['r']
 
     # Convert response to dataframe
-    df_raw = pd.io.excel.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
+    df_raw = pd.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
     # skip rows and remove extra rows at end of dataframe
     df = pd.DataFrame(df_raw.loc[10:25]).reindex()
     # set column headers

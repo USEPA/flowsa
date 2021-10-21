@@ -9,6 +9,7 @@ import io
 import zipfile
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import convert_fba_unit
 
 
 def epa_nei_url_helper(**kwargs):
@@ -129,6 +130,10 @@ def epa_nei_global_parse(**kwargs):
                                    'Unit',
                                    'Description']), 1, inplace=True)
 
+    # to align with other processed NEI data (Point from StEWI), units are
+    # converted during FBA creation instead of maintained
+    df = convert_fba_unit(df)
+
     # add hardcoded data
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Class'] = "Chemicals"
@@ -203,9 +208,20 @@ def clean_NEI_fba(fba):
     """
     fba = remove_duplicate_NEI_flows(fba)
     fba = drop_GHGs(fba)
-    # Remove the portion of PM10 that is PM2.5 to eliminate double counting and rename flow
+    # Remove the portion of PM10 that is PM2.5 to eliminate double counting,
+    # rename FlowName and Flowable, and update UUID
     fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)', ['PM2.5 Primary (Filt + Cond)'])
-    fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'), 'FlowName'] = 'PM10-PM2.5'
+    # # link to FEDEFL
+    # import fedelemflowlist
+    # mapping = fedelemflowlist.get_flowmapping('NEI')
+    # PM_df = mapping[['TargetFlowName',
+    #                  'TargetFlowUUID']][mapping['SourceFlowName']=='PM10-PM2.5']
+    # PM_list = PM_df.values.flatten().tolist()
+    PM_list = ['Particulate matter, > 2.5μm and ≤ 10μm',
+               'a320e284-d276-3167-89b3-19d790081c08']
+    fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
+            ['FlowName','Flowable','FlowUUID']] = ['PM10-PM2.5',
+                                                   PM_list[0], PM_list[1]]
     return fba
 
 
@@ -238,12 +254,13 @@ def remove_duplicate_NEI_flows(df):
 
 def drop_GHGs(df):
     """
-    GHGs are included in some NEI datasets. If these data are not compiled together 
+    GHGs are included in some NEI datasets. If these data are not compiled together
     with GHGRP, need to remove them as they will be tracked from a different source
     :param df: df, FBA format
     :return: df
     """""
-    # Flow names reflect source data prior to FEDEFL mapping
+    # Flow names reflect source data prior to FEDEFL mapping, using 'FlowName'
+    # instead of 'Flowable'
     flowlist = [
         'Carbon Dioxide',
         'Methane',
@@ -263,7 +280,8 @@ def drop_pesticides(df):
     :param df: df, FBA format
     :return: df
     """
-    # Flow names reflect source data prior to FEDEFL mapping
+    # Flow names reflect source data prior to FEDEFL mapping, using 'FlowName'
+    # instead of 'Flowable'
     flowlist = [
         '2,4-Dichlorophenoxy Acetic Acid',
         'Captan',
@@ -299,7 +317,8 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     match_conditions = ['ActivityProducedBy', 'Compartment', 'Location', 'Year']
 
     df_contributing_flows = df.loc[df['FlowName'].isin(contributing_flows)]
-    df_contributing_flows = df_contributing_flows.groupby(match_conditions, as_index=False)['FlowAmount'].sum()
+    df_contributing_flows = df_contributing_flows.groupby(match_conditions,
+                                                          as_index=False)['FlowAmount'].sum()
 
     df_contributing_flows['FlowName'] = aggregate_flow
     df_contributing_flows['ContributingAmount'] = df_contributing_flows['FlowAmount']

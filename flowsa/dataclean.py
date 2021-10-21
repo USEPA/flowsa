@@ -93,7 +93,6 @@ def standardize_units(df):
     gallon_water_to_kg = 3.79  # rounded to match USGS_NWIS_WU mapping file on FEDEFL
     ac_ft_water_to_kg = 1233481.84
     acre_to_m2 = 4046.8564224
-    acres_in_thousand_acres = 1000
     mj_in_btu = .0010550559
     ton_to_kg = 907.185
     lb_to_kg = 0.45359
@@ -101,7 +100,8 @@ def standardize_units(df):
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['ACRES', 'Acres']), df['FlowAmount'] * acre_to_m2,
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['ACRES', 'Acres']),
+                                       df['FlowAmount'] * acre_to_m2,
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['ACRES', 'Acres']), 'm2', df['Unit'])
 
@@ -216,7 +216,7 @@ def harmonize_FBS_columns(df):
     # combining MetaSources string in process
     df_sub = df_sub.groupby(group_no_meta)['MetaSources'].apply(', '.join).reset_index()
     # drop the MetaSources col in original df and replace with the MetaSources col in df_sub
-    df = df.drop('MetaSources', 1)
+    df = df.drop(columns='MetaSources')
     harmonized_df = df.merge(df_sub, how='left')
     harmonized_df = replace_strings_with_NoneType(harmonized_df)
 

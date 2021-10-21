@@ -8,7 +8,6 @@ source_names:
     geoscale_to_use: state
     year: 2017
     clean_fba_df_fxn: clean_NEI_fba_no_pesticides
-    clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
     activity_sets:
@@ -20,7 +19,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_2: #Crops
         allocation_source: "USDA_CoA_Cropland"
         allocation_method: proportional
@@ -32,7 +30,6 @@ source_names:
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-        allocation_helper: no
       activity_set_3: #Fuel Combustion - Industry #only allocating to 3digits
         allocation_source: "EIA_MECS_Energy"
         allocation_method: proportional
@@ -50,7 +47,6 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: mecs_energy_fba_cleanup
         clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional-flagged
         helper_source_class: "Employment"
@@ -71,7 +67,6 @@ source_names:
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
-        allocation_helper: no
       activity_set_5: # mobile sources and fuel storage
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
@@ -83,7 +78,6 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
         clean_parameter: "324110"
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -104,7 +98,6 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
         clean_parameter: "325310"
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -123,7 +116,6 @@ source_names:
           - "Gross Output"
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -144,7 +136,6 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
         clean_parameter: "325320"
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -160,7 +151,6 @@ source_names:
     geoscale_to_use: national
     year: 2017
     clean_fba_df_fxn: clean_NEI_fba
-    clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
     activity_sets:
@@ -172,7 +162,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_2: # off-highway vehicles and equipment
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
@@ -184,7 +173,6 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
         clean_parameter: "324110"
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -200,7 +188,6 @@ source_names:
     geoscale_to_use: national
     year: 2017
     clean_fba_df_fxn: clean_NEI_fba
-    clean_fba_w_sec_df_fxn: None
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Onroad_2017_asets.csv'
     activity_sets:
@@ -212,7 +199,6 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-        allocation_helper: 'no'
       activity_set_2: # highway vehicles and gas stations
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
@@ -224,7 +210,6 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
         clean_parameter: "324110"
-        allocation_helper: 'yes'
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -240,6 +225,7 @@ source_names:
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
     NAICS_level: 'NAICS_6'
     geo_scale: 'national'
+    local_inventory_name: 'NEI_TRI_air_2017'
     compartments:
      - 'air'
     functions:
