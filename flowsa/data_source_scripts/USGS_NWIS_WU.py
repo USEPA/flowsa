@@ -584,7 +584,6 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
     """
 
     df = modify_sector_length(df_wsec)
-    df = filter_out_activities(df, attr)
 
     return df
 
@@ -644,30 +643,5 @@ def modify_sector_length(df_wsec):
         df = pd.concat([df1, df2], sort=True)
     else:
         df = df1.copy()
-
-    return df
-
-
-def filter_out_activities(df, attr):
-    """
-    To avoid double counting and ensure that the deliveries from public supplies to another
-    activity are accurately accounted for, in some activity sets, need to drop certain rows
-    of data. if direct allocation, drop rows of data where an activity in either activity
-    column is not also directly allocated. These non-direct activities are
-    captured in other activity allocations
-    :param df: a dataframe that has activity consumed/produced by columns
-    :param attr: dictionary, attribute data from method yaml for activity set
-    :return: df, modified to avoid double counting by activity sets
-    """
-
-    # if the activity is public supply and the method is direct,
-    # drop rows of industrial and domestic because accounted for in other activity sets
-    if (attr['allocation_method'] == 'direct') & ('Public Supply' in attr['names']):
-        # drop rows of Industrial
-        df = df.loc[(df[fba_activity_fields[0]] != 'Industrial') &
-                    (df[fba_activity_fields[1]] != 'Industrial')].reset_index(drop=True)
-        # drop rows of Domestic
-        df = df.loc[(df[fba_activity_fields[0]] != 'Domestic') &
-                    (df[fba_activity_fields[1]] != 'Domestic')].reset_index(drop=True)
 
     return df
