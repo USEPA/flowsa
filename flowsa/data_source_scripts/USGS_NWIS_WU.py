@@ -351,9 +351,9 @@ def usgs_fba_data_cleanup(df):
 
     # drop rows of commercial data (because only exists for 3 states),
     # causes issues because linked with public supply
-    # also drop closed-loop or once-through cooling (thermoelectric power) due to limited data
-    vLogDetailed.info('Removing all rows for Commercial Data because only exists for three states '
-                      'and causes issues as information on Public Supply deliveries')
+    # also drop closed-loop or once-through cooling (thermoelectric power) to avoid double counting
+    vLogDetailed.info('Removing all rows for Commercial Data because does not exist for all states '
+                      'and causes issues as information on Public Supply deliveries.')
     dfa = df[~df['Description'].str.lower().str.contains(
         'commercial|closed-loop cooling|once-through')]
     calculate_flowamount_diff_between_dfs(df, dfa)
@@ -390,6 +390,10 @@ def usgs_fba_data_cleanup(df):
 
     # concat the two df
     dfd = pd.concat([df1, df2, df3], ignore_index=True, sort=False)
+
+    # In 2015, there is data for consumptive water use for thermo and crop, drop because
+    # do not calculate consumptive water loss for all water categories
+    dfd = dfd[dfd['Compartment'] != 'air'].reset_index(drop=True)
 
     return dfd
 
@@ -443,7 +447,7 @@ def calculate_net_public_supply(df_load):
     df_w = df1_sub[df1_sub[fba_activity_fields[1]] == 'Public Supply']
     df_us = df1_sub[df1_sub['Location'] == '00000']
     # split consumed further into fresh water (assumption domestic deliveries are freshwater)
-    # temporary assumption that water withdrawal taken evenly from ground and surface
+    # assumption that water withdrawal taken equally from ground and surface
     df_w1 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] != 'total')]
     df_w2 = df_w[(df_w['FlowName'] == 'fresh') & (df_w['Compartment'] == 'total')]
     # compare units
