@@ -152,22 +152,20 @@ def usgs_parse(**kwargs):
                                      np.where(df.Description.str.contains("saline"), "saline",
                                               np.where(df.Description.str.contains("wastewater"),
                                                        "wastewater", "total")))
+    # drop data that is only published by some states/not estimated nationally
+    # and that would produce incomplete results
+    # instream water use is not withdrawn or consumed
+    df = df[~df['Description'].str.contains('instream water use|conveyance')]
+
     # create flow name column
-    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground"),
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("ground|Ground"),
                                         "ground", "total")
-    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Ground"),
-                                        "ground", df['Compartment'])
-    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("surface"),
+    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("surface|Surface"),
                                         "surface", df['Compartment'])
-    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("Surface"),
-                                        "surface", df['Compartment'])
-    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("instream water use"),
-                                        "surface", df['Compartment']) # based on usgs def
+    # consumptive water use is reported nationally for thermoelectric and irrigation beginning in 2015
     df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("consumptive"),
                                         "air", df['Compartment'])
-    df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("conveyance"),
-                                        "water", df['Compartment'])
-    # df.loc[:, 'Compartment'] = np.where(df.Description.str.contains("total"), "total", "total")
+
     # drop rows of data that are not water use/day. also drop "in" in unit column
     df.loc[:, 'Unit'] = df['Unit'].str.strip()
     df.loc[:, "Unit"] = df['Unit'].str.replace("in ", "", regex=True)
