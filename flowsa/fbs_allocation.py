@@ -37,14 +37,18 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
     # for each activity, if activities are not sector like, check that there is no data loss
     if load_source_catalog()[k]['sector-like_activities'] is False:
         activity_list = []
+        n_allocated = []
         for n in names:
+            # avoid double counting by dropping n from the df after calling on
+            # n, in the event both ACB and APB values exist
+            fbs = fbs[~((fbs[fba_activity_fields[0]].isin(n_allocated)) |
+                      (fbs[fba_activity_fields[1]].isin(n_allocated)))].reset_index(drop=True)
             log.debug('Checking for %s at %s', n, method['target_sector_level'])
-            fbs_subset = fbs[((fbs[fba_activity_fields[0]] == n) &
-                              (fbs[fba_activity_fields[1]] == n)) |
-                             (fbs[fba_activity_fields[0]] == n) |
+            fbs_subset = fbs[(fbs[fba_activity_fields[0]] == n) |
                              (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
             fbs_subset = allocate_dropped_sector_data(fbs_subset, method['target_sector_level'])
             activity_list.append(fbs_subset)
+            n_allocated.append(n)
         fbs = pd.concat(activity_list, ignore_index=True)
     return fbs
 
@@ -119,8 +123,15 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     else:
         group_cols = fba_wsec_default_grouping_fields
     group_cols = [e for e in group_cols if e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
+    n_allocated = []
     for n in names:
         log.debug("Creating allocation ratios for %s", n)
+        # if n has already been called, drop all rows of data containing n to avoid double
+        fba_allocation_subset = fba_allocation_subset[
+            ~((fba_allocation_subset[fba_activity_fields[0]].isin(n_allocated)) |
+              (fba_allocation_subset[fba_activity_fields[1]].isin(n_allocated))
+              )].reset_index(drop=True)
+        # counting when there are two activities in each ACB and APB columns
         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n],
                                                             flowSubsetMapped=flow_subset_mapped,
                                                             allocMethod=attr['allocation_method'],
@@ -132,6 +143,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
                                             attr['allocation_method'], group_cols,
                                             flowSubsetMapped=flow_subset_mapped)
             flow_alloc = flow_alloc.assign(FBA_Activity=n)
+            n_allocated.append(n)
             flow_alloc_list.append(flow_alloc)
     flow_allocation = pd.concat(flow_alloc_list, ignore_index=True)
 

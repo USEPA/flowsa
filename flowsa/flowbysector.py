@@ -146,6 +146,8 @@ def main(**kwargs):
             else:
                 aset_names = None
 
+            # master list of activity names read in from data source
+            ml_act = []
             # create dictionary of allocation datasets for different activities
             activities = v['activity_sets']
             # subset activity data and allocate to sector
@@ -155,6 +157,15 @@ def main(**kwargs):
                     names = aset_names[aset_names['activity_set'] == aset]['name']
                 else:
                     names = attr['names']
+
+                # to avoid double counting data from the same source, in the event there are
+                # values in both the APB and ACB columns, if an activity has
+                # already been read in and allocated, remove that activity from the mapped flows
+                # regardless of what activity set the data was read in
+                flows_mapped = flows_mapped[~((flows_mapped[fba_activity_fields[0]].isin(ml_act)) |
+                                              (flows_mapped[fba_activity_fields[1]].isin(ml_act))
+                                              )].reset_index(drop=True)
+                ml_act.extend(names)
 
                 vLog.info("Preparing to handle %s in %s", aset, k)
                 # subset fba data by activity
