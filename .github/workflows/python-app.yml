@@ -53,13 +53,6 @@ jobs:
       if: matrix.build-type == 'user'
       run: |
         pip install .
-    # import USDS key
-    - name: Save api key
-      env:
-        USDS_KEY: ${{ secrets.USDS_KEY }}
-      run: | 
-        mkdir -p /home/runner/.local/share/flowsa/API_Keys/
-        echo "$USDS_KEY" > /home/runner/.local/share/flowsa/API_Keys/USDA_Quickstats_API_KEY.txt
     # linting & pytest
     - name: Lint with flake8
       run: |
