@@ -5,14 +5,15 @@
 Public API for flowsa
 For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/format%20specs
 """
+import os
+import pprint
 
-import logging as log
 from esupy.processed_data_mgmt import load_preprocessed_output
-from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath,\
-    DEFAULT_DOWNLOAD_IF_MISSING
+from flowsa.common import paths, biboutputpath, fbaoutputpath, fbsoutputpath, \
+    DEFAULT_DOWNLOAD_IF_MISSING, log, sourceconfigpath, flowbysectormethodpath, load_sourceconfig
 from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
-from flowsa.datachecks import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
+from flowsa.validation import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
@@ -86,7 +87,9 @@ def getFlowBySector(methodname, download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING)
     if fbs is None and download_if_missing:
         log.info('%s not found in %s, downloading from remote source',
                  methodname, fbsoutputpath)
-        download_from_remote(fbs_meta, paths)
+        # download and load the FBS parquet
+        subdirectory_dict = {'.log': 'Log'}
+        download_from_remote(fbs_meta, paths, subdirectory_dict=subdirectory_dict)
         fbs = load_preprocessed_output(fbs_meta, paths)
 
     # If remote download not specified and no FBS, generate the FBS
@@ -132,3 +135,43 @@ def writeFlowBySectorBibliography(methodname):
     # and save file to local directory
     log.info('Write bibliography to %s%s.bib', biboutputpath, methodname)
     generate_fbs_bibliography(methodname)
+
+
+def seeAvailableFlowByModels(flowbytype):
+    """
+    Return available Flow-By-Activity or Flow-By-Sector models
+    :param flowbytype: 'FBA' or 'FBS'
+    :return: console printout of available models
+    """
+
+    # return fba directory path dependent on FBA or FBS
+    if flowbytype == 'FBA':
+        fb_directory = sourceconfigpath
+    else:
+        fb_directory = flowbysectormethodpath
+
+    # empty dictionary
+    fb_dict = {}
+    # empty df
+    fb_df = []
+    # run through all files and append
+    for file in os.listdir(fb_directory):
+        if file.endswith(".yaml"):
+            # drop file extension
+            f = os.path.splitext(file)[0]
+            if flowbytype == 'FBA':
+                s = load_sourceconfig(f)
+                years = s['years']
+                fb_dict.update({f: years})
+            # else if FBS
+            else:
+                fb_df.append(f)
+
+    # determine format of data to print
+    if flowbytype == 'FBA':
+        data_print = fb_dict
+    else:
+        data_print = fb_df
+
+    # print data in human-readable format
+    pprint.pprint(data_print, width=79, compact=True)

@@ -15,7 +15,8 @@ import zipfile
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, fba_default_grouping_fields, flow_by_activity_wsec_mapped_fields
+from flowsa.common import US_FIPS, fba_default_grouping_fields, flow_by_activity_wsec_fields, \
+    flow_by_activity_mapped_wsec_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     aggregator, estimate_suppressed_data, log
 from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
@@ -153,7 +154,8 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
     fba_df = clean_bls_qcew_fba(fba_df, **kwargs)
 
     # rename flowname value
-    fba_df['FlowName'] = fba_df['FlowName'].replace({'Number of employees': 'Jobs'})
+    for c in ['FlowName', 'Flowable']:
+        fba_df[c] = fba_df[c].replace({'Number of employees': 'Jobs'})
 
     return fba_df
 
@@ -255,7 +257,23 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     df_w_sec = df_w_sec.reset_index(drop=True)
     df2 = add_missing_flow_by_fields(df_w_sec,
-                                     flow_by_activity_wsec_mapped_fields).reset_index(drop=True)
+                                     flow_by_activity_wsec_fields).reset_index(drop=True)
+    df3 = replace_strings_with_NoneType(df2)
+
+    return df3
+
+def bls_clean_allocation_fba_w_sec_sat_table(df_w_sec, **kwargs):
+    """
+    clean up bls df with sectors by estimating suppresed data
+    :param df_w_sec: df, FBA format BLS QCEW data
+    :param kwargs: additional arguments can include 'attr', a
+    dictionary of FBA method yaml parameters
+    :return: df, BLS QCEW FBA with estimated suppressed data
+    """
+    df_w_sec = df_w_sec.reset_index(drop=True)
+    df2 = add_missing_flow_by_fields(df_w_sec,
+                                     flow_by_activity_mapped_wsec_fields
+                                     ).reset_index(drop=True)
     df3 = replace_strings_with_NoneType(df2)
 
     return df3
