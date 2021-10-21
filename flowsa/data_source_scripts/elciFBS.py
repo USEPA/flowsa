@@ -9,7 +9,7 @@ data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
 
 """
 import pandas as pd
-from flowsa.mapping import get_activitytosector_mapping
+from flowsa.sectormapping import get_activitytosector_mapping
 from flowsa.flowbyfunctions import aggregator
 from flowsa.common import US_FIPS, fbs_default_grouping_fields
 
