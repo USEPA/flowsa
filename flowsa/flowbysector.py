@@ -49,13 +49,16 @@ from flowsa.validation import allocate_dropped_sector_data,\
 
 def parse_args():
     """
-    Make year and source script parameters
+    Make method parameters
     :return: dictionary, 'method'
     """
     ap = argparse.ArgumentParser()
     ap.add_argument("-m", "--method",
                     required=True, help="Method for flow by sector file. "
                                         "A valid method config file must exist with this name.")
+    ap.add_argument("-d", "--download_FBAs_if_missing",
+                    required=False, help="Option to download any FBAs not saved locally rather"
+                                         "than generating the FBAs in FLOWSA.")
     args = vars(ap.parse_args())
     return args
 
@@ -75,13 +78,15 @@ def load_method(method_name):
     return method
 
 
-def load_source_dataframe(k, v):
+def load_source_dataframe(k, v, download_FBA_if_missing):
     """
     Load the source dataframe. Data can be a FlowbyActivity or
     FlowBySector parquet stored in flowsa, or a FlowBySector
     formatted dataframe from another package.
     :param k: str, The datasource name
     :param v: dictionary, The datasource parameters
+    :param download_FBA_if_missing: Bool, if True will download FBAs from
+       Data Commons. Default is False.
     :return: df of identified parquet
     """
     if v['data_format'] == 'FBA':
@@ -91,8 +96,9 @@ def load_source_dataframe(k, v):
         else:
             geo_level = None
         vLog.info("Retrieving flowbyactivity for datasource %s in year %s", k, str(v['year']))
-        flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'], flowclass=v['class'],
-                                            geographic_level=geo_level)
+        flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'],
+                                            flowclass=v['class'], geographic_level=geo_level,
+                                            download_FBA_if_missing=download_FBA_if_missing)
     elif v['data_format'] == 'FBS':
         vLog.info("Retrieving flowbysector for datasource %s", k)
         flows_df = flowsa.getFlowBySector(k)
@@ -116,6 +122,7 @@ def main(**kwargs):
         kwargs = parse_args()
 
     method_name = kwargs['method']
+    download_FBA_if_missing = kwargs.get('download_FBAs_if_missing', False)
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
@@ -126,7 +133,7 @@ def main(**kwargs):
     fbs_list = []
     for k, v in fb.items():
         # pull fba data for allocation
-        flows = load_source_dataframe(k, v)
+        flows = load_source_dataframe(k, v, download_FBA_if_missing)
 
         if v['data_format'] == 'FBA':
             # ensure correct datatypes and that all fields exist
@@ -219,7 +226,7 @@ def main(**kwargs):
                     fbs =\
                         dataset_allocation_method(flows_mapped_wsec, attr,
                                                   names, method, k, v, aset,
-                                                  method_name, aset_names)
+                                                  method_name, aset_names, download_FBA_if_missing)
 
                 # drop rows where flowamount = 0 (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)

@@ -731,7 +731,7 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     if 'geographic_level' in kwargs:
         fba_dict['geographic_level'] = kwargs['geographic_level']
     # load the allocation FBA
-    fba = flowsa.getFlowByActivity(datasource, year, **fba_dict).reset_index(drop=True)
+    fba = flowsa.getFlowByActivity(datasource, year, download_FBA_if_missing=kwargs['download_FBA_if_missing'], **fba_dict).reset_index(drop=True)
     # ensure df loaded correctly/has correct dtypes
     fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
     # convert to standardized units

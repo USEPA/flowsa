@@ -21,7 +21,7 @@ from flowsa.bibliography import generate_fbs_bibliography
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
-                      download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
+                      download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Retrieves stored data in the FlowByActivity format
     :param datasource: str, the code of the datasource.
@@ -29,7 +29,7 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
     :param geographic_level: str, a geographic level of the data.
                              Optional. E.g. 'national', 'state', 'county'.
-    :param download_if_missing: bool, if True will attempt to load from remote server
+    :param download_FBA_if_missing: bool, if True will attempt to load from remote server
         prior to generating if file not found locally
     :return: a pandas DataFrame in FlowByActivity format
     """
@@ -41,7 +41,7 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     # Try to load a local version of fba; generate and load if missing
     fba = load_preprocessed_output(fba_meta, paths)
     # Remote download
-    if fba is None and download_if_missing:
+    if fba is None and download_FBA_if_missing:
         log.info('%s %s not found in %s, downloading from remote source',
                  datasource, str(year), fbaoutputpath)
         download_from_remote(fba_meta,paths)
@@ -71,11 +71,14 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname, download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
+def getFlowBySector(methodname, download_FBAs_if_missing = DEFAULT_DOWNLOAD_IF_MISSING,
+                    download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Loads stored FlowBySector output or generates it if it doesn't exist, then loads
     :param methodname: string, Name of an available method for the given class
-    :param download_if_missing: bool, if True will attempt to load from remote server
+    :param download_FBAs_if_missing: bool, if True will attempt to load FBAS used in
+        generating the FBS from remote server prior to generating if file not found locally
+    :param download_FBS_if_missing: bool, if True will attempt to load from remote server
         prior to generating if file not found locally
     :return: dataframe in flow by sector format
     """
@@ -85,7 +88,7 @@ def getFlowBySector(methodname, download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING)
     fbs = load_preprocessed_output(fbs_meta, paths)
 
     # Remote download
-    if fbs is None and download_if_missing:
+    if fbs is None and download_FBS_if_missing:
         log.info('%s not found in %s, downloading from remote source',
                  methodname, fbsoutputpath)
         # download and load the FBS parquet
@@ -95,10 +98,12 @@ def getFlowBySector(methodname, download_if_missing=DEFAULT_DOWNLOAD_IF_MISSING)
 
     # If remote download not specified and no FBS, generate the FBS
     if fbs is None:
-        log.info('%s not found in %s, running functions to generate FBS', methodname, fbsoutputpath)
-        # Generate the fba
-        flowsa.flowbysector.main(method=methodname)
-        # Now load the fba
+        log.info('%s not found in %s, running functions to generate FBS',
+                 methodname, fbsoutputpath)
+        # Generate the fbs, with option to download any required FBAs from Data Commons
+        flowsa.flowbysector.main(method=methodname,
+                                 download_FBAs_if_missing=download_FBAs_if_missing)
+        # Now load the fbs
         fbs = load_preprocessed_output(fbs_meta, paths)
         if fbs is None:
             log.error('getFlowBySector failed, FBS not found')

@@ -11,7 +11,7 @@ def test_get_flows_by_activity():
 
 def test_get_flows_by_sector():
     # set function to download any FBAs that are missing
-    flowsa.getFlowBySector('Water_national_2015_m1')
+    flowsa.getFlowBySector('Water_national_2015_m1', download_FBAs_if_missing=True)
 
 
 def test_write_bibliography():
