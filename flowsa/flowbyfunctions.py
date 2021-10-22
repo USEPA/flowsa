@@ -257,22 +257,42 @@ def sector_aggregation(df_load, group_cols):
         df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
         # reindex columns
         df = df.reindex(df_load.columns, axis=1)
+
     # replace null values
     df = replace_strings_with_NoneType(df).reset_index(drop=True)
 
     return df
 
 
-def sector_disaggregation(df):
+def sector_disaggregation(df_load):
     """
     function to disaggregate sectors if there is only one naics at a lower level
     works for lower than naics 4
-    :param df: A FBS df, must have sector columns
+    :param df_load: A FBS df, must have sector columns
     :return: A FBS df with values for the missing naics5 and naics6
     """
 
     # ensure None values are not strings
-    df = replace_NoneType_with_empty_cells(df)
+    df = replace_NoneType_with_empty_cells(df_load)
+
+    # determine if activities are sector-like, if aggregating a df with a 'SourceName'
+    sector_like_activities = False
+    if 'SourceName' in df_load.columns:
+        # load source catalog
+        cat = load_source_catalog()
+        # for s in pd.unique(flowbyactivity_df['SourceName']):
+        s = pd.unique(df_load['SourceName'])[0]
+        # load catalog info for source
+        src_info = cat[s]
+        sector_like_activities = src_info['sector-like_activities']
+
+    # if activities are source like, drop from df,
+    # add back in as copies of sector columns columns to keep
+    if sector_like_activities:
+        # subset df
+        df_cols = [e for e in df.columns if e not in
+                   ('ActivityProducedBy', 'ActivityConsumedBy')]
+        df = df[df_cols]
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_sector_length_crosswalk()
@@ -344,6 +364,13 @@ def sector_disaggregation(df):
         df = pd.concat([df, new_naics], sort=True)
     # replace blank strings with None
     df = replace_strings_with_NoneType(df)
+
+    # if activities are source-like, set col values as copies of the sector columns
+    if sector_like_activities:
+        df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
+        df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
+        # reindex columns
+        df = df.reindex(df_load.columns, axis=1)
 
     return df
 
