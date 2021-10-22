@@ -334,8 +334,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         log.info("Scaling %s to FBA values", attr['helper_source'])
         modified_fba_allocation = \
             dynamically_import_fxn(attr['allocation_source'],
-                                   attr["scale_helper_results"])(modified_fba_allocation,
-                                                                 attr)
+                                   attr["scale_helper_results"])(modified_fba_allocation, attr,
+                                                                 download_FBA_if_missing=download_FBA_if_missing)
     return modified_fba_allocation
 
 

@@ -171,7 +171,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs)
     return df_wratio
 
 
-def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_missing=download_FBA_if_missing):
+def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_missing):
     """
     Scale the initial estimates for Blackhurst-based mining estimates to USGS values.
     Oil-based sectors are allocated a larger percentage of the difference between initial
