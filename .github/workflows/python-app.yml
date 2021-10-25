@@ -9,13 +9,17 @@ on:
     #branches: [master, develop] # excluding for initial testing purposes
     paths-ignore: # prevents workflow execution when only these types of files are modified
       - '**.md'  # prevent md files (e.g., README.md) in any repo dir from trigering workflow
+      - '**.bib'
+      - '**.ya?ml'  # captures both .yml and .yaml
       - 'LICENSE'
       - '.gitignore'
   pull_request:
     branches: [master, develop]
     types: [opened, reopened]  # excluding syncronize to prevent commits to PR's from duplicating tests
     paths-ignore:
-      - '**.md'
+      - '**.md'  
+      - '**.bib'
+      - '**.ya?ml'
       - 'LICENSE'
       - '.gitignore'
   workflow_dispatch:  # also allow manual trigger, for testing purposes
