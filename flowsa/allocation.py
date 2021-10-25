@@ -264,7 +264,7 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
             # calculate new flow amounts, based on sector count,
             # allocating equally to the new sector length codes
             rl_m3['FlowAmount'] = rl_m3['FlowAmount'] / rl_m3['sector_count']
-            rl_m3 = rl_m3.drop(columns=['sector_count'])
+            rl_m3 = rl_m3.drop(columns=['sector_count', 'spb_tmp', 'scb_tmp'])
 
             # append to df
             if len(rl) != 0:

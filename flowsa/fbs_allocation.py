@@ -127,11 +127,11 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     for n in names:
         log.debug("Creating allocation ratios for %s", n)
         # if n has already been called, drop all rows of data containing n to avoid double
+        # counting when there are two activities in each ACB and APB columns
         fba_allocation_subset = fba_allocation_subset[
             ~((fba_allocation_subset[fba_activity_fields[0]].isin(n_allocated)) |
               (fba_allocation_subset[fba_activity_fields[1]].isin(n_allocated))
               )].reset_index(drop=True)
-        # counting when there are two activities in each ACB and APB columns
         fba_allocation_subset_2 = get_fba_allocation_subset(fba_allocation_subset, k, [n],
                                                             flowSubsetMapped=flow_subset_mapped,
                                                             allocMethod=attr['allocation_method'],
