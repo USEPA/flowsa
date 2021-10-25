@@ -6,8 +6,12 @@ Functions to generate .bib file for a FlowBySector method
 """
 
 import os
-from bibtexparser.bwriter import BibTexWriter
-from bibtexparser.bibdatabase import BibDatabase
+# This code exists so flowsa can run without BibTexWriter (although bibliographies can't be written).
+try:
+    from bibtexparser.bwriter import BibTexWriter
+    from bibtexparser.bibdatabase import BibDatabase
+except ModuleNotFoundError as e:
+    print(f'{str(e)}, so writing a bibliography will not be possible.')
 from flowsa.flowbysector import load_method
 from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
     load_values_from_literature_citations_config, paths, log, \

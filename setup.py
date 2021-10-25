@@ -22,7 +22,7 @@ setup(
         'pyyaml>=5.3',
         'requests>=2.22.0',
         'appdirs>=1.4.3',
-        'pycountry>=19.8.18',
+        # 'pycountry>=19.8.18',
         'xlrd>=2.0.1',
         'openpyxl>=3.0.7',
         'requests_ftp==0.3.1',

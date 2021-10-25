@@ -7,7 +7,7 @@ setuptools>=41                 # Fully-featured library designed to facilitate p
 pyyaml>=5.3                    # Yaml for python
 requests >=2.22.0              # Web service calls
 appdirs >= 1.4.3               # Storing user data
-pycountry >= 19.8.18           # ISO country codes
+# pycountry >= 19.8.18           # ISO country codes
 xlrd >= 2.0.1                 # Extract data from xls files
 openpyxl >= 3.0.7              # Extract data from xlsm files
 requests_ftp == 0.3.1          # Requests implementation for FTP

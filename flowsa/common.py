@@ -10,10 +10,22 @@ import os
 import logging
 import yaml
 import requests
-import requests_ftp
+# This code exists because requests_ftp is only required for downloading data to create FBA datasets, so 
+# if it's not available, I want to be able to do other things.
+try:
+    import requests_ftp
+except ModuleNotFoundError as e:
+    print(f'{str(e)}, so downloading data to create Flow-By-Activity datasets will not be possible.')
+    
 import pandas as pd
 import numpy as np
-import pycountry
+# This code exists to remove dependence on pycountry, without losing its functionality if it is available.
+try:
+    import pycountry  # type: ignore
+    pycountry_available = True
+except ModuleNotFoundError:
+    pycountry_available = False
+
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
@@ -802,12 +814,19 @@ def assign_census_regions(df_load):
 
 def call_country_code(country):
     """
-    use pycountry to call on 3 digit iso country code
+    use pycountry to call on 3 digit iso country code, unless pycountry is
+    unavailable. As of 10/20/2021, the only country this was called for was
+    Canada.
     :param country: str, name of country
     :return: str, ISO code
     """
-    country_info = pycountry.countries.get(name=country)
-    country_numeric_iso = country_info.numeric
+    if pycountry_available:
+        country_info = pycountry.countries.get(name=country)
+        country_numeric_iso = country_info.numeric
+    elif country.strlower() == 'canada':
+        country_numeric_iso = '124'
+    else:
+        raise ValueError('Country name unknown. pycountry not available to look up.')
     return country_numeric_iso
 
 

@@ -11,7 +11,13 @@ DOI: https://doi.org/10.25318/1410002301-eng
 
 import io
 import zipfile
-import pycountry
+# This code exists to remove dependence on pycountry, without losing its functionality if it is available.
+try:
+    import pycountry  # type: ignore
+    pycountry_available = True
+except ModuleNotFoundError:
+    pycountry_available = False
+
 import pandas as pd
 from flowsa.common import WITHDRAWN_KEYWORD
 
@@ -102,12 +108,20 @@ def sc_lfs_parse(**kwargs):
     return df
 
 
+# Why is this function not just being imported from flowsa.common?
 def call_country_code(country):
     """
-    Determine country code, use pycountry to call on 3 digit iso country code
-    :param country: str, country name
-    :return: str, country code
+    use pycountry to call on 3 digit iso country code, unless pycountry is
+    unavailable. As of 10/20/2021, the only country this was called for was
+    Canada.
+    :param country: str, name of country
+    :return: str, ISO code
     """
-    country_info = pycountry.countries.get(name=country)
-    country_numeric_iso = country_info.numeric
+    if pycountry_available:
+        country_info = pycountry.countries.get(name=country)
+        country_numeric_iso = country_info.numeric
+    elif country.strlower() == 'canada':
+        country_numeric_iso = '124'
+    else:
+        raise ValueError('Country name unknown. pycountry not available to look up.')
     return country_numeric_iso
