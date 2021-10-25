@@ -224,6 +224,8 @@ def sector_aggregation(df_load, group_cols):
 
         # merge the dfs
         merge_cols = [col for col in df2.columns if hasattr(df2[col], 'str')]
+        # also drop activity and description cols
+        merge_cols = [c for c in merge_cols if c not in ['ActivityConsumedBy', 'ActivityProducedBy', 'Description']]
 
         if len(df2) > 0:
             dfm = df1.merge(df2[merge_cols], how='outer',
