@@ -31,6 +31,7 @@ crosswalkpath = datapath + 'activitytosectormapping/'
 flowbysectormethodpath = datapath + 'flowbysectormethods/'
 flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
+scc_adjustmentpath = datapath + 'scc_adjustments/'
 
 datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
