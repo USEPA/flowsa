@@ -230,5 +230,5 @@ source_names:
      - 'air'
     functions:
      - 'drop_GHGs'
-     - 'reassign_airplane_emissions'
+    reassign_scc_to_sectors: 'airplane_emissions'
 
