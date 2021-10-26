@@ -11,25 +11,6 @@ data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
 from flowsa.sectormapping import get_activitytosector_mapping
 
 
-def generate_elci_model_specs():
-    """
-    To prevent errors when loading elci files, first generate the model specs
-    :return:
-    """
-    import electricitylci.model_config as config
-
-    config.model_specs = config.build_model_class('ELCI_1')
-    config.model_specs.include_upstream_processes = False
-    config.model_specs.regional_aggregation = 'US'
-    config.model_specs.include_renewable_generation = False
-    config.model_specs.include_netl_water = True
-    config.model_specs.stewicombo_file = 'ELCI_1'
-    if 'DMR' not in config.model_specs.inventories_of_interest.keys():
-        config.model_specs.inventories_of_interest['DMR'] = 2016
-
-    return config
-
-
 def get_elci_emissions(yaml_load):
     import electricitylci
     import electricitylci.model_config as config
