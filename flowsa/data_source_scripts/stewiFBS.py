@@ -18,7 +18,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.sectormapping import map_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
-    update_geoscale, log, load_sector_length_crosswalk
+    update_geoscale, log, load_sector_length_crosswalk, scc_adjustmentpath
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 def stewicombo_to_sector(yaml_load):
@@ -92,10 +92,10 @@ def stewicombo_to_sector(yaml_load):
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    if 'reassign_airplane_emissions' in functions:
-        df = reassign_airplane_emissions(df, yaml_load['inventory_dict']['NEI'],
-                                         NAICS_level_value)
-        functions.remove('reassign_airplane_emissions')
+    if 'reassign_scc_to_sectors' in yaml_load:
+        df = reassign_scc_to_sectors(df, yaml_load['inventory_dict']['NEI'],
+                                     NAICS_level_value,
+                                     yaml_load['reassign_scc_to_sectors'])
 
     df['MetaSources'] = df['Source']
 
@@ -162,56 +162,59 @@ def stewi_to_sector(yaml_load):
     return fbs
 
 
-def reassign_airplane_emissions(df, year, NAICS_level_value):
+def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file):
     """
-    Reassigns emissions from airplanes to NAICS associated with air
-    transportation instead of the NAICS assigned to airports
+    Reassigns emissions from a specific SCC/NAICS combination to a new NAICS.
+
     :param df: a dataframe of emissions and mapped faciliites from stewicombo
     :param year: year as str
     :param NAICS_level_value: desired NAICS aggregation level, using sector_level_key,
                 should match target_sector_level
+    :param scc_file:
     :return: df
     """
     import stewi
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
 
-    ## subtract emissions for air transportation from airports in NEI
-    airport_NAICS = '4881'
-    air_transportation_SCC = '2275020000'
-    air_transportation_naics = '481111'
-    log.info('Reassigning emissions from air transportation from airports')
+    scc = pd.read_csv(scc_adjustmentpath + scc_file + '.csv', dtype='str')
 
     # obtain and prepare SCC dataset
-    df_airplanes = stewi.getInventory('NEI', year,
-                                      stewiformat='flowbyprocess')
-    df_airplanes = df_airplanes[df_airplanes['Process'] == air_transportation_SCC]
-    df_airplanes['Source'] = 'NEI'
-    df_airplanes = addChemicalMatches(df_airplanes)
-    df_airplanes = remove_default_flow_overlaps(df_airplanes, SCC=True)
-    df_airplanes.drop(columns=['Process'], inplace=True)
+    df_fbp = stewi.getInventory('NEI', year, stewiformat='flowbyprocess')
+    df_fbp = df_fbp[df_fbp['Process'].isin(scc['source_scc'])]
+    df_fbp['Source'] = 'NEI'
+    df_fbp = addChemicalMatches(df_fbp)
+    df_fbp = remove_default_flow_overlaps(df_fbp, SCC=True)
 
-    facility_mapping_air = df[['FacilityID', 'NAICS']]
-    facility_mapping_air.drop_duplicates(keep='first', inplace=True)
-    df_airplanes = df_airplanes.merge(facility_mapping_air, how='left',
-                                      on='FacilityID')
+    # merge in NAICS data
+    facility_df = df[['FacilityID', 'NAICS', 'Location']]
+    facility_df.drop_duplicates(keep='first', inplace=True)
+    df_fbp = df_fbp.merge(facility_df, how='left', on='FacilityID')
 
-    df_airplanes['Year'] = year
-    df_airplanes = df_airplanes[
-        df_airplanes['NAICS'].str[0:len(airport_NAICS)] == airport_NAICS]
+    df_fbp['Year'] = year
 
-    # subtract airplane emissions from airport NAICS at individual facilities
-    df_planeemissions = df_airplanes[['FacilityID', 'FlowName', 'FlowAmount']]
-    df_planeemissions.rename(columns={'FlowAmount': 'PlaneEmissions'}, inplace=True)
-    df = df.merge(df_planeemissions, how='left',
+    #TODO: expand naics list in scc file to include child naics
+    df_fbp = df_fbp.merge(scc, how='inner',
+                          left_on=['NAICS', 'Process'],
+                          right_on=['source_naics', 'source_scc'])
+
+    # subtract emissions by SCC from specific facilities
+    df_emissions = df_fbp.groupby(['FacilityID', 'FlowName']).agg(
+        {'FlowAmount': 'sum'})
+    df_emissions.rename(columns={'FlowAmount': 'Emissions'}, inplace=True)
+    df = df.merge(df_emissions, how='left',
                   on=['FacilityID', 'FlowName'])
-    df[['PlaneEmissions']] = df[['PlaneEmissions']].fillna(value=0)
-    df['FlowAmount'] = df['FlowAmount'] - df['PlaneEmissions']
-    df.drop(columns=['PlaneEmissions'], inplace=True)
+    df[['Emissions']] = df[['Emissions']].fillna(value=0)
+    df['FlowAmount'] = df['FlowAmount'] - df['Emissions']
+    df.drop(columns=['Emissions'], inplace=True)
 
-    # add airplane emissions under air transport NAICS
-    df_airplanes.loc[:, 'NAICS_lvl'] = air_transportation_naics[0:NAICS_level_value]
-    df = pd.concat([df, df_airplanes], ignore_index=True)
+    # add back in emissions under the correct target NAICS
+    df_fbp.drop(columns=['Process', 'NAICS', 'source_naics', 'source_scc',
+                         'ProcessType', 'SRS_CAS', 'SRS_ID'],
+                inplace=True)
+    df_fbp.rename(columns={'target_naics': 'NAICS'}, inplace=True)
+    df_fbp.loc[:, 'NAICS_lvl'] = df_fbp['NAICS'].str[0:NAICS_level_value]
+    df = pd.concat([df, df_fbp], ignore_index=True)
 
     return df
 
