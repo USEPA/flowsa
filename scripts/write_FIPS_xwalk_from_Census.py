@@ -12,7 +12,8 @@ Grabs FIPS codes from static URLs and creates crosswalk over the years.
 
 import io
 import pandas as pd
-from flowsa.common import datapath, clean_str_and_capitalize
+from flowsa.common import clean_str_and_capitalize
+from flowsa.settings import datapath
 from flowsa.flowbyactivity import make_http_request
 
 def stripcounty(s):

@@ -11,7 +11,8 @@ Grabs FIPS 2017 codes from a static URL.
 """
 
 import pandas as pd
-from flowsa.common import datapath, clean_str_and_capitalize
+from flowsa.common import clean_str_and_capitalize
+from flowsa.settings import datapath
 
 # 2017 State, County, Minor Civil Division, and Incorporated Place FIPS Codes
 url = "https://www2.census.gov/programs-surveys/popest/geographies/2017/all-geocodes-v2017.xlsx"

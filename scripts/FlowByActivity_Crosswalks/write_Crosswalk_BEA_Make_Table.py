@@ -7,7 +7,8 @@ Create a crosswalk linking BEA to NAICS for Make Tables
 
 """
 import pandas as pd
-from flowsa.common import datapath, load_bea_crosswalk
+from flowsa.common import load_bea_crosswalk
+from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
