@@ -158,7 +158,9 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     allocation_df.loc[:, 'FlowAmountRatio'] = \
         allocation_df['HelperFlow'] / allocation_df['Denominator']
     allocation_df = allocation_df.drop(columns=['Denominator']).reset_index(drop=True)
-
+    # where parent NAICS are not found in the allocation dataset, make sure those
+    # child NAICS are not dropped
+    allocation_df['FlowAmountRatio'] = allocation_df['FlowAmountRatio'].fillna(1)
     # fill empty cols with NoneType
     allocation_df = replace_strings_with_NoneType(allocation_df)
     # fill na values with 0

@@ -1,0 +1,24 @@
+author: US Census Bureau
+source_name: Value of Construction Put in Place
+source_url: https://www.census.gov/construction/c30/c30index.html
+bib_id: Census_VIP
+api_name: None
+api_key_required: false
+format: xlsx
+url:
+  base_url: https://www.census.gov/construction/c30/xls/total.xls
+call_response_fxn: census_vip_call
+parse_response_fxn: census_vip_parse
+years:
+- 2009
+- 2010
+- 2011
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020

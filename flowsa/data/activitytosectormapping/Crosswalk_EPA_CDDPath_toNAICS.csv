@@ -1,0 +1,9 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+EPA_CDDPath,Buildings,NAICS_2012_Code,2361,I
+EPA_CDDPath,Other,NAICS_2012_Code,236210,I
+EPA_CDDPath,Buildings,NAICS_2012_Code,236220,I
+EPA_CDDPath,Other,NAICS_2012_Code,237110,I
+EPA_CDDPath,Other,NAICS_2012_Code,237130,I
+EPA_CDDPath,Roads and Bridges,NAICS_2012_Code,237310,I
+EPA_CDDPath,Other,NAICS_2012_Code,237990,I
+EPA_CDDPath,Other - Wood,NAICS_2012_Code,237990,I
