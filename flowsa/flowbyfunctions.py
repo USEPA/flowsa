@@ -751,7 +751,7 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     :return: fba df with standardized units
     """
 
-    from sectormapping import map_fbs_flows
+    from flowsa.sectormapping import map_fbs_flows
 
     # determine if any addtional parameters required to load a Flow-By-Activity
     # add parameters to dictionary if exist in method yaml
