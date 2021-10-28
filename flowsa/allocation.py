@@ -7,7 +7,8 @@ Methods of allocating datasets
 """
 import pandas as pd
 from flowsa.settings import log
-from flowsa.common import fbs_activity_fields, sector_level_key, load_sector_length_crosswalk, vLogDetailed
+from flowsa.common import fbs_activity_fields, sector_level_key, load_sector_length_crosswalk
+from flowsa.settings import vLogDetailed
 from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation
 
