@@ -13,8 +13,9 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, \
     load_sector_length_crosswalk, load_source_catalog, \
-    load_sector_crosswalk, SECTOR_SOURCE_NAME, log, fba_activity_fields, \
-    fbs_activity_fields, vLog, vLogDetailed, fba_default_grouping_fields
+    load_sector_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
+    fbs_activity_fields, fba_default_grouping_fields
+from flowsa.settings import log, vLog, vLogDetailed
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):

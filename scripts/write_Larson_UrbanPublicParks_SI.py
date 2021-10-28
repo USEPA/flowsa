@@ -15,8 +15,8 @@ SI obtained 08/26/2020
 
 import io
 import pandas as pd
-from flowsa.common import datapath, make_http_request
-
+from flowsa.common import make_http_request
+from flowsa.settings import datapath
 
 # 2012--2018 fisheries data at state level
 csv_load = "https://doi.org/10.1371/journal.pone.0153211.s001"

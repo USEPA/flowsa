@@ -13,7 +13,8 @@ import requests
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
-    paths, rename_log_file
+    rename_log_file
+from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
     dynamically_import_fxn

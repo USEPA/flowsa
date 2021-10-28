@@ -9,7 +9,8 @@ specified here and can be called on using functions.
 
 import pandas as pd
 import numpy as np
-from flowsa.common import datapath
+from flowsa.settings import datapath
+
 
 def get_US_urban_green_space_and_public_parks_ratio():
     """

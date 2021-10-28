@@ -11,7 +11,8 @@ Script creates crosswalks for Land and Water
 
 import io
 import pandas as pd
-from flowsa.common import datapath, make_http_request
+from flowsa.common import make_http_request
+from flowsa.settings import datapath
 from flowsa.data_source_scripts.EIA_CBECS_Land import standardize_eia_cbecs_land_activity_names
 
 if __name__ == '__main__':

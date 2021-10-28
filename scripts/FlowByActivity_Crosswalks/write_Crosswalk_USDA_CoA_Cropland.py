@@ -15,7 +15,7 @@ on NAICS definitions from the Census.
 
 """
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
