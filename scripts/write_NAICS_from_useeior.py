@@ -22,7 +22,7 @@ import pandas as pd
 import numpy as np
 import rpy2.robjects.packages as packages
 from rpy2.robjects import pandas2ri
-from flowsa.common import datapath, crosswalkpath
+from flowsa.settings import datapath, crosswalkpath
 from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells
 from flowsa.dataclean import replace_strings_with_NoneType
 

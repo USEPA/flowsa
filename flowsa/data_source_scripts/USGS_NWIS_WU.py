@@ -10,7 +10,8 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.common import abbrev_us_state, fba_activity_fields,\
-    capitalize_first_letter, US_FIPS, vLogDetailed
+    capitalize_first_letter, US_FIPS
+from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.validation import compare_df_units, calculate_flowamount_diff_between_dfs
 

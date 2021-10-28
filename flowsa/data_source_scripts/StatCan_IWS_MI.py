@@ -102,7 +102,7 @@ def sc_parse(**kwargs):
     return df
 
 
-def convert_statcan_data_to_US_water_use(df, attr):
+def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
     """
     Use Canadian GDP data to convert 3 digit canadian water use to us water
     use:
@@ -116,7 +116,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
     # load Canadian GDP data
     gdp = load_fba_w_standardized_units(datasource='StatCan_GDP',
                                         year=attr['allocation_source_year'],
-                                        flowclass='Money')
+                                        flowclass='Money',
+                                        download_FBA_if_missing=download_FBA_if_missing)
 
     # drop 31-33
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
@@ -149,7 +150,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
     # load Canadian GDP data
     us_gdp_load = load_fba_w_standardized_units(datasource='BEA_GDP_GrossOutput',
                                                 year=attr['allocation_source_year'],
-                                                flowclass='Money')
+                                                flowclass='Money',
+                                                download_FBA_if_missing=download_FBA_if_missing)
 
     # load bea crosswalk
     cw_load = load_bea_crosswalk()

@@ -11,7 +11,7 @@ Grabs Census Region and Division codes from a static URL.
 
 import pandas as pd
 import numpy as np
-from flowsa.common import datapath
+from flowsa.settings import datapath
 
 url = "https://www2.census.gov/programs-surveys/popest/geographies/2017/state-geocodes-v2017.xlsx"
 

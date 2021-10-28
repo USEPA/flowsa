@@ -11,7 +11,7 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 4. _download_if_missing_: (optional) Add and set to 'True' if you would like to download all required
    FBAs from Data Commons rather than generating FBAs locally.
 
-### Source specifications (in FBA or FBS format)
+### Source specifications (in FBA format)
 1. _source_names_: The name of the FBS dataset or the FBA dataset requiring allocation to sectors
 2. _data_format_: 'FBA', 'FBS', 'FBS_outside_flowsa', loads a FlowByActivity or a FlowBySector
    parquet stored in flowsa, or calls on a specified function to load data from outside flowsa in FBS format
@@ -72,6 +72,14 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
     the source.py file
 22. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
     allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
+
+### Source specifications (in FBS format)
+If source data format is specified as 'FBS':
+1. _source_names_: The name of the FBS dataset
+2. _data_format_: 'FBS', loads a FlowBySector
+3. _year_: year of available dataset (ex. 2015)
+4. _clean_fbs_df_fxn_: (optional) apply function to clean the FBS after it is accessed
+5. _clean_fbs_df_fxn_source: (if clean_fbs_df_fxn is used) identifies the location of the function
 
 ### FBS_outside_flows specifications
 If source data_format is specified as 'FBS_outside_flowsa':

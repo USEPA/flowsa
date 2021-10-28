@@ -2,21 +2,19 @@
 Setup for flowsa package
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='0.3.3',
-    packages=['flowsa'],
+    version='0.3.2',
+    packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
-    package_data={'flowsa': [
-        "data/*.*", "output/*.*"]},
+    package_data={'flowsa': ["data/*.*"]},
     include_package_data=True,
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.8#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy@v0.1.7#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories@v0.10.0#egg=StEWI',
-        'ElectricityLCI @ git+https://github.com/USEPA/ElectricityLCI@v1.0.1#egg=ElectricityLCI',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
         'pandas>=1.3.2',
         'pip>=9',
         'setuptools>=41',
