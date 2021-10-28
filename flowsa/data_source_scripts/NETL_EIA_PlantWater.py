@@ -9,7 +9,8 @@ as eLCI conducted water withdrawal modifications
 
 import pandas as pd
 import numpy as np
-from flowsa.common import get_state_FIPS, get_county_FIPS, us_state_abbrev, externaldatapath
+from flowsa.common import get_county_FIPS, us_state_abbrev
+from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
