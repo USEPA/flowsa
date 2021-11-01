@@ -104,8 +104,8 @@ def return_fbs_method_data(source_name, config):
             # get stewi metadata
             meta['primary_source_meta'][k] = add_stewi_metadata(v['inventory_dict'])
             continue
-        if v['data_format'] == 'FBS':
-            meta['primary_source_meta'][k] = getMetadata(k, category = 'FlowBySector')
+        if v['data_format'] in ('FBS', 'FBS_outside_flowsa'):
+            meta['primary_source_meta'][k] = getMetadata(k, category='FlowBySector')
             continue
         # append source and year
         meta['primary_source_meta'][k] = getMetadata(k, v["year"])
