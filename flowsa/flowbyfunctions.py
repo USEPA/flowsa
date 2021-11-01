@@ -759,8 +759,8 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
         fba_dict['flowclass'] = kwargs['flowclass']
     if 'geographic_level' in kwargs:
         fba_dict['geographic_level'] = kwargs['geographic_level']
-    if 'download_if_missing' in kwargs:
-        fba_dict['download_if_missing'] = kwargs['download_if_missing']
+    if 'download_FBA_if_missing' in kwargs:
+        fba_dict['download_FBA_if_missing'] = kwargs['download_FBA_if_missing']
     # load the allocation FBA
     fba = flowsa.getFlowByActivity(datasource, year, **fba_dict).reset_index(drop=True)
     # convert to standardized units either by mapping to federal flow list/material flow list

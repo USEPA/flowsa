@@ -99,12 +99,14 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         fba_dict['clean_fba_w_sec'] = attr['clean_allocation_fba_w_sec']
 
     # load the allocation FBA
-    fba_allocation_wsec = load_map_clean_fba(method, attr, download_FBA_if_missing=download_FBA_if_missing,
+    fba_allocation_wsec = load_map_clean_fba(method, attr,
                                              fba_sourcename=attr['allocation_source'],
                                              df_year=attr['allocation_source_year'],
                                              flowclass=attr['allocation_source_class'],
                                              geoscale_from=attr['allocation_from_scale'],
-                                             geoscale_to=v['geoscale_to_use'], **fba_dict)
+                                             geoscale_to=v['geoscale_to_use'],
+                                             download_FBA_if_missing=download_FBA_if_missing
+                                             , **fba_dict)
 
     # subset fba datasets to only keep the sectors associated with activity subset
     log.info("Subsetting %s for sectors in %s", attr['allocation_source'], k)
@@ -379,8 +381,8 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     """
     # dictionary to load/standardize fba
     kwargs_dict = {}
-    if 'download_if_missing' in method:
-        kwargs_dict['download_if_missing'] = method['download_if_missing']
+    if 'download_FBA_if_missing' in kwargs:
+        kwargs_dict['download_FBA_if_missing'] = kwargs['download_FBA_if_missing']
     if 'allocation_map_to_flow_list' in attr:
         kwargs_dict['allocation_map_to_flow_list'] = attr['allocation_map_to_flow_list']
 
