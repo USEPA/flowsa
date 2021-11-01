@@ -4,11 +4,11 @@
 # m1 for the GHG national replicates the method used in the National GHG Industry Attribution Model, except that
 # sector attribution is to 6-digit NAICS, rather than the BEA 2012 IO schema
 
-target_sector_level: NAICS_6
+target_sector_level: NAICS_6 #this should perhaps be 4 or 5 to be closer to BEA_2012
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 source_names:
-  "EPA_GHGI_T_2_1":
+  "EPA_GHGI_T_2_1": #U.S. GHG emissions
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -19,20 +19,33 @@ source_names:
       activity_set_1:
         names:
           - "Residential" #CO2
-          - "Iron and Steel Production & Metallurgical Coke Production" #CO2
-          - "Cement Production"
-          - "Lime Production"
-          - "Ammonia Production"
-          - "Incineration of Waste"
-          - "Aluminum Production"
-          - "Soda Ash Production and Consumption"
-          - "Ferroalloy Production"
-          - "Titanium Dioxide Production"
-          - "Zinc Production"
-          - "Phosphoric Acid Production"
-          - "Glass Production"
-          - "Silicon Carbide Production and Consumption"
+          - "Iron and Steel Production & Metallurgical Coke Production" #CO2, CH4
+          - "Cement Production" #CO2
+          - "Lime Production" #CO2
+          - "Ammonia Production" #CO2
+          - "Incineration of Waste" #CO2
+          - "Aluminum Production" #CO2, PFCs
+          - "Soda Ash Production and Consumption" #CO2
+          - "Ferroalloy Production" #CO2, CH4
+          - "Titanium Dioxide Production" #CO2
+          - "Zinc Production" #CO2
+          - "Phosphoric Acid Production" #CO2
+          - "Glass Production" #CO2
+          - "Silicon Carbide Production and Consumption" #CO2, CH4
+          - "Landfills" #CH4
+          - "Coal Mining" #CH4
+          - "Wastewater Treatment" #CH4, N2O
           - "Rice Cultivation" #CH4
+          - "Abandoned Oil and Gas Wells" #CH4
+          - "Abandoned Underground Coal Mines" #CH4
+          - "Composting" #CH4, N2O
+          - "Incineration of Waste" #CH4, N2O
+          - "Nitric Acid Production" #N2O
+          - "Adipic Acid Production" #N2O
+          - "Caprolactam, Glyoxal, and Glyoxylic Acid Production" #CH4
+          - "Semiconductor Manufacture" #N2O
+          - "HCFC-22 Production" #HFCs
+          - "Electrical Transmission and Distribution" #SF6
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -42,7 +55,8 @@ source_names:
         allocation_from_scale: national
       activity_set_2:
         names:
-        - "Electric Power"
+        - "Electric Power" #CO2
+        - "Magnesium Production and Processing"  #HFCs
         allocation_method: proportional
         allocation_source: "BEA_Make_Detail_BeforeRedef"
         allocation_source_class: "Money"
@@ -61,5 +75,24 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-
-##activities to be allocated from T_3-54
+  "EPA_GHGI_T_5_3":  #CH4 from Enteric Fermentation
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    clean_fba_df_fxn: None
+    clean_fba_w_sec_df_fxn: None
+    activity_sets:
+      activity_set_1:
+        names:
+          - "American Bison"
+          - "Beef Cattle"
+          - "Dairy Cattle"
+          - "Goats"
+          - "Horses"
+          - "Mules and Asses"
+          - "Sheep"
+          - "Swine"
+        allocation_method: direct
+        allocation_source: None
+        allocation_from_scale: national
