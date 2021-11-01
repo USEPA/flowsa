@@ -3,7 +3,8 @@
 # coding=utf-8
 import io
 import pandas as pd
-from flowsa.common import externaldatapath, US_FIPS
+from flowsa.common import US_FIPS
+from flowsa.settings import externaldatapath
 
 """
 Projects
