@@ -12,7 +12,8 @@ import io
 import yaml
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, datapath, vLogDetailed
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
+from flowsa.settings import datapath, vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 from flowsa.data_source_scripts.EIA_CBECS_Land import calculate_total_facility_land_area

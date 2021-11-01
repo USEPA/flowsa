@@ -6,7 +6,7 @@
 Methods of allocating datasets
 """
 import pandas as pd
-from flowsa import log
+from flowsa.settings import log
 from flowsa.common import fbs_activity_fields
 from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation
@@ -57,7 +57,7 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
 
     # run sector aggregation fxn to determine total flowamount for each level of sector
     if len(df_w_sectors) == 0:
-        allocation_df = df_w_sectors_nonflagged.copy()
+        return df_w_sectors_nonflagged
     else:
         df1 = sector_aggregation(df_w_sectors, group_cols)
         # run sector disaggregation to capture one-to-one naics4/5/6 relationships
@@ -82,7 +82,7 @@ def allocate_by_sector(df_w_sectors, allocation_method, group_cols, **kwargs):
                 pd.concat([allocation_df, df_w_sectors_nonflagged],
                           ignore_index=True).sort_values(['SectorProducedBy', 'SectorConsumedBy'])
 
-    return allocation_df
+        return allocation_df
 
 
 def proportional_allocation_by_location(df):

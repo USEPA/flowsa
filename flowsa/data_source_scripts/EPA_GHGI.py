@@ -10,7 +10,8 @@ import io
 import zipfile
 import numpy as np
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system, log
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.settings import log
 
 DEFAULT_YEAR = 9999
 
