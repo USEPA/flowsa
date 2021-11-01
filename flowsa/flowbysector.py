@@ -173,6 +173,9 @@ def main(**kwargs):
                               (flows_mapped[fba_activity_fields[1]].isin(names)
                                )].reset_index(drop=True)
 
+                # subset by flowname if exists
+                if 'source_flows' in attr:
+                    flows_subset = flows_subset[flows_subset['FlowName'].isin(attr['source_flows'])]
                 # if activities are sector-like, check sectors are valid
                 if load_source_catalog()[k]['sector-like_activities']:
                     flows_subset2 =\
