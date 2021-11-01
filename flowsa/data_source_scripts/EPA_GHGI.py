@@ -45,32 +45,32 @@ DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996
 TBL_META = {
     "EPA_GHGI_T_2_1": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Recent Trends in U.S. Greenhouse Gas Emissions and Sinks",
+        "activity": "CO2e",
         "desc": "Table 2-1:  Recent Trends in U.S. Greenhouse Gas Emissions and Sinks (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_10": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Stationary Combustion",
+        "activity": "CO2e",
         "desc": "Table 3-10:  CH4 Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_11": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Stationary Combustion",
+        "activity": "CO2e",
         "desc": "Table 3-11:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_14": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Mobile Combustion",
+        "activity": "CO2e",
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_15": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Mobile Combustion",
+        "activity": "CO2e",
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_21": {
         "class": "Energy", "unit": "TBtu", "compartment": "air",
-        "activity": "Adjusted Consumption of Fossil Fuels for Non-Energy Uses",
+        "activity": "TBtu",
         "desc": "Table 3-21:  Adjusted Consumption of Fossil Fuels for Non-Energy Uses (TBtu)"
     },
     "EPA_GHGI_T_3_22": {
@@ -82,85 +82,85 @@ TBL_META = {
     },
     "EPA_GHGI_T_3_37": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Petroleum Systems",
+        "activity": "CO2e",
         "desc": "Table 3-37:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_38": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "Petroleum Systems",
+        "activity": "kt CH4",
         "desc": "Table 3-38:  CH4 Emissions from Petroleum Systems (kt CH4)"
     },
     "EPA_GHGI_T_3_39": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Petroleum Systems",
+        "activity": "CO2",
         "desc": "Table 3-39:  CO2 Emissions from Petroleum Systems (MMT CO2)"
     },
     "EPA_GHGI_T_3_57": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Natural Gas Systems",
+        "activity": "CO2e",
         "desc": "Table 3-57:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_59": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Natural Gas Systems",
+        "activity": "CO2",
         "desc": "Table 3-59:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
     },
     "EPA_GHGI_T_4_43": {
         "class": "Chemicals", "unit": "Other", "compartment": "air",
-        "activity": "Soda Ash Production",
+        "activity": "CO2e and kt CO2",
         "desc": "Table 4-43:  CO2 Emissions from Soda Ash Production"
     },
     "EPA_GHGI_T_4_80": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Aluminum Production",
+        "activity": "CO2e",
         "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_48": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "Production of Selected Petrochemicals",
+        "activity": "kt",
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
     },
     "EPA_GHGI_T_4_94": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Electronics Manufacture",
+        "activity": "CO2e",
         "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
                 "Electronics Manufacture [1] (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_99": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "ODS Substitutes",
+        "activity": "CO2e",
         "desc": "Table 4-99:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_101": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "ODS Substitutes",
+        "activity": "CO2e",
         "desc": "Table 4-101:  Emissions of HFCs and PFCs from "
                 "ODS Substitutes (MMT CO2 Eq.) by Sector"
     },
     "EPA_GHGI_T_5_3": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Enteric Fermentation",
+        "activity": "CO2e",
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_7": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Manure Management",
+        "activity": "CO2e",
         "desc": "Table 5-7:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_18": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Agricultural Soils by Land Use Type and N Input Type",
+        "activity": "CO2e",
         "desc": "Table 5-18:  Direct N2O Emissions from Agricultural " +
                 "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_19": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Agricultural Soils",
+        "activity": "CO2e",
         "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_30": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "Field Burning of Agricultural Residues",
+        "activity": "kt",
         "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field "
                 "Burning of Agricultural Residues (kt)"
     },
@@ -172,22 +172,22 @@ TBL_META = {
     },
     "EPA_GHGI_T_A_93": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "Stationary Combustion",
+        "activity": "kt",
         "desc": "NOx Emissions from Stationary Combustion (kt)"
     },
     "EPA_GHGI_T_A_94": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "Stationary Combustion",
+        "activity": "kt",
         "desc": "CO Emissions from Stationary Combustion (kt)"
     },
     "EPA_GHGI_T_A_118": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "Mobile Combustion",
+        "activity": "kt",
         "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
     },
     "EPA_GHGI_T_ES_5": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "Land Use, Land-Use Change, and Forestry",
+        "activity": "CO2e",
         "desc": "Table ES-5: U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
                 "from Land Use, Land-Use Change, and Forestry (MMT CO2 Eq.)"
     },
@@ -553,10 +553,10 @@ def ghg_parse(**kwargs):
 
         df = assign_fips_location_system(df, str(args['year']))
 
-        if is_cons:
-            df = df.rename(columns={'FlowName': 'ActivityConsumedBy', 'ActivityConsumedBy': 'FlowName'})
-        else:
-            df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
+       # if is_cons:
+       #     df = df.rename(columns={'FlowName': 'ActivityConsumedBy', 'ActivityConsumedBy': 'FlowName'})
+       # else:
+       #     df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
 
 # "EPA_GHGI_T_2_1", "EPA_GHGI_T_3_21", "EPA_GHGI_T_4_48", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_30",
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
