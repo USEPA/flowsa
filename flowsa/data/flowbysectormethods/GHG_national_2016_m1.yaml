@@ -18,9 +18,8 @@ source_names:
     activity_sets:
       activity_set_1:
         names:
-          - "Residential"
-          - "Iron and Steel Production & Metallurgical Coke Production"
-          - "Natural Gas Systems"
+          - "Residential" #CO2
+          - "Iron and Steel Production & Metallurgical Coke Production" #CO2
           - "Cement Production"
           - "Lime Production"
           - "Ammonia Production"
@@ -33,6 +32,7 @@ source_names:
           - "Phosphoric Acid Production"
           - "Glass Production"
           - "Silicon Carbide Production and Consumption"
+          - "Rice Cultivation" #CH4
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -62,3 +62,4 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
 
+##activities to be allocated from T_3-54
