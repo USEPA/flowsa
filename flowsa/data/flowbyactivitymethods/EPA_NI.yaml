@@ -1,0 +1,15 @@
+author: Sabo
+source_name: 'Nitrogen FBA import - Sabo'
+source_url: https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019JG005110
+original_data_download_date: '2021-09-14'
+bib_id: EPA_NI
+format: xls
+url:
+  base_url: https://pasteur.epa.gov/uploads/10.23719/1418976/National_Nitrogen_Inventory.xlsx
+url_replace_fxn: ni_url_helper
+call_response_fxn: ni_call
+parse_response_fxn: ni_parse
+years:
+- 2002
+- 2007
+- 2012

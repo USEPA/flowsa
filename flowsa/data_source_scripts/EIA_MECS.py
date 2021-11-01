@@ -330,7 +330,7 @@ def eia_mecs_energy_call(**kwargs):
         if data_type == 'nonfuel consumption':
             df_data_region['Class'] = 'Other'
         elif data_type == 'fuel consumption':
-            df_data_region['Class'] = 'Energy'
+            df_data_region['Class'] = 'E nergy'
         # remove extra spaces before 'Subsector and Industry' descriptions
         df_data_region['Subsector and Industry'] = \
             df_data_region['Subsector and Industry'].str.lstrip(' ')
@@ -387,6 +387,7 @@ def eia_mecs_energy_parse(**kwargs):
     df.loc[df['FlowAmount'] == '*', 'FlowAmount'] = None
     df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = WITHDRAWN_KEYWORD
     df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == 'D', 'FlowAmount'] = None
     df.loc[df['FlowAmount'] == 'NA', 'FlowAmount'] = None
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
@@ -400,6 +401,7 @@ def eia_mecs_energy_parse(**kwargs):
     df.loc[df['Spread'] == 'NA', 'Spread'] = None
     df.loc[df['Spread'] == 'X', 'Spread'] = None
     df.loc[df['Spread'] == ' ', 'Spread'] = None
+    df.loc[df['Spread'] == 'D', 'Spread'] = None
 
     return df
 
