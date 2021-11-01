@@ -58,8 +58,8 @@ def load_api_key(api_source):
         with open(keyfile, mode='r') as keyfilecontents:
             key = keyfilecontents.read().strip()
     except IOError:
-        log.error(f"Key file {keyfile} not found in 'API_Keys' directory. See github wiki for help"
-                  "https://github.com/USEPA/flowsa/wiki/GitHub-Contributors#api-keys")
+        log.error(f"Key file {keyfile} not found. See github wiki for help "
+                  "https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#api-keys")
     return key
 
 
