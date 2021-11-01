@@ -13,8 +13,8 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2016
-    clean_fba_df_fxn: None
-    clean_fba_w_sec_df_fxn: None
+#    clean_fba_df_fxn: None
+#    clean_fba_w_sec_df_fxn: None
     activity_sets:
       activity_set_1:
         names:
@@ -33,6 +33,8 @@ source_names:
           - "Phosphoric Acid Production"
           - "Glass Production"
           - "Silicon Carbide Production and Consumption"
+        source_flows:
+          - "CO2"
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
