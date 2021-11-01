@@ -139,3 +139,34 @@ def netl_eia_parse(**kwargs):
     df4 = assign_fips_location_system(df4, str(args["year"]))
 
     return df4
+
+
+def clean_plantwater_fba(fba_df, **kwargs):
+    """
+    Function to clean netl eia plantwater fba
+    :param fba_df: df, FBA format
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in the FBA method yaml
+    :return: df, modified BLS QCEW data
+    """
+
+    # for USGS water allocation, the NETL "Brackish" PLUS "saline" is
+    # equivalent to USGS "Saline". So rename in the NETL dataset
+    sal_sub = fba_df[fba_df['FlowName'].str.contains('Saline')][
+        ['FlowName', 'Flowable', 'Compartment', 'Context', 'FlowUUID']].drop_duplicates()
+    sal_sub = sal_sub.rename(columns={'FlowName': 'fn',
+                                      'Flowable': 'f',
+                                      'Context': 'ct',
+                                      'FlowUUID': 'fd'})
+
+    # match original df with saline subset based on compartment
+    dfm = fba_df.merge(sal_sub, on=['Compartment'])
+
+    # where brackish water, replace flowname/flowable/context/flowuuid
+    dfm['Flowable'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['f'], dfm['Flowable'])
+    dfm['Context'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['ct'], dfm['Context'])
+    dfm['FlowUUID'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['fd'], dfm['FlowUUID'])
+    dfm['FlowName'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['fn'], dfm['FlowName'])
+
+    dfm.drop(columns=['fn', 'f', 'ct', 'fd'], inplace=True)
+
+    return dfm

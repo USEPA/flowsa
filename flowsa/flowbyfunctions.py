@@ -729,7 +729,6 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
     :param function_name: str, name of function to import and call on
     :return: a function
     """
-
     # if a file does not exist modify file name, dropping ext after last underscore
     data_source_scripts_file = find_true_file_path(datasourcescriptspath,
                                                    data_source_scripts_file,
@@ -767,10 +766,11 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     # convert to standardized units either by mapping to federal flow list/material flow list
     # or by using function. Mapping will add context and flowable columns
     if 'allocation_map_to_flow_list' in kwargs:
-        if kwargs['allocation_map_to_flow_list'] == True:
+        if kwargs['allocation_map_to_flow_list']:
             # ensure df loaded correctly/has correct dtypes
             fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
-            fba, mapping_files = map_fbs_flows(fba, datasource, kwargs, keep_fba_columns=True)
+            fba, mapping_files = map_fbs_flows(fba, datasource, kwargs,
+                                               keep_fba_columns=True, keep_unmapped_rows=True)
         else:
             # ensure df loaded correctly/has correct dtypes
             fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)

@@ -38,6 +38,7 @@ source_names:
           - 'Surface'
           - 'Ground'
         allocation_from_scale: national
+        clean_allocation_fba: clean_plantwater_fba
         allocation_map_to_flow_list: True
         allocation_merge_columns:
           - 'Context'
