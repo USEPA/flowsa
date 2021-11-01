@@ -139,6 +139,13 @@ EPA_NEI_Onroad:
   sector-like_activities: False
   activity_schema: SCC
   sector_aggregation_level: "aggregated"
+NETL_EIA_PlantWater:
+  class:
+  - Water
+  - Energy
+  sector-like_activities: False
+  activity_schema: None
+  sector_aggregation_level: "aggregated"
 NOAA_FisheryLandings:
   class:
   - Money

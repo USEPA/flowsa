@@ -9,7 +9,7 @@ import numpy as np
 from esupy.mapping import apply_flow_mapping
 from flowsa.common import activity_fields, load_source_catalog, \
     load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
-from flowsa.settings import datapath, log
+from flowsa.settings import crosswalkpath, log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
@@ -24,7 +24,7 @@ def get_activitytosector_mapping(source):
         source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
-    mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
+    mapping = pd.read_csv(crosswalkpath +'Crosswalk_'+source+'_toNAICS.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
     return mapping
@@ -87,7 +87,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         if levelofSectoragg == 'aggregated':
             mapping = expand_naics_list(mapping, sectorsourcename)
     # Merge in with flowbyactivity by
-    flowbyactivity_wsector_df = flowbyactivity_df
+    flowbyactivity_wsector_df = flowbyactivity_df.copy(deep=True)
     for k, v in activity_fields.items():
         sector_direction = k
         flowbyactivity_field = v[0]["flowbyactivity"]
@@ -101,7 +101,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
         flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
-    flowbyactivity_wsector_df = flowbyactivity_wsector_df.replace({np.nan: None})
+    for c in ['ProducedBySectorType', 'ConsumedBySectorType']:
+        flowbyactivity_wsector_df[c] = flowbyactivity_wsector_df[c].replace({np.nan: None})
     # add sector source name
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
 

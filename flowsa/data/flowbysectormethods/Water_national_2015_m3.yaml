@@ -1,7 +1,3 @@
-%YAML 1.1
-
----
-
 target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
@@ -16,11 +12,10 @@ source_names:
     activity_sets:
       activity_set_1:
         names:
-        - "Aquaculture"
-        - "Irrigation Golf Courses"
-        - "Public Supply"
-        - "Thermoelectric Power"
-        - "Domestic"
+          - "Aquaculture"
+          - "Irrigation Golf Courses"
+          - "Public Supply"
+          - "Domestic"
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -30,8 +25,28 @@ source_names:
         allocation_from_scale: state
       activity_set_2:
         names:
-        - "Industrial"
-        - "Mining"
+          - "Thermoelectric Power"
+        allocation_method: proportional
+        allocation_source: "NETL_EIA_PlantWater"
+        allocation_source_class: "Water"
+        allocation_source_year: 2015
+        allocation_flow:
+          - 'Fresh Water Withdrawal'
+          - 'Saline Water Withdrawal'
+          - 'Brackish Water Withdrawal'
+        allocation_compartment:
+          - 'Surface'
+          - 'Ground'
+        allocation_from_scale: national
+        clean_allocation_fba: clean_plantwater_fba
+        allocation_map_to_flow_list: True
+        allocation_merge_columns:
+          - 'Context'
+          - 'Flowable'
+      activity_set_3:
+        names:
+          - "Industrial"
+          - "Mining"
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
@@ -42,9 +57,9 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-      activity_set_3:
+      activity_set_4:
         names:
-        - "Irrigation Crop"
+          - "Irrigation Crop"
         allocation_method: proportional
         allocation_source: "USDA_CoA_Cropland"
         allocation_source_class: "Land"
@@ -65,9 +80,9 @@ source_names:
         helper_source_year: 2018
         helper_flow: None
         helper_from_scale: state
-      activity_set_4:
+      activity_set_5:
         names:
-        - "Livestock"
+          - "Livestock"
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
         allocation_source_class: "Other"
