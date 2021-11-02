@@ -167,7 +167,10 @@ def seeAvailableFlowByModels(flowbytype):
             f = os.path.splitext(file)[0]
             if flowbytype == 'FBA':
                 s = load_sourceconfig(f)
-                years = s['years']
+                try:
+                    years = s['years']
+                except KeyError:
+                    years = 'YAML missing information on years'
                 fb_dict.update({f: years})
             # else if FBS
             else:
