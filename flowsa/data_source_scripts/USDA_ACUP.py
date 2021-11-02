@@ -3,9 +3,11 @@
 # coding=utf-8
 
 import json
+import numpy as np
 import pandas as pd
 from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, abbrev_us_state, log
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields
+from flowsa.allocation import allocate_by_sector
 
 
 def acup_url_helper(**kwargs):
