@@ -30,9 +30,16 @@ def get_activitytosector_mapping(source):
     mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
-    # subset df to keep rows wher ActivitySourceName matches source name
+    # some mapping tables will have data for multiple sources, while other mapping tables
+    # are used for multiple sources (like EPA_NEI or BEA mentioned above)
+    # so if find the exact source name in the ActivitySourceName column use those rows
+    # if the mapping file returns empty, use the original mapping file
+    # subset df to keep rows where ActivitySourceName matches source name
     mapping2 = mapping[mapping['ActivitySourceName'] == source].reset_index(drop=True)
-    return mapping2
+    if len(mapping2) > 0:
+        return mapping2
+    else:
+        return mapping
 
 
 def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOURCE_NAME, **kwargs):
