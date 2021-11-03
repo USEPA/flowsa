@@ -177,8 +177,7 @@ def main(**kwargs):
                 if 'source_flows' in attr:
                     flows_subset = flows_subset[flows_subset['FlowName'].isin(attr['source_flows'])]
                 # if activities are sector-like, check sectors are valid
-                if check_activities_sector_like:
-                    # load_source_catalog()[k]['sector-like_activities']:
+                if check_activities_sector_like(k):
                     flows_subset2 =\
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
