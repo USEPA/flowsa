@@ -7,10 +7,10 @@ For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/
 """
 import os
 import pprint
-
 from esupy.processed_data_mgmt import load_preprocessed_output
-from flowsa.common import log, load_sourceconfig
-from flowsa.settings import sourceconfigpath, flowbysectormethodpath, paths, fbaoutputpath, fbsoutputpath, \
+from flowsa.common import load_sourceconfig
+from flowsa.settings import log, sourceconfigpath, flowbysectormethodpath, \
+    paths, fbaoutputpath, fbsoutputpath, \
     biboutputpath, DEFAULT_DOWNLOAD_IF_MISSING
 from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
@@ -44,8 +44,8 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     if fba is None and download_FBA_if_missing:
         log.info('%s %s not found in %s, downloading from remote source',
                  datasource, str(year), fbaoutputpath)
-        download_from_remote(fba_meta,paths)
-        fba = load_preprocessed_output(fba_meta,paths)
+        download_from_remote(fba_meta, paths)
+        fba = load_preprocessed_output(fba_meta, paths)
 
     if fba is None:
         log.info('%s %s not found in %s, running functions to generate FBA',
@@ -71,7 +71,7 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname, download_FBAs_if_missing = DEFAULT_DOWNLOAD_IF_MISSING,
+def getFlowBySector(methodname, download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                     download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Loads stored FlowBySector output or generates it if it doesn't exist, then loads
