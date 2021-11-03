@@ -1,0 +1,36 @@
+target_sector_level: NAICS_6
+target_sector_source: NAICS_2012_Code
+target_geoscale: national
+source_names:
+  "EPA_CDDPath":
+    data_format: 'FBA'
+    class: Other
+    geoscale_to_use: national
+    year: 2014
+    clean_fba_df_fxn: 'assign_wood_to_engineering'
+    mfl_mapping: 'EPA_CDDPath'
+    activity_sets:
+      activity_set_1:
+        names:
+        - "Buildings"
+        - "Other"
+        - "Other - Wood"
+        - "Roads and Bridges"
+        allocation_source: "Census_VIP"        
+        allocation_method: proportional
+        allocation_source_class: 'Money'
+        allocation_source_year: 2014
+        allocation_flow: 
+        - "Construction spending"
+        allocation_compartment: None
+        allocation_from_scale: national
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2014
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+

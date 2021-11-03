@@ -11,7 +11,8 @@ import re
 import io
 import tabula
 import pandas as pd
-from flowsa.common import WITHDRAWN_KEYWORD, get_all_state_FIPS_2, log
+from flowsa.common import WITHDRAWN_KEYWORD, get_all_state_FIPS_2
+from flowsa.settings import log
 
 
 def split(row, header, sub_header, next_line):

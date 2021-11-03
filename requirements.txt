@@ -1,6 +1,6 @@
-git+git://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.8#egg=fedelemflowlist
-git+git://github.com/USEPA/esupy@v0.1.7#egg=esupy
-git+git://github.com/USEPA/standardizedinventories@v0.10.0#egg=StEWI
+git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List#egg=fedelemflowlist
+git+https://github.com/USEPA/esupy#egg=esupy
+git+https://github.com/USEPA/standardizedinventories#egg=StEWI
 pandas>=1.3.2                  # Powerful data structures for data analysis, time series, and statistics.
 pip>=9                         # The PyPA recommended tool for installing Python packages.
 setuptools>=41                 # Fully-featured library designed to facilitate packaging Python projects.
@@ -8,7 +8,7 @@ pyyaml>=5.3                    # Yaml for python
 requests >=2.22.0              # Web service calls
 appdirs >= 1.4.3               # Storing user data
 pycountry >= 19.8.18           # ISO country codes
-xlrd >= 2.0.1                 # Extract data from xls files
+xlrd >= 2.0.1                  # Extract data from xls files
 openpyxl >= 3.0.7              # Extract data from xlsm files
 requests_ftp == 0.3.1          # Requests implementation for FTP
 tabula-py >= 2.1.1             # PDF reader

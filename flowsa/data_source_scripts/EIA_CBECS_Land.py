@@ -11,7 +11,8 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.common import US_FIPS, get_region_and_division_codes, WITHDRAWN_KEYWORD,\
-    clean_str_and_capitalize, fba_mapped_default_grouping_fields, vLogDetailed
+    clean_str_and_capitalize, fba_mapped_default_grouping_fields
+from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.literature_values import \
     get_commercial_and_manufacturing_floorspace_to_land_area_ratio

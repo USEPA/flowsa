@@ -9,7 +9,7 @@ Public Land Statistics
 
 import numpy as np
 import flowsa
-from flowsa.common import flowbysectoractivitysetspath
+from flowsa.settings import flowbysectoractivitysetspath
 
 as_year = '2012'
 

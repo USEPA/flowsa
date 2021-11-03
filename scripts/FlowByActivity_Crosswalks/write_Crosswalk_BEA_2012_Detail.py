@@ -6,8 +6,8 @@
 Create a crosswalk linking BEA to NAICS for 2012 Detail
 
 """
-from flowsa.common import datapath, load_bea_crosswalk
-
+from flowsa.common import load_bea_crosswalk
+from flowsa.settings import datapath
 
 if __name__ == '__main__':
 

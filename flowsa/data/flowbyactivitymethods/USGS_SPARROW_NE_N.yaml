@@ -1,0 +1,20 @@
+author: US Environmental Protection Agency
+source_name: 'USGS SPARROW NE N'
+bib_id: USGS_SPARROW_NE_N
+api_name: USGS_SPARROW
+api_key_required: false
+format: txt
+url:
+  base_url: https://www.sciencebase.gov/catalog/file/get/__txt__
+url_replace_fxn: sparrow_url_helper
+call_response_fxn: sparrow_call
+parse_response_fxn: sparrow_parse
+years:
+- 2012
+txt:
+- 5d4192aee4b01d82ce8da477?f=__disk__c2%2F02%2F06%2Fc20206078520c5ec87394a3499eea073f472a27d
+
+
+
+
+

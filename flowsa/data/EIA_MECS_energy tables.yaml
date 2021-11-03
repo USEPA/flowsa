@@ -1,4 +1,4 @@
-'2014':
+'2018':
   Table 2.1:
     col_names:
       - NAICS Code
@@ -110,6 +110,126 @@
       }
     rse_regions:
       { 
+      Total United States : [12,93],
+      Northeast Region : [96,177],
+      Midwest Region : [180,261],
+      South Region : [264,345],
+      West Region : [348,429]
+      }
+    data_type: 'fuel consumption'
+
+'2014':
+  Table 2.1:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total | trillion Btu
+      - Residual Fuel Oil | million bbl
+      - Distillate Fuel Oil | million bbl
+      - Natural Gas | billion cu ft
+      - Hydrocarbon Gas Liquids, excluding natural gasoline | million bbl
+      - Coal | million short tons
+      - Coke and Breeze | million short tons
+      - Other | trillion Btu
+    regions:
+      {
+      Total United States : [14,97],
+      Northeast Region : [100,181],
+      Midwest Region : [184,265],
+      South Region : [268,349],
+      West Region : [352,433]
+      }
+    rse_regions:
+      {
+      Total United States : [12,95],
+      Northeast Region : [98,179],
+      Midwest Region : [182,263],
+      South Region : [266,347],
+      West Region : [350,431]
+      }
+    data_type: 'nonfuel consumption'
+  Table 2.2:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total
+      - Residual Fuel Oil
+      - Distillate Fuel Oil
+      - Natural Gas
+      - Hydrocarbon Gas Liquids, excluding natural gasoline
+      - Coal
+      - Coke and Breeze
+      - Other
+    regions:
+      {
+      Total United States : [14,97],
+      Northeast Region : [100,181],
+      Midwest Region : [184,265],
+      South Region : [268,349],
+      West Region : [352,433]
+      }
+    rse_regions:
+      {
+      Total United States : [12,95],
+      Northeast Region : [98,179],
+      Midwest Region : [182,263],
+      South Region : [266,347],
+      West Region : [350,431]
+      }
+    data_type: 'nonfuel consumption'
+  Table 3.1:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total | trillion Btu
+      - Net Electricity | million kWh
+      - Residual Fuel Oil | million bbl
+      - Distillate Fuel Oil | million bbl
+      - Natural Gas | billion cu ft
+      - Hydrocarbon Gas Liquids, excluding natural gasoline | million bbl
+      - Coal | million short tons
+      - Coke and Breeze | million short tons
+      - Other | trillion Btu
+    regions:
+      {
+      Total United States : [14,95],
+      Northeast Region : [98,179],
+      Midwest Region : [182,263],
+      South Region : [266,347],
+      West Region : [350,431]
+      }
+    rse_regions:
+      {
+      Total United States : [12,93],
+      Northeast Region : [96,177],
+      Midwest Region : [180,261],
+      South Region : [264,345],
+      West Region : [348,429]
+      }
+    data_type: 'fuel consumption'
+  Table 3.2:
+    col_names:
+      - NAICS Code
+      - Subsector and Industry
+      - Total
+      - Net Electricity
+      - Residual Fuel Oil
+      - Distillate Fuel Oil
+      - Natural Gas
+      - Hydrocarbon Gas Liquids, excluding natural gasoline
+      - Coal
+      - Coke and Breeze
+      - Other
+    regions:
+      {
+      Total United States : [14,95],
+      Northeast Region : [98,179],
+      Midwest Region : [182,263],
+      South Region : [266,347],
+      West Region : [350,431]
+      }
+    rse_regions:
+      {
       Total United States : [12,93],
       Northeast Region : [96,177],
       Midwest Region : [180,261],
