@@ -796,3 +796,22 @@ def rename_log_file(filename, fb_meta):
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file already exists)
     shutil.copy(log_file, new_log_name)
+
+
+def check_activities_sector_like(sourcename_load):
+    """
+    Check if the activities in a df are sector-like,
+    if cannot find the sourcename in the source catalog, drop extensions on the
+    source name
+    """
+    sourcename = sourcename_load
+    while (load_source_catalog().get(sourcename) is None) & ('_' in sourcename):
+        sourcename = sourcename.rsplit("_", 1)[0]
+
+    try:
+        sectorLike = load_source_catalog()[sourcename]['sector-like_activities']
+    except KeyError:
+        log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
+                  sourcename_load, sourcename)
+
+    return sectorLike
