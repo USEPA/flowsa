@@ -1,0 +1,12 @@
+author: NETL-EIA
+source_name: NETL_EIA_PlantWater
+source_url: ' ' # imported from ElectricityLCI repository
+original_data_download_date: 10/06/2021
+bib_id: elci_plantwater
+api_name: None
+api_key_required: false
+format: csv  # comma delineated data
+url: None
+parse_response_fxn: netl_eia_parse
+years:
+- 2015

@@ -224,8 +224,8 @@ def replace_missing_2_digit_sector_values(df):
         rows_to_drop = pd.concat(rows_list, ignore_index=True)
         # drop rows from df
         modified_df = pd.merge(df, rows_to_drop, indicator=True,
-                               how='outer').query('_merge=="left_only"').drop(
-            '_merge', axis=1)
+                               how='outer').query('_merge=="left_only"'
+                                                  ).drop('_merge', axis=1)
         # add new rows
         modified_df = modified_df.append(new_sectors, sort=False)
     else:

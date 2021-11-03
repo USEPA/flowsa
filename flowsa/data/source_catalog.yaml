@@ -48,6 +48,12 @@ BLS_QCEW:
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
+CalRecycle_WasteCharacterization:
+  class:
+    - Other
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
 Census_AHS:
   class:
     - Land
@@ -67,6 +73,11 @@ Census_PEP_Population:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: ""
+Census_VIP:
+  class: Money
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
 EIA_CBECS_Land:
   class: Land
   sector-like_activities: False
@@ -96,6 +107,12 @@ EIA_MER:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
+EPA_CDDPath:
+  class:
+    - Other
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
 EPA_GHGI:
   class:
     - Chemicals
@@ -121,6 +138,13 @@ EPA_NEI_Onroad:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
+  sector_aggregation_level: "aggregated"
+NETL_EIA_PlantWater:
+  class:
+  - Water
+  - Energy
+  sector-like_activities: False
+  activity_schema: None
   sector_aggregation_level: "aggregated"
 NOAA_FisheryLandings:
   class:
@@ -195,3 +219,33 @@ USGS_WU_Coef:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+write_FBA_California_Commercial_bySector:
+  class:
+  - Other
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: ""
+USGS_MYB_Lead:
+  class:
+  - Geological
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: ""
+USGS_MYB_ManufacturedAbrasive:
+  class:
+  - Geological
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: ""
+USGS_MYB_SodaAsh:
+  class:
+  - Geological
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: ""
+USGS_MYB_Copper:
+  class:
+    - Geological
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: ""

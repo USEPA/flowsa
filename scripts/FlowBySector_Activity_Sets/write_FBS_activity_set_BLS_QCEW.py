@@ -7,7 +7,7 @@ land use related to BLS QCEW employment data
 """
 
 import flowsa
-from flowsa.common import flowbysectoractivitysetspath
+from flowsa.settings import flowbysectoractivitysetspath
 
 as_year = '2017'
 

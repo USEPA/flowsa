@@ -17,7 +17,7 @@ https://www.bls.gov/green/industry_by_naics.pdf
 
 """
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.settings import datapath
 
 # read the csv loaded as a raw datafile
 df_raw = pd.read_csv(datapath + "BLS_GreenIndustries_Raw.csv")
