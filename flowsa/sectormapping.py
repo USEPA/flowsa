@@ -30,7 +30,9 @@ def get_activitytosector_mapping(source):
     mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
-    return mapping
+    # subset df to keep rows wher ActivitySourceName matches source name
+    mapping2 = mapping[mapping['ActivitySourceName'] == source].reset_index(drop=True)
+    return mapping2
 
 
 def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOURCE_NAME, **kwargs):
