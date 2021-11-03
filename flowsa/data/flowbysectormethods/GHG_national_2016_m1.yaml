@@ -198,3 +198,28 @@ source_names:
           allocation_method: direct
           allocation_source: None
           allocation_from_scale: national
+    "EPA_GHGI_T_5_7": #CH4 and N2O from manure
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: None
+      clean_fba_w_sec_df_fxn: None
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Beef Cattle"
+            - "Dairy Cattle"
+            - "Horses"
+            - "Poultry"
+            - "Sheep"
+            - "Swine"
+            - "American Bison" #activity from 2018 GHG inventory
+            - "Mules and Asses" #activity from 2018 GHG inventory
+          allocation_method: direct
+          allocation_source: None
+          allocation_from_scale: national
+
+
+
+
