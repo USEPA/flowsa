@@ -14,7 +14,8 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
 from flowsa.common import US_FIPS, sector_level_key, \
     load_sector_length_crosswalk, load_source_catalog, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
-    fbs_activity_fields, fba_default_grouping_fields
+    fbs_activity_fields, fba_default_grouping_fields, \
+    check_activities_sector_like, return_true_source_catalog_name
 from flowsa.settings import log, vLog, vLogDetailed
 
 
@@ -391,7 +392,7 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
-    if load_source_catalog()[source_name]['sector-like_activities']:
+    if check_activities_sector_like(source_name):
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector ratios '
                   'for a dataset with sector-like activities because if there '
                   'are modifications to flowamounts for a sector, then the '
@@ -495,13 +496,9 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
     vLog.info('Comparing Flow-By-Activity subset by activity and geography to '
               'the subset Flow-By-Sector FlowAmount total.')
 
-    # load source catalog
-    cat = load_source_catalog()
-    src_info = cat[source_name]
-
     # extract relevant geoscale data or aggregate existing data
     fba = subset_df_by_geoscale(fba_load, activity_attr['allocation_from_scale'], method['target_geoscale'])
-    if src_info['sector-like_activities']:
+    if check_activities_sector_like(source_name):
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
         fba = fba[['Class', 'FlowAmount', 'Unit', 'Context', 'ActivityProducedBy',

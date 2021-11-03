@@ -13,7 +13,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, load_source_catalog, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
-    fbs_collapsed_fill_na_dict, fba_activity_fields, \
+    fbs_collapsed_fill_na_dict, fba_activity_fields, return_true_source_catalog_name, \
     fips_number_key, flow_by_activity_fields, fba_fill_na_dict, find_true_file_path, \
     flow_by_activity_mapped_fields, fba_mapped_default_grouping_fields
 from flowsa.settings import datasourcescriptspath, log
@@ -175,13 +175,11 @@ def sector_aggregation(df_load, group_cols):
     # determine if activities are sector-like, if aggregating a df with a 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
-        # load source catalog
-        cat = load_source_catalog()
         # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
         # load catalog info for source
-        src_info = cat[s]
-        sector_like_activities = src_info['sector-like_activities']
+        ts = return_true_source_catalog_name(s)
+        sector_like_activities = load_source_catalog()[ts]['sector-like_activities']
 
     # ensure None values are not strings
     df = replace_NoneType_with_empty_cells(df_load)
@@ -647,7 +645,8 @@ def estimate_suppressed_data(df, sector_column, naics_level, sourcename):
             df_m = df_m.drop(columns=[sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
             df_m = df_m.rename(columns={sector_column + '_y': sector_column})
             # reset activity columns
-            if load_source_catalog()[sourcename]['sector-like_activities']:
+            ts = return_true_source_catalog_name(sourcename)
+            if load_source_catalog()[ts]['sector-like_activities']:
                 df_m = df_m.assign(ActivityProducedBy=df_m['SectorProducedBy'])
                 df_m = df_m.assign(ActivityConsumedBy=df_m['SectorConsumedBy'])
 
