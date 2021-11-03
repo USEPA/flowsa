@@ -96,3 +96,105 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
+  "EPA_GHGI_T_3_57":  #CH4 from Natural Gas Systems
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    clean_fba_df_fxn: None
+    clean_fba_w_sec_df_fxn: None
+    activity_sets:
+      activity_set_1:
+        names:
+          - "Distribution"
+          - "Exploration"
+          - "Gathering and Boosting"
+          - "Offshore Production"
+          - "Onshore Production"
+          - "Processing"
+          - "Production"
+          - "Transmission and Storage"
+        allocation_method: direct
+        allocation_source: None
+        allocation_from_scale: national
+  "EPA_GHGI_T_3_59":  #CO2 from Natural Gas Systems
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    clean_fba_df_fxn: None
+    clean_fba_w_sec_df_fxn: None
+    activity_sets:
+      activity_set_1:
+        names:
+          - "Exploration"
+          - "Processing"
+          - "Production"
+          - "Transmission and Storage"
+        allocation_method: direct
+        allocation_source: None
+        allocation_from_scale: national
+    "EPA_GHGI_T_3_59": #CO2 from Natural Gas Systems
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: None
+      clean_fba_w_sec_df_fxn: None
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Exploration"
+            - "Processing"
+            - "Production"
+            - "Transmission and Storage"
+          allocation_method: direct
+          allocation_source: None
+          allocation_from_scale: national
+# Note that T_61 N2O from natural gas systems was not used in original method
+    "EPA_GHGI_T_3_37": #CO2 from Petroleum Systems
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: None
+      clean_fba_w_sec_df_fxn: None
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Chemical Injection Pumps"
+            - "Crude Oil Transportation"
+            - "Equipment Leaks"
+            - "Exploration"
+            - "Gas Engines"
+            - "Offshore Production"
+            - "Other Sources"
+            - "Pneumatic Controllers"
+            - "Production (Total)"
+            - "Refining"
+          allocation_method: direct
+          allocation_source: None
+          allocation_from_scale: national
+    "EPA_GHGI_T_3_38": #CO2 from Petroleum Systems
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: None
+      clean_fba_w_sec_df_fxn: None
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Chemical Injection Pumps"
+            - "Crude Oil Transportation"
+            - "Equipment Leaks"
+            - "Exploration"
+            - "Gas Engines"
+            - "Offshore Production"
+            - "Other Sources"
+            - "Pneumatic Controllers"
+            - "Production (Total)"
+            - "Refining"
+          allocation_method: direct
+          allocation_source: None
+          allocation_from_scale: national
