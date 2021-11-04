@@ -11,7 +11,8 @@ Last updated: Thursday, April 16, 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import get_all_state_FIPS_2, vLogDetailed
+from flowsa.common import get_all_state_FIPS_2
+from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import load_household_sector_codes
 from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2013, \

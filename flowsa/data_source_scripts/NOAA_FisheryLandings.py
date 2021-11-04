@@ -21,7 +21,8 @@ Data output saved as csv, retaining assigned file name "foss_landings.csv"
 
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import externaldatapath, get_state_FIPS
+from flowsa.common import get_state_FIPS
+from flowsa.settings import externaldatapath
 
 
 def noaa_parse(**kwargs):

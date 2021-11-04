@@ -13,6 +13,7 @@ parse_response_fxn: eia_mecs_land_parse
 years:
 - 2010
 - 2014
+- 2018
 tables:
 - table9_1
 

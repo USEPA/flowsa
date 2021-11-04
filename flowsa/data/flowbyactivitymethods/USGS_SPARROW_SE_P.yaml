@@ -1,0 +1,20 @@
+author: US Environmental Protection Agency
+source_name: 'USGS SPARROW SE P'
+bib_id: USGS_SPARROW_SE_P
+api_name: USGS_SPARROW
+api_key_required: false
+format: txt
+url:
+  base_url: https://www.sciencebase.gov/catalog/file/get/__txt__
+url_replace_fxn: sparrow_url_helper
+call_response_fxn: sparrow_call
+parse_response_fxn: sparrow_parse
+years:
+- 2012
+txt:
+- 5d6e70e5e4b0c4f70cf635a1?f=__disk__14%2Fc1%2F63%2F14c1636eef91529f548d5fe29ff3f426d3b4b996
+
+
+
+
+

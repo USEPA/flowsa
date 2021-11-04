@@ -19,6 +19,8 @@ from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.sectormapping import map_flows
 from flowsa.common import flow_by_sector_fields, apply_county_FIPS, sector_level_key, \
     update_geoscale, log, load_sector_length_crosswalk, scc_adjustmentpath
+    update_geoscale, load_sector_length_crosswalk
+from flowsa.settings import log
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 def stewicombo_to_sector(yaml_load):
