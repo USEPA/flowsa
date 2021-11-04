@@ -10,8 +10,8 @@ https://github.com/USEPA/useeior/blob/master/data/MasterCrosswalk2012.rda
 
 csv obtained by running the following code in Rstudio:
 cw  <- load('MasterCrosswalk2012.rda')
-write.csv(get(cw), file='Crosswalk_BEA_toNAICs.csv')
+write.csv(get(cw), file='NAICS_Crosswalk_BEA.csv')
 
-CSV manually added to flowsa as Crosswalk_BEA_toNAICS_raw.csv
+CSV manually added to flowsa as NAICS_Crosswalk_BEA_raw.csv
 
 """

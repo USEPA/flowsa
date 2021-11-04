@@ -17,12 +17,12 @@ to NAICS crosswalk.
 - Writes reshaped file to datapath as csv.
 """
 
-import glob
+import os
 import pandas as pd
 import numpy as np
 import rpy2.robjects.packages as packages
 from rpy2.robjects import pandas2ri
-from flowsa.settings import datapath, crosswalkpath
+from flowsa.settings import datapath, crosswalkpath, log
 from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells
 from flowsa.dataclean import replace_strings_with_NoneType
 
@@ -38,7 +38,8 @@ def import_useeior_mastercrosswalk():
     # load the .Rd file for
     cw = packages.data(useeior).fetch('MasterCrosswalk2012')['MasterCrosswalk2012']
 
-    return cw
+    # save as csv
+    cw.to_csv(datapath + "USEEIOCrosswalk.csv", index=False)
 
 
 def write_naics_2012_crosswalk():
@@ -48,7 +49,7 @@ def write_naics_2012_crosswalk():
     """
 
     # load the useeior mastercrosswalk
-    cw_load = import_useeior_mastercrosswalk()
+    cw_load = pd.read_csv(datapath + "USEEIOCrosswalk.csv", dtype=str)
 
     # extract naics 2012 code column and drop duplicates and empty cells
     cw = cw_load[['NAICS_2012_Code']].drop_duplicates()
@@ -106,15 +107,13 @@ def write_naics_2012_crosswalk():
     # save as csv
     naics_cw.to_csv(datapath + "NAICS_2012_Crosswalk.csv", index=False)
 
-    return None
-
 
 def load_naics_02_to_07_crosswalk():
     """
     Load the 2002 to 2007 crosswalk from US Census
     :return:
     """
-    naics_url = 'https://www.census.gov/eos/www/naics/concordances/2002_to_2007_NAICS.xls'
+    naics_url = 'https://www.census.gov/naics/concordances/2002_to_2007_NAICS.xls'
     df_load = pd.read_excel(naics_url)
     # drop first rows
     df = pd.DataFrame(df_load.loc[2:]).reset_index(drop=True)
@@ -143,7 +142,7 @@ def update_naics_crosswalk():
     """
 
     # read useeior master crosswalk, subset NAICS columns
-    naics_load = import_useeior_mastercrosswalk()
+    naics_load = pd.read_csv(datapath + "USEEIOCrosswalk.csv", dtype=str)
     naics = naics_load[['NAICS_2007_Code', 'NAICS_2012_Code',
                         'NAICS_2017_Code']].drop_duplicates().reset_index(drop=True)
     # convert all rows to string
@@ -158,31 +157,35 @@ def update_naics_crosswalk():
 
     # find any NAICS where length > 6 that are used for allocation purposes and add to naics list
     missing_naics_df_list = []
-    # read in all the crosswalk csv files (ends in toNAICS.csv)
-    for file_name in glob.glob(datapath + "activitytosectormapping/"+'*_toNAICS.csv'):
-        # skip Statistics Canada GDP because not all sectors relevant
-        if file_name != crosswalkpath + 'Crosswalk_StatCan_GDP_toNAICS.csv':
-            df = pd.read_csv(file_name, low_memory=False, dtype=str)
-            # convert all rows to string
-            df = df.astype(str)
-            # determine sector year
-            naics_year = df['SectorSourceName'].all()
-            # subset dataframe so only sector
-            df = df[['Sector']]
-            # trim whitespace and cast as string, rename column
-            df['Sector'] = df['Sector'].astype(str).str.strip()
-            df = df.rename(columns={'Sector': naics_year})
-            # extract sector year column from master crosswalk
-            df_naics = naics[[naics_year]]
-            # find any NAICS that are in source crosswalk but not in mastercrosswalk
-            common = df.merge(df_naics, on=[naics_year, naics_year])
-            missing_naics = df[(~df[naics_year].isin(common[naics_year]))]
-            # extract sectors where len > 6 and that does not include a '-'
-            missing_naics = missing_naics[missing_naics[naics_year].apply(lambda x: len(x) > 6)]
-            if len(missing_naics) != 0:
-                missing_naics = missing_naics[~missing_naics[naics_year].str.contains('-')]
-                # append to df list
-                missing_naics_df_list.append(missing_naics)
+    # read in all the crosswalk csv files (starts with NAICS_Crosswalk)
+    for file_name in os.listdir(crosswalkpath):
+        if file_name.startswith("NAICS_Crosswalk"):
+            # skip Statistics Canada GDP because not all sectors relevant
+            if file_name != crosswalkpath + 'NAICS_Crosswalk_StatCan_GDP.csv':
+                df = pd.read_csv(f'{crosswalkpath}{file_name}', low_memory=False, dtype=str)
+                # convert all rows to string
+                df = df.astype(str)
+                # determine sector year
+                naics_year = df['SectorSourceName'][0]
+                if naics_year == 'nan':
+                    log.info(f'Missing SectorSourceName for {file_name}')
+                    continue
+                # subset dataframe so only sector
+                df = df[['Sector']]
+                # trim whitespace and cast as string, rename column
+                df['Sector'] = df['Sector'].astype(str).str.strip()
+                df = df.rename(columns={'Sector': naics_year})
+                # extract sector year column from master crosswalk
+                df_naics = naics[[naics_year]]
+                # find any NAICS that are in source crosswalk but not in mastercrosswalk
+                common = df.merge(df_naics, on=[naics_year, naics_year])
+                missing_naics = df[(~df[naics_year].isin(common[naics_year]))]
+                # extract sectors where len > 6 and that does not include a '-'
+                missing_naics = missing_naics[missing_naics[naics_year].apply(lambda x: len(x) > 6)]
+                if len(missing_naics) != 0:
+                    missing_naics = missing_naics[~missing_naics[naics_year].str.contains('-')]
+                    # append to df list
+                    missing_naics_df_list.append(missing_naics)
     # concat df list and drop duplications
     missing_naics_df = \
         pd.concat(missing_naics_df_list,

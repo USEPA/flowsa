@@ -1,5 +1,7 @@
 from string import digits
 from flowsa.common import *
+from flowsa.settings import log
+
 
 def usgs_myb_year(years, current_year_str):
     """Sets the column for the string based on the year.
@@ -12,7 +14,7 @@ def usgs_myb_year(years, current_year_str):
         column_val = current_year - lower_year + 1
         return "year_" + str(column_val)
     else:
-        print("Your year is out of scope. Pick a year between " + lower_year + " and " + upper_year)
+        log.info("Your year is out of scope. Pick a year between %s and %s", lower_year, upper_year)
 
 
 def usgs_myb_name(USGS_Source):

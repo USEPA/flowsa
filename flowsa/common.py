@@ -761,9 +761,8 @@ def find_true_file_path(filedirectory, filename, extension):
     :param extension: string, type of file, such as "yaml" or "py"
     :return: string, corrected file path name
     """
-
     # if a file does not exist modify file name, dropping ext after last underscore
-    while os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
+    while (os.path.exists(f"{filedirectory}{filename}.{extension}") is False) & ('_' in filename):
         # continue dropping last underscore/extension until file name does exist
         filename = filename.rsplit("_", 1)[0]
 
@@ -798,15 +797,22 @@ def rename_log_file(filename, fb_meta):
     shutil.copy(log_file, new_log_name)
 
 
+def return_true_source_catalog_name(sourcename):
+    """
+    Drop any extensions on source name until find the name in source catalog
+    """
+    while (load_source_catalog().get(sourcename) is None) & ('_' in sourcename):
+        sourcename = sourcename.rsplit("_", 1)[0]
+    return sourcename
+
+
 def check_activities_sector_like(sourcename_load):
     """
     Check if the activities in a df are sector-like,
     if cannot find the sourcename in the source catalog, drop extensions on the
     source name
     """
-    sourcename = sourcename_load
-    while (load_source_catalog().get(sourcename) is None) & ('_' in sourcename):
-        sourcename = sourcename.rsplit("_", 1)[0]
+    sourcename = return_true_source_catalog_name(sourcename_load)
 
     try:
         sectorLike = load_source_catalog()[sourcename]['sector-like_activities']

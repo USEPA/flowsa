@@ -119,7 +119,7 @@ def bea_make_detail_br_parse(**kwargs):
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
-    df["SourceName"] = "BEA_Make_BR"
+    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
     df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
