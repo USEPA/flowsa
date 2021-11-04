@@ -22,7 +22,7 @@ import pandas as pd
 import numpy as np
 import rpy2.robjects.packages as packages
 from rpy2.robjects import pandas2ri
-from flowsa.settings import datapath, crosswalkpath
+from flowsa.settings import datapath, crosswalkpath, log
 from flowsa.flowbyfunctions import replace_NoneType_with_empty_cells
 from flowsa.dataclean import replace_strings_with_NoneType
 
@@ -38,7 +38,8 @@ def import_useeior_mastercrosswalk():
     # load the .Rd file for
     cw = packages.data(useeior).fetch('MasterCrosswalk2012')['MasterCrosswalk2012']
 
-    return cw
+    # save as csv
+    cw.to_csv(datapath + "USEEIOCrosswalk.csv", index=False)
 
 
 def write_naics_2012_crosswalk():
@@ -48,7 +49,7 @@ def write_naics_2012_crosswalk():
     """
 
     # load the useeior mastercrosswalk
-    cw_load = import_useeior_mastercrosswalk()
+    cw_load = pd.read_csv(datapath + "USEEIOCrosswalk.csv", dtype=str)
 
     # extract naics 2012 code column and drop duplicates and empty cells
     cw = cw_load[['NAICS_2012_Code']].drop_duplicates()
@@ -106,15 +107,13 @@ def write_naics_2012_crosswalk():
     # save as csv
     naics_cw.to_csv(datapath + "NAICS_2012_Crosswalk.csv", index=False)
 
-    return None
-
 
 def load_naics_02_to_07_crosswalk():
     """
     Load the 2002 to 2007 crosswalk from US Census
     :return:
     """
-    naics_url = 'https://www.census.gov/eos/www/naics/concordances/2002_to_2007_NAICS.xls'
+    naics_url = 'https://www.census.gov/naics/concordances/2002_to_2007_NAICS.xls'
     df_load = pd.read_excel(naics_url)
     # drop first rows
     df = pd.DataFrame(df_load.loc[2:]).reset_index(drop=True)
@@ -143,7 +142,7 @@ def update_naics_crosswalk():
     """
 
     # read useeior master crosswalk, subset NAICS columns
-    naics_load = import_useeior_mastercrosswalk()
+    naics_load = pd.read_csv(datapath + "USEEIOCrosswalk.csv", dtype=str)
     naics = naics_load[['NAICS_2007_Code', 'NAICS_2012_Code',
                         'NAICS_2017_Code']].drop_duplicates().reset_index(drop=True)
     # convert all rows to string
@@ -167,7 +166,10 @@ def update_naics_crosswalk():
                 # convert all rows to string
                 df = df.astype(str)
                 # determine sector year
-                naics_year = df['SectorSourceName'].all()
+                naics_year = df['SectorSourceName'][0]
+            if naics_year == 'nan':
+                log.info(f'Missing SectorSourceName for {file_name}')
+                continue
                 # subset dataframe so only sector
                 df = df[['Sector']]
                 # trim whitespace and cast as string, rename column

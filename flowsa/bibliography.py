@@ -10,10 +10,10 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import load_sourceconfig, \
-    load_values_from_literature_citations_config, log, \
+    load_values_from_literature_citations_config, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
     find_true_file_path, sourceconfigpath
-from flowsa.settings import outputpath, biboutputpath
+from flowsa.settings import outputpath, biboutputpath, log
 
 
 def generate_list_of_sources_in_fbs_method(methodname):
