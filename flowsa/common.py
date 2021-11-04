@@ -16,7 +16,6 @@ import pycountry
 from esupy.processed_data_mgmt import create_paths_if_missing
 from flowsa.settings import datapath, outputpath, logoutputpath, sourceconfigpath, log
 
-scc_adjustmentpath = datapath + 'scc_adjustments/'
 # Sets default Sector Source Name
 SECTOR_SOURCE_NAME = 'NAICS_2012_Code'
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
