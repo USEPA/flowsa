@@ -12,7 +12,8 @@ import io
 import yaml
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, datapath, vLogDetailed
+from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
+from flowsa.settings import datapath, vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 from flowsa.data_source_scripts.EIA_CBECS_Land import calculate_total_facility_land_area
@@ -386,6 +387,7 @@ def eia_mecs_energy_parse(**kwargs):
     df.loc[df['FlowAmount'] == '*', 'FlowAmount'] = None
     df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = WITHDRAWN_KEYWORD
     df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == 'D', 'FlowAmount'] = None
     df.loc[df['FlowAmount'] == 'NA', 'FlowAmount'] = None
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
@@ -399,6 +401,7 @@ def eia_mecs_energy_parse(**kwargs):
     df.loc[df['Spread'] == 'NA', 'Spread'] = None
     df.loc[df['Spread'] == 'X', 'Spread'] = None
     df.loc[df['Spread'] == ' ', 'Spread'] = None
+    df.loc[df['Spread'] == 'D', 'Spread'] = None
 
     return df
 

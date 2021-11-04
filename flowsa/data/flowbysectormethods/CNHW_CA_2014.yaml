@@ -1,0 +1,47 @@
+target_sector_level: NAICS_6
+target_sector_source: NAICS_2012_Code
+target_geoscale: state
+source_names:
+  "CalRecycle_WasteCharacterization":
+    data_format: 'FBA'
+    class: Other
+    geoscale_to_use: state
+    year: 2014
+    clean_fba_df_fxn: keep_generated_quantity
+    mfl_mapping: 'CalRecycle'
+    activity_sets:
+      activity_set_1:
+        names:
+          - "Arts Entertainment Recreation"
+          - "Durable Wholesale Trucking"
+          - "Education"
+          - "Electronic Equipment"
+          - "Food Beverage Stores"
+          - "Food Nondurable Wholesale"
+          - "Hotel Lodging"
+          - "Medical Health"
+          - "Other Manufacturing"
+          - "Other Retail Trade"
+          - "Public Administration"
+          - "Restaurants"
+          - "Services Management Administration Support Social"
+          - "Services Professional Technical Financial"
+          - "Services Repair Personal"
+          - "Not Elsewhere Classified"
+        allocation_method: proportional
+        allocation_source: "BLS_QCEW"
+        allocation_source_class: "Employment"
+        allocation_source_year: 2014
+        allocation_flow:
+          - "Number of employees"
+        allocation_compartment: None
+        allocation_from_scale: state
+        allocation_fba_load_scale: state
+        clean_allocation_fba: clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+      activity_set_2:
+        names:
+          - "Multifamily"
+        allocation_method: direct
+        allocation_from_scale: state
+
