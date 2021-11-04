@@ -219,7 +219,48 @@ source_names:
           allocation_method: direct
           allocation_source: None
           allocation_from_scale: national
-
-
-
-
+  "EPA_GHGI_T_3_14": #CH4 from mobile combustion
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: None
+      clean_fba_w_sec_df_fxn: None
+      activity_sets:
+        activity_set_1:  #this set is direct
+          names:
+            - "Passenger Cars"
+            - "Light-Duty Trucks"
+            - "Rail"
+            - "Ships and Boats"
+            - "Aircraft"
+        activity_set_2: #this set is allocated by purchases of 333120 construction equipment
+          names:
+            - "Construction/Mining Equipment"
+          allocation_method: proportional
+          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+          allocation_source_class: "Money"
+          allocation_source_year: 2012
+          allocation_flow: "USD2012"
+          allocation_compartment: None
+          allocation_from_scale: national
+        activity_set_3: #this set is allocated by purchases of 333111 farm machinery
+          names:
+            - "Agricultural Equipment"
+          allocation_method: proportional
+          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+          allocation_source_class: "Money"
+          allocation_source_year: 2012
+          allocation_flow: "USD2012"
+          allocation_compartment: None
+          allocation_from_scale: national
+        activity_set_4: #this set is allocated by purchases of 333111 petroleum refining
+          names:
+            - "Other"
+          allocation_method: proportional
+          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+          allocation_source_class: "Money"
+          allocation_source_year: 2012
+          allocation_flow: "USD2012"
+          allocation_compartment: None
+          allocation_from_scale: national
