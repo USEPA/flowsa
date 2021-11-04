@@ -162,14 +162,14 @@ def update_naics_crosswalk():
         if file_name.startswith("NAICS_Crosswalk"):
             # skip Statistics Canada GDP because not all sectors relevant
             if file_name != crosswalkpath + 'NAICS_Crosswalk_StatCan_GDP.csv':
-                df = pd.read_csv(file_name, low_memory=False, dtype=str)
+                df = pd.read_csv(f'{crosswalkpath}{file_name}', low_memory=False, dtype=str)
                 # convert all rows to string
                 df = df.astype(str)
                 # determine sector year
                 naics_year = df['SectorSourceName'][0]
-            if naics_year == 'nan':
-                log.info(f'Missing SectorSourceName for {file_name}')
-                continue
+                if naics_year == 'nan':
+                    log.info(f'Missing SectorSourceName for {file_name}')
+                    continue
                 # subset dataframe so only sector
                 df = df[['Sector']]
                 # trim whitespace and cast as string, rename column

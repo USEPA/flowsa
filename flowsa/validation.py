@@ -43,7 +43,6 @@ def check_if_activities_match_sectors(fba):
     activities = []
     for f in fba_activity_fields:
         activities.extend(fba[f])
-    #activities.remove("None")
 
     # Get list of module default sectors
     flowsa_sector_list = list(load_sector_crosswalk()[SECTOR_SOURCE_NAME])
