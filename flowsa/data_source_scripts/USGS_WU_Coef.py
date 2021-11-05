@@ -30,12 +30,11 @@ def usgs_coef_parse(**kwargs):
     df_raw = pd.read_csv(externaldatapath + "USGS_WU_Coef_Raw.csv")
 
     # rename columns to match flowbyactivity format
-    df = df_raw.copy()
-    df = df.rename(columns={"Animal Type": "ActivityConsumedBy",
-                            "WUC_Median": "FlowAmount",
-                            "WUC_Minimum": "Min",
-                            "WUC_Maximum": "Max"
-                            })
+    df = df_raw.rename(columns={"Animal Type": "ActivityConsumedBy",
+                                "WUC_Median": "FlowAmount",
+                                "WUC_Minimum": "Min",
+                                "WUC_Maximum": "Max"
+                                })
 
     # drop columns
     df = df.drop(columns=["WUC_25th_Percentile", "WUC_75th_Percentile"])

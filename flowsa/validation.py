@@ -533,7 +533,6 @@ def check_summation_at_sector_lengths(df):
     df2 = df2[~df2['Sector'].isnull()]
 
     df2 = df2.assign(SectorLength=len(df2['Sector']))
-    # df2 = df2.assign(SectorLength=df2['Sector'].apply(lambda x: len(x)))
 
     # sum flowamounts by sector length
     denom_df = df2.copy()

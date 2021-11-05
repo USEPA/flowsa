@@ -561,11 +561,11 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
         df_subset = clean_df(df_subset, cols_to_keep,
                              fba_fill_na_dict, drop_description=False)
 
+        return df_subset
+
     # right now, the only other location system is for Statistics Canada data
     else:
-        df_subset = df.copy()
-
-    return df_subset
+        return df
 
 
 def unique_activity_names(fba_df):

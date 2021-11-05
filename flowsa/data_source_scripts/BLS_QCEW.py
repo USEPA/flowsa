@@ -228,10 +228,9 @@ def replace_missing_2_digit_sector_values(df):
                                                   ).drop('_merge', axis=1)
         # add new rows
         modified_df = modified_df.append(new_sectors, sort=False)
+        return modified_df
     else:
-        modified_df = df.copy()
-
-    return modified_df
+        return df
 
 
 def remove_2_digit_sector_ranges(fba_df):

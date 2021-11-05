@@ -567,10 +567,9 @@ def check_golf_and_crop_irrigation_totals(df_load):
 
     if len(df_m3) != 0:
         df_w_missing_crop = df_load.append(df_m3, sort=True, ignore_index=True)
+        return df_w_missing_crop
     else:
-        df_w_missing_crop = df_load.copy()
-
-    return df_w_missing_crop
+        return df_load
 
 
 def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
@@ -642,7 +641,6 @@ def modify_sector_length(df_wsec):
         df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
 
         df = pd.concat([df1, df2], sort=True)
+        return df
     else:
-        df = df1.copy()
-
-    return df
+        return df1

@@ -23,17 +23,16 @@ from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.validation import check_if_data_exists_at_geoscale
 
 
-def direct_allocation_method(flow_subset_mapped, k, names, method):
+def direct_allocation_method(fbs, k, names, method):
     """
     Directly assign activities to sectors
-    :param flow_subset_mapped: df, FBA with flows converted using fedelemflowlist
+    :param fbs: df, FBA with flows converted using fedelemflowlist
     :param k: str, source name
     :param names: list, activity names in activity set
     :param method: dictionary, FBS method yaml
     :return: df with sector columns
     """
     log.info('Directly assigning activities to sectors')
-    fbs = flow_subset_mapped.copy()
     # for each activity, if activities are not sector like, check that there is no data loss
     if load_source_catalog()[k]['sector-like_activities'] is False:
         activity_list = []
