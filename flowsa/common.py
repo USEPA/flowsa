@@ -57,7 +57,7 @@ def load_api_key(api_source):
     api_keys_path = Path(Path(outputpath), 'API_Keys')
     api_keys_path.mkdir(exist_ok=True)
     # key path
-    keyfile = Path(api_keys_path, api_source, '_API_KEY.txt')
+    keyfile = Path(api_keys_path, f'{api_source}_API_KEY.txt')
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
