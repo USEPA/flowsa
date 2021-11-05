@@ -6,8 +6,8 @@ bib_id: EPA_GHGI
 # api_key_required: false
 format: csv
 url:
-  base_url: https://www.epa.gov/sites/production/files/2020-08/chapter_0.zip
-  annex_url: https://www.epa.gov/sites/production/files/2020-07/annex_1.zip
+  base_url: https://www.epa.gov/sites/default/files/2021-05/chapter.zip
+  annex_url: https://www.epa.gov/sites/default/files/2021-05/annex.zip
 url_replace_fxn: ghg_url_helper
 call_response_fxn: ghg_call
 parse_response_fxn: ghg_parse
@@ -21,3 +21,4 @@ years:
 - 2016
 - 2017
 - 2018
+- 2019

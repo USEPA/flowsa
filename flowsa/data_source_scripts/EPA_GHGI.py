@@ -20,14 +20,18 @@ DEFAULT_YEAR = 9999
 # Only keeping years 2010-2018 for the following tables:
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
-    "Ch 3 - Energy": ["3-10", "3-11", "3-14", "3-15", "3-21",
-                      "3-37", "3-38", "3-39", "3-57", "3-59", "3-22"],
-    "Ch 4 - Industrial Processes": ["4-48", "4-94", "4-99", "4-101", "4-43", "4-80"],
-    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
+    "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-21", "3-22",
+                      "3-38", "3-39", "3-40", "3-63", "3-65"],
+    "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-43", "4-48", "4-49", "4-80", "4-94", "4-99", "4-101"],
+    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
     "Executive Summary": ["ES-5"]
 }
+#TABLES = {
+ #  # "Ch 4 - Industrial Processes": ["4-33"]
+#}
+#ANNEX_TABLES = {"Annex": ["A-17"]}
 ANNEX_TABLES = {
-    "Annex": ["A-17", "A-93", "A-94", "A-118"]
+    "Annex": ["A-17", "A-76", "A-77", "A-101"]
 }
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
 A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
@@ -44,29 +48,29 @@ DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996
 
 TBL_META = {
     "EPA_GHGI_T_2_1": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 2-1:  Recent Trends in U.S. Greenhouse Gas Emissions and Sinks (MMT CO2 Eq.)"
     },
-    "EPA_GHGI_T_3_10": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 3-10:  CH4 Emissions from Stationary Combustion (MMT CO2 Eq.)"
+    "EPA_GHGI_T_3_8": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CH4",
+        "desc": "Table 3-8:  CH4 Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
-    "EPA_GHGI_T_3_11": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 3-11:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
+    "EPA_GHGI_T_3_9": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "N2O",
+        "desc": "Table 3-9:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_14": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "CO2e",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CH4",
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_15": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "N2O",
+        "desc": "Table 3-15:  N2O Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_21": {
         "class": "Energy", "unit": "TBtu", "compartment": "air",
@@ -76,85 +80,100 @@ TBL_META = {
     "EPA_GHGI_T_3_22": {
         "class": "Energy", "unit": "Other", "compartment": "air",
         "activity": "2018 Adjusted Non-Energy Use Fossil Fuel - __type__",
-        "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel "
+        "desc": "Table 3-22:  2019 Adjusted Non-Energy Use Fossil Fuel "
                 "Consumption, Storage, and Emissions",
         "year": "2018"
     },
-    "EPA_GHGI_T_3_37": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 3-37:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
-    },
     "EPA_GHGI_T_3_38": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "kt CH4",
-        "desc": "Table 3-38:  CH4 Emissions from Petroleum Systems (kt CH4)"
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CH4",
+        "desc": "Table 3?38:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_39": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "CO2",
-        "desc": "Table 3-39:  CO2 Emissions from Petroleum Systems (MMT CO2)"
+        "class": "Chemicals", "unit": "kt", "compartment": "air",
+        "activity": "CH4",
+        "desc": "Table 3-39:  CH4 Emissions from Petroleum Systems (kt CH4)"
     },
-    "EPA_GHGI_T_3_57": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+    "EPA_GHGI_T_3_40": {
+        "class": "Chemicals", "unit": "MMT CO2", "compartment": "air",
+        "activity": "CO2",
+        "desc": "Table 3-40:  CO2 Emissions from Petroleum Systems (MMT CO2)"
+    },
+    "EPA_GHGI_T_3_63": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CH4",
+        "desc": "Table 3-63:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)a"
+    },
+    "EPA_GHGI_T_3_65": {
+        "class": "Chemicals", "unit": "MMT CO2", "compartment": "air",
+        "activity": "CO2",
+        "desc": "Table 3-65:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
+    },
+    "EPA_GHGI_T_4_14": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
-        "desc": "Table 3-57:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)"
+        "desc": "Table 4-14:  CO2 Emissions from Other Process Uses of Carbonates (MMT CO2 Eq.)"
     },
-    "EPA_GHGI_T_3_59": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "activity": "CO2",
-        "desc": "Table 3-59:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
+    "EPA_GHGI_T_4_33": {
+        "class": "Chemicals", "unit": "Other", "compartment": "air",
+        "activity": "N2O",
+        "desc": "Table 4-33:  N2O Emissions from Caprolactam Production (MMT CO2 Eq. and kt N2O)"
     },
     "EPA_GHGI_T_4_43": {
         "class": "Chemicals", "unit": "Other", "compartment": "air",
-        "activity": "CO2e and kt CO2",
-        "desc": "Table 4-43:  CO2 Emissions from Soda Ash Production"
-    },
-    "EPA_GHGI_T_4_80": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
         "activity": "CO2e",
-        "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
+        "desc": "Table 4-43:  CO2 Emissions from Soda Ash Production (MMT CO2 Eq. and kt CO2)"
     },
     "EPA_GHGI_T_4_48": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
         "activity": "kt",
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
     },
+    "EPA_GHGI_T_4_49": {
+        "class": "Chemicals", "unit": "kt", "compartment": "air",
+        "activity": "kt",
+        "desc": "Table 4-49:  Approach 2 Quantitative Uncertainty Estimates for CH4 Emissions from Petrochemical Production and CO2 Emissions from Petrochemical Production (MMT CO2 Eq. and Percent) "
+    },
+    "EPA_GHGI_T_4_80": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CO2e",
+        "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
+    },
     "EPA_GHGI_T_4_94": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
                 "Electronics Manufacture [1] (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_99": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 4-99:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_101": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 4-101:  Emissions of HFCs and PFCs from "
                 "ODS Substitutes (MMT CO2 Eq.) by Sector"
     },
     "EPA_GHGI_T_5_3": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_7": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 5-7:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_18": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 5-18:  Direct N2O Emissions from Agricultural " +
                 "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_19": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
     },
@@ -166,34 +185,34 @@ TBL_META = {
     },
     "EPA_GHGI_T_A_17": {
         "class": "Energy", "unit": "Other", "compartment": "air",
-        "activity": "Fossil Fuel Combustion - __type__",
+        "activity": "CO2",
         "desc": "2012 Energy Consumption Data and CO2 Emissions from "
                 "Fossil Fuel Combustion by Fuel Type"
     },
-    "EPA_GHGI_T_A_93": {
+    "EPA_GHGI_T_A_76": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "kt",
+        "activity": "NOx",
         "desc": "NOx Emissions from Stationary Combustion (kt)"
     },
-    "EPA_GHGI_T_A_94": {
+    "EPA_GHGI_T_A_77": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "kt",
+        "activity": "CO",
         "desc": "CO Emissions from Stationary Combustion (kt)"
     },
-    "EPA_GHGI_T_A_118": {
+    "EPA_GHGI_T_A_101": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "kt",
+        "activity": "NMVOC",
         "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
     },
     "EPA_GHGI_T_ES_5": {
-        "class": "Chemicals", "unit": "MMT", "compartment": "air",
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table ES-5: U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
                 "from Land Use, Land-Use Change, and Forestry (MMT CO2 Eq.)"
     },
 }
 
-YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
+YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
 
 
 def ghg_url_helper(**kwargs):
@@ -423,6 +442,48 @@ def is_consumption(source_name):
         return True
     return False
 
+def strip_char(text):
+    """
+    Removes the footnote chars from the text
+    """
+    text = text + " "
+    if " a " in text:
+        text_split = text.split(" a ")
+        text = text_split[0]
+    if " b " in text:
+        text_split = text.split(" b ")
+        text = text_split[0]
+    if " c " in text:
+        text_split = text.split(" c ")
+        text = text_split[0]
+    if " d " in text:
+        text_split = text.split(" d ")
+        text = text_split[0]
+    if " e " in text:
+        text_split = text.split(" e ")
+        text = text_split[0]
+    if " f " in text:
+        text_split = text.split(" f ")
+        text = text_split[0]
+    if " g " in text:
+        text_split = text.split(" g ")
+        text = text_split[0]
+    if " h " in text:
+        text_split = text.split(" h ")
+        text = text_split[0]
+    if " i " in text:
+        text_split = text.split(" i ")
+        text = text_split[0]
+    if " j " in text:
+        text_split = text.split(" j ")
+        text = text_split[0]
+    if " k " in text:
+        text_split = text.split(" k ")
+        text = text_split[0]
+
+
+    return text.strip()
+
 
 def ghg_parse(**kwargs):
     """
@@ -462,6 +523,7 @@ def ghg_parse(**kwargs):
             df["ActivityConsumedBy"] = 'None'
             df["ActivityProducedBy"] = 'None'
 
+
         df["FlowType"] = "ELEMENTARY_FLOW"
         df["Location"] = "00000"
 
@@ -481,6 +543,9 @@ def ghg_parse(**kwargs):
                 df = df.melt(id_vars=id_vars, var_name="Units", value_name="FlowAmount")
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
+            if source_name == "EPA_GHGI_T_4_14":
+                df = df.rename(columns={'ActivityProducedBy': 'Year', 'Year': 'ActivityProducedBy'})
+
 
         # Dropping all rows with value "+"
         try:
@@ -536,10 +601,20 @@ def ghg_parse(**kwargs):
         if 'Year' not in df.columns:
             df['Year'] = meta.get("year", DEFAULT_YEAR)
 
+        if source_name != "EPA_GHGI_T_4_43":
+            df = df.rename(columns={'Year': 'ActivityProducedBy', 'ActivityProducedBy': 'Year'})
+
         # Some of the datasets, 4-43 and 4-80, still have years we don't want at this point.
         # Remove rows matching the years we don't want:
         try:
-            df = df[df['Year'].isin([args['year']])]
+            if source_name != "EPA_GHGI_T_4_43":
+                if source_name == "EPA_GHGI_T_4_33":
+                    df = df[df['Year'].isin([int(args['year'])])]
+                else:
+                    df = df[df['Year'].isin([args['year']])]
+
+
+
         except AttributeError as ex:
             log.info(ex)
 
@@ -552,14 +627,149 @@ def ghg_parse(**kwargs):
         df["LocationSystem"] = 'None'
 
         df = assign_fips_location_system(df, str(args['year']))
-
-       # if is_cons:
-       #     df = df.rename(columns={'FlowName': 'ActivityConsumedBy', 'ActivityConsumedBy': 'FlowName'})
-       # else:
-       #     df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
-
-# "EPA_GHGI_T_2_1", "EPA_GHGI_T_3_21", "EPA_GHGI_T_4_48", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_30",
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
+        multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_5_7", "EPA_GHGI_T_5_30", "EPA_GHGI_T_ES_5"]
+        source_No_activity = ["EPA_GHGI_T_3_21", "EPA_GHGI_T_3_22"]
+        source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
+                             "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
+                             "EPA_GHGI_T_A_77"]
+        source_activity_2 =  ["EPA_GHGI_T_3_38", "EPA_GHGI_T_3_39", "EPA_GHGI_T_3_63"]
+        double_activity = ["EPA_GHGI_T_4_48"]
+        if source_name in multi_chem_names:
+            bool_apb = False
+            apbe_value = ""
+            flow_name_list = ["CO2", "CH4", "N2O", "NF3", "HFCs", "PFCs", "SF6", "NF3", "CH4 a", "N2O b", "CO", "NOx"]
+            for index, row in df.iterrows():
+                apb_value = row["ActivityProducedBy"]
+                if "CH4" in apb_value:
+                    apb_value = "CH4"
+                elif "N2O" in apb_value:
+                    apb_value = "N2O"
+                if apb_value in flow_name_list:
+                    apbe_value = apb_value
+                    df.loc[index, 'FlowName'] = apbe_value
+                    df.loc[index, 'ActivityProducedBy'] = "All activities"
+                    bool_apb = True
+                else:
+                    if bool_apb == True:
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                        df.loc[index, 'FlowName'] = apbe_value
+                    else:
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+
+                if "Total" == apb_value or "Total " == apb_value:
+                  df = df.drop(index)
+            if source_name == "EPA_GHGI_T_ES_5":
+                df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
+        elif source_name in source_No_activity:
+            bool_apb = False
+            apbe_value = ""
+            flow_name_list = ["Industry", "Transportation", "U.S. Territories"]
+            for index, row in df.iterrows():
+                apb_value = row["ActivityConsumedBy"]
+                if apb_value in flow_name_list:
+                    apbe_value = apb_value
+                    df.loc[index, 'FlowName'] = apbe_value
+                    df.loc[index, 'ActivityConsumedBy'] = "All activities"
+                    bool_apb = True
+                else:
+                    if bool_apb == True:
+                        df.loc[index, 'FlowName'] = apbe_value
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                    else:
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+
+                if "Total" == apb_value or "Total " == apb_value:
+                  df = df.drop(index)
+        elif source_name in source_activity_1:
+            bool_apb = False
+            apbe_value = ""
+            flow_name_list = ["Electric Power", "Industrial", "Commercial", "Residential", "U.S. Territories",
+                              "Fuel Type/Vehicle Type a", "Diesel On-Road b", "Alternative Fuel On-Road", "Non-Road c",
+                              "Gasoline On-Road b", "Non-Road", "Exploration a", "Production (Total)",
+                              "Crude Oil Transportation", "Refining", "Exploration b", "Cropland", "Grassland"]
+            for index, row in df.iterrows():
+                apb_value = row["ActivityProducedBy"]
+                start_activity = row["FlowName"]
+                if apb_value in flow_name_list:
+                    apbe_value = apb_value
+                    apbe_value = strip_char(apbe_value)
+                    df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
+                    df.loc[index, 'ActivityProducedBy'] = "All activities"
+                    bool_apb = True
+                else:
+                    if bool_apb == True:
+                        df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                    else:
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                if "Total" == apb_value or "Total " == apb_value:
+                  df = df.drop(index)
+        elif source_name in source_activity_2:
+            bool_apb = False
+            apbe_value = ""
+            flow_name_list = ["Explorationb", "Production", "Processing", "Transmission and Storage", "Distribution",
+                              "Crude Oil Transportation", "Refining", "Exploration" ]
+            for index, row in df.iterrows():
+                apb_value = row["ActivityProducedBy"]
+                start_activity = row["FlowName"]
+                if apb_value.strip() in flow_name_list:
+                    apbe_value = apb_value
+                    if apbe_value == "Explorationb":
+                        apbe_value = "Exploration"
+                    df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
+                    df.loc[index, 'ActivityProducedBy'] = "All activities"
+                    bool_apb = True
+                else:
+                    if bool_apb == True:
+                        df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        if apb_txt == "Gathering and Boostingc":
+                            apb_txt = "Gathering and Boosting"
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                    else:
+                        apb_txt = df.loc[index, 'ActivityProducedBy']
+                        apb_txt = strip_char(apb_txt)
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                if "Total" == apb_value or "Total " == apb_value:
+                  df = df.drop(index)
+        elif source_name in double_activity:
+            for index, row in df.iterrows():
+                df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
+        else:
+            if source_name in "EPA_GHGI_T_4_80":
+                for index, row in df.iterrows():
+                    df.loc[index, 'ActivityProducedBy'] = df.loc[index, 'Units']
+            elif source_name in "EPA_GHGI_T_4_43":
+                for index, row in df.iterrows():
+                    df.loc[index, 'ActivityProducedBy'] = "Soda Ash Production"
+                    df.loc[index, 'Unit'] = df.loc[index, 'Units']
+            elif source_name in "EPA_GHGI_T_4_33":
+                for index, row in df.iterrows():
+                    df.loc[index, 'Unit'] = df.loc[index, 'ActivityProducedBy']
+                    df.loc[index, 'ActivityProducedBy'] = "Caprolactam Production"
+
+
+            df.drop(df.loc[df['ActivityProducedBy'] == "Total"].index, inplace=True)
+            df.drop(df.loc[df['ActivityProducedBy'] == "Total "].index, inplace=True)
+
+ #       elif source_name in only_activity:
+  #          for index, row in df.iterrows():
+   #             if "Total" in apb_value:
+    #                df = df.drop(index)
 
         if source_name in modified_activity_list:
 
@@ -567,14 +777,8 @@ def ghg_parse(**kwargs):
                 df = df.rename(columns={'FlowName': 'ActivityConsumedBy', 'ActivityConsumedBy': 'FlowName'})
             else:
                 df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
-            if source_name == "EPA_GHGI_T_2_1":
-                df["FlowName"] = "CO2 eq"
-
-
-
-
-
-
+           # if source_name == "EPA_GHGI_T_2_1":
+           #     df["FlowName"] = "CO2 eq"
         df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
 
