@@ -22,14 +22,10 @@ TABLES = {
     "Ch 2 - Trends": ["2-1"],
     "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-22",
                       "3-38", "3-39", "3-40", "3-63", "3-65"],
-    "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-43", "4-48", "4-49", "4-80", "4-94", "4-99", "4-101"],
-    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
+    "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-43", "4-80", "4-94", "4-99", "4-101"],
+    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
     "Executive Summary": ["ES-5"]
 }
-#TABLES = {
- #  # "Ch 4 - Industrial Processes": ["4-33"]
-#}
-#ANNEX_TABLES = {"Annex": ["A-17"]}
 ANNEX_TABLES = {
     "Annex": ["A-17", "A-76", "A-77", "A-101"]
 }
@@ -38,7 +34,7 @@ A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)
 A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
                    'Emissions (MMT CO2 Eq.) from Energy Use']
 
-SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
+SPECIAL_FORMAT = ["3-22", "4-43", "4-50", "4-80", "A-17", "A-93", "A-94", "A-118", "5-29"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
 Activity_Format_A = ["T_5_30", "T_A_17", "T_ES_5"]
 Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
@@ -134,6 +130,11 @@ TBL_META = {
         "activity": "kt",
         "desc": "Table 4-49:  Approach 2 Quantitative Uncertainty Estimates for CH4 Emissions from Petrochemical Production and CO2 Emissions from Petrochemical Production (MMT CO2 Eq. and Percent) "
     },
+    "EPA_GHGI_T_4_50": {
+        "class": "Chemicals", "unit": "Other", "compartment": "air",
+        "activity": "MMT CO2e",
+        "desc": "Table 4-50: HFC-23 Emissions from HCFC-22 Production (MMT CO2 Eq. and kt HFC-23)"
+    },
     "EPA_GHGI_T_4_80": {
         "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CO2e",
@@ -177,11 +178,10 @@ TBL_META = {
         "activity": "CO2e",
         "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
     },
-    "EPA_GHGI_T_5_30": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "kt",
-        "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field "
-                "Burning of Agricultural Residues (kt)"
+    "EPA_GHGI_T_5_29": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CO2e",
+        "desc": "Table 5-29: CH4 and N2O Emissions from Field Burning of Agricultural Residues (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_A_17": {
         "class": "Energy", "unit": "Other", "compartment": "air",
@@ -409,6 +409,9 @@ def ghg_call(**kwargs):
                     else:
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
+                elif '5-' in table:
+                    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                     thousands=",", decimal=".")
 
                 if df is not None and len(df.columns) > 1:
                     years = YEARS.copy()
@@ -535,7 +538,7 @@ def ghg_parse(**kwargs):
 
         # Set index on the df:
         df.set_index(id_vars)
-
+        switch_year_apb = ["EPA_GHGI_T_4_14", "EPA_GHGI_T_4_50"]
         if special_format:
             if "T_4_" not in source_name:
                 df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
@@ -543,7 +546,7 @@ def ghg_parse(**kwargs):
                 df = df.melt(id_vars=id_vars, var_name="Units", value_name="FlowAmount")
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
-            if source_name == "EPA_GHGI_T_4_14":
+            if source_name in switch_year_apb:
                 df = df.rename(columns={'ActivityProducedBy': 'Year', 'Year': 'ActivityProducedBy'})
 
 
@@ -599,16 +602,17 @@ def ghg_parse(**kwargs):
             df.loc[df["Unit"] != 'TBtu', 'ActivityConsumedBy'] = 'None'
 
         if 'Year' not in df.columns:
-            df['Year'] = meta.get("year", DEFAULT_YEAR)
+          #  df['Year'] = meta.get("year", DEFAULT_YEAR)
+          df['Year'] = args['year']
 
-        if source_name != "EPA_GHGI_T_4_43":
+        if source_name == "EPA_GHGI_T_":
             df = df.rename(columns={'Year': 'ActivityProducedBy', 'ActivityProducedBy': 'Year'})
-
+        year_int = ["EPA_GHGI_T_4_33", "EPA_GHGI_T_4_50"]
         # Some of the datasets, 4-43 and 4-80, still have years we don't want at this point.
         # Remove rows matching the years we don't want:
         try:
             if source_name != "EPA_GHGI_T_4_43":
-                if source_name == "EPA_GHGI_T_4_33":
+                if source_name in year_int:
                     df = df[df['Year'].isin([int(args['year'])])]
                 else:
                     df = df[df['Year'].isin([args['year']])]
@@ -628,7 +632,7 @@ def ghg_parse(**kwargs):
 
         df = assign_fips_location_system(df, str(args['year']))
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
-        multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_5_7", "EPA_GHGI_T_5_30", "EPA_GHGI_T_ES_5"]
+        multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_5_7", "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]
         source_No_activity = ["EPA_GHGI_T_3_21", "EPA_GHGI_T_3_22"]
         source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
                              "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
