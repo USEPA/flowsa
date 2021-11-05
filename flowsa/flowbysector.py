@@ -26,8 +26,8 @@ import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
 from flowsa.common import flow_by_sector_fields, \
-    fips_number_key, flow_by_activity_fields, load_source_catalog, \
-    flow_by_sector_fields_w_activity, \
+    fips_number_key, flow_by_activity_fields, \
+    flow_by_sector_fields_w_activity, check_activities_sector_like, \
     fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
     fbs_grouping_fields_w_activities, logoutputpath
@@ -42,10 +42,10 @@ from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn, \
     update_geoscale
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
-from flowsa.validation import allocate_dropped_sector_data,\
-    compare_activity_to_sector_flowamounts, \
+from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
+from flowsa.allocation import allocate_dropped_sector_data
 
 
 def parse_args():
@@ -156,6 +156,8 @@ def main(**kwargs):
             else:
                 aset_names = None
 
+            # master list of activity names read in from data source
+            ml_act = []
             # create dictionary of allocation datasets for different activities
             activities = v['activity_sets']
             # subset activity data and allocate to sector
@@ -165,6 +167,15 @@ def main(**kwargs):
                     names = aset_names[aset_names['activity_set'] == aset]['name']
                 else:
                     names = attr['names']
+
+                # to avoid double counting data from the same source, in the event there are
+                # values in both the APB and ACB columns, if an activity has
+                # already been read in and allocated, remove that activity from the mapped flows
+                # regardless of what activity set the data was read in
+                flows_mapped = flows_mapped[~((flows_mapped[fba_activity_fields[0]].isin(ml_act)) |
+                                              (flows_mapped[fba_activity_fields[1]].isin(ml_act))
+                                              )].reset_index(drop=True)
+                ml_act.extend(names)
 
                 vLog.info("Preparing to handle %s in %s", aset, k)
                 # subset fba data by activity
@@ -177,7 +188,7 @@ def main(**kwargs):
                 if 'source_flows' in attr:
                     flows_subset = flows_subset[flows_subset['FlowName'].isin(attr['source_flows'])]
                 # if activities are sector-like, check sectors are valid
-                if load_source_catalog()[k]['sector-like_activities']:
+                if check_activities_sector_like(k):
                     flows_subset2 =\
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
@@ -236,7 +247,7 @@ def main(**kwargs):
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
 
                 # define grouping columns dependent on sectors being activity-like or not
-                if load_source_catalog()[k]['sector-like_activities'] is False:
+                if check_activities_sector_like(k) is False:
                     groupingcols = fbs_grouping_fields_w_activities
                     groupingdict = flow_by_sector_fields_w_activity
                 else:

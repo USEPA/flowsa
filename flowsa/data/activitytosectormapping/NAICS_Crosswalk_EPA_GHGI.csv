@@ -1,0 +1,104 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Notes
+EPA_GHGI_T_2_1,Residential,,,,
+EPA_GHGI_T_2_1,Iron and Steel Production & Metallurgical Coke Production,,,,
+EPA_GHGI_T_2_1,Cement Production,,,,
+EPA_GHGI_T_2_1,Lime Production,,,,
+EPA_GHGI_T_2_1,Ammonia Production,,,,
+EPA_GHGI_T_2_1,Incineration of Waste,,,,
+EPA_GHGI_T_2_1,Aluminum Production,,,,
+EPA_GHGI_T_2_1,Soda Ash Production and Consumption,,,,
+EPA_GHGI_T_2_1,Ferroalloy Production,,,,
+EPA_GHGI_T_2_1,Titanium Dioxide Production,,,,
+EPA_GHGI_T_2_1,Zinc Production,,,,
+EPA_GHGI_T_2_1,Phosphoric Acid Production,,,,
+EPA_GHGI_T_2_1,Glass Production,,,,
+EPA_GHGI_T_2_1,Silicon Carbide Production and Consumption,,,,
+EPA_GHGI_T_2_1,Landfills,,,,
+EPA_GHGI_T_2_1,Coal Mining,,,,
+EPA_GHGI_T_2_1,Wastewater Treatment,,,,
+EPA_GHGI_T_2_1,Abandoned Oil and Gas Wells,,,,
+EPA_GHGI_T_2_1,Abandoned Underground Coal Mines,,,,
+EPA_GHGI_T_2_1,Composting,,,,
+EPA_GHGI_T_2_1,Incineration of Waste,,,,
+EPA_GHGI_T_2_1,Nitric Acid Production,,,,
+EPA_GHGI_T_2_1,Adipic Acid Production,,,,
+EPA_GHGI_T_2_1,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",,,,
+EPA_GHGI_T_2_1,Semiconductor Manufacture,,,,
+EPA_GHGI_T_2_1,HCFC22 Production,,,,
+EPA_GHGI_T_2_1,Electrical Transmission and Distribution,,,,
+EPA_GHGI_T_2_1,Electric Power,,,,
+EPA_GHGI_T_2_1,Magnesium Production and Processing,,,,
+EPA_GHGI_T_2_1,Liming of Agricultural Soils,,,,
+EPA_GHGI_T_2_1,Urea Fertilization,,,,
+EPA_GHGI_T_3_14,Agricultural Equipment,,,,
+EPA_GHGI_T_3_14,Alternative Fuel On-Road,,,,
+EPA_GHGI_T_3_14,Construction/Mining Equipment,,,,
+EPA_GHGI_T_3_14,Light-Duty Trucks,,,,
+EPA_GHGI_T_3_14,Medium- and Heavy-Duty Trucks and Buses,,,,
+EPA_GHGI_T_3_14,Other,,,,
+EPA_GHGI_T_3_14,Passenger Cars,,,,
+EPA_GHGI_T_3_14,Rail,,,,
+EPA_GHGI_T_3_14,Ships and Boats,,,,
+EPA_GHGI_T_3_15,Agricultural Equipment,,,,
+EPA_GHGI_T_3_15,Alternative Fuel On-Road,,,,
+EPA_GHGI_T_3_15,Construction/Mining Equipment,,,,
+EPA_GHGI_T_3_15,Light-Duty Trucks,,,,
+EPA_GHGI_T_3_15,Medium- and Heavy-Duty Trucks and Buses,,,,
+EPA_GHGI_T_3_15,Other,,,,
+EPA_GHGI_T_3_15,Passenger Cars,,,,
+EPA_GHGI_T_3_15,Rail,,,,
+EPA_GHGI_T_3_15,Ships and Boats,,,,
+EPA_GHGI_T_3_37,Chemical Injection Pumps,,,,
+EPA_GHGI_T_3_37,Crude Oil Transportation,,,,
+EPA_GHGI_T_3_37,Equipment Leaks,,,,
+EPA_GHGI_T_3_37,Exploration,,,,
+EPA_GHGI_T_3_37,Gas Engines,,,,
+EPA_GHGI_T_3_37,Offshore Production,,,,
+EPA_GHGI_T_3_37,Other Sources,,,,
+EPA_GHGI_T_3_37,Pneumatic Controllers,,,,
+EPA_GHGI_T_3_37,Production (Total),,,,
+EPA_GHGI_T_3_37,Refining,,,,
+EPA_GHGI_T_3_38,Chemical Injection Pumps,,,,
+EPA_GHGI_T_3_38,Crude Oil Transportation,,,,
+EPA_GHGI_T_3_38,Equipment Leaks,,,,
+EPA_GHGI_T_3_38,Exploration,,,,
+EPA_GHGI_T_3_38,Gas Engines,,,,
+EPA_GHGI_T_3_38,Offshore Production,,,,
+EPA_GHGI_T_3_38,Other Sources,,,,
+EPA_GHGI_T_3_38,Pneumatic Controllers,,,,
+EPA_GHGI_T_3_38,Production (Total) ,,,,
+EPA_GHGI_T_3_38,Refining,,,,
+EPA_GHGI_T_3_57,Distribution,NAICS_2012_Code,,,221200
+EPA_GHGI_T_3_57,Exploration,NAICS_2012_Code,,,211000
+EPA_GHGI_T_3_57,Gathering and Boosting,NAICS_2012_Code,,,not maped in original
+EPA_GHGI_T_3_57,Offshore Production,NAICS_2012_Code,,,not maped in original
+EPA_GHGI_T_3_57,Onshore Production,NAICS_2012_Code,,,not maped in original
+EPA_GHGI_T_3_57,Processing,NAICS_2012_Code,,,211000
+EPA_GHGI_T_3_57,Production,NAICS_2012_Code,,,211000
+EPA_GHGI_T_3_57,Transmission and Storage,NAICS_2012_Code,,,486000
+EPA_GHGI_T_3_59,Exploration,NAICS_2012_Code,,,211000
+EPA_GHGI_T_3_59,Processing,NAICS_2012_Code,,,211000
+EPA_GHGI_T_3_59,Production,NAICS_2012_Code,,,211000
+EPA_GHGI_T_3_59,Transmission and Storage,NAICS_2012_Code,,,486000
+EPA_GHGI_T_5_29,Chickpeas,,,,
+EPA_GHGI_T_5_29,Cotton,,,,
+EPA_GHGI_T_5_29,Maize,,,,
+EPA_GHGI_T_5_29,Rice,,,,
+EPA_GHGI_T_5_29,Soybeans,,,,
+EPA_GHGI_T_5_29,Wheat,,,,
+EPA_GHGI_T_5_3,American Bison,NAICS_2012_Code,,,1121A0
+EPA_GHGI_T_5_3,Beef Cattle,NAICS_2012_Code,,,112120
+EPA_GHGI_T_5_3,Dairy Cattle,NAICS_2012_Code,,,112300
+EPA_GHGI_T_5_3,Goats,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_3,Horses,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_3,Mules and Asses,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_3,Sheep,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_3,Swine,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_7,Beef Cattle,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_7,Dairy Cattle,NAICS_2012_Code,,,1121A0
+EPA_GHGI_T_5_7,Poultry,NAICS_2012_Code,,,112120
+EPA_GHGI_T_5_7,Horses,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_7,Mules and Asses,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_7,Sheep,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_7,Swine,NAICS_2012_Code,,,112A00
+EPA_GHGI_T_5_7,American Bison,NAICS_2012_Code,,,112A00

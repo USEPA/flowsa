@@ -330,7 +330,7 @@ def eia_mecs_energy_call(**kwargs):
         if data_type == 'nonfuel consumption':
             df_data_region['Class'] = 'Other'
         elif data_type == 'fuel consumption':
-            df_data_region['Class'] = 'E nergy'
+            df_data_region['Class'] = 'Energy'
         # remove extra spaces before 'Subsector and Industry' descriptions
         df_data_region['Subsector and Industry'] = \
             df_data_region['Subsector and Industry'].str.lstrip(' ')

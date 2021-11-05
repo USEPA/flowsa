@@ -8,8 +8,9 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 from flowsa.common import activity_fields, load_source_catalog, \
-    load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
-from flowsa.settings import datapath, log
+    load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME, \
+    find_true_file_path, return_true_source_catalog_name, check_activities_sector_like
+from flowsa.settings import crosswalkpath, log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
@@ -20,14 +21,25 @@ def get_activitytosector_mapping(source):
     :param source: str, the data source name
     :return: a pandas df for a standard ActivitytoSector mapping
     """
+
     if 'EPA_NEI' in source:
         source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
-    mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
+    activity_mapping_source_name = find_true_file_path(crosswalkpath, f'NAICS_Crosswalk_{source}', 'csv')
+    mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
-    return mapping
+    # some mapping tables will have data for multiple sources, while other mapping tables
+    # are used for multiple sources (like EPA_NEI or BEA mentioned above)
+    # so if find the exact source name in the ActivitySourceName column use those rows
+    # if the mapping file returns empty, use the original mapping file
+    # subset df to keep rows where ActivitySourceName matches source name
+    mapping2 = mapping[mapping['ActivitySourceName'] == source].reset_index(drop=True)
+    if len(mapping2) > 0:
+        return mapping2
+    else:
+        return mapping
 
 
 def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOURCE_NAME, **kwargs):
@@ -42,12 +54,11 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
     """
 
     # First check if source activities are NAICS like - if so make it into a mapping file
-    cat = load_source_catalog()
-
     # for s in pd.unique(flowbyactivity_df['SourceName']):
     s = pd.unique(flowbyactivity_df['SourceName'])[0]
-    # load catalog info for source
-    src_info = cat[s]
+    # load catalog info for source, first check for sourcename used in source catalog
+    ts = return_true_source_catalog_name(s)
+    src_info = load_source_catalog()[ts]
     # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
     levelofSectoragg = src_info['sector_aggregation_level']
     # if the FBS activity set is 'direct', overwrite the
@@ -87,7 +98,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         if levelofSectoragg == 'aggregated':
             mapping = expand_naics_list(mapping, sectorsourcename)
     # Merge in with flowbyactivity by
-    flowbyactivity_wsector_df = flowbyactivity_df
+    flowbyactivity_wsector_df = flowbyactivity_df.copy(deep=True)
     for k, v in activity_fields.items():
         sector_direction = k
         flowbyactivity_field = v[0]["flowbyactivity"]
@@ -101,7 +112,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
         flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
-    flowbyactivity_wsector_df = flowbyactivity_wsector_df.replace({np.nan: None})
+    for c in ['ProducedBySectorType', 'ConsumedBySectorType']:
+        flowbyactivity_wsector_df[c] = flowbyactivity_wsector_df[c].replace({np.nan: None})
     # add sector source name
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
 
@@ -183,10 +195,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
                 if 'allocation_subset_col' in asn:
                     subset_by_column_value = True
 
-    # load the source catalog
-    cat = load_source_catalog()
-    src_info = cat[source]
-    if src_info['sector-like_activities'] is False:
+    if check_activities_sector_like(source) is False:
         # read in source crosswalk
         df = get_activitytosector_mapping(source)
         sec_source_name = df['SectorSourceName'][0]
