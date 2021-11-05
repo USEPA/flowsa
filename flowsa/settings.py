@@ -22,6 +22,7 @@ externaldatapath = datapath + 'external_data/'
 
 datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
+# "Paths()" are a class defined in esupy
 paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 outputpath = paths.local_path.replace('\\', '/') + '/'

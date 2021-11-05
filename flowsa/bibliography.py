@@ -54,6 +54,8 @@ def generate_list_of_sources_in_fbs_method(methodname):
                         sources.append([fxn_config['source'], y])
     except KeyError:
         # if no additional fbas than pass
+        log.info(f'There are no additional Flow-By-Activities '
+                 'used in generating %s', methodname)
         pass
 
     return sources
