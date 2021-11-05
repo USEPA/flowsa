@@ -13,6 +13,7 @@ import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
+import joblib
 from esupy.processed_data_mgmt import create_paths_if_missing
 from flowsa.settings import datapath, outputpath, logoutputpath, sourceconfigpath, log
 
@@ -63,25 +64,27 @@ def load_api_key(api_source):
     return key
 
 
-def make_http_request(url, **kwargs):
+memory = joblib.Memory(".cache")
+
+
+@memory.cache()
+def make_http_request(url, set_cookies=False):
     """
     Makes http request using requests library
     :param url: URL to query
+    :param set_cookies: bool, default set to False
+        set to True if cookies required
     :return: request Object
     """
-    if 'requests_session' in kwargs:
-        s = kwargs['requests_session']
-    else:
-        s = requests
+    s = requests
 
     r = []
     try:
         r = s.get(url)
         # determine if require request.post to set cookies
-        if 'set_cookies' in kwargs:
-            if kwargs['set_cookies'] == 'yes':
-                cookies = dict(r.cookies)
-                r = s.post(url, verify=True, cookies=cookies)
+        if set_cookies:
+            cookies = dict(r.cookies)
+            r = s.post(url, verify=True, cookies=cookies)
     except requests.exceptions.InvalidSchema:  # if url is ftp rather than http
         requests_ftp.monkeypatch_session()
         r = requests.Session().get(url)
