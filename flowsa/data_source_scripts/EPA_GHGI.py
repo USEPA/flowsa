@@ -20,10 +20,10 @@ DEFAULT_YEAR = 9999
 # Only keeping years 2010-2018 for the following tables:
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
-    "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-21", "3-22",
+    "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-22",
                       "3-38", "3-39", "3-40", "3-63", "3-65"],
     "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-43", "4-48", "4-49", "4-80", "4-94", "4-99", "4-101"],
-    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
+    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-30"],
     "Executive Summary": ["ES-5"]
 }
 #TABLES = {
