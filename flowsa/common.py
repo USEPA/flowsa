@@ -46,14 +46,18 @@ def load_api_key(api_source):
     containing the users personal API key. The user must register with this
     API and get the key and save it to a .txt file in the user directory specified
     by local_path (see common.py for definition)
+
+    See wiki for how to get an api:
+    https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#api-keys
+
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
     # create directory if missing
-    api_keys_path = Path(outputpath) / 'API_Keys'
+    api_keys_path = Path(Path(outputpath), 'API_Keys')
     api_keys_path.mkdir(exist_ok=True)
     # key path
-    keyfile = str(api_keys_path / (api_source + '_API_KEY.txt'))
+    keyfile = Path(api_keys_path, api_source, '_API_KEY.txt')
     key = ""
     try:
         with open(keyfile, mode='r') as keyfilecontents:
