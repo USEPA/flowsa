@@ -383,19 +383,21 @@ def assign_fips_location_system(df, year_of_data):
     """
     Add location system based on year of data. County level FIPS change over the years.
     :param df: df with FIPS location system
-    :param year_of_data: str, year of data pulled
+    :param year_of_data: int, year of data pulled
     :return: df, with 'LocationSystem' column values
     """
-
-    if year_of_data >= '2015':
+    # ensure year integer
+    year_of_data = int(year_of_data)
+    if year_of_data >= 2015:
         df.loc[:, 'LocationSystem'] = 'FIPS_2015'
-    elif '2013' <= year_of_data < '2015':
+    elif 2013 <= year_of_data < 2015:
         df.loc[:, 'LocationSystem'] = 'FIPS_2013'
-    elif '2010' <= year_of_data < '2013':
+    elif 2010 <= year_of_data < 2013:
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
-    elif year_of_data < '2010':
+    elif year_of_data < 2010:
         log.warning(
-            "Missing FIPS codes from crosswalk for %s. Assigning to FIPS_2010", year_of_data)
+            "Missing FIPS codes from crosswalk for %s. "
+            "Assigning to FIPS_2010", str(year_of_data))
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
 
     return df
