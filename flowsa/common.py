@@ -355,9 +355,9 @@ def create_fill_na_dict(flow_by_fields):
         if v[0]['dtype'] == 'str':
             fill_na_dict[k] = ""
         elif v[0]['dtype'] == 'int':
-            fill_na_dict[k] = 9999
+            fill_na_dict[k] = 0
         elif v[0]['dtype'] == 'float':
-            fill_na_dict[k] = 0.0
+            fill_na_dict[k] = 0
     return fill_na_dict
 
 
