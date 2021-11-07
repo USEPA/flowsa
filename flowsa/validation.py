@@ -12,7 +12,7 @@ from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, \
-    load_source_catalog, \
+    load_yaml_dict, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
     fba_default_grouping_fields, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
@@ -296,7 +296,7 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
-    if load_source_catalog()[source_name]['sector-like_activities']:
+    if load_yaml_dict('source_catalog')[source_name]['sector-like_activities']:
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector ratios '
                   'for a dataset with sector-like activities because if there '
                   'are modifications to flowamounts for a sector, then the '
@@ -401,7 +401,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
               'the subset Flow-By-Sector FlowAmount total.')
 
     # load source catalog
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
     src_info = cat[source_name]
 
     # determine from scale

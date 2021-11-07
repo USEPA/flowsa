@@ -146,25 +146,16 @@ def load_bea_crosswalk():
     return cw
 
 
-def load_source_catalog():
+def load_yaml_dict(filename):
     """
     Load the information in 'source_catalog.yaml'
     :return: dictionary containing all information in source_catalog.yaml
     """
-    sources = datapath + 'source_catalog.yaml'
-    with open(sources, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_sourceconfig(source):
-    """
-    Load the method yaml
-    :param source: string, method name
-    :return: dictionary, information on the source method
-    """
-    sfile = sourceconfigpath + source + '.yaml'
-    with open(sfile, 'r') as f:
+    if filename == 'source_catalog':
+        yaml_load = f'{datapath}source_catalog.yaml'
+    else:
+        yaml_load = sourceconfigpath + filename + '.yaml'
+    with open(yaml_load, 'r') as f:
         config = yaml.safe_load(f)
     return config
 

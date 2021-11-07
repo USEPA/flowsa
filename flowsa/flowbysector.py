@@ -27,7 +27,7 @@ import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
 from flowsa.common import flow_by_sector_fields, \
-    fips_number_key, flow_by_activity_fields, load_source_catalog, \
+    fips_number_key, flow_by_activity_fields, load_yaml_dict, \
     flow_by_sector_fields_w_activity, str2bool, \
     fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
@@ -186,7 +186,7 @@ def main(**kwargs):
                                )].reset_index(drop=True)
 
                 # if activities are sector-like, check sectors are valid
-                if load_source_catalog()[k]['sector-like_activities']:
+                if load_yaml_dict('source_catalog')[k]['sector-like_activities']:
                     flows_subset2 =\
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
@@ -245,7 +245,7 @@ def main(**kwargs):
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
 
                 # define grouping columns dependent on sectors being activity-like or not
-                if load_source_catalog()[k]['sector-like_activities'] is False:
+                if load_yaml_dict('source_catalog')[k]['sector-like_activities'] is False:
                     groupingcols = fbs_grouping_fields_w_activities
                     groupingdict = flow_by_sector_fields_w_activity
                 else:

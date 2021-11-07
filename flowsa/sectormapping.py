@@ -7,7 +7,7 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
-from flowsa.common import activity_fields, load_source_catalog, \
+from flowsa.common import activity_fields, load_yaml_dict, \
     load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.settings import crosswalkpath, log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
@@ -42,7 +42,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
     """
 
     # First check if source activities are NAICS like - if so make it into a mapping file
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
 
     # for s in pd.unique(flowbyactivity_df['SourceName']):
     s = pd.unique(flowbyactivity_df['SourceName'])[0]
@@ -186,7 +186,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
                     subset_by_column_value = True
 
     # load the source catalog
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
     src_info = cat[source]
     if src_info['sector-like_activities'] is False:
         # read in source crosswalk

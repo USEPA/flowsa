@@ -10,7 +10,7 @@ import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
-    get_county_FIPS, update_geoscale, load_source_catalog, \
+    get_county_FIPS, update_geoscale, load_yaml_dict, \
     load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
@@ -178,7 +178,7 @@ def sector_aggregation(df_load, group_cols):
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
         # load source catalog
-        cat = load_source_catalog()
+        cat = load_yaml_dict('source_catalog')
         # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
         # load catalog info for source
@@ -282,7 +282,7 @@ def sector_disaggregation(df_load):
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
         # load source catalog
-        cat = load_source_catalog()
+        cat = load_yaml_dict('source_catalog')
         # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
         # load catalog info for source
@@ -674,7 +674,7 @@ def equally_allocate_parent_to_child_naics(df, sector_column, naics_level, sourc
             df_m = df_m.drop(columns=[sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
             df_m = df_m.rename(columns={sector_column + '_y': sector_column})
             # reset activity columns
-            if load_source_catalog()[sourcename]['sector-like_activities']:
+            if load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']:
                 df_m = df_m.assign(ActivityProducedBy=df_m['SectorProducedBy'])
                 df_m = df_m.assign(ActivityConsumedBy=df_m['SectorConsumedBy'])
 
