@@ -452,9 +452,8 @@ def return_activity_from_scale(df, provided_from_scale):
     unique_activities = unique_activity_names(df)
     # filter by geoscale
     fips = create_geoscale_list(df, provided_from_scale)
-    df_sub = df[df['Location'].isin(fips)]
     # determine unique activities after subsetting by geoscale
-    unique_activities_sub = unique_activity_names(df_sub)
+    unique_activities_sub = unique_activity_names(df[df['Location'].isin(fips)])
 
     # return df of the difference between unique_activities and unique_activities2
     df_missing = dataframe_difference(unique_activities, unique_activities_sub, which='left_only')
@@ -737,7 +736,7 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
                                                    data_source_scripts_file,
                                                    'py')
 
-    df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
+    df = getattr(__import__(f"flowsa.data_source_scripts.{data_source_scripts_file}",
                             fromlist=function_name), function_name)
     return df
 
