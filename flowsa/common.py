@@ -142,7 +142,7 @@ def load_bea_crosswalk():
     Load the BEA crosswalk
     :return: df, BEA crosswalk
     """
-    cw = pd.read_csv(datapath + "BEA_Crosswalk.csv", dtype="str")
+    cw = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", dtype="str")
     return cw
 
 
