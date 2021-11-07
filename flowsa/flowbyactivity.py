@@ -17,8 +17,9 @@ from flowsa.common import log, make_http_request, load_api_key, load_yaml_dict, 
     rename_log_file
 from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
-from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
+from flowsa.flowbyfunctions import fba_fill_na_dict, \
     dynamically_import_fxn
+from flowsa.schema import flow_by_activity_fields
 from flowsa.dataclean import clean_df
 
 

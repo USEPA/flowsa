@@ -7,8 +7,9 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
-from flowsa.common import activity_fields, load_yaml_dict, \
+from flowsa.common import load_yaml_dict, \
     load_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
+from flowsa.schema import activity_fields
 from flowsa.settings import crosswalkpath, log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year

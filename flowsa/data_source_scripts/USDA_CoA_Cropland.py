@@ -10,8 +10,9 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
-    flow_by_sector_fields, fbs_default_grouping_fields, fbs_fill_na_dict, \
+    fbs_default_grouping_fields, fbs_fill_na_dict, \
     fba_wsec_default_grouping_fields
+from flowsa.schema import flow_by_sector_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, sector_disaggregation, sector_ratios, \
     load_fba_w_standardized_units, equally_allocate_parent_to_child_naics
 from flowsa.allocation import allocate_by_sector, allocate_dropped_sector_data
