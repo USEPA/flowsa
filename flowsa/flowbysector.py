@@ -80,35 +80,40 @@ def load_method(method_name):
     return method
 
 
-def load_source_dataframe(k, v, download_FBA_if_missing):
+def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
     """
     Load the source dataframe. Data can be a FlowbyActivity or
     FlowBySector parquet stored in flowsa, or a FlowBySector
     formatted dataframe from another package.
-    :param k: str, The datasource name
-    :param v: dictionary, The datasource parameters
+    :param sourcename: str, The datasource name
+    :param source_dict: dictionary, The datasource parameters
     :param download_FBA_if_missing: Bool, if True will download FBAs from
        Data Commons. Default is False.
     :return: df of identified parquet
     """
-    if v['data_format'] == 'FBA':
+    if source_dict['data_format'] == 'FBA':
         # if yaml specifies a geoscale to load, use parameter to filter dataframe
-        if 'source_fba_load_scale' in v:
-            geo_level = v['source_fba_load_scale']
+        if 'source_fba_load_scale' in source_dict:
+            geo_level = source_dict['source_fba_load_scale']
         else:
             geo_level = None
-        vLog.info("Retrieving flowbyactivity for datasource %s in year %s", k, str(v['year']))
-        flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'],
-                                            flowclass=v['class'], geographic_level=geo_level,
+        vLog.info("Retrieving Flow-By-Activity for datasource %s in year %s",
+                  sourcename, str(source_dict['year']))
+        flows_df = flowsa.getFlowByActivity(datasource=sourcename,
+                                            year=source_dict['year'],
+                                            flowclass=source_dict['class'],
+                                            geographic_level=geo_level,
                                             download_FBA_if_missing=download_FBA_if_missing)
-    elif v['data_format'] == 'FBS':
-        vLog.info("Retrieving flowbysector for datasource %s", k)
-        flows_df = flowsa.getFlowBySector(k)
-    elif v['data_format'] == 'FBS_outside_flowsa':
-        vLog.info("Retrieving flowbysector for datasource %s", k)
-        flows_df = dynamically_import_fxn(k, v["FBS_datapull_fxn"])(v)
+    elif source_dict['data_format'] == 'FBS':
+        vLog.info("Retrieving flowbysector for datasource %s", sourcename)
+        flows_df = flowsa.getFlowBySector(sourcename)
+    elif source_dict['data_format'] == 'FBS_outside_flowsa':
+        vLog.info("Retrieving flowbysector for datasource %s", sourcename)
+        flows_df = dynamically_import_fxn(sourcename,
+                                          source_dict["FBS_datapull_fxn"])(source_dict)
     else:
-        vLog.error("Data format not specified in method file for datasource %s", k)
+        vLog.error("Data format not specified in method "
+                   "file for datasource %s", sourcename)
 
     return flows_df
 
