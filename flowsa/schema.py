@@ -1,3 +1,11 @@
+# schema.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
+"""
+Dictionaries for Flow-By-Activity and Flow-By-Sector datasets
+and their variations
+"""
+
 flow_by_activity_fields = \
     {'Class': [{'dtype': 'str'}, {'required': True}],
      'SourceName': [{'dtype': 'str'}, {'required': True}],
