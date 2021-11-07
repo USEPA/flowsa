@@ -11,7 +11,7 @@ from esupy.dqi import get_weighted_average
 import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, load_yaml_dict, \
-    load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
+    load_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
     fips_number_key, flow_by_activity_fields, fba_fill_na_dict, find_true_file_path, \
@@ -298,7 +298,7 @@ def sector_disaggregation(df_load):
         df = df[df_cols]
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_sector_length_crosswalk()
+    cw_load = load_crosswalk('sector length')
 
     # for loop min length to 6 digits, where min length cannot be less than 2
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(

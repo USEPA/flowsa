@@ -8,9 +8,9 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 from flowsa.common import activity_fields, load_yaml_dict, \
-    load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
+    load_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.settings import crosswalkpath, log
-from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
+from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
@@ -60,7 +60,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
             levelofSectoragg = kwargs['overwrite_sectorlevel']
     # if data are provided in NAICS format, use the mastercrosswalk
     if src_info['sector-like_activities']:
-        cw = load_sector_crosswalk()
+        cw = load_crosswalk()
         sectors = cw.loc[:, [SECTOR_SOURCE_NAME]]
         # Create mapping df that's just the sectors at first
         mapping = sectors.drop_duplicates()
@@ -125,7 +125,7 @@ def expand_naics_list(df, sectorsourcename):
     """
 
     # load master crosswalk
-    cw = load_sector_crosswalk()
+    cw = load_crosswalk()
     sectors = cw.loc[:, [sectorsourcename]]
     # drop duplicates
     sectors = sectors.drop_duplicates().dropna()
@@ -364,7 +364,7 @@ def get_sector_list(sector_level):
     :return: list, sectors at specified sector level
     """
 
-    cw = load_sector_length_crosswalk()
+    cw = load_crosswalk('sector length')
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list

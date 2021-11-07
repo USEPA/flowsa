@@ -12,7 +12,7 @@ from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator,\
     load_fba_w_standardized_units
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
-    load_bea_crosswalk, call_country_code, WITHDRAWN_KEYWORD
+    load_crosswalk, call_country_code, WITHDRAWN_KEYWORD
 from flowsa.validation import compare_df_units
 
 
@@ -154,7 +154,7 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
                                                 download_FBA_if_missing=download_FBA_if_missing)
 
     # load bea crosswalk
-    cw_load = load_bea_crosswalk()
+    cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates()
     cw = cw[cw['NAICS_2012_Code'].apply(lambda x:
                                         len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)

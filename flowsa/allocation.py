@@ -7,7 +7,7 @@ Methods of allocating datasets
 """
 import pandas as pd
 from flowsa.settings import log
-from flowsa.common import fbs_activity_fields, sector_level_key, load_sector_length_crosswalk
+from flowsa.common import fbs_activity_fields, sector_level_key, load_crosswalk
 from flowsa.settings import vLogDetailed
 from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation
@@ -242,7 +242,7 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
             # match sectors with target sector length sectors
 
             # import cw and subset to current sector length and target sector length
-            cw_load = load_sector_length_crosswalk()
+            cw_load = load_crosswalk('sector length')
             nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
             cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
             # add column with counts

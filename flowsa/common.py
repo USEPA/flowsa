@@ -101,48 +101,22 @@ def make_http_request(url, set_cookies=False):
     return r
 
 
-def load_sector_crosswalk():
+def load_crosswalk(crosswalk_name):
     """
     Load NAICS crosswalk between the years 2007, 2012, 2017
     :return: df, NAICS crosswalk over the years
     """
-    cw = pd.read_csv(datapath + "NAICS_Crosswalk.csv", dtype="str")
-    return cw
 
+    cw_dict = {'sector': 'NAICS_Crosswalk',
+               'sector length': 'NAICS_2012_Crosswalk',
+               'household': 'Household_SectorCodes',
+               'government': 'Government_SectorCodes',
+               'BEA': 'NAICS_to_BEA_Crosswalk'
+               }
 
-def load_sector_length_crosswalk():
-    """
-    Load the 2-digit to 6-digit NAICS crosswalk for 2012
-    :return: df, NAICS 2012 crosswalk by sector length
-    """
-    cw = pd.read_csv(datapath + 'NAICS_2012_Crosswalk.csv', dtype='str')
-    return cw
+    fn = cw_dict.get(crosswalk_name)
 
-
-def load_household_sector_codes():
-    """
-    Load manually added household sector codes from csv
-    :return: df, household sector codes
-    """
-    household = pd.read_csv(datapath + 'Household_SectorCodes.csv', dtype='str')
-    return household
-
-
-def load_government_sector_codes():
-    """
-    Load the government sector codes from csv
-    :return: df, government sector codes
-    """
-    government = pd.read_csv(datapath + 'Government_SectorCodes.csv', dtype='str')
-    return government
-
-
-def load_bea_crosswalk():
-    """
-    Load the BEA crosswalk
-    :return: df, BEA crosswalk
-    """
-    cw = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", dtype="str")
+    cw = pd.read_csv(f'{datapath}{fn}.csv', dtype="str")
     return cw
 
 

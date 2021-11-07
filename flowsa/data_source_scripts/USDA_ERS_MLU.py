@@ -14,7 +14,7 @@ import numpy as np
 from flowsa.common import get_all_state_FIPS_2
 from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import load_household_sector_codes
+from flowsa.common import load_crosswalk
 from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2013, \
     get_area_of_urban_land_occupied_by_houses_2013, \
     get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
@@ -294,7 +294,7 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
     rural_res = get_area_of_rural_land_occupied_by_houses_2013()
 
     # household codes
-    household = load_household_sector_codes()
+    household = load_crosswalk('household')
     household = household['Code'].drop_duplicates().tolist()
 
     # in df, where sector is a personal expenditure value, and
