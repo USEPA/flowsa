@@ -13,7 +13,7 @@ from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
     flow_by_sector_fields, fbs_default_grouping_fields, fbs_fill_na_dict, \
     fba_wsec_default_grouping_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, sector_disaggregation, sector_ratios, \
-    load_fba_w_standardized_units, estimate_suppressed_data
+    load_fba_w_standardized_units, equally_allocate_parent_to_child_naics
 from flowsa.allocation import allocate_by_sector, allocate_dropped_sector_data
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
@@ -359,7 +359,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column, do
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
         # estimate suppressed data by equal allocation
-        df_f = estimate_suppressed_data(df_f, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
+        df_f = equally_allocate_parent_to_child_naics(df_f, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
         # create proportional ratios
         group_cols = fba_wsec_default_grouping_fields
         group_cols = [e for e in group_cols if
@@ -431,7 +431,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column, downl
     # add sectors
     naics = add_sectors_to_flowbyactivity(naics, sectorsourcename=method['target_sector_source'])
     # estimate suppressed data by equally allocating parent to child naics
-    naics = estimate_suppressed_data(naics, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
+    naics = equally_allocate_parent_to_child_naics(naics, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
     # add missing fbs fields
     naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
 

@@ -600,7 +600,7 @@ def dataframe_difference(df1, df2, which=None):
     return diff_df
 
 
-def estimate_suppressed_data(df, sector_column, naics_level, sourcename):
+def equally_allocate_parent_to_child_naics(df, sector_column, naics_level, sourcename):
     """
     Estimate data suppression, by equally allocating parent NAICS values to child NAICS
     :param df: df with sector columns

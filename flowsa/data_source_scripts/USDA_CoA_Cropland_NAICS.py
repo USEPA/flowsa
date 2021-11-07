@@ -10,7 +10,7 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import WITHDRAWN_KEYWORD, US_FIPS, abbrev_us_state
-from flowsa.flowbyfunctions import assign_fips_location_system, estimate_suppressed_data
+from flowsa.flowbyfunctions import assign_fips_location_system, equally_allocate_parent_to_child_naics
 
 
 def CoA_Cropland_NAICS_URL_helper(**kwargs):
@@ -167,5 +167,5 @@ def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
     """
 
     # estimate the suppressed data by equally allocating parent naics to child
-    df = estimate_suppressed_data(fba_w_sector, 'SectorConsumedBy', 3, kwargs['sourcename'])
+    df = equally_allocate_parent_to_child_naics(fba_w_sector, 'SectorConsumedBy', 3, kwargs['sourcename'])
     return df
