@@ -92,10 +92,9 @@ def assemble_urls_for_query(build_url, config, args):
         urls = dynamically_import_fxn(args['source'],
                                       config["url_replace_fxn"])(build_url=build_url,
                                                                  config=config, args=args)
+        return urls
     else:
-        urls = []
-        urls.append(build_url)
-    return urls
+        return [build_url]
 
 
 def call_urls(url_list, args, config):
@@ -141,7 +140,6 @@ def parse_data(dataframe_list, args, config):
     :param config: dictionary, FBA yaml
     :return: df, single df formatted to FBA
     """
-    # if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
     if "parse_response_fxn" in config:
         # dynamically import and call on function
         df = dynamically_import_fxn(args['source'],
@@ -192,12 +190,10 @@ def main(**kwargs):
     config = load_yaml_dict(kwargs['source'])
 
     log.info("Creating dataframe list")
-    # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
+    # year input can either be sequential years (e.g. 2007-2009) or single year
     if '-' in str(kwargs['year']):
         years = str(kwargs['year']).split('-')
-        min_year = int(years[0])
-        max_year = int(years[1]) + 1
-        year_iter = list(range(min_year, max_year))
+        year_iter = list(range(int(years[0]), int(years[1]) + 1))
     else:
         # Else only a single year defined, create an array of one:
         year_iter = [kwargs['year']]
@@ -217,9 +213,9 @@ def main(**kwargs):
         dataframe_list = call_urls(urls, kwargs, config)
         # concat the dataframes and parse data with specific instructions from source.py
         log.info("Concat dataframe list and parse data")
-        df = parse_data(dataframe_list, kwargs, config)
-        if isinstance(df, list):
-            for frame in df:
+        dfs = parse_data(dataframe_list, kwargs, config)
+        if isinstance(dfs, list):
+            for frame in dfs:
                 if not len(frame.index) == 0:
                     try:
                         source_names = frame['SourceName']
@@ -228,7 +224,7 @@ def main(**kwargs):
                         source_name = kwargs['source']
                     process_data_frame(frame, source_name, kwargs['year'], config)
         else:
-            process_data_frame(df, kwargs['source'], kwargs['year'], config)
+            process_data_frame(dfs, kwargs['source'], kwargs['year'], config)
 
 
 if __name__ == '__main__':
