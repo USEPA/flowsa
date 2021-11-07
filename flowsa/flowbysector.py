@@ -124,7 +124,7 @@ def main(**kwargs):
         kwargs = parse_args()
 
     method_name = kwargs['method']
-    download_FBA_if_missing = kwargs.get('download_FBAs_if_missing', False)
+    download_FBA_if_missing = kwargs.get('download_FBAs_if_missing')
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
