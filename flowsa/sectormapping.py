@@ -101,7 +101,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
         flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
-    for c in ['ProducedBySectorType', 'ConsumedBySectorType']:
+    for c in ['SectorProducedBy', 'ProducedBySectorType',
+              'SectorConsumedBy', 'ConsumedBySectorType']:
         flowbyactivity_wsector_df[c] = flowbyactivity_wsector_df[c].replace({np.nan: None})
     # add sector source name
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
