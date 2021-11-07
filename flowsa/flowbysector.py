@@ -21,6 +21,7 @@ you need functions to clean up the FBA
 """
 
 import argparse
+import ast
 import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
@@ -123,7 +124,7 @@ def main(**kwargs):
         kwargs = parse_args()
 
     method_name = kwargs['method']
-    download_FBA_if_missing = kwargs.get('download_FBAs_if_missing', False)
+    download_FBA_if_missing = ast.literal_eval(kwargs.get('download_FBAs_if_missing', False))
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
