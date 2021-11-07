@@ -803,3 +803,12 @@ def rename_log_file(filename, fb_meta):
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file already exists)
     shutil.copy(log_file, new_log_name)
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    else:
+        return False

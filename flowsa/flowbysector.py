@@ -28,7 +28,7 @@ from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
 from flowsa.common import flow_by_sector_fields, \
     fips_number_key, flow_by_activity_fields, load_source_catalog, \
-    flow_by_sector_fields_w_activity, \
+    flow_by_sector_fields_w_activity, str2bool, \
     fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
     fbs_grouping_fields_w_activities, logoutputpath
@@ -58,7 +58,7 @@ def parse_args():
     ap.add_argument("-m", "--method",
                     required=True, help="Method for flow by sector file. "
                                         "A valid method config file must exist with this name.")
-    ap.add_argument("-d", "--download_FBAs_if_missing",
+    ap.add_argument("-d", "--download_FBAs_if_missing", type=str2bool,
                     required=False, help="Option to download any FBAs not saved locally rather"
                                          "than generating the FBAs in FLOWSA.")
     args = vars(ap.parse_args())
@@ -124,7 +124,7 @@ def main(**kwargs):
         kwargs = parse_args()
 
     method_name = kwargs['method']
-    download_FBA_if_missing = ast.literal_eval(kwargs.get('download_FBAs_if_missing', False))
+    download_FBA_if_missing = kwargs.get('download_FBAs_if_missing', False)
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
