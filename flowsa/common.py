@@ -400,15 +400,15 @@ def read_stored_FIPS(year='2015'):
     """
     Read fips based on year specified, year defaults to 2015
     :param year: str, '2010', '2013', or '2015', default year is 2015
+        because most recent year of FIPS available
     :return: df, FIPS for specified year
     """
 
     FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
     # subset columns by specified year
     df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
-    # rename columns
-    cols = ['State', 'FIPS', 'County']
-    df.columns = cols
+    # rename columns to drop data year
+    df.columns = ['State', 'FIPS', 'County']
     # sort df
     df = df.sort_values(['FIPS']).reset_index(drop=True)
 
@@ -425,6 +425,9 @@ def getFIPS(state=None, county=None, year='2015'):
     :return: str. A five digit FIPS code
     """
     FIPS_df = read_stored_FIPS(year)
+
+    # default code
+    code = None
 
     if county is None:
         if state is not None:
@@ -614,7 +617,7 @@ us_state_abbrev = {
 }
 
 # thank you to @kinghelix and @trevormarburger for this idea
-abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
+abbrev_us_state = {abbr: state for state, abbr in us_state_abbrev.items()}
 
 
 def get_region_and_division_codes():
