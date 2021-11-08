@@ -379,11 +379,12 @@ def eia_mecs_energy_parse(dataframe_list, args):
     return df
 
 
-def mecs_energy_fba_cleanup(fba, attr):
+def mecs_energy_fba_cleanup(fba, attr, **kwargs):
     """
     Clean up the EIA MECS energy FlowByActivity
     :param fba: df, FBA format
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: optional, can also include bool 'download_FBAs_if_missing'
     :return: df, subset of EIA MECS Energy FBA
     """
     # subset the df to only include values where the unit = MJ
