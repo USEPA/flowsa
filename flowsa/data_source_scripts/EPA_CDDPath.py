@@ -68,11 +68,11 @@ def epa_cddpath_parse(dataframe_list, args):
     return df
 
 
-def write_cdd_path_from_csv(**kwargs):
+def write_cdd_path_from_csv():
     file = 'EPA_2016_Table5_CNHWCGenerationbySource_Extracted_UsingCNHWCPathNames.csv'
-    df = pd.read_csv(externaldatapath + file, header = 0,
-                     names = ['FlowName', 'ActivityProducedBy',
-                              'FlowAmount'])
+    df = pd.read_csv(externaldatapath + file, header=0,
+                     names=['FlowName', 'ActivityProducedBy',
+                            'FlowAmount'])
     return df
 
 
