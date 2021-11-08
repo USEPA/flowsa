@@ -20,21 +20,23 @@ DEFAULT_YEAR = 9999
 # Only keeping years 2010-2018 for the following tables:
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
-    "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-22",
+    "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-21", "3-22",
                       "3-38", "3-39", "3-40", "3-63", "3-65"],
-    "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-43", "4-80", "4-94", "4-99", "4-101"],
+    "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-43", "4-46", "4-50", "4-80", "4-94", "4-99", "4-101"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
     "Executive Summary": ["ES-5"]
 }
+
 ANNEX_TABLES = {
     "Annex": ["A-17", "A-76", "A-77", "A-101"]
 }
+
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
 A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
 A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
                    'Emissions (MMT CO2 Eq.) from Energy Use']
 
-SPECIAL_FORMAT = ["3-22", "4-43", "4-50", "4-80", "A-17", "A-93", "A-94", "A-118", "5-29"]
+SPECIAL_FORMAT = ["3-22", "4-43", "4-46", "4-50", "4-80", "A-17", "A-93", "A-94", "A-118", "5-29"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
 Activity_Format_A = ["T_5_30", "T_A_17", "T_ES_5"]
 Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
@@ -119,6 +121,11 @@ TBL_META = {
         "class": "Chemicals", "unit": "Other", "compartment": "air",
         "activity": "CO2e",
         "desc": "Table 4-43:  CO2 Emissions from Soda Ash Production (MMT CO2 Eq. and kt CO2)"
+    },
+    "EPA_GHGI_T_4_46": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CO2e",
+        "desc": "Table 4-46: CO2 and CH4 Emissions from Petrochemical Production (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_48": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
@@ -374,7 +381,11 @@ def ghg_call(**kwargs):
                     df.columns = new_headers
                     # print('break')
                 elif '4-' in table:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                    if table == '4-46':
+                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                         thousands=",", decimal=".")
+                    else:
+                        df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")
                 elif 'A-' in table:
                     if table == 'A-17':
@@ -450,41 +461,11 @@ def strip_char(text):
     Removes the footnote chars from the text
     """
     text = text + " "
-    if " a " in text:
-        text_split = text.split(" a ")
-        text = text_split[0]
-    if " b " in text:
-        text_split = text.split(" b ")
-        text = text_split[0]
-    if " c " in text:
-        text_split = text.split(" c ")
-        text = text_split[0]
-    if " d " in text:
-        text_split = text.split(" d ")
-        text = text_split[0]
-    if " e " in text:
-        text_split = text.split(" e ")
-        text = text_split[0]
-    if " f " in text:
-        text_split = text.split(" f ")
-        text = text_split[0]
-    if " g " in text:
-        text_split = text.split(" g ")
-        text = text_split[0]
-    if " h " in text:
-        text_split = text.split(" h ")
-        text = text_split[0]
-    if " i " in text:
-        text_split = text.split(" i ")
-        text = text_split[0]
-    if " j " in text:
-        text_split = text.split(" j ")
-        text = text_split[0]
-    if " k " in text:
-        text_split = text.split(" k ")
-        text = text_split[0]
-
-
+    notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", " i ", " j ", " k "]
+    for i in notes:
+        if i in text:
+            text_split = text.split(i)
+            text = text_split[0]
     return text.strip()
 
 
@@ -576,19 +557,23 @@ def ghg_parse(**kwargs):
 
         # Update classes:
         meta = TBL_META[source_name]
-        df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
-        df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
-        df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
-        df.loc[df["SourceName"] == source_name, "Compartment"] = meta["compartment"]
-        if not special_format or "T_4_" in source_name:
-            df.loc[df["SourceName"] == source_name, "FlowName"] = meta["activity"]
+        if source_name == "EPA_GHGI_T_3_21" and int(args["year"]) < 2015:
+            # skip don't do anything: The lines are blank
+            print("There is no data for this year and source")
         else:
-            if "T_4_" not in source_name:
-                flow_name_units = series_separate_name_and_units(df["FlowName"],
-                                                                 meta["activity"],
-                                                                 meta["unit"])
-                df['Unit'] = flow_name_units['units']
-                df.loc[df["SourceName"] == source_name, "FlowName"] = flow_name_units['names']
+            df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
+            df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
+            df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
+            df.loc[df["SourceName"] == source_name, "Compartment"] = meta["compartment"]
+            if not special_format or "T_4_" in source_name:
+                df.loc[df["SourceName"] == source_name, "FlowName"] = meta["activity"]
+            else:
+                if "T_4_" not in source_name:
+                    flow_name_units = series_separate_name_and_units(df["FlowName"],
+                                                                     meta["activity"],
+                                                                     meta["unit"])
+                    df['Unit'] = flow_name_units['units']
+                    df.loc[df["SourceName"] == source_name, "FlowName"] = flow_name_units['names']
 
         # We also need to fix the Activity PRODUCED or CONSUMED, now that we know units.
         # Any units TBtu will be CONSUMED, all other units will be PRODUCED.
@@ -605,7 +590,7 @@ def ghg_parse(**kwargs):
           #  df['Year'] = meta.get("year", DEFAULT_YEAR)
           df['Year'] = args['year']
 
-        if source_name == "EPA_GHGI_T_":
+        if source_name == "EPA_GHGI_T_4_33":
             df = df.rename(columns={'Year': 'ActivityProducedBy', 'ActivityProducedBy': 'Year'})
         year_int = ["EPA_GHGI_T_4_33", "EPA_GHGI_T_4_50"]
         # Some of the datasets, 4-43 and 4-80, still have years we don't want at this point.
@@ -632,13 +617,14 @@ def ghg_parse(**kwargs):
 
         df = assign_fips_location_system(df, str(args['year']))
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
-        multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_5_7", "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]
+        multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_4_46", "EPA_GHGI_T_5_7", "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]
         source_No_activity = ["EPA_GHGI_T_3_21", "EPA_GHGI_T_3_22"]
         source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
                              "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
                              "EPA_GHGI_T_A_77"]
         source_activity_2 =  ["EPA_GHGI_T_3_38", "EPA_GHGI_T_3_39", "EPA_GHGI_T_3_63"]
         double_activity = ["EPA_GHGI_T_4_48"]
+        note_par = ["EPA_GHGI_T_4_14", "EPA_GHGI_T_4_99"]
         if source_name in multi_chem_names:
             bool_apb = False
             apbe_value = ""
@@ -649,6 +635,9 @@ def ghg_parse(**kwargs):
                     apb_value = "CH4"
                 elif "N2O" in apb_value:
                     apb_value = "N2O"
+                elif "CO2" in apb_value:
+                    apb_value = "CO2"
+
                 if apb_value in flow_name_list:
                     apbe_value = apb_value
                     df.loc[index, 'FlowName'] = apbe_value
@@ -765,6 +754,18 @@ def ghg_parse(**kwargs):
                 for index, row in df.iterrows():
                     df.loc[index, 'Unit'] = df.loc[index, 'ActivityProducedBy']
                     df.loc[index, 'ActivityProducedBy'] = "Caprolactam Production"
+            elif source_name in "EPA_GHGI_T_A_101":
+                for index, row in df.iterrows():
+                    apb_value = strip_char(row["ActivityProducedBy"])
+                    df.loc[index, 'ActivityProducedBy'] = apb_value
+            elif source_name in note_par:
+                for index, row in df.iterrows():
+                    apb_value = strip_char(row["ActivityProducedBy"])
+                    if "(" in apb_value:
+                        text_split = apb_value.split("(")
+                        df.loc[index, 'ActivityProducedBy'] = text_split[0]
+
+
 
 
             df.drop(df.loc[df['ActivityProducedBy'] == "Total"].index, inplace=True)
