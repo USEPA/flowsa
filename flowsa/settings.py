@@ -3,8 +3,6 @@ import os
 import logging
 import subprocess
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
-
-# set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 from esupy.util import get_git_hash
 
 
