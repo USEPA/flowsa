@@ -45,18 +45,13 @@ def epa_cddpath_call(**kwargs):
     return df
 
 
-def epa_cddpath_parse(**kwargs):
+def epa_cddpath_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    args = kwargs['args']
-    dataframe_list = kwargs['dataframe_list']
-
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
     

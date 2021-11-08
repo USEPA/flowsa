@@ -135,7 +135,12 @@ def pi_call(**kwargs):
 
 
 def pi_parse(dataframe_list, args):
-    """Parsing the USGS data into flowbyactivity format."""
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     data = {}
     row_to_use = ["Production2", "Production", "Imports for consumption"]
     df = pd.DataFrame()

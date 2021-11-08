@@ -71,7 +71,12 @@ def usgs_bauxite_call(url, usgs_response, args):
 
 
 def usgs_bauxite_parse(dataframe_list, args):
-    """Parsing the USGS data into flowbyactivity format."""
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     data = {}
     row_to_use = ["Production", "Total"]
     prod = ""

@@ -66,7 +66,12 @@ def usgs_niobium_call(url, usgs_response, args):
 
 
 def usgs_niobium_parse(dataframe_list, args):
-    """Parsing the USGS data into flowbyactivity format."""
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     data = {}
     row_to_use = ["Total imports, Nb content", "Total exports, Nb content"]
     prod = ""

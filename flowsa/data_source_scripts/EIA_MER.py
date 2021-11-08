@@ -100,18 +100,13 @@ def decide_consumed(desc):
     return 'None'
 
 
-def eia_mer_parse(**kwargs):
+def eia_mer_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     df = pd.concat(dataframe_list, sort=False)
     # Filter only the rows we want, YYYYMM field beginning with 201, for 2010's.
     # df = df[df['YYYYMM'] > 201000]

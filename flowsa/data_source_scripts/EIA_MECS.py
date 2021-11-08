@@ -167,18 +167,13 @@ def eia_mecs_land_call(**kwargs):
     return df
 
 
-def eia_mecs_land_parse(**kwargs):
+def eia_mecs_land_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     df_array = []
     for dataframes in dataframe_list:
 
@@ -341,18 +336,13 @@ def eia_mecs_energy_call(**kwargs):
     return df_data
 
 
-def eia_mecs_energy_parse(**kwargs):
+def eia_mecs_energy_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     from flowsa.common import assign_census_regions
 
     # concatenate dataframe list into single dataframe

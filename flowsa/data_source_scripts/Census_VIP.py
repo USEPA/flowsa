@@ -51,11 +51,13 @@ def census_vip_call(**kwargs):
     return df2
     
 
-def census_vip_parse(**kwargs):
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
+def census_vip_parse(dataframe_list, args):
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     df = pd.concat(dataframe_list, sort=False)
     df['Year'] = df['Year'].astype(str)
     df = df[df['Year'] == args['year']].reset_index(drop=True)

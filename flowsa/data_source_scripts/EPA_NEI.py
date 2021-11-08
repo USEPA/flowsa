@@ -75,18 +75,13 @@ def epa_nei_call(**kwargs):
     return df
 
 
-def epa_nei_global_parse(**kwargs):
+def epa_nei_global_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     df = pd.concat(dataframe_list, sort=True)
 
     # rename columns to match flowbyactivity format
@@ -145,16 +140,14 @@ def epa_nei_global_parse(**kwargs):
     return df
 
 
-def epa_nei_onroad_parse(**kwargs):
+def epa_nei_onroad_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-
-    df = epa_nei_global_parse(**kwargs)
+    df = epa_nei_global_parse(dataframe_list, args)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -163,16 +156,15 @@ def epa_nei_onroad_parse(**kwargs):
     return df
 
 
-def epa_nei_nonroad_parse(**kwargs):
+def epa_nei_nonroad_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
 
-    df = epa_nei_global_parse(**kwargs)
+    df = epa_nei_global_parse(dataframe_list, args)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -181,16 +173,15 @@ def epa_nei_nonroad_parse(**kwargs):
     return df
 
 
-def epa_nei_nonpoint_parse(**kwargs):
+def epa_nei_nonpoint_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
 
-    df = epa_nei_global_parse(**kwargs)
+    df = epa_nei_global_parse(dataframe_list, args)
 
     # Add DQ scores
     df['DataReliability'] = 3
