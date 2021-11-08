@@ -46,7 +46,7 @@ def check_if_activities_match_sectors(fba):
     #activities.remove("None")
 
     # Get list of module default sectors
-    flowsa_sector_list = list(load_crosswalk()[SECTOR_SOURCE_NAME])
+    flowsa_sector_list = list(load_crosswalk('NAICS_Crosswalk')[SECTOR_SOURCE_NAME])
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
@@ -624,7 +624,7 @@ def melt_naics_crosswalk():
     """
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
-    cw_load = load_crosswalk()
+    cw_load = load_crosswalk('NAICS_Crosswalk')
 
     # create melt table of possible 2007 and 2017 naics that can be mapped to 2012
     cw_melt = cw_load.melt(id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
@@ -661,7 +661,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     df = replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
-    cw_load = load_crosswalk()
+    cw_load = load_crosswalk('NAICS_Crosswalk')
     cw = cw_load[sectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
