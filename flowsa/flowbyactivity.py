@@ -90,8 +90,7 @@ def assemble_urls_for_query(build_url, config, args):
     if "url_replace_fxn" in config:
         # dynamically import and call on function
         urls = dynamically_import_fxn(args['source'],
-                                      config["url_replace_fxn"])(build_url=build_url,
-                                                                 config=config, args=args)
+                                      config["url_replace_fxn"])(build_url, config, args)
         return urls
     else:
         return [build_url]

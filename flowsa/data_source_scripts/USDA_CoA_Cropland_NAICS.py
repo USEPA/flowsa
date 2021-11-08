@@ -13,24 +13,18 @@ from flowsa.common import WITHDRAWN_KEYWORD, US_FIPS, abbrev_us_state
 from flowsa.flowbyfunctions import assign_fips_location_system, equally_allocate_parent_to_child_naics
 
 
-def CoA_Cropland_NAICS_URL_helper(**kwargs):
+def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param kwargs: potential arguments include:
-                   build_url: string, base url
-                   config: dictionary, items in FBA method yaml
-                   args: dictionary, arguments specified when running flowbyactivity.py
-                   flowbyactivity.py ('year' and 'source')
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
-
-    # load the arguments necessary for function
-    build_url = kwargs['build_url']
-    config = kwargs['config']
-
     # initiate url list for coa cropland data
     urls = []
 

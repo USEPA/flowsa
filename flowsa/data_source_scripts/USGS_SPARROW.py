@@ -25,6 +25,7 @@ def url_file(url):
     url_file = url_array[1]
     return url_file
 
+
 def column_names(file_name):
     base_url = 'https://www.sciencebase.gov/catalog/file/get/'
     pacific_region = ['5d407318e4b01d82ce8d9b3c?f=__disk__22%2F5c%2Fe3%2F225ce31141477eb0904f38f95f1d472bbe2a2a11',
@@ -63,6 +64,7 @@ def column_names(file_name):
     legend["name"] = name
     return legend
 
+
 def name_and_unit_split(df_legend):
     for i in range(len(df_legend)):
         apb = df_legend.loc[i, "name"]
@@ -79,6 +81,7 @@ def name_and_unit_split(df_legend):
             df_legend.loc[i, "Unit"] = None
     return df_legend
 
+
 def name_replace(df_legend, df_raw):
     for col_name in df_raw.columns:
         for i in range(len(df_legend)):
@@ -87,25 +90,19 @@ def name_replace(df_legend, df_raw):
                     df_raw = df_raw.rename(columns={col_name: df_legend.loc[i, "name"]})
     return df_raw
 
-def sparrow_url_helper(**kwargs):
-    """Used to substitute in components of usgs urls"""
+
+def sparrow_url_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param kwargs: potential arguments include:
-                   build_url: string, base url
-                   config: dictionary, items in FBA method yaml
-                   args: dictionary, arguments specified when running flowbyactivity.py
-                   flowbyactivity.py ('year' and 'source')
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
-
-    # load the arguments necessary for function
-    build_url = kwargs['build_url']
-    config = kwargs['config']
-
     # initiate url list for coa cropland data
     urls = []
     # replace "__xlsx_name__" in build_url to create three urls
