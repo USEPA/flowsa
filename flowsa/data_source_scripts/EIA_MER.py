@@ -33,19 +33,15 @@ def eia_mer_url_helper(build_url, config, args):
     return urls
 
 
-def eia_mer_call(**kwargs):
+def eia_mer_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     with io.StringIO(response_load.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df

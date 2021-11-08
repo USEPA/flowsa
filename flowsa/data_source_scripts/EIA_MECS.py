@@ -51,20 +51,15 @@ def eia_mecs_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_mecs_land_call(**kwargs):
+def eia_mecs_land_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-    args = kwargs['args']
-
     # Convert response to dataframe
     df_raw_data = pd.read_excel(io.BytesIO(response_load.content), sheet_name='Table 9.1')
     df_raw_rse = pd.read_excel(io.BytesIO(response_load.content), sheet_name='RSE 9.1')
@@ -220,22 +215,17 @@ def eia_mecs_land_parse(dataframe_list, args):
     return df
 
 
-def eia_mecs_energy_call(**kwargs):
+def eia_mecs_energy_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-    args = kwargs['args']
-
-    ## load .yaml file containing information about each energy table
-    ## (the .yaml includes information such as column names, units, and which rows to grab)
+    # load .yaml file containing information about each energy table
+    # (the .yaml includes information such as column names, units, and which rows to grab)
     filename = 'EIA_MECS_energy tables'
     sourcefile = datapath + filename + '.yaml'
     with open(sourcefile, 'r') as f:

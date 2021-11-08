@@ -43,19 +43,15 @@ def BLS_QCEW_URL_helper(build_url, config, args):
     return urls
 
 
-def bls_qcew_call(**kwargs):
+def bls_qcew_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # initiate dataframes list
     df_list = []
     # unzip folder that contains bls data in ~4000 csv files

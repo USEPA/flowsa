@@ -50,13 +50,15 @@ def usgs_peat_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_peat_call(**kwargs):
-    """TODO."""
-    # load arguments necessary for function
-    url = kwargs['url']
-    usgs_response = kwargs['r']
-    args = kwargs['args']
-    """Calls the excel sheet for nickel and removes extra columns"""
+def usgs_peat_call(url, response_load, args):
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
     df_data_one = pd.DataFrame(df_raw_data_one.loc[7:18]).reindex()
     df_data_one = df_data_one.reset_index()

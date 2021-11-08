@@ -16,19 +16,15 @@ import pandas as pd
 from flowsa.common import WITHDRAWN_KEYWORD
 
 
-def sc_lfs_call(**kwargs):
+def sc_lfs_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:

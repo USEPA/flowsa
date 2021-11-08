@@ -11,23 +11,19 @@ import io
 import pandas as pd
 from flowsa.common import US_FIPS
 from flowsa.settings import externaldatapath
-from flowsa.flowbyfunctions import assign_fips_location_system #, \
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 # Read pdf into list of DataFrame
-def epa_cddpath_call(**kwargs):
+def epa_cddpath_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     df = (pd.io.excel.read_excel(io.BytesIO(response_load.content),
                                  sheet_name='Final Results',
@@ -80,12 +76,12 @@ def write_cdd_path_from_csv(**kwargs):
     return df
 
 
-def combine_cdd_path(**kwargs):
+def combine_cdd_path(url, response_load, args):
     """Call function to generate combined dataframe from csv file and excel dataset,
     bringing only those flows from the excel file that are not in the csv file
     """
     df_csv = write_cdd_path_from_csv()
-    df_excel = epa_cddpath_call(**kwargs)
+    df_excel = epa_cddpath_call(url, response_load, args)
     df_excel = df_excel[~df_excel['FlowName'].isin(df_csv['FlowName'])]
     
     df = pd.concat([df_csv, df_excel], ignore_index=True)

@@ -12,19 +12,15 @@ from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def eia_cbecs_water_call(**kwargs):
+def eia_cbecs_water_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     df_raw = pd.read_excel(io.BytesIO(response_load.content), sheet_name='data').dropna()
     # skip rows and remove extra rows at end of dataframe

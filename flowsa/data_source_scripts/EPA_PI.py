@@ -87,13 +87,15 @@ def pi_url_helper(build_url, config, args):
     return [url]
 
 
-def pi_call(**kwargs):
-    """TODO."""
-    # load arguments necessary for function
-    url = kwargs['url']
-    response = kwargs['r']
-    args = kwargs['args']
-    """Calls for the years 2002, 2007, and 2012"""
+def pi_call(url, response, args):
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_legend = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='Legend')
     df_legend = pd.DataFrame(df_legend.loc[0:18]).reindex()
     df_legend.columns = ["HUC_8", "HUC8 CODE"]

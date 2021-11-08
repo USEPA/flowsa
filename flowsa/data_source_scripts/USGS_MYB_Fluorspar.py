@@ -49,7 +49,14 @@ def usgs_fluorspar_url_helper(build_url, config, args):
 
 
 def usgs_fluorspar_call(url, usgs_response, args):
-    """Calls the excel sheet for nickel and removes extra columns"""
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
 
     if args['year'] in SPAN_YEARS_INPORTS:

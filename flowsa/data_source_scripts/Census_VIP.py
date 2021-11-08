@@ -11,17 +11,16 @@ import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import US_FIPS
 
-def census_vip_call(**kwargs):
+
+def census_vip_call(url, response_load, args):
     """
-    Call url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-
-
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     df = pd.read_excel(response_load.content,
                        sheet_name = 'Total',

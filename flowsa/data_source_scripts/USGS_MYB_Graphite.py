@@ -50,12 +50,18 @@ def usgs_graphite_url_helper(build_url, config, args):
 
 
 def usgs_graphite_call(url, usgs_response, args):
-    """TODO."""
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[5:9]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
-
 
     if len(df_data. columns) == 13:
         df_data.columns = ["Production", "space_1", "Unit", "space_6", "year_1", "space_2", "year_2", "space_3",

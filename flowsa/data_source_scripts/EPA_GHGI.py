@@ -291,21 +291,15 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
     return {'names': names, 'units': units}
 
 
-def ghg_call(**kwargs):
+def ghg_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    url = kwargs['url']
-    response_load = kwargs['r']
-    args = kwargs['args']
-
     df = None
     year = args['year']
     with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:

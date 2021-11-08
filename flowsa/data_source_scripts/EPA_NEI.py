@@ -41,19 +41,15 @@ def epa_nei_url_helper(build_url, config, args):
     return urls
 
 
-def epa_nei_call(**kwargs):
+def epa_nei_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     z = zipfile.ZipFile(io.BytesIO(response_load.content))
     # create a list of files contained in the zip archive
     znames = z.namelist()

@@ -51,19 +51,15 @@ def CoA_Livestock_URL_helper(build_url, config, args):
     return urls_livestock
 
 
-def coa_livestock_call(**kwargs):
+def coa_livestock_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     livestock_json = json.loads(response_load.text)
     # Convert response to dataframe
     df_livestock = pd.DataFrame(data=livestock_json["data"])

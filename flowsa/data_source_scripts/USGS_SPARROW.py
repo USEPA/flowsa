@@ -113,13 +113,9 @@ def sparrow_url_helper(build_url, config, args):
     return urls
 
 
-def sparrow_call(**kwargs):
+def sparrow_call(url, response_load, args):
     """TODO."""
-    # load arguments necessary for function
-    url = kwargs['url']
-    response = kwargs['r']
-    text = response.content
-    args = kwargs['args']
+    text = response_load.content
 
     ph = ['5cbf5150e4b09b8c0b700df3?f=__disk__bf%2F73%2F1f%2Fbf731fdf4e984a5cf50c0f1a140cda366cb8c1d3',
           '5d407318e4b01d82ce8d9b3c?f=__disk__2b%2F75%2F2b%2F2b752b0c5decf8e83c035d559a2688c481bb0cfe',

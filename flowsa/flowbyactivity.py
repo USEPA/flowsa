@@ -122,7 +122,7 @@ def call_urls(url_list, args, config):
             if "call_response_fxn" in config:
                 # dynamically import and call on function
                 df = dynamically_import_fxn(args['source'],
-                                            config["call_response_fxn"])(url=url, r=r, args=args)
+                                            config["call_response_fxn"])(url, r, args)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):

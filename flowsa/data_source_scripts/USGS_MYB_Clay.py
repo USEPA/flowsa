@@ -49,12 +49,18 @@ def usgs_clay_url_helper(build_url, config, args):
 
 
 def usgs_clay_call(url, usgs_response, args):
-    """TODO."""
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_raw_data_ball = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T3')
     df_data_ball = pd.DataFrame(df_raw_data_ball.loc[19:19]).reindex()
     df_data_ball = df_data_ball.reset_index()
     del df_data_ball["index"]
-
 
     df_raw_data_bentonite = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4 ')
     df_data_bentonite = pd.DataFrame(df_raw_data_bentonite.loc[28:28]).reindex()

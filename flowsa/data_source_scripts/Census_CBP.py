@@ -97,19 +97,15 @@ def Census_CBP_URL_helper(build_url, config, args):
     return urls_census
 
 
-def census_cbp_call(**kwargs):
+def census_cbp_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     cbp_json = json.loads(response_load.text)
     # convert response to dataframe
     df_census = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])

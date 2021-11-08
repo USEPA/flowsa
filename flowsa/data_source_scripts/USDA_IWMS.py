@@ -38,19 +38,15 @@ def iwms_url_helper(build_url, config, args):
     return urls_iwms
 
 
-def iwms_call(**kwargs):
+def iwms_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     iwms_json = json.loads(response_load.text)
     # Convert response to dataframe
     df_iwms = pd.DataFrame(data=iwms_json["data"])

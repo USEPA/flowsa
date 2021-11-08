@@ -41,20 +41,15 @@ def eia_cbecs_land_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_cbecs_land_call(**kwargs):
+def eia_cbecs_land_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    url = kwargs['url']
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     df_raw_data = pd.read_excel(io.BytesIO(response_load.content), sheet_name='data')
     df_raw_rse = pd.read_excel(io.BytesIO(response_load.content), sheet_name='rse')

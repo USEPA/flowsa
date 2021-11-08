@@ -109,10 +109,16 @@ def ni_url_helper(build_url, config, args):
     url = build_url
     return [url]
 
-def ni_call(**kwargs):
-    response = kwargs['r']
-    args = kwargs['args']
-    """Calls for the years 2002, 2007, and 2012"""
+
+def ni_call(url, response, args):
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_legend = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='Legend')
 
     if args['year'] == '2002':
