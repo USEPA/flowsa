@@ -193,3 +193,4 @@ def seeAvailableFlowByModels(flowbytype):
 
     # print data in human-readable format
     pprint.pprint(data_print, width=79, compact=True)
+    return data_print
