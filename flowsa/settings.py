@@ -63,10 +63,10 @@ vLogDetailed.propagate = False
 
 # create handlers
 # create handler for overall logger
-log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
+log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w', encoding='utf-8')
 log_fh.setFormatter(formatter)
 # create handler for general validation information
-vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
+vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w', encoding='utf-8')
 vLog_fh.setFormatter(formatter)
 # create console handler
 ch = logging.StreamHandler(sys.stdout)
