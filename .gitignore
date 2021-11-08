@@ -2,4 +2,4 @@
 .idea
 venv
 .venv
-.env
+*.env

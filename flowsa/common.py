@@ -6,7 +6,6 @@
 
 import shutil
 import os
-from pathlib import Path
 import yaml
 import requests
 import requests_ftp
@@ -14,11 +13,11 @@ import pandas as pd
 import numpy as np
 import pycountry
 import joblib
+from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
-
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, \
     flow_by_activity_mapped_fields, flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, activity_fields
-from flowsa.settings import datapath, outputpath, logoutputpath, sourceconfigpath, log
+from flowsa.settings import datapath, MODULEPATH, logoutputpath, sourceconfigpath, log
 
 
 # Sets default Sector Source Name
@@ -44,11 +43,10 @@ WITHDRAWN_KEYWORD = np.nan
 
 def load_api_key(api_source):
     """
-    Loads a txt file from the appdirs user directory with a set name
-    in the form of the host name and '_API_KEY.txt' like 'BEA_API_KEY.txt'
-    containing the users personal API key. The user must register with this
-    API and get the key and save it to a .txt file in the user directory specified
-    by local_path (see common.py for definition)
+    Loads an API Key from "API_Keys.env" file using the
+    'api_name' defined in the FBA source config file. The '.env' file contains
+    the users personal API keys. The user must register with this
+    API and get the key and manually add to "API_Keys.env"
 
     See wiki for how to get an api:
     https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#api-keys
@@ -56,17 +54,10 @@ def load_api_key(api_source):
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
     """
-    # create directory if missing
-    api_keys_path = Path(Path(outputpath), 'API_Keys')
-    api_keys_path.mkdir(exist_ok=True)
-    # key path
-    keyfile = Path(api_keys_path, f'{api_source}_API_KEY.txt')
-    key = ""
-    try:
-        with open(keyfile, mode='r') as keyfilecontents:
-            key = keyfilecontents.read().strip()
-    except IOError:
-        log.error(f"Key file {keyfile} not found. See github wiki for help "
+    load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
+    key = os.getenv(api_source)
+    if key is None:
+        log.error(f"Key file {api_source} not found. See github wiki for help "
                   "https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#api-keys")
     return key
 
