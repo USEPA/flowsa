@@ -14,7 +14,7 @@ on NAICS definitions from the Census.
 7/8 digit NAICS align with USDA ERS IWMS
 
 """
-import pandas as pd
+
 from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 

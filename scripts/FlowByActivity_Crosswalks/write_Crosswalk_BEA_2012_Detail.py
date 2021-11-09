@@ -11,7 +11,7 @@ from flowsa.settings import datapath
 
 if __name__ == '__main__':
 
-    cw_load = load_crosswalk()
+    cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code',
                   'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # drop all rows with naics >6
