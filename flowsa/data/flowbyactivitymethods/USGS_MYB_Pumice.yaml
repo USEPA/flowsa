@@ -10,4 +10,6 @@ url:
 url_replace_fxn: usgs_pumice_url_helper
 call_response_fxn: usgs_pumice_call
 parse_response_fxn: usgs_pumice_parse
+years:
+  - 2017
 
