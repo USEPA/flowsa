@@ -21,7 +21,7 @@ DEFAULT_YEAR = 9999
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
     "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-21", "3-22",
-                      "3-38", "3-39", "3-40", "3-63", "3-65"],
+                      "3-38", "3-39", "3-40", "3-67", "3-63", "3-65"],
     "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-43", "4-46", "4-50", "4-80", "4-94", "4-99", "4-101"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
     "Executive Summary": ["ES-5"]
@@ -101,6 +101,11 @@ TBL_META = {
         "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "CH4",
         "desc": "Table 3-63:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)a"
+    },
+    "EPA_GHGI_T_3_67": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "N2O",
+        "desc": "Table 3-67: N2O Emissions from Natural Gas Systems (Metric Tons CO2 Eq.)"
     },
     "EPA_GHGI_T_3_65": {
         "class": "Chemicals", "unit": "MMT CO2", "compartment": "air",
