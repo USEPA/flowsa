@@ -19,7 +19,7 @@ def assign_naics(df):
     :return: df with assigned Sector columns
     """
 
-    cw_load = load_crosswalk()
+    cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code',
                   'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # least aggregate level that applies is 5 digits
