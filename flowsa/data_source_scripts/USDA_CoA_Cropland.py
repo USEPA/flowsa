@@ -423,8 +423,6 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column, downl
 
     # aggregate sectors to create any missing naics levels
     group_cols = fbs_default_grouping_fields
-    # group_cols = [e for e in group_cols if e not in ('SectorProducedBy', 'SectorConsumedBy')]
-    # group_cols.append(sector_column)
     naics2 = sector_aggregation(naics, group_cols)
     # add missing naics5/6 when only one naics5/6 associated with a naics4
     naics3 = sector_disaggregation(naics2)
