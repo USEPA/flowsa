@@ -9,9 +9,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 """
 
 import argparse
-import requests
 import pandas as pd
-import numpy as np
 from esupy.processed_data_mgmt import write_df_to_file
 from flowsa.common import log, make_http_request, load_api_key, load_yaml_dict, \
     rename_log_file
