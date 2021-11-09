@@ -108,12 +108,12 @@ def epa_nei_global_parse(dataframe_list, args):
     df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
 
     # drop all other columns
-    df.drop(df.columns.difference(['FlowName',
-                                   'FlowAmount',
-                                   'ActivityProducedBy',
-                                   'Location',
-                                   'Unit',
-                                   'Description']), 1, inplace=True)
+    df.drop(columns=df.columns.difference(['FlowName',
+                                           'FlowAmount',
+                                           'ActivityProducedBy',
+                                           'Location',
+                                           'Unit',
+                                           'Description']), inplace=True)
 
     # to align with other processed NEI data (Point from StEWI), units are
     # converted during FBA creation instead of maintained
