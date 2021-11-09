@@ -49,7 +49,7 @@ def load_api_key(api_source):
     API and get the key and manually add to "API_Keys.env"
 
     See wiki for how to get an api:
-    https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#api-keys
+    https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys
 
     :param api_source: str, name of source, like 'BEA' or 'Census'
     :return: the users API key as a string
@@ -58,7 +58,7 @@ def load_api_key(api_source):
     key = os.getenv(api_source)
     if key is None:
         log.error(f"Key file {api_source} not found. See github wiki for help "
-                  "https://github.com/USEPA/flowsa/wiki/Using-FLOWSA-as-a-Developer#api-keys")
+                  "https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys")
     return key
 
 
