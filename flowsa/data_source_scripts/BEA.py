@@ -153,7 +153,7 @@ def bea_make_ar_parse(dataframe_list, args):
     return df
 
 
-def subset_BEA_Use(df, attr):
+def subset_BEA_Use(df, attr, **kwargs):
     """
     Function to modify loaded BEA table based on data in the FBA method yaml
     :param df: df, flowbyactivity format
