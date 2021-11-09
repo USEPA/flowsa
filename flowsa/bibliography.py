@@ -9,7 +9,7 @@ import os
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
-from flowsa.common import load_sourceconfig, \
+from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
     find_true_file_path, sourceconfigpath
@@ -54,6 +54,8 @@ def generate_list_of_sources_in_fbs_method(methodname):
                         sources.append([fxn_config['source'], y])
     except KeyError:
         # if no additional fbas than pass
+        log.info(f'There are no additional Flow-By-Activities '
+                 'used in generating %s', methodname)
         pass
 
     return sources
@@ -73,7 +75,7 @@ def load_source_dict(sourcename):
     except KeyError:
         # else check if file exists, then try loading citation information from source yaml
         sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
-        config = load_sourceconfig(sourcename)
+        config = load_yaml_dict(sourcename)
 
     return config
 

@@ -39,7 +39,7 @@ def import_useeior_mastercrosswalk():
     cw = packages.data(useeior).fetch('MasterCrosswalk2012')['MasterCrosswalk2012']
 
     # save as csv
-    cw.to_csv(datapath + "USEEIOCrosswalk.csv", index=False)
+    cw.to_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", index=False)
 
 
 def write_naics_2012_crosswalk():
@@ -49,7 +49,7 @@ def write_naics_2012_crosswalk():
     """
 
     # load the useeior mastercrosswalk
-    cw_load = pd.read_csv(datapath + "USEEIOCrosswalk.csv", dtype=str)
+    cw_load = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", dtype=str)
 
     # extract naics 2012 code column and drop duplicates and empty cells
     cw = cw_load[['NAICS_2012_Code']].drop_duplicates()
@@ -142,7 +142,7 @@ def update_naics_crosswalk():
     """
 
     # read useeior master crosswalk, subset NAICS columns
-    naics_load = pd.read_csv(datapath + "USEEIOCrosswalk.csv", dtype=str)
+    naics_load = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", dtype=str)
     naics = naics_load[['NAICS_2007_Code', 'NAICS_2012_Code',
                         'NAICS_2017_Code']].drop_duplicates().reset_index(drop=True)
     # convert all rows to string

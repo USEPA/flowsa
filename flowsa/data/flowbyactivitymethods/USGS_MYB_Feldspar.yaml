@@ -10,4 +10,6 @@ url:
 url_replace_fxn: usgs_feldspar_url_helper
 call_response_fxn: usgs_feldspar_call
 parse_response_fxn: usgs_feldspar_parse
+years:
+  - 2017
 

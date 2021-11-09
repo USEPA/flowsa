@@ -14,6 +14,8 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
 from flowsa.common import US_FIPS, sector_level_key, \
     load_sector_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
     check_activities_sector_like, \
+    load_yaml_dict, \
+    load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
     fba_default_grouping_fields, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
 
@@ -45,7 +47,7 @@ def check_if_activities_match_sectors(fba):
         activities.extend(fba[f])
 
     # Get list of module default sectors
-    flowsa_sector_list = list(load_sector_crosswalk()[SECTOR_SOURCE_NAME])
+    flowsa_sector_list = list(load_crosswalk('sector')[SECTOR_SOURCE_NAME])
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
@@ -528,7 +530,6 @@ def check_summation_at_sector_lengths(df):
     df2 = df2[~df2['Sector'].isnull()]
 
     df2 = df2.assign(SectorLength=len(df2['Sector']))
-    # df2 = df2.assign(SectorLength=df2['Sector'].apply(lambda x: len(x)))
 
     # sum flowamounts by sector length
     denom_df = df2.copy()
@@ -620,7 +621,7 @@ def melt_naics_crosswalk():
     """
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
-    cw_load = load_sector_crosswalk()
+    cw_load = load_crosswalk('sector')
 
     # create melt table of possible 2007 and 2017 naics that can be mapped to 2012
     cw_melt = cw_load.melt(id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
@@ -657,7 +658,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     df = replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
-    cw_load = load_sector_crosswalk()
+    cw_load = load_crosswalk('sector')
     cw = cw_load[sectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
@@ -710,7 +711,6 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
                                    'DataCollection', 'Description')
         # list of column headers to group aggregation by
         groupby_cols = [e for e in df.columns.values.tolist() if e not in possible_column_headers]
-        # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
     # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
@@ -801,7 +801,7 @@ def compare_geographic_totals(df_subset, df_load, sourcename, attr, activity_set
         sub = df_subset.assign(Location=US_FIPS)
         # depending on the datasource, might need to rename some strings for national comparison
         sub = rename_column_values_for_comparison(sub, sourcename)
-        sub2 = aggregator(sub,fba_default_grouping_fields).rename(
+        sub2 = aggregator(sub, fba_default_grouping_fields).rename(
             columns={'FlowAmount': 'FlowAmount_sub'})
 
         # compare df

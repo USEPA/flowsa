@@ -27,7 +27,9 @@ setup(
         'requests_ftp==0.3.1',
         'tabula-py>=2.1.1',
         'numpy>=1.20.1',
-        'bibtexparser>=1.2.0'
+        'bibtexparser>=1.2.0',
+        'joblib >= 1.1.0',
+        'python-dotenv >= 0.19.1'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',

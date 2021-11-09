@@ -31,19 +31,36 @@ Years = 2016+
 """
 SPAN_YEARS = "2015-2016"
 
+
 def usgs_clay_url_helper(build_url, config, args):
-    """Used to substitute in components of usgs urls"""
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    """
     url = build_url
     return [url]
 
 
 def usgs_clay_call(url, usgs_response, args):
-    """TODO."""
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_raw_data_ball = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T3')
     df_data_ball = pd.DataFrame(df_raw_data_ball.loc[19:19]).reindex()
     df_data_ball = df_data_ball.reset_index()
     del df_data_ball["index"]
-
 
     df_raw_data_bentonite = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4 ')
     df_data_bentonite = pd.DataFrame(df_raw_data_bentonite.loc[28:28]).reindex()
@@ -136,7 +153,12 @@ def usgs_clay_call(url, usgs_response, args):
 
 
 def usgs_clay_parse(dataframe_list, args):
-    """Parsing the USGS data into flowbyactivity format."""
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     data = {}
     row_to_use = ["Ball clay", "Bentonite", "Fire clay", "Kaolin", "Fuller’s earth", "Total", "Grand total",
                   "Artificially activated clay and earth", "Clays, not elsewhere classified",

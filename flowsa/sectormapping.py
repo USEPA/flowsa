@@ -10,8 +10,11 @@ from esupy.mapping import apply_flow_mapping
 from flowsa.common import activity_fields, load_source_catalog, \
     load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME, \
     find_true_file_path, return_true_source_catalog_name, check_activities_sector_like
+from flowsa.common import load_yaml_dict, \
+    load_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
+from flowsa.schema import activity_fields
 from flowsa.settings import crosswalkpath, log
-from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
+from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
@@ -71,7 +74,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
             levelofSectoragg = kwargs['overwrite_sectorlevel']
     # if data are provided in NAICS format, use the mastercrosswalk
     if src_info['sector-like_activities']:
-        cw = load_sector_crosswalk()
+        cw = load_crosswalk('sector')
         sectors = cw.loc[:, [SECTOR_SOURCE_NAME]]
         # Create mapping df that's just the sectors at first
         mapping = sectors.drop_duplicates()
@@ -112,7 +115,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
         flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
-    for c in ['ProducedBySectorType', 'ConsumedBySectorType']:
+    for c in ['SectorProducedBy', 'ProducedBySectorType',
+              'SectorConsumedBy', 'ConsumedBySectorType']:
         flowbyactivity_wsector_df[c] = flowbyactivity_wsector_df[c].replace({np.nan: None})
     # add sector source name
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
@@ -135,7 +139,7 @@ def expand_naics_list(df, sectorsourcename):
     """
 
     # load master crosswalk
-    cw = load_sector_crosswalk()
+    cw = load_crosswalk('sector')
     sectors = cw.loc[:, [sectorsourcename]]
     # drop duplicates
     sectors = sectors.drop_duplicates().dropna()
@@ -371,7 +375,7 @@ def get_sector_list(sector_level):
     :return: list, sectors at specified sector level
     """
 
-    cw = load_sector_length_crosswalk()
+    cw = load_crosswalk('sector length')
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list

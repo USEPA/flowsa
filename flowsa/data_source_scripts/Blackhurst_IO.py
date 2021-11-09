@@ -21,19 +21,15 @@ from flowsa.validation import compare_df_units
 
 
 # Read pdf into list of DataFrame
-def bh_call(**kwargs):
+def bh_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
@@ -45,17 +41,13 @@ def bh_call(**kwargs):
     return bh_df
 
 
-def bh_parse(**kwargs):
+def bh_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
