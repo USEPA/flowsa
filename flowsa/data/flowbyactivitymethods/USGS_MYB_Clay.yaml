@@ -12,4 +12,6 @@ url:
 url_replace_fxn: usgs_clay_url_helper
 call_response_fxn: usgs_clay_call
 parse_response_fxn: usgs_clay_parse
+years:
+  - 2016
 

@@ -12,4 +12,6 @@ url:
 url_replace_fxn: usgs_iron_ore_url_helper
 call_response_fxn: usgs_iron_ore_call
 parse_response_fxn: usgs_iron_ore_parse
+years:
+  - 2017
 

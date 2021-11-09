@@ -10,4 +10,6 @@ url:
 url_replace_fxn: usgs_barite_url_helper
 call_response_fxn: usgs_barite_call
 parse_response_fxn: usgs_barite_parse
+years:
+  - 2018
 

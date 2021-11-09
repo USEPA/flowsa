@@ -12,4 +12,6 @@ url:
 url_replace_fxn: usgs_tungsten_url_helper
 call_response_fxn: usgs_tungsten_call
 parse_response_fxn: usgs_tungsten_parse
+years:
+  - 2017
 
