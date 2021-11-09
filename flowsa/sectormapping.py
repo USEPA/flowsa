@@ -7,11 +7,9 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
-from flowsa.common import activity_fields, load_source_catalog, \
-    load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME, \
-    find_true_file_path, return_true_source_catalog_name, check_activities_sector_like
-from flowsa.common import load_yaml_dict, \
-    load_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
+from flowsa.common import find_true_file_path, \
+    return_true_source_catalog_name, check_activities_sector_like, \
+    load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.schema import activity_fields
 from flowsa.settings import crosswalkpath, log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
@@ -61,7 +59,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
     s = pd.unique(flowbyactivity_df['SourceName'])[0]
     # load catalog info for source, first check for sourcename used in source catalog
     ts = return_true_source_catalog_name(s)
-    src_info = load_source_catalog()[ts]
+    src_info = load_yaml_dict('source_catalog')[ts]
     # read the pre-determined level of sector aggregation of each crosswalk from the source catalog
     levelofSectoragg = src_info['sector_aggregation_level']
     # if the FBS activity set is 'direct', overwrite the

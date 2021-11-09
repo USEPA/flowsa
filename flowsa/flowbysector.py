@@ -25,15 +25,12 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import flow_by_sector_fields, \
-    fips_number_key, flow_by_activity_fields, \
-    flow_by_sector_fields_w_activity, check_activities_sector_like, \
-from flowsa.common import fips_number_key, load_yaml_dict, \
-    str2bool, \
-    fba_activity_fields, rename_log_file, \
+from flowsa.common import check_activities_sector_like, fips_number_key, \
+    str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
     fbs_grouping_fields_w_activities, logoutputpath
-from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_fields_w_activity
+from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
+    flow_by_sector_fields_w_activity
 from flowsa.settings import log, vLog, flowbysectormethodpath, \
     flowbysectoractivitysetspath, paths
 from flowsa.metadata import set_fb_meta, write_metadata
@@ -189,8 +186,8 @@ def main(**kwargs):
                 # subset fba data by activity
                 flows_subset =\
                     flows_mapped[(flows_mapped[fba_activity_fields[0]].isin(names)) |
-                              (flows_mapped[fba_activity_fields[1]].isin(names)
-                               )].reset_index(drop=True)
+                                 (flows_mapped[fba_activity_fields[1]].isin(names)
+                                  )].reset_index(drop=True)
 
                 # subset by flowname if exists
                 if 'source_flows' in attr:

@@ -569,7 +569,6 @@ def rename_log_file(filename, fb_meta):
     Rename the log file saved to local directory using df meta for df
     :param filename: str, name of dataset
     :param fb_meta: metadata for parquet
-    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
     :return: modified log file name
     """
     # original log file name - all log statements
@@ -596,7 +595,7 @@ def return_true_source_catalog_name(sourcename):
     """
     Drop any extensions on source name until find the name in source catalog
     """
-    while (load_source_catalog().get(sourcename) is None) & ('_' in sourcename):
+    while (load_yaml_dict('source_catalog').get(sourcename) is None) & ('_' in sourcename):
         sourcename = sourcename.rsplit("_", 1)[0]
     return sourcename
 
@@ -610,12 +609,13 @@ def check_activities_sector_like(sourcename_load):
     sourcename = return_true_source_catalog_name(sourcename_load)
 
     try:
-        sectorLike = load_source_catalog()[sourcename]['sector-like_activities']
+        sectorLike = load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']
     except KeyError:
         log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
                   sourcename_load, sourcename)
 
     return sectorLike
+
 
 def str2bool(v):
     if isinstance(v, bool):
