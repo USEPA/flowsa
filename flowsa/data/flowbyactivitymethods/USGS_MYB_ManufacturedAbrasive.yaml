@@ -10,3 +10,5 @@ url:
 url_replace_fxn: usgs_ma_url_helper
 call_response_fxn: usgs_ma_call
 parse_response_fxn: usgs_ma_parse
+years:
+  - 2017
