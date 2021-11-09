@@ -50,7 +50,7 @@ def usgs_peat_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_peat_call(url, response_load, args):
+def usgs_peat_call(url, usgs_response, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param kwargs: url: string, url
