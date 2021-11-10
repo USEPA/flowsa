@@ -1,7 +1,6 @@
 # write_UDSA_IWMS_crosswalk.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the USDA Irrigation and Water Management Surveyto NAICS_12.

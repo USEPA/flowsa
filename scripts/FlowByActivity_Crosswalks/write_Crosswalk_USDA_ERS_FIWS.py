@@ -1,7 +1,6 @@
 # write_Crosswalk_USDA_ERS_FIWS.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USDA_ERS_FIWS to NAICS_12.

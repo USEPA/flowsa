@@ -1,7 +1,6 @@
 # write_Crosswalk_UDSA_CoA_Cropland.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USDA_CoA_Cropland to NAICS_12.

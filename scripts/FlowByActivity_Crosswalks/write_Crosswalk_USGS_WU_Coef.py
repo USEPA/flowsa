@@ -1,7 +1,6 @@
 # write_Crosswalk_USGS_WU_Coef.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the USGS Water Use Coefficients
