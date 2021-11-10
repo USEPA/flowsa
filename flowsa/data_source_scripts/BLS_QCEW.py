@@ -18,7 +18,7 @@ import numpy as np
 from flowsa.common import US_FIPS, fba_default_grouping_fields
 from flowsa.schema import flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    aggregator, estimate_suppressed_data, log
+    aggregator, equally_allocate_parent_to_child_naics, log
 from flowsa.dataclean import add_missing_flow_by_fields, replace_strings_with_NoneType
 
 
@@ -277,6 +277,6 @@ def bls_clean_allocation_fba_w_sec_state(df_w_sec, **kwargs):
     # estimate the suppressed data by equally allocating parent naics to child
     log.info('Estimating suppressed data by equally allocating '
              'parent NAICS to child NAICS')
-    df = estimate_suppressed_data(df, 'SectorProducedBy', 2, kwargs['sourcename'])
+    df = equally_allocate_parent_to_child_naics(df, 'SectorProducedBy', 2, kwargs['sourcename'])
 
     return df

@@ -11,7 +11,7 @@ from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, \
-    load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
+    load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config, \
     find_true_file_path, sourceconfigpath
 from flowsa.settings import outputpath, biboutputpath, log
 
@@ -110,10 +110,13 @@ def generate_fbs_bibliography(methodname):
             if config is not None:
                 # ensure data sources are not duplicated when different source names
                 try:
-                    if (config['source_name'], config['author'], source[1],
-                    config['source_url']) not in source_set:
-                        source_set.add((config['source_name'], config['author'],
-                                        source[1], config['source_url']))
+                    if (config['tool_meta']['source_name'], config['tool_meta']['author'], source[1],
+                        config['tool_meta']['source_url']) not in source_set:
+
+                        source_set.add((config['tool_meta']['source_name'],
+                                        config['tool_meta']['author'],
+                                        source[1],
+                                        config['tool_meta']['source_url']))
 
                         # if there is a date downloaded, use in citation over date generated
                         if 'original_data_download_date' in config:
@@ -125,12 +128,12 @@ def generate_fbs_bibliography(methodname):
 
                         db = BibDatabase()
                         db.entries = [{
-                            'title': config['source_name'] + ' ' + str(source[1]),
-                            'author': config['author'],
+                            'title': config['tool_meta']['source_name'] + ' ' + str(source[1]),
+                            'author': config['tool_meta']['author'],
                             'year': str(source[1]),
-                            'url': config['source_url'],
+                            'url': config['tool_meta']['source_url'],
                             'urldate': bib_date,
-                            'ID': config['bib_id'] + '_' + str(source[1]),
+                            'ID': config['tool_meta']['bib_id'] + '_' + str(source[1]),
                             'ENTRYTYPE': 'misc'
                         }]
                         # append each entry to a list of BibDatabase entries
