@@ -38,9 +38,9 @@ def usgs_copper_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_copper_call(url, usgs_response, args):
+def usgs_copper_call(url, r, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
     df_data_1 = pd.DataFrame(df_raw_data.loc[12:12]).reindex()
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]

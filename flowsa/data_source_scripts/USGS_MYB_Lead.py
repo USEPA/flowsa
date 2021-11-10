@@ -26,9 +26,9 @@ def usgs_lead_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_lead_call(url, usgs_response, args):
+def usgs_lead_call(url, r, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[8:15]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]

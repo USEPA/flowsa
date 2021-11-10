@@ -1,8 +1,8 @@
-source_name: USGS Minneral Yearbook Garnet
+# Downloads and parses CSV from USGS Garnet Statistics and Information on an annual basis.
+---
+source_name: USGS Mineral Yearbook Garnet
 citable_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-garne-adv.xlsx
 date_generated: '2021-03-26'
-# api_name: USGS_MYB_Garnet
-# api_key_required: false
 years_available: 2014-2018
 format: xls
 url:
@@ -10,4 +10,9 @@ url:
 url_replace_fxn: usgs_garnet_url_helper
 call_response_fxn: usgs_garnet_call
 parse_response_fxn: usgs_garnet_parse
-
+years:
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018

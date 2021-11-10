@@ -40,9 +40,9 @@ def usgs_rhenium_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_rhenium_call(url, usgs_response, args):
+def usgs_rhenium_call(url, r, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[5:13]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -55,6 +55,9 @@ def usgs_rhenium_call(url, usgs_response, args):
     if len(df_data. columns) == 14:
         df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
                            "space_4", "year_4", "space_5", "year_5", "space_6", "space_7", "space_8"]
+    elif len(df_data. columns) == 11:
+        df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
+                           "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

@@ -5,7 +5,7 @@
 import io
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
-
+from flowsa.common import WITHDRAWN_KEYWORD
 """
 
 Projects
@@ -39,9 +39,9 @@ def usgs_boron_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_boron_call(url, usgs_response, args):
+def usgs_boron_call(url, r, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
     df_data_one = pd.DataFrame(df_raw_data.loc[8:8]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
@@ -113,7 +113,7 @@ def usgs_boron_parse(dataframe_list, args):
                 if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
                 elif str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)

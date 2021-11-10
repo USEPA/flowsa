@@ -5,6 +5,7 @@
 import io
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
 
 
 """
@@ -40,9 +41,9 @@ def usgs_iodine_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_iodine_call(url, usgs_response, args):
+def usgs_iodine_call(url, r, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[6:10]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -93,7 +94,7 @@ def usgs_iodine_parse(dataframe_list, args):
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)
                 elif str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)

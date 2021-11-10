@@ -39,9 +39,9 @@ def usgs_vermiculite_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_vermiculite_call(url, usgs_response, args):
+def usgs_vermiculite_call(url, r, args):
     """Calls the excel sheet for nickel and removes extra columns"""
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
     df_data_one = pd.DataFrame(df_raw_data_one.loc[6:12]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]

@@ -23,8 +23,9 @@ from string import digits
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
 
-SPAN_YEARS = "2013-2017"
+SPAN_YEARS = "2010-2017"
 SPAN_YEARS_T4 = ["2016", "2017"]
 
 def description(value, code):
@@ -75,6 +76,8 @@ def soda_url_helper(**kwargs):
 
     # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
+    url = url.replace('__format__', str(config['formats'][args["year"]]))
+    url = url.replace('__url_text__', str(config['url_texts'][args["year"]]))
     return [url]
 
 
@@ -89,22 +92,25 @@ def soda_call(**kwargs):
     :return: pandas dataframe of original source data
     """
     # load arguments necessary for function
-    response_load = kwargs['r']
-
-    col_to_use = ["Production", "NAICS code", "End use"]
-    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
+    r = kwargs['r']
+    args = kwargs['args']
+    col_to_use = ["Production", "NAICS code", "End use", "year_5", "total"]
 
     if str(args["year"]) in SPAN_YEARS_T4:
-        df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4')# .dropna()
+        df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4')# .dropna()
         df_data_one = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
         df_data_one = df_data_one.reset_index()
         del df_data_one["index"]
         if len(df_data_one.columns) == 23:
-            df_data_one.columns = ["NAICS code", "space_1", "End use", "space_2", "y1_q1", "space_3", "y1_q2",
+            df_data_one.columns = ["NAICS code", "space_1", "Production", "space_2", "y1_q1", "space_3", "y1_q2",
                                    "space_4", "y1_q3", "space_5", "y1_q4", "space_6", "year_4", "space_7", "y2_q1",
                                    "space_8", "y2_q2", "space_9", "y2_q3", "space_10", "y2_q4", "space_11", "year_5"]
+        elif len(df_data_one.columns) == 17:
+            df_data_one.columns = ["NAICS code", "space_1", "Production", "space_2", "last_year", "space_3", "y1_q1",
+                                   "space_4", "y1_q2", "space_5", "y1_q3", "space_6", "y1_4", "space_7", "year_5",
+                                   "space_8", "space_9"]
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
     df_data_two = pd.DataFrame(df_raw_data_two.loc[6:18]).reindex()
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
@@ -152,7 +158,8 @@ def soda_parse(**kwargs):
     prod = ""
     name = usgs_myb_name(args["source"])
     des = name
-    col_name = usgs_myb_year(SPAN_YEARS, args["year"])
+    #col_name = usgs_myb_year(SPAN_YEARS, args["year"])
+    col_name = "year_5"
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
@@ -177,7 +184,7 @@ def soda_parse(**kwargs):
                     data["Year"] = str(args["year"])
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                     if str(df.iloc[index][col_name]) == "W":
-                        data["FlowAmount"] = withdrawn_keyword
+                        data["FlowAmount"] = WITHDRAWN_KEYWORD
                     data["Description"] = des
                     data["ActivityProducedBy"] = name
                     data['FlowName'] = name + " " + prod

@@ -43,10 +43,10 @@ def usgs_peat_call(**kwargs):
     """TODO."""
     # load arguments necessary for function
     url = kwargs['url']
-    usgs_response = kwargs['r']
+    r = kwargs['r']
     args = kwargs['args']
     """Calls the excel sheet for nickel and removes extra columns"""
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
     df_data_one = pd.DataFrame(df_raw_data_one.loc[7:18]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]

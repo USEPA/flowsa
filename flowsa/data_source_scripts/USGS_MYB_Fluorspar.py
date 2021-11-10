@@ -5,7 +5,7 @@
 import io
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
-
+from flowsa.common import WITHDRAWN_KEYWORD
 """
 Projects
 /
@@ -37,14 +37,14 @@ def usgs_fluorspar_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_fluorspar_call(url, usgs_response, args):
+def usgs_fluorspar_call(url, r, args):
     """Calls the excel sheet for nickel and removes extra columns"""
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
 
     if args['year'] in SPAN_YEARS_INPORTS:
-        df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T2')
-        df_raw_data_three = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T7')
-        df_raw_data_four = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T8')
+        df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T2')
+        df_raw_data_three = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T7')
+        df_raw_data_four = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T8')
 
     df_data_one = pd.DataFrame(df_raw_data_one.loc[5:15]).reindex()
     df_data_one = df_data_one.reset_index()
@@ -133,7 +133,7 @@ def usgs_fluorspar_parse(dataframe_list, args):
                 data["Unit"] = "Metric Tons"
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 data["Description"] = des

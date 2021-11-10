@@ -5,6 +5,7 @@
 import io
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
 
 
 """
@@ -40,9 +41,9 @@ def usgs_bauxite_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_bauxite_call(url, usgs_response, args):
+def usgs_bauxite_call(url, r, args):
     """Calls the excel sheet for nickel and removes extra columns"""
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
     df_data_one = pd.DataFrame(df_raw_data_one.loc[6:14]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
@@ -97,7 +98,7 @@ def usgs_bauxite_parse(dataframe_list, args):
 
                 flow_amount = str(df.iloc[index][col_name])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = flow_amount
                 data["Description"] = des

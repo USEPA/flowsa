@@ -36,9 +36,9 @@ def usgs_iron_ore_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_iron_ore_call(url, usgs_response, args):
+def usgs_iron_ore_call(url, r, args):
     """TODO."""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1 ')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1 ')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]

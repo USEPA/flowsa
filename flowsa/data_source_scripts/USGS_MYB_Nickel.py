@@ -37,14 +37,14 @@ def usgs_nickel_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_nickel_call(url, usgs_response, args):
+def usgs_nickel_call(url, r, args):
     """Calls the excel sheet for nickel and removes extra columns"""
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T10')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T10')# .dropna()
     df_data_1 = pd.DataFrame(df_raw_data.loc[36:36]).reindex()
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
     df_data_2 = pd.DataFrame(df_raw_data_two.loc[11:16]).reindex()
     df_data_2 = df_data_2.reset_index()
     del df_data_2["index"]
