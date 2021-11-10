@@ -6,7 +6,7 @@
 Create a crosswalk for EPA CDDPath to NAICS 2012.
 """
 import pandas as pd
-from flowsa.common import datapath, externaldatapath
+from flowsa.settings import datapath, externaldatapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 

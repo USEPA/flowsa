@@ -1,12 +1,10 @@
 import sys
 import os
 import logging
+import subprocess
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
-
-# set version number for use in FBA and FBS output naming schemas, needs to be updated with setup.py
 from esupy.util import get_git_hash
 
-PKG_VERSION_NUMBER = '0.4.0'
 
 try:
     MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
@@ -23,6 +21,7 @@ scc_adjustmentpath = datapath + 'scc_adjustments/'
 
 datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
+# "Paths()" are a class defined in esupy
 paths = Paths()
 paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
 outputpath = paths.local_path.replace('\\', '/') + '/'
@@ -65,10 +64,10 @@ vLogDetailed.propagate = False
 
 # create handlers
 # create handler for overall logger
-log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w')
+log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w', encoding='utf-8')
 log_fh.setFormatter(formatter)
 # create handler for general validation information
-vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w')
+vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w', encoding='utf-8')
 vLog_fh.setFormatter(formatter)
 # create console handler
 ch = logging.StreamHandler(sys.stdout)
@@ -85,8 +84,23 @@ vLog.addHandler(ch)  # print to console
 vLog.addHandler(vLog_fh)
 vLogDetailed.addHandler(vLog_fh)
 
+
+def return_pkg_version():
+
+    # return version with git describe
+    try:
+        tags = subprocess.check_output(["git", "describe", "--tags", "--always"]).decode().strip()
+        version = tags.split("-", 1)[0].replace('v', "")
+    except subprocess.CalledProcessError:
+        log.info('Unable to return version with git describe')
+        version = 'None'
+
+    return version
+
+
 # metadata
 PKG = "flowsa"
+PKG_VERSION_NUMBER = return_pkg_version()
 GIT_HASH = get_git_hash()
 GIT_HASH_LONG = get_git_hash('long')
 

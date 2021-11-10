@@ -1,7 +1,6 @@
 # write_Crosswalk_USGS_NWIS_WU.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USGS_NWIS_WU to NAICS_12.
@@ -76,10 +75,20 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Public', 'Sector'] = '221310'
     df.loc[df['Activity'] == 'Public Supply', 'Sector'] = '221310'
 
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '2211']],
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '221112']],
                                 columns=['Activity', 'Sector']), sort=True)
-    df.loc[df['Activity'] == 'Thermoelectric Power Closed-loop cooling', 'Sector'] = '221100A'
-    df.loc[df['Activity'] == 'Thermoelectric Power Once-through cooling', 'Sector'] = '221100B'
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '221113']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '221114']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '221115']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '221116']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '221117']],
+                                columns=['Activity', 'Sector']), sort=True)
+    df = df.append(pd.DataFrame([['Thermoelectric Power', '221118']],
+                                columns=['Activity', 'Sector']), sort=True)
 
     # df.loc[df['Activity'] == 'Total', 'Sector'] = ''
     # df.loc[df['Activity'] == 'Total Groundwater', 'Sector'] = ''
