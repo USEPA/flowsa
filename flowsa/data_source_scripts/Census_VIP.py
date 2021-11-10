@@ -11,17 +11,16 @@ import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import US_FIPS
 
-def census_vip_call(**kwargs):
+
+def census_vip_call(url, response_load, args):
     """
-    Call url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-
-
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     df = pd.read_excel(response_load.content,
                        sheet_name = 'Total',
@@ -51,11 +50,13 @@ def census_vip_call(**kwargs):
     return df2
     
 
-def census_vip_parse(**kwargs):
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
+def census_vip_parse(dataframe_list, args):
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     df = pd.concat(dataframe_list, sort=False)
     df['Year'] = df['Year'].astype(str)
     df = df[df['Year'] == args['year']].reset_index(drop=True)

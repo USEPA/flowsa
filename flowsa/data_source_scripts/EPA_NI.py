@@ -95,14 +95,30 @@ def name_and_unit_split(df_legend):
 
 
 def ni_url_helper(build_url, config, args):
-    """Used to substitute in components of usgs urls"""
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    """
     url = build_url
     return [url]
 
-def ni_call(**kwargs):
-    response = kwargs['r']
-    args = kwargs['args']
-    """Calls for the years 2002, 2007, and 2012"""
+
+def ni_call(url, response, args):
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param kwargs: url: string, url
+    :param kwargs: response: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     df_legend = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='Legend')
 
     if args['year'] == '2002':
@@ -140,9 +156,8 @@ def ni_call(**kwargs):
 def ni_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
     # load arguments necessary for function

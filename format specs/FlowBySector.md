@@ -19,11 +19,11 @@ Spread | Numeric | N | The value for the given measure of spread.
 DistributionType | String | N | The form of the frequency distribution, if given. Acceptable values are 'NORMAL', 'LOGNORMAL', 'TRIANGULAR', 'UNIFORM'.
 Min | Numeric | N | The minimum FlowAmount, if provided for the data range. 
 Max | Numeric | N | The maximum FlowAmount, if provided for the data range.
-DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md)
-TemporalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
-GeographicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
-TechnologicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
-DataCollection | Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md).
+DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md)
+TemporalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md).
+GeographicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md).
+TechnologicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md).
+DataCollection | Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md).
 MetaSources | String | Y | The major data source(s) value is based on, usually a FlowByActivity set.
 FlowUUID| String| Y | UUID from Federal Commons Flow List. 
 

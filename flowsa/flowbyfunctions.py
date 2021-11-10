@@ -10,12 +10,13 @@ import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
-    get_county_FIPS, update_geoscale, load_source_catalog, \
-    load_sector_length_crosswalk, flow_by_sector_fields, fbs_fill_na_dict, \
-    fbs_collapsed_default_grouping_fields, flow_by_sector_collapsed_fields, \
-    fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
-    fips_number_key, flow_by_activity_fields, fba_fill_na_dict, find_true_file_path, \
-    flow_by_activity_mapped_fields, fba_mapped_default_grouping_fields
+    get_county_FIPS, update_geoscale, load_yaml_dict, \
+    load_crosswalk, fbs_fill_na_dict, \
+    fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
+    fips_number_key, fba_fill_na_dict, find_true_file_path, \
+    fba_mapped_default_grouping_fields
+from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, \
+    flow_by_activity_mapped_fields
 from flowsa.settings import datasourcescriptspath, log
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells, standardize_units
@@ -175,7 +176,7 @@ def sector_aggregation(df_load, group_cols):
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
         # load source catalog
-        cat = load_source_catalog()
+        cat = load_yaml_dict('source_catalog')
         # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
         # load catalog info for source
@@ -279,7 +280,7 @@ def sector_disaggregation(df_load):
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
         # load source catalog
-        cat = load_source_catalog()
+        cat = load_yaml_dict('source_catalog')
         # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
         # load catalog info for source
@@ -295,7 +296,7 @@ def sector_disaggregation(df_load):
         df = df[df_cols]
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_sector_length_crosswalk()
+    cw_load = load_crosswalk('sector length')
 
     # for loop min length to 6 digits, where min length cannot be less than 2
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -379,19 +380,21 @@ def assign_fips_location_system(df, year_of_data):
     """
     Add location system based on year of data. County level FIPS change over the years.
     :param df: df with FIPS location system
-    :param year_of_data: str, year of data pulled
+    :param year_of_data: int, year of data pulled
     :return: df, with 'LocationSystem' column values
     """
-
-    if year_of_data >= '2015':
+    # ensure year integer
+    year_of_data = int(year_of_data)
+    if year_of_data >= 2015:
         df.loc[:, 'LocationSystem'] = 'FIPS_2015'
-    elif '2013' <= year_of_data < '2015':
+    elif 2013 <= year_of_data < 2015:
         df.loc[:, 'LocationSystem'] = 'FIPS_2013'
-    elif '2010' <= year_of_data < '2013':
+    elif 2010 <= year_of_data < 2013:
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
-    elif year_of_data < '2010':
+    elif year_of_data < 2010:
         log.warning(
-            "Missing FIPS codes from crosswalk for %s. Assigning to FIPS_2010", year_of_data)
+            "Missing FIPS codes from crosswalk for %s. "
+            "Assigning to FIPS_2010", str(year_of_data))
         df.loc[:, 'LocationSystem'] = 'FIPS_2010'
 
     return df
@@ -446,9 +449,8 @@ def return_activity_from_scale(df, provided_from_scale):
     unique_activities = unique_activity_names(df)
     # filter by geoscale
     fips = create_geoscale_list(df, provided_from_scale)
-    df_sub = df[df['Location'].isin(fips)]
     # determine unique activities after subsetting by geoscale
-    unique_activities_sub = unique_activity_names(df_sub)
+    unique_activities_sub = unique_activity_names(df[df['Location'].isin(fips)])
 
     # return df of the difference between unique_activities and unique_activities2
     df_missing = dataframe_difference(unique_activities, unique_activities_sub, which='left_only')
@@ -558,11 +560,11 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
         df_subset = clean_df(df_subset, cols_to_keep,
                              fba_fill_na_dict, drop_description=False)
 
+        return df_subset
+
     # right now, the only other location system is for Statistics Canada data
     else:
-        df_subset = df.copy()
-
-    return df_subset
+        return df
 
 
 def unique_activity_names(fba_df):
@@ -597,7 +599,7 @@ def dataframe_difference(df1, df2, which=None):
     return diff_df
 
 
-def estimate_suppressed_data(df, sector_column, naics_level, sourcename):
+def equally_allocate_parent_to_child_naics(df, sector_column, naics_level, sourcename):
     """
     Estimate data suppression, by equally allocating parent NAICS values to child NAICS
     :param df: df with sector columns
@@ -671,7 +673,7 @@ def estimate_suppressed_data(df, sector_column, naics_level, sourcename):
             df_m = df_m.drop(columns=[sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
             df_m = df_m.rename(columns={sector_column + '_y': sector_column})
             # reset activity columns
-            if load_source_catalog()[sourcename]['sector-like_activities']:
+            if load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']:
                 df_m = df_m.assign(ActivityProducedBy=df_m['SectorProducedBy'])
                 df_m = df_m.assign(ActivityConsumedBy=df_m['SectorConsumedBy'])
 
@@ -731,7 +733,7 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
                                                    data_source_scripts_file,
                                                    'py')
 
-    df = getattr(__import__(f"{'flowsa.data_source_scripts.'}{data_source_scripts_file}",
+    df = getattr(__import__(f"flowsa.data_source_scripts.{data_source_scripts_file}",
                             fromlist=function_name), function_name)
     return df
 

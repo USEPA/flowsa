@@ -12,4 +12,6 @@ url:
 url_replace_fxn: usgs_platinum_url_helper
 call_response_fxn: usgs_platinum_call
 parse_response_fxn: usgs_platinum_parse
+years:
+  - 2017
 

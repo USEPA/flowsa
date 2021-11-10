@@ -7,9 +7,10 @@ Functions to allocate data using additional data sources
 
 import numpy as np
 import pandas as pd
-from flowsa.common import load_source_catalog, activity_fields, US_FIPS, \
+from flowsa.common import load_yaml_dict, US_FIPS, \
     fba_activity_fields, fbs_activity_fields, fba_mapped_wsec_default_grouping_fields, \
     fba_wsec_default_grouping_fields
+from flowsa.schema import activity_fields
 from flowsa.settings import log
 from flowsa.validation import check_allocation_ratios, \
     check_if_location_systems_match
@@ -17,25 +18,24 @@ from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
     load_fba_w_standardized_units
 from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
-    allocate_dropped_sector_data
+    allocate_dropped_sector_data, equal_allocation
 from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.validation import check_if_data_exists_at_geoscale
 
 
-def direct_allocation_method(flow_subset_mapped, k, names, method):
+def direct_allocation_method(fbs, k, names, method):
     """
     Directly assign activities to sectors
-    :param flow_subset_mapped: df, FBA with flows converted using fedelemflowlist
+    :param fbs: df, FBA with flows converted using fedelemflowlist
     :param k: str, source name
     :param names: list, activity names in activity set
     :param method: dictionary, FBS method yaml
     :return: df with sector columns
     """
     log.info('Directly assigning activities to sectors')
-    fbs = flow_subset_mapped.copy()
     # for each activity, if activities are not sector like, check that there is no data loss
-    if load_source_catalog()[k]['sector-like_activities'] is False:
+    if load_yaml_dict('source_catalog')[k]['sector-like_activities'] is False:
         activity_list = []
         n_allocated = []
         for n in names:
@@ -46,6 +46,8 @@ def direct_allocation_method(flow_subset_mapped, k, names, method):
             log.debug('Checking for %s at %s', n, method['target_sector_level'])
             fbs_subset = fbs[(fbs[fba_activity_fields[0]] == n) |
                              (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
+            # check if an Activity maps to more than one sector, if so, equally allocate
+            fbs_subset = equal_allocation(fbs_subset)
             fbs_subset = allocate_dropped_sector_data(fbs_subset, method['target_sector_level'])
             activity_list.append(fbs_subset)
             n_allocated.append(n)
@@ -346,7 +348,7 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
                                                   'Denominator', 'FlowAmountRatio'])
         # run sector aggregation
         modified_fba_allocation = sector_aggregation(modified_fba_allocation,
-                                                     fba_mapped_wsec_default_grouping_fields)
+                                                     fba_wsec_default_grouping_fields)
 
     # drop rows of 0
     modified_fba_allocation =\

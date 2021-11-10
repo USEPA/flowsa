@@ -1,4 +1,6 @@
 # Source Catalog
+The 'source_catalog.yaml' file should be manually updated with each new
+Flow-By-Activity.
 
 ## Term descriptions
 - _class_: list, classes such as "Water" found in the Flow-By-Activity

@@ -7,7 +7,7 @@ Methods of allocating datasets
 """
 import pandas as pd
 from flowsa.settings import log
-from flowsa.common import fbs_activity_fields, sector_level_key, load_sector_length_crosswalk
+from flowsa.common import fbs_activity_fields, sector_level_key, load_crosswalk
 from flowsa.settings import vLogDetailed
 from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation
@@ -242,7 +242,7 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
             # match sectors with target sector length sectors
 
             # import cw and subset to current sector length and target sector length
-            cw_load = load_sector_length_crosswalk()
+            cw_load = load_crosswalk('sector length')
             nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
             cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
             # add column with counts
@@ -284,3 +284,28 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
     df_w_lost_data = replace_strings_with_NoneType(df_w_lost_data)
 
     return df_w_lost_data
+
+
+def equal_allocation(fba_load):
+    """
+    Allocate an Activity in a FBA equally to all mapped sectors.
+    Function only works if all mapped sectors are the same length
+
+    :param fba_load: df, FBA with activity columns mapped to sectors
+    :return: df, with FlowAmount equally allocated to all mapped sectors
+    """
+    # create groupby cols by which to determine allocation
+    fba_cols = fba_load.select_dtypes([object]).columns.to_list()
+    groupcols = [e for e in fba_cols if e not in
+                 ['SectorProducedBy', 'SectorConsumedBy', 'Description']]
+    # create counts of rows
+    df_count = fba_load.groupby(groupcols, as_index=False, dropna=False).size().astype(str)
+    df_count = replace_strings_with_NoneType(df_count)
+
+    # merge dfs
+    dfm = fba_load.merge(df_count, how='left')
+    # calc new flowamounts
+    dfm['FlowAmount'] = dfm['FlowAmount'] / dfm['size'].astype(int)
+    dfm = dfm.drop(columns='size')
+
+    return dfm
