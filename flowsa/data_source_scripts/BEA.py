@@ -160,10 +160,11 @@ def subset_BEA_Use(df, attr, **kwargs):
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe
     """
-    commodity = attr['clean_parameter']
-    df = df.loc[df['ActivityProducedBy'] == commodity]
+    # extract commodity to filter and which Activity column used to filter
+    (commodity, ActivityCol), *rest = attr['clean_parameter'].items()
+    df = df.loc[df[ActivityCol] == commodity].reset_index(drop=True)
 
     # set column to None to enable generalizing activity column later
-    df.loc[:, 'ActivityProducedBy'] = None
+    df.loc[:, ActivityCol] = None
 
     return df

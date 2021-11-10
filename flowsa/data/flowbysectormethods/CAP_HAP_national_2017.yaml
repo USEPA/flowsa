@@ -77,7 +77,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "324110"
+        clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -97,7 +97,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "325310"
+        clean_parameter: {"325310": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -135,7 +135,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "325320"
+        clean_parameter: {"325320": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -172,7 +172,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "324110"
+        clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -209,7 +209,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "324110"
+        clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
