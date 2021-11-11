@@ -49,8 +49,8 @@ def usgs_chromium_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_chromium_call(url, usgs_response, args):
-    """
+def usgs_chromium_call(url, r, args):
+    """"
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param kwargs: url: string, url
     :param kwargs: response_load: df, response from url call
@@ -58,7 +58,7 @@ def usgs_chromium_call(url, usgs_response, args):
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
     df_data = pd.DataFrame(df_raw_data.loc[4:24]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -66,6 +66,9 @@ def usgs_chromium_call(url, usgs_response, args):
     if len(df_data. columns) == 12:
         df_data.columns = ["Production", "Unit", "space_1", "year_1", "space_2", "year_2", "space_3",
                            "year_3", "space_4", "year_4", "space_5", "year_5"]
+    elif len(df_data. columns) == 13:
+        df_data.columns = ["Production", "Unit", "space_1", "year_1", "space_2", "year_2", "space_3",
+                           "year_3", "space_4", "year_4", "space_5", "year_5", "space_6"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))

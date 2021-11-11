@@ -48,7 +48,7 @@ def usgs_clay_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_clay_call(url, usgs_response, args):
+def usgs_clay_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param kwargs: url: string, url
@@ -57,48 +57,49 @@ def usgs_clay_call(url, usgs_response, args):
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data_ball = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T3')
+    df_raw_data_ball = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T3')
     df_data_ball = pd.DataFrame(df_raw_data_ball.loc[19:19]).reindex()
     df_data_ball = df_data_ball.reset_index()
     del df_data_ball["index"]
 
-    df_raw_data_bentonite = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4 ')
+
+    df_raw_data_bentonite = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4 ')
     df_data_bentonite = pd.DataFrame(df_raw_data_bentonite.loc[28:28]).reindex()
     df_data_bentonite = df_data_bentonite.reset_index()
     del df_data_bentonite["index"]
 
 
-    df_raw_data_common = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T5 ')
+    df_raw_data_common = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T5 ')
     df_data_common = pd.DataFrame(df_raw_data_common.loc[40:40]).reindex()
     df_data_common = df_data_common.reset_index()
     del df_data_common["index"]
 
 
-    df_raw_data_fire = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T6 ')
+    df_raw_data_fire = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T6 ')
     df_data_fire = pd.DataFrame(df_raw_data_fire.loc[12:12]).reindex()
     df_data_fire = df_data_fire.reset_index()
     del df_data_fire["index"]
 
 
-    df_raw_data_fuller = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T7 ')
+    df_raw_data_fuller = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T7 ')
     df_data_fuller = pd.DataFrame(df_raw_data_fuller.loc[17:17]).reindex()
     df_data_fuller = df_data_fuller.reset_index()
     del df_data_fuller["index"]
 
 
-    df_raw_data_kaolin = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T8 ')
+    df_raw_data_kaolin = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T8 ')
     df_data_kaolin = pd.DataFrame(df_raw_data_kaolin.loc[18:18]).reindex()
     df_data_kaolin = df_data_kaolin.reset_index()
     del df_data_kaolin["index"]
 
 
-    df_raw_data_export = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T13')
+    df_raw_data_export = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T13')
     df_data_export = pd.DataFrame(df_raw_data_export.loc[6:15]).reindex()
     df_data_export = df_data_export.reset_index()
     del df_data_export["index"]
 
 
-    df_raw_data_import = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T14')
+    df_raw_data_import = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T14')
     df_data_import = pd.DataFrame(df_raw_data_import.loc[6:13]).reindex()
     df_data_import = df_data_import.reset_index()
     del df_data_import["index"]
