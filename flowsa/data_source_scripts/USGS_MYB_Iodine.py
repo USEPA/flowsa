@@ -1,13 +1,6 @@
 # USGS_MYB_Iodine.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-from flowsa.common import WITHDRAWN_KEYWORD
-
-
 """
 Projects
 /
@@ -32,6 +25,11 @@ Data for: Iodine; concentrate
 
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
 SPAN_YEARS = "2014-2018"
 
 
@@ -67,7 +65,7 @@ def usgs_iodine_call(url, r, args):
 
     if len(df_data. columns) == 11:
         df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
+                           "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -101,8 +99,6 @@ def usgs_iodine_parse(dataframe_list, args):
             elif df.iloc[index]["Production"].strip() == "Exports2":
                 product = "exports"
 
-
-
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]
@@ -121,4 +117,3 @@ def usgs_iodine_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

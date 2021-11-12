@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 SourceName: USGS_MYB_Lead
 https://www.usgs.gov/centers/nmic/lead-statistics-and-information
@@ -18,6 +14,11 @@ Secondary lead, lead content
 
 Years = 2010+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2012-2016"
 
 
@@ -80,8 +81,8 @@ def usgs_lead_parse(dataframe_list, args):
     name = usgs_myb_name(args["source"])
     des = name
     row_to_use = ["Primary lead, refined content, domestic ores and base bullion", "Secondary lead, lead content",
-                   "Lead ore and concentrates", "Lead in base bullion"]
-    import_export = ["Exports, lead content:","Imports for consumption, lead content:"]
+                  "Lead ore and concentrates", "Lead in base bullion"]
+    import_export = ["Exports, lead content:", "Imports for consumption, lead content:"]
     dataframe = pd.DataFrame()
     product = "production"
     for df in dataframe_list:
@@ -106,4 +107,3 @@ def usgs_lead_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

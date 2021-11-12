@@ -2,11 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -29,6 +24,12 @@ Data for: Kyanite and related; mine
 
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2014-2018"
 
 
@@ -111,11 +112,10 @@ def usgs_kyanite_parse(dataframe_list, args):
                 data["Unit"] = "Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-
