@@ -6,6 +6,7 @@ Functions to generate .bib file for a FlowBySector method
 """
 
 import os
+import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
@@ -104,6 +105,11 @@ def generate_fbs_bibliography(methodname):
             except KeyError:
                 try:
                     config = getMetadata(source[0], source[1])
+                    # flatten the dictionary so can treat all dictionaries the same
+                    # when pulling info
+                    config = pd.json_normalize(config, sep='_')
+                    config.columns = config.columns.str.replace('tool_meta_', '')
+                    config = config.to_dict(orient='records')[0]
                 except KeyError or AttributeError:
                     log.info('Could not find metadata for %s', source[0])
                     continue
