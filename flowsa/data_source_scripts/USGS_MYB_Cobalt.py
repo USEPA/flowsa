@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -29,6 +25,11 @@ Data for: Cobalt; cobalt content
 
 Years = 2013+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2013-2017"
 
 
@@ -76,10 +77,10 @@ def usgs_cobalt_call(url, r, args):
 
     if len(df_data_1. columns) == 12:
         df_data_1.columns = ["Production", "space_6", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5"]
+                             "year_3", "space_4", "year_4", "space_5", "year_5"]
     if len(df_data_2. columns) == 11:
         df_data_2.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5"]
+                             "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -121,18 +122,13 @@ def usgs_cobalt_parse(dataframe_list, args):
             elif df.iloc[index]["Production"].strip() == "Exports":
                 prod = "exports"
 
-
             if df.iloc[index]["Production"].strip() in row_to_use:
                 remove_digits = str.maketrans('', '', digits)
                 product = df.iloc[index]["Production"].strip().translate(remove_digits)
                 data = usgs_myb_static_varaibles()
 
-
-
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
-
-
 
                 data["Unit"] = "Thousand Metric Tons"
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
@@ -146,4 +142,3 @@ def usgs_cobalt_parse(dataframe_list, args):
                     dataframe = dataframe.append(data, ignore_index=True)
                     dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

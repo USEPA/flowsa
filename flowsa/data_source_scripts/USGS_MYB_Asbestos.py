@@ -27,7 +27,9 @@ Years = 2014+
 There is no production in this file.
 """
 import io
+import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.data_source_scripts.USGS_MYB_Common import *
 
 SPAN_YEARS = "2014-2018"
@@ -70,7 +72,7 @@ def usgs_asbestos_call(url, r, args):
 
     if len(df_data. columns) == 12:
         df_data.columns = ["Production", "Unit", "space_1", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
+                           "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -114,10 +116,9 @@ def usgs_asbestos_parse(dataframe_list, args):
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)
                 elif str(df.iloc[index][col_name]) == "nan":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

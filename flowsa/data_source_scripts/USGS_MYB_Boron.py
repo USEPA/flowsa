@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-from flowsa.common import WITHDRAWN_KEYWORD
 """
 
 Projects
@@ -30,6 +26,12 @@ Data for: Boron
 
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
+
 SPAN_YEARS = "2014-2018"
 
 
@@ -73,11 +75,11 @@ def usgs_boron_call(url, r, args):
 
     if len(df_data_one. columns) == 11:
         df_data_one.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5"]
+                               "space_4", "year_4", "space_5", "year_5"]
         df_data_two.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5"]
+                               "space_4", "year_4", "space_5", "year_5"]
         df_data_three.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5"]
+                                 "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -92,7 +94,6 @@ def usgs_boron_call(url, r, args):
     df_data = df_data.reset_index()
     del df_data["index"]
     return df_data
-
 
 
 def usgs_boron_parse(dataframe_list, args):
@@ -113,7 +114,8 @@ def usgs_boron_parse(dataframe_list, args):
     for df in dataframe_list:
         for index, row in df.iterrows():
 
-            if df.iloc[index]["Production"].strip() == "B2O3 content" or df.iloc[index]["Production"].strip() == "Quantity":
+            if df.iloc[index]["Production"].strip() == "B2O3 content" or \
+                    df.iloc[index]["Production"].strip() == "Quantity":
                 product = "production"
 
             if df.iloc[index]["Production"].strip() == "Colemanite:4":
@@ -141,4 +143,3 @@ def usgs_boron_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

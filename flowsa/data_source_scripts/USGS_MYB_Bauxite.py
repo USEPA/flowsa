@@ -2,12 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-from flowsa.common import WITHDRAWN_KEYWORD
-
-
 """
 Projects
 /
@@ -32,6 +26,12 @@ The '<' has been striped for the Parquet files.
 
 Years = 2013+
 """
+
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
 
 SPAN_YEARS = "2013-2017"
 
@@ -66,11 +66,9 @@ def usgs_bauxite_call(url, r, args):
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
 
-
     if len(df_data_one. columns) == 11:
         df_data_one.columns = ["Production", "space_2",  "year_1", "space_3", "year_2",
                                "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
-
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -79,14 +77,12 @@ def usgs_bauxite_call(url, r, args):
         if col not in col_to_use:
             del df_data_one[col]
 
-
     frames = [df_data_one]
     df_data = pd.concat(frames)
     df_data = df_data.reset_index()
     del df_data["index"]
 
     return df_data
-
 
 
 def usgs_bauxite_parse(dataframe_list, args):

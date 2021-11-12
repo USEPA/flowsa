@@ -2,11 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -30,6 +25,12 @@ Data for: Gallium; concentrate
 There is no export in this file.
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2014-2018"
 
 
@@ -114,10 +115,9 @@ def usgs_gallium_parse(dataframe_list, args):
                 if str(df.iloc[index][col_name]).strip() == "--":
                     data["FlowAmount"] = str(0)
                 elif str(df.iloc[index][col_name]) == "nan":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

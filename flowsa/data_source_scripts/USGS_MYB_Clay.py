@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -29,6 +25,11 @@ Data for: Clay; Ball Clay, Bentonite, Fire Clay, Fuller's Clay, Kaolin
 
 Years = 2016+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2015-2016"
 
 
@@ -62,42 +63,35 @@ def usgs_clay_call(url, r, args):
     df_data_ball = df_data_ball.reset_index()
     del df_data_ball["index"]
 
-
     df_raw_data_bentonite = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4 ')
     df_data_bentonite = pd.DataFrame(df_raw_data_bentonite.loc[28:28]).reindex()
     df_data_bentonite = df_data_bentonite.reset_index()
     del df_data_bentonite["index"]
-
 
     df_raw_data_common = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T5 ')
     df_data_common = pd.DataFrame(df_raw_data_common.loc[40:40]).reindex()
     df_data_common = df_data_common.reset_index()
     del df_data_common["index"]
 
-
     df_raw_data_fire = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T6 ')
     df_data_fire = pd.DataFrame(df_raw_data_fire.loc[12:12]).reindex()
     df_data_fire = df_data_fire.reset_index()
     del df_data_fire["index"]
-
 
     df_raw_data_fuller = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T7 ')
     df_data_fuller = pd.DataFrame(df_raw_data_fuller.loc[17:17]).reindex()
     df_data_fuller = df_data_fuller.reset_index()
     del df_data_fuller["index"]
 
-
     df_raw_data_kaolin = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T8 ')
     df_data_kaolin = pd.DataFrame(df_raw_data_kaolin.loc[18:18]).reindex()
     df_data_kaolin = df_data_kaolin.reset_index()
     del df_data_kaolin["index"]
 
-
     df_raw_data_export = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T13')
     df_data_export = pd.DataFrame(df_raw_data_export.loc[6:15]).reindex()
     df_data_export = df_data_export.reset_index()
     del df_data_export["index"]
-
 
     df_raw_data_import = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T14')
     df_data_import = pd.DataFrame(df_raw_data_import.loc[6:13]).reindex()
@@ -105,19 +99,19 @@ def usgs_clay_call(url, r, args):
     del df_data_import["index"]
 
     df_data_ball.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
-                         "year_2", "space_4", "value_2"]
-    df_data_bentonite.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
-                         "year_2", "space_4", "value_2"]
-    df_data_common.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
                             "year_2", "space_4", "value_2"]
-    df_data_fire.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
+    df_data_bentonite.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
+                                 "year_2", "space_4", "value_2"]
+    df_data_common.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
                               "year_2", "space_4", "value_2"]
+    df_data_fire.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
+                            "year_2", "space_4", "value_2"]
     df_data_fuller.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
-                         "year_2", "space_4", "value_2"]
+                              "year_2", "space_4", "value_2"]
     df_data_kaolin.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
-                         "year_2", "space_4", "value_2"]
+                              "year_2", "space_4", "value_2"]
     df_data_export.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
-                            "year_2", "space_4", "value_2", "space_5", "extra"]
+                              "year_2", "space_4", "value_2", "space_5", "extra"]
     df_data_import.columns = ["Production", "space_1", "year_1", "space_2", "value_1", "space_3",
                               "year_2", "space_4", "value_2", "space_5", "extra"]
 
@@ -146,7 +140,8 @@ def usgs_clay_call(url, r, args):
             del df_data_fuller[col]
             del df_data_kaolin[col]
 
-    frames = [df_data_import, df_data_export, df_data_ball, df_data_bentonite, df_data_common, df_data_fire, df_data_fuller, df_data_kaolin]
+    frames = [df_data_import, df_data_export, df_data_ball, df_data_bentonite,
+              df_data_common, df_data_fire, df_data_fuller, df_data_kaolin]
     df_data = pd.concat(frames)
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -174,7 +169,7 @@ def usgs_clay_parse(dataframe_list, args):
             else:
                 product = "production"
 
-            if str(df.iloc[index]["Production"]).strip() in row_to_use :
+            if str(df.iloc[index]["Production"]).strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
@@ -189,11 +184,11 @@ def usgs_clay_parse(dataframe_list, args):
                     data["ActivityProducedBy"] = df.iloc[index]["Production"].strip()
 
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
-                if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)" or str(df.iloc[index][col_name]) == "(2)":
+                if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)" or \
+                        str(df.iloc[index][col_name]) == "(2)":
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

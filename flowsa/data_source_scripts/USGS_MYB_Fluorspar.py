@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-from flowsa.common import WITHDRAWN_KEYWORD
 """
 Projects
 /
@@ -28,6 +24,12 @@ Data for: Fluorspar; fluorspar equivalent from phosphate rock
 
 Years = 2013+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
+
 SPAN_YEARS = "2013-2017"
 SPAN_YEARS_INPORTS = ["2016", "2017"]
 
@@ -98,7 +100,7 @@ def usgs_fluorspar_call(url, r, args):
                 del df_data_three[col]
         for col in df_data_four.columns:
             if col not in col_to_use:
-             del df_data_four[col]
+                del df_data_four[col]
     df_data_one["type"] = "data_one"
 
     if args['year'] in SPAN_YEARS_INPORTS:
@@ -144,7 +146,8 @@ def usgs_fluorspar_parse(dataframe_list, args):
             if str(df.iloc[index]["type"]).strip() == "data_two":
                 prod = "imports"
                 des = df.iloc[index]["Production"].strip()
-            elif str(df.iloc[index]["type"]).strip() == "Aluminum Fluoride" or str(df.iloc[index]["type"]).strip() == "Cryolite":
+            elif str(df.iloc[index]["type"]).strip() == "Aluminum Fluoride" or \
+                    str(df.iloc[index]["type"]).strip() == "Cryolite":
                 prod = "imports"
                 des = df.iloc[index]["type"].strip()
 
@@ -164,4 +167,3 @@ def usgs_fluorspar_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-
