@@ -23,11 +23,11 @@ def census_vip_call(url, response_load, args):
     """
     # Convert response to dataframe
     df = pd.read_excel(response_load.content,
-                       sheet_name = 'Total',
-                       header = 3).dropna().reset_index(drop=True)
+                       sheet_name='Total',
+                       header=3).dropna().reset_index(drop=True)
     
     df.loc[df['Type of Construction:'].str.startswith("  "),
-            'Type of Construction:'] = 'Nonresidential - ' + df['Type of Construction:'].str.strip()
+           'Type of Construction:'] = 'Nonresidential - ' + df['Type of Construction:'].str.strip()
     df = df[df['Type of Construction:'] != 'Nonresidential']
     index_1 = np.where(df['Type of Construction:'].str.startswith(
         "Total Private Construction"))[0][0]
@@ -36,16 +36,15 @@ def census_vip_call(url, response_load, args):
 
     df_private = df.iloc[index_1+1:index_2, :]
     df_public = df.iloc[index_2+1:, :]
-    
-    #TODO  fix setting with copy warning
+
     df_public['Type of Construction:'] = 'Public, ' + df_public['Type of Construction:']
     df_private['Type of Construction:'] = 'Private, ' + df_private['Type of Construction:']
     
     df2 = pd.concat([df_public, df_private], ignore_index=True)
     
-    df2 = df2.melt(id_vars = ['Type of Construction:'],
-                  var_name = 'Year',
-                  value_name = 'FlowAmount')
+    df2 = df2.melt(id_vars=['Type of Construction:'],
+                   var_name='Year',
+                   value_name='FlowAmount')
 
     return df2
     
@@ -60,7 +59,7 @@ def census_vip_parse(dataframe_list, args):
     df = pd.concat(dataframe_list, sort=False)
     df['Year'] = df['Year'].astype(str)
     df = df[df['Year'] == args['year']].reset_index(drop=True)
-    df = df.rename(columns = {'Type of Construction:':'ActivityProducedBy'})
+    df = df.rename(columns={'Type of Construction:': 'ActivityProducedBy'})
 
     df['Class'] = 'Money'
     df['SourceName'] = 'Census_VIP'
@@ -78,4 +77,3 @@ def census_vip_parse(dataframe_list, args):
     df['DataCollection'] = 5
     
     return df
-

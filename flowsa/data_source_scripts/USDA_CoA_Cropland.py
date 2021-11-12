@@ -13,7 +13,8 @@ from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
     fbs_default_grouping_fields, fbs_fill_na_dict, \
     fba_wsec_default_grouping_fields
 from flowsa.schema import flow_by_sector_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, sector_disaggregation, sector_ratios, \
+from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, \
+    sector_disaggregation, sector_ratios, \
     load_fba_w_standardized_units, equally_allocate_parent_to_child_naics
 from flowsa.allocation import allocate_by_sector, allocate_dropped_sector_data
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
@@ -235,6 +236,7 @@ def coa_irrigated_cropland_fba_cleanup(fba, **kwargs):
 
     return fba
 
+
 def coa_nonirrigated_cropland_fba_cleanup(fba, **kwargs):
     """
     When using irrigated cropland, aggregate sectors to cropland and total ag land. Doing this
@@ -279,8 +281,8 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method, **kwa
 
     # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
     fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, method, year=attr['allocation_source_year'],
-                                           sector_column=sector_col,
-                                           download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+                                            sector_column=sector_col,
+                                            download_FBA_if_missing=kwargs['download_FBA_if_missing'])
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit naics
     fba_w_sector = disaggregate_cropland(fba_w_sector, attr,
@@ -315,9 +317,12 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column, do
     level CoA 'Land in Farms' to allocate the county level acreage data to 6 digit NAICS.
     :param fba_w_sector: df, the CoA Cropland dataframe after linked to sectors
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: string, methodname
     :param year: str, year of data being disaggregated
     :param sector_column: str, the sector column on which to make df
                           modifications (SectorProducedBy or SectorConsumedBy)
+    :param download_FBA_if_missing: bool, if True will attempt to load FBAS used in
+        generating the FBS from remote server prior to generating if file not found locally
     :return: df, the CoA cropland dataframe with disaggregated pastureland data
     """
 
@@ -389,10 +394,12 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column, downl
     create ratios
     :param fba_w_sector: df, CoA cropland data, FBA format with sector columns
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: string, method name
     :param year: str, year of data
     :param sector_column: str, the sector column on which to make
                           df modifications (SectorProducedBy or SectorConsumedBy)
-    :param attr: dictionary, attribute data from method yaml for activity set
+    :param download_FBA_if_missing: bool, if True will attempt to load FBAS used in
+        generating the FBS from remote server prior to generating if file not found locally
     :return: df, CoA cropland data disaggregated
     """
 

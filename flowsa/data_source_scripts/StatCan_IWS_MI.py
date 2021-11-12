@@ -101,6 +101,8 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
     - us gdp
     :param df: df, FBA format
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param download_FBA_if_missing: bool, True if would like to download missing
+      FBAs from Data Commons, False if FBAs should be generated locally
     :return: df, FBA format, flowamounts converted
     """
 

@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -15,6 +11,11 @@ FLOWSA
 
 Years = 2002, 2007, 2012
 """
+
+import io
+import pandas as pd
+
+
 def name_and_unit_split(df_legend):
     for i in range(len(df_legend)):
         apb = df_legend.loc[i, "name"]
@@ -71,6 +72,7 @@ def name_and_unit_split(df_legend):
             df_legend.loc[i, "Compartment "] = "ground"
     return df_legend
 
+
 def pi_url_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
@@ -113,11 +115,14 @@ def pi_call(url, response, args):
                                         'livestock_production_2007': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
                                         'Surplus_2007': 'surplus'})
     else:
-       df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2012')
-       df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition',  'Crop_removal_2012': 'Crop_removal',
-           'livestock_Waste_2012': 'livestock_Waste', 'livestock_demand_2012': 'livestock_demand',
-           'livestock_production_2012': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
-           'Surplus_2012': 'surplus'})
+        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2012')
+        df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition',
+                                        'Crop_removal_2012': 'Crop_removal',
+                                        'livestock_Waste_2012': 'livestock_Waste',
+                                        'livestock_demand_2012': 'livestock_demand',
+                                        'livestock_production_2012': 'livestock_production',
+                                        '02P_Hi_P': 'P_Hi_P',
+                                        'Surplus_2012': 'surplus'})
 
     for col_name in df_raw.columns:
         for i in range(len(df_legend)):
@@ -164,4 +169,3 @@ def pi_parse(dataframe_list, args):
         df["FlowType"] = "ELEMENTARY_FLOW"
         df["Compartment"] = "ground"
     return df
-

@@ -172,6 +172,8 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_m
     This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
     :param df_to_scale: df, fba dataframe to be modified
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param download_FBA_if_missing: bool, indicate if missing FBAs should be downloaded
+      from Data Commons
     :return: scaled fba results
     """
 

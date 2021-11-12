@@ -246,6 +246,7 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
 
     return df3
 
+
 def bls_clean_allocation_fba_w_sec_sat_table(df_w_sec, **kwargs):
     """
     clean up bls df with sectors by estimating suppresed data

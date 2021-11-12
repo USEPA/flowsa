@@ -1,10 +1,6 @@
 # EPAN_NI.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-import io
-import pandas as pd
-from flowsa.common import US_FIPS
-from flowsa.settings import externaldatapath
 
 """
 Projects
@@ -16,6 +12,11 @@ https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019JG005110
 
 Years = 2002, 2007, 2012
 """
+
+
+import io
+import pandas as pd
+
 
 def name_and_unit_split(df_legend):
     for i in range(len(df_legend)):
@@ -128,7 +129,7 @@ def ni_call(url, response, args):
         df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2007')
 
     else:
-       df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2012')
+        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2012')
 
     for col_name in df_raw.columns:
         for i in range(len(df_legend)):
@@ -142,8 +143,8 @@ def ni_call(url, response, args):
 
     # use "melt" fxn to convert colummns into rows
     df = df_raw.melt(id_vars=["HUC8_1"],
-                          var_name="name",
-                          value_name="FlowAmount")
+                     var_name="name",
+                     value_name="FlowAmount")
     df = df.rename(columns={"HUC8_1": "Location"})
     df_legend = df_legend.rename(columns={"HUC8 CODE": "name"})
     df_legend = name_and_unit_split(df_legend)
@@ -170,8 +171,3 @@ def ni_parse(dataframe_list, args):
         df["Year"] = str(args["year"])
         df["FlowType"] = "ELEMENTARY_FLOW"
     return df
-
-
-
-
-

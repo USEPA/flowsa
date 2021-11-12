@@ -2,12 +2,13 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
+"""
+Functions to import and parse USDA Chemical Use Survey
+"""
 import json
-import numpy as np
 import pandas as pd
 from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, abbrev_us_state, log
-from flowsa.flowbyfunctions import assign_fips_location_system, collapse_activity_fields
-from flowsa.allocation import allocate_by_sector
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def acup_url_helper(build_url, config, args):
@@ -86,10 +87,11 @@ def acup_parse(dataframe_list, args):
     # extract data within parenthesis for activity col
     df['ActivityConsumedBy'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + df[
         'util_practice_desc']  # drop this column later
+    # not interested in all data from class_desc
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ALL CLASSES", "",
-                                                regex=True)  # not interested in all data from class_desc
+                                                                    regex=True)
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.replace(", ALL UTILIZATION PRACTICES", "",
-                                                regex=True)  # not interested in all data from class_desc
+                                                                    regex=True)
 
     # rename columns to match flowbyactivity format
     df = df.rename(columns={"Value": "FlowAmount",

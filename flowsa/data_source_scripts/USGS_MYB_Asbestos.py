@@ -2,11 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -31,6 +26,10 @@ Data for: Asbestos; Asbestos imports for consumption
 Years = 2014+
 There is no production in this file.
 """
+import io
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2014-2018"
 
 

@@ -76,6 +76,6 @@ def noaa_parse(dataframe_list, args):
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
     df4['DataReliability'] = 5  # tmp
-    df4['DataCollection'] = 5  #tmp
+    df4['DataCollection'] = 5  # tmp
 
     return df4

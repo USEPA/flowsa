@@ -592,7 +592,7 @@ def blm_pls_parse(dataframe_list, args):
     df['Unit'] = "Acres"
     df['FlowType'] = 'ELEMENTARY_FLOW'
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     return df
 

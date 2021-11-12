@@ -23,6 +23,7 @@ from flowsa.schema import flow_by_sector_fields
 from flowsa.settings import log
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
+
 def stewicombo_to_sector(yaml_load):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
@@ -63,7 +64,7 @@ def stewicombo_to_sector(yaml_load):
     if inventory_name is not None:
         df = stewicombo.getInventory(inventory_name, True)
     if df is None:
-        ## run stewicombo to combine inventories, filter for LCI, remove overlap
+        # run stewicombo to combine inventories, filter for LCI, remove overlap
         log.info('generating inventory in stewicombo')
         df = stewicombo.combineFullInventories(yaml_load['inventory_dict'],
                                                filter_for_LCI=True,
@@ -71,7 +72,7 @@ def stewicombo_to_sector(yaml_load):
                                                compartments=yaml_load['compartments'])
 
     if df is None:
-        ## Inventories not found for stewicombo, return empty FBS
+        # Inventories not found for stewicombo, return empty FBS
         return None
 
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
@@ -141,7 +142,7 @@ def stewi_to_sector(yaml_load):
         inv['Year'] = year
         inv['MetaSources'] = database
         df = df.append(inv)
-    if yaml_load['compartments'] != None:
+    if yaml_load['compartments'] is not None:
         df = df[df['Compartment'].isin(yaml_load['compartments'])]
     facility_mapping = extract_facility_data(yaml_load['inventory_dict'])
     # Convert NAICS to string (first to int to avoid decimals)
@@ -178,7 +179,7 @@ def reassign_airplane_emissions(df, year, NAICS_level_value):
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
 
-    ## subtract emissions for air transportation from airports in NEI
+    # subtract emissions for air transportation from airports in NEI
     airport_NAICS = '4881'
     air_transportation_SCC = '2275020000'
     air_transportation_naics = '481111'
@@ -259,7 +260,7 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     :return: df
     """
     import facilitymatcher
-    ## Access NAICS From facility matcher and assign based on FRS_ID
+    # Access NAICS From facility matcher and assign based on FRS_ID
     all_NAICS = \
         facilitymatcher.get_FRS_NAICSInfo_for_facility_list(
             frs_id_list=None, inventories_of_interest_list=inventory_list)
@@ -308,7 +309,7 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
 
     # apply flow mapping separately for elementary and waste flows
     fbs['FlowType'] = 'ELEMENTARY_FLOW'
-    fbs.loc[fbs['MetaSources']=='RCRAInfo', 'FlowType'] = 'WASTE_FLOW'
+    fbs.loc[fbs['MetaSources'] == 'RCRAInfo', 'FlowType'] = 'WASTE_FLOW'
 
     # Add 'SourceName' for mapping purposes
     fbs['SourceName'] = fbs['MetaSources']
@@ -317,17 +318,17 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     fbs_list = []
     if len(fbs_elem) > 0:
         fbs_elem = map_flows(fbs_elem, list(inventory_dict.keys()),
-                             flow_type = 'ELEMENTARY_FLOW')
+                             flow_type='ELEMENTARY_FLOW')
         fbs_list.append(fbs_elem)
     if len(fbs_waste) > 0:
         fbs_waste = map_flows(fbs_waste, list(inventory_dict.keys()),
-                              flow_type = 'WASTE_FLOW')
+                              flow_type='WASTE_FLOW')
         fbs_list.append(fbs_waste)
 
     if len(fbs_list) == 1:
         fbs_mapped = fbs_list[0]
     else:
-        fbs_mapped = pd.concat[fbs_list].reset_index(drop = True)
+        fbs_mapped = pd.concat[fbs_list].reset_index(drop=True)
 
     # rename columns to match flowbysector format
     fbs_mapped = fbs_mapped.rename(columns={"NAICS_lvl": "SectorProducedBy"})
@@ -473,6 +474,7 @@ def check_for_missing_sector_data(df, target_sector_level):
     df_allocated = replace_strings_with_NoneType(df_allocated)
 
     return df_allocated
+
 
 def add_stewi_metadata(inventory_dict):
     """

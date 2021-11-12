@@ -178,7 +178,7 @@ def eia_mecs_land_parse(dataframe_list, args):
             unit_text = flow_name_array[1]
             unit_text_array = unit_text.split(")")
             if unit_text_array[0] == "counts":
-                unit.append(("p"))
+                unit.append("p")
             else:
                 unit.append(unit_text_array[0])
             ACB = row["ActivityConsumedBy"]
@@ -207,7 +207,7 @@ def eia_mecs_land_parse(dataframe_list, args):
     df = assign_fips_location_system(df, args['year'])
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     # modify flowname
     df['FlowName'] = df['Description'] + ', ' + df['FlowName'].str.strip()
@@ -231,36 +231,36 @@ def eia_mecs_energy_call(url, response_load, args):
     with open(sourcefile, 'r') as f:
         table_dict = yaml.safe_load(f)
 
-    ## read raw data into dataframe
-    ## (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
+    # read raw data into dataframe
+    # (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
     df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
                                 sheet_name=0, header=None)
     df_raw_rse = pd.read_excel(io.BytesIO(response_load.content),
                                sheet_name=1, header=None)
 
-    ## retrieve table name from cell A3 of Excel file
+    # retrieve table name from cell A3 of Excel file
     table = df_raw_data.iloc[2][0]
     # drop the table description (retain only table name)
     table = table.split('    ')[0]
 
-    ## for each of the census regions...
-    ## - grab the appropriate rows and columns
-    ## - add column names
-    ## - "unpivot" dataframe from wide format to long format
-    ## - add columns denoting census region, relative standard error, units
-    ## - concatenate census region data into master dataframe
+    # for each of the census regions...
+    # - grab the appropriate rows and columns
+    # - add column names
+    # - "unpivot" dataframe from wide format to long format
+    # - add columns denoting census region, relative standard error, units
+    # - concatenate census region data into master dataframe
     df_data = pd.DataFrame()
     for region in table_dict[args['year']][table]['regions']:
 
-        ## grab relevant columns
-        ## (this is a necessary step because code was retaining some seemingly blank columns)
+        # grab relevant columns
+        # (this is a necessary step because code was retaining some seemingly blank columns)
         # determine number of columns in table, based on number of column names
         num_cols = len(table_dict[args['year']][table]['col_names'])
         # keep only relevant columns
         df_raw_data = df_raw_data.iloc[:, 0:num_cols]
         df_raw_rse = df_raw_rse.iloc[:, 0:num_cols]
 
-        ## grab relevant rows
+        # grab relevant rows
         # get indices for relevant rows
         grab_rows = table_dict[args['year']][table]['regions'][region]
         grab_rows_rse = table_dict[args['year']][table]['rse_regions'][region]
@@ -293,7 +293,7 @@ def eia_mecs_energy_call(url, response_load, args):
         # add relative standard error data
         df_data_region = pd.merge(df_data_region, df_rse_region)
 
-        ## add units
+        # add units
         # if table name ends in 1, units must be extracted from flow names
         if table[-1] == '1':
             flow_name_array = df_data_region['FlowName'].str.split('\s+\|+\s')
@@ -347,12 +347,12 @@ def eia_mecs_energy_parse(dataframe_list, args):
     df = assign_census_regions(df)
     df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     # drop rows that reflect subtotals (only necessary in 2014)
     df.dropna(subset=['ActivityConsumedBy'], inplace=True)
 
-    ## replace withheld/unavailable data
+    # replace withheld/unavailable data
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
     # Q = withheld because relative standard error is greater than 50 percent
@@ -455,6 +455,7 @@ def mecs_land_clean_allocation_mapped_fba_w_sec(df, attr, method):
 
     :param df: The mecs df with sectors after mapped to FEDEFL
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: string, methodname
     :return: df, with additional column flagging rows where sectors should be disaggregated
     """
 

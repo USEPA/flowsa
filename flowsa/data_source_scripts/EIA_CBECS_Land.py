@@ -18,6 +18,7 @@ from flowsa.literature_values import \
     get_commercial_and_manufacturing_floorspace_to_land_area_ratio
 from flowsa.validation import calculate_flowamount_diff_between_dfs
 
+
 def eia_cbecs_land_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
@@ -183,7 +184,7 @@ def eia_cbecs_land_parse(dataframe_list, args):
     df['MeasureofSpread'] = "RSE"
     df['FlowType'] = 'ELEMENTARY_FLOW'
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     # drop any duplicates that arise from joining multiple excel files
     df = df.drop_duplicates()
@@ -216,14 +217,14 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
 
     # modify capitalization
     df[column_to_standardize] = \
-        df.apply(lambda x:clean_str_and_capitalize(x[column_to_standardize]), axis=1)
+        df.apply(lambda x: clean_str_and_capitalize(x[column_to_standardize]), axis=1)
 
     # exception to capitalization rule is health care
     df[column_to_standardize] = \
         df[column_to_standardize].replace({'Health care in-patient':
-                                               'Health care In-Patient',
+                                           'Health care In-Patient',
                                            'Health care out-patient':
-                                               'Health care Out-Patient'
+                                           'Health care Out-Patient'
                                            })
 
     return df
@@ -232,7 +233,7 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
 def cbecs_land_fba_cleanup(fba_load):
     """
     Clean up the land fba for use in allocation
-    :param fba: df, eia cbecs land flowbyactivity format
+    :param fba_load: df, eia cbecs land flowbyactivity format
     :return: df, flowbyactivity with modified values
     """
 
@@ -258,7 +259,7 @@ def calculate_floorspace_based_on_number_of_floors(fba_load):
     Assumptions (Taken from Yang's static satellite tables):
     1. When floor range is 4-9, assume 6 stories
     2. When floor range is 10 or more, assume 15 stories
-    :param fba: df, eia cbecs land flowbyactivity
+    :param fba_load: df, eia cbecs land flowbyactivity
     :return: df, eia cbecs land fba with estimated total floorspace
     """
 

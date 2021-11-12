@@ -52,7 +52,7 @@ def netl_eia_parse(dataframe_list, args):
                            ).reset_index()
     # drop 'calc' from column name
     df2 = df2.rename(columns={'Total water discharge (million gallons) calc':
-                                  'Total water discharge (million gallons)'})
+                              'Total water discharge (million gallons)'})
     # drop rows where no water withdrawal data
     df3 = df2[df2['Water Withdrawal (gal)'] != 0].reset_index(drop=True)
 
@@ -158,10 +158,10 @@ def clean_plantwater_fba(fba_df, **kwargs):
     dfm = fba_df.merge(sal_sub, on=['Compartment'])
 
     # where brackish water, replace flowname/flowable/context/flowuuid
-    dfm['Flowable'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['f'], dfm['Flowable'])
-    dfm['Context'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['ct'], dfm['Context'])
-    dfm['FlowUUID'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['fd'], dfm['FlowUUID'])
-    dfm['FlowName'] = np.where(dfm['FlowName'] =='Brackish Water Withdrawal', dfm['fn'], dfm['FlowName'])
+    dfm['Flowable'] = np.where(dfm['FlowName'] == 'Brackish Water Withdrawal', dfm['f'], dfm['Flowable'])
+    dfm['Context'] = np.where(dfm['FlowName'] == 'Brackish Water Withdrawal', dfm['ct'], dfm['Context'])
+    dfm['FlowUUID'] = np.where(dfm['FlowName'] == 'Brackish Water Withdrawal', dfm['fd'], dfm['FlowUUID'])
+    dfm['FlowName'] = np.where(dfm['FlowName'] == 'Brackish Water Withdrawal', dfm['fn'], dfm['FlowName'])
 
     dfm.drop(columns=['fn', 'f', 'ct', 'fd'], inplace=True)
 

@@ -134,7 +134,7 @@ def disaggregate_iwms_to_6_digit_naics(df, attr, method, **kwargs):
                                'Compartment', 'Location'], keep='first', inplace=True)
     years = [attr['allocation_source_year'] - 1]
     df = df[~df[sector_column].isna()].reset_index(drop=True)
-    df = disaggregate_pastureland(df, attr, method, years,sector_column,
+    df = disaggregate_pastureland(df, attr, method, years, sector_column,
                                   download_FBA_if_missing=kwargs['download_FBA_if_missing'])
     df = disaggregate_cropland(df, attr, method, years, sector_column,
                                download_FBA_if_missing=kwargs['download_FBA_if_missing'])

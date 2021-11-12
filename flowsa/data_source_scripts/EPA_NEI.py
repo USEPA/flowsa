@@ -201,8 +201,8 @@ def clean_NEI_fba(fba):
     PM_list = ['Particulate matter, > 2.5μm and ≤ 10μm',
                'a320e284-d276-3167-89b3-19d790081c08']
     fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
-            ['FlowName','Flowable','FlowUUID']] = ['PM10-PM2.5',
-                                                   PM_list[0], PM_list[1]]
+            ['FlowName', 'Flowable', 'FlowUUID']] = ['PM10-PM2.5',
+                                                     PM_list[0], PM_list[1]]
     return fba
 
 

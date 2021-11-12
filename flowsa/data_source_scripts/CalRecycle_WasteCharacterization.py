@@ -20,7 +20,6 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 
 
-
 def produced_by(entry):
     """
     Modify source activity names to clarify data meaning
@@ -108,12 +107,12 @@ def calR_parse(dataframe_list, args):
 def keep_generated_quantity(fba, **kwargs):
     """
     Function to clean CalRecycles FBA to remove quantities not assigned as Generated
-    :param fba_df: df, FBA format
+    :param fba: df, FBA format
     :param kwargs: dictionary, can include attr, a dictionary of parameters in 
         the FBA method yaml
     :return: df, modified CalRecycles FBA
     """
-    fba = fba[fba['Description']=='Generated']
+    fba = fba[fba['Description'] == 'Generated']
     return fba
     
 
@@ -134,20 +133,19 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     # Subset BLS dataset
     sector_list = list(filter(None, fbs['SectorProducedBy'].unique()))
     bls = get_fba_allocation_subset(bls, 'BLS_QCEW', sector_list)
-    bls = bls.rename(columns={'FlowAmount':'Employees'})
-    bls = bls[['Employees','Location','Year','SectorProducedBy']]
+    bls = bls.rename(columns={'FlowAmount': 'Employees'})
+    bls = bls[['Employees', 'Location', 'Year', 'SectorProducedBy']]
     
     # Calculate tons per employee per year per material and sector in CA
-    bls_CA = bls[bls['Location']=='06000'] # California
-    tpepy = fbs.merge(bls_CA, how = 'inner')
-    tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'],tpepy['Employees'],
-                               out = np.zeros_like(tpepy['Employees']),
-                               where= tpepy['Employees']!=0)
-    tpepy = tpepy.drop(columns = ['Employees','FlowAmount','Location'])
+    bls_CA = bls[bls['Location'] == '06000']  # California
+    tpepy = fbs.merge(bls_CA, how='inner')
+    tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'], tpepy['Employees'],
+                               out=np.zeros_like(tpepy['Employees']),
+                               where=tpepy['Employees'] != 0)
+    tpepy = tpepy.drop(columns=['Employees', 'FlowAmount', 'Location'])
     
     # Apply TPEPY back to all employees in all states
-    national_waste = tpepy.merge(bls, how = 'outer')
+    national_waste = tpepy.merge(bls, how='outer')
     national_waste['FlowAmount'] = national_waste['Employees'] * national_waste['TPEPY']
 
     return national_waste
-

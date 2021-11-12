@@ -553,15 +553,8 @@ def ghg_parse(dataframe_list, args):
             if source_name == "EPA_GHGI_T_2_1":
                 df["FlowName"] = "CO2 eq"
 
-
-
-
-
-
         df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
-
-
 
     if cleaned_list:
         for df in cleaned_list:
