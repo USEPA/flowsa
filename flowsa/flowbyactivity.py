@@ -153,6 +153,7 @@ def process_data_frame(df, source, year, config):
     :param df: df, FBA format
     :param source: str, source name
     :param year: str, year
+    :param config: dict, items in method yaml
     :return: df, FBA format, standardized
     """
     # log that data was retrieved
@@ -166,7 +167,7 @@ def process_data_frame(df, source, year, config):
     # save as parquet file
     name_data = set_fba_name(source, year)
     meta = set_fb_meta(name_data, "FlowByActivity")
-    write_df_to_file(flow_df,paths,meta)
+    write_df_to_file(flow_df, paths, meta)
     write_metadata(source, config, meta, "FlowByActivity", year=year)
     log.info("FBA generated and saved for %s", name_data)
     # rename the log file saved to local directory

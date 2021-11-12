@@ -114,7 +114,14 @@ def sparrow_url_helper(build_url, config, args):
 
 
 def sparrow_call(url, response_load, args):
-    """TODO."""
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
     text = response_load.content
 
     ph = ['5cbf5150e4b09b8c0b700df3?f=__disk__bf%2F73%2F1f%2Fbf731fdf4e984a5cf50c0f1a140cda366cb8c1d3',

@@ -48,17 +48,16 @@ def usgs_magnesium_url_helper(build_url, config, args):
 def usgs_magnesium_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    :param url: string, url
+    :param r: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[7:15]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
-
 
     if len(df_data. columns) == 12:
         df_data.columns = ["Production", "Units", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",

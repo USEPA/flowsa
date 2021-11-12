@@ -570,7 +570,6 @@ def rename_log_file(filename, fb_meta):
     Rename the log file saved to local directory using df meta for df
     :param filename: str, name of dataset
     :param fb_meta: metadata for parquet
-    :param fb_type: str, 'FlowByActivity' or 'FlowBySector'
     :return: modified log file name
     """
     # original log file name - all log statements
@@ -594,6 +593,11 @@ def rename_log_file(filename, fb_meta):
 
 
 def str2bool(v):
+    """
+    Convert string to boolean
+    :param v: string
+    :return: boolean
+    """
     if isinstance(v, bool):
         return v
     if v.lower() in ('yes', 'true', 't', 'y', '1'):

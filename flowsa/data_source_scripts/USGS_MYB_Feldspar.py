@@ -50,13 +50,13 @@ def usgs_feldspar_url_helper(build_url, config, args):
 def usgs_feldspar_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    :param url: string, url
+    :param r: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')# .dropna()
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
     df_data_two = pd.DataFrame(df_raw_data_two.loc[4:8]).reindex()
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]

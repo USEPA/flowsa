@@ -24,9 +24,9 @@ from flowsa.validation import compare_df_units
 def bh_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
@@ -64,7 +64,7 @@ def bh_parse(dataframe_list, args):
     df = assign_fips_location_system(df, '2002')
     df['Year'] = '2002'
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     return df
 
@@ -101,7 +101,7 @@ def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
     bh_df_revised = bh_df_revised.drop(columns=["FlowAmount_x", "FlowAmount_y",
                                                 'ActivityProducedBy_y'])
     bh_df_revised = bh_df_revised.rename(columns={"ActivityProducedBy_x":
-                                                      "ActivityProducedBy"})
+                                                  "ActivityProducedBy"})
 
     return bh_df_revised
 
@@ -193,7 +193,7 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_m
 
     # subset df to scale into oil and non-oil sectors
     df_to_scale['sector_label'] = np.where(
-        df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil','nonoil')
+        df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil', 'nonoil')
     df_to_scale['ratio'] = np.where(df_to_scale['sector_label'] == 'oil', 2 / 3, 1 / 3)
     df_to_scale['label_sum'] = df_to_scale.groupby(['Location',
                                                     'sector_label'])['FlowAmount'].transform('sum')

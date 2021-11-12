@@ -52,7 +52,6 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     Generate the metadata specific to a Flow-by-Activity or Flow-By-Sector method
     :param source_name: string, FBA or FBS method name
     :param config: dictionary, FBA or FBS method
-    :param fb_meta: object, metadata
     :param category: string, "FlowByActivity" or "FlowBySector"
     :param kwargs: additional parameters, if running for FBA, define "year"
     :return: object, metadata for FBA or FBS method
@@ -196,4 +195,3 @@ def getMetadata(source, year=None, category='FlowByActivity'):
         meta = {'source_meta': f'No metadata found for {name}'}
 
     return meta
-

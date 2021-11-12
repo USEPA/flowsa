@@ -12,8 +12,8 @@ import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, load_yaml_dict, \
     load_crosswalk, fbs_fill_na_dict, \
-    fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, fba_activity_fields, fba_default_grouping_fields, \
-    fips_number_key, fba_fill_na_dict, find_true_file_path, \
+    fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, fba_activity_fields, \
+    fba_default_grouping_fields, fips_number_key, fba_fill_na_dict, find_true_file_path, \
     fba_mapped_default_grouping_fields
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, \
     flow_by_activity_mapped_fields
@@ -72,7 +72,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     :param df: flowbyactivity or flowbysector df
     :param from_scale: str, geoscale to aggregate from ('national', 'state', 'county')
     :param to_scale: str, geoscale to aggregate to ('national', 'state', 'county')
-    :param groupbycolumns: flowbyactivity or flowbysector default groupby columns
+    :param groupbycols: flowbyactivity or flowbysector default groupby columns
     :return: df, at identified to_scale geographic level
     """
 
@@ -220,9 +220,9 @@ def sector_aggregation(df_load, group_cols):
                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1)))
             |
                  ((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) &
-                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1)))
-        ].rename(columns = {'SectorProducedBy': 'SPB',
-                            'SectorConsumedBy': 'SCB'})
+                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1))
+                  )].rename(columns={'SectorProducedBy': 'SPB',
+                                     'SectorConsumedBy': 'SCB'})
 
         # merge the dfs
         merge_cols = [col for col in df2.columns if hasattr(df2[col], 'str')]

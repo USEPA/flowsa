@@ -51,18 +51,18 @@ def usgs_nickel_url_helper(build_url, config, args):
 def usgs_nickel_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    :param url: string, url
+    :param response: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T10')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T10')
     df_data_1 = pd.DataFrame(df_raw_data.loc[36:36]).reindex()
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
     df_data_2 = pd.DataFrame(df_raw_data_two.loc[11:16]).reindex()
     df_data_2 = df_data_2.reset_index()
     del df_data_2["index"]

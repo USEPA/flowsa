@@ -51,8 +51,8 @@ def allocate_by_sector(df_w_sectors, attr, allocation_method, group_cols, **kwar
 
                 df_w_sectors = \
                     df_w_sectors.loc[(df_w_sectors[fbs_activity_fields[0]].isin(flagged_names)) |
-                                     (df_w_sectors[fbs_activity_fields[1]].isin(flagged_names))
-                                    ].reset_index(drop=True)
+                                     (df_w_sectors[fbs_activity_fields[1]].isin(flagged_names)
+                                      )].reset_index(drop=True)
             else:
                 log.error('The proportional-flagged allocation method requires a'
                           'column "disaggregate_flag" in the flow_subset_mapped df')
@@ -144,8 +144,9 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     # denominator summed from highest level of sector grouped by location
     short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
     # want to create denominator based on short_length
-    denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) ==
-                                                       short_length)].reset_index(drop=True)
+    denom_df = \
+        df.loc[df[sectorcolumn].apply(lambda x:
+                                      len(x) == short_length)].reset_index(drop=True)
     grouping_cols = [e for e in ['FlowName', 'Location', 'Activity',
                                  'ActivityConsumedBy', 'ActivityProducedBy']
                      if e in denom_df.columns.values.tolist()]
@@ -221,10 +222,10 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
 
             # merge the two dfs
             if 'Context' in df_y.columns:
-                merge_cols = ['Class', 'Context', 'FlowType', 'Flowable', \
+                merge_cols = ['Class', 'Context', 'FlowType', 'Flowable',
                               'Location', 'LocationSystem', 'Unit', 'Year']
             else:
-                merge_cols = ['Class', 'FlowType', \
+                merge_cols = ['Class', 'FlowType',
                               'Location', 'LocationSystem', 'Unit', 'Year']
 
             df_m = pd.merge(df_x, df_y[merge_cols + ['spb_tmp', 'scb_tmp']],
@@ -271,8 +272,9 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
 
             # append to df
             if len(rl) != 0:
-                vLogDetailed.warning('Data found at %s digit NAICS not represented in current '
-                            'data subset: {}'.format(' '.join(map(str, rl_list))), str(i))
+                vLogDetailed.warning('Data found at %s digit NAICS not '
+                                     'represented in current data subset: '
+                                     '{}'.format(' '.join(map(str, rl_list))), str(i))
                 rows_lost = rows_lost.append(rl_m3, ignore_index=True)
 
     if len(rows_lost) != 0:

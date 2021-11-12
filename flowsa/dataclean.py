@@ -134,11 +134,6 @@ def standardize_units(df):
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal', 'kg', df['Unit'])
 
-    # class = other, unit varies
-
-
-
-
     # Convert Energy unit "Quadrillion Btu" to MJ
     # 1 Quad = .0010550559 x 10^15
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',

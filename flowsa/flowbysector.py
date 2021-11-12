@@ -186,8 +186,8 @@ def main(**kwargs):
                 # subset fba data by activity
                 flows_subset =\
                     flows_mapped[(flows_mapped[fba_activity_fields[0]].isin(names)) |
-                              (flows_mapped[fba_activity_fields[1]].isin(names)
-                               )].reset_index(drop=True)
+                                 (flows_mapped[fba_activity_fields[1]].isin(names)
+                                  )].reset_index(drop=True)
 
                 # if activities are sector-like, check sectors are valid
                 if load_yaml_dict('source_catalog')[k]['sector-like_activities']:

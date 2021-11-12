@@ -76,9 +76,9 @@ def soda_url_helper(build_url, config, args):
 def soda_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
@@ -88,7 +88,7 @@ def soda_call(url, response_load, args):
     col_to_use = ["Production", "NAICS code", "End use", "year_5", "total"]
 
     if str(args["year"]) in SPAN_YEARS_T4:
-        df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4')# .dropna()
+        df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4')
         df_data_one = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
         df_data_one = df_data_one.reset_index()
         del df_data_one["index"]
@@ -101,7 +101,7 @@ def soda_call(url, response_load, args):
                                    "space_4", "y1_q2", "space_5", "y1_q3", "space_6", "y1_4", "space_7", "year_5",
                                    "space_8", "space_9"]
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
     df_data_two = pd.DataFrame(df_raw_data_two.loc[6:18]).reindex()
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]

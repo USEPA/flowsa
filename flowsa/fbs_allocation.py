@@ -84,6 +84,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     :param aset: dictionary items for FBS method yaml
     :param method_name: str, method ame
     :param aset_names: list, activity set names
+    :param download_FBA_if_missing: bool, indicate if missing FBAs
+       should be downloaded from Data Commons
     :return: df, allocated activity names
     """
 
@@ -107,8 +109,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
                                              flowclass=attr['allocation_source_class'],
                                              geoscale_from=attr['allocation_from_scale'],
                                              geoscale_to=v['geoscale_to_use'],
-                                             download_FBA_if_missing=download_FBA_if_missing
-                                             , **fba_dict)
+                                             download_FBA_if_missing=download_FBA_if_missing,
+                                             **fba_dict)
 
     # subset fba datasets to only keep the sectors associated with activity subset
     log.info("Subsetting %s for sectors in %s", attr['allocation_source'], k)
@@ -217,6 +219,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
     :param attr: dictionary, attribute data from method yaml for activity set
     :param method: dictionary, FBS method yaml
     :param v: dictionary, the datasource parameters
+    :param download_FBA_if_missing: bool, indicate if missing FBAs
+       should be downloaded from Data Commons or run locally
     :return: df, with modified fba allocation values
     """
     from flowsa.validation import compare_df_units
@@ -312,8 +316,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         # don't have incorrect value associated with new unit
         modified_fba_allocation['HelperFlow'] =\
             modified_fba_allocation['HelperFlow'].fillna(value=0)
-        modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
-                                                       modified_fba_allocation['HelperFlow']
+        modified_fba_allocation.loc[:, 'FlowAmount'] = \
+            modified_fba_allocation['FlowAmount'] * modified_fba_allocation['HelperFlow']
         # drop columns
         modified_fba_allocation =\
             modified_fba_allocation.drop(columns=["HelperFlow", 'ReplacementValue', 'Sector'])
@@ -324,8 +328,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
                                                              sector_col_to_merge)
         modified_fba_allocation['FlowAmountRatio'] =\
             modified_fba_allocation['FlowAmountRatio'].fillna(0)
-        modified_fba_allocation.loc[:, 'FlowAmount'] = modified_fba_allocation['FlowAmount'] * \
-                                                       modified_fba_allocation['FlowAmountRatio']
+        modified_fba_allocation.loc[:, 'FlowAmount'] = \
+            modified_fba_allocation['FlowAmount'] * modified_fba_allocation['FlowAmountRatio']
         modified_fba_allocation =\
             modified_fba_allocation.drop(columns=['FlowAmountRatio', 'HelperFlow', 'Sector'])
 
