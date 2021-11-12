@@ -1,12 +1,6 @@
 # USGS_MYB_Niobium.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -31,6 +25,11 @@ Tantalum; mine
 There is no Production in this excel.
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2014-2018"
 
 
@@ -118,4 +117,3 @@ def usgs_niobium_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

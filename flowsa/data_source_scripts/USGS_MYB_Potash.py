@@ -1,12 +1,6 @@
 # USGS_MYB_Potash.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -30,6 +24,11 @@ Data for: Potash; marketable
 
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
 
 SPAN_YEARS = "2014-2018"
 
@@ -73,7 +72,6 @@ def usgs_potash_call(url, r, args):
             col_name = "Unnamed: " + str(x)
             del df_data_one[col_name]
             del df_data_two[col_name]
-
 
     if len(df_data_one. columns) == 12:
         df_data_one.columns = ["Production", "space_1", "space_2",  "year_1", "space_3", "year_2",
@@ -127,7 +125,7 @@ def usgs_potash_parse(dataframe_list, args):
                 data["Unit"] = "Thousand Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod

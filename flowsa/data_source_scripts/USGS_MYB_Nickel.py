@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 
 Projects
@@ -29,6 +25,11 @@ Data for: Nickel; mine
 
 Years = 2012+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2012-2016"
 
 
@@ -52,7 +53,7 @@ def usgs_nickel_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param url: string, url
-    :param response: df, response from url call
+    :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
@@ -138,4 +139,3 @@ def usgs_nickel_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

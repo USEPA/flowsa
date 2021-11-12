@@ -1,11 +1,6 @@
 # USGS_MYB_Zinc.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -28,6 +23,11 @@ Data for: Zinc; mine, zinc in concentrate
 
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2013-2017"
 
 
@@ -70,8 +70,6 @@ def usgs_zinc_call(url, r, args):
         for x in range(11, len(df_data_one.columns)):
             col_name = "Unnamed: " + str(x)
             del df_data_one[col_name]
-
-
 
     if len(df_data_two. columns) == 12:
         df_data_two.columns = ["Production",  "unit", "space_1", "year_1", "space_2", "year_2", "space_3",
@@ -148,4 +146,3 @@ def usgs_zinc_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

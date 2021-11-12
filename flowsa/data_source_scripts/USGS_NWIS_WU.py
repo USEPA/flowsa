@@ -209,7 +209,6 @@ def usgs_parse(dataframe_list, args):
     df['FlowType'] = np.where(df["Description"].str.contains('deliveries'),
                               "ELEMENTARY_FLOW", df['FlowType'])  # is really a "TECHNOSPHERE_FLOW"
 
-
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
 
@@ -294,7 +293,7 @@ def split_name(name):
             upper_case = upper_case.strip() + " " + s
         else:
             lower_case = lower_case.strip() + " " + s
-    return (upper_case, lower_case)
+    return upper_case, lower_case
 
 
 def standardize_usgs_nwis_names(flowbyactivity_df):
@@ -320,8 +319,8 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     for f in fba_activity_fields:
         flowbyactivity_df.loc[flowbyactivity_df[f] == 'Public', f] = 'Public Supply'
         flowbyactivity_df.loc[flowbyactivity_df[f] == 'Irrigation Total', f] = 'Irrigation'
-        flowbyactivity_df.loc[flowbyactivity_df[f] ==
-                                 'Total Thermoelectric Power', f] = 'Thermoelectric Power'
+        flowbyactivity_df.loc[
+            flowbyactivity_df[f] == 'Total Thermoelectric Power', f] = 'Thermoelectric Power'
         flowbyactivity_df.loc[flowbyactivity_df[f] == 'Thermoelectric', f] = 'Thermoelectric Power'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
@@ -457,9 +456,9 @@ def calculate_net_public_supply(df_load):
     # calculate new, net total public supply withdrawals
     # will end up with negative values due to instances of water
     # deliveries coming form surrounding counties
-    df_w_modified.loc[:, 'FlowAmount'] = df_w_modified['FlowAmount'] - \
-                                         (df_w_modified['FlowRatio'] *
-                                          df_w_modified['DomesticDeliveries'])
+    df_w_modified.loc[:, 'FlowAmount'] = \
+        df_w_modified['FlowAmount'] - (df_w_modified['FlowRatio'] *
+                                       df_w_modified['DomesticDeliveries'])
 
     net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
 
@@ -470,8 +469,9 @@ def calculate_net_public_supply(df_load):
     df_d_modified = df_d.drop(columns=['FlowName', 'Flowable', 'Compartment',
                                        'Context', 'FlowUUID'])
     # Also allocate to ground/surface from state ratios
-    df_d_modified = pd.merge(df_d_modified, net_ps[['FlowName', 'Flowable', 'Compartment',
-                                           'Context', 'FlowUUID', 'Location', 'FlowRatio']],
+    df_d_modified = pd.merge(df_d_modified,
+                             net_ps[['FlowName', 'Flowable', 'Compartment',
+                                     'Context', 'FlowUUID', 'Location', 'FlowRatio']],
                              how='left',
                              left_on='Location',
                              right_on='Location')

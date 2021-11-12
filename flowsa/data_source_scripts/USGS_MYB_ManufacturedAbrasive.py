@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -30,6 +26,11 @@ Data for: Manufactured Abrasive
 
 Years = 2017+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2017-2018"
 
 
@@ -67,7 +68,6 @@ def usgs_ma_call(url, r, args):
         for x in range(9, len(df_data.columns)):
             col_name = "Unnamed: " + str(x)
             del df_data[col_name]
-
 
     if len(df_data. columns) == 9:
         df_data.columns = ["Product", "space_1", "quality_year_1", "space_2", "value_year_1", "space_3",
@@ -115,4 +115,3 @@ def usgs_ma_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

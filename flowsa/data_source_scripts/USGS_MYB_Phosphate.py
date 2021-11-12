@@ -1,12 +1,6 @@
 # USGS_MYB_Phosphate.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -31,6 +25,11 @@ Data for: Phosphate Rock; marketable
 Years = 2014+
 There is no export for Phosphate.
 """
+import io
+import pandas as pd
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
 
 SPAN_YEARS = "2014-2018"
 
@@ -128,7 +127,7 @@ def usgs_phosphate_parse(dataframe_list, args):
                 data["Unit"] = "Thousand Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod

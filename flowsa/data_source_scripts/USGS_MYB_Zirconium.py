@@ -1,12 +1,6 @@
 # USGS_MYB_Zirconium.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-from flowsa.common import WITHDRAWN_KEYWORD
-
 """
 
 Projects
@@ -31,6 +25,12 @@ Data for: Zirconium and Hafnium; zirconium, ores and concentrates
 
 Years = 2013+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
+
 SPAN_YEARS = "2013-2017"
 
 
@@ -140,4 +140,3 @@ def usgs_zirconium_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

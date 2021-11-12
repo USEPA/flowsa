@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -29,6 +25,11 @@ Sand and Gravel; sand and gravel (construction)
 
 Years = 2013+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2013-2017"
 
 
@@ -58,8 +59,6 @@ def usgs_sgc_call(url, r, args):
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-
-
     df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
 
     df_data_1 = pd.DataFrame(df_raw_data_two.loc[5:12]).reindex()
@@ -68,8 +67,7 @@ def usgs_sgc_call(url, r, args):
 
     if len(df_data_1. columns) == 11:
         df_data_1.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5"]
-
+                             "year_3", "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -114,4 +112,3 @@ def usgs_sgc_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-

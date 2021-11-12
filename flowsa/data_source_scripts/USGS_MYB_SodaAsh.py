@@ -19,7 +19,6 @@ https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-
 
 import io
 import math
-from string import digits
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
@@ -27,6 +26,7 @@ from flowsa.common import WITHDRAWN_KEYWORD
 
 SPAN_YEARS = "2010-2017"
 SPAN_YEARS_T4 = ["2016", "2017"]
+
 
 def description(value, code):
     """
@@ -73,18 +73,16 @@ def soda_url_helper(build_url, config, args):
     return [url]
 
 
-def soda_call(url, response_load, args):
+def soda_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    r = response_load
-    #args = kwargs['args']
+
     col_to_use = ["Production", "NAICS code", "End use", "year_5", "total"]
 
     if str(args["year"]) in SPAN_YEARS_T4:
@@ -143,7 +141,6 @@ def soda_parse(dataframe_list, args):
     prod = ""
     name = usgs_myb_name(args["source"])
     des = name
-    #col_name = usgs_myb_year(SPAN_YEARS, args["year"])
     col_name = "year_5"
     dataframe = pd.DataFrame()
     for df in dataframe_list:
@@ -181,7 +178,8 @@ def soda_parse(dataframe_list, args):
                 data["Compartment"] = "air"
                 data["Description"] = ""
                 data['ActivityConsumedBy'] = description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
-                data['FlowName'] = name  + " " + description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
+                data['FlowName'] = name + " " + description(df.iloc[index]["End use"],
+                                                            df.iloc[index]["NAICS code"])
                 if df.iloc[index]["End use"].strip() == "Glass:":
                     total_glass = int(df.iloc[index]["NAICS code"])
                 elif data['ActivityConsumedBy'] == "Glass Total":

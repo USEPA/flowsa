@@ -1,12 +1,6 @@
 # USGS_MYB_Vermiculite.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -27,9 +21,13 @@ Minerals Yearbook, xls file, tab T1:
 
 Data for: Vermiculite; vermiculite
 
-
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
 
 SPAN_YEARS = "2014-2018"
 
@@ -75,7 +73,6 @@ def usgs_vermiculite_call(url, r, args):
         if col not in col_to_use:
             del df_data_one[col]
 
-
     frames = [df_data_one]
     df_data = pd.concat(frames)
     df_data = df_data.reset_index()
@@ -114,7 +111,7 @@ def usgs_vermiculite_parse(dataframe_list, args):
                 data["Unit"] = "Thousand Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod

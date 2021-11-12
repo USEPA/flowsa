@@ -1,12 +1,6 @@
 # USGS_MYB_Pumice.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -30,6 +24,11 @@ Data for: Pumice and Pumicite; mine
 
 Years = 2014+
 """
+import io
+import pandas as pd
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
 
 SPAN_YEARS = "2014-2018"
 
@@ -69,11 +68,9 @@ def usgs_pumice_call(url, r, args):
             col_name = "Unnamed: " + str(x)
             del df_data_one[col_name]
 
-
     if len(df_data_one. columns) == 13:
         df_data_one.columns = ["Production", "space_1", "Unit", "space_2",  "year_1", "space_3", "year_2",
                                "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
-
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -81,7 +78,6 @@ def usgs_pumice_call(url, r, args):
     for col in df_data_one.columns:
         if col not in col_to_use:
             del df_data_one[col]
-
 
     frames = [df_data_one]
     df_data = pd.concat(frames)
@@ -121,7 +117,7 @@ def usgs_pumice_parse(dataframe_list, args):
                 data["Unit"] = "Thousand Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod

@@ -1,11 +1,6 @@
 # USGS_MYB_Titanium.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -29,6 +24,11 @@ Data for: Titanium and Titanium Dioxide; mineral concentrate
 
 Years = 2012+
 """
+import io
+import pandas as pd
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
+
 SPAN_YEARS = "2013-2017"
 
 
@@ -102,13 +102,13 @@ def usgs_titanium_parse(dataframe_list, args):
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Imports for consumption":
                 product = "imports"
-            elif df.iloc[index]["Production"].strip() == "Production2" or df.iloc[index]["Production"].strip() == "Production":
+            elif df.iloc[index]["Production"].strip() == "Production2" or \
+                    df.iloc[index]["Production"].strip() == "Production":
                 product = "production"
             if df.iloc[index]["Production"].strip() == "Mineral concentrates:":
                 name = "Titanium"
             elif df.iloc[index]["Production"].strip() == "Titanium dioxide pigment:":
                 name = "Titanium dioxide"
-
 
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
@@ -126,4 +126,3 @@ def usgs_titanium_parse(dataframe_list, args):
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe, str(args["year"]))
     return dataframe
-
