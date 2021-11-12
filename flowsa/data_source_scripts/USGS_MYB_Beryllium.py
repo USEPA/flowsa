@@ -54,7 +54,7 @@ def usgs_beryllium_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_beryllium_call(url, usgs_response, args):
+def usgs_beryllium_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
     :param kwargs: url: string, url
@@ -63,10 +63,10 @@ def usgs_beryllium_call(url, usgs_response, args):
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4')# .dropna()
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4')# .dropna()
 
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')  # .dropna()
 
     df_data_1 = pd.DataFrame(df_raw_data_two.loc[6:9]).reindex()
     df_data_1 = df_data_1.reset_index()
