@@ -85,7 +85,7 @@ def write_naics_2012_crosswalk():
         # add some housing/gov't transport sectors, depending on length
         if i in range(2, 4):
             vars()[cw_name] = vars()[cw_name].append(
-                pd.DataFrame(house_4,columns=[cw_col]), ignore_index=True)
+                pd.DataFrame(house_4, columns=[cw_col]), ignore_index=True)
         if i == 5:
             vars()[cw_name] = vars()[cw_name].append(
                 pd.DataFrame(house_6, columns=[cw_col]), ignore_index=True)
@@ -121,7 +121,7 @@ def load_naics_02_to_07_crosswalk():
     df.columns = df_load.loc[1, ]
 
     # df subset columns
-    naics_02_to_07_cw = df[['2002 NAICS Code','2007 NAICS Code']].rename(
+    naics_02_to_07_cw = df[['2002 NAICS Code', '2007 NAICS Code']].rename(
         columns={'2002 NAICS Code': 'NAICS_2002_Code', '2007 NAICS Code': 'NAICS_2007_Code'})
     # ensure datatype is string
     naics_02_to_07_cw = naics_02_to_07_cw.astype(str)
@@ -194,7 +194,7 @@ def update_naics_crosswalk():
     missing_naics_df = missing_naics_df.reset_index(drop=True)
 
     # add missing naics to master naics crosswalk
-    total_naics= naics.append(missing_naics_df, ignore_index=True)
+    total_naics = naics.append(missing_naics_df, ignore_index=True)
 
     # sort df
     total_naics = total_naics.sort_values(['NAICS_2012_Code', 'NAICS_2007_Code']).drop_duplicates()
