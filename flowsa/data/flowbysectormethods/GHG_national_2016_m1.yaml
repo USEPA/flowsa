@@ -327,3 +327,20 @@ source_names:
             - "Soybeans"
             - "Wheat"
           allocation_method: direct
+  "EPA_GHGI_T_4_46": #CH4, N2O, CO and NOx from field burning of residues
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: None
+      clean_fba_w_sec_df_fxn: None
+      activity_sets:
+        activity_set_1:  #this set is direct
+          names:
+            - "Acrylonitrile"
+            - "Carbon Black"
+            - "Ethylene"
+            - "Ethylene Dichloride"
+            - "Ethylene Oxide"
+            - "Methanol"
+          allocation_method: direct
