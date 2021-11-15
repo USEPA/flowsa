@@ -53,10 +53,6 @@ def mlu_parse(dataframe_list, args):
                  var_name="FlowName",
                  value_name="FlowAmount")
 
-    # test
-    # df = df[df['Year'] == 2012]
-    # df = df[df['FlowName'] == 'Forest-use land not grazed'].reset_index(drop=True)
-
     # load fips codes and merge
     fips = get_all_state_FIPS_2()
     fips['State'] = fips['State'].apply(lambda x: x.title())
