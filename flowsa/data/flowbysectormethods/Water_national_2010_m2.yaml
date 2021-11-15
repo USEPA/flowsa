@@ -20,15 +20,6 @@ source_names:
           - "Irrigation Golf Courses"
           - "Public Supply"
           - "Thermoelectric Power"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: state
-      activity_set_2:
-        names:
           - "Domestic"
         allocation_method: direct
         allocation_source: None
