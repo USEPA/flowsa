@@ -44,7 +44,8 @@ from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
-    replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
+    replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs, \
+    check_for_negative_flowamounts
 from flowsa.allocation import allocate_dropped_sector_data
 
 
@@ -344,6 +345,8 @@ def main(**kwargs):
     fbss = clean_df(fbss, flow_by_sector_fields, fbs_fill_na_dict)
     fbss = fbss.sort_values(
         ['SectorProducedBy', 'SectorConsumedBy', 'Flowable', 'Context']).reset_index(drop=True)
+    # check for negative flow amounts
+    check_for_negative_flowamounts(fbss)
     # tmp reset data quality scores
     fbss = reset_fbs_dq_scores(fbss)
     # save parquet file
