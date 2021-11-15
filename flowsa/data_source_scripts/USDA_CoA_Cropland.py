@@ -346,7 +346,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column, do
         # subset to rows related to pastureland
         df_f = df_f.loc[df_f['ActivityConsumedBy'].apply(lambda x: x[0:3]) == '112']
         # drop rows with "&'
-        df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
+        df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')].reset_index(drop=True)
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
         # estimate suppressed data by equal allocation

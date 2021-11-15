@@ -608,9 +608,6 @@ def equally_allocate_suppressed_parent_to_child_naics(df_load, sector_column, gr
     Estimate data suppression, by equally allocating parent NAICS values to child NAICS
     :param df_load: df with sector columns
     :param sector_column: str, column to estimate suppressed data for
-    :param naics_level: numeric, indicate at what NAICS length to base
-                        estimated suppresed data off (2 - 5)
-    :param sourcename: str, sourcename
     :param groupcols: list, columns to group df by
     :return: df, with estimated suppressed data
     """
@@ -665,7 +662,8 @@ def equally_allocate_suppressed_parent_to_child_naics(df_load, sector_column, gr
 
     # add column for each state of sector length where there are no missing values
     df_sup = df_sup.assign(secLength=df_sup[sector_column].apply(lambda x: len(x)))
-    df_sup2 = (df_sup.groupby(['FlowName', 'Compartment', 'Location'])['secLength'].agg(lambda x: x.min()-1).reset_index(name='secLengthsup'))
+    df_sup2 = (df_sup.groupby(['FlowName', 'Compartment', 'Location']
+                              )['secLength'].agg(lambda x: x.min()-1).reset_index(name='secLengthsup'))
 
     # merge the dfs and sub out the last sector lengths with all data for each state
     # drop states that don't have suppressed dat
