@@ -799,6 +799,7 @@ def compare_geographic_totals(df_subset, df_load, sourcename, attr, activity_set
         nat = nat[(nat[fba_activity_fields[0]].isin(activity_names)) |
                   (nat[fba_activity_fields[1]].isin(activity_names)
                    )].reset_index(drop=True)
+        nat = replace_strings_with_NoneType(nat)
         # drop the geoscale in df_subset and sum
         sub = df_subset.assign(Location=US_FIPS)
         # depending on the datasource, might need to rename some strings for national comparison
@@ -849,8 +850,7 @@ def rename_column_values_for_comparison(df, sourcename):
     # and ground/surface water. Therefore, to compare subset data to national level, rename
     # to match national values.
     if sourcename == 'USGS_NWIS_WU':
-        df['FlowName'] = df['FlowName'].str.replace('fresh', 'total', regex=True)
-        df['FlowName'] = df['FlowName'].str.replace('saline', 'total', regex=True)
+        df['FlowName'] = np.where(df['ActivityConsumedBy'] != 'Livestock', 'total', df['FlowName'])
         df['Compartment'] = df['Compartment'].str.replace('ground', 'total', regex=True)
         df['Compartment'] = df['Compartment'].str.replace('surface', 'total', regex=True)
 
