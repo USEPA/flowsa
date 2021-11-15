@@ -13,7 +13,8 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, load_yaml_dict, \
     load_crosswalk, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, fba_activity_fields, \
-    fba_default_grouping_fields, fips_number_key, fba_fill_na_dict, find_true_file_path, \
+    fba_default_grouping_fields, fba_wsec_default_grouping_fields, \
+    fips_number_key, fba_fill_na_dict, find_true_file_path, \
     fba_mapped_default_grouping_fields
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, \
     flow_by_activity_mapped_fields
@@ -602,93 +603,175 @@ def dataframe_difference(df1, df2, which=None):
     return diff_df
 
 
-def equally_allocate_parent_to_child_naics(df, sector_column, naics_level, sourcename):
+def equally_allocate_suppressed_parent_to_child_naics(df_load, sector_column, naics_level, sourcename, groupcols):
     """
     Estimate data suppression, by equally allocating parent NAICS values to child NAICS
-    :param df: df with sector columns
+    :param df_load: df with sector columns
     :param sector_column: str, column to estimate suppressed data for
     :param naics_level: numeric, indicate at what NAICS length to base
                         estimated suppresed data off (2 - 5)
     :param sourcename: str, sourcename
+    :param groupcols: list, columns to group df by
     :return: df, with estimated suppressed data
     """
+    # test
+    # from flowsa.common import fba_wsec_default_grouping_fields
+    # groupcols = fba_wsec_default_grouping_fields
+    # df_load = df_load[df_load['Location'].isin(['33000'])].reset_index(drop=True)
+    # df_load = replace_NoneType_with_empty_cells(df_load)
+    # t = df_load.copy()
+    # t = t.assign(secLength=t[sector_column].apply(lambda x: len(x)))
+    # t = t.assign(sum=t.groupby(['secLength'])['FlowAmount'].transform('sum'))[['FlowAmount', 'Location', sector_column, 'sum']]
 
-    # exclude nonsectors
+    df = sector_disaggregation(df_load)
     df = replace_NoneType_with_empty_cells(df)
+    df = df[df[sector_column] != '']
 
-    # find the longest length sector
-    max_length = max(df[sector_column].apply(lambda x: len(str(x))).unique())
-    # loop through starting at naics_level, use most detailed level possible to save time
-    for i in range(naics_level, max_length):
-        # create df of i length
-        df_x = df.loc[df[sector_column].apply(lambda x: len(x) == i)]
-        # create df of i + 1 length
-        df_y = df.loc[df[sector_column].apply(lambda x: len(x) == i + 1)]
-        # create temp sector columns in df y, that are i digits in length
-        df_y = df_y.assign(s_tmp=df_y[sector_column].apply(lambda x: x[0:i]))
+    # determine if activities are sector-like, if aggregating a df with a 'SourceName'
+    sector_like_activities = False
+    if 'SourceName' in df_load.columns:
+        # load source catalog
+        cat = load_yaml_dict('source_catalog')
+        # for s in pd.unique(flowbyactivity_df['SourceName']):
+        s = pd.unique(df_load['SourceName'])[0]
+        # load catalog info for source
+        src_info = cat[s]
+        sector_like_activities = src_info['sector-like_activities']
 
-        # create list of location and temp activity combos that contain a 0
-        missing_sectors_df = df_y[df_y['FlowAmount'] == 0]
-        missing_sectors_list = missing_sectors_df[['Location',
-                                                   's_tmp']].drop_duplicates().values.tolist()
-        # subset the y df
-        if len(missing_sectors_list) != 0:
-            # new df of sectors that start with missing sectors.
-            # drop last digit of the sector and sum flows set conditions
-            suppressed_list = []
-            for q, r, in missing_sectors_list:
-                c1 = df_y['Location'] == q
-                c2 = df_y['s_tmp'] == r
-                # subset data
-                suppressed_list.append(df_y.loc[c1 & c2])
-            suppressed_sectors = pd.concat(suppressed_list, sort=False, ignore_index=True)
-            # add column of existing allocated data for length of i
-            suppressed_sectors['alloc_flow'] =\
-                suppressed_sectors.groupby(['Location', 's_tmp'])['FlowAmount'].transform('sum')
-            # subset further so only keep rows of 0 value
-            suppressed_sectors_sub = suppressed_sectors[suppressed_sectors['FlowAmount'] == 0]
-            # add count
-            suppressed_sectors_sub = \
-                suppressed_sectors_sub.assign(sector_count=
-                                              suppressed_sectors_sub.groupby(
-                                                  ['Location', 's_tmp']
-                                              )['s_tmp'].transform('count'))
+    # if activities are source like, drop from df,
+    # add back in as copies of sector columns columns to keep
+    if sector_like_activities:
+        # subset df
+        df_cols = [e for e in df.columns if e not in
+                   ('ActivityProducedBy', 'ActivityConsumedBy')]
+        df = df[df_cols]
+        # drop activity from groupby
+        groupcols = [e for e in groupcols if e not in ['ActivityConsumedBy', 'ActivityProducedBy', 'Description']]
 
-            # merge suppressed sector subset with df x
-            df_m = pd.merge(df_x,
-                            suppressed_sectors_sub[['Class', 'Compartment', 'FlowType',
-                                                    'FlowName', 'Location', 'LocationSystem',
-                                                    'Unit', 'Year', sector_column, 's_tmp',
-                                                    'alloc_flow', 'sector_count']],
-                            left_on=['Class', 'Compartment', 'FlowType', 'FlowName',
-                                     'Location', 'LocationSystem', 'Unit', 'Year', sector_column],
-                            right_on=['Class', 'Compartment', 'FlowType', 'FlowName',
-                                      'Location', 'LocationSystem', 'Unit', 'Year', 's_tmp'],
-                            how='right')
-            # drop any rows where flowamount is none
-            df_m = df_m[~df_m['FlowAmount'].isna()]
-            # calculate estimated flows by subtracting the flow
-            # amount already allocated from total flow of
-            # sector one level up and divide by number of sectors with suppressed data
-            df_m.loc[:, 'FlowAmount'] = \
-                (df_m['FlowAmount'] - df_m['alloc_flow']) / df_m['sector_count']
-            # only keep the suppressed sector subset activity columns
-            df_m = df_m.drop(columns=[sector_column + '_x', 's_tmp', 'alloc_flow', 'sector_count'])
-            df_m = df_m.rename(columns={sector_column + '_y': sector_column})
-            # reset activity columns
-            if load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']:
-                df_m = df_m.assign(ActivityProducedBy=df_m['SectorProducedBy'])
-                df_m = df_m.assign(ActivityConsumedBy=df_m['SectorConsumedBy'])
+    # load naics 2 to naics 6 crosswalk
+    cw_load = load_crosswalk('sector length')
 
-            # drop the existing rows with suppressed data and append the new estimates from fba df
-            modified_df =\
-                pd.merge(df, df_m[['FlowName', 'Location', sector_column]],
-                         indicator=True,
-                         how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
-            df = pd.concat([modified_df, df_m], ignore_index=True)
-    df_w_estimated_data = replace_strings_with_NoneType(df)
+    # for loop min length to 6 digits, where min length cannot be less than 2 by location
+    # for l in df['Location'].unique():
+    #     df = df[df['Location'] == l].reset_index(drop=True)
+    df_zero = df[df['FlowAmount'] == 0]
+    min_length = df_zero[sector_column].apply(lambda x: len(x)).min()
 
-    return df_w_estimated_data
+    # test
+    # df = df[df['Location'].isin(['33000', '44000'])].reset_index(drop=True)
+
+
+    # appends missing naics levels to df
+    for i in range(min_length-1, 6):
+        sector_merge = 'NAICS_' + str(i)
+        sector_add = 'NAICS_6'
+
+        # subset to rows with 0 flow
+        df_sup = df[df['FlowAmount'] == 0].reset_index(drop=True)
+        # subset the df by naics length
+        cw = cw_load[[sector_merge, sector_add]].drop_duplicates()
+        # subset df to sectors with length = i
+        df_subset = df_sup.loc[df_sup[sector_column].apply(lambda x: len(x) == i)].reset_index(drop=True)
+        # merge the naics cw
+        new_naics = pd.merge(df_subset, cw[[sector_merge, sector_add]],
+                             how='left', left_on=[sector_column], right_on=[sector_merge])
+        #
+        new_naics[sector_column] = new_naics[sector_add].copy()
+        new_naics = new_naics.drop(columns=[sector_add, sector_merge])
+
+        # merge the new naics with the existing df, if data already existed for a NAICS6, keep the original
+        dfm = pd.merge(new_naics[groupcols], df, how='left', on=groupcols,
+                       indicator=True).query('_merge=="left_only"').drop('_merge', axis=1)
+        dfm = replace_NoneType_with_empty_cells(dfm)
+        dfm = dfm.fillna(0)
+        df = pd.concat([df, dfm], sort=True, ignore_index=True)
+    # add length column and subset the data
+    # subtract out existing data at NAICS6 from total data at a length where no suppressed data
+    df = df.assign(secLength=df[sector_column].apply(lambda x: len(x)))
+    df1 = df[df['secLength'] == min_length-1]
+    df2 = df[df['secLength'] == 6].reset_index(drop=True)
+    df2 = df2.assign(mergeSec=df2[sector_column].apply(lambda x: x[0:min_length-1]))
+    sum_cols = [e for e in fba_default_grouping_fields if e not in ['ActivityConsumedBy', 'ActivityProducedBy']]
+    sum_cols.append('mergeSec')
+    df2 = df2.assign(FlowAlloc=df2.groupby(sum_cols)['FlowAmount'].transform('sum'))
+    # rename columns for the merge and define merge cols
+    df2 = df2.rename(columns={sector_column: 'NewNAICS',
+                              'mergeSec': sector_column})
+    # keep flows with 0 flow
+    df3 = df2[df2['FlowAmount'] == 0].reset_index(drop=True)
+    m_cols = groupcols + ['NewNAICS', 'FlowAlloc']
+    # merge the two dfs
+    dfe = df1.merge(df3[m_cols])
+    # add count column used to divide the unallocated flows
+    dfe = dfe.assign(secCount=dfe.groupby(groupcols)['NewNAICS'].transform('count'))
+    dfe = dfe.assign(newFlow=(dfe['FlowAmount'] - dfe['FlowAlloc']) / dfe['secCount'])
+    # reassign values and drop columns
+    dfe = dfe.assign(FlowAmount=dfe['newFlow'])
+    dfe[sector_column] = dfe['NewNAICS'].copy()
+    dfe = dfe.drop(columns=['NewNAICS', 'FlowAlloc', 'secCount', 'newFlow'])
+
+    # new df with estimated naics6
+    dfn = pd.concat([df, dfe], ignore_index=True)
+
+    # test
+    # dfn2 = dfn[dfn['FlowAmount'] == 0].reset_index(drop=True)
+    # dfn2 = dfn2.sort_values([sector_column, 'Location'])[['FlowAmount', 'Location', sector_column]]
+    # dfe2 = dfe.sort_values(['Location', sector_column])[['FlowAmount', 'Location', sector_column]]
+
+
+    dfn2 = dfn[dfn['FlowAmount'] != 0].reset_index(drop=True)
+    dfn2 = dfn2.drop(columns=['secLength'])
+
+    # test
+    t2 = dfn2.copy()
+    t2 = t2.assign(secLength=t2[sector_column].apply(lambda x: len(x)))
+    t2 = t2.assign(sum=t2.groupby(['Location', 'secLength'])['FlowAmount'].transform('sum')
+                   )[['FlowAmount', 'Location', sector_column, 'sum']]
+    t2 = t2[t2['Location'] == '33000'].sort_values(['sum'])
+
+
+    dff = sector_aggregation(dfn2, fba_wsec_default_grouping_fields)
+
+    # test compare the two dfs
+    dfn2 = replace_strings_with_NoneType(dfn2)
+    c = pd.merge(dff, dfn2, how='outer', indicator=True)
+    c = c[c['_merge'] != 'both']
+    c = c[c['Location'] == '33000']
+
+    # test
+    t3 = dff.copy()
+    t3 = t3.assign(secLength=t3[sector_column].apply(lambda x: len(x)))
+    t3 = t3.assign(sum=t3.groupby(['Location', 'secLength'])['FlowAmount'].transform('sum'))[
+        ['FlowAmount', 'Location', sector_column, 'sum']]
+    t3 = t3[t3['Location'] == '33000'].sort_values(['sum'])
+
+    # if activities are source-like, set col values as copies of the sector columns
+    if sector_like_activities:
+        dff = dff.assign(ActivityProducedBy=dff['SectorProducedBy'])
+        dff = dff.assign(ActivityConsumedBy=dff['SectorConsumedBy'])
+        # reindex columns
+        dff = dff.reindex(df_load.columns, axis=1)
+    # test
+    t4 = dff.copy()
+    t4 = t4.assign(secLength=t4[sector_column].apply(lambda x: len(x)))
+    t4 = t4.assign(sum=t4.groupby(['Location', 'secLength'])['FlowAmount'].transform('sum'))[
+        ['FlowAmount', 'Location', sector_column, 'sum']]
+    t4 = t4[t4['Location'] == '33000'].sort_values(['sum'])
+
+    # replace null values
+    dff = replace_strings_with_NoneType(dff).reset_index(drop=True)
+
+    # test
+    t5 = dff.copy()
+    t5 = t5.assign(secLength=t5[sector_column].apply(lambda x: len(x)))
+    t5 = t5.assign(sum=t5.groupby(['Location', 'secLength'])['FlowAmount'].transform('sum'))[
+        ['FlowAmount', 'Location', sector_column, 'sum']]
+    t5 = t5[t5['Location'] == '33000'].sort_values(['sum'])
+
+    # test
+    dff2 = dff.sort_values(['Location', sector_column])[['FlowAmount', 'Location', sector_column]]
+
+    return dff
 
 
 def collapse_activity_fields(df):
