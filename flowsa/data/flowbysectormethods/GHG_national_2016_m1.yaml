@@ -327,7 +327,7 @@ source_names:
             - "Soybeans"
             - "Wheat"
           allocation_method: direct
-  "EPA_GHGI_T_4_46": #CH4, N2O, CO and NOx from field burning of residues
+  "EPA_GHGI_T_4_46": #CO2 for selected petrochemicals
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
@@ -344,7 +344,7 @@ source_names:
             - "Ethylene Oxide"
             - "Methanol"
           allocation_method: direct
-  "EPA_GHGI_T_3_22": #CH4, N2O, CO and NOx from field burning of residues
+  "EPA_GHGI_T_3_22": #Fossil fuel for non-energy uses
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
@@ -352,17 +352,19 @@ source_names:
       clean_fba_df_fxn: None
       clean_fba_w_sec_df_fxn: None
       activity_sets:
-        activity_set_1:  #this set is direct
+        activity_set_1:  #this set is direct for coal products
+          names:
+            - "Industrial Coking Coal"
+            - "Industrial Other Coal"
+          allocation_method: direct
+        activity_set_2:  #consumed petroleum products
           names:
             - "Asphalt & Road Oil"
             - "Distillate Fuel Oil"
             - "HGL"
-            - "Industrial Coking Coal"
-            - "Industrial Other Coal"
             - "Lubricants"
             - "Miscellaneous Products"
             - "Naphtha (<401° F)"
-            - "Natural Gas to       Chemical Plants"
             - "Other Oil (>401° F)"
             - "Other Petroleum (Misc. Prod.)"
             - "Pentanes Plus"
@@ -370,4 +372,28 @@ source_names:
             - "Special Naphtha"
             - "Still Gas"
             - "Waxes"
-          allocation_method: direct
+          allocation_method: proportional
+          allocation_source: "EIA_MECS_Energy"
+          allocation_source_class: "Energy"
+          allocation_source_year: 2014
+          allocation_flow: ##need to be specified
+          allocation_compartment: None
+          allocation_from_scale: national
+        activity_set_3:  #consumed nat gas to chemical plants
+          names:
+            - "Natural Gas to       Chemical Plants"
+          allocation_method: proportional
+          allocation_source: "EIA_MECS_Energy"
+          allocation_source_class: "Energy"
+          allocation_source_year: 2014
+          allocation_flow: ##need to be specified
+          allocation_compartment: None
+          allocation_from_scale: national
+          helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
+          helper_method: proportional
+          helper_source_class: "Money"
+          helper_source_year: 2012
+          helper_flow: "USD2012"
+          helper_from_scale: national
+
+
