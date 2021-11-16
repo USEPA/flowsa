@@ -19,7 +19,9 @@ Flow-By-Sector datasets are tables of environmental and other data attributed to
 `flowsa.getFlowBySector('Water_national_2015_m1')`
 
 ## Installation
-`pip install https://github.com/USEPA/flowsa/archive/refs/tags/v0.3.2.zip`
+`pip install https://github.com/USEPA/flowsa/archive/refs/tags/vX.X.X.zip`
+
+where vX.X.X can be updated with the most recent version.
 
 ### Additional Information on Installation, Examples, Detailed Documentation
 For more information on `flowsa` see the [wiki](https://github.com/USEPA/flowsa/wiki).
