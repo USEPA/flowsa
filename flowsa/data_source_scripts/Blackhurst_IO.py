@@ -95,7 +95,7 @@ def convert_blackhurst_data_to_kg_per_year(df, **kwargs):
 
     bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']) *
                                           (bh_df_revised['FlowAmount_y']))
-    bh_df_revised.loc[:, 'Unit'] = 'gal'
+    bh_df_revised.loc[:, 'Unit'] = 'kg'
     # drop columns
     bh_df_revised = bh_df_revised.drop(columns=["FlowAmount_x", "FlowAmount_y",
                                                 'ActivityProducedBy_y'])
@@ -154,7 +154,7 @@ def convert_blackhurst_data_to_kg_per_employee(df_wsec, attr, method, **kwargs):
     # calculate gal/employee in 2002
     df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] *
                                       df_wratio['EmployeeRatio']) / df_wratio['Employees']
-    df_wratio.loc[:, 'Unit'] = 'gal/employee'
+    df_wratio.loc[:, 'Unit'] = 'kg/p'
 
     # drop cols
     df_wratio = df_wratio.drop(columns=['Sector', 'Employees', 'EmployeeRatio'])
@@ -184,7 +184,7 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_m
 
     pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) &
                      (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
-    pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
+    pv = pv_sub['FlowAmount'].loc[0]
 
     # sum quantity of water withdrawals already allocated to sectors
     av = df_to_scale['FlowAmount'].sum()

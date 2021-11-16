@@ -341,7 +341,6 @@ def ghg_call(url, response_load, args):
                             new_header = col[2]
                         new_headers.append(new_header)
                     df.columns = new_headers
-                    # print('break')
                 elif '4-' in table:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")

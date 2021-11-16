@@ -7,6 +7,7 @@ Common functions to clean and harmonize dataframes
 
 import numpy as np
 from flowsa.settings import log
+from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 
 
 def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
@@ -97,6 +98,9 @@ def standardize_units(df):
     ton_to_kg = 907.185
     lb_to_kg = 0.45359
 
+    # strip whitespace from units
+    df['Unit'] = df['Unit'].str.strip()
+
     # class = employment, unit = 'p'
     # class = energy, unit = MJ
     # class = land, unit = m2
@@ -117,6 +121,12 @@ def standardize_units(df):
     df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['square feet']), 'm2', df['Unit'])
 
     # class = money, unit = USD
+    if df['Unit'].str.contains('Canadian Dollar').any():
+        exchange_rate = float(get_Canadian_to_USD_exchange_rate(str(df['Year'].unique()[0])))
+        df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Canadian Dollar',
+                                           df['FlowAmount'] / exchange_rate,
+                                           df['FlowAmount'])
+        df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Canadian Dollar', 'USD', df['Unit'])
 
     # class = water, unit = kg
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day',
@@ -134,6 +144,28 @@ def standardize_units(df):
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal', 'kg', df['Unit'])
 
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gal',
+                                       df['FlowAmount'] * gallon_water_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gal', 'kg', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gal/USD',
+                                       df['FlowAmount'] * gallon_water_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gal/USD', 'kg/USD', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'Bgal/d',
+                 df['FlowAmount'] * 1000000000 * gallon_water_to_kg * days_in_year,
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'kg', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'Mgal/d',
+                 df['FlowAmount'] * 1000000 * gallon_water_to_kg * days_in_year,
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'kg', df['Unit'])
+
     # Convert Energy unit "Quadrillion Btu" to MJ
     # 1 Quad = .0010550559 x 10^15
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
@@ -149,8 +181,9 @@ def standardize_units(df):
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year',
-                                       df['FlowAmount'] * 264.172, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
+                                       df['FlowAmount'] * 264.172 * 1000000 * gallon_water_to_kg,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'kg', df['Unit'])
 
     # Convert mass units (LB or TON) to kg
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
