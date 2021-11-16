@@ -31,9 +31,9 @@ Water_national_2010_m2:
         'flowbyactivity_1': 2010
         'flowbyactivity_2': 2010
     activity_set_4:
-      convert_blackhurst_data_to_gal_per_year:
+      convert_blackhurst_data_to_kg_per_year:
         flowbyactivity_1: 2002
-      convert_blackhurst_data_to_gal_per_employee:
+      convert_blackhurst_data_to_kg_per_employee:
         flowbyactivity_1: 2002
       scale_blackhurst_results_to_usgs_values:
         flowbyactivity_1: 2010
@@ -56,9 +56,9 @@ Water_national_2015_m2:
         'flowbyactivity_1': 2015
         'flowbyactivity_2': 2015
     activity_set_4:
-      convert_blackhurst_data_to_gal_per_year:
+      convert_blackhurst_data_to_kg_per_year:
         flowbyactivity_1: 2002
-      convert_blackhurst_data_to_gal_per_employee:
+      convert_blackhurst_data_to_kg_per_employee:
         flowbyactivity_1: 2002
       scale_blackhurst_results_to_usgs_values:
         flowbyactivity_1: 2015

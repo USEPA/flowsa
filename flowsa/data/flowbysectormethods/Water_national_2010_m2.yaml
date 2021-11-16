@@ -60,8 +60,8 @@ source_names:
           - 'Water Withdrawals IO Vector'
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: convert_blackhurst_data_to_gal_per_year
-        clean_allocation_fba_w_sec: convert_blackhurst_data_to_gal_per_employee
+        clean_allocation_fba: convert_blackhurst_data_to_kg_per_year
+        clean_allocation_fba_w_sec: convert_blackhurst_data_to_kg_per_employee
         helper_source: "BLS_QCEW"
         helper_method: "multiplication and scaled"
         helper_source_class: "Employment"

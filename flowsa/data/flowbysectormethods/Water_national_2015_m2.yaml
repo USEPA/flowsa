@@ -28,7 +28,7 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-      activity_set_3:
+      activity_set_2:
         names:
           - "Industrial"
         allocation_method: proportional
@@ -49,7 +49,7 @@ source_names:
         helper_from_scale: national
         clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-      activity_set_4:
+      activity_set_3:
         names:
           - "Mining"
         allocation_method: proportional
@@ -60,8 +60,8 @@ source_names:
           - 'Water Withdrawals IO Vector'
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: convert_blackhurst_data_to_gal_per_year
-        clean_allocation_fba_w_sec: convert_blackhurst_data_to_gal_per_employee
+        clean_allocation_fba: convert_blackhurst_data_to_kg_per_year
+        clean_allocation_fba_w_sec: convert_blackhurst_data_to_kg_per_employee
         helper_source: "BLS_QCEW"
         helper_method: "multiplication and scaled"
         helper_source_class: "Employment"
@@ -72,7 +72,7 @@ source_names:
         clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
         scale_helper_results: scale_blackhurst_results_to_usgs_values
-      activity_set_5:
+      activity_set_4:
         names:
           - "Irrigation Crop"
         allocation_method: proportional
@@ -89,7 +89,7 @@ source_names:
         helper_source_year: 2018
         helper_flow: None
         helper_from_scale: state
-      activity_set_6:
+      activity_set_5:
         names:
           - "Livestock"
         allocation_method: proportional
