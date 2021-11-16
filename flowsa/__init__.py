@@ -3,7 +3,8 @@
 # coding=utf-8
 """
 Public API for flowsa
-For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/format%20specs
+For standard dataframe formats, see
+https://github.com/USEPA/flowsa/tree/master/format%20specs
 
 Files are loaded from a user's local directory
 https://github.com/USEPA/flowsa/wiki/Data-Storage#local-storage
@@ -23,7 +24,8 @@ from flowsa.settings import log, sourceconfigpath, flowbysectormethodpath, \
     biboutputpath, DEFAULT_DOWNLOAD_IF_MISSING
 from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
-from flowsa.validation import check_for_nonetypes_in_sector_col, check_for_negative_flowamounts
+from flowsa.validation import check_for_nonetypes_in_sector_col, \
+    check_for_negative_flowamounts
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
@@ -38,8 +40,8 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
     :param geographic_level: str, a geographic level of the data.
                              Optional. E.g. 'national', 'state', 'county'.
-    :param download_FBA_if_missing: bool, if True will attempt to load from remote server
-        prior to generating if file not found locally
+    :param download_FBA_if_missing: bool, if True will attempt to load from
+        remote server prior to generating if file not found locally
     :return: a pandas DataFrame in FlowByActivity format
     """
     from esupy.processed_data_mgmt import download_from_remote
@@ -80,15 +82,18 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname, download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+def getFlowBySector(methodname,
+                    download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                     download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
-    Loads stored FlowBySector output or generates it if it doesn't exist, then loads
+    Loads stored FlowBySector output or generates it if it doesn't exist,
+    then loads
     :param methodname: string, Name of an available method for the given class
-    :param download_FBAs_if_missing: bool, if True will attempt to load FBAS used in
-        generating the FBS from remote server prior to generating if file not found locally
-    :param download_FBS_if_missing: bool, if True will attempt to load from remote server
-        prior to generating if file not found locally
+    :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
+        used in generating the FBS from remote server prior to generating if
+        file not found locally
+    :param download_FBS_if_missing: bool, if True will attempt to load from
+        remote server prior to generating if file not found locally
     :return: dataframe in flow by sector format
     """
     from esupy.processed_data_mgmt import download_from_remote
@@ -102,16 +107,20 @@ def getFlowBySector(methodname, download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MIS
                  methodname, fbsoutputpath)
         # download and load the FBS parquet
         subdirectory_dict = {'.log': 'Log'}
-        download_from_remote(fbs_meta, paths, subdirectory_dict=subdirectory_dict)
+        download_from_remote(fbs_meta, paths,
+                             subdirectory_dict=subdirectory_dict)
         fbs = load_preprocessed_output(fbs_meta, paths)
 
     # If remote download not specified and no FBS, generate the FBS
     if fbs is None:
         log.info('%s not found in %s, running functions to generate FBS',
                  methodname, fbsoutputpath)
-        # Generate the fbs, with option to download any required FBAs from Data Commons
-        flowsa.flowbysector.main(method=methodname,
-                                 download_FBAs_if_missing=download_FBAs_if_missing)
+        # Generate the fbs, with option to download any required FBAs from
+        # Data Commons
+        flowsa.flowbysector.main(
+            method=methodname,
+            download_FBAs_if_missing=download_FBAs_if_missing
+        )
         # Now load the fbs
         fbs = load_preprocessed_output(fbs_meta, paths)
         if fbs is None:
