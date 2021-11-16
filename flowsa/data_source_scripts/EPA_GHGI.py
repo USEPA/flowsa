@@ -19,17 +19,16 @@ DEFAULT_YEAR = 9999
 # the YML config isn't available in the ghg_call method.
 # Only keeping years 2010-2018 for the following tables:
 TABLES = {
-
     "Ch 2 - Trends": ["2-1"],
-    "Ch 3 - Energy": ["3-8", "3-9", "3-14", "3-15", "3-21", "3-22",
+    "Ch 3 - Energy": ["3-8", "3-9", "3-10", "3-14", "3-15", "3-22",
                       "3-38", "3-39", "3-40", "3-67", "3-63", "3-65"],
-    "Ch 4 - Industrial Processes": ["4-14", "4-33",  "4-46", "4-50", "4-80", "4-94", "4-99", "4-101"],
+    "Ch 4 - Industrial Processes": ["4-14", "4-33",  "4-46", "4-48", "4-50", "4-80", "4-94", "4-99", "4-101"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
     "Executive Summary": ["ES-5"]
 }
 
 ANNEX_TABLES = {
-    "Annex": ["A-17", "A-76", "A-77", "A-101"]
+     "Annex": ["A-17", "A-76", "A-77", "A-101"]
 }
 
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
@@ -37,7 +36,7 @@ A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)
 A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
                    'Emissions (MMT CO2 Eq.) from Energy Use']
 
-SPECIAL_FORMAT = ["3-22", "4-46", "4-50", "4-80", "A-17", "A-93", "A-94", "A-118", "5-29"]
+SPECIAL_FORMAT = ["3-10", "3-22", "4-46", "4-50", "4-80", "A-17", "A-93", "A-94", "A-118", "5-29"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
 Activity_Format_A = ["T_5_30", "T_A_17", "T_ES_5"]
 Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
@@ -60,6 +59,11 @@ TBL_META = {
         "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
         "activity": "N2O",
         "desc": "Table 3-9:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
+    },
+    "EPA_GHGI_T_3_10": {
+        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "activity": "CH4",
+        "desc": "Table 3-10:  CO2, CH4, and N2O Emissions from Fossil Fuel Combustion by Sector (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_14": {
         "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
@@ -140,7 +144,7 @@ TBL_META = {
     },
     "EPA_GHGI_T_4_50": {
         "class": "Chemicals", "unit": "Other", "compartment": "air",
-        "activity": "MMT CO2e",
+        "activity": "HFC-23",
         "desc": "Table 4-50: HFC-23 Emissions from HCFC-22 Production (MMT CO2 Eq. and kt HFC-23)"
     },
     "EPA_GHGI_T_4_80": {
@@ -161,7 +165,7 @@ TBL_META = {
     },
     "EPA_GHGI_T_4_101": {
         "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
+        "activity": "HFCs and PFCs",
         "desc": "Table 4-101:  Emissions of HFCs and PFCs from "
                 "ODS Substitutes (MMT CO2 Eq.) by Sector"
     },
@@ -348,27 +352,31 @@ def ghg_call(url, response_load, args):
                 if table not in SPECIAL_FORMAT:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
                 elif '3-' in table:
-                    # Skip first two rows, as usual, but make headers the next 3 rows:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                     header=[0, 1, 2], thousands=",")
-                    # The next two rows are headers and the third is units:
-                    new_headers = []
-                    for col in df.columns:
-                        # unit = col[2]
-                        new_header = 'Unnamed: 0'
-                        if 'Unnamed' not in col[0]:
-                            if 'Unnamed' not in col[1]:
-                                new_header = f'{col[0]} {col[1]}'
-                            else:
-                                new_header = col[0]
-                            if 'Unnamed' not in col[2]:
-                                new_header += f' {col[2]}'
+                    if table == '3-10':
+                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                         thousands=",", decimal=".")
+                    else:
+                        # Skip first two rows, as usual, but make headers the next 3 rows:
+                        df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                         header=[0, 1, 2], thousands=",")
+                        # The next two rows are headers and the third is units:
+                        new_headers = []
+                        for col in df.columns:
                             # unit = col[2]
-                        elif 'Unnamed' in col[0] and 'Unnamed' not in col[2]:
-                            new_header = col[2]
-                        new_headers.append(new_header)
-                    df.columns = new_headers
-                    # print('break')
+                            new_header = 'Unnamed: 0'
+                            if 'Unnamed' not in col[0]:
+                                if 'Unnamed' not in col[1]:
+                                    new_header = f'{col[0]} {col[1]}'
+                                else:
+                                    new_header = col[0]
+                                if 'Unnamed' not in col[2]:
+                                    new_header += f' {col[2]}'
+                                # unit = col[2]
+                            elif 'Unnamed' in col[0] and 'Unnamed' not in col[2]:
+                                new_header = col[2]
+                            new_headers.append(new_header)
+                        df.columns = new_headers
+                        # print('break')
                 elif '4-' in table:
                     if table == '4-46':
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
@@ -380,7 +388,7 @@ def ghg_call(url, response_load, args):
                     if table == 'A-17':
                         # A-17  is similar to T 3-23, the entire table is 2012 and
                         # headings are completely different.
-                        if str(year) == '2012':
+                        if str(year) == '2013':
                             df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                              header=[0, 1], thousands=",")
                             new_headers = []
@@ -602,10 +610,10 @@ def ghg_parse(dataframe_list, args):
         df = assign_fips_location_system(df, str(args['year']))
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
         multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_4_46", "EPA_GHGI_T_5_7", "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]
-        source_No_activity = ["EPA_GHGI_T_3_21", "EPA_GHGI_T_3_22"]
+        source_No_activity = ["EPA_GHGI_T_3_22"]
         source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
                              "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
-                             "EPA_GHGI_T_A_77"]
+                             "EPA_GHGI_T_A_77", "EPA_GHGI_T_3_10"]
         source_activity_2 =  ["EPA_GHGI_T_3_38", "EPA_GHGI_T_3_39", "EPA_GHGI_T_3_63"]
         double_activity = ["EPA_GHGI_T_4_48"]
         note_par = ["EPA_GHGI_T_4_14", "EPA_GHGI_T_4_99"]
@@ -650,18 +658,20 @@ def ghg_parse(dataframe_list, args):
                 unit = row["Unit"]
                 if unit.strip() == "MMT  CO2":
                         df.loc[index, 'Unit'] = "MMT CO2e"
-                if row["ActivityConsumedBy"] == "None":
+                if df.loc[index, 'Unit'] != "MMT CO2e":
+                    df = df.drop(index)
+                else:
                     apb_value = row["ActivityProducedBy"]
                     if apb_value in flow_name_list:
                         apbe_value = apb_value
                         if apb_value == "U.S. Territories":
                             df.loc[index, 'Location'] = "99000"
-                        df.loc[index, 'FlowName'] = apbe_value
+                        df.loc[index, 'FlowName'] = "CO2"
                         df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + "All activities"
                         bool_apb = True
                     else:
                         if bool_apb == True:
-                            df.loc[index, 'FlowName'] = apbe_value
+                            df.loc[index, 'FlowName'] = "CO2"
                             apb_txt = df.loc[index, 'ActivityProducedBy']
                             apb_txt = strip_char(apb_txt)
                             if apbe_value == "U.S. Territories":
@@ -673,37 +683,11 @@ def ghg_parse(dataframe_list, args):
                             df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + apb_txt
                         if "Total" == apb_value or "Total " == apb_value:
                             df = df.drop(index)
-
-                else:
-                    apb_value = row["ActivityConsumedBy"]
-                    if apb_value in flow_name_list:
-                        apbe_value = apb_value
-                        df.loc[index, 'FlowName'] = apbe_value
-                        df.loc[index, 'ActivityConsumedBy'] = apbe_value + " " + "All activities"
-                        if apb_value == "U.S. Territories":
-                            df.loc[index, 'Location'] = "99000"
-                        bool_apb = True
-                    else:
-                        if bool_apb == True:
-                            df.loc[index, 'FlowName'] = apbe_value
-                            apb_txt = df.loc[index, 'ActivityConsumedBy']
-                            apb_txt = strip_char(apb_txt)
-                            df.loc[index, 'ActivityConsumedBy'] = apbe_value + " " + apb_txt
-                            if apbe_value == "U.S. Territories":
-                                df.loc[index, 'Location'] = "99000"
-                        else:
-                            apb_txt = df.loc[index, 'ActivityConsumedBy']
-                            apb_txt = strip_char(apb_txt)
-                            df.loc[index, 'ActivityConsumedBy'] = apbe_value + " " + apb_txt
-                    if "Total" == apb_value or "Total " == apb_value:
-                        df = df.drop(index)
-
-
-
         elif source_name in source_activity_1:
             bool_apb = False
             apbe_value = ""
             flow_name_list = ["Electric Power", "Industrial", "Commercial", "Residential", "U.S. Territories",
+                              "U.S. Territories a", "Transportation",
                               "Fuel Type/Vehicle Type a", "Diesel On-Road b", "Alternative Fuel On-Road", "Non-Road c",
                               "Gasoline On-Road b", "Non-Road", "Exploration a", "Production (Total)",
                               "Crude Oil Transportation", "Refining", "Exploration b", "Cropland", "Grassland"]
@@ -711,21 +695,35 @@ def ghg_parse(dataframe_list, args):
                 apb_value = row["ActivityProducedBy"]
                 start_activity = row["FlowName"]
                 if apb_value in flow_name_list:
+                    if "U.S. Territories" in apb_value:
+                        df.loc[index, 'Location'] = "99000"
+                    elif "U.S. Territories" in apbe_value:
+                        df.loc[index, 'Location'] = "99000"
                     apbe_value = apb_value
                     apbe_value = strip_char(apbe_value)
-                    df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
-                    df.loc[index, 'ActivityProducedBy'] = "All activities"
+                    df.loc[index, 'FlowName'] = start_activity
+                    df.loc[index, 'ActivityProducedBy'] = "All activities" + " " + apbe_value
                     bool_apb = True
                 else:
                     if bool_apb == True:
-                        df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
+                        if "U.S. Territories" in apb_value:
+                            df.loc[index, 'Location'] = "99000"
+                        elif "U.S. Territories" in apbe_value:
+                            df.loc[index, 'Location'] = "99000"
+                        df.loc[index, 'FlowName'] = start_activity
                         apb_txt = df.loc[index, 'ActivityProducedBy']
                         apb_txt = strip_char(apb_txt)
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
+                        if source_name == "EPA_GHGI_T_3_10":
+                            df.loc[index, 'FlowName'] = apb_txt
                     else:
+                        if "U.S. Territories" in apb_value:
+                            df.loc[index, 'Location'] = "99000"
+                        elif "U.S. Territories" in apbe_value:
+                            df.loc[index, 'Location'] = "99000"
                         apb_txt = df.loc[index, 'ActivityProducedBy']
                         apb_txt = strip_char(apb_txt)
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
                 if "Total" == apb_value or "Total " == apb_value:
                   df = df.drop(index)
         elif source_name in source_activity_2:
@@ -740,21 +738,21 @@ def ghg_parse(dataframe_list, args):
                     apbe_value = apb_value
                     if apbe_value == "Explorationb":
                         apbe_value = "Exploration"
-                    df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
-                    df.loc[index, 'ActivityProducedBy'] = "All activities"
+                    df.loc[index, 'FlowName'] = start_activity
+                    df.loc[index, 'ActivityProducedBy'] = "All activities" + " " + apbe_value
                     bool_apb = True
                 else:
                     if bool_apb == True:
-                        df.loc[index, 'FlowName'] = start_activity + " " + apbe_value
+                        df.loc[index, 'FlowName'] = start_activity
                         apb_txt = df.loc[index, 'ActivityProducedBy']
                         apb_txt = strip_char(apb_txt)
                         if apb_txt == "Gathering and Boostingc":
                             apb_txt = "Gathering and Boosting"
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
                     else:
                         apb_txt = df.loc[index, 'ActivityProducedBy']
                         apb_txt = strip_char(apb_txt)
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt
+                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
                 if "Total" == apb_value or "Total " == apb_value:
                   df = df.drop(index)
         elif source_name in double_activity:
@@ -763,8 +761,16 @@ def ghg_parse(dataframe_list, args):
         else:
             if source_name in "EPA_GHGI_T_4_80":
                 for index, row in df.iterrows():
-                    df.loc[index, 'ActivityProducedBy'] = df.loc[index, 'Units']
-
+                    df.loc[index, 'FlowName'] = df.loc[index, 'Units']
+                    df.loc[index, 'ActivityProducedBy'] = "Aluminum Production"
+            elif source_name in "EPA_GHGI_T_4_94":
+                for index, row in df.iterrows():
+                    df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
+                    df.loc[index, 'ActivityProducedBy'] = "Electronics Production"
+            elif source_name in "EPA_GHGI_T_4_99":
+                for index, row in df.iterrows():
+                    df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
+                    df.loc[index, 'ActivityProducedBy'] = "ODS Substitute"
             elif source_name in "EPA_GHGI_T_4_33":
                 for index, row in df.iterrows():
                     df.loc[index, 'Unit'] = df.loc[index, 'ActivityProducedBy']
@@ -773,23 +779,32 @@ def ghg_parse(dataframe_list, args):
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
                     df.loc[index, 'ActivityProducedBy'] = apb_value
+            elif source_name == "EPA_GHGI_T_4_50":
+                for index, row in df.iterrows():
+                    apb_value = strip_char(row["ActivityProducedBy"])
+                    df.loc[index, 'ActivityProducedBy'] = "HFC-23 Production"
+                    if "kt" in apb_value:
+                        df.loc[index, 'Unit'] = "kt"
+                    else:
+                        df.loc[index, 'Unit'] = "MMT CO2e"
             elif source_name in note_par:
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
                     if "(" in apb_value:
                         text_split = apb_value.split("(")
                         df.loc[index, 'ActivityProducedBy'] = text_split[0]
-
-
-
+            else:
+                for index, row in df.iterrows():
+                    if "CO2" in df.loc[index, 'Unit']:
+                        df.loc[index, 'Unit'] = "MTT CO2e"
+                    if "U.S. Territory" in df.loc[index, 'ActivityProducedBy']:
+                        df.loc[index, 'Location'] = "99000"
 
             df.drop(df.loc[df['ActivityProducedBy'] == "Total"].index, inplace=True)
             df.drop(df.loc[df['ActivityProducedBy'] == "Total "].index, inplace=True)
+            df.drop(df.loc[df['FlowName'] == "Total"].index, inplace=True)
+            df.drop(df.loc[df['FlowName'] == "Total "].index, inplace=True)
 
- #       elif source_name in only_activity:
-  #          for index, row in df.iterrows():
-   #             if "Total" in apb_value:
-    #                df = df.drop(index)
 
         if source_name in modified_activity_list:
 
