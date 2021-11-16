@@ -4,11 +4,20 @@
 """
 Public API for flowsa
 For standard dataframe formats, see https://github.com/USEPA/flowsa/tree/master/format%20specs
+
+Files are loaded from a user's local directory
+https://github.com/USEPA/flowsa/wiki/Data-Storage#local-storage
+
+or can be downloaded from a remote repository
+https://edap-ord-data-commons.s3.amazonaws.com/index.html?prefix=flowsa/
+
+The most recent version (based on timestamp) of Flow-By-Activity and
+Flow-By-Sector files are loaded when running these functions
 """
 import os
 import pprint
 from esupy.processed_data_mgmt import load_preprocessed_output
-from flowsa.common import load_sourceconfig
+from flowsa.common import load_yaml_dict
 from flowsa.settings import log, sourceconfigpath, flowbysectormethodpath, \
     paths, fbaoutputpath, fbsoutputpath, \
     biboutputpath, DEFAULT_DOWNLOAD_IF_MISSING
@@ -166,7 +175,7 @@ def seeAvailableFlowByModels(flowbytype):
             # drop file extension
             f = os.path.splitext(file)[0]
             if flowbytype == 'FBA':
-                s = load_sourceconfig(f)
+                s = load_yaml_dict(f)
                 try:
                     years = s['years']
                 except KeyError:
@@ -184,3 +193,4 @@ def seeAvailableFlowByModels(flowbytype):
 
     # print data in human-readable format
     pprint.pprint(data_print, width=79, compact=True)
+    return data_print

@@ -12,23 +12,19 @@ from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator,\
     load_fba_w_standardized_units
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
-    load_bea_crosswalk, call_country_code, WITHDRAWN_KEYWORD
+    load_crosswalk, call_country_code, WITHDRAWN_KEYWORD
 from flowsa.validation import compare_df_units
 
 
-def sc_call(**kwargs):
+def sc_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
@@ -41,18 +37,13 @@ def sc_call(**kwargs):
     return df
 
 
-def sc_parse(**kwargs):
+def sc_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
@@ -110,6 +101,8 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
     - us gdp
     :param df: df, FBA format
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param download_FBA_if_missing: bool, True if would like to download missing
+      FBAs from Data Commons, False if FBAs should be generated locally
     :return: df, FBA format, flowamounts converted
     """
 
@@ -121,26 +114,23 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
 
     # drop 31-33
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
-    gdp = gdp.rename(columns={"FlowAmount": "CanDollar"})
+    gdp = gdp.rename(columns={"FlowAmount": "USD"})
 
     # check units before merge
     compare_df_units(df, gdp)
     # merge df
-    df_m = pd.merge(df, gdp[['CanDollar', 'ActivityProducedBy']],
+    df_m = pd.merge(df, gdp[['USD', 'ActivityProducedBy']],
                     how='left', left_on='ActivityConsumedBy',
                     right_on='ActivityProducedBy')
-    df_m['CanDollar'] = df_m['CanDollar'].fillna(0)
+    df_m['USD'] = df_m['USD'].fillna(0)
     df_m = df_m.drop(columns=["ActivityProducedBy_y"])
     df_m = df_m.rename(columns={"ActivityProducedBy_x": "ActivityProducedBy"})
-    df_m = df_m[df_m['CanDollar'] != 0]
+    df_m = df_m[df_m['USD'] != 0]
+    # # convert to kg/USD
+    df_m.loc[:, 'FlowAmount'] = df_m['FlowAmount'] / df_m['USD']
+    df_m.loc[:, 'Unit'] = 'kg/USD'
 
-    exchange_rate = get_Canadian_to_USD_exchange_rate(str(attr['allocation_source_year']))
-    exchange_rate = float(exchange_rate)
-    # convert to mgal/USD
-    df_m.loc[:, 'FlowAmount'] = df_m['FlowAmount'] / (df_m['CanDollar'] / exchange_rate)
-    df_m.loc[:, 'Unit'] = 'Mgal/USD'
-
-    df_m = df_m.drop(columns=["CanDollar"])
+    df_m = df_m.drop(columns=["USD"])
 
     # convert Location to US
     df_m.loc[:, 'Location'] = US_FIPS
@@ -154,7 +144,7 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
                                                 download_FBA_if_missing=download_FBA_if_missing)
 
     # load bea crosswalk
-    cw_load = load_bea_crosswalk()
+    cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates()
     cw = cw[cw['NAICS_2012_Code'].apply(lambda x:
                                         len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)
@@ -175,7 +165,7 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
                      right_on='ActivityProducedBy')
 
     df_m2.loc[:, 'FlowAmount'] = df_m2['FlowAmount'] * (df_m2['us_gdp'])
-    df_m2.loc[:, 'Unit'] = 'Mgal'
+    df_m2.loc[:, 'Unit'] = 'kg'
     df_m2 = df_m2.rename(columns={'ActivityProducedBy_x': 'ActivityProducedBy'})
     df_m2 = df_m2.drop(columns=['ActivityProducedBy_y', 'us_gdp'])
 

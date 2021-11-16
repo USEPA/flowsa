@@ -19,25 +19,18 @@ from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_wit
 from flowsa.data_source_scripts.EIA_CBECS_Land import calculate_total_facility_land_area
 
 
-def eia_mecs_URL_helper(**kwargs):
+def eia_mecs_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param kwargs: potential arguments include:
-                   build_url: string, base url
-                   config: dictionary, items in FBA method yaml
-                   args: dictionary, arguments specified when running flowbyactivity.py
-                   flowbyactivity.py ('year' and 'source')
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
-
-    # load the arguments necessary for function
-    build_url = kwargs['build_url']
-    config = kwargs['config']
-    args = kwargs['args']
-
     # initiate url list
     urls = []
 
@@ -58,20 +51,15 @@ def eia_mecs_URL_helper(**kwargs):
     return urls
 
 
-def eia_mecs_land_call(**kwargs):
+def eia_mecs_land_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-    args = kwargs['args']
-
     # Convert response to dataframe
     df_raw_data = pd.read_excel(io.BytesIO(response_load.content), sheet_name='Table 9.1')
     df_raw_rse = pd.read_excel(io.BytesIO(response_load.content), sheet_name='RSE 9.1')
@@ -167,18 +155,13 @@ def eia_mecs_land_call(**kwargs):
     return df
 
 
-def eia_mecs_land_parse(**kwargs):
+def eia_mecs_land_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     df_array = []
     for dataframes in dataframe_list:
 
@@ -195,7 +178,7 @@ def eia_mecs_land_parse(**kwargs):
             unit_text = flow_name_array[1]
             unit_text_array = unit_text.split(")")
             if unit_text_array[0] == "counts":
-                unit.append(("p"))
+                unit.append("p")
             else:
                 unit.append(unit_text_array[0])
             ACB = row["ActivityConsumedBy"]
@@ -224,7 +207,7 @@ def eia_mecs_land_parse(**kwargs):
     df = assign_fips_location_system(df, args['year'])
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     # modify flowname
     df['FlowName'] = df['Description'] + ', ' + df['FlowName'].str.strip()
@@ -232,57 +215,52 @@ def eia_mecs_land_parse(**kwargs):
     return df
 
 
-def eia_mecs_energy_call(**kwargs):
+def eia_mecs_energy_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-    args = kwargs['args']
-
-    ## load .yaml file containing information about each energy table
-    ## (the .yaml includes information such as column names, units, and which rows to grab)
+    # load .yaml file containing information about each energy table
+    # (the .yaml includes information such as column names, units, and which rows to grab)
     filename = 'EIA_MECS_energy tables'
     sourcefile = datapath + filename + '.yaml'
     with open(sourcefile, 'r') as f:
         table_dict = yaml.safe_load(f)
 
-    ## read raw data into dataframe
-    ## (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
+    # read raw data into dataframe
+    # (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
     df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
                                 sheet_name=0, header=None)
     df_raw_rse = pd.read_excel(io.BytesIO(response_load.content),
                                sheet_name=1, header=None)
 
-    ## retrieve table name from cell A3 of Excel file
+    # retrieve table name from cell A3 of Excel file
     table = df_raw_data.iloc[2][0]
     # drop the table description (retain only table name)
     table = table.split('    ')[0]
 
-    ## for each of the census regions...
-    ## - grab the appropriate rows and columns
-    ## - add column names
-    ## - "unpivot" dataframe from wide format to long format
-    ## - add columns denoting census region, relative standard error, units
-    ## - concatenate census region data into master dataframe
+    # for each of the census regions...
+    # - grab the appropriate rows and columns
+    # - add column names
+    # - "unpivot" dataframe from wide format to long format
+    # - add columns denoting census region, relative standard error, units
+    # - concatenate census region data into master dataframe
     df_data = pd.DataFrame()
     for region in table_dict[args['year']][table]['regions']:
 
-        ## grab relevant columns
-        ## (this is a necessary step because code was retaining some seemingly blank columns)
+        # grab relevant columns
+        # (this is a necessary step because code was retaining some seemingly blank columns)
         # determine number of columns in table, based on number of column names
         num_cols = len(table_dict[args['year']][table]['col_names'])
         # keep only relevant columns
         df_raw_data = df_raw_data.iloc[:, 0:num_cols]
         df_raw_rse = df_raw_rse.iloc[:, 0:num_cols]
 
-        ## grab relevant rows
+        # grab relevant rows
         # get indices for relevant rows
         grab_rows = table_dict[args['year']][table]['regions'][region]
         grab_rows_rse = table_dict[args['year']][table]['rse_regions'][region]
@@ -315,7 +293,7 @@ def eia_mecs_energy_call(**kwargs):
         # add relative standard error data
         df_data_region = pd.merge(df_data_region, df_rse_region)
 
-        ## add units
+        # add units
         # if table name ends in 1, units must be extracted from flow names
         if table[-1] == '1':
             flow_name_array = df_data_region['FlowName'].str.split('\s+\|+\s')
@@ -341,18 +319,13 @@ def eia_mecs_energy_call(**kwargs):
     return df_data
 
 
-def eia_mecs_energy_parse(**kwargs):
+def eia_mecs_energy_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     from flowsa.common import assign_census_regions
 
     # concatenate dataframe list into single dataframe
@@ -374,12 +347,12 @@ def eia_mecs_energy_parse(**kwargs):
     df = assign_census_regions(df)
     df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     # drop rows that reflect subtotals (only necessary in 2014)
     df.dropna(subset=['ActivityConsumedBy'], inplace=True)
 
-    ## replace withheld/unavailable data
+    # replace withheld/unavailable data
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
     # Q = withheld because relative standard error is greater than 50 percent
@@ -406,11 +379,12 @@ def eia_mecs_energy_parse(**kwargs):
     return df
 
 
-def mecs_energy_fba_cleanup(fba, attr):
+def mecs_energy_fba_cleanup(fba, attr, **kwargs):
     """
     Clean up the EIA MECS energy FlowByActivity
     :param fba: df, FBA format
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param kwargs: optional, can also include bool 'download_FBAs_if_missing'
     :return: df, subset of EIA MECS Energy FBA
     """
     # subset the df to only include values where the unit = MJ
@@ -481,6 +455,7 @@ def mecs_land_clean_allocation_mapped_fba_w_sec(df, attr, method):
 
     :param df: The mecs df with sectors after mapped to FEDEFL
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: string, methodname
     :return: df, with additional column flagging rows where sectors should be disaggregated
     """
 

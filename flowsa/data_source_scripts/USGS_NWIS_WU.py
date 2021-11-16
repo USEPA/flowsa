@@ -15,24 +15,19 @@ from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.validation import compare_df_units, calculate_flowamount_diff_between_dfs
 
-def usgs_URL_helper(**kwargs):
+
+def usgs_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param kwargs: potential arguments include:
-                   build_url: string, base url
-                   config: dictionary, items in FBA method yaml
-                   args: dictionary, arguments specified when running flowbyactivity.py
-                   flowbyactivity.py ('year' and 'source')
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
-
-    # load the arguments necessary for function
-    build_url = kwargs['build_url']
-    config = kwargs['config']
-
     # initiate url list for usgs data
     urls_usgs = []
     # call on state acronyms from common.py (and remove entry for DC)
@@ -57,20 +52,15 @@ def usgs_URL_helper(**kwargs):
     return urls_usgs
 
 
-def usgs_call(**kwargs):
+def usgs_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    url = kwargs['url']
-    response_load = kwargs['r']
-
     usgs_data = []
     metadata = []
     with io.StringIO(response_load.text) as fp:
@@ -99,18 +89,13 @@ def usgs_call(**kwargs):
     return df_usgs
 
 
-def usgs_parse(**kwargs):
+def usgs_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     for df in dataframe_list:
         # add columns at national and state level that only exist at the county level
         if 'state_cd' not in df:
@@ -224,7 +209,6 @@ def usgs_parse(**kwargs):
     df['FlowType'] = np.where(df["Description"].str.contains('deliveries'),
                               "ELEMENTARY_FLOW", df['FlowType'])  # is really a "TECHNOSPHERE_FLOW"
 
-
     # standardize usgs activity names
     df = standardize_usgs_nwis_names(df)
 
@@ -309,7 +293,7 @@ def split_name(name):
             upper_case = upper_case.strip() + " " + s
         else:
             lower_case = lower_case.strip() + " " + s
-    return (upper_case, lower_case)
+    return upper_case, lower_case
 
 
 def standardize_usgs_nwis_names(flowbyactivity_df):
@@ -335,8 +319,8 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     for f in fba_activity_fields:
         flowbyactivity_df.loc[flowbyactivity_df[f] == 'Public', f] = 'Public Supply'
         flowbyactivity_df.loc[flowbyactivity_df[f] == 'Irrigation Total', f] = 'Irrigation'
-        flowbyactivity_df.loc[flowbyactivity_df[f] ==
-                                 'Total Thermoelectric Power', f] = 'Thermoelectric Power'
+        flowbyactivity_df.loc[
+            flowbyactivity_df[f] == 'Total Thermoelectric Power', f] = 'Thermoelectric Power'
         flowbyactivity_df.loc[flowbyactivity_df[f] == 'Thermoelectric', f] = 'Thermoelectric Power'
         flowbyactivity_df[f] = flowbyactivity_df[f].astype(str)
 
@@ -472,9 +456,9 @@ def calculate_net_public_supply(df_load):
     # calculate new, net total public supply withdrawals
     # will end up with negative values due to instances of water
     # deliveries coming form surrounding counties
-    df_w_modified.loc[:, 'FlowAmount'] = df_w_modified['FlowAmount'] - \
-                                         (df_w_modified['FlowRatio'] *
-                                          df_w_modified['DomesticDeliveries'])
+    df_w_modified.loc[:, 'FlowAmount'] = \
+        df_w_modified['FlowAmount'] - (df_w_modified['FlowRatio'] *
+                                       df_w_modified['DomesticDeliveries'])
 
     net_ps = df_w_modified.drop(columns=["FlowTotal", "DomesticDeliveries"])
 
@@ -485,8 +469,9 @@ def calculate_net_public_supply(df_load):
     df_d_modified = df_d.drop(columns=['FlowName', 'Flowable', 'Compartment',
                                        'Context', 'FlowUUID'])
     # Also allocate to ground/surface from state ratios
-    df_d_modified = pd.merge(df_d_modified, net_ps[['FlowName', 'Flowable', 'Compartment',
-                                           'Context', 'FlowUUID', 'Location', 'FlowRatio']],
+    df_d_modified = pd.merge(df_d_modified,
+                             net_ps[['FlowName', 'Flowable', 'Compartment',
+                                     'Context', 'FlowUUID', 'Location', 'FlowRatio']],
                              how='left',
                              left_on='Location',
                              right_on='Location')
@@ -567,10 +552,9 @@ def check_golf_and_crop_irrigation_totals(df_load):
 
     if len(df_m3) != 0:
         df_w_missing_crop = df_load.append(df_m3, sort=True, ignore_index=True)
+        return df_w_missing_crop
     else:
-        df_w_missing_crop = df_load.copy()
-
-    return df_w_missing_crop
+        return df_load
 
 
 def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
@@ -642,7 +626,6 @@ def modify_sector_length(df_wsec):
         df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
 
         df = pd.concat([df1, df2], sort=True)
+        return df
     else:
-        df = df1.copy()
-
-    return df
+        return df1

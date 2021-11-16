@@ -11,10 +11,10 @@ Last updated: Thursday, April 16, 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import get_all_state_FIPS_2
+from flowsa.common import get_all_state_FIPS_2, US_FIPS
 from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import load_household_sector_codes
+from flowsa.common import load_crosswalk
 from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2013, \
     get_area_of_urban_land_occupied_by_houses_2013, \
     get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
@@ -22,86 +22,62 @@ from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2
 from flowsa.validation import compare_df_units
 
 
-def mlu_call(**kwargs):
+def mlu_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     with io.StringIO(response_load.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
 
-def mlu_parse(**kwargs):
+def mlu_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
-    output = pd.DataFrame()
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False)
-    data = {}
-    df_columns = df.columns.tolist()
-    location = ""
+    df = pd.concat(dataframe_list, sort=False
+                   ).drop(columns=['SortOrder', 'Region']
+                          ).rename(columns={'Region or State': 'State'})
 
+    # use "melt" fxn to convert colummns into rows
+    df = df.melt(id_vars=["State", "Year"],
+                 var_name="FlowName",
+                 value_name="FlowAmount")
+
+    # load fips codes and merge
     fips = get_all_state_FIPS_2()
-    for index, row in df.iterrows():
-        if int(row["Year"]) == int(args['year']):
-            if (row["Region or State"] != "Northeast") & \
-                    (row["Region or State"] != "Lake States") & \
-                    (row["Region or State"] != "Corn Belt") & \
-                    (row["Region or State"] != "Northern Plains") & \
-                    (row["Region or State"] != "Appalachian") & \
-                    (row["Region or State"] != "Southeast") & \
-                    (row["Region or State"] != "Delta States") & \
-                    (row["Region or State"] != "Southern Plains") & \
-                    (row["Region or State"] != "Mountain") & \
-                    (row["Region or State"] != "Pacific") & \
-                    (row["Region or State"] != "48 States"):
-                if row['Region or State'] == "U.S. total":
-                    location = "00000"
-                else:
-                    for i, fips_row in fips.iterrows():
-                        if fips_row["State"] == row['Region or State']:
-                            location = fips_row["FIPS_2"] + "000"
+    fips['State'] = fips['State'].apply(lambda x: x.title())
+    fips['FIPS_2'] = fips['FIPS_2'] + '000'
+    dfm = df.merge(fips, how='left').rename(columns={'FIPS_2': 'Location'})
+    dfm['Location'] = np.where(dfm['State'] == "U.S. total", US_FIPS, dfm['Location'])
 
-                for col in df_columns:
-                    if (col != "SortOrder") & (col != "Region") & \
-                            (col != "Region or State") & (col != "Year"):
-                        data["Class"] = "Land"
-                        data["SourceName"] = "USDA_ERS_MLU"
-                        # flownames are the same as ActivityConsumedBy for
-                        # purposes of mapping elementary flows
-                        data['FlowName'] = col
-                        data["FlowAmount"] = int(row[col])
-                        data["ActivityProducedBy"] = None
-                        data["ActivityConsumedBy"] = col
-                        data['FlowType'] = 'ELEMENTARY_FLOW'
-                        data["Compartment"] = 'ground'
-                        data["Location"] = location
-                        data["Year"] = int(args['year'])
-                        data["Unit"] = "Thousand Acres"
-                        data['DataReliability'] = 5  # tmp
-                        data['DataCollection'] = 5  # tmp
-                        output = output.append(data, ignore_index=True)
-    output = assign_fips_location_system(output, args['year'])
+    # drop null values
+    dfm2 = dfm[~dfm['Location'].isnull()].reset_index(drop=True)
+    dfm3 = assign_fips_location_system(dfm2, args['year'])
+    # sub by year
+    dfm3['Year'] = dfm3['Year'].astype(str)
+    dfm3 = dfm3[dfm3['Year'] == args['year']].reset_index(drop=True)
 
-    return output
+    dfm3["Class"] = "Land"
+    dfm3["SourceName"] = args['source']
+    dfm3["ActivityProducedBy"] = None
+    dfm3["ActivityConsumedBy"] = dfm3['FlowName']
+    dfm3['FlowType'] = 'ELEMENTARY_FLOW'
+    dfm3["Compartment"] = 'ground'
+    dfm3["Unit"] = "Thousand Acres"
+    dfm3['DataReliability'] = 5  # tmp
+    dfm3['DataCollection'] = 5  # tmp
+
+    return dfm3
 
 
 def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
@@ -294,7 +270,7 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
     rural_res = get_area_of_rural_land_occupied_by_houses_2013()
 
     # household codes
-    household = load_household_sector_codes()
+    household = load_crosswalk('household')
     household = household['Code'].drop_duplicates().tolist()
 
     # in df, where sector is a personal expenditure value, and

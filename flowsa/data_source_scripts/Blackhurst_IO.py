@@ -20,20 +20,15 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.validation import compare_df_units
 
 
-# Read pdf into list of DataFrame
-def bh_call(**kwargs):
+def bh_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
@@ -45,17 +40,13 @@ def bh_call(**kwargs):
     return bh_df
 
 
-def bh_parse(**kwargs):
+def bh_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
@@ -72,12 +63,12 @@ def bh_parse(**kwargs):
     df = assign_fips_location_system(df, '2002')
     df['Year'] = '2002'
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  #tmp
+    df['DataCollection'] = 5  # tmp
 
     return df
 
 
-def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
+def convert_blackhurst_data_to_kg_per_year(df, **kwargs):
     """
     Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
@@ -104,17 +95,17 @@ def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
 
     bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']) *
                                           (bh_df_revised['FlowAmount_y']))
-    bh_df_revised.loc[:, 'Unit'] = 'gal'
+    bh_df_revised.loc[:, 'Unit'] = 'kg'
     # drop columns
     bh_df_revised = bh_df_revised.drop(columns=["FlowAmount_x", "FlowAmount_y",
                                                 'ActivityProducedBy_y'])
     bh_df_revised = bh_df_revised.rename(columns={"ActivityProducedBy_x":
-                                                      "ActivityProducedBy"})
+                                                  "ActivityProducedBy"})
 
     return bh_df_revised
 
 
-def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs):
+def convert_blackhurst_data_to_kg_per_employee(df_wsec, attr, method, **kwargs):
     """
     Load BLS employment data and use to transform original units to gallons per employee
     :param df_wsec: df, includes sector columns
@@ -163,7 +154,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs)
     # calculate gal/employee in 2002
     df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] *
                                       df_wratio['EmployeeRatio']) / df_wratio['Employees']
-    df_wratio.loc[:, 'Unit'] = 'gal/employee'
+    df_wratio.loc[:, 'Unit'] = 'kg/p'
 
     # drop cols
     df_wratio = df_wratio.drop(columns=['Sector', 'Employees', 'EmployeeRatio'])
@@ -180,6 +171,8 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_m
     This method is based off the Water Satellite Table created by Yang and Ingwersen, 2017
     :param df_to_scale: df, fba dataframe to be modified
     :param attr: dictionary, attribute data from method yaml for activity set
+    :param download_FBA_if_missing: bool, indicate if missing FBAs should be downloaded
+      from Data Commons
     :return: scaled fba results
     """
 
@@ -191,7 +184,7 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_m
 
     pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) &
                      (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
-    pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
+    pv = pv_sub['FlowAmount'].loc[0]
 
     # sum quantity of water withdrawals already allocated to sectors
     av = df_to_scale['FlowAmount'].sum()
@@ -201,7 +194,7 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_m
 
     # subset df to scale into oil and non-oil sectors
     df_to_scale['sector_label'] = np.where(
-        df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil','nonoil')
+        df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'), 'oil', 'nonoil')
     df_to_scale['ratio'] = np.where(df_to_scale['sector_label'] == 'oil', 2 / 3, 1 / 3)
     df_to_scale['label_sum'] = df_to_scale.groupby(['Location',
                                                     'sector_label'])['FlowAmount'].transform('sum')

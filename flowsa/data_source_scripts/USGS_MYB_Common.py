@@ -1,5 +1,12 @@
+# USGS_MYB_Common.py (flowsa)
+# !/usr/bin/env python3
+# coding=utf-8
+
+"""
+Common functions used when loading and parsing USGS Mineral Yearbook data
+"""
 from string import digits
-from flowsa.common import *
+from flowsa.common import US_FIPS
 from flowsa.settings import log
 
 
@@ -18,8 +25,11 @@ def usgs_myb_year(years, current_year_str):
 
 
 def usgs_myb_name(USGS_Source):
-    """Takes the USGS source name and parses it so it can be used in other parts of Flow by activity."""
-    #USGS_MYB_Kyanite
+    """
+    Takes the USGS source name and parses it so it can be used in other parts of Flow by activity.
+    :param USGS_Source: string, usgs source name
+    :return:
+    """
     source_split = USGS_Source.split("_")
     name_cc = str(source_split[2])
     name = ""
@@ -32,8 +42,12 @@ def usgs_myb_name(USGS_Source):
     name = name.strip()
     return name
 
+
 def usgs_myb_static_varaibles():
-    """Populates the data values for Flow by activity that are the same for all of USGS_MYB Files"""
+    """
+    Populates the data values for Flow by activity that are the same for all of USGS_MYB Files
+    :return:
+    """
     data = {}
     data["Class"] = "Geological"
     data['FlowType'] = "ELEMENTARY_FLOWS"
@@ -43,9 +57,9 @@ def usgs_myb_static_varaibles():
     data["ActivityConsumedBy"] = None
     return data
 
+
 def usgs_myb_remove_digits(value_string):
     """Eliminates numbers in a string"""
     remove_digits = str.maketrans('', '', digits)
     return_string = value_string.translate(remove_digits)
     return return_string
-

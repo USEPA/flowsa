@@ -6,7 +6,7 @@
 Create a crosswalk for CalRecycle Waste Characterization to NAICS 2012.
 """
 import pandas as pd
-from flowsa.common import datapath, externaldatapath
+from flowsa.settings import datapath, externaldatapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 from flowsa.data_source_scripts.CalRecycle_WasteCharacterization import produced_by
 
@@ -19,21 +19,22 @@ def assign_naics(df):
     """
     
     mapping = pd.read_csv(externaldatapath + "California_Commercial_bySector_2014_Mapping.csv",
-                          dtype = 'str')
-    mapping = mapping.melt(var_name = 'Activity',
-                           value_name = 'Sector'
+                          dtype='str')
+    mapping = mapping.melt(var_name='Activity',
+                           value_name='Sector'
                            ).dropna().reset_index(drop=True)
     mapping['Sector'] = mapping['Sector'].astype(str)
     mapping['Activity'] = mapping['Activity'].map(lambda x: produced_by(x))
-    df = df.merge(mapping, on = 'Activity')
+    df = df.merge(mapping, on='Activity')
 
     # append Multifamily Sector to PCE
-    df = df.append({'Activity':'Multifamily',
-                    'ActivitySourceName':'CalRecycle_WasteCharacterization',
-                    'Sector':'F010'},
+    df = df.append({'Activity': 'Multifamily',
+                    'ActivitySourceName': 'CalRecycle_WasteCharacterization',
+                    'Sector': 'F010'},
                    ignore_index=True)
     
     return df
+
 
 if __name__ == '__main__':
     # select years to pull unique activity names

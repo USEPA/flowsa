@@ -19,8 +19,8 @@ Spread | Numeric | N | The value for the given measure of spread.
 DistributionType | String | N | The form of the frequency distribution, if given. Acceptable values are 'NORMAL', 'LOGNORMAL', 'TRIANGULAR', 'UNIFORM'.
 Min | Numeric | N | The minimum FlowAmount, if provided for the data range. 
 Max | Numeric | N | The maximum FlowAmount, if provided for the data range.
-DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md)
-DataCollection | Numeric | Y | A score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../DataQualityPedigreeMatrix.md)
+DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md)
+DataCollection | Numeric | Y | A score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md)
 Description | String | Y | Original description of the flow
 
 *At minimum, either ActivityProducedBy or ActivityConsumedBy must be present. If there is a transfer between activities, both must be present.

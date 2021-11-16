@@ -12,8 +12,8 @@ from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, \
-    load_source_catalog, \
-    load_sector_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
+    load_yaml_dict, \
+    load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
     fba_default_grouping_fields, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
 
@@ -43,15 +43,14 @@ def check_if_activities_match_sectors(fba):
     activities = []
     for f in fba_activity_fields:
         activities.extend(fba[f])
-    #activities.remove("None")
 
     # Get list of module default sectors
-    flowsa_sector_list = list(load_sector_crosswalk()[SECTOR_SOURCE_NAME])
+    flowsa_sector_list = list(load_crosswalk('sector')[SECTOR_SOURCE_NAME])
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
         vLog.debug("%s activities not matching sectors in default %s list",
-                  str(len(activities_missing_sectors)), SECTOR_SOURCE_NAME)
+                   str(len(activities_missing_sectors)), SECTOR_SOURCE_NAME)
         return activities_missing_sectors
 
 
@@ -98,9 +97,8 @@ def check_if_data_exists_at_less_aggregated_geoscale(df, geoscale, activityname)
     In the event data does not exist at specified geoscale,
     check if data exists at less aggregated level
     :param df: Either flowbyactivity or flowbysector dataframe
-    :param data_to_check: Either an activity name (ex. 'Domestic') or a sector (ex. '1124')
     :param geoscale: national, state, or county
-    :param flowbytype: 'fba' for flowbyactivity, 'fbs' for flowbysector
+    :param activityname: str, activity col names to check
     :return: str, geoscale to use
     """
 
@@ -178,8 +176,8 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config, attr):
                                dropna=False, as_index=False).agg({"FlowAmountRatio": sum})
     # keep only rows of specified sector length
     flow_alloc_df4 = flow_alloc_df3[flow_alloc_df3['SectorLength'] ==
-                          sector_level_key[config['target_sector_level']
-                          ]].reset_index(drop=True)
+                                    sector_level_key[config['target_sector_level']
+                                    ]].reset_index(drop=True)
     # keep data where the flowamountratio is greater than or less than 1 by 0.005
     tolerance = 0.01
     flow_alloc_df5 = flow_alloc_df4[(flow_alloc_df4['FlowAmountRatio'] < 1 - tolerance) |
@@ -193,7 +191,7 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config, attr):
 
     # add to validation log
     log.info('Save the summary table of flow allocation ratios for each sector length for '
-              '%s in validation log', activity_set)
+             '%s in validation log', activity_set)
     # if df not empty, print, if empty, print string
     if flow_alloc_df5.empty:
         vLogDetailed.info('Flow allocation ratios for %s all round to 1', activity_set)
@@ -254,7 +252,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
                                                                      'FlowAmount_Modified': sum})
     # column calculating difference
     dfagg['FlowAmount_Difference'] = dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
-    dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference']/
+    dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference'] /
                                    dfagg['FlowAmount_Original']) * 100
     # drop rows where difference = 0
     dfagg2 = dfagg[dfagg['FlowAmount_Difference'] != 0].reset_index(drop=True)
@@ -296,11 +294,11 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
-    if load_source_catalog()[source_name]['sector-like_activities']:
+    if load_yaml_dict('source_catalog')[source_name]['sector-like_activities']:
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector ratios '
-                  'for a dataset with sector-like activities because if there '
-                  'are modifications to flowamounts for a sector, then the '
-                  'ratios will be different')
+                   'for a dataset with sector-like activities because if there '
+                   'are modifications to flowamounts for a sector, then the '
+                   'ratios will be different')
     else:
         # subset fba df
         fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType',
@@ -337,7 +335,7 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
         df_merge = fba_agg.merge(fbs_agg,
                                  left_on=['ActivityProducedBy', 'ActivityConsumedBy',
                                           'Flowable', 'Unit', 'FlowType', 'Context',
-                                          'Location','LocationSystem', 'Year'],
+                                          'Location', 'LocationSystem', 'Year'],
                                  right_on=['ActivityProducedBy', 'ActivityConsumedBy',
                                            'Flowable', 'Unit', 'FlowType', 'Context',
                                            'Location', 'LocationSystem', 'Year'],
@@ -401,7 +399,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
               'the subset Flow-By-Sector FlowAmount total.')
 
     # load source catalog
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
     src_info = cat[source_name]
 
     # determine from scale
@@ -418,10 +416,10 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
         fba = fba[['Class', 'FlowAmount', 'Unit', 'Context', 'ActivityProducedBy',
-                        'ActivityConsumedBy', 'Location', 'LocationSystem']]
+                   'ActivityConsumedBy', 'Location', 'LocationSystem']]
         # rename the activity cols to sector cols for purposes of aggregation
         fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
-                                    'ActivityConsumedBy': 'SectorConsumedBy'})
+                                  'ActivityConsumedBy': 'SectorConsumedBy'})
         group_cols_agg = ['Class', 'Context', 'Unit', 'Location',
                           'LocationSystem', 'SectorProducedBy', 'SectorConsumedBy']
         fba = sector_aggregation(fba, group_cols_agg)
@@ -500,14 +498,14 @@ def compare_fba_geo_subset_and_fbs_output_totals(fba_load, fbs_load, activity_se
 
         # log output
         log.info('Save the comparison of FlowByActivity load to FlowBySector '
-                  'total FlowAmounts for %s in validation log file', activity_set)
+                 'total FlowAmounts for %s in validation log file', activity_set)
         # if df not empty, print, if empty, print string
         if df_v.empty:
             vLogDetailed.info('Percent difference for %s all round to 0', activity_set)
         else:
             vLogDetailed.info('Comparison of FBA load to FBS total '
-                          'FlowAmounts for %s: '
-                          '\n {}'.format(df_v.to_string()), activity_set)
+                              'FlowAmounts for %s: '
+                              '\n {}'.format(df_v.to_string()), activity_set)
     except:
         vLog.info('Error occurred when comparing total FlowAmounts '
                   'for FlowByActivity and FlowBySector')
@@ -533,7 +531,6 @@ def check_summation_at_sector_lengths(df):
     df2 = df2[~df2['Sector'].isnull()]
 
     df2 = df2.assign(SectorLength=len(df2['Sector']))
-    # df2 = df2.assign(SectorLength=df2['Sector'].apply(lambda x: len(x)))
 
     # sum flowamounts by sector length
     denom_df = df2.copy()
@@ -625,7 +622,7 @@ def melt_naics_crosswalk():
     """
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
-    cw_load = load_sector_crosswalk()
+    cw_load = load_crosswalk('sector')
 
     # create melt table of possible 2007 and 2017 naics that can be mapped to 2012
     cw_melt = cw_load.melt(id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
@@ -662,7 +659,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     df = replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
 
     # load the mastercroswalk and subset by sectorsourcename, save values to list
-    cw_load = load_sector_crosswalk()
+    cw_load = load_crosswalk('sector')
     cw = cw_load[sectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
@@ -684,7 +681,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     # loop through the df headers and determine if value is not in crosswalk list
     if len(non_naics) != 0:
         vLog.debug('Checking if sectors represent a different '
-                  'NAICS year, if so, replace with %s', sectorsourcename)
+                   'NAICS year, if so, replace with %s', sectorsourcename)
         for c in column_headers:
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
@@ -715,7 +712,6 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
                                    'DataCollection', 'Description')
         # list of column headers to group aggregation by
         groupby_cols = [e for e in df.columns.values.tolist() if e not in possible_column_headers]
-        # groupby_cols = list(df.select_dtypes(include=['object']).columns)
         df = aggregator(df, groupby_cols)
 
     # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
@@ -726,7 +722,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
                                                     'ActivityProducedBy']].values.ravel('K'))
             activities_dropped = list(filter(lambda x: x is not None, activities_dropped))
             vLog.debug('Dropping rows where the Activity columns contain %s',
-                      ', '.join(activities_dropped))
+                       ', '.join(activities_dropped))
         df = df[~((df['SectorConsumedBy'].isnull()) &
                   (df['SectorProducedBy'].isnull()))].reset_index(drop=True)
     else:
@@ -758,7 +754,8 @@ def compare_FBS_results(fbs1_load, fbs2_load, ignore_metasources=False):
     merge_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
                   'SectorSourceName', 'Context', 'Location', 'LocationSystem',
                   'Unit', 'FlowType', 'Year', 'MetaSources']
-    if ignore_metasources: merge_cols.remove('MetaSources')
+    if ignore_metasources:
+        merge_cols.remove('MetaSources')
     # check units
     compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
@@ -802,11 +799,12 @@ def compare_geographic_totals(df_subset, df_load, sourcename, attr, activity_set
         nat = nat[(nat[fba_activity_fields[0]].isin(activity_names)) |
                   (nat[fba_activity_fields[1]].isin(activity_names)
                    )].reset_index(drop=True)
+        nat = replace_strings_with_NoneType(nat)
         # drop the geoscale in df_subset and sum
         sub = df_subset.assign(Location=US_FIPS)
         # depending on the datasource, might need to rename some strings for national comparison
         sub = rename_column_values_for_comparison(sub, sourcename)
-        sub2 = aggregator(sub,fba_default_grouping_fields).rename(
+        sub2 = aggregator(sub, fba_default_grouping_fields).rename(
             columns={'FlowAmount': 'FlowAmount_sub'})
 
         # compare df
@@ -852,8 +850,7 @@ def rename_column_values_for_comparison(df, sourcename):
     # and ground/surface water. Therefore, to compare subset data to national level, rename
     # to match national values.
     if sourcename == 'USGS_NWIS_WU':
-        df['FlowName'] = df['FlowName'].str.replace('fresh', 'total', regex=True)
-        df['FlowName'] = df['FlowName'].str.replace('saline', 'total', regex=True)
+        df['FlowName'] = np.where(df['ActivityConsumedBy'] != 'Livestock', 'total', df['FlowName'])
         df['Compartment'] = df['Compartment'].str.replace('ground', 'total', regex=True)
         df['Compartment'] = df['Compartment'].str.replace('surface', 'total', regex=True)
 

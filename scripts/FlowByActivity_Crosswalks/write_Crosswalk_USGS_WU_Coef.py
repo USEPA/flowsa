@@ -1,7 +1,6 @@
 # write_Crosswalk_USGS_WU_Coef.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the USGS Water Use Coefficients
@@ -12,6 +11,7 @@ Activity Names and manually assigning to NAICS
 import pandas as pd
 from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
+
 
 def assign_naics(df):
     """
@@ -34,7 +34,6 @@ def assign_naics(df):
     # hog and pig farming: 1122
     df.loc[df['Activity'] == 'Hogs and pigs', 'Sector'] = '1122'
 
-
     # poultry and egg production: 1123
 
     # chicken egg production: 11231
@@ -53,7 +52,6 @@ def assign_naics(df):
         pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11239']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
                      ), ignore_index=True, sort=True)
-
 
     # sheep and goat farming: 1124
 
@@ -78,7 +76,6 @@ def assign_naics(df):
         pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11293']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
                      ), ignore_index=True, sort=True)
-
 
     # all other animal production: 11299, manually add row
     df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Sheep and lambs', 'NAICS_2012_Code', '11299']],

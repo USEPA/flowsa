@@ -7,10 +7,11 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
-from flowsa.common import activity_fields, load_source_catalog, \
-    load_sector_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
+from flowsa.common import load_yaml_dict, \
+    fba_activity_fields, SECTOR_SOURCE_NAME
+from flowsa.schema import activity_fields
 from flowsa.settings import crosswalkpath, log
-from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
+from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
@@ -24,7 +25,7 @@ def get_activitytosector_mapping(source):
         source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
-    mapping = pd.read_csv(crosswalkpath +'Crosswalk_'+source+'_toNAICS.csv',
+    mapping = pd.read_csv(f'{crosswalkpath}Crosswalk_{source}_toNAICS.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
     return mapping
@@ -42,7 +43,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
     """
 
     # First check if source activities are NAICS like - if so make it into a mapping file
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
 
     # for s in pd.unique(flowbyactivity_df['SourceName']):
     s = pd.unique(flowbyactivity_df['SourceName'])[0]
@@ -60,7 +61,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
             levelofSectoragg = kwargs['overwrite_sectorlevel']
     # if data are provided in NAICS format, use the mastercrosswalk
     if src_info['sector-like_activities']:
-        cw = load_sector_crosswalk()
+        cw = load_crosswalk('sector')
         sectors = cw.loc[:, [SECTOR_SOURCE_NAME]]
         # Create mapping df that's just the sectors at first
         mapping = sectors.drop_duplicates()
@@ -94,14 +95,15 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         flowbysector_field = v[1]["flowbysector"]
         sector_type_field = sector_direction+'SectorType'
         mappings_df_tmp = mapping.rename(columns={'Activity': flowbyactivity_field,
-                                                      'Sector': flowbysector_field,
-                                                      'SectorType': sector_type_field})
+                                                  'Sector': flowbysector_field,
+                                                  'SectorType': sector_type_field})
         # column doesn't exist for sector-like activities, so ignore if error occurs
         mappings_df_tmp = mappings_df_tmp.drop(columns=['ActivitySourceName'], errors='ignore')
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
-        flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
+        flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df, mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
-    for c in ['ProducedBySectorType', 'ConsumedBySectorType']:
+    for c in ['SectorProducedBy', 'ProducedBySectorType',
+              'SectorConsumedBy', 'ConsumedBySectorType']:
         flowbyactivity_wsector_df[c] = flowbyactivity_wsector_df[c].replace({np.nan: None})
     # add sector source name
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
@@ -124,7 +126,7 @@ def expand_naics_list(df, sectorsourcename):
     """
 
     # load master crosswalk
-    cw = load_sector_crosswalk()
+    cw = load_crosswalk('sector')
     sectors = cw.loc[:, [sectorsourcename]]
     # drop duplicates
     sectors = sectors.drop_duplicates().dropna()
@@ -185,7 +187,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
                     subset_by_column_value = True
 
     # load the source catalog
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
     src_info = cat[source]
     if src_info['sector-like_activities'] is False:
         # read in source crosswalk
@@ -205,8 +207,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
         else:
             fba_allocation_subset = \
                 fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(sector_list)) |
-                                   (fba_allocation[fbs_activity_fields[1]].isin(sector_list))]. \
-                    reset_index(drop=True)
+                                   (fba_allocation[fbs_activity_fields[1]].isin(sector_list)
+                                    )].reset_index(drop=True)
     else:
         if 'Sector' in fba_allocation:
             fba_allocation_subset =\
@@ -229,14 +231,14 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
             fba_allocation_subset = \
                 fba_allocation.loc[
                     (fba_allocation[fbs_activity_fields[0]].isin(modified_activitynames)) |
-                    (fba_allocation[fbs_activity_fields[1]].isin(modified_activitynames))]. \
-                    reset_index(drop=True)
+                    (fba_allocation[fbs_activity_fields[1]].isin(modified_activitynames)
+                     )].reset_index(drop=True)
 
         else:
             fba_allocation_subset =\
                 fba_allocation.loc[(fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
-                                   (fba_allocation[fbs_activity_fields[1]].isin(activitynames))].\
-                    reset_index(drop=True)
+                                   (fba_allocation[fbs_activity_fields[1]].isin(activitynames)
+                                    )].reset_index(drop=True)
 
     # if activity set names included in function call and activity set names is not null, \
     # then subset data based on value and column specified
@@ -313,7 +315,7 @@ def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
     mapped_df = apply_flow_mapping(fba, from_fba_source,
                                    flow_type=flow_type,
                                    keep_unmapped_rows=keep_unmapped_rows,
-                                   ignore_source_name = ignore_source_name)
+                                   ignore_source_name=ignore_source_name)
 
     if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so can continue working on the FBS
@@ -363,7 +365,7 @@ def get_sector_list(sector_level):
     :return: list, sectors at specified sector level
     """
 
-    cw = load_sector_length_crosswalk()
+    cw = load_crosswalk('sector length')
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list

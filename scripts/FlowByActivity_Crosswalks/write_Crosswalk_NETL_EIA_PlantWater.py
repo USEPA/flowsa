@@ -1,7 +1,6 @@
 # write_Crosswalk_UDSA_CoA_Cropland.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USDA_CoA_Cropland to NAICS_12.
@@ -14,7 +13,7 @@ on NAICS definitions from the Census.
 7/8 digit NAICS align with USDA ERS IWMS
 
 """
-import pandas as pd
+
 from flowsa.common import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 

@@ -1,12 +1,6 @@
 # USGS_MYB_Salt.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
-
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
-
 """
 Projects
 /
@@ -30,19 +24,42 @@ Data for: Salt; salt
 
 Years = 2013+
 """
+import io
+import pandas as pd
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.data_source_scripts.USGS_MYB_Common import *
 
 SPAN_YEARS = "2013-2017"
 
+
 def usgs_salt_url_helper(build_url, config, args):
-    """Used to substitute in components of usgs urls"""
+    """
+    This helper function uses the "build_url" input from flowbyactivity.py, which
+    is a base url for data imports that requires parts of the url text string
+    to be replaced with info specific to the data year.
+    This function does not parse the data, only modifies the urls from which data is obtained.
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    """
 
     url = build_url
     return [url]
 
 
-def usgs_salt_call(url, usgs_response, args):
-    """Calls the excel sheet for nickel and removes extra columns"""
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+def usgs_salt_call(url, r, args):
+    """
+    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    :param url: string, url
+    :param r: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
+    :return: pandas dataframe of original source data
+    """
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
     df_data_one = pd.DataFrame(df_raw_data_one.loc[6:11]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
@@ -56,7 +73,6 @@ def usgs_salt_call(url, usgs_response, args):
             col_name = "Unnamed: " + str(x)
             del df_data_one[col_name]
             del df_data_two[col_name]
-
 
     if len(df_data_one. columns) == 11:
         df_data_one.columns = ["Production", "space_1",  "year_1", "space_3", "year_2",
@@ -80,9 +96,13 @@ def usgs_salt_call(url, usgs_response, args):
     return df_data
 
 
-
 def usgs_salt_parse(dataframe_list, args):
-    """Parsing the USGS data into flowbyactivity format."""
+    """
+    Combine, parse, and format the provided dataframes
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity specifications
+    """
     data = {}
     row_to_use = ["Quantity", "Total"]
     prod = ""
@@ -106,7 +126,7 @@ def usgs_salt_parse(dataframe_list, args):
                 data["Unit"] = "Thousand Metric Tons"
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 if str(df.iloc[index][col_name]) == "W":
-                    data["FlowAmount"] = withdrawn_keyword
+                    data["FlowAmount"] = WITHDRAWN_KEYWORD
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod

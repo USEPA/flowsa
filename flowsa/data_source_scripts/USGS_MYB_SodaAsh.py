@@ -19,13 +19,14 @@ https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-
 
 import io
 import math
-from string import digits
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
+from flowsa.common import WITHDRAWN_KEYWORD
 
-SPAN_YEARS = "2013-2017"
+SPAN_YEARS = "2010-2017"
 SPAN_YEARS_T4 = ["2016", "2017"]
+
 
 def description(value, code):
     """
@@ -54,61 +55,54 @@ def description(value, code):
     return return_val
 
 
-def soda_url_helper(**kwargs):
+def soda_url_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param kwargs: potential arguments include:
-                   build_url: string, base url
-                   config: dictionary, items in FBA method yaml
-                   args: dictionary, arguments specified when running flowbyactivity.py
-                   flowbyactivity.py ('year' and 'source')
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
-
-    # load the arguments necessary for function
-    build_url = kwargs['build_url']
-    config = kwargs['config']
-    args = kwargs['args']
-
-    # URL Format, replace __year__ and __format__, either xls or xlsx.
     url = build_url
+    url = url.replace('__format__', str(config['formats'][args["year"]]))
+    url = url.replace('__url_text__', str(config['url_texts'][args["year"]]))
     return [url]
 
 
-def soda_call(**kwargs):
+def soda_call(url, r, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param url: string, url
+    :param r: df, response from url call
+    :param args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
 
-    col_to_use = ["Production", "NAICS code", "End use"]
-    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
+    col_to_use = ["Production", "NAICS code", "End use", "year_5", "total"]
 
     if str(args["year"]) in SPAN_YEARS_T4:
-        df_raw_data = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T4')# .dropna()
+        df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4')
         df_data_one = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
         df_data_one = df_data_one.reset_index()
         del df_data_one["index"]
         if len(df_data_one.columns) == 23:
-            df_data_one.columns = ["NAICS code", "space_1", "End use", "space_2", "y1_q1", "space_3", "y1_q2",
+            df_data_one.columns = ["NAICS code", "space_1", "Production", "space_2", "y1_q1", "space_3", "y1_q2",
                                    "space_4", "y1_q3", "space_5", "y1_q4", "space_6", "year_4", "space_7", "y2_q1",
                                    "space_8", "y2_q2", "space_9", "y2_q3", "space_10", "y2_q4", "space_11", "year_5"]
+        elif len(df_data_one.columns) == 17:
+            df_data_one.columns = ["NAICS code", "space_1", "Production", "space_2", "last_year", "space_3", "y1_q1",
+                                   "space_4", "y1_q2", "space_5", "y1_q3", "space_6", "y1_4", "space_7", "year_5",
+                                   "space_8", "space_9"]
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(usgs_response.content), sheet_name='T1')  # .dropna()
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
     df_data_two = pd.DataFrame(df_raw_data_two.loc[6:18]).reindex()
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
-
 
     if len(df_data_two.columns) == 11:
         df_data_two.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
@@ -133,18 +127,13 @@ def soda_call(**kwargs):
     return df_data
 
 
-def soda_parse(**kwargs):
+def soda_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     total_glass = 0
 
     data = {}
@@ -152,7 +141,7 @@ def soda_parse(**kwargs):
     prod = ""
     name = usgs_myb_name(args["source"])
     des = name
-    col_name = usgs_myb_year(SPAN_YEARS, args["year"])
+    col_name = "year_5"
     dataframe = pd.DataFrame()
     for df in dataframe_list:
         for index, row in df.iterrows():
@@ -177,7 +166,7 @@ def soda_parse(**kwargs):
                     data["Year"] = str(args["year"])
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                     if str(df.iloc[index][col_name]) == "W":
-                        data["FlowAmount"] = withdrawn_keyword
+                        data["FlowAmount"] = WITHDRAWN_KEYWORD
                     data["Description"] = des
                     data["ActivityProducedBy"] = name
                     data['FlowName'] = name + " " + prod
@@ -189,7 +178,8 @@ def soda_parse(**kwargs):
                 data["Compartment"] = "air"
                 data["Description"] = ""
                 data['ActivityConsumedBy'] = description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
-                data['FlowName'] = name  + " " + description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
+                data['FlowName'] = name + " " + description(df.iloc[index]["End use"],
+                                                            df.iloc[index]["NAICS code"])
                 if df.iloc[index]["End use"].strip() == "Glass:":
                     total_glass = int(df.iloc[index]["NAICS code"])
                 elif data['ActivityConsumedBy'] == "Glass Total":

@@ -1,7 +1,6 @@
 # write_Crosswalk_USGS_NWIS_WU.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USGS_NWIS_WU to NAICS_12.

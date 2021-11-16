@@ -6,10 +6,11 @@ Functions to generate .bib file for a FlowBySector method
 """
 
 import os
+import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
-from flowsa.common import load_sourceconfig, \
+from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
     find_true_file_path, sourceconfigpath
@@ -54,6 +55,8 @@ def generate_list_of_sources_in_fbs_method(methodname):
                         sources.append([fxn_config['source'], y])
     except KeyError:
         # if no additional fbas than pass
+        log.info(f'There are no additional Flow-By-Activities '
+                 'used in generating %s', methodname)
         pass
 
     return sources
@@ -73,7 +76,7 @@ def load_source_dict(sourcename):
     except KeyError:
         # else check if file exists, then try loading citation information from source yaml
         sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
-        config = load_sourceconfig(sourcename)
+        config = load_yaml_dict(sourcename)
 
     return config
 
@@ -102,6 +105,11 @@ def generate_fbs_bibliography(methodname):
             except KeyError:
                 try:
                     config = getMetadata(source[0], source[1])
+                    # flatten the dictionary so can treat all dictionaries the same
+                    # when pulling info
+                    config = pd.json_normalize(config, sep='_')
+                    config.columns = config.columns.str.replace('tool_meta_', '')
+                    config = config.to_dict(orient='records')[0]
                 except KeyError or AttributeError:
                     log.info('Could not find metadata for %s', source[0])
                     continue

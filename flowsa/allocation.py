@@ -7,7 +7,7 @@ Methods of allocating datasets
 """
 import pandas as pd
 from flowsa.settings import log
-from flowsa.common import fbs_activity_fields, sector_level_key, load_sector_length_crosswalk
+from flowsa.common import fbs_activity_fields, sector_level_key, load_crosswalk
 from flowsa.settings import vLogDetailed
 from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.flowbyfunctions import sector_aggregation, sector_disaggregation
@@ -51,8 +51,8 @@ def allocate_by_sector(df_w_sectors, attr, allocation_method, group_cols, **kwar
 
                 df_w_sectors = \
                     df_w_sectors.loc[(df_w_sectors[fbs_activity_fields[0]].isin(flagged_names)) |
-                                     (df_w_sectors[fbs_activity_fields[1]].isin(flagged_names))
-                                    ].reset_index(drop=True)
+                                     (df_w_sectors[fbs_activity_fields[1]].isin(flagged_names)
+                                      )].reset_index(drop=True)
             else:
                 log.error('The proportional-flagged allocation method requires a'
                           'column "disaggregate_flag" in the flow_subset_mapped df')
@@ -144,8 +144,9 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     # denominator summed from highest level of sector grouped by location
     short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
     # want to create denominator based on short_length
-    denom_df = df.loc[df[sectorcolumn].apply(lambda x: len(x) ==
-                                                       short_length)].reset_index(drop=True)
+    denom_df = \
+        df.loc[df[sectorcolumn].apply(lambda x:
+                                      len(x) == short_length)].reset_index(drop=True)
     grouping_cols = [e for e in ['FlowName', 'Location', 'Activity',
                                  'ActivityConsumedBy', 'ActivityProducedBy']
                      if e in denom_df.columns.values.tolist()]
@@ -221,10 +222,10 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
 
             # merge the two dfs
             if 'Context' in df_y.columns:
-                merge_cols = ['Class', 'Context', 'FlowType', 'Flowable', \
+                merge_cols = ['Class', 'Context', 'FlowType', 'Flowable',
                               'Location', 'LocationSystem', 'Unit', 'Year']
             else:
-                merge_cols = ['Class', 'FlowType', \
+                merge_cols = ['Class', 'FlowType',
                               'Location', 'LocationSystem', 'Unit', 'Year']
 
             df_m = pd.merge(df_x, df_y[merge_cols + ['spb_tmp', 'scb_tmp']],
@@ -242,7 +243,7 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
             # match sectors with target sector length sectors
 
             # import cw and subset to current sector length and target sector length
-            cw_load = load_sector_length_crosswalk()
+            cw_load = load_crosswalk('sector length')
             nlength = list(sector_level_key.keys())[list(sector_level_key.values()).index(i)]
             cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
             # add column with counts
@@ -271,8 +272,9 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
 
             # append to df
             if len(rl) != 0:
-                vLogDetailed.warning('Data found at %s digit NAICS not represented in current '
-                            'data subset: {}'.format(' '.join(map(str, rl_list))), str(i))
+                vLogDetailed.warning('Data found at %s digit NAICS not '
+                                     'represented in current data subset: '
+                                     '{}'.format(' '.join(map(str, rl_list))), str(i))
                 rows_lost = rows_lost.append(rl_m3, ignore_index=True)
 
     if len(rows_lost) != 0:
@@ -284,3 +286,28 @@ def allocate_dropped_sector_data(df_load, target_sector_level):
     df_w_lost_data = replace_strings_with_NoneType(df_w_lost_data)
 
     return df_w_lost_data
+
+
+def equal_allocation(fba_load):
+    """
+    Allocate an Activity in a FBA equally to all mapped sectors.
+    Function only works if all mapped sectors are the same length
+
+    :param fba_load: df, FBA with activity columns mapped to sectors
+    :return: df, with FlowAmount equally allocated to all mapped sectors
+    """
+    # create groupby cols by which to determine allocation
+    fba_cols = fba_load.select_dtypes([object]).columns.to_list()
+    groupcols = [e for e in fba_cols if e not in
+                 ['SectorProducedBy', 'SectorConsumedBy', 'Description']]
+    # create counts of rows
+    df_count = fba_load.groupby(groupcols, as_index=False, dropna=False).size().astype(str)
+    df_count = replace_strings_with_NoneType(df_count)
+
+    # merge dfs
+    dfm = fba_load.merge(df_count, how='left')
+    # calc new flowamounts
+    dfm['FlowAmount'] = dfm['FlowAmount'] / dfm['size'].astype(int)
+    dfm = dfm.drop(columns='size')
+
+    return dfm
