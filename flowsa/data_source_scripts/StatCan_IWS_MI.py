@@ -114,26 +114,23 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
 
     # drop 31-33
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
-    gdp = gdp.rename(columns={"FlowAmount": "CanDollar"})
+    gdp = gdp.rename(columns={"FlowAmount": "USD"})
 
     # check units before merge
     compare_df_units(df, gdp)
     # merge df
-    df_m = pd.merge(df, gdp[['CanDollar', 'ActivityProducedBy']],
+    df_m = pd.merge(df, gdp[['USD', 'ActivityProducedBy']],
                     how='left', left_on='ActivityConsumedBy',
                     right_on='ActivityProducedBy')
-    df_m['CanDollar'] = df_m['CanDollar'].fillna(0)
+    df_m['USD'] = df_m['USD'].fillna(0)
     df_m = df_m.drop(columns=["ActivityProducedBy_y"])
     df_m = df_m.rename(columns={"ActivityProducedBy_x": "ActivityProducedBy"})
-    df_m = df_m[df_m['CanDollar'] != 0]
+    df_m = df_m[df_m['USD'] != 0]
+    # # convert to kg/USD
+    df_m.loc[:, 'FlowAmount'] = df_m['FlowAmount'] / df_m['USD']
+    df_m.loc[:, 'Unit'] = 'kg/USD'
 
-    exchange_rate = get_Canadian_to_USD_exchange_rate(str(attr['allocation_source_year']))
-    exchange_rate = float(exchange_rate)
-    # convert to mgal/USD
-    df_m.loc[:, 'FlowAmount'] = df_m['FlowAmount'] / (df_m['CanDollar'] / exchange_rate)
-    df_m.loc[:, 'Unit'] = 'Mgal/USD'
-
-    df_m = df_m.drop(columns=["CanDollar"])
+    df_m = df_m.drop(columns=["USD"])
 
     # convert Location to US
     df_m.loc[:, 'Location'] = US_FIPS
@@ -168,7 +165,7 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
                      right_on='ActivityProducedBy')
 
     df_m2.loc[:, 'FlowAmount'] = df_m2['FlowAmount'] * (df_m2['us_gdp'])
-    df_m2.loc[:, 'Unit'] = 'Mgal'
+    df_m2.loc[:, 'Unit'] = 'kg'
     df_m2 = df_m2.rename(columns={'ActivityProducedBy_x': 'ActivityProducedBy'})
     df_m2 = df_m2.drop(columns=['ActivityProducedBy_y', 'us_gdp'])
 

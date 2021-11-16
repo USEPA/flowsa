@@ -10,8 +10,7 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import WITHDRAWN_KEYWORD, US_FIPS, abbrev_us_state, fba_wsec_default_grouping_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, equally_allocate_parent_to_child_naics, \
-    sector_aggregation, sector_disaggregation
+from flowsa.flowbyfunctions import assign_fips_location_system, equally_allocate_suppressed_parent_to_child_naics
 
 
 def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
@@ -152,11 +151,6 @@ def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
     :return: df, flowbyactivity with modified values
     """
 
-    # aggregate sectors to create any missing naics levels
-    df = sector_aggregation(fba_w_sector, fba_wsec_default_grouping_fields)
-    # add missing naics5/6 when only one naics5/6 associated with a naics4
-    df2 = sector_disaggregation(df)
-    # estimate the suppressed data by equally allocating parent naics to child
-    df3 = equally_allocate_parent_to_child_naics(df2, 'SectorConsumedBy', 3, kwargs['sourcename'])
-
-    return df3
+    df = equally_allocate_suppressed_parent_to_child_naics(fba_w_sector, 'SectorConsumedBy',
+                                                           fba_wsec_default_grouping_fields)
+    return df

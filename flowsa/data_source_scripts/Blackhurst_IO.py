@@ -20,7 +20,6 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.validation import compare_df_units
 
 
-# Read pdf into list of DataFrame
 def bh_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
@@ -69,7 +68,7 @@ def bh_parse(dataframe_list, args):
     return df
 
 
-def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
+def convert_blackhurst_data_to_kg_per_year(df, **kwargs):
     """
     Load BEA Make After Redefinition data to convert Blackhurst IO dataframe units
     to gallon per year
@@ -96,7 +95,7 @@ def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
 
     bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']) *
                                           (bh_df_revised['FlowAmount_y']))
-    bh_df_revised.loc[:, 'Unit'] = 'gal'
+    bh_df_revised.loc[:, 'Unit'] = 'kg'
     # drop columns
     bh_df_revised = bh_df_revised.drop(columns=["FlowAmount_x", "FlowAmount_y",
                                                 'ActivityProducedBy_y'])
@@ -106,7 +105,7 @@ def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
     return bh_df_revised
 
 
-def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs):
+def convert_blackhurst_data_to_kg_per_employee(df_wsec, attr, method, **kwargs):
     """
     Load BLS employment data and use to transform original units to gallons per employee
     :param df_wsec: df, includes sector columns
@@ -155,7 +154,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs)
     # calculate gal/employee in 2002
     df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] *
                                       df_wratio['EmployeeRatio']) / df_wratio['Employees']
-    df_wratio.loc[:, 'Unit'] = 'gal/employee'
+    df_wratio.loc[:, 'Unit'] = 'kg/p'
 
     # drop cols
     df_wratio = df_wratio.drop(columns=['Sector', 'Employees', 'EmployeeRatio'])
@@ -185,7 +184,7 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_m
 
     pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) &
                      (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
-    pv = pv_sub['FlowAmount'].loc[0] * 1000000  # usgs unit is Mgal, blackhurst unit is gal
+    pv = pv_sub['FlowAmount'].loc[0]
 
     # sum quantity of water withdrawals already allocated to sectors
     av = df_to_scale['FlowAmount'].sum()
