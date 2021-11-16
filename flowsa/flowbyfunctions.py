@@ -249,10 +249,9 @@ def sector_aggregation(df_load, group_cols):
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
 
     # manually modify non-NAICS codes that might exist in sector
-    df.loc[:, 'SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin(['F0', 'F01']),
-                                             'F010', df['SectorConsumedBy'])  # domestic/household
-    df.loc[:, 'SectorProducedBy'] = np.where(df['SectorProducedBy'].isin(['F0', 'F01']),
-                                             'F010', df['SectorProducedBy'])  # domestic/household
+    # domestic/household
+    df = df.replace({'F0': 'F010',
+                     'F01': 'F010'})
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
 
@@ -366,7 +365,7 @@ def sector_disaggregation(df_load):
         new_naics['SectorConsumedBy'] = new_naics['SectorConsumedBy'].replace({np.nan: ""})
         new_naics['SectorProducedBy'] = new_naics['SectorProducedBy'].replace({np.nan: ""})
         new_naics = replace_NoneType_with_empty_cells(new_naics)
-        df = pd.concat([df, new_naics], sort=True)
+        df = pd.concat([df, new_naics], sort=True, ignore_index=True)
     # replace blank strings with None
     df = replace_strings_with_NoneType(df)
 
