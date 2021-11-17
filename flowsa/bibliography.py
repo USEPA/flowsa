@@ -13,7 +13,7 @@ from flowsa.flowbysector import load_method
 from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, \
     load_fbs_methods_additional_fbas_config, \
-    load_functions_loading_fbas_config, find_true_file_path, sourceconfigpath
+    load_functions_loading_fbas_config, get_flowsa_base_name, sourceconfigpath
 from flowsa.settings import outputpath, biboutputpath, log
 
 
@@ -81,7 +81,7 @@ def load_source_dict(sourcename):
     except KeyError:
         # else check if file exists, then try loading
         # citation information from source yaml
-        sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
+        sourcename = get_flowsa_base_name(sourceconfigpath, sourcename, "yaml")
         config = load_yaml_dict(sourcename)
 
     return config
