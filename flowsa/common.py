@@ -15,9 +15,12 @@ import pycountry
 import joblib
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
-from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_collapsed_fields, \
-    flow_by_activity_mapped_fields, flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, activity_fields
-from flowsa.settings import datapath, MODULEPATH, logoutputpath, sourceconfigpath, log
+from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
+    flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields, \
+    flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
+    activity_fields
+from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
+    sourceconfigpath, log
 
 
 # Sets default Sector Source Name
@@ -134,7 +137,8 @@ def load_values_from_literature_citations_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = datapath + 'bibliographyinfo/values_from_literature_source_citations.yaml'
+    sfile = (f'{datapath}bibliographyinfo/'
+             f'values_from_literature_source_citations.yaml')
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
@@ -146,7 +150,7 @@ def load_fbs_methods_additional_fbas_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = datapath + 'bibliographyinfo/fbs_methods_additional_fbas.yaml'
+    sfile = f'{datapath}bibliographyinfo/fbs_methods_additional_fbas.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
@@ -205,15 +209,23 @@ fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
                        activity_fields['ConsumedBy'][1]['flowbysector']]
 fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
-fbs_collapsed_fill_na_dict = create_fill_na_dict(flow_by_sector_collapsed_fields)
-fba_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_fields)
-fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_fields)
-fba_mapped_wsec_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_mapped_wsec_fields)
-fbs_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_fields)
-fbs_grouping_fields_w_activities = fbs_default_grouping_fields + \
-                                   (['ActivityProducedBy', 'ActivityConsumedBy'])
-fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(flow_by_sector_collapsed_fields)
-fba_wsec_default_grouping_fields = get_flow_by_groupby_cols(flow_by_activity_wsec_fields)
+fbs_collapsed_fill_na_dict = create_fill_na_dict(
+    flow_by_sector_collapsed_fields)
+fba_default_grouping_fields = get_flow_by_groupby_cols(
+    flow_by_activity_fields)
+fba_mapped_default_grouping_fields = get_flow_by_groupby_cols(
+    flow_by_activity_mapped_fields)
+fba_mapped_wsec_default_grouping_fields = get_flow_by_groupby_cols(
+    flow_by_activity_mapped_wsec_fields)
+fbs_default_grouping_fields = get_flow_by_groupby_cols(
+    flow_by_sector_fields)
+fbs_grouping_fields_w_activities = (
+    fbs_default_grouping_fields + (['ActivityProducedBy',
+                                    'ActivityConsumedBy']))
+fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(
+    flow_by_sector_collapsed_fields)
+fba_wsec_default_grouping_fields = get_flow_by_groupby_cols(
+    flow_by_activity_wsec_fields)
 
 
 def read_stored_FIPS(year='2015'):
@@ -252,16 +264,20 @@ def getFIPS(state=None, county=None, year='2015'):
     if county is None:
         if state is not None:
             state = clean_str_and_capitalize(state)
-            code = FIPS_df.loc[(FIPS_df["State"] == state) & (FIPS_df["County"].isna()), "FIPS"]
+            code = FIPS_df.loc[(FIPS_df["State"] == state)
+                               & (FIPS_df["County"].isna()), "FIPS"]
         else:
-            log.error("To get state FIPS, state name must be passed in 'state' param")
+            log.error("To get state FIPS, state name must be passed in "
+                      "'state' param")
     else:
         if state is None:
-            log.error("To get county FIPS, state name must be passed in 'state' param")
+            log.error("To get county FIPS, state name must be passed in "
+                      "'state' param")
         else:
             state = clean_str_and_capitalize(state)
             county = clean_str_and_capitalize(county)
-            code = FIPS_df.loc[(FIPS_df["State"] == state) & (FIPS_df["County"] == county), "FIPS"]
+            code = FIPS_df.loc[(FIPS_df["State"] == state)
+                               & (FIPS_df["County"] == county), "FIPS"]
     if code.empty:
         log.error("No FIPS code found")
     else:
@@ -272,17 +288,22 @@ def getFIPS(state=None, county=None, year='2015'):
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     """
-    Applies FIPS codes by county to dataframe containing columns with State and County
-    :param df: dataframe must contain columns with 'State' and 'County', but not 'Location'
+    Applies FIPS codes by county to dataframe containing columns with State
+    and County
+    :param df: dataframe must contain columns with 'State' and 'County', but
+        not 'Location'
     :param year: str, FIPS year, defaults to 2015
-    :param source_state_abbrev: True or False, the state column uses abbreviations
+    :param source_state_abbrev: True or False, the state column uses
+        abbreviations
     :return dataframe with new column 'FIPS', blanks not removed
     """
     # If using 2 letter abbrevations, map to state names
     if source_state_abbrev:
         df['State'] = df['State'].map(abbrev_us_state)
-    df['State'] = df.apply(lambda x: clean_str_and_capitalize(x.State), axis=1)
-    df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County), axis=1)
+    df['State'] = df.apply(lambda x: clean_str_and_capitalize(x.State),
+                           axis=1)
+    df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County),
+                            axis=1)
 
     # Pull and merge FIPS on state and county
     mapping_FIPS = get_county_FIPS(year)
@@ -310,7 +331,8 @@ def update_geoscale(df, to_scale):
         df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
         # pad zeros
         df.loc[:, 'Location'] = df['Location'].apply(lambda x:
-                                                     x.ljust(3 + len(x), '0') if len(x) < 5 else x)
+                                                     x.ljust(3 + len(x), '0')
+                                                     if len(x) < 5 else x)
     elif to_scale == 'national':
         df.loc[:, 'Location'] = US_FIPS
     return df
@@ -445,7 +467,8 @@ def get_region_and_division_codes():
     Load the Census Regions csv
     :return: pandas df of census regions
     """
-    df = pd.read_csv(datapath + "Census_Regions_and_Divisions.csv", dtype="str")
+    df = pd.read_csv(f"{datapath}Census_Regions_and_Divisions.csv",
+                     dtype="str")
     return df
 
 
@@ -457,13 +480,15 @@ def assign_census_regions(df_load):
     """
     # load census codes
     census_codes_load = get_region_and_division_codes()
-    census_codes = census_codes_load[census_codes_load['LocationSystem'] == 'Census_Region']
+    census_codes = census_codes_load[
+        census_codes_load['LocationSystem'] == 'Census_Region']
 
     # merge df with census codes
     df = df_load.merge(census_codes[['Name', 'Region']],
                        left_on=['Location'], right_on=['Name'], how='left')
     # replace Location value
-    df['Location'] = np.where(~df['Region'].isnull(), df['Region'], df['Location'])
+    df['Location'] = np.where(~df['Region'].isnull(),
+                              df['Region'], df['Location'])
 
     # modify LocationSystem
     # merge df with census codes
@@ -471,7 +496,8 @@ def assign_census_regions(df_load):
                   left_on=['Region'], right_on=['Region'], how='left')
     # replace Location value
     df['LocationSystem_x'] = np.where(~df['LocationSystem_y'].isnull(),
-                                      df['LocationSystem_y'], df['LocationSystem_x'])
+                                      df['LocationSystem_y'],
+                                      df['LocationSystem_x'])
 
     # drop census columns
     df = df.drop(columns=['Name', 'Region', 'LocationSystem_y'])
@@ -497,49 +523,66 @@ def convert_fba_unit(df):
     """
     # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
     days_in_year = 365
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Bgal/d',
-                                       df['FlowAmount'] * 1000 * days_in_year, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'Mgal', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'Bgal/d',
+        df['FlowAmount'] * 1000 * days_in_year,
+        df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d',
+                                 'Mgal', df['Unit'])
 
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal/d',
-                                       df['FlowAmount'] * days_in_year, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'Mgal', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'Mgal/d',
+        df['FlowAmount'] * days_in_year,
+        df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d',
+                                 'Mgal', df['Unit'])
 
     # Convert Land unit 'Thousand Acres' to 'Acres
     acres_in_thousand_acres = 1000
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand Acres',
-                                       df['FlowAmount'] * acres_in_thousand_acres,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres', 'Acres', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'Thousand Acres',
+        df['FlowAmount'] * acres_in_thousand_acres,
+        df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres',
+                                 'Acres', df['Unit'])
 
     # Convert Energy unit "Quadrillion Btu" to MJ
     mj_in_btu = .0010550559
     # 1 Quad = .0010550559 x 10^15
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
-                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'Quadrillion Btu',
+        df['FlowAmount'] * mj_in_btu * (10 ** 15),
+        df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu',
+                                 'MJ', df['Unit'])
 
     # Convert Energy unit "Trillion Btu" to MJ
     # 1 Tril = .0010550559 x 10^14
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
-                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'Trillion Btu',
+        df['FlowAmount'] * mj_in_btu * (10 ** 14),
+        df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu',
+                                 'MJ', df['Unit'])
 
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year',
-                                       df['FlowAmount'] * 264.172, df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'Mgal', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'million Cubic metres/year',
+        df['FlowAmount'] * 264.172,
+        df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year',
+                                 'Mgal', df['Unit'])
 
     # Convert mass units (LB or TON) to kg
     ton_to_kg = 907.185
     lb_to_kg = 0.45359
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
-                                       df['FlowAmount'] * ton_to_kg,
-                                       df['FlowAmount'])
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
-                                       df['FlowAmount'] * lb_to_kg,
-                                       df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'TON',
+        df['FlowAmount'] * ton_to_kg,
+        df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'] == 'LB',
+        df['FlowAmount'] * lb_to_kg,
+        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where((df['Unit'] == 'TON') | (df['Unit'] == 'LB'),
                                  'kg', df['Unit'])
 
@@ -557,9 +600,11 @@ def find_true_file_path(filedirectory, filename, extension):
     :return: string, corrected file path name
     """
 
-    # if a file does not exist modify file name, dropping ext after last underscore
+    # if a file does not exist modify file name, dropping ext after last
+    # underscore
     while os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
-        # continue dropping last underscore/extension until file name does exist
+        # continue dropping last underscore/extension until file name does
+        # exist
         filename = filename.rsplit("_", 1)[0]
 
     return filename
@@ -575,20 +620,23 @@ def rename_log_file(filename, fb_meta):
     # original log file name - all log statements
     log_file = f'{logoutputpath}{"flowsa.log"}'
     # generate new log name
-    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
-                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    new_log_name = (f'{logoutputpath}{filename}{"_v"}'
+                    f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}')
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file already exists)
+    # rename the standard log file name (os.rename throws error if file
+    # already exists)
     shutil.copy(log_file, new_log_name)
     # original log file name - validation
     log_file = f'{logoutputpath}{"validation_flowsa.log"}'
     # generate new log name
-    new_log_name = f'{logoutputpath}{filename}_v' \
-                   f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log'
+    new_log_name = (f'{logoutputpath}{filename}_v'
+                    f'{fb_meta.tool_version}_{fb_meta.git_hash}'
+                    f'_validation.log')
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file already exists)
+    # rename the standard log file name (os.rename throws error if file
+    # already exists)
     shutil.copy(log_file, new_log_name)
 
 
