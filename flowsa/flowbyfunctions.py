@@ -15,7 +15,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
     fba_activity_fields, fba_default_grouping_fields, \
     fba_wsec_default_grouping_fields, fips_number_key, fba_fill_na_dict, \
-    find_true_file_path, fba_mapped_default_grouping_fields
+    get_flowsa_base_name, fba_mapped_default_grouping_fields
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
 from flowsa.settings import datasourcescriptspath, log
@@ -828,9 +828,9 @@ def dynamically_import_fxn(data_source_scripts_file, function_name):
     """
     # if a file does not exist modify file name, dropping
     # extension after last underscore
-    data_source_scripts_file = find_true_file_path(datasourcescriptspath,
-                                                   data_source_scripts_file,
-                                                   'py')
+    data_source_scripts_file = get_flowsa_base_name(datasourcescriptspath,
+                                                    data_source_scripts_file,
+                                                    'py')
 
     df = getattr(__import__(
         f"flowsa.data_source_scripts.{data_source_scripts_file}",

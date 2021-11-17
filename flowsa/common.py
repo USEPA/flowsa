@@ -589,7 +589,7 @@ def convert_fba_unit(df):
     return df
 
 
-def find_true_file_path(filedirectory, filename, extension):
+def get_flowsa_base_name(filedirectory, filename, extension):
     """
     If filename does not match filename within flowsa due to added extensions
     onto the filename, cycle through
