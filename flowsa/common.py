@@ -599,13 +599,13 @@ def find_true_file_path(filedirectory, filename, extension):
     :param extension: string, type of file, such as "yaml" or "py"
     :return: string, corrected file path name
     """
-
-    # if a file does not exist modify file name, dropping ext after last
-    # underscore
-    while os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
-        # continue dropping last underscore/extension until file name does
-        # exist
-        filename = filename.rsplit("_", 1)[0]
+    # If a file does not exist, modify file name, dropping portion after last
+    # underscore. Repeat this process until the file name exists or no
+    # underscores are left.
+    while '_' in filename:
+        if os.path.exists(f"{filedirectory}{filename}.{extension}"):
+            break
+        filename, _ = filename.rsplit('_', 1)
 
     return filename
 
