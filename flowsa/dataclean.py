@@ -12,11 +12,13 @@ from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 
 def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
     """
-    Modify a dataframe to ensure all columns are present and column datatypes correct
+    Modify a dataframe to ensure all columns are present and column
+    datatypes correct
     :param df: df, any format
     :param flowbyfields: list, flow_by_activity_fields or flow_by_sector_fields
     :param fill_na_dict: dict, fba_fill_na_dict or fbs_fill_na_dict
-    :param drop_description: specify if want the Description column dropped, defaults to true
+    :param drop_description: specify if want the Description column
+         dropped, defaults to true
     :return: df, modified
     """
     df = df.reset_index(drop=True)
@@ -75,7 +77,8 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
             flowby_partial_df[k] = None
     # convert data types to match those defined in flow_by_activity_fields
     for k, v in flowbyfields.items():
-        flowby_partial_df.loc[:, k] = flowby_partial_df[k].astype(v[0]['dtype'])
+        flowby_partial_df.loc[:, k] = \
+            flowby_partial_df[k].astype(v[0]['dtype'])
     # Resort it so order is correct
     flowby_partial_df = flowby_partial_df[flowbyfields.keys()]
     return flowby_partial_df
@@ -91,7 +94,8 @@ def standardize_units(df):
 
     days_in_year = 365
     sq_ft_to_sq_m_multiplier = 0.092903
-    gallon_water_to_kg = 3.79  # rounded to match USGS_NWIS_WU mapping file on FEDEFL
+    # rounded to match USGS_NWIS_WU mapping file on FEDEFL
+    gallon_water_to_kg = 3.79
     ac_ft_water_to_kg = 1233481.84
     acre_to_m2 = 4046.8564224
     mj_in_btu = .0010550559
@@ -107,41 +111,52 @@ def standardize_units(df):
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['ACRES', 'Acres']),
                                        df['FlowAmount'] * acre_to_m2,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['ACRES', 'Acres']), 'm2', df['Unit'])
-
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
-                                       df['FlowAmount'] * sq_ft_to_sq_m_multiplier * 1000000,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['ACRES', 'Acres']),
                                  'm2', df['Unit'])
 
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['square feet']),
-                                       df['FlowAmount'] * sq_ft_to_sq_m_multiplier,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['square feet']), 'm2', df['Unit'])
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
+                 df['FlowAmount'] * sq_ft_to_sq_m_multiplier * 1000000,
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = \
+        np.where(df['Unit'].isin(['million sq ft', 'million square feet']),
+                 'm2', df['Unit'])
+
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'].isin(['square feet']),
+                 df['FlowAmount'] * sq_ft_to_sq_m_multiplier, df['FlowAmount'])
+    df.loc[:, 'Unit'] = \
+        np.where(df['Unit'].isin(['square feet']), 'm2', df['Unit'])
 
     # class = money, unit = USD
     if df['Unit'].str.contains('Canadian Dollar').any():
-        exchange_rate = float(get_Canadian_to_USD_exchange_rate(str(df['Year'].unique()[0])))
+        exchange_rate = float(get_Canadian_to_USD_exchange_rate(
+            str(df['Year'].unique()[0])))
         df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Canadian Dollar',
                                            df['FlowAmount'] / exchange_rate,
                                            df['FlowAmount'])
-        df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Canadian Dollar', 'USD', df['Unit'])
+        df.loc[:, 'Unit'] = \
+            np.where(df['Unit'] == 'Canadian Dollar', 'USD', df['Unit'])
 
     # class = water, unit = kg
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gallons/animal/day',
-                                       (df['FlowAmount'] * gallon_water_to_kg) * days_in_year,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'gallons/animal/day', 'kg', df['Unit'])
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'gallons/animal/day',
+                 (df['FlowAmount'] * gallon_water_to_kg) * days_in_year,
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = \
+        np.where(df['Unit'] == 'gallons/animal/day', 'kg', df['Unit'])
 
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'ACRE FEET / ACRE',
-                                       (df['FlowAmount'] / acre_to_m2) * ac_ft_water_to_kg,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'ACRE FEET / ACRE', 'kg/m2', df['Unit'])
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'ACRE FEET / ACRE',
+                 (df['FlowAmount'] / acre_to_m2) * ac_ft_water_to_kg,
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = \
+        np.where(df['Unit'] == 'ACRE FEET / ACRE', 'kg/m2', df['Unit'])
 
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Mgal',
-                                       df['FlowAmount'] * 1000000 * gallon_water_to_kg,
-                                       df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'Mgal',
+                 df['FlowAmount'] * 1000000 * gallon_water_to_kg,
+                 df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal', 'kg', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'gal',
@@ -156,34 +171,42 @@ def standardize_units(df):
 
     df.loc[:, 'FlowAmount'] = \
         np.where(df['Unit'] == 'Bgal/d',
-                 df['FlowAmount'] * 1000000000 * gallon_water_to_kg * days_in_year,
+                 df['FlowAmount'] * (10**9) * gallon_water_to_kg *
+                 days_in_year,
                  df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d', 'kg', df['Unit'])
 
     df.loc[:, 'FlowAmount'] = \
         np.where(df['Unit'] == 'Mgal/d',
-                 df['FlowAmount'] * 1000000 * gallon_water_to_kg * days_in_year,
+                 df['FlowAmount'] * (10**6) * gallon_water_to_kg *
+                 days_in_year,
                  df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d', 'kg', df['Unit'])
 
     # Convert Energy unit "Quadrillion Btu" to MJ
     # 1 Quad = .0010550559 x 10^15
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Quadrillion Btu',
-                                       df['FlowAmount'] * mj_in_btu * (10 ** 15),
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'Quadrillion Btu',
+                 df['FlowAmount'] * mj_in_btu * (10 ** 15),
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = \
+        np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
 
     # Convert Energy unit "Trillion Btu" to MJ
     # 1 Tril = .0010550559 x 10^14
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Trillion Btu',
-                                       df['FlowAmount'] * mj_in_btu * (10 ** 14),
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'Trillion Btu',
+                 df['FlowAmount'] * mj_in_btu * (10 ** 14),
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = \
+        np.where(df['Unit'] == 'Trillion Btu', 'MJ', df['Unit'])
 
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'million Cubic metres/year',
-                                       df['FlowAmount'] * 264.172 * 1000000 * gallon_water_to_kg,
-                                       df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year', 'kg', df['Unit'])
+    df.loc[:, 'FlowAmount'] = \
+        np.where(df['Unit'] == 'million Cubic metres/year',
+                 df['FlowAmount'] * 264.172 * (10**6) * gallon_water_to_kg,
+                 df['FlowAmount'])
+    df.loc[:, 'Unit'] = \
+        np.where(df['Unit'] == 'million Cubic metres/year', 'kg', df['Unit'])
 
     # Convert mass units (LB or TON) to kg
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
@@ -205,7 +228,8 @@ def harmonize_FBS_columns(df):
     - MeasureofSpread: tmp set to NoneType as values currently misleading
     - Spread: tmp set to 0 as values currently misleading
     - DistributionType: tmp set to NoneType as values currently misleading
-    - MetaSources: Combine strings for rows where class/context/flowtype/flowable/etc. are equal
+    - MetaSources: Combine strings for rows where
+            class/context/flowtype/flowable/etc. are equal
     :param df: FBS dataframe with mixed values/strings in columns
     :return: FBS df with harmonized values/strings in columns
     """
@@ -229,9 +253,10 @@ def harmonize_FBS_columns(df):
     df = replace_NoneType_with_empty_cells(df)
 
     # subset all string cols of the df and drop duplicates
-    string_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
-                   'SectorSourceName', 'Context', 'Location', 'LocationSystem',
-                   'Unit', 'FlowType', 'Year', 'MeasureofSpread', 'MetaSources']
+    string_cols = ['Flowable', 'Class', 'SectorProducedBy',
+                   'SectorConsumedBy', 'SectorSourceName', 'Context',
+                   'Location', 'LocationSystem', 'Unit', 'FlowType',
+                   'Year', 'MeasureofSpread', 'MetaSources']
     df_sub = df[string_cols].drop_duplicates().reset_index(drop=True)
     # sort df
     df_sub = df_sub.sort_values(['MetaSources', 'SectorProducedBy',
@@ -242,8 +267,10 @@ def harmonize_FBS_columns(df):
 
     # combine/sum columns that share the same data other than Metasources,
     # combining MetaSources string in process
-    df_sub = df_sub.groupby(group_no_meta)['MetaSources'].apply(', '.join).reset_index()
-    # drop the MetaSources col in original df and replace with the MetaSources col in df_sub
+    df_sub = df_sub.groupby(
+        group_no_meta)['MetaSources'].apply(', '.join).reset_index()
+    # drop the MetaSources col in original df and replace with the
+    # MetaSources col in df_sub
     df = df.drop(columns='MetaSources')
     harmonized_df = df.merge(df_sub, how='left')
     harmonized_df = replace_strings_with_NoneType(harmonized_df)

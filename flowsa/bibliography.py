@@ -12,8 +12,8 @@ from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
 from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, \
-    load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
-    find_true_file_path, sourceconfigpath
+    load_fbs_methods_additional_fbas_config, \
+    load_functions_loading_fbas_config, find_true_file_path, sourceconfigpath
 from flowsa.settings import outputpath, biboutputpath, log
 
 
@@ -33,14 +33,17 @@ def generate_list_of_sources_in_fbs_method(methodname):
         try:
             sources.append([fbs_k, fbs_v['year']])
         except KeyError:
-            log.info('Could not append %s to datasource list because missing year', fbs_k)
+            log.info('Could not append %s to datasource '
+                     'list because missing year', fbs_k)
             continue
         activities = fbs_v['activity_sets']
         for aset, attr in activities.items():
             if attr['allocation_source'] != 'None':
-                sources.append([attr['allocation_source'], attr['allocation_source_year']])
+                sources.append([attr['allocation_source'],
+                                attr['allocation_source_year']])
             if 'helper_source' in attr:
-                sources.append([attr['helper_source'], attr['helper_source_year']])
+                sources.append([attr['helper_source'],
+                                attr['helper_source_year']])
             if 'literature_sources' in attr:
                 for source, date in attr['literature_sources'].items():
                     sources.append([source, date])
@@ -51,7 +54,8 @@ def generate_list_of_sources_in_fbs_method(methodname):
             for acts, fxn_info in acts_info.items():
                 for fxn, fba_info in fxn_info.items():
                     for fba, y in fba_info.items():
-                        fxn_config = load_functions_loading_fbas_config()[fxn][fba]
+                        fxn_config = \
+                            load_functions_loading_fbas_config()[fxn][fba]
                         sources.append([fxn_config['source'], y])
     except KeyError:
         # if no additional fbas than pass
@@ -64,7 +68,8 @@ def generate_list_of_sources_in_fbs_method(methodname):
 
 def load_source_dict(sourcename):
     """
-    Load the yaml method file for a flowbyactivity dataset or for a value from the literature
+    Load the yaml method file for a flowbyactivity dataset
+    or for a value from the literature
     :param sourcename: string, FBA source name or value from the lit name
     :return: dictionary, the method file
     """
@@ -74,7 +79,8 @@ def load_source_dict(sourcename):
         config_load = load_values_from_literature_citations_config()
         config = config_load[sourcename]
     except KeyError:
-        # else check if file exists, then try loading citation information from source yaml
+        # else check if file exists, then try loading
+        # citation information from source yaml
         sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
         config = load_yaml_dict(sourcename)
 
@@ -93,7 +99,8 @@ def generate_fbs_bibliography(methodname):
     # create list of sources in method
     sources = generate_list_of_sources_in_fbs_method(methodname)
 
-    # loop through list of sources, load source method yaml, and create bib entry
+    # loop through list of sources, load source method
+    # yaml, and create bib entry
     bib_list = []
     source_set = set()
     for source in sources:
@@ -101,27 +108,33 @@ def generate_fbs_bibliography(methodname):
         # is a function, not a datasource)
         if source[1] != 'None':
             try:
-                config = load_values_from_literature_citations_config()[source[0]]
+                config = \
+                    load_values_from_literature_citations_config()[source[0]]
             except KeyError:
                 try:
                     config = getMetadata(source[0], source[1])
-                    # flatten the dictionary so can treat all dictionaries the same
-                    # when pulling info
+                    # flatten the dictionary so can treat all
+                    # dictionaries the same when pulling info
                     config = pd.json_normalize(config, sep='_')
-                    config.columns = config.columns.str.replace('tool_meta_', '')
+                    config.columns = \
+                        config.columns.str.replace('tool_meta_', '')
                     config = config.to_dict(orient='records')[0]
                 except KeyError or AttributeError:
                     log.info('Could not find metadata for %s', source[0])
                     continue
             if config is not None:
-                # ensure data sources are not duplicated when different source names
+                # ensure data sources are not duplicated
+                # when different source names
                 try:
                     if (config['source_name'], config['author'], source[1],
                     config['source_url']) not in source_set:
-                        source_set.add((config['source_name'], config['author'],
-                                        source[1], config['source_url']))
+                        source_set.add((config['source_name'],
+                                        config['author'],
+                                        source[1],
+                                        config['source_url']))
 
-                        # if there is a date downloaded, use in citation over date generated
+                        # if there is a date downloaded, use in
+                        # citation over date generated
                         if 'original_data_download_date' in config:
                             bib_date = config['original_data_download_date']
                         elif 'date_accessed' in config:
@@ -131,7 +144,8 @@ def generate_fbs_bibliography(methodname):
 
                         db = BibDatabase()
                         db.entries = [{
-                            'title': config['source_name'] + ' ' + str(source[1]),
+                            'title': f"{config['source_name']} "
+                                     f"{str(source[1])}",
                             'author': config['author'],
                             'year': str(source[1]),
                             'url': config['source_url'],
@@ -142,8 +156,9 @@ def generate_fbs_bibliography(methodname):
                         # append each entry to a list of BibDatabase entries
                         bib_list.append(db)
                 except KeyError:
-                    log.exception('Missing information needed to create bib for %s, %s',
-                                  source[0], source[1])
+                    log.exception('Missing information needed to '
+                                  'create bib for %s, %s', source[0],
+                                  source[1])
                     continue
 
     # write out bibliography

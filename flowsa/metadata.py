@@ -7,7 +7,8 @@ FlowByActivity (FBA) and FlowBySector (FBS) datasets
 """
 
 import pandas as pd
-from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, read_source_metadata
+from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, \
+    read_source_metadata
 from flowsa.common import load_functions_loading_fbas_config, \
     load_fbs_methods_additional_fbas_config
 from flowsa.settings import paths, PKG, PKG_VERSION_NUMBER, WRITE_FORMAT, \
@@ -28,7 +29,8 @@ def set_fb_meta(name_data, category):
     fb_meta.tool_version = PKG_VERSION_NUMBER
     fb_meta.git_hash = GIT_HASH
     fb_meta.ext = WRITE_FORMAT
-    fb_meta.date_created = pd.to_datetime('today').strftime('%Y-%m-%d %H:%M:%S')
+    fb_meta.date_created = \
+        pd.to_datetime('today').strftime('%Y-%m-%d %H:%M:%S')
     return fb_meta
 
 
@@ -39,17 +41,20 @@ def write_metadata(source_name, config, fb_meta, category, **kwargs):
     :param config: dictionary, configuration file
     :param fb_meta: object, metadata
     :param category: string, 'FlowBySector' or 'FlowByActivity'
-    :param kwargs: additional parameters, if running for FBA, define "year" of data
+    :param kwargs: additional parameters, if running for FBA, define
+        "year" of data
     :return: object, metadata that includes methodology for FBAs
     """
 
-    fb_meta.tool_meta = return_fb_meta_data(source_name, config, category, **kwargs)
+    fb_meta.tool_meta = return_fb_meta_data(
+        source_name, config, category, **kwargs)
     write_metadata_to_file(paths, fb_meta)
 
 
 def return_fb_meta_data(source_name, config, category, **kwargs):
     """
-    Generate the metadata specific to a Flow-by-Activity or Flow-By-Sector method
+    Generate the metadata specific to a Flow-by-Activity or
+    Flow-By-Sector method
     :param source_name: string, FBA or FBS method name
     :param config: dictionary, FBA or FBS method
     :param category: string, "FlowByActivity" or "FlowBySector"
@@ -61,8 +66,9 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     fb_dict = {}
 
     # add url of FlowBy method at time of commit
-    fb_dict['method_url'] = f'https://github.com/USEPA/flowsa/blob/{GIT_HASH_LONG}' \
-                            f'/flowsa/data/{category.lower()}methods/{source_name}.yaml'
+    fb_dict['method_url'] = \
+        f'https://github.com/USEPA/flowsa/blob/{GIT_HASH_LONG}/flowsa/' \
+        f'data/{category.lower()}methods/{source_name}.yaml'
 
     if category == 'FlowBySector':
         method_data = return_fbs_method_data(source_name, config)
@@ -86,7 +92,8 @@ def return_fbs_method_data(source_name, config):
     """
     from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata
 
-    # load the yaml that lists what additional fbas are used in creating the fbs
+    # load the yaml that lists what additional fbas are
+    # used in creating the fbs
     try:
         add_fbas = load_fbs_methods_additional_fbas_config()[source_name]
     except KeyError:
@@ -101,10 +108,12 @@ def return_fbs_method_data(source_name, config):
     for k, v in fb.items():
         if k == 'stewiFBS':
             # get stewi metadata
-            meta['primary_source_meta'][k] = add_stewi_metadata(v['inventory_dict'])
+            meta['primary_source_meta'][k] = \
+                add_stewi_metadata(v['inventory_dict'])
             continue
         if v['data_format'] in ('FBS', 'FBS_outside_flowsa'):
-            meta['primary_source_meta'][k] = getMetadata(k, category='FlowBySector')
+            meta['primary_source_meta'][k] = \
+                getMetadata(k, category='FlowBySector')
             continue
         # append source and year
         meta['primary_source_meta'][k] = getMetadata(k, v["year"])
@@ -114,30 +123,38 @@ def return_fbs_method_data(source_name, config):
         meta['primary_source_meta'][k]['allocation_source_meta'] = {}
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
-            if attr['allocation_method'] not in (['direct', 'allocation_function']):
+            if attr['allocation_method'] not in \
+                    (['direct', 'allocation_function']):
                 # append fba meta
                 meta['primary_source_meta'][k]['allocation_source_meta'][
-                    attr['allocation_source']] = \
-                    getMetadata(attr['allocation_source'], attr['allocation_source_year'])
+                    attr['allocation_source']] = getMetadata(
+                    attr['allocation_source'], attr['allocation_source_year'])
             if 'helper_source' in attr:
-                meta['primary_source_meta'][k]['allocation_source_meta'][attr['helper_source']] = \
-                    getMetadata(attr['helper_source'], attr['helper_source_year'])
+                meta['primary_source_meta'][k][
+                    'allocation_source_meta'][attr['helper_source']] = \
+                    getMetadata(attr['helper_source'],
+                                attr['helper_source_year'])
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 for s, y in lit.items():
                     lit_meta = return_fba_method_meta(s, year=y)
                     # append fba meta
-                    meta['primary_source_meta'][k]['allocation_source_meta'][s] = lit_meta
-                    # subset the additional fbas to the source and activity set, if exists
+                    meta['primary_source_meta'][k][
+                        'allocation_source_meta'][s] = lit_meta
+                    # subset the additional fbas to the source and
+                    # activity set, if exists
         if add_fbas is not None:
             try:
                 fbas = add_fbas[k]
                 for acts, fxn_info in fbas.items():
                     for fxn, fba_info in fxn_info.items():
                         for fba, y in fba_info.items():
-                            fxn_config = load_functions_loading_fbas_config()[fxn][fba]
-                            meta['primary_source_meta'][k]['allocation_source_meta'][
-                                fxn_config['source']] = getMetadata(fxn_config['source'], y)
+                            fxn_config = \
+                                load_functions_loading_fbas_config()[fxn][fba]
+                            meta['primary_source_meta'][k][
+                                'allocation_source_meta'][
+                                fxn_config['source']] = getMetadata(
+                                fxn_config['source'], y)
             except KeyError:
                 pass
 
@@ -165,7 +182,8 @@ def return_fba_method_meta(sourcename, **kwargs):
     try:
         # loop through the FBA yaml and add info
         for k, v in fba.items():
-            # include bib_id because this ifno pulled when generating a method bib
+            # include bib_id because this ifno pulled
+            # when generating a method bib
             if k in ('author', 'source_name', 'source_url',
                      'original_data_download_date',
                      'date_accessed', 'bib_id'):
