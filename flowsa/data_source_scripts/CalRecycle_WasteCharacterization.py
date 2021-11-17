@@ -17,7 +17,8 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
 from flowsa.settings import externaldatapath
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
-from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
+from flowsa.sectormapping import get_fba_allocation_subset, \
+    add_sectors_to_flowbyactivity
 
 
 def produced_by(entry):
@@ -66,8 +67,10 @@ def calR_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     data = {}
     output = pd.DataFrame()
@@ -83,7 +86,8 @@ def calR_parse(dataframe_list, args):
 
     for entry in os.listdir(externaldatapath):
         if os.path.isfile(os.path.join(externaldatapath, entry)):
-            if "California_Commercial_bySector_2014" in entry and "Map" not in entry:
+            if "California_Commercial_bySector_2014" in entry and \
+                    "Map" not in entry:
                 data["ActivityProducedBy"] = produced_by(entry)
                 dataframe = pd.read_csv(externaldatapath + "/" + entry,
                                         header=0, dtype=str)
@@ -106,7 +110,8 @@ def calR_parse(dataframe_list, args):
 
 def keep_generated_quantity(fba, **kwargs):
     """
-    Function to clean CalRecycles FBA to remove quantities not assigned as Generated
+    Function to clean CalRecycles FBA to remove quantities not
+    assigned as Generated
     :param fba: df, FBA format
     :param kwargs: dictionary, can include attr, a dictionary of parameters in 
         the FBA method yaml
@@ -118,8 +123,8 @@ def keep_generated_quantity(fba, **kwargs):
 
 def apply_tons_per_employee_per_year_to_states(fbs):
     """
-    Calculates tons per employee per year based on BLS_QCEW employees by sector and
-    applies that quantity to employees in all states
+    Calculates tons per employee per year based on BLS_QCEW employees
+    by sector and applies that quantity to employees in all states
     """
     bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
                                         year=fbs['Year'].unique()[0],
@@ -146,6 +151,7 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     
     # Apply TPEPY back to all employees in all states
     national_waste = tpepy.merge(bls, how='outer')
-    national_waste['FlowAmount'] = national_waste['Employees'] * national_waste['TPEPY']
+    national_waste['FlowAmount'] = \
+        national_waste['Employees'] * national_waste['TPEPY']
 
     return national_waste

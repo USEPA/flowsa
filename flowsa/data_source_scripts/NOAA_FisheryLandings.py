@@ -3,8 +3,9 @@
 # coding=utf-8
 
 """
-NOAA fisheries data obtained from: https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200
-                               on: April 28, 2020
+NOAA fisheries data obtained from:
+https://foss.nmfs.noaa.gov/apexfoss/f?p=215:200
+on: April 28, 2020
 
 Parameters used to select data:
 Landings
@@ -29,8 +30,10 @@ def noaa_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "foss_landings.csv")
@@ -45,20 +48,24 @@ def noaa_parse(dataframe_list, args):
 
     # filter by year
     df = df[df['Year'] == int(args['year'])]
-    # noaa differentiates between florida east and west, which is not necessary for our purposes
+    # noaa differentiates between florida east and west,
+    # which is not necessary for our purposes
     df['State'] = df['State'].str.replace(r'-east', '')
     df['State'] = df['State'].str.replace(r'-west', '')
 
     # sum florida data after casting rows as numeric
     df['Sum Dollars'] = df['Sum Dollars'].str.replace(r',', '')
     df["Sum Dollars"] = df["Sum Dollars"].apply(pd.to_numeric)
-    df2 = df.groupby(['Year', 'State'], as_index=False).agg({"Sum Dollars": sum})
+    df2 = df.groupby(
+        ['Year', 'State'], as_index=False).agg({"Sum Dollars": sum})
 
     # new column includes state fips
-    df3 = df2.merge(df_state[["State", "FIPS"]], how="left", left_on="State", right_on="State")
+    df3 = df2.merge(df_state[["State", "FIPS"]], how="left",
+                    left_on="State", right_on="State")
 
-    # data includes "process at sea", which is not associated with any fips, assign value of '99'
-    # if fips is nan, add the state name to description and drop state name
+    # data includes "process at sea", which is not associated with any
+    # fips, assign value of '99' if fips is nan, add the state name to
+    # description and drop state name
     df3['Description'] = None
     df3.loc[df3['State'] == 'process at sea', 'Description'] = df3['State']
     df3.loc[df3['State'] == 'process at sea', 'FIPS'] = 99

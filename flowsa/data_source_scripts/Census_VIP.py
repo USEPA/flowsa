@@ -14,7 +14,8 @@ from flowsa.common import US_FIPS
 
 def census_vip_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe,
+    begin parsing df into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -27,7 +28,8 @@ def census_vip_call(url, response_load, args):
                        header=3).dropna().reset_index(drop=True)
     
     df.loc[df['Type of Construction:'].str.startswith("  "),
-           'Type of Construction:'] = 'Nonresidential - ' + df['Type of Construction:'].str.strip()
+           'Type of Construction:'] = 'Nonresidential - ' + \
+                                      df['Type of Construction:'].str.strip()
     df = df[df['Type of Construction:'] != 'Nonresidential']
     index_1 = np.where(df['Type of Construction:'].str.startswith(
         "Total Private Construction"))[0][0]
@@ -37,8 +39,10 @@ def census_vip_call(url, response_load, args):
     df_private = df.iloc[index_1+1:index_2, :]
     df_public = df.iloc[index_2+1:, :]
 
-    df_public['Type of Construction:'] = 'Public, ' + df_public['Type of Construction:']
-    df_private['Type of Construction:'] = 'Private, ' + df_private['Type of Construction:']
+    df_public['Type of Construction:'] = 'Public, ' + \
+                                         df_public['Type of Construction:']
+    df_private['Type of Construction:'] = 'Private, ' + \
+                                          df_private['Type of Construction:']
     
     df2 = pd.concat([df_public, df_private], ignore_index=True)
     
@@ -53,8 +57,10 @@ def census_vip_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     df = pd.concat(dataframe_list, sort=False)
     df['Year'] = df['Year'].astype(str)

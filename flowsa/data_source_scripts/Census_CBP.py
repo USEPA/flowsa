@@ -19,15 +19,17 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def Census_CBP_URL_helper(build_url, config, args):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data
+    is obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
     :param args: dictionary, arguments specified when running flowbyactivity.py
         flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into
+        Flow-By-Activity format
     """
     urls_census = []
     # This section gets the census data by county instead of by state.
@@ -71,9 +73,9 @@ def Census_CBP_URL_helper(build_url, config, args):
                 s_15_y_11 = ["005"]
                 s_48_y_11 = ["269", "301"]
 
-                # There are specific counties in various states for the year 2011
-                # that do not have data. For these counties a URL is not generated
-                # as if there is no data then an error occurs.
+                # There are specific counties in various states for the year
+                # 2011 that do not have data. For these counties a URL is
+                # not generated as if there is no data then an error occurs.
                 if state_digit == "02" and county_digit in s_02_y_11 or \
                         state_digit == "15" and county_digit in s_15_y_11 or \
                         state_digit == "48" and county_digit in s_48_y_11:
@@ -99,7 +101,8 @@ def Census_CBP_URL_helper(build_url, config, args):
 
 def census_cbp_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin
+        parsing df into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -108,7 +111,8 @@ def census_cbp_call(url, response_load, args):
     """
     cbp_json = json.loads(response_load.text)
     # convert response to dataframe
-    df_census = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
+    df_census = pd.DataFrame(
+        data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
     return df_census
 
 
@@ -116,8 +120,10 @@ def census_cbp_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
@@ -146,9 +152,10 @@ def census_cbp_parse(dataframe_list, args):
                             'EMP': 'Number of employees',
                             'PAYANN': 'Annual payroll'})
     # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year", "Description"],
-                 var_name="FlowName",
-                 value_name="FlowAmount")
+    df = df.melt(
+        id_vars=["Location", "ActivityProducedBy", "Year", "Description"],
+        var_name="FlowName",
+        value_name="FlowAmount")
     # specify unit based on flowname
     df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
     # specify class

@@ -17,7 +17,8 @@ from flowsa.common import call_country_code
 
 def sc_gdp_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -40,30 +41,33 @@ def sc_gdp_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(dataframe_list, sort=False, ignore_index=True)
     # drop columns
     df = df.drop(columns=['COORDINATE', 'DECIMALS', 'DGUID', 'SYMBOL',
                           'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR',
                           'SCALAR_FACTOR'])
     # rename columns
-    df = df.rename(columns={'GEO': 'Location',
-                            'North American Industry Classification System (NAICS)': 'Description',
-                            'REF_DATE': 'Year',
-                            'STATUS': 'Spread',
-                            'VALUE': "FlowAmount",
-                            "UOM": 'Unit'})
+    df = df.rename(
+        columns={'GEO': 'Location',
+                 'North American Industry Classification System (NAICS)':
+                     'Description',
+                 'REF_DATE': 'Year', 'STATUS': 'Spread', 'VALUE': "FlowAmount",
+                 "UOM": 'Unit'})
     # extract NAICS as activity column. rename activity based on flowname
     df['ActivityProducedBy'] = df['Description'].str.extract('.*\[(.*)\].*')
     # hard code data
     df['Class'] = 'Money'
     df.loc[:, 'FlowName'] = 'GDP'
     df.loc[:, 'Unit'] = 'Canadian Dollar'
+    # original unit million canadian dollars
     df.loc[:, 'FlowAmount'] = \
-        df['FlowAmount'].astype(float) * 1000000  # original unit million canadian dollars
+        df['FlowAmount'].astype(float) * 1000000
     df['SourceName'] = 'StatCan_GDP'
     df.loc[:, 'Year'] = df['Year'].astype(str)
     # temp hardcode canada iso code
@@ -75,5 +79,6 @@ def sc_gdp_parse(dataframe_list, args):
 
     # drop data
     df = df[df['Year'] == args['year']]
-    df = df[~df['ActivityProducedBy'].apply(lambda x: x[0:1] == 'T')].reset_index(drop=True)
+    df = df[~df['ActivityProducedBy'].apply(
+        lambda x: x[0:1] == 'T')].reset_index(drop=True)
     return df

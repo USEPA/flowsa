@@ -18,7 +18,8 @@ from flowsa.common import WITHDRAWN_KEYWORD
 
 def sc_lfs_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -41,8 +42,10 @@ def sc_lfs_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
@@ -51,7 +54,8 @@ def sc_lfs_parse(dataframe_list, args):
                           'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR'])
     # rename columns
     df = df.rename(columns={'GEO': 'Location',
-                            'North American Industry Classification System (NAICS)': 'Description',
+                            'North American Industry Classification System '
+                            '(NAICS)': 'Description',
                             'REF_DATE': 'Year',
                             'STATUS': 'Spread',
                             'VALUE': "FlowAmount",
@@ -67,9 +71,11 @@ def sc_lfs_parse(dataframe_list, args):
     # extract NAICS as activity column. rename activity based on flowname
     df['Activity'] = df['Description'].str.extract('.*\[(.*)\].*')
     df.loc[df['Description'] == 'Total, all industries', 'Activity'] = '31-33'
-    df.loc[df['Description'] == 'Other manufacturing industries', 'Activity'] = 'Other'
+    df.loc[df['Description'] ==
+           'Other manufacturing industries', 'Activity'] = 'Other'
     df['FlowName'] = df['FlowName'].str.strip()
-    df.loc[df['FlowName'] == 'Water intake', 'ActivityConsumedBy'] = df['Activity']
+    df.loc[df['FlowName'] == 'Water intake',
+           'ActivityConsumedBy'] = df['Activity']
     df.loc[df['FlowName'].isin(['Water discharge', "Water recirculation"]),
            'ActivityProducedBy'] = df['Activity']
     # drop columns used to create unit and activity columns
