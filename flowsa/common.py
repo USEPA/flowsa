@@ -620,8 +620,8 @@ def rename_log_file(filename, fb_meta):
     # original log file name - all log statements
     log_file = f'{logoutputpath}{"flowsa.log"}'
     # generate new log name
-    new_log_name = f'{logoutputpath}{filename}{"_v"}' \
-                   f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}'
+    new_log_name = (f'{logoutputpath}{filename}{"_v"}'
+                    f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}')
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file
@@ -630,8 +630,8 @@ def rename_log_file(filename, fb_meta):
     # original log file name - validation
     log_file = f'{logoutputpath}{"validation_flowsa.log"}'
     # generate new log name
-    new_log_name = f'{logoutputpath}{filename}_v' \
-                   f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log'
+    new_log_name = (f'{logoutputpath}{filename}_v'
+                    f'{fb_meta.tool_version}_{fb_meta.git_hash}_validation.log')
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file
