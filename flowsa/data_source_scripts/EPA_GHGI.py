@@ -295,9 +295,10 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
 
 def ghg_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data

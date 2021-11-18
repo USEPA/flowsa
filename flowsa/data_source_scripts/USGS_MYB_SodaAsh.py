@@ -77,7 +77,8 @@ def soda_url_helper(build_url, config, args):
 
 def soda_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -88,27 +89,35 @@ def soda_call(url, r, args):
     col_to_use = ["Production", "NAICS code", "End use", "year_5", "total"]
 
     if str(args["year"]) in SPAN_YEARS_T4:
-        df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T4')
+        df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                             sheet_name='T4')
         df_data_one = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
         df_data_one = df_data_one.reset_index()
         del df_data_one["index"]
         if len(df_data_one.columns) == 23:
-            df_data_one.columns = ["NAICS code", "space_1", "Production", "space_2", "y1_q1", "space_3", "y1_q2",
-                                   "space_4", "y1_q3", "space_5", "y1_q4", "space_6", "year_4", "space_7", "y2_q1",
-                                   "space_8", "y2_q2", "space_9", "y2_q3", "space_10", "y2_q4", "space_11", "year_5"]
+            df_data_one.columns = ["NAICS code", "space_1", "Production",
+                                   "space_2", "y1_q1", "space_3", "y1_q2",
+                                   "space_4", "y1_q3", "space_5", "y1_q4",
+                                   "space_6", "year_4", "space_7", "y2_q1",
+                                   "space_8", "y2_q2", "space_9", "y2_q3",
+                                   "space_10", "y2_q4", "space_11", "year_5"]
         elif len(df_data_one.columns) == 17:
-            df_data_one.columns = ["NAICS code", "space_1", "Production", "space_2", "last_year", "space_3", "y1_q1",
-                                   "space_4", "y1_q2", "space_5", "y1_q3", "space_6", "y1_4", "space_7", "year_5",
+            df_data_one.columns = ["NAICS code", "space_1", "Production",
+                                   "space_2", "last_year", "space_3", "y1_q1",
+                                   "space_4", "y1_q2", "space_5", "y1_q3",
+                                   "space_6", "y1_4", "space_7", "year_5",
                                    "space_8", "space_9"]
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                             sheet_name='T1')
     df_data_two = pd.DataFrame(df_raw_data_two.loc[6:18]).reindex()
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
 
     if len(df_data_two.columns) == 11:
-        df_data_two.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                               "year_3", "space_4", "year_4", "space_5", "year_5"]
+        df_data_two.columns = ["Production", "space_1", "year_1", "space_2",
+                               "year_2", "space_3", "year_3", "space_4",
+                               "year_4", "space_5", "year_5"]
 
     if str(args["year"]) in SPAN_YEARS_T4:
         for col in df_data_one.columns:
@@ -160,7 +169,8 @@ def soda_parse(dataframe_list, args):
                 des = name
                 if df.iloc[index]["Production"].strip() == "Exports:":
                     prod = "exports"
-                elif df.iloc[index]["Production"].strip() == "Imports for consumption:":
+                elif df.iloc[index]["Production"].strip() == \
+                        "Imports for consumption:":
                     prod = "imports"
                 elif df.iloc[index]["Production"].strip() == "Production:":
                     prod = "production"
@@ -175,15 +185,19 @@ def soda_parse(dataframe_list, args):
                     data["ActivityProducedBy"] = name
                     data['FlowName'] = name + " " + prod
                     dataframe = dataframe.append(data, ignore_index=True)
-                    dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                    dataframe = assign_fips_location_system(
+                        dataframe, str(args["year"]))
             else:
                 data["Class"] = "Chemicals"
                 data["Context"] = None
                 data["Compartment"] = "air"
                 data["Description"] = ""
-                data['ActivityConsumedBy'] = description(df.iloc[index]["End use"], df.iloc[index]["NAICS code"])
-                data['FlowName'] = name + " " + description(df.iloc[index]["End use"],
-                                                            df.iloc[index]["NAICS code"])
+                data['ActivityConsumedBy'] = \
+                    description(df.iloc[index]["End use"],
+                                df.iloc[index]["NAICS code"])
+                data['FlowName'] = name + " " + \
+                                   description(df.iloc[index]["End use"],
+                                               df.iloc[index]["NAICS code"])
                 if df.iloc[index]["End use"].strip() == "Glass:":
                     total_glass = int(df.iloc[index]["NAICS code"])
                 elif data['ActivityConsumedBy'] == "Glass Total":
@@ -197,5 +211,6 @@ def soda_parse(dataframe_list, args):
                         data["Description"] = des_str
                 if df.iloc[index]["End use"].strip() != "Glass:":
                     dataframe = dataframe.append(data, ignore_index=True)
-                    dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                    dataframe = assign_fips_location_system(
+                        dataframe, str(args["year"]))
     return dataframe

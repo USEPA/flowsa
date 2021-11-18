@@ -53,7 +53,8 @@ def usgs_sgi_url_helper(build_url, config, args):
 
 def usgs_sgi_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -61,7 +62,8 @@ def usgs_sgi_call(url, r, args):
     :return: pandas dataframe of original source data
     """
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                             sheet_name='T1')
 
     df_data_1 = pd.DataFrame(df_raw_data_two.loc[6:10]).reindex()
     df_data_1 = df_data_1.reset_index()
@@ -78,10 +80,12 @@ def usgs_sgi_call(url, r, args):
             del df_data_2[col_name]
 
     if len(df_data_1. columns) == 12:
-        df_data_1.columns = ["Production", "space_7", "space_1", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
-        df_data_2.columns = ["Production", "space_7", "space_1", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
+        df_data_1.columns = ["Production", "space_7", "space_1", "year_1",
+                             "space_2", "year_2", "space_3", "year_3",
+                             "space_4", "year_4", "space_5", "year_5"]
+        df_data_2.columns = ["Production", "space_7", "space_1", "year_1",
+                             "space_2", "year_2", "space_3", "year_3",
+                             "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -115,13 +119,15 @@ def usgs_sgi_parse(dataframe_list, args):
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Sold or used:":
                 prod = "production"
-            elif df.iloc[index]["Production"].strip() == "Imports for consumption:":
+            elif df.iloc[index]["Production"].strip() == \
+                    "Imports for consumption:":
                 prod = "imports"
             elif df.iloc[index]["Production"].strip() == "Exports:":
                 prod = "exports"
             if df.iloc[index]["Production"].strip() in row_to_use:
                 remove_digits = str.maketrans('', '', digits)
-                product = df.iloc[index]["Production"].strip().translate(remove_digits)
+                product = df.iloc[index][
+                    "Production"].strip().translate(remove_digits)
                 data = usgs_myb_static_varaibles()
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
@@ -132,5 +138,6 @@ def usgs_sgi_parse(dataframe_list, args):
                 data['FlowName'] = "Sand Gravel Industrial " + prod
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

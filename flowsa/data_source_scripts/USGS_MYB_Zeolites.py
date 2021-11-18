@@ -54,21 +54,24 @@ def usgs_zeolites_url_helper(build_url, config, args):
 
 def usgs_zeolites_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                             sheet_name='T1')
     df_data_one = pd.DataFrame(df_raw_data_one.loc[4:7]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
 
     if len(df_data_one. columns) == 12:
-        df_data_one.columns = ["Production", "Unit", "space_2",  "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
+        df_data_one.columns = ["Production", "Unit", "space_2",  "year_1",
+                               "space_3", "year_2", "space_4", "year_3",
+                               "space_5", "year_4", "space_6", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -126,5 +129,6 @@ def usgs_zeolites_parse(dataframe_list, args):
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

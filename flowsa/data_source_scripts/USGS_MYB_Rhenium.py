@@ -56,14 +56,16 @@ def usgs_rhenium_url_helper(build_url, config, args):
 
 def usgs_rhenium_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                         sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[5:13]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -74,10 +76,13 @@ def usgs_rhenium_call(url, r, args):
             del df_data[col_name]
 
     if len(df_data. columns) == 14:
-        df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5", "space_6", "space_7", "space_8"]
+        df_data.columns = ["Production", "space_1", "year_1", "space_2",
+                           "year_2", "space_3", "year_3", "space_4",
+                           "year_4", "space_5", "year_5", "space_6",
+                           "space_7", "space_8"]
     elif len(df_data. columns) == 11:
-        df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3", "year_3",
+        df_data.columns = ["Production", "space_1", "year_1", "space_2",
+                           "year_2", "space_3", "year_3",
                            "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
@@ -98,15 +103,18 @@ def usgs_rhenium_parse(dataframe_list, args):
         specifications
     """
     data = {}
-    row_to_use = ["Total, rhenium content", "Production, mine, rhenium content2"]
+    row_to_use = ["Total, rhenium content",
+                  "Production, mine, rhenium content2"]
     dataframe = pd.DataFrame()
     name = usgs_myb_name(args["source"])
     des = name
     for df in dataframe_list:
         for index, row in df.iterrows():
-            if df.iloc[index]["Production"].strip() == "Total, rhenium content":
+            if df.iloc[index]["Production"].strip() == \
+                    "Total, rhenium content":
                 product = "imports"
-            elif df.iloc[index]["Production"].strip() == "Production, mine, rhenium content2":
+            elif df.iloc[index]["Production"].strip() == \
+                    "Production, mine, rhenium content2":
                 product = "production"
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
@@ -122,5 +130,6 @@ def usgs_rhenium_parse(dataframe_list, args):
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

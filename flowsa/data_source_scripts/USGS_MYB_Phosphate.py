@@ -55,7 +55,8 @@ def usgs_phosphate_url_helper(build_url, config, args):
 
 def usgs_phosphate_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running

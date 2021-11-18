@@ -54,21 +54,24 @@ def usgs_silver_url_helper(build_url, config, args):
 
 def usgs_silver_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+     Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                         sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[4:14]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
 
     if len(df_data. columns) == 11:
-        df_data.columns = ["Production", "Unit", "year_1", "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5"]
+        df_data.columns = ["Production", "Unit", "year_1", "space_2",
+                           "year_2", "space_3", "year_3", "space_4",
+                           "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -109,10 +112,12 @@ def usgs_silver_parse(dataframe_list, args):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
-                if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
+                if str(df.iloc[index][col_name]) == "--" or \
+                        str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

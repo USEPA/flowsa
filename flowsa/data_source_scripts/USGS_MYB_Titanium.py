@@ -52,14 +52,16 @@ def usgs_titanium_url_helper(build_url, config, args):
 
 def usgs_titanium_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                         sheet_name='T1')
     df_data_1 = pd.DataFrame(df_raw_data.loc[4:7]).reindex()
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]
@@ -69,10 +71,14 @@ def usgs_titanium_call(url, r, args):
     del df_data_2["index"]
 
     if len(df_data_1. columns) == 13:
-        df_data_1.columns = ["Production", "space_1", "Unit", "space_6", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
-        df_data_2.columns = ["Production", "space_1", "Unit", "space_6", "year_1", "space_2", "year_2", "space_3",
-                             "year_3", "space_4", "year_4", "space_5", "year_5"]
+        df_data_1.columns = ["Production", "space_1", "Unit", "space_6",
+                             "year_1", "space_2", "year_2", "space_3",
+                             "year_3", "space_4", "year_4", "space_5",
+                             "year_5"]
+        df_data_2.columns = ["Production", "space_1", "Unit", "space_6",
+                             "year_1", "space_2", "year_2", "space_3",
+                             "year_3", "space_4", "year_4", "space_5",
+                             "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -104,14 +110,16 @@ def usgs_titanium_parse(dataframe_list, args):
 
     for df in dataframe_list:
         for index, row in df.iterrows():
-            if df.iloc[index]["Production"].strip() == "Imports for consumption":
+            if df.iloc[index]["Production"].strip() == \
+                    "Imports for consumption":
                 product = "imports"
             elif df.iloc[index]["Production"].strip() == "Production2" or \
                     df.iloc[index]["Production"].strip() == "Production":
                 product = "production"
             if df.iloc[index]["Production"].strip() == "Mineral concentrates:":
                 name = "Titanium"
-            elif df.iloc[index]["Production"].strip() == "Titanium dioxide pigment:":
+            elif df.iloc[index]["Production"].strip() == \
+                    "Titanium dioxide pigment:":
                 name = "Titanium dioxide"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
@@ -123,10 +131,12 @@ def usgs_titanium_parse(dataframe_list, args):
                 data["Description"] = name
                 data["ActivityProducedBy"] = name
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
-                if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
+                if str(df.iloc[index][col_name]) == "--" or \
+                        str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

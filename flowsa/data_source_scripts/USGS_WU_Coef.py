@@ -3,7 +3,8 @@
 # coding=utf-8
 
 """
-Animal Water Use coefficients data obtained from: USGS Publication (Lovelace, 2005)
+Animal Water Use coefficients data obtained from: USGS Publication
+(Lovelace, 2005)
 https://pubs.er.usgs.gov/publication/sir20095041
 
 Data output manually saved as csv, "data/external_data/USGS_WU_Coef_Raw.csv"

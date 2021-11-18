@@ -52,14 +52,16 @@ def usgs_strontium_url_helper(build_url, config, args):
 
 def usgs_strontium_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                         sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[6:13]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -70,8 +72,9 @@ def usgs_strontium_call(url, r, args):
             del df_data[col_name]
 
     if len(df_data. columns) == 11:
-        df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5"]
+        df_data.columns = ["Production", "space_1", "year_1", "space_2",
+                           "year_2", "space_3", "year_3", "space_4",
+                           "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -92,7 +95,8 @@ def usgs_strontium_parse(dataframe_list, args):
         specifications
     """
     data = {}
-    row_to_use = ["Production, strontium minerals", "Strontium compounds3", "Celestite4", "Strontium carbonate"]
+    row_to_use = ["Production, strontium minerals", "Strontium compounds3",
+                  "Celestite4", "Strontium carbonate"]
     prod = ""
     name = usgs_myb_name(args["source"])
     des = name
@@ -100,9 +104,11 @@ def usgs_strontium_parse(dataframe_list, args):
     col_name = usgs_myb_year(SPAN_YEARS, args["year"])
     for df in dataframe_list:
         for index, row in df.iterrows():
-            if df.iloc[index]["Production"].strip() == "Imports for consumption:2":
+            if df.iloc[index]["Production"].strip() == \
+                    "Imports for consumption:2":
                 product = "imports"
-            elif df.iloc[index]["Production"].strip() == "Production, strontium minerals":
+            elif df.iloc[index]["Production"].strip() == \
+                    "Production, strontium minerals":
                 product = "production"
             elif df.iloc[index]["Production"].strip() == "Exports:2":
                 product = "exports"
@@ -112,18 +118,23 @@ def usgs_strontium_parse(dataframe_list, args):
                 data["SourceName"] = args["source"]
                 data["Year"] = str(args["year"])
                 data["Unit"] = "Metric Tons"
-                if usgs_myb_remove_digits(df.iloc[index]["Production"].strip()) == "Celestite":
-                    data['FlowName'] = name + " " + product + " " + \
-                                       usgs_myb_remove_digits(df.iloc[index]["Production"].strip())
+                if usgs_myb_remove_digits(
+                        df.iloc[index]["Production"].strip()) == "Celestite":
+                    data['FlowName'] = \
+                        name + " " + product + " " + usgs_myb_remove_digits(
+                            df.iloc[index]["Production"].strip())
                 else:
                     data['FlowName'] = name + " " + product
-                data["Description"] = usgs_myb_remove_digits(df.iloc[index]["Production"].strip())
+                data["Description"] = usgs_myb_remove_digits(
+                    df.iloc[index]["Production"].strip())
                 data["ActivityProducedBy"] = name
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
-                if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
+                if str(df.iloc[index][col_name]) == "--" or \
+                        str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

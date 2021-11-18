@@ -61,14 +61,16 @@ def usgs_platinum_url_helper(build_url, config, args):
 
 def usgs_platinum_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                         sheet_name='T1')
     df_data_1 = pd.DataFrame(df_raw_data.loc[4:9]).reindex()
     df_data_1 = df_data_1.reset_index()
     del df_data_1["index"]
@@ -78,10 +80,14 @@ def usgs_platinum_call(url, r, args):
     del df_data_2["index"]
 
     if len(df_data_1. columns) == 13:
-        df_data_1.columns = ["Production", "space_6", "Units", "space_1", "year_1", "space_2", "year_2",
-                             "space_3", "year_3", "space_4", "year_4", "space_5", "year_5"]
-        df_data_2.columns = ["Production", "space_6", "Units", "space_1", "year_1", "space_2", "year_2",
-                             "space_3", "year_3", "space_4", "year_4", "space_5", "year_5"]
+        df_data_1.columns = ["Production", "space_6", "Units", "space_1",
+                             "year_1", "space_2", "year_2", "space_3",
+                             "year_3", "space_4", "year_4", "space_5",
+                             "year_5"]
+        df_data_2.columns = ["Production", "space_6", "Units", "space_1",
+                             "year_1", "space_2", "year_2", "space_3",
+                             "year_3", "space_4", "year_4", "space_5",
+                             "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -107,9 +113,13 @@ def usgs_platinum_parse(dataframe_list, args):
         specifications
     """
     data = {}
-    row_to_use = ["Quantity", "Palladium, Pd content", "Platinum, includes coins, Pt content", "Platinum, Pt content",
-                  "Iridium, Ir content", "Osmium, Os content", "Rhodium, Rh content", "Ruthenium, Ru content",
-                  "Iridium, osmium, and ruthenium, gross weight", "Rhodium, Rh content"]
+    row_to_use = ["Quantity", "Palladium, Pd content",
+                  "Platinum, includes coins, Pt content",
+                  "Platinum, Pt content",
+                  "Iridium, Ir content", "Osmium, Os content",
+                  "Rhodium, Rh content", "Ruthenium, Ru content",
+                  "Iridium, osmium, and ruthenium, gross weight",
+                  "Rhodium, Rh content"]
     dataframe = pd.DataFrame()
 
     for df in dataframe_list:
@@ -118,7 +128,8 @@ def usgs_platinum_parse(dataframe_list, args):
 
             if df.iloc[index]["Production"].strip() == "Exports, refined:":
                 product = "exports"
-            elif df.iloc[index]["Production"].strip() == "Imports for consumption, refined:":
+            elif df.iloc[index]["Production"].strip() == \
+                    "Imports for consumption, refined:":
                 product = "imports"
             elif df.iloc[index]["Production"].strip() == "Mine production:2":
                 product = "production"
@@ -145,5 +156,6 @@ def usgs_platinum_parse(dataframe_list, args):
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe
