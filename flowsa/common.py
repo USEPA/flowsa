@@ -43,6 +43,8 @@ sector_level_key = {"NAICS_2": 2,
 # because unable to run calculation functions with text string
 WITHDRAWN_KEYWORD = np.nan
 
+memory = joblib.Memory(f'{datapath}.cache')
+
 
 def load_api_key(api_source):
     """
@@ -63,9 +65,6 @@ def load_api_key(api_source):
         log.error(f"Key file {api_source} not found. See github wiki for help "
                   "https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys")
     return key
-
-
-memory = joblib.Memory(".cache")
 
 
 @memory.cache()
