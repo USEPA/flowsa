@@ -589,7 +589,7 @@ def convert_fba_unit(df):
     return df
 
 
-def find_true_file_path(filedirectory, filename, extension):
+def get_flowsa_base_name(filedirectory, filename, extension):
     """
     If filename does not match filename within flowsa due to added extensions
     onto the filename, cycle through
@@ -599,13 +599,13 @@ def find_true_file_path(filedirectory, filename, extension):
     :param extension: string, type of file, such as "yaml" or "py"
     :return: string, corrected file path name
     """
-
-    # if a file does not exist modify file name, dropping ext after last
-    # underscore
-    while os.path.exists(f"{filedirectory}{filename}.{extension}") is False:
-        # continue dropping last underscore/extension until file name does
-        # exist
-        filename = filename.rsplit("_", 1)[0]
+    # If a file does not exist, modify file name, dropping portion after last
+    # underscore. Repeat this process until the file name exists or no
+    # underscores are left.
+    while '_' in filename:
+        if os.path.exists(f"{filedirectory}{filename}.{extension}"):
+            break
+        filename, _ = filename.rsplit('_', 1)
 
     return filename
 
@@ -620,8 +620,10 @@ def rename_log_file(filename, fb_meta):
     # original log file name - all log statements
     log_file = f'{logoutputpath}{"flowsa.log"}'
     # generate new log name
-    new_log_name = (f'{logoutputpath}{filename}{"_v"}'
-                    f'{fb_meta.tool_version}{"_"}{fb_meta.git_hash}{".log"}')
+    new_log_name = (f'{logoutputpath}{filename}_v'
+                    f'{fb_meta.tool_version}'
+                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
+                    f'.log')
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file
@@ -631,7 +633,8 @@ def rename_log_file(filename, fb_meta):
     log_file = f'{logoutputpath}{"validation_flowsa.log"}'
     # generate new log name
     new_log_name = (f'{logoutputpath}{filename}_v'
-                    f'{fb_meta.tool_version}_{fb_meta.git_hash}'
+                    f'{fb_meta.tool_version}'
+                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
                     f'_validation.log')
     # create log directory if missing
     create_paths_if_missing(logoutputpath)
