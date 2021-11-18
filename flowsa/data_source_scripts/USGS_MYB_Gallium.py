@@ -36,15 +36,17 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_gallium_url_helper(build_url, config, args):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data is
+    obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
     :param args: dictionary, arguments specified when running flowbyactivity.py
         flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity
+        format
     """
     url = build_url
     return [url]
@@ -52,14 +54,16 @@ def usgs_gallium_url_helper(build_url, config, args):
 
 def usgs_gallium_call(url, r, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                         sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[5:7]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -70,8 +74,9 @@ def usgs_gallium_call(url, r, args):
             del df_data[col_name]
 
     if len(df_data.columns) == 11:
-        df_data.columns = ["Production", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5"]
+        df_data.columns = ["Production", "space_1", "year_1", "space_2",
+                           "year_2", "space_3", "year_3", "space_4",
+                           "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -86,8 +91,10 @@ def usgs_gallium_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     data = {}
     row_to_use = ["Production, primary crude", "Metal"]
@@ -98,9 +105,11 @@ def usgs_gallium_parse(dataframe_list, args):
     col_name = usgs_myb_year(SPAN_YEARS, args["year"])
     for df in dataframe_list:
         for index, row in df.iterrows():
-            if df.iloc[index]["Production"].strip() == "Imports for consumption:":
+            if df.iloc[index]["Production"].strip() == \
+                    "Imports for consumption:":
                 product = "imports"
-            elif df.iloc[index]["Production"].strip() == "Production, primary crude":
+            elif df.iloc[index]["Production"].strip() == \
+                    "Production, primary crude":
                 product = "production"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
@@ -119,5 +128,6 @@ def usgs_gallium_parse(dataframe_list, args):
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

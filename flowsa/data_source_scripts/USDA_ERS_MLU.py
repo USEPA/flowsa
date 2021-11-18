@@ -15,16 +15,19 @@ from flowsa.common import get_all_state_FIPS_2, US_FIPS
 from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import load_crosswalk
-from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2013, \
+from flowsa.literature_values import \
+    get_area_of_rural_land_occupied_by_houses_2013, \
     get_area_of_urban_land_occupied_by_houses_2013, \
-    get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
+    get_transportation_sectors_based_on_FHA_fees, \
+    get_urban_land_use_for_airports, \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
 from flowsa.validation import compare_df_units
 
 
 def mlu_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe,
+    begin parsing df into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -40,8 +43,10 @@ def mlu_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False
@@ -58,7 +63,8 @@ def mlu_parse(dataframe_list, args):
     fips['State'] = fips['State'].apply(lambda x: x.title())
     fips['FIPS_2'] = fips['FIPS_2'] + '000'
     dfm = df.merge(fips, how='left').rename(columns={'FIPS_2': 'Location'})
-    dfm['Location'] = np.where(dfm['State'] == "U.S. total", US_FIPS, dfm['Location'])
+    dfm['Location'] = np.where(dfm['State'] == "U.S. total",
+                               US_FIPS, dfm['Location'])
 
     # drop null values
     dfm2 = dfm[~dfm['Location'].isnull()].reset_index(drop=True)
@@ -82,15 +88,16 @@ def mlu_parse(dataframe_list, args):
 
 def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     """
-    This function is used to allocate the USDA_ERS_MLU activity 'land in urban areas'
-    to NAICS 2012 sectors. Allocation is dependent on assumptions defined in
-    'literature_values.py' as well as results from allocating
-    'EIA_CBECS_Land' and 'EIA_MECS_Land' to land based sectors.
+    This function is used to allocate the USDA_ERS_MLU activity 'land in
+    urban areas' to NAICS 2012 sectors. Allocation is dependent on
+    assumptions defined in 'literature_values.py' as well as results from
+    allocating 'EIA_CBECS_Land' and 'EIA_MECS_Land' to land based sectors.
 
     Methodology is based on the manuscript:
     Lin Zeng and Anu Ramaswami
-    Impact of Locational Choices and Consumer Behaviors on Personal Land Footprints:
-    An Exploration Across the Urban–Rural Continuum in the United States
+    Impact of Locational Choices and Consumer Behaviors on Personal
+    Land Footprints: An Exploration Across the Urban–Rural Continuum in the
+    United States
     Environmental Science & Technology 2020 54 (6), 3091-3102
     DOI: 10.1021/acs.est.9b06024
 
@@ -117,7 +124,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     # load the federal highway administration fees dictionary
     fha_dict = get_transportation_sectors_based_on_FHA_fees()
     df_fha = pd.DataFrame.from_dict(
-        fha_dict, orient='index').rename(columns={'NAICS_2012_Code': sector_col})
+        fha_dict, orient='index').rename(
+        columns={'NAICS_2012_Code': sector_col})
 
     # calculate total residential area from the American Housing Survey
     residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
@@ -127,63 +135,74 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
     # make an assumption about the percent of urban area that is open space
     openspace_multiplier = get_open_space_fraction_of_urban_area()
     df_openspace = df[df[sector_col] == '712190']
-    df_openspace = df_openspace.assign(FlowAmount=df_openspace['FlowAmount'] * openspace_multiplier)
+    df_openspace = df_openspace.assign(
+        FlowAmount=df_openspace['FlowAmount'] * openspace_multiplier)
 
     # sum all uses of urban area that are NOT transportation
-    # first concat dfs for residential, openspace, commercial, and manufacturing land use
-    df_non_urban_transport_area = pd.concat([df_residential, df_openspace,
-                                             cbecs, mecs], sort=False, ignore_index=True)
-    df_non_urban_transport_area = df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
-    non_urban_transport_area_sum =\
-        df_non_urban_transport_area.groupby(
-            ['Location', 'Unit'], as_index=False).agg({'FlowAmount': sum}).rename(
-            columns={'FlowAmount': 'NonTransport'})
+    # first concat dfs for residential, openspace, commercial,
+    # and manufacturing land use
+    df_non_urban_transport_area = pd.concat(
+        [df_residential, df_openspace, cbecs, mecs], sort=False,
+        ignore_index=True)
+    df_non_urban_transport_area = \
+        df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
+    non_urban_transport_area_sum = df_non_urban_transport_area.groupby(
+            ['Location', 'Unit'], as_index=False).agg(
+        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'NonTransport'})
     # compare units
     compare_df_units(df, df_non_urban_transport_area)
-    # calculate total urban transportation by subtracting calculated areas from total urban land
+    # calculate total urban transportation by subtracting
+    # calculated areas from total urban land
     df_transport = df.merge(non_urban_transport_area_sum, how='left')
-    df_transport = df_transport.assign(FlowAmount=df_transport['FlowAmount'] -
-                                                  df_transport['NonTransport'])
+    df_transport = df_transport.assign(
+        FlowAmount=df_transport['FlowAmount'] - df_transport['NonTransport'])
     df_transport.drop(columns=['NonTransport'], inplace=True)
 
-    # make an assumption about the percent of urban transport area used by airports
+    # make an assumption about the percent of urban transport
+    # area used by airports
     airport_multiplier = get_urban_land_use_for_airports()
     df_airport = df_transport[df_transport[sector_col] == '488119']
-    df_airport = df_airport.assign(FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
+    df_airport = df_airport.assign(
+        FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
 
-    # make an assumption about the percent of urban transport area used by railroads
+    # make an assumption about the percent of urban transport
+    # area used by railroads
     railroad_multiplier = get_urban_land_use_for_railroads()
     df_railroad = df_transport[df_transport[sector_col] == '482112']
-    df_railroad = df_railroad.assign(FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
+    df_railroad = df_railroad.assign(
+        FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
 
     # further allocate the remaining urban transportation area using
     # Federal Highway Administration fees
     # first subtract area for airports and railroads
     air_rail_area = pd.concat([df_airport, df_railroad], sort=False)
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
-    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)\
-        .agg({'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
+    air_rail_area_sum = air_rail_area.groupby(
+        ['Location', 'Unit'], as_index=False).agg(
+        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
 
     df_highway = df_transport.merge(air_rail_area_sum, how='left')
-    df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
+    df_highway = df_highway.assign(
+        FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
     df_highway.drop(columns=['AirRail'], inplace=True)
 
     # add fed highway administration fees
     df_highway2 = df_highway.merge(df_fha, how='left')
     df_highway2 = df_highway2[df_highway2['ShareOfFees'].notna()]
-    df_highway2 = df_highway2.assign(FlowAmount=df_highway2['FlowAmount'] *
-                                                df_highway2['ShareOfFees'])
+    df_highway2 = df_highway2.assign(
+        FlowAmount=df_highway2['FlowAmount'] * df_highway2['ShareOfFees'])
     df_highway2.drop(columns=['ShareOfFees'], inplace=True)
 
     # concat all df subsets
-    allocated_urban_areas_df = pd.concat([df_residential, df_openspace,
-                                          df_airport, df_railroad, df_highway2],
-                                         ignore_index=True, sort=False).reset_index(drop=True)
+    allocated_urban_areas_df = pd.concat(
+        [df_residential, df_openspace, df_airport, df_railroad, df_highway2],
+        ignore_index=True, sort=False).reset_index(drop=True)
 
     return allocated_urban_areas_df
 
 
-def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list):
+def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
+        df, attr, fbs_list):
     """
     This function is used to allocate the USDA_ERS_MLU activity
     'land in urban areas' to NAICS 2012 sectors. Allocation
@@ -191,8 +210,9 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
 
     Methodology is based on the manuscript:
     Lin Zeng and Anu Ramaswami
-    Impact of Locational Choices and Consumer Behaviors on Personal Land Footprints:
-    An Exploration Across the Urban–Rural Continuum in the United States
+    Impact of Locational Choices and Consumer Behaviors on Personal
+    Land Footprints: An Exploration Across the Urban–Rural Continuum in the
+    United States
     Environmental Science & Technology 2020 54 (6), 3091-3102
     DOI: 10.1021/acs.est.9b06024
 
@@ -211,40 +231,46 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(df, attr, fbs_list)
     df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(
         columns={'NAICS_2012_Code': sector_col})
 
-    # make an assumption about the percent of rural transport area used by airports
+    # make an assumption about the percent of rural transport
+    # area used by airports
     airport_multiplier = get_urban_land_use_for_airports()
     df_airport = df[df[sector_col] == '488119']
-    df_airport = df_airport.assign(FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
+    df_airport = df_airport.assign(
+        FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
 
-    # make an assumption about the percent of urban transport area used by railroads
+    # make an assumption about the percent of urban transport
+    # area used by railroads
     railroad_multiplier = get_urban_land_use_for_railroads()
     df_railroad = df[df[sector_col] == '482112']
-    df_railroad = df_railroad.assign(FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
+    df_railroad = df_railroad.assign(
+        FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
 
     # further allocate the remaining urban transportation area
     # using Federal Highway Administration fees
     # first subtract area for airports and railroads
     air_rail_area = pd.concat([df_airport, df_railroad], sort=False)
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
-    air_rail_area_sum = air_rail_area.groupby(['Location', 'Unit'], as_index=False)\
-        .agg({'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
+    air_rail_area_sum = air_rail_area.groupby(
+        ['Location', 'Unit'], as_index=False).agg(
+        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
 
     # compare units
     compare_df_units(df, air_rail_area)
     df_highway = df.merge(air_rail_area_sum, how='left')
-    df_highway = df_highway.assign(FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
+    df_highway = df_highway.assign(
+        FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
     df_highway.drop(columns=['AirRail'], inplace=True)
 
     # add fed highway administration fees
     df_highway2 = df_highway.merge(df_fha, how='left')
     df_highway2 = df_highway2[df_highway2['ShareOfFees'].notna()]
-    df_highway2 = df_highway2.assign(FlowAmount=df_highway2['FlowAmount'] *
-                                                df_highway2['ShareOfFees'])
+    df_highway2 = df_highway2.assign(
+        FlowAmount=df_highway2['FlowAmount'] * df_highway2['ShareOfFees'])
     df_highway2.drop(columns=['ShareOfFees'], inplace=True)
 
     # concat airport, railroad, highway
-    allocated_rural_trans = pd.concat([df_airport, df_railroad, df_highway2],
-                                      sort=False, ignore_index=True)
+    allocated_rural_trans = pd.concat(
+        [df_airport, df_railroad, df_highway2], sort=False, ignore_index=True)
 
     return allocated_rural_trans
 
@@ -254,11 +280,13 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
     From the USDA ERS MLU 2012 report:
     "Includes miscellaneous other uses, such as industrial and commercial
     sites in rural areas, cemeteries, golf courses, mining areas, quarry sites,
-    marshes, swamps, sand dunes, bare rocks, deserts, tundra, rural residential,
-    and other unclassified land. In this report, urban land is reported as a separate category."
+    marshes, swamps, sand dunes, bare rocks, deserts, tundra,
+    rural residential, and other unclassified land. In this report,
+    urban land is reported as a separate category."
 
     Mining data is calculated using a separate source = BLM PLS.
-    Want to extract rural residential land area from total value of 'Other Land'
+    Want to extract rural residential land area from total value of
+    'Other Land'
     :param df: df, USDA ERA MLU Land
     :param attr: dictionary, attribute data from method yaml for activity set
     :param fbs_list: list, FBS dfs for activities created prior to the activity
@@ -276,8 +304,10 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
     # in df, where sector is a personal expenditure value, and
     # location = 00000, replace with rural res value
     vLogDetailed.info('The only category for MLU other land use is rural land '
-                      'occupation. All other land area in this category is unassigned to'
-                      'sectors, resulting in unaccounted land area.')
-    df['FlowAmount'] = np.where(df['SectorConsumedBy'].isin(household), rural_res, df['FlowAmount'])
+                      'occupation. All other land area in this category is '
+                      'unassigned to sectors, resulting in unaccounted land '
+                      'area.')
+    df['FlowAmount'] = np.where(df['SectorConsumedBy'].isin(household),
+                                rural_res, df['FlowAmount'])
 
     return df

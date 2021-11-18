@@ -35,15 +35,17 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_chromium_url_helper(build_url, config, args):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data is
+    obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
     :param args: dictionary, arguments specified when running flowbyactivity.py
         flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity
+        format
     """
     url = build_url
     return [url]
@@ -51,24 +53,28 @@ def usgs_chromium_url_helper(build_url, config, args):
 
 def usgs_chromium_call(url, r, args):
     """"
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe,
+    begin parsing df into FBA format
     :param url: string, url
     :param r: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                         sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[4:24]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
 
     if len(df_data. columns) == 12:
-        df_data.columns = ["Production", "Unit", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5"]
+        df_data.columns = ["Production", "Unit", "space_1", "year_1",
+                           "space_2", "year_2", "space_3", "year_3",
+                           "space_4", "year_4", "space_5", "year_5"]
     elif len(df_data. columns) == 13:
-        df_data.columns = ["Production", "Unit", "space_1", "year_1", "space_2", "year_2", "space_3",
-                           "year_3", "space_4", "year_4", "space_5", "year_5", "space_6"]
+        df_data.columns = ["Production", "Unit", "space_1", "year_1",
+                           "space_2", "year_2", "space_3", "year_3",
+                           "space_4", "year_4", "space_5", "year_5", "space_6"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -83,8 +89,10 @@ def usgs_chromium_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     data = {}
     row_to_use = ["Secondary2", "Total"]
@@ -111,10 +119,12 @@ def usgs_chromium_parse(dataframe_list, args):
                 data["Description"] = name
                 data["ActivityProducedBy"] = name
                 col_name = usgs_myb_year(SPAN_YEARS, args["year"])
-                if str(df.iloc[index][col_name]) == "--" or str(df.iloc[index][col_name]) == "(3)":
+                if str(df.iloc[index][col_name]) == "--" or \
+                        str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

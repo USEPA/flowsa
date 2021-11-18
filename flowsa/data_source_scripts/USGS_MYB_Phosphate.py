@@ -36,15 +36,17 @@ SPAN_YEARS = "2014-2018"
 
 def usgs_phosphate_url_helper(build_url, config, args):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data is
+    obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
     :param args: dictionary, arguments specified when running flowbyactivity.py
         flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity
+        format
     """
 
     url = build_url
@@ -61,7 +63,8 @@ def usgs_phosphate_call(url, r, args):
     :return: pandas dataframe of original source data
     """
 
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content), sheet_name='T1')
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content),
+                                             sheet_name='T1')
     df_data_one = pd.DataFrame(df_raw_data_one.loc[7:9]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
@@ -77,10 +80,12 @@ def usgs_phosphate_call(url, r, args):
             del df_data_two[col_name]
 
     if len(df_data_one. columns) == 12:
-        df_data_one.columns = ["Production", "unit", "space_1", "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
-        df_data_two.columns = ["Production", "unit", "space_1", "year_1", "space_3", "year_2",
-                               "space_4", "year_3", "space_5", "year_4", "space_6", "year_5"]
+        df_data_one.columns = ["Production", "unit", "space_1", "year_1",
+                               "space_3", "year_2", "space_4", "year_3",
+                               "space_5", "year_4", "space_6", "year_5"]
+        df_data_two.columns = ["Production", "unit", "space_1", "year_1",
+                               "space_3", "year_2", "space_4", "year_3",
+                               "space_5", "year_4", "space_6", "year_5"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
@@ -102,8 +107,10 @@ def usgs_phosphate_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     data = {}
     row_to_use = ["Gross weight", "Quantity, gross weight"]
@@ -114,9 +121,11 @@ def usgs_phosphate_parse(dataframe_list, args):
     col_name = usgs_myb_year(SPAN_YEARS, args["year"])
     for df in dataframe_list:
         for index, row in df.iterrows():
-            if df.iloc[index]["Production"].strip() == "Marketable production:":
+            if df.iloc[index]["Production"].strip() == \
+                    "Marketable production:":
                 prod = "production"
-            elif df.iloc[index]["Production"].strip() == "Imports for consumption:3":
+            elif df.iloc[index]["Production"].strip() == \
+                    "Imports for consumption:3":
                 prod = "import"
 
             if df.iloc[index]["Production"].strip() in row_to_use:
@@ -132,5 +141,6 @@ def usgs_phosphate_parse(dataframe_list, args):
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
-                dataframe = assign_fips_location_system(dataframe, str(args["year"]))
+                dataframe = assign_fips_location_system(
+                    dataframe, str(args["year"]))
     return dataframe

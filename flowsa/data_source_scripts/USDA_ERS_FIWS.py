@@ -16,7 +16,8 @@ from flowsa.common import US_FIPS, get_all_state_FIPS_2, us_state_abbrev
 
 def fiws_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
+    Convert response for calling url to pandas dataframe, begin parsing
+    df into FBA format
     :param url: string, url
     :param response_load: df, response from url call
     :param args: dictionary, arguments specified when running
@@ -36,8 +37,10 @@ def fiws_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
@@ -51,21 +54,26 @@ def fiws_parse(dataframe_list, args):
     fips['StateAbbrev'] = fips['State'].map(us_state_abbrev)
     # pad zeroes
     fips['FIPS_2'] = fips['FIPS_2'].apply(lambda x: x.ljust(3 + len(x), '0'))
-    df = pd.merge(df, fips, how='left', left_on='State', right_on='StateAbbrev')
+    df = pd.merge(
+        df, fips, how='left', left_on='State', right_on='StateAbbrev')
     # set us location code
     df.loc[df['State_x'] == 'US', 'FIPS_2'] = US_FIPS
     # drop "All" in variabledescription2
-    df.loc[df['VariableDescriptionPart2'] == 'All', 'VariableDescriptionPart2'] = 'drop'
+    df.loc[df['VariableDescriptionPart2'] ==
+           'All', 'VariableDescriptionPart2'] = 'drop'
     # combine variable descriptions to create Activity name and remove ", drop"
     df['ActivityProducedBy'] = df['VariableDescriptionPart1'] + \
                                ', ' + df['VariableDescriptionPart2']
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(", drop", "", regex=True)
+    df['ActivityProducedBy'] = \
+        df['ActivityProducedBy'].str.replace(", drop", "", regex=True)
     # trim whitespace
     df['ActivityProducedBy'] = df['ActivityProducedBy'].str.strip()
     # drop columns
-    df = df.drop(columns=['artificialKey', 'PublicationDate', 'Source', 'ChainType_GDP_Deflator',
-                          'VariableDescriptionPart1', 'VariableDescriptionPart2',
-                          'State_x', 'State_y', 'StateAbbrev', 'unit_desc'])
+    df = df.drop(
+        columns=['artificialKey', 'PublicationDate', 'Source',
+                 'ChainType_GDP_Deflator', 'VariableDescriptionPart1',
+                 'VariableDescriptionPart2', 'State_x', 'State_y',
+                 'StateAbbrev', 'unit_desc'])
     # rename columns
     df = df.rename(columns={"VariableDescriptionTotal": "Description",
                             "Amount": "FlowAmount",
@@ -80,7 +88,8 @@ def fiws_parse(dataframe_list, args):
     df.loc[df['Year'].between(2010, 2012), 'LocationSystem'] = 'FIPS_2010'
     # drop unnecessary rows
     df = df[df['FlowName'].str.contains("Cash receipts")]
-    # the unit is $1000 USD, so multiply FlowAmount by 1000 and set unit as 'USD'
+    # the unit is $1000 USD, so multiply FlowAmount by 1000 and
+    # set unit as 'USD'
     df['FlowAmount'] = df['FlowAmount'].astype(float)
     df['FlowAmount'] = df['FlowAmount'] * 1000
     # hard code data
