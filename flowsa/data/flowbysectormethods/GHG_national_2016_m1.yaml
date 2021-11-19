@@ -192,7 +192,7 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_57":  #CH4 from Natural Gas Systems
+  "EPA_GHGI_T_3_63":  #CH4 from Natural Gas Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -203,16 +203,13 @@ source_names:
         names:
           - "Distribution"
           - "Exploration"
-          - "Gathering and Boosting"
-          - "Offshore Production"
-          - "Onshore Production"
           - "Processing"
           - "Production"
           - "Transmission and Storage"
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_59":  #CO2 from Natural Gas Systems
+  "EPA_GHGI_T_3_65":  #CO2 from Natural Gas Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -221,6 +218,7 @@ source_names:
     activity_sets:
       activity_set_1:
         names:
+          - "Distribution"
           - "Exploration"
           - "Processing"
           - "Production"

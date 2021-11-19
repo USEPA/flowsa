@@ -82,18 +82,16 @@ EPA_GHGI_T_3_38,Other Sources,,,,
 EPA_GHGI_T_3_38,Pneumatic Controllers,,,,
 EPA_GHGI_T_3_38,Production (Total) ,,,,
 EPA_GHGI_T_3_38,Refining,,,,
-EPA_GHGI_T_3_57,Distribution,NAICS_2012_Code,,,221200
-EPA_GHGI_T_3_57,Exploration,NAICS_2012_Code,,,211000
-EPA_GHGI_T_3_57,Gathering and Boosting,NAICS_2012_Code,,,not maped in original
-EPA_GHGI_T_3_57,Offshore Production,NAICS_2012_Code,,,not maped in original
-EPA_GHGI_T_3_57,Onshore Production,NAICS_2012_Code,,,not maped in original
-EPA_GHGI_T_3_57,Processing,NAICS_2012_Code,,,211000
-EPA_GHGI_T_3_57,Production,NAICS_2012_Code,,,211000
-EPA_GHGI_T_3_57,Transmission and Storage,NAICS_2012_Code,,,486000
-EPA_GHGI_T_3_59,Exploration,NAICS_2012_Code,,,211000
-EPA_GHGI_T_3_59,Processing,NAICS_2012_Code,,,211000
-EPA_GHGI_T_3_59,Production,NAICS_2012_Code,,,211000
-EPA_GHGI_T_3_59,Transmission and Storage,NAICS_2012_Code,,,486000
+EPA_GHGI_T_3_63,Distribution,NAICS_2012_Code,221210,,221200
+EPA_GHGI_T_3_63,Exploration,NAICS_2012_Code,211111,,211000
+EPA_GHGI_T_3_63,Processing,NAICS_2012_Code,211111,,211000
+EPA_GHGI_T_3_63,Production,NAICS_2012_Code,211111,,211000
+EPA_GHGI_T_3_63,Transmission and Storage,NAICS_2012_Code,486210,,486000
+EPA_GHGI_T_3_65,Distribution,NAICS_2012_Code,221210,,221200
+EPA_GHGI_T_3_65,Exploration,NAICS_2012_Code,211111,,211000
+EPA_GHGI_T_3_65,Processing,NAICS_2012_Code,211111,,211000
+EPA_GHGI_T_3_65,Production,NAICS_2012_Code,211111,,211000
+EPA_GHGI_T_3_65,Transmission and Storage,NAICS_2012_Code,486210,,486000
 EPA_GHGI_T_5_29,Chickpeas,,,,
 EPA_GHGI_T_5_29,Cotton,,,,
 EPA_GHGI_T_5_29,Maize,,,,
