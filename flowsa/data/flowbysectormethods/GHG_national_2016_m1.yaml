@@ -242,7 +242,7 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_37": #CO2 from Petroleum Systems
+  "EPA_GHGI_T_3_38": #CH4 from Petroleum Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -251,20 +251,14 @@ source_names:
     activity_sets:
       activity_set_1:
         names:
-          - "Chemical Injection Pumps"
           - "Crude Oil Transportation"
-          - "Equipment Leaks"
           - "Exploration"
-          - "Gas Engines"
-          - "Offshore Production"
-          - "Other Sources"
-          - "Pneumatic Controllers"
-          - "Production (Total)"
+          - "Production"
           - "Refining"
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_38": #CO2 from Petroleum Systems
+  "EPA_GHGI_T_3_40": #CO2 from Petroleum Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -273,15 +267,25 @@ source_names:
     activity_sets:
       activity_set_1:
         names:
-          - "Chemical Injection Pumps"
           - "Crude Oil Transportation"
-          - "Equipment Leaks"
           - "Exploration"
-          - "Gas Engines"
-          - "Offshore Production"
-          - "Other Sources"
-          - "Pneumatic Controllers"
-          - "Production (Total)"
+          - "Production"
+          - "Refining"
+        allocation_method: direct
+        allocation_source: None
+        allocation_from_scale: national
+  "EPA_GHGI_T_3_42": #N2O from Petroleum Systems, not in prior method
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    fedefl_mapping: 'GHGI'
+    activity_sets:
+      activity_set_1:
+        names:
+          - "Crude Oil Transportation"
+          - "Exploration"
+          - "Production"
           - "Refining"
         allocation_method: direct
         allocation_source: None
