@@ -25,6 +25,7 @@ TABLES = {
     "Ch 4 - Industrial Processes": ["4-14", "4-33",  "4-46", "4-48", "4-50", "4-80", "4-94", "4-99", "4-101"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
     "Executive Summary": ["ES-5"]
+
 }
 
 ANNEX_TABLES = {
@@ -723,7 +724,8 @@ def ghg_parse(dataframe_list, args):
                             df.loc[index, 'Location'] = "99000"
                         apb_txt = df.loc[index, 'ActivityProducedBy']
                         apb_txt = strip_char(apb_txt)
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
+                        apb_final = apb_txt + " " + apbe_value
+                        df.loc[index, 'ActivityProducedBy'] = apb_final.strip()
                 if "Total" == apb_value or "Total " == apb_value:
                   df = df.drop(index)
         elif source_name in source_activity_2:
