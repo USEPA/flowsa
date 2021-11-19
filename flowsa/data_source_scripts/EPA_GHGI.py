@@ -21,7 +21,7 @@ DEFAULT_YEAR = 9999
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
     "Ch 3 - Energy": ["3-8", "3-9", "3-10", "3-14", "3-15", "3-22",
-                      "3-38", "3-39", "3-40", "3-63", "3-65", "3-67"],
+                      "3-38", "3-40", "3-42", "3-63", "3-65", "3-67"],
     "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-46", "4-48", "4-50",
                                     "4-80", "4-94", "4-99", "4-101"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
@@ -94,15 +94,15 @@ TBL_META = {
         "activity": "CH4",
         "desc": "Table 3?38:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
     },
-    "EPA_GHGI_T_3_39": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "CH4",
-        "desc": "Table 3-39:  CH4 Emissions from Petroleum Systems (kt CH4)"
-    },
     "EPA_GHGI_T_3_40": {
         "class": "Chemicals", "unit": "MMT CO2", "compartment": "air",
         "activity": "CO2",
         "desc": "Table 3-40:  CO2 Emissions from Petroleum Systems (MMT CO2)"
+    },
+    "EPA_GHGI_T_3_42": {
+        "class": "Chemicals", "unit": "MT CO2", "compartment": "air",
+        "activity": "N2O",
+        "desc": "Table 3-42:  N2O Emissions from Petroleum Systems (Metric Tons CO2 Eq.)"
     },
     "EPA_GHGI_T_3_63": {
         "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
@@ -616,7 +616,7 @@ def ghg_parse(dataframe_list, args):
         source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
                              "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
                              "EPA_GHGI_T_A_77", "EPA_GHGI_T_3_10"]
-        source_activity_2 =  ["EPA_GHGI_T_3_38", "EPA_GHGI_T_3_39", "EPA_GHGI_T_3_63"]
+        source_activity_2 =  ["EPA_GHGI_T_3_38", "EPA_GHGI_T_3_63"]
         double_activity = ["EPA_GHGI_T_4_48"]
         note_par = ["EPA_GHGI_T_4_14", "EPA_GHGI_T_4_99"]
         if source_name in multi_chem_names:
