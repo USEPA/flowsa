@@ -172,7 +172,7 @@ source_names:
       #   allocation_flow:
       #   allocation_compartment: None
       #   allocation_from_scale: national
-  "EPA_GHGI_T_3_63":  #CH4 from Natural Gas Systems
+  "EPA_GHGI_T_3_63": &natgas #CH4 from Natural Gas Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -189,40 +189,9 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_65":  #CO2 from Natural Gas Systems
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
-    year: 2016
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      activity_set_1:
-        names:
-          - "Distribution"
-          - "Exploration"
-          - "Processing"
-          - "Production"
-          - "Transmission and Storage"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-  "EPA_GHGI_T_3_67": #N2O from Natural Gas Systems, not used in original method
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
-    year: 2016
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      activity_set_1:
-        names:
-          - "Exploration"
-          - "Processing"
-          - "Production"
-          - "Transmission and Storage"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-  "EPA_GHGI_T_3_38": #CH4 from Petroleum Systems
+  "EPA_GHGI_T_3_65": *natgas #CO2 from Natural Gas Systems mimics CH4
+  "EPA_GHGI_T_3_67": *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
+  "EPA_GHGI_T_3_38": &petroleum #CH4 from Petroleum Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -238,38 +207,8 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_40": #CO2 from Petroleum Systems
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
-    year: 2016
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      activity_set_1:
-        names:
-          - "Crude Oil Transportation"
-          - "Exploration"
-          - "Production"
-          - "Refining"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-  "EPA_GHGI_T_3_42": #N2O from Petroleum Systems, not in prior method
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
-    year: 2016
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      activity_set_1:
-        names:
-          - "Crude Oil Transportation"
-          - "Exploration"
-          - "Production"
-          - "Refining"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
+  "EPA_GHGI_T_3_40": *petroleum #CO2 from Petroleum Systems mimics CH4
+  "EPA_GHGI_T_3_42": *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
   "EPA_GHGI_T_5_3":  #CH4 from Enteric Fermentation
     data_format: 'FBA'
     class: Chemicals
