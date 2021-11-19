@@ -75,7 +75,7 @@ def make_url_request(url, set_cookies=False):
     :param url: URL to query
     :param set_cookies: bool, default set to False
         set to True if cookies required
-    :return: request Object
+    :return: response Object
     """
     session = (requests_ftp.ftp.FTPSession if urlsplit(url).scheme == 'ftp'
                else requests.Session)
