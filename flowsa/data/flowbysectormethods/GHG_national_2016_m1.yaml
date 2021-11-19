@@ -310,95 +310,113 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_14": #CH4 from mobile combustion
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      year: 2016
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        activity_set_1:  #this set is direct
-          names:
-            - "Passenger Cars"
-            - "Light-Duty Trucks"
-            - "Rail"
-            - "Ships and Boats"
-            - "Aircraft"
-        activity_set_2: #this set is allocated by purchases of 333120 construction equipment
-          names:
-            - "Construction/Mining Equipment"
-          allocation_method: proportional
-          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-          allocation_source_class: "Money"
-          allocation_source_year: 2012
-          allocation_flow: "USD2012"
-          allocation_compartment: None
-          allocation_from_scale: national
-        activity_set_3: #this set is allocated by purchases of 333111 farm machinery
-          names:
-            - "Agricultural Equipment"
-          allocation_method: proportional
-          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-          allocation_source_class: "Money"
-          allocation_source_year: 2012
-          allocation_flow: "USD2012"
-          allocation_compartment: None
-          allocation_from_scale: national
-        activity_set_4: #this set is allocated by purchases of 333111 petroleum refining
-          names:
-            - "Other"
-          allocation_method: proportional
-          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-          allocation_source_class: "Money"
-          allocation_source_year: 2012
-          allocation_flow: "USD2012"
-          allocation_compartment: None
-          allocation_from_scale: national
-  "EPA_GHGI_T_3_15": #N2O from mobile combustion
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      year: 2016
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        activity_set_1:  #this set is direct
-          names:
-            - "Passenger Cars"
-            - "Light-Duty Trucks"
-            - "Rail"
-            - "Ships and Boats"
-            - "Aircraft"
-          allocation_method: direct
-        activity_set_2: #this set is allocated by purchases of 333120 construction equipment
-          names:
-            - "Construction/Mining Equipment"
-          allocation_method: proportional
-          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-          allocation_source_class: "Money"
-          allocation_source_year: 2012
-          allocation_flow: "USD2012"
-          allocation_compartment: None
-          allocation_from_scale: national
-        activity_set_3: #this set is allocated by purchases of 333111 farm machinery
-          names:
-            - "Agricultural Equipment"
-          allocation_method: proportional
-          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-          allocation_source_class: "Money"
-          allocation_source_year: 2012
-          allocation_flow: "USD2012"
-          allocation_compartment: None
-          allocation_from_scale: national
-        activity_set_4: #this set is allocated by purchases of 333111 petroleum refining
-          names:
-            - "Other"
-          allocation_method: proportional
-          allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-          allocation_source_class: "Money"
-          allocation_source_year: 2012
-          allocation_flow: "USD2012"
-          allocation_compartment: None
-          allocation_from_scale: national
+  "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    fedefl_mapping: 'GHGI'
+    activity_sets:
+      activity_set_1:  #this set is direct
+        names:
+            - "Passenger Cars Gasoline On-Road"
+            - "Light-Duty Trucks Gasoline On-Road"
+            - "Rail Non-Road"
+            - "Ships and Boats Non-Road"
+            - "Aircraft Non-Road"
+            - "Medium- and Heavy-Duty Trucks and Buses Diesel On-Road"
+        allocation_method: direct
+        allocation_source: None
+        allocation_from_scale: national
+      activity_set_2: #this set is allocated by purchases of construction equipment
+        names:
+          - "Construction/Mining Equipment Non-Road"
+        allocation_method: proportional
+        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        allocation_source_class: "Money"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "USD2012"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"333120": 'ActivityProducedBy'} # purchases of construction equipment
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2012
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+      activity_set_3: #this set is allocated by purchases of farm machinery
+        names:
+          - "Agricultural Equipment Non-Road"
+        allocation_method: proportional
+        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        allocation_source_class: "Money"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "USD2012"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"333111": 'ActivityProducedBy'} # purchases of farm machinery
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2012
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+      activity_set_4: #this set is allocated by purchases of petroleum refining
+        names:
+          - "Other Non-Road"
+        allocation_method: proportional
+        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        allocation_source_class: "Money"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "USD2012"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery products
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2012
+        helper_flow:
+           - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+      activity_set_5: #this set is allocated by purchases of natural gas
+        names:
+          - "Alternative Fuel On-Road"
+        allocation_method: proportional
+        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        allocation_source_class: "Money"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "USD2012"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2012
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+  "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
   "EPA_GHGI_T_5_29": #CH4, N2O, CO and NOx from field burning of residues
       data_format: 'FBA'
       class: Chemicals
