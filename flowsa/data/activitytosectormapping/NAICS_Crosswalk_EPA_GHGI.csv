@@ -1,35 +1,39 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Notes
-EPA_GHGI_T_2_1,Residential,,,,
-EPA_GHGI_T_2_1,Iron and Steel Production & Metallurgical Coke Production,,,,
-EPA_GHGI_T_2_1,Cement Production,,,,
-EPA_GHGI_T_2_1,Lime Production,,,,
-EPA_GHGI_T_2_1,Ammonia Production,,,,
-EPA_GHGI_T_2_1,Incineration of Waste,,,,
-EPA_GHGI_T_2_1,Aluminum Production,,,,
-EPA_GHGI_T_2_1,Soda Ash Production and Consumption,,,,
-EPA_GHGI_T_2_1,Ferroalloy Production,,,,
-EPA_GHGI_T_2_1,Titanium Dioxide Production,,,,
-EPA_GHGI_T_2_1,Zinc Production,,,,
-EPA_GHGI_T_2_1,Phosphoric Acid Production,,,,
-EPA_GHGI_T_2_1,Glass Production,,,,
-EPA_GHGI_T_2_1,Silicon Carbide Production and Consumption,,,,
-EPA_GHGI_T_2_1,Landfills,,,,
-EPA_GHGI_T_2_1,Coal Mining,,,,
-EPA_GHGI_T_2_1,Wastewater Treatment,,,,
-EPA_GHGI_T_2_1,Abandoned Oil and Gas Wells,,,,
-EPA_GHGI_T_2_1,Abandoned Underground Coal Mines,,,,
-EPA_GHGI_T_2_1,Composting,,,,
-EPA_GHGI_T_2_1,Incineration of Waste,,,,
-EPA_GHGI_T_2_1,Nitric Acid Production,,,,
-EPA_GHGI_T_2_1,Adipic Acid Production,,,,
-EPA_GHGI_T_2_1,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",,,,
-EPA_GHGI_T_2_1,Semiconductor Manufacture,,,,
-EPA_GHGI_T_2_1,HCFC22 Production,,,,
-EPA_GHGI_T_2_1,Electrical Transmission and Distribution,,,,
-EPA_GHGI_T_2_1,Electric Power,,,,
-EPA_GHGI_T_2_1,Magnesium Production and Processing,,,,
-EPA_GHGI_T_2_1,Liming of Agricultural Soils,,,,
-EPA_GHGI_T_2_1,Urea Fertilization,,,,
+EPA_GHGI_T_2_1,Residential,NAICS_2012_Code,F01000,,Pull from A-17 instead
+EPA_GHGI_T_2_1,Iron and Steel Production & Metallurgical Coke Production,NAICS_2012_Code,3311,,331110
+EPA_GHGI_T_2_1,Cement Production,NAICS_2012_Code,32731,,327310
+EPA_GHGI_T_2_1,Lime Production,NAICS_2012_Code,3274,,327400
+EPA_GHGI_T_2_1,Ammonia Production,NAICS_2012_Code,32531,,325310
+EPA_GHGI_T_2_1,Incineration of Waste,NAICS_2012_Code,562,,562000
+EPA_GHGI_T_2_1,Aluminum Production,NAICS_2012_Code,331313,,331313
+EPA_GHGI_T_2_1,Soda Ash Production and Consumption,NAICS_2012_Code,32519,,325190
+EPA_GHGI_T_2_1,Ferroalloy Production,NAICS_2012_Code,3311,,331110
+EPA_GHGI_T_2_1,Titanium Dioxide Production,NAICS_2012_Code,32519,,325190
+EPA_GHGI_T_2_1,Zinc Production,NAICS_2012_Code,33142,,331420
+EPA_GHGI_T_2_1,Phosphoric Acid Production,NAICS_2012_Code,32531,,325310
+EPA_GHGI_T_2_1,Glass Production,NAICS_2012_Code,3272,,327200
+EPA_GHGI_T_2_1,Silicon Carbide Production and Consumption,NAICS_2012_Code,32518,,325180
+EPA_GHGI_T_2_1,Landfills,NAICS_2012_Code,562,,562000
+EPA_GHGI_T_2_1,Coal Mining,NAICS_2012_Code,2121,,212100
+EPA_GHGI_T_2_1,Wastewater Treatment,NAICS_2012_Code,2213,,221300
+EPA_GHGI_T_2_1,Abandoned Oil and Gas Wells,NAICS_2012_Code,211,,211000
+EPA_GHGI_T_2_1,Abandoned Underground Coal Mines,NAICS_2012_Code,2121,,212100
+EPA_GHGI_T_2_1,Composting,NAICS_2012_Code,562,,562000
+EPA_GHGI_T_2_1,Incineration of Waste,NAICS_2012_Code,562,,562000
+EPA_GHGI_T_2_1,Nitric Acid Production,NAICS_2012_Code,32531,,325310
+EPA_GHGI_T_2_1,Adipic Acid Production,NAICS_2012_Code,32519,,325190
+EPA_GHGI_T_2_1,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",NAICS_2012_Code,32519,,325190
+EPA_GHGI_T_2_1,Semiconductor Manufacture,NAICS_2012_Code,334413,,334413
+EPA_GHGI_T_2_1,HCFC22 Production,NAICS_2012_Code,32512,,325120
+EPA_GHGI_T_2_1,Electrical Transmission and Distribution,NAICS_2012_Code,2211,,221100
+EPA_GHGI_T_2_1,Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
+EPA_GHGI_T_2_1,Magnesium Production and Processing,NAICS_2012_Code,331410,,"331410, 331490, 331520"
+EPA_GHGI_T_2_1,Magnesium Production and Processing,NAICS_2012_Code,33149,,
+EPA_GHGI_T_2_1,Magnesium Production and Processing,NAICS_2012_Code,33152,,
+EPA_GHGI_T_2_1,Liming,NAICS_2012_Code,111,,"111, 112"
+EPA_GHGI_T_2_1,Liming,NAICS_2012_Code,112,,
+EPA_GHGI_T_2_1,Urea Fertilization,NAICS_2012_Code,111,,"111, 112"
+EPA_GHGI_T_2_1,Urea Fertilization,NAICS_2012_Code,112,,
 EPA_GHGI_T_3_14,Agricultural Equipment,NAICS_2012_Code,,,"111, 112, 113, 114"
 EPA_GHGI_T_3_14,Alternative Fuel On-Road,NAICS_2012_Code,,,not mapped
 EPA_GHGI_T_3_14,Construction/Mining Equipment,NAICS_2012_Code,,,"211000, 212100, 2122A0, 212230, 212310, 2123AO, 213111"
@@ -116,9 +120,9 @@ EPA_GHGI_T_3_22,Industrial Coking Coal,,,,
 EPA_GHGI_T_3_22,Industrial Other Coal,,,,
 EPA_GHGI_T_3_22,Lubricants,,,,
 EPA_GHGI_T_3_22,Miscellaneous Products,,,,
-EPA_GHGI_T_3_22,Naphtha (<401° F),,,,
+EPA_GHGI_T_3_22,Naphtha (<401F),,,,Name is causing encoding errors
 EPA_GHGI_T_3_22,Natural Gas to       Chemical Plants,,,,
-EPA_GHGI_T_3_22,Other Oil (>401° F),,,,
+EPA_GHGI_T_3_22,Other Oil (>401F),,,,Name is causing encoding errors
 EPA_GHGI_T_3_22,Pentanes Plus,,,,
 EPA_GHGI_T_3_22,Petroleum Coke,,,,
 EPA_GHGI_T_3_22,Special Naphtha,,,,
