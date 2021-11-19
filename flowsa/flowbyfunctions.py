@@ -220,7 +220,7 @@ def sector_aggregation(df_load, group_cols):
         # df where either sector column is length or both columns are
         df1 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i)) |
                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))
-            |
+                 |
                  ((df['SectorProducedBy'].apply(lambda x: len(x) == i)) &
                   (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))]
 
@@ -233,7 +233,7 @@ def sector_aggregation(df_load, group_cols):
         # second dataframe where length is l - 1
         df2 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) |
                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1)))
-            |
+                 |
                  ((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) &
                   (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1))
                   )].rename(columns={'SectorProducedBy': 'SPB',
@@ -457,7 +457,7 @@ def collapse_fbs_sectors(fbs):
         fbs["SectorProducedBy"]
     fbs.loc[(fbs["FlowType"] == 'WASTE_FLOW') &
             (fbs['SectorProducedBy'].isnull()),
-        'Sector'] = fbs["SectorConsumedBy"]
+            'Sector'] = fbs["SectorConsumedBy"]
     fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') &
             (fbs['SectorProducedBy'].isnull()),
             'Sector'] = fbs["SectorConsumedBy"]
