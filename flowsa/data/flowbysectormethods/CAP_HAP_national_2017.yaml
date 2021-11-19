@@ -76,7 +76,7 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
+        clean_allocation_fba: subset_BEA_table
         clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
@@ -96,7 +96,7 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
+        clean_allocation_fba: subset_BEA_table
         clean_parameter: {"325310": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
@@ -134,7 +134,7 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
+        clean_allocation_fba: subset_BEA_table
         clean_parameter: {"325320": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
@@ -171,7 +171,7 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
+        clean_allocation_fba: subset_BEA_table
         clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
@@ -208,7 +208,7 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
+        clean_allocation_fba: subset_BEA_table
         clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional

@@ -153,9 +153,9 @@ def bea_make_ar_parse(dataframe_list, args):
     return df
 
 
-def subset_BEA_Use(df, attr, **kwargs):
+def subset_BEA_table(df, attr, **kwargs):
     """
-    Function to modify loaded BEA table based on data in the FBA method yaml
+    Modify loaded BEA table (make or use) based on data in the FBA method yaml
     :param df: df, flowbyactivity format
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe

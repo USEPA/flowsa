@@ -55,6 +55,27 @@ source_names:
       activity_set_2:
         names:
         - "Electric Power" #CO2
+        allocation_method: proportional
+        allocation_source: "BEA_Make_Detail_BeforeRedef"
+        allocation_source_class: "Money"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "USD2012"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"221100": 'ActivityConsumedBy'} # Electricity
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2012
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+      activity_set_3:
+        names:
         - "Magnesium Production and Processing"  #HFCs
         allocation_method: proportional
         allocation_source: "BEA_Make_Detail_BeforeRedef"
@@ -64,19 +85,8 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-      activity_set_3:
-        names:
-        - "Liming"  #CO2
-        allocation_method: proportional
-        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-        allocation_source_class: "Money"
-        allocation_source_year: 2012
-        allocation_flow:
-          - "USD2012"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
-        clean_parameter: {"327400": 'ActivityProducedBy'} # Lime
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"T008": 'ActivityConsumedBy'} # Gross Output
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -88,6 +98,28 @@ source_names:
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_4:
         names:
+        - "Liming"  #CO2
+        allocation_method: proportional
+        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        allocation_source_class: "Money"
+        allocation_source_year: 2012
+        allocation_flow:
+          - "USD2012"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"327400": 'ActivityProducedBy'} # Lime
+        helper_source: "BLS_QCEW"
+        helper_method: proportional
+        helper_source_class: "Employment"
+        helper_source_year: 2012
+        helper_flow:
+          - "Number of employees"
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+      activity_set_5:
+        names:
         - "Urea Fertilization" #CO2
         allocation_method: proportional
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
@@ -97,7 +129,7 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
+        clean_allocation_fba: subset_BEA_table
         clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
         helper_source: "BLS_QCEW"
         helper_method: proportional
