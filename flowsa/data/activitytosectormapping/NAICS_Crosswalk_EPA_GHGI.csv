@@ -6,14 +6,22 @@ EPA_GHGI_T_2_1,Lime Production,NAICS_2012_Code,3274,,327400
 EPA_GHGI_T_2_1,Ammonia Production,NAICS_2012_Code,32531,,325310
 EPA_GHGI_T_2_1,Incineration of Waste,NAICS_2012_Code,562,,562000
 EPA_GHGI_T_2_1,Aluminum Production,NAICS_2012_Code,331313,,331313
-EPA_GHGI_T_2_1,Soda Ash Production and Consumption,NAICS_2012_Code,32519,,325190
+EPA_GHGI_T_2_1,Soda Ash Production,NAICS_2012_Code,32519,,325190
 EPA_GHGI_T_2_1,Ferroalloy Production,NAICS_2012_Code,3311,,331110
 EPA_GHGI_T_2_1,Titanium Dioxide Production,NAICS_2012_Code,32519,,325190
 EPA_GHGI_T_2_1,Zinc Production,NAICS_2012_Code,33142,,331420
 EPA_GHGI_T_2_1,Phosphoric Acid Production,NAICS_2012_Code,32531,,325310
 EPA_GHGI_T_2_1,Glass Production,NAICS_2012_Code,3272,,327200
-EPA_GHGI_T_2_1,Silicon Carbide Production and Consumption,NAICS_2012_Code,32518,,325180
+EPA_GHGI_T_2_1,Carbide Production and Consumption,NAICS_2012_Code,32518,,325180
 EPA_GHGI_T_2_1,Landfills,NAICS_2012_Code,562,,562000
+EPA_GHGI_T_2_1,Urea Consumption for Non-Agricultural Purposes,NAICS_2012_Code,31,,"31, 32, 33"
+EPA_GHGI_T_2_1,Urea Consumption for Non-Agricultural Purposes,NAICS_2012_Code,32,,
+EPA_GHGI_T_2_1,Urea Consumption for Non-Agricultural Purposes,NAICS_2012_Code,33,,
+EPA_GHGI_T_2_1,Other Process Uses of Carbonates,NAICS_2012_Code,31,,"31, 32, 33"
+EPA_GHGI_T_2_1,Other Process Uses of Carbonates,NAICS_2012_Code,32,,
+EPA_GHGI_T_2_1,Other Process Uses of Carbonates,NAICS_2012_Code,33,,
+EPA_GHGI_T_2_1,Lead Production,NAICS_2012_Code,331410,,"331410, 331490"
+EPA_GHGI_T_2_1,Lead Production,NAICS_2012_Code,33149,,
 EPA_GHGI_T_2_1,Coal Mining,NAICS_2012_Code,2121,,212100
 EPA_GHGI_T_2_1,Wastewater Treatment,NAICS_2012_Code,2213,,221300
 EPA_GHGI_T_2_1,Abandoned Oil and Gas Wells,NAICS_2012_Code,211,,211000
