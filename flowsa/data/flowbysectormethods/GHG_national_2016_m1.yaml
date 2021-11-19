@@ -17,7 +17,6 @@ source_names:
     activity_sets:
       activity_set_1:
         names:
-          # - "Residential" #CO2
           - "Iron and Steel Production & Metallurgical Coke Production" #CO2, CH4
           - "Cement Production" #CO2
           - "Lime Production" #CO2
@@ -37,12 +36,12 @@ source_names:
           - "Rice Cultivation" #CH4
           - "Abandoned Oil and Gas Wells" #CH4
           - "Abandoned Underground Coal Mines" #CH4
+          - "Anaerobic Digestion at Biogas Facilities" #CH4 new activity
           - "Composting" #CH4, N2O
-          - "Incineration of Waste" #CH4, N2O
           - "Nitric Acid Production" #N2O
           - "Adipic Acid Production" #N2O
           - "Caprolactam, Glyoxal, and Glyoxylic Acid Production" #CH4
-          - "Semiconductor Manufacture" #N2O
+          - "Electronics Industry" #N2O, SF6, NF3
           - "HCFC-22 Production" #HFCs
           - "Electrical Transmission and Distribution" #SF6
         allocation_method: direct

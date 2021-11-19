@@ -1,5 +1,4 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Notes
-EPA_GHGI_T_2_1,Residential,NAICS_2012_Code,F01000,,Pull from A-17 instead
 EPA_GHGI_T_2_1,Iron and Steel Production & Metallurgical Coke Production,NAICS_2012_Code,3311,,331110
 EPA_GHGI_T_2_1,Cement Production,NAICS_2012_Code,32731,,327310
 EPA_GHGI_T_2_1,Lime Production,NAICS_2012_Code,3274,,327400
@@ -31,7 +30,7 @@ EPA_GHGI_T_2_1,Incineration of Waste,NAICS_2012_Code,562,,562000
 EPA_GHGI_T_2_1,Nitric Acid Production,NAICS_2012_Code,32531,,325310
 EPA_GHGI_T_2_1,Adipic Acid Production,NAICS_2012_Code,32519,,325190
 EPA_GHGI_T_2_1,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",NAICS_2012_Code,32519,,325190
-EPA_GHGI_T_2_1,Semiconductor Manufacture,NAICS_2012_Code,334413,,334413
+EPA_GHGI_T_2_1,Electronics Industry,NAICS_2012_Code,334413,,"334413, name change from Semiconductor Manufacture"
 EPA_GHGI_T_2_1,HCFC22 Production,NAICS_2012_Code,32512,,325120
 EPA_GHGI_T_2_1,Electrical Transmission and Distribution,NAICS_2012_Code,2211,,221100
 EPA_GHGI_T_2_1,Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
@@ -42,6 +41,8 @@ EPA_GHGI_T_2_1,Liming,NAICS_2012_Code,111,,"111, 112"
 EPA_GHGI_T_2_1,Liming,NAICS_2012_Code,112,,
 EPA_GHGI_T_2_1,Urea Fertilization,NAICS_2012_Code,111,,"111, 112"
 EPA_GHGI_T_2_1,Urea Fertilization,NAICS_2012_Code,112,,
+EPA_GHGI_T_2_1,Rice Cultivation,NAICS_2012_Code,11116,,1111B0
+EPA_GHGI_T_2_1,Anaerobic Digestion at Biogas Facilities,NAICS_2012_Code,562,,new in GHGI since 2018
 EPA_GHGI_T_3_14,Agricultural Equipment,NAICS_2012_Code,,,"111, 112, 113, 114"
 EPA_GHGI_T_3_14,Alternative Fuel On-Road,NAICS_2012_Code,,,not mapped
 EPA_GHGI_T_3_14,Construction/Mining Equipment,NAICS_2012_Code,,,"211000, 212100, 2122A0, 212230, 212310, 2123AO, 213111"
