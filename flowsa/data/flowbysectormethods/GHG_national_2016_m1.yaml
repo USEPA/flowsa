@@ -226,7 +226,7 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-    "EPA_GHGI_T_3_59": #CO2 from Natural Gas Systems
+    "EPA_GHGI_T_3_67": #N2O from Natural Gas Systems, not used in original method
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
@@ -242,7 +242,6 @@ source_names:
           allocation_method: direct
           allocation_source: None
           allocation_from_scale: national
-# Note that T_61 N2O from natural gas systems was not used in original method
     "EPA_GHGI_T_3_37": #CO2 from Petroleum Systems
       data_format: 'FBA'
       class: Chemicals

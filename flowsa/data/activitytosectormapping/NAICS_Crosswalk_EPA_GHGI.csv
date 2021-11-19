@@ -92,6 +92,10 @@ EPA_GHGI_T_3_65,Exploration,NAICS_2012_Code,211111,,211000
 EPA_GHGI_T_3_65,Processing,NAICS_2012_Code,211111,,211000
 EPA_GHGI_T_3_65,Production,NAICS_2012_Code,211111,,211000
 EPA_GHGI_T_3_65,Transmission and Storage,NAICS_2012_Code,486210,,486000
+EPA_GHGI_T_3_67,Exploration,NAICS_2012_Code,211111,,not in original method
+EPA_GHGI_T_3_67,Processing,NAICS_2012_Code,211111,,not in original method
+EPA_GHGI_T_3_67,Production,NAICS_2012_Code,211111,,not in original method
+EPA_GHGI_T_3_67,Transmission and Storage,NAICS_2012_Code,486210,,not in original method
 EPA_GHGI_T_5_29,Chickpeas,,,,
 EPA_GHGI_T_5_29,Cotton,,,,
 EPA_GHGI_T_5_29,Maize,,,,
