@@ -71,7 +71,7 @@ def load_api_key(api_source):
 @memory.cache()
 def make_url_request(url, set_cookies=False):
     """
-    Makes http request using requests library
+    Makes request using requests library if http, or requests_ftp if ftp
     :param url: URL to query
     :param set_cookies: bool, default set to False
         set to True if cookies required
