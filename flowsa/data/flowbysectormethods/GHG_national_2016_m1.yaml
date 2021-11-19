@@ -177,8 +177,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2016
-    clean_fba_df_fxn: None
-    clean_fba_w_sec_df_fxn: None
+    fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:
         names:
@@ -198,8 +197,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2016
-    clean_fba_df_fxn: None
-    clean_fba_w_sec_df_fxn: None
+    fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:
         names:
@@ -219,8 +217,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2016
-    clean_fba_df_fxn: None
-    clean_fba_w_sec_df_fxn: None
+    fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:
         names:
@@ -236,8 +233,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
           names:
@@ -254,8 +250,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
           names:
@@ -277,8 +272,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
           names:
@@ -300,8 +294,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
           names:
@@ -321,8 +314,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct
           names:
@@ -366,8 +358,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct
           names:
@@ -412,8 +403,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct
           names:
@@ -429,8 +419,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct
           names:
@@ -446,8 +435,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: None
-      clean_fba_w_sec_df_fxn: None
+      fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct for coal products
           names:
