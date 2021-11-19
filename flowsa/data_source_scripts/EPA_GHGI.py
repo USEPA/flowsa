@@ -21,8 +21,9 @@ DEFAULT_YEAR = 9999
 TABLES = {
     "Ch 2 - Trends": ["2-1"],
     "Ch 3 - Energy": ["3-8", "3-9", "3-10", "3-14", "3-15", "3-22",
-                      "3-38", "3-39", "3-40", "3-67", "3-63", "3-65"],
-    "Ch 4 - Industrial Processes": ["4-14", "4-33",  "4-46", "4-48", "4-50", "4-80", "4-94", "4-99", "4-101"],
+                      "3-38", "3-39", "3-40", "3-63", "3-65", "3-67"],
+    "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-46", "4-48", "4-50",
+                                    "4-80", "4-94", "4-99", "4-101"],
     "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
     "Executive Summary": ["ES-5"]
 }
@@ -108,7 +109,7 @@ TBL_META = {
         "desc": "Table 3-63:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)a"
     },
     "EPA_GHGI_T_3_67": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
+        "class": "Chemicals", "unit": "MT CO2e", "compartment": "air",
         "activity": "N2O",
         "desc": "Table 3-67: N2O Emissions from Natural Gas Systems (Metric Tons CO2 Eq.)"
     },
@@ -171,7 +172,7 @@ TBL_META = {
     },
     "EPA_GHGI_T_5_3": {
         "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
+        "activity": "CH4",
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_7": {
@@ -739,7 +740,7 @@ def ghg_parse(dataframe_list, args):
                     if apbe_value == "Explorationb":
                         apbe_value = "Exploration"
                     df.loc[index, 'FlowName'] = start_activity
-                    df.loc[index, 'ActivityProducedBy'] = "All activities" + " " + apbe_value
+                    df.loc[index, 'ActivityProducedBy'] = apbe_value
                     bool_apb = True
                 else:
                     if bool_apb == True:
@@ -748,7 +749,7 @@ def ghg_parse(dataframe_list, args):
                         apb_txt = strip_char(apb_txt)
                         if apb_txt == "Gathering and Boostingc":
                             apb_txt = "Gathering and Boosting"
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
+                        df.loc[index, 'ActivityProducedBy'] = apbe_value + " - " + apb_txt
                     else:
                         apb_txt = df.loc[index, 'ActivityProducedBy']
                         apb_txt = strip_char(apb_txt)
@@ -796,7 +797,7 @@ def ghg_parse(dataframe_list, args):
             else:
                 for index, row in df.iterrows():
                     if "CO2" in df.loc[index, 'Unit']:
-                        df.loc[index, 'Unit'] = "MTT CO2e"
+                        df.loc[index, 'Unit'] = "MMT CO2e"
                     if "U.S. Territory" in df.loc[index, 'ActivityProducedBy']:
                         df.loc[index, 'Location'] = "99000"
 
