@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 import pycountry
 import joblib
+from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
@@ -68,33 +69,29 @@ def load_api_key(api_source):
 
 
 @memory.cache()
-def make_http_request(url, set_cookies=False):
+def make_url_request(url, set_cookies=False):
     """
-    Makes http request using requests library
+    Makes request using requests library if http, or requests_ftp if ftp
     :param url: URL to query
     :param set_cookies: bool, default set to False
         set to True if cookies required
-    :return: request Object
+    :return: response Object
     """
-    s = requests
-
-    r = []
-    try:
-        r = s.get(url)
-        # determine if require request.post to set cookies
-        if set_cookies:
-            cookies = dict(r.cookies)
-            r = s.post(url, verify=True, cookies=cookies)
-    except requests.exceptions.InvalidSchema:  # if url is ftp rather than http
-        requests_ftp.monkeypatch_session()
-        r = requests.Session().get(url)
-    except requests.exceptions.ConnectionError:
-        log.error("URL Connection Error for %s", url)
-    try:
-        r.raise_for_status()
-    except requests.exceptions.HTTPError:
-        log.error('Error in URL request!')
-    return r
+    session = (requests_ftp.ftp.FTPSession if urlsplit(url).scheme == 'ftp'
+               else requests.Session)
+    with session() as s:
+        try:
+            # The session object s preserves cookies, so the second s.get()
+            # will have the cookies that came from the first s.get()
+            if set_cookies:
+                s.get(url)
+            response = s.get(url)
+            response.raise_for_status()
+        except requests.exceptions.ConnectionError:
+            log.error("URL Connection Error for %s", url)
+        except requests.exceptions.HTTPError:
+            log.error('Error in URL request!')
+    return response
 
 
 def load_crosswalk(crosswalk_name):

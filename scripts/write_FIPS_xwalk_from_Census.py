@@ -10,9 +10,8 @@ Grabs FIPS codes from static URLs and creates crosswalk over the years.
 
 import io
 import pandas as pd
-from flowsa.common import clean_str_and_capitalize
+from flowsa.common import clean_str_and_capitalize, make_url_request
 from flowsa.settings import datapath
-from flowsa.flowbyactivity import make_http_request
 
 
 def stripcounty(s):
@@ -42,7 +41,7 @@ def annual_fips(years):
             url = "https://www2.census.gov/programs-surveys/popest/geographies/" + \
                   year + "/all-geocodes-v" + year + ".xlsx"
 
-        r = make_http_request(url)
+        r = make_url_request(url)
         raw_df = pd.read_excel(io.BytesIO(r.content)).dropna().reset_index(drop=True)
 
         # skip the first few rows

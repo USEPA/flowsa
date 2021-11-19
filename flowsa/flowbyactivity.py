@@ -11,7 +11,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
-from flowsa.common import log, make_http_request, load_api_key, \
+from flowsa.common import log, make_url_request, load_api_key, \
     load_yaml_dict, rename_log_file
 from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
@@ -123,7 +123,7 @@ def call_urls(url_list, args, config):
     if url_list[0] is not None:
         for url in url_list:
             log.info("Calling %s", url)
-            r = make_http_request(url, set_cookies=set_cookies)
+            r = make_url_request(url, set_cookies=set_cookies)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
                 df = dynamically_import_fxn(

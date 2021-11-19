@@ -7,12 +7,12 @@ Projects
 FLOWSA
 /
 Years = 2012
-Eliminated all columns with fraction in the title. 
+Eliminated all columns with fraction in the title.
 """
 import io
 import pandas as pd
 import xml.etree.ElementTree as ET
-from flowsa.common import make_http_request
+from flowsa.common import make_url_request
 
 
 def url_file(url):
@@ -58,7 +58,7 @@ def column_names(file_name):
     elif file_name in southeastern:
         legend_name = "5d6e70e5e4b0c4f70cf635a1?f=__disk__93%2Fba%2F5c%2F93b" \
                       "a5c50c58ced4116ad2e5b9783fc7848ab2cb5"
-    contents = make_http_request(base_url + legend_name)
+    contents = make_url_request(base_url + legend_name)
     xslt_content = contents.content.decode('utf-8')
     root = ET.fromstring(xslt_content)
     label = []
