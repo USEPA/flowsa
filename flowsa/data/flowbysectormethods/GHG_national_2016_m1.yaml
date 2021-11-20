@@ -175,7 +175,7 @@ source_names:
         allocation_from_scale: national
   "EPA_GHGI_T_3_40": *petroleum #CO2 from Petroleum Systems mimics CH4
   "EPA_GHGI_T_3_42": *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
-  "EPA_GHGI_T_5_3":  #CH4 from Enteric Fermentation
+  "EPA_GHGI_T_5_3":  &animals #CH4 from Enteric Fermentation
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -192,29 +192,11 @@ source_names:
           - "Mules and Asses"
           - "Sheep"
           - "Swine"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-  "EPA_GHGI_T_5_7": #CH4 and N2O from manure
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
-    year: 2016
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      activity_set_1:
-        names:
-          - "Beef Cattle"
-          - "Dairy Cattle"
-          - "Horses"
           - "Poultry"
-          - "Sheep"
-          - "Swine"
-          - "American Bison" #activity from 2018 GHG inventory
-          - "Mules and Asses" #activity from 2018 GHG inventory
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
+  "EPA_GHGI_T_5_7": *animals #CH4 and N2O from manure, mimics enteric fermentation
   "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
     data_format: 'FBA'
     class: Chemicals

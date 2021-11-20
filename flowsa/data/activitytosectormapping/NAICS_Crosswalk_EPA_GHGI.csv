@@ -123,12 +123,12 @@ EPA_GHGI_T_3_67,Exploration,NAICS_2012_Code,211111,,not in original method
 EPA_GHGI_T_3_67,Processing,NAICS_2012_Code,211111,,not in original method
 EPA_GHGI_T_3_67,Production,NAICS_2012_Code,211111,,not in original method
 EPA_GHGI_T_3_67,Transmission and Storage,NAICS_2012_Code,486210,,not in original method
-EPA_GHGI_T_5_29,Chickpeas,,,,
-EPA_GHGI_T_5_29,Cotton,,,,
-EPA_GHGI_T_5_29,Maize,,,,
-EPA_GHGI_T_5_29,Rice,,,,
-EPA_GHGI_T_5_29,Soybeans,,,,
-EPA_GHGI_T_5_29,Wheat,,,,
+EPA_GHGI_T_5_29,Chickpeas,NAICS_2012_Code,11113,,1111B0
+EPA_GHGI_T_5_29,Cotton,NAICS_2012_Code,11192,,111900
+EPA_GHGI_T_5_29,Maize,NAICS_2012_Code,11115,,1111B0
+EPA_GHGI_T_5_29,Rice,NAICS_2012_Code,11116,,1111B0
+EPA_GHGI_T_5_29,Soybeans,NAICS_2012_Code,11111,,1111A0
+EPA_GHGI_T_5_29,Wheat,NAICS_2012_Code,11114,,1111B0
 EPA_GHGI_T_5_3,American Bison,NAICS_2012_Code,11299,,112A00
 EPA_GHGI_T_5_3,Beef Cattle,NAICS_2012_Code,11211,,1121A0
 EPA_GHGI_T_5_3,Dairy Cattle,NAICS_2012_Code,11212,,112120
@@ -137,6 +137,7 @@ EPA_GHGI_T_5_3,Horses,NAICS_2012_Code,11292,,112A00
 EPA_GHGI_T_5_3,Mules and Asses,NAICS_2012_Code,11292,,112A00
 EPA_GHGI_T_5_3,Sheep,NAICS_2012_Code,11241,,112A00
 EPA_GHGI_T_5_3,Swine,NAICS_2012_Code,1122,,112A00
+EPA_GHGI_T_5_3,Poultry,NAICS_2012_Code,1123,,112300
 EPA_GHGI_T_5_7,American Bison,NAICS_2012_Code,11299,,112A00
 EPA_GHGI_T_5_7,Beef Cattle,NAICS_2012_Code,11211,,1121A0
 EPA_GHGI_T_5_7,Dairy Cattle,NAICS_2012_Code,11212,,112120
@@ -145,12 +146,13 @@ EPA_GHGI_T_5_7,Horses,NAICS_2012_Code,11292,,112A00
 EPA_GHGI_T_5_7,Mules and Asses,NAICS_2012_Code,11292,,112A00
 EPA_GHGI_T_5_7,Sheep,NAICS_2012_Code,11241,,112A00
 EPA_GHGI_T_5_7,Swine,NAICS_2012_Code,1122,,112A00
-EPA_GHGI_T_4_46,Acrylonitrile,,,,
-EPA_GHGI_T_4_46,Carbon Black,,,,
-EPA_GHGI_T_4_46,Ethylene,,,,
-EPA_GHGI_T_4_46,Ethylene Dichloride,,,,
-EPA_GHGI_T_4_46,Ethylene Oxide,,,,
-EPA_GHGI_T_4_46,Methanol,,,,
+EPA_GHGI_T_5_7,Poultry,NAICS_2012_Code,1123,,112300
+EPA_GHGI_T_4_46,Acrylonitrile,NAICS_2012_Code,325199,,325411 (incorrect in original?)
+EPA_GHGI_T_4_46,Carbon Black,NAICS_2012_Code,325180,,3252A0
+EPA_GHGI_T_4_46,Ethylene,NAICS_2012_Code,324110,,324110
+EPA_GHGI_T_4_46,Ethylene Dichloride,NAICS_2012_Code,325120,,not mapped
+EPA_GHGI_T_4_46,Ethylene Oxide,NAICS_2012_Code,325199,,325411 (incorrect in original?)
+EPA_GHGI_T_4_46,Methanol,NAICS_2012_Code,325199,,325411 (incorrect in original?)
 EPA_GHGI_T_3_22,Asphalt & Road Oil,,,,
 EPA_GHGI_T_3_22,Distillate Fuel Oil,,,,
 EPA_GHGI_T_3_22,HGL,,,,
