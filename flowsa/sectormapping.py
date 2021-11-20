@@ -7,7 +7,7 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
-from flowsa.common import find_true_file_path, \
+from flowsa.common import get_flowsa_base_name, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.schema import activity_fields
@@ -27,7 +27,7 @@ def get_activitytosector_mapping(source):
         source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
-    activity_mapping_source_name = find_true_file_path(
+    activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, f'NAICS_Crosswalk_{source}', 'csv')
     mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',
                           dtype={'Activity': 'str',

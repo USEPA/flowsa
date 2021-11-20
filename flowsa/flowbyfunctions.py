@@ -14,7 +14,7 @@ from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     load_crosswalk, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, return_true_source_catalog_name, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, \
-    fips_number_key, fba_fill_na_dict, find_true_file_path, \
+    fips_number_key, fba_fill_na_dict, \
     fba_mapped_default_grouping_fields, fba_default_grouping_fields, \
     fba_wsec_default_grouping_fields, get_flowsa_base_name
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
