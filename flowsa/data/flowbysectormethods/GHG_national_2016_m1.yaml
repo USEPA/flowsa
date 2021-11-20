@@ -138,6 +138,8 @@ source_names:
       #   allocation_flow:
       #   allocation_compartment: None
       #   allocation_from_scale: national
+
+##Fossil Fuels
   "EPA_GHGI_T_3_63": &natgas #CH4 from Natural Gas Systems
     data_format: 'FBA'
     class: Chemicals
@@ -175,6 +177,26 @@ source_names:
         allocation_from_scale: national
   "EPA_GHGI_T_3_40": *petroleum #CO2 from Petroleum Systems mimics CH4
   "EPA_GHGI_T_3_42": *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
+
+## Agriculture
+  "EPA_GHGI_T_5_29": #CH4, N2O, CO and NOx from field burning of residues
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:  #this set is direct
+          names:
+            - "Chickpeas"
+            - "Cotton"
+            - "Maize"
+            - "Rice"
+            - "Soybeans"
+            - "Wheat"
+          allocation_method: direct
+          allocation_source: None
+          allocation_from_scale: national
   "EPA_GHGI_T_5_3":  &animals #CH4 from Enteric Fermentation
     data_format: 'FBA'
     class: Chemicals
@@ -197,6 +219,8 @@ source_names:
         allocation_source: None
         allocation_from_scale: national
   "EPA_GHGI_T_5_7": *animals #CH4 and N2O from manure, mimics enteric fermentation
+
+## Mobile Sources
   "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
     data_format: 'FBA'
     class: Chemicals
@@ -236,22 +260,9 @@ source_names:
           - "Alternative Fuel On-Road"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
   "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
-  "EPA_GHGI_T_5_29": #CH4, N2O, CO and NOx from field burning of residues
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      year: 2016
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        activity_set_1:  #this set is direct
-          names:
-            - "Chickpeas"
-            - "Cotton"
-            - "Maize"
-            - "Rice"
-            - "Soybeans"
-            - "Wheat"
-          allocation_method: direct
+
+
+
   "EPA_GHGI_T_4_46": #CO2 for selected petrochemicals
       data_format: 'FBA'
       class: Chemicals
