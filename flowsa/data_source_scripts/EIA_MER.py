@@ -16,15 +16,17 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def eia_mer_url_helper(build_url, config, args):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url
+    text string to be replaced with info specific to the data year. This
+    function does not parse the data, only modifies the urls from which
+    data is obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
     :param args: dictionary, arguments specified when running flowbyactivity.py
         flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into
+        Flow-By-Activity format
     """
     urls = []
     for tbl in config['tbls']:
@@ -35,10 +37,11 @@ def eia_mer_url_helper(build_url, config, args):
 
 def eia_mer_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    Convert response for calling url to pandas dataframe, begin
+    parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
@@ -94,16 +97,17 @@ def eia_mer_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     df = pd.concat(dataframe_list, sort=False)
-    # Filter only the rows we want, YYYYMM field beginning with 201, for 2010's.
-    # df = df[df['YYYYMM'] > 201000]
+    # Filter only the rows we want, YYYYMM field beginning with 201,
+    # for 2010's.
     # For doing year-by-year based on args['year']
     min_year = int(args['year'] + '00')
     max_year = int(str(int(args['year']) + 1) + '00')
-    # df = df[min_year < df['YYYYMM'] < max_year]
     df = df[df['YYYYMM'] > min_year]
     df = df[df['YYYYMM'] < max_year]
 
@@ -121,9 +125,10 @@ def eia_mer_parse(dataframe_list, args):
             act_prod_by = decide_produced(row['Description'])
             act_cons_by = decide_consumed(row['Description'])
             temp_row = {'Description': row['Description'], 'Unit': row['Unit'],
-                        'FlowName': flow_name, 'ActivityProducedBy': act_prod_by,
-                        'ActivityConsumedBy': act_cons_by, 'FlowAmount': 0, 'FlowType': 'None',
-                        'Year': year}
+                        'FlowName': flow_name,
+                        'ActivityProducedBy': act_prod_by,
+                        'ActivityConsumedBy': act_cons_by,
+                        'FlowAmount': 0, 'FlowType': 'None', 'Year': year}
             sums.append(temp_row)
             sums_key_map[key] = len(sums) - 1
 
@@ -141,7 +146,8 @@ def eia_mer_parse(dataframe_list, args):
     output['Class'] = 'Energy'
     output['SourceName'] = 'EIA_MER'
     output['Location'] = '00000'
-    # Fill in the rest of the Flow by fields so they show "None" instead of nan.
+    # Fill in the rest of the Flow by fields so they show
+    # "None" instead of nan.
     output['Compartment'] = 'None'
     output['MeasureofSpread'] = 'None'
     output['DistributionType'] = 'None'

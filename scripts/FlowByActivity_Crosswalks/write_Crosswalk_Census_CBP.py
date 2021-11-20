@@ -1,7 +1,6 @@
 # write_Crosswalk_Census_CBP.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk for Census CBP to NAICS 2012. Downloaded data is already provided in NAICS

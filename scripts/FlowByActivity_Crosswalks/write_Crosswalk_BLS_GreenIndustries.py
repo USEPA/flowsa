@@ -1,7 +1,6 @@
 # write_Crosswalk_BLS_GreenIndustries.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 A NAICS list for green goods and services industries created in 2010.

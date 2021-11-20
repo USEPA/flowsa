@@ -1,7 +1,6 @@
 # write_Crosswalk_USDA_ERS_FIWS.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USDA_ERS_FIWS to NAICS_12.
@@ -15,6 +14,7 @@ import pandas as pd
 from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
+
 def assign_naics(df):
     """
     Function to assign NAICS codes to each dataframe activity
@@ -25,16 +25,15 @@ def assign_naics(df):
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
-
-    ##### crops and livestock ########
+    # crops and livestock
     df.loc[df['Activity'] == 'All Commodities', 'Sector'] = '111-112'
 
-    #### CROPS ####################
+    # CROPS
 
     # equivalent to crop production: 111
     df.loc[df['Activity'] == 'Crops', 'Sector'] = '111'
 
-    ## equivalent to soybean farming: 11111
+    # equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'Soybeans', 'Sector'] = '11111'
 
     # aggregates to oilseed (except soybean) farming: 11112
@@ -71,7 +70,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Rye', 'Sector'] = '111199E'
     df.loc[df['Activity'] == 'Sorghum grain', 'Sector'] = '111199F'
 
-    ## equivalent to vegetable and melon farming: 1112
+    # equivalent to vegetable and melon farming: 1112
 
     # equivalent to potato farming: 111211
     df.loc[df['Activity'] == 'Potatoes', 'Sector'] = '111211A'
@@ -194,14 +193,9 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'All other crops, Miscellaneous crops', 'Sector'] = '111998I'
     df.loc[df['Activity'] == 'Mushrooms', 'Sector'] = '111998J'
 
+    # ANIMALS
 
-
-
-
-
-    ###### ANIMALS ###################
-
-    #animal totals: 112
+    # animal totals: 112
     df.loc[df['Activity'] == 'Animals and products', 'Sector'] = '112'
 
     # cattle ranching and farming: 1121
@@ -246,8 +240,7 @@ def assign_naics(df):
     # df.loc[df['Activity'] == 'Animals and products, Milk pelts', 'Sector'] = '112990E1'
     df.loc[df['Activity'] == 'Wool', 'Sector'] = '112990F'
 
-
-    ################# FORESTRY ##############33
+    # FORESTRY
     df.loc[df['Activity'] == 'Forest products', 'Sector'] = '11531'
 
     return df

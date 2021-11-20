@@ -231,15 +231,17 @@ YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018",
 
 def ghg_url_helper(build_url, config, args):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data is
+    obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
     :param args: dictionary, arguments specified when running flowbyactivity.py
         flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity
+        format
     """
     annex_url = config['url']['annex_url']
     return [build_url, annex_url]
@@ -326,10 +328,11 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
 
 def ghg_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    Convert response for calling url to pandas dataframe, begin parsing df
+    into FBA format
+    :param url: string, url
+    :param r: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
@@ -378,7 +381,6 @@ def ghg_call(url, response_load, args):
                                 new_header = col[2]
                             new_headers.append(new_header)
                         df.columns = new_headers
-                        # print('break')
                 elif '4-' in table:
                     if table == '4-46':
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
@@ -472,8 +474,10 @@ def ghg_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     cleaned_list = []
     for df in dataframe_list:
@@ -817,10 +821,9 @@ def ghg_parse(dataframe_list, args):
                 df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
            # if source_name == "EPA_GHGI_T_2_1":
            #     df["FlowName"] = "CO2 eq"
+
         df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
-
-
 
     if cleaned_list:
         for df in cleaned_list:

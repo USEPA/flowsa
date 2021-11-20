@@ -11,8 +11,8 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
-from flowsa.common import log, make_http_request, load_api_key, load_yaml_dict, \
-    rename_log_file
+from flowsa.common import log, make_url_request, load_api_key, \
+    load_yaml_dict, rename_log_file
 from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import fba_fill_na_dict, \
@@ -27,8 +27,10 @@ def parse_args():
     :return: dictionary, 'year' and 'source'
     """
     ap = argparse.ArgumentParser()
-    ap.add_argument("-y", "--year", required=True, help="Year for data pull and save")
-    ap.add_argument("-s", "--source", required=True, help="Data source code to pull and save")
+    ap.add_argument("-y", "--year", required=True,
+                    help="Year for data pull and save")
+    ap.add_argument("-s", "--source", required=True,
+                    help="Data source code to pull and save")
     args = vars(ap.parse_args())
     return args
 
@@ -49,12 +51,14 @@ def set_fba_name(datasource, year):
 
 def build_url_for_query(config, args):
     """
-    Creates a base url which requires string substitutions that depend on data source
+    Creates a base url which requires string substitutions that
+    depend on data source
     :param config: dictionary, FBA yaml
     :param args: dictionary, load parameters 'source' and 'year'
     :return: base url used to load data
     """
-    # if there are url parameters defined in the yaml, then build a url, else use "base_url"
+    # if there are url parameters defined in the yaml,
+    # then build a url, else use "base_url"
     urlinfo = config["url"]
     if urlinfo != 'None':
         if 'url_params' in urlinfo:
@@ -63,7 +67,9 @@ def build_url_for_query(config, args):
                 params = params+'&'+k+"="+str(v)
 
         if 'url_params' in urlinfo:
-            build_url = "{0}{1}{2}".format(urlinfo['base_url'], urlinfo['api_path'], params)
+            build_url = "{0}{1}{2}".format(urlinfo['base_url'],
+                                           urlinfo['api_path'],
+                                           params)
         else:
             build_url = "{0}".format(urlinfo['base_url'])
 
@@ -78,7 +84,8 @@ def build_url_for_query(config, args):
 
 def assemble_urls_for_query(build_url, config, args):
     """
-    Calls on helper functions defined in source.py files to replace parts of the url string
+    Calls on helper functions defined in source.py files to
+    replace parts of the url string
     :param build_url: str, base url
     :param config: dictionary, FBA yaml
     :param args: dictionary, load parameters 'source' and 'year'
@@ -87,8 +94,8 @@ def assemble_urls_for_query(build_url, config, args):
 
     if "url_replace_fxn" in config:
         # dynamically import and call on function
-        urls = dynamically_import_fxn(args['source'],
-                                      config["url_replace_fxn"])(build_url, config, args)
+        urls = dynamically_import_fxn(
+            args['source'], config["url_replace_fxn"])(build_url, config, args)
         return urls
     else:
         return [build_url]
@@ -116,11 +123,11 @@ def call_urls(url_list, args, config):
     if url_list[0] is not None:
         for url in url_list:
             log.info("Calling %s", url)
-            r = make_http_request(url, set_cookies=set_cookies)
+            r = make_url_request(url, set_cookies=set_cookies)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
-                df = dynamically_import_fxn(args['source'],
-                                            config["call_response_fxn"])(url, r, args)
+                df = dynamically_import_fxn(
+                    args['source'], config["call_response_fxn"])(url, r, args)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):
@@ -131,7 +138,8 @@ def call_urls(url_list, args, config):
 
 def parse_data(dataframe_list, args, config):
     """
-    Calls on functions defined in source.py files, as parsing rules are specific to the data source.
+    Calls on functions defined in source.py files, as parsing rules
+    are specific to the data source.
     :param dataframe_list: list, dfs to concat and parse
     :param args: dictionary, load parameters 'source' and 'year'
     :param config: dictionary, FBA yaml
@@ -139,34 +147,38 @@ def parse_data(dataframe_list, args, config):
     """
     if "parse_response_fxn" in config:
         # dynamically import and call on function
-        df = dynamically_import_fxn(args['source'],
-                                    config["parse_response_fxn"])(dataframe_list=dataframe_list,
-                                                                  args=args)
+        df = dynamically_import_fxn(
+            args['source'], config["parse_response_fxn"])(
+            dataframe_list=dataframe_list, args=args)
     return df
 
 
 def process_data_frame(df, source, year, config):
     """
-    Process the given dataframe, cleaning, converting data, and writing the final parquet.
-    This method was written to move code into a shared method, which was necessary to support
-    the processing of a list of dataframes instead of a single dataframe.
+    Process the given dataframe, cleaning, converting data, and
+    writing the final parquet. This method was written to move code into a
+    shared method, which was necessary to support the processing of a list
+    of dataframes instead of a single dataframe.
     :param df: df, FBA format
     :param source: str, source name
     :param year: str, year
+    :param config: dict, items in method yaml
     :return: df, FBA format, standardized
     """
     # log that data was retrieved
     log.info("Retrieved data for %s %s", source, year)
     # add any missing columns of data and cast to appropriate data type
     log.info("Add any missing columns and check field datatypes")
-    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict, drop_description=False)
+    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict,
+                       drop_description=False)
     # sort df and reset index
-    flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy', 'ActivityConsumedBy',
-                                   'FlowName', 'Compartment']).reset_index(drop=True)
+    flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy',
+                                   'ActivityConsumedBy', 'FlowName',
+                                   'Compartment']).reset_index(drop=True)
     # save as parquet file
     name_data = set_fba_name(source, year)
     meta = set_fb_meta(name_data, "FlowByActivity")
-    write_df_to_file(flow_df,paths,meta)
+    write_df_to_file(flow_df, paths, meta)
     write_metadata(source, config, meta, "FlowByActivity", year=year)
     log.info("FBA generated and saved for %s", name_data)
     # rename the log file saved to local directory
@@ -196,9 +208,11 @@ def main(**kwargs):
         year_iter = [kwargs['year']]
 
     # check that year(s) are listed in the method yaml, return warning if not
-    years_list = list(set(list(map(int, year_iter))).difference(config['years']))
+    years_list = list(set(list(map(int, year_iter))
+                          ).difference(config['years']))
     if len(years_list) != 0:
-        log.warning(f'Years not listed in FBA method yaml: {years_list}, data might not exist')
+        log.warning(f'Years not listed in FBA method yaml: {years_list}, '
+                    f'data might not exist')
 
     for p_year in year_iter:
         kwargs['year'] = str(p_year)
@@ -208,7 +222,8 @@ def main(**kwargs):
         urls = assemble_urls_for_query(build_url, config, kwargs)
         # create a list with data from all source urls
         dataframe_list = call_urls(urls, kwargs, config)
-        # concat the dataframes and parse data with specific instructions from source.py
+        # concat the dataframes and parse data with specific
+        # instructions from source.py
         log.info("Concat dataframe list and parse data")
         dfs = parse_data(dataframe_list, kwargs, config)
         if isinstance(dfs, list):
@@ -219,7 +234,8 @@ def main(**kwargs):
                         source_name = source_names.iloc[0]
                     except KeyError:
                         source_name = kwargs['source']
-                    process_data_frame(frame, source_name, kwargs['year'], config)
+                    process_data_frame(frame, source_name,
+                                       kwargs['year'], config)
         else:
             process_data_frame(dfs, kwargs['source'], kwargs['year'], config)
 

@@ -1,7 +1,6 @@
 # write_Crosswalk_UDSA_CoA_Cropland.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USDA_CoA_Cropland to NAICS_12.
@@ -38,7 +37,7 @@ def assign_naics(df):
     # coa equivalent to Animal Production and Aquaculture: 112
     df.loc[df['Activity'] == 'AG LAND, (EXCL HARVESTED CROPLAND)', 'Sector'] = '112'
 
-    ## coa equivalent to soybean farming: 11111
+    # coa equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
 
     # coa aggregates to oilseed (except soybean) farming: 11112

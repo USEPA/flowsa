@@ -23,7 +23,7 @@ def assign_naics(df):
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
-    ## coa equivalent to soybean farming: 11111
+    # coa equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
 
     # coa aggregates to oilseed (except soybean) farming: 11112

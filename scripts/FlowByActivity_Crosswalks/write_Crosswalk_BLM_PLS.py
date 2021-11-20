@@ -12,6 +12,7 @@ import pandas as pd
 from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
+
 def assign_naics(df):
     """
     Function to assign NAICS codes to each dataframe activity
@@ -119,7 +120,7 @@ def assign_naics(df):
     df.loc[df['Activity'] ==
            'Oil and Gas Pre-Reform Act Over-the-Counter Leases, Public Domain', 'Sector'] = '21111'
     df.loc[df['Activity'] ==
-           'Oil and Gas Special Act - ' \
+           'Oil and Gas Special Act - '
            'Federal Farm Mortgage Corporation Act of 1934, Acquired Lands',
            'Sector'] = '21111'
     df.loc[df['Activity'] ==

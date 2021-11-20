@@ -2,8 +2,10 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Construction and Demolition Debris 2014 Final Disposition Estimates Using the CDDPath Method v2
-https://edg.epa.gov/metadata/catalog/search/resource/details.page?uuid=https://doi.org/10.23719/1503167
+Construction and Demolition Debris 2014 Final Disposition Estimates
+Using the CDDPath Method v2
+https://edg.epa.gov/metadata/catalog/search/resource/details.page?
+uuid=https://doi.org/10.23719/1503167
 Last updated: 2018-11-07
 """
 
@@ -17,10 +19,11 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 # Read pdf into list of DataFrame
 def epa_cddpath_call(url, response_load, args):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
+    Convert response for calling url to pandas dataframe,
+    begin parsing df into FBA format
+    :param url: string, url
+    :param response_load: df, response from url call
+    :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
@@ -45,8 +48,10 @@ def epa_cddpath_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
@@ -69,7 +74,8 @@ def epa_cddpath_parse(dataframe_list, args):
 
 
 def write_cdd_path_from_csv():
-    file = 'EPA_2016_Table5_CNHWCGenerationbySource_Extracted_UsingCNHWCPathNames.csv'
+    file = 'EPA_2016_Table5_CNHWCGenerationbySource_Extracted_' \
+           'UsingCNHWCPathNames.csv'
     df = pd.read_csv(externaldatapath + file, header=0,
                      names=['FlowName', 'ActivityProducedBy',
                             'FlowAmount'])
@@ -77,8 +83,9 @@ def write_cdd_path_from_csv():
 
 
 def combine_cdd_path(url, response_load, args):
-    """Call function to generate combined dataframe from csv file and excel dataset,
-    bringing only those flows from the excel file that are not in the csv file
+    """Call function to generate combined dataframe from csv file and
+    excel dataset, bringing only those flows from the excel file that are
+    not in the csv file
     """
     df_csv = write_cdd_path_from_csv()
     df_excel = epa_cddpath_call(url, response_load, args)

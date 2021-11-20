@@ -18,15 +18,16 @@ def assign_naics(df):
     """
 
     cw = pd.read_csv(externaldatapath + 'VIPNametoNAICStoFF.csv',
-                     usecols=['Name','2012_NAICS_Code'])
+                     usecols=['Name', '2012_NAICS_Code'])
     cw['Name'] = cw['Name'].str.lower()
     df['Name'] = df['Activity'].str.split(' - ').str[1].str.lower()
     df.loc[df['Activity'].str.contains('Residential'), 'Name'] = 'residential'
-    df = df.merge(cw, how = 'left', on = ['Name'])
+    df = df.merge(cw, how='left', on=['Name'])
     df = df.drop(columns='Name')
-    df = df.rename(columns={'2012_NAICS_Code':'Sector'})
+    df = df.rename(columns={'2012_NAICS_Code': 'Sector'})
     
     return df
+
 
 if __name__ == '__main__':
     # select years to pull unique activity names

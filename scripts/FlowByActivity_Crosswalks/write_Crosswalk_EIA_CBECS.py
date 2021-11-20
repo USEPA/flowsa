@@ -11,7 +11,7 @@ Script creates crosswalks for Land and Water
 
 import io
 import pandas as pd
-from flowsa.common import make_http_request
+from flowsa.common import make_url_request
 from flowsa.settings import datapath
 from flowsa.data_source_scripts.EIA_CBECS_Land import standardize_eia_cbecs_land_activity_names
 
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # url for excel crosswalk
     url = 'http://www.eia.gov/consumption/commercial/data/archive/cbecs/PBAvsNAICS.xls'
     # make url requestl, as defined in common.py
-    r = make_http_request(url)
+    r = make_url_request(url)
     # Convert response to dataframe, skipping first three rows
     df_raw = pd.read_excel(io.BytesIO(r.content), skiprows=3)
 

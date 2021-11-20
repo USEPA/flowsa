@@ -1,7 +1,6 @@
 # write_UDSA_IWMS_crosswalk.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the USDA Irrigation and Water Management Surveyto NAICS_12.
@@ -38,19 +37,23 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'COTTON', 'Sector'] = '11192'
 
     # a number of naics are the generalized "crops, other", so manually add each row
-    df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '11191'  # tobacco farming
+    # tobacco farming
+    df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '11191'
+    # sugarcane farming
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11193']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)  # sugarcane farming
+        ignore_index=True, sort=True)
+    # oilseed (except soybean) farming
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11112']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)  # oilseed (except soybean) farming
+        ignore_index=True, sort=True)
+    # SUGARBEETS
     df = df.append(
-        pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER','NAICS_2012_Code',  '111991']],
+        pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code',  '111991']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)  # SUGARBEETS
+        ignore_index=True, sort=True)
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
@@ -94,42 +97,52 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'RICE', 'Sector'] = '11116'
 
     # seven types of other small grains, so manually add 6 rows
-    df.loc[df['Activity'] == 'SMALL GRAINS, OTHER', 'Sector'] = '111199A'  # BARLEY
+    # BARLEY
+    df.loc[df['Activity'] == 'SMALL GRAINS, OTHER', 'Sector'] = '111199A'
+    # BUCKWHEAT
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199B']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)  # BUCKWHEAT
+        ignore_index=True, sort=True)
+    # MILLET, PROSO
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199C']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)    # MILLET, PROSO
+        ignore_index=True, sort=True)
+    # OATS
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199D']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)    # OATS
+        ignore_index=True, sort=True)
+    # RYE
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199E']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)   # RYE
+        ignore_index=True, sort=True)
+    # TRITICALE
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199I']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)    # TRITICALE
+        ignore_index=True, sort=True)
+    # WILD RICE
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199J']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)    # WILD RICE
+        ignore_index=True, sort=True)
 
     # three types of sorghum, so manually add two rows
-    df.loc[df['Activity'] == 'SORGHUM, GRAIN', 'Sector'] = '111199F'  # grain
+    # grain
+    df.loc[df['Activity'] == 'SORGHUM, GRAIN', 'Sector'] = '111199F'
+    # syrup
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199G']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)  # syrup
+        ignore_index=True, sort=True)
+    # silage
     df = df.append(
         pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199H']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)  # silage
+        ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
 

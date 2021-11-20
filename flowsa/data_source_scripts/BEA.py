@@ -18,8 +18,10 @@ def bea_gdp_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_GDP_GrossOutput_IO.csv")
@@ -39,10 +41,11 @@ def bea_gdp_parse(dataframe_list, args):
     df['FlowName'] = 'Gross Output'
     df["SourceName"] = "BEA_GDP_GrossOutput"
     df["Location"] = US_FIPS
-    df['LocationSystem'] = "FIPS_2015"  # state FIPS codes have not changed over last decade
+    # state FIPS codes have not changed over last decade
+    df['LocationSystem'] = "FIPS_2015"
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5 # tmp
+    df['DataCollection'] = 5  # tmp
 
     return df
 
@@ -51,10 +54,13 @@ def bea_use_detail_br_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
-    csv_load = externaldatapath + "BEA_" + str(args['year']) + "_Detail_Use_PRO_BeforeRedef.csv"
+    csv_load = f'{externaldatapath}BEA_{str(args["year"])}' \
+               f'_Detail_Use_PRO_BeforeRedef.csv'
     df_raw = pd.read_csv(csv_load)
 
     # first column is the commodity being consumed
@@ -74,10 +80,11 @@ def bea_use_detail_br_parse(dataframe_list, args):
     df["SourceName"] = "BEA_Use_Detail_PRO_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
-    df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
+    # original unit in million USD
+    df['FlowAmount'] = df['FlowAmount'] * 1000000
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5 #tmp
+    df['DataCollection'] = 5  # tmp
 
     return df
 
@@ -86,8 +93,10 @@ def bea_make_detail_br_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) +
@@ -110,10 +119,11 @@ def bea_make_detail_br_parse(dataframe_list, args):
     df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
-    df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
+    # original unit in million USD
+    df['FlowAmount'] = df['FlowAmount'] * 1000000
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5 #tmp
+    df['DataCollection'] = 5  # tmp
 
     return df
 
@@ -122,8 +132,10 @@ def bea_make_ar_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     # df = pd.concat(dataframe_list, sort=False)
     df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] +

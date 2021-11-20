@@ -14,8 +14,9 @@ from flowsa.settings import datapath
 
 def get_US_urban_green_space_and_public_parks_ratio():
     """
-    calculates weighted average of urban green space and public parks in national total urban areas
-    Based on weighted average of 44 cities based on city population.
+    calculates weighted average of urban green space and public parks in
+    national total urban areas. Based on weighted average of 44 cities based
+    on city population.
 
     weighted average value = 12.35%
 
@@ -82,7 +83,8 @@ def get_Canadian_to_USD_exchange_rate(year):
 
 def get_area_of_urban_land_occupied_by_houses_2013():
     """
-    Reported area of urban land occupied by houses in 2013 from the USDA ERS Major Land Uses Report
+    Reported area of urban land occupied by houses in 2013 from the USDA
+    ERS Major Land Uses Report
 
     :return: number, the area of land occupied by houses in square meters
     """
@@ -92,14 +94,16 @@ def get_area_of_urban_land_occupied_by_houses_2013():
     area_urban_residence = 32.8
 
     # convert to square meters
-    area_urban_residence = area_urban_residence * 1000000 * acres_to_sq_m_conversion
+    area_urban_residence = \
+        area_urban_residence * (10 ** 6) * acres_to_sq_m_conversion
 
     return area_urban_residence
 
 
 def get_area_of_rural_land_occupied_by_houses_2013():
     """
-    Reported area of urban land occupied by houses in 2013 from the USDA ERS Major Land Uses Report
+    Reported area of urban land occupied by houses in 2013 from the
+    USDA ERS Major Land Uses Report
 
     :return: number, the area of land occupied by rural houses in square meters
     """
@@ -108,7 +112,8 @@ def get_area_of_rural_land_occupied_by_houses_2013():
     # value originally reported in million acres
     area_rural_residence = 106.3
     # convert to square meters
-    area_rural_residence = area_rural_residence * 1000000 * acres_to_sq_m_conversion
+    area_rural_residence = \
+        area_rural_residence * 1000000 * acres_to_sq_m_conversion
 
     return area_rural_residence
 
@@ -181,13 +186,16 @@ def get_transportation_sectors_based_on_FHA_fees():
 
     :return: dictionary, fraction of fha fees by transportation type
     """
-    fha_dict = ({'Truck transportation': {'NAICS_2012_Code': '484', 'ShareOfFees': 0.329},
-                 'Transit and ground passenger transportation': {'NAICS_2012_Code': '485',
-                                                                 'ShareOfFees': 0.001},
-                 'State and local government passenger transit': {'NAICS_2012_Code': 'S00201',
-                                                                  'ShareOfFees': 0.001},
-                 'Personal consumption expenditures': {'NAICS_2012_Code': 'F01000',
-                                                       'ShareOfFees': 0.669}
+    fha_dict = ({'Truck transportation':
+                     {'NAICS_2012_Code': '484', 'ShareOfFees': 0.329},
+                 'Transit and ground passenger transportation':
+                     {'NAICS_2012_Code': '485', 'ShareOfFees': 0.001},
+                 'State and local government passenger transit': {
+                     'NAICS_2012_Code': 'S00201',
+                     'ShareOfFees': 0.001},
+                 'Personal consumption expenditures': {
+                     'NAICS_2012_Code': 'F01000',
+                     'ShareOfFees': 0.669}
                  })
 
     return fha_dict

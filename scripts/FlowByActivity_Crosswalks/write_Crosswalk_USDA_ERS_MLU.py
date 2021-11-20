@@ -13,6 +13,7 @@ import pandas as pd
 from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
+
 def assign_naics(df):
     """
     manually assign each ERS activity to a NAICS_2012 code
@@ -117,8 +118,9 @@ def assign_naics(df):
     # Unclassified uses such as marshes, swamps, bare rock,
     # deserts, tundra plus other uses not estimated, /
     # classified, or inventoried.
+    # only want partial value for residential rural land
     df.loc[df['Activity'] == 'Other land',
-           'Sector'] = 'F01000' # only want partial value for residential rural land
+           'Sector'] = 'F01000'
 
     # categories not included to prevent double counting
 
