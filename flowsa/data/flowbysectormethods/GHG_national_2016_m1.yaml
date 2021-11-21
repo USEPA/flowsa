@@ -51,7 +51,7 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-      activity_set_2:
+      activity_set_2: &electricity_make
         names:
         - "Electric Power" #CO2
         allocation_method: proportional
@@ -262,6 +262,49 @@ source_names:
   "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
 
 
+## Stationary Combustion
+  "EPA_GHGI_T_3_8":  &stationary_combustion # CH4 emissions from stationary combustion
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    fedefl_mapping: 'GHGI'
+    activity_sets:
+      activity_set_1: #direct allocation
+        names:
+            - "Fuel Oil Residential"
+            - "Coal Residential"
+            - "Natural Gas Residential"
+            - "Wood Residential"
+        allocation_method: direct
+        allocation_source: None
+        allocation_from_scale: national
+      activity_set_2:
+        <<: *electricity_make # Electric power
+        names:
+            - "Coal Electric Power"
+            - "Natural Gas Electric Power"
+            - "Fuel Oil Electric Power"
+            - "Wood Electric Power"
+      activity_set_3: # Commercial Fuel Oil
+        <<: *use_allocation
+        names:
+            - "Fuel Oil Commercial"
+        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
+      activity_set_4: # Commercial Natural gas
+        <<: *use_allocation
+        names:
+            - "Natural Gas Commercial"
+        clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
+      # activity_set_5: # Industrial
+      #   names:
+      #       - "Coal Industrial"
+      #       - "Natural Gas Industrial"
+      #       - "Fuel Oil Industrial"
+      #       - "Wood Industrial"
+
+
+  "EPA_GHGI_T_3_9": *stationary_combustion # N2O emissions from stationary combustion
 
   "EPA_GHGI_T_4_46": #CO2 for selected petrochemicals
       data_format: 'FBA'
@@ -279,6 +322,8 @@ source_names:
             - "Ethylene Oxide"
             - "Methanol"
           allocation_method: direct
+          allocation_source: None
+          allocation_from_scale: national
   "EPA_GHGI_T_3_22": #Fossil fuel for non-energy uses
       data_format: 'FBA'
       class: Chemicals
