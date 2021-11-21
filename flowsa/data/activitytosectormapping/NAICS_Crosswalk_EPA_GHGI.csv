@@ -168,19 +168,34 @@ EPA_GHGI_T_3_22,Petroleum Coke,,,,
 EPA_GHGI_T_3_22,Special Naphtha,,,,
 EPA_GHGI_T_3_22,Still Gas,,,,
 EPA_GHGI_T_3_22,Waxes,,,,
-EPA_GHGI_T_3_8,Coal,Electric Power,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
-EPA_GHGI_T_3_8,Fuel Oil,Electric Power,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
-EPA_GHGI_T_3_8,Natural Gas,Electric Power,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
-EPA_GHGI_T_3_8,Wood,Electric Power,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
-EPA_GHGI_T_3_8,Coal,Residential,,,F01000
-EPA_GHGI_T_3_8,Fuel Oil,Residential,,,
-EPA_GHGI_T_3_8,Natural Gas,Residential,,,
-EPA_GHGI_T_3_8,Wood,Residential,,,
-EPA_GHGI_T_3_8,Coal,Industrial,,,"11, 21, 2212, 23, 31, 32, 33"
-EPA_GHGI_T_3_8,Fuel Oil,Industrial,,,
-EPA_GHGI_T_3_8,Natural Gas,Industrial,,,
-EPA_GHGI_T_3_8,Wood,Industrial,,,
-EPA_GHGI_T_3_8,Coal,Commercial,,,"2213, 42, 44, 45, 493, 5, 6, 7, 8, S00102, GSLGE, GSLGH"
-EPA_GHGI_T_3_8,Fuel Oil,Commercial,,,
-EPA_GHGI_T_3_8,Natural Gas,Commercial,,,
-EPA_GHGI_T_3_8,Wood,Commercial,,,
+EPA_GHGI_T_3_8,Coal Electric Power,,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
+EPA_GHGI_T_3_8,Fuel Oil Electric Power,,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
+EPA_GHGI_T_3_8,Natural Gas Electric Power,,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
+EPA_GHGI_T_3_8,Wood Electric Power,,,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
+EPA_GHGI_T_3_8,Coal Residential,,,,F01000
+EPA_GHGI_T_3_8,Fuel Oil Residential,,,,
+EPA_GHGI_T_3_8,Natural Gas Residential,,,,
+EPA_GHGI_T_3_8,Wood Residential,,,,
+EPA_GHGI_T_3_8,Coal Industrial,,,,"11, 21, 2212, 23, 31, 32, 33"
+EPA_GHGI_T_3_8,Fuel Oil Industrial,,,,
+EPA_GHGI_T_3_8,Natural Gas Industrial,,,,
+EPA_GHGI_T_3_8,Wood Industrial,,,,
+EPA_GHGI_T_3_8,Coal Commercial,,,,"2213, 42, 44, 45, 493, 5, 6, 7, 8, S00102, GSLGE, GSLGH"
+EPA_GHGI_T_3_8,Fuel Oil Commercial,,,,
+EPA_GHGI_T_3_8,Natural Gas Commercial,,,,
+EPA_GHGI_T_3_8,Wood Commercial,,,,
+EPA_GHGI_T_5_18,Drained Organic Soils Cropland,NAICS_2012_Code,1111,,"111, excl. 1114"
+EPA_GHGI_T_5_18,Drained Organic Soils Cropland,NAICS_2012_Code,1112,,
+EPA_GHGI_T_5_18,Drained Organic Soils Cropland,NAICS_2012_Code,1113,,
+EPA_GHGI_T_5_18,Drained Organic Soils Cropland,NAICS_2012_Code,1119,,
+EPA_GHGI_T_5_18,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1111,,"111, excl. 1114"
+EPA_GHGI_T_5_18,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1112,,
+EPA_GHGI_T_5_18,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1113,,
+EPA_GHGI_T_5_18,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1119,,
+EPA_GHGI_T_5_18,Organic Amendment Cropland,NAICS_2012_Code,111,,111
+EPA_GHGI_T_5_18,Residue N Cropland,NAICS_2012_Code,111,,111
+EPA_GHGI_T_5_18,Synthetic Fertilizer Cropland,NAICS_2012_Code,111,,111
+EPA_GHGI_T_5_18,All activities Grassland,NAICS_2012_Code,112,,112
+EPA_GHGI_T_5_19,Volatilization & Atm. Deposition Cropland,NAICS_2012_Code,111,,111
+EPA_GHGI_T_5_19,Surface Leaching & Run-Off Cropland,NAICS_2012_Code,111,,111
+EPA_GHGI_T_5_19,All activities Grassland,NAICS_2012_Code,112,,112

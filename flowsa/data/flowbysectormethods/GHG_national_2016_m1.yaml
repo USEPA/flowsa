@@ -220,6 +220,54 @@ source_names:
         allocation_from_scale: national
   "EPA_GHGI_T_5_7": *animals #CH4 and N2O from manure, mimics enteric fermentation
 
+  "EPA_GHGI_T_5_18": #Direct N2O emissions from agricultural soils
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    fedefl_mapping: 'GHGI'
+    activity_sets:
+      activity_set_1:  # allocated based on fertilizer use
+        <<: *use_allocation
+        names:
+            - "Organic Amendment Cropland"
+            - "Residue N Cropland"
+            - "Synthetic Fertilizer Cropland"
+        clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
+      activity_set_2:  # allocated based on USDA land area harvested
+        names:
+            - "Mineralization and Asymbiotic Fixation Cropland"
+            - "Drained Organic Soils Cropland"
+        allocation_source: "USDA_CoA_Cropland"
+        allocation_method: proportional
+        allocation_source_class: "Land"
+        allocation_source_year: 2017
+        allocation_flow:
+          - "AREA HARVESTED"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+      # activity_set_3: # allocated based on USDA Animal operation land (acres)
+      #   names:
+      #       - "All activities Grassland"
+  "EPA_GHGI_T_5_19": #Indirect N2O emissions from agricultural soils
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    fedefl_mapping: 'GHGI'
+    activity_sets:
+      activity_set_1:  # allocated based on fertilizer use
+        <<: *use_allocation
+        names:
+            - "Volatilization & Atm. Deposition Cropland"
+            - "Surface Leaching & Run-Off Cropland"
+        clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
+      # activity_set_3: # allocated based on USDA Animal operation land (acres)
+      #   names:
+      #       - "All activities Grassland"
+
 ## Mobile Sources
   "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
     data_format: 'FBA'
