@@ -6,7 +6,8 @@ Pulls EPA National Emissions Inventory (NEI) data for nonpoint sources
 """
 
 import io
-import zipfile
+from zipfile import ZipFile
+from os import path
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import convert_fba_unit
@@ -43,29 +44,20 @@ def epa_nei_url_helper(build_url, config, args):
     return urls
 
 
-def epa_nei_call(url, response_load, args):
+def epa_nei_call(_1, response, _2):
     """
-    Convert response for calling url to pandas dataframe, begin parsing
-    df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    Convert response for calling _1 to pandas dataframe
+    :param _1: string, url (unused)
+    :param response: df, response from url call
+    :param _2: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source') (unused)
     :return: pandas dataframe of original source data
     """
-    z = zipfile.ZipFile(io.BytesIO(response_load.content))
-    # create a list of files contained in the zip archive
-    znames = z.namelist()
-    # retain only those files that are in .csv format
-    znames = [s for s in znames if '.csv' in s]
-    # initialize the dataframe
-    df = pd.DataFrame()
-    # for all of the .csv data files in the .zip archive,
-    # read the .csv files into a dataframe
-    # and concatenate with the master dataframe
-    for i in range(len(znames)):
-        df = pd.concat([df, pd.read_csv(z.open(znames[i]))])
-    return df
+    with ZipFile(io.BytesIO(response.content)) as z:
+        # Read in all .csv files from the zip archive as a list of dataframes
+        df_list = [pd.read_csv(z.open(name)) for name in z.namelist()
+                   if path.splitext(name)[1] == '.csv']
+    return pd.concat(df_list)
 
 
 def epa_nei_global_parse(dataframe_list, args):
@@ -248,7 +240,7 @@ def remove_duplicate_NEI_flows(df):
 def drop_GHGs(df):
     """
     GHGs are included in some NEI datasets. If these data are not
-    compiled together with GHGRP, need to remove them as they will be 
+    compiled together with GHGRP, need to remove them as they will be
     tracked from a different source
     :param df: df, FBA format
     :return: df
