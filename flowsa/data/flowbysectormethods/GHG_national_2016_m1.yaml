@@ -431,7 +431,7 @@ source_names:
             - "Industrial Coking Coal"
             - "Industrial Other Coal"
           allocation_method: direct
-        activity_set_2:  #consumed petroleum products
+        activity_set_2: &nonfuel_MECS #consumed petroleum products
           names:
             - "Asphalt & Road Oil"
             - "Distillate Fuel Oil"
@@ -448,26 +448,26 @@ source_names:
             - "Waxes"
           allocation_method: proportional
           allocation_source: "EIA_MECS_Energy"
-          allocation_source_class: "Energy"
+          allocation_source_class: "Other" #nonfuel consumption
           allocation_source_year: 2014
-          allocation_flow: ##need to be specified
+          allocation_flow:
+            - "Other" #consistent with original, but other flows may be better
           allocation_compartment: None
           allocation_from_scale: national
-        activity_set_3:  #consumed nat gas to chemical plants
+          clean_allocation_fba: mecs_energy_fba_cleanup #use energy basis
+          clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
+          helper_source: "BLS_QCEW"
+          helper_method: proportional-flagged
+          helper_source_class: "Employment"
+          helper_source_year: 2014
+          helper_flow: None
+          helper_from_scale: national
+          clean_helper_fba: clean_bls_qcew_fba
+          clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        activity_set_3: *nonfuel_MECS #consumed nat gas to chemical plants
           names:
             - "Natural Gas to       Chemical Plants"
-          allocation_method: proportional
-          allocation_source: "EIA_MECS_Energy"
-          allocation_source_class: "Energy"
-          allocation_source_year: 2014
-          allocation_flow: ##need to be specified
-          allocation_compartment: None
-          allocation_from_scale: national
-          helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
-          helper_method: proportional
-          helper_source_class: "Money"
-          helper_source_year: 2012
-          helper_flow: "USD2012"
-          helper_from_scale: national
+          allocation_flow:
+            - "Natural Gas"
 
 
