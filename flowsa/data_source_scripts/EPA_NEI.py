@@ -12,7 +12,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import convert_fba_unit
 
 
-def epa_nei_url_helper(build_url, config, args):
+def epa_nei_url_helper(build_url, _, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -20,27 +20,24 @@ def epa_nei_url_helper(build_url, config, args):
     does not parse the data, only modifies the urls from which data is
     obtained.
     :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
+    :param _: dictionary, items in FBA method yaml (unused)
     :param args: dictionary, arguments specified when running flowbyactivity.py
         flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
-    urls = []
-    url = build_url
+    version_dict = {
+        '2017': '2017v1/2017neiApr',
+        '2014': '2014v2/2014neiv2',
+        '2011': '2011v2/2011neiv2',
+        '2008': '2008neiv3'
+    }
 
-    url = url.replace('__year__', args['year'])
+    url = (build_url
+           .replace('__year__', args['year'])
+           .replace('__version__', version_dict[args['year']]))
 
-    if args['year'] == '2017':
-        url = url.replace('__version__', '2017v1/2017neiApr')
-    elif args['year'] == '2014':
-        url = url.replace('__version__', '2014v2/2014neiv2')
-    elif args['year'] == '2011':
-        url = url.replace('__version__', '2011v2/2011neiv2')
-    elif args['year'] == '2008':
-        url = url.replace('__version__', '2008neiv3')
-    urls.append(url)
-    return urls
+    return [url]
 
 
 def epa_nei_call(url, response_load, args):
@@ -248,7 +245,7 @@ def remove_duplicate_NEI_flows(df):
 def drop_GHGs(df):
     """
     GHGs are included in some NEI datasets. If these data are not
-    compiled together with GHGRP, need to remove them as they will be 
+    compiled together with GHGRP, need to remove them as they will be
     tracked from a different source
     :param df: df, FBA format
     :return: df
