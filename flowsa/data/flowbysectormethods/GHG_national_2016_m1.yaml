@@ -464,10 +464,16 @@ source_names:
           helper_from_scale: national
           clean_helper_fba: clean_bls_qcew_fba
           clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-        activity_set_3: *nonfuel_MECS #consumed nat gas to chemical plants
+        activity_set_3:
+          <<: *nonfuel_MECS #consumed nat gas to chemical plants
           names:
             - "Natural Gas to       Chemical Plants"
           allocation_flow:
             - "Natural Gas"
+        activity_set_4:
+          <<: *use_allocation
+          names:
+            - "Transportation Lubricants"
+          clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
 
