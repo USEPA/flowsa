@@ -128,16 +128,18 @@ source_names:
         names:
         - "Other Process Uses of Carbonates" #CO2
         clean_parameter: {"325180": 'ActivityProducedBy'} # Other Basic Inorganic Chemicals
-      # activity_set_7:
-      #   names:
-      #   - "Lead Production" #CO2
-      #   allocation_method: proportional
-      #   allocation_source: "USGS" #MYB_LEAD?
-      #   allocation_source_class:
-      #   allocation_source_year:
-      #   allocation_flow:
-      #   allocation_compartment: None
-      #   allocation_from_scale: national
+      activity_set_7:
+        names:
+        - "Lead Production" #CO2
+        allocation_method: proportional
+        allocation_source: "USGS_MYB_Lead"
+        allocation_source_class: "Geological"
+        allocation_source_year: 2016
+        allocation_flow:
+        - "lead production Primary lead, refined content, domestic ores and base bullion "
+        - "lead production Secondary lead, lead content"
+        allocation_compartment: None
+        allocation_from_scale: national
       activity_set_8:
         <<: *use_allocation
         names:
