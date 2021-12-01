@@ -385,7 +385,7 @@ source_names:
         <<: *electricity_make # Electric power
         names:
             - "Coal Electric Power"
-            - "Natural Gas Electric Power"
+            - "Natural gas Electric Power"
             - "Fuel Oil Electric Power"
             - "Wood Electric Power"
       activity_set_3: # Commercial Fuel Oil
@@ -396,12 +396,12 @@ source_names:
       activity_set_4: # Commercial Natural gas
         <<: *use_allocation
         names:
-            - "Natural Gas Commercial"
+            - "Natural gas Commercial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
       # activity_set_5: # Industrial
       #   names:
       #       - "Coal Industrial"
-      #       - "Natural Gas Industrial"
+      #       - "Natural gas Industrial"
       #       - "Fuel Oil Industrial"
       #       - "Wood Industrial"
 
