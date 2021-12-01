@@ -199,3 +199,17 @@ EPA_GHGI_T_5_18,All activities Grassland,NAICS_2012_Code,112,,112
 EPA_GHGI_T_5_19,Volatilization & Atm. Deposition Cropland,NAICS_2012_Code,111,,111
 EPA_GHGI_T_5_19,Surface Leaching & Run-Off Cropland,NAICS_2012_Code,111,,111
 EPA_GHGI_T_5_19,All activities Grassland,NAICS_2012_Code,112,,112
+EPA_GHGI_T_A_14,Natural Gas Transportation,,,,"48, 491, 492, S00500, S00600, GSLGO, S00201, S00203, F01000"
+EPA_GHGI_T_A_14,Aviation Gasoline Transportation,,,,
+EPA_GHGI_T_A_14,Distillate Fuel Oil Transportation,,,,
+EPA_GHGI_T_A_14,Jet Fuel Transportation,,,,
+EPA_GHGI_T_A_14,LPG Transportation,,,,
+EPA_GHGI_T_A_14,Motor Gasoline Transportation,,,,
+EPA_GHGI_T_A_14,Residual Fuel Transportation,,,,
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial,,,,"11, 21, 2212, 23, 31, 32, 33"
+EPA_GHGI_T_A_14,Natural Gas Industrial,,,,
+EPA_GHGI_T_A_14,Total Petroleum Industrial,,,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,,,,"2213, 42, 44, 45, 493, 5, 6, 7, 8, S00102, GSLGE, GSLGH"
+EPA_GHGI_T_A_14,Natural Gas Commercial,,,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,,,,
+EPA_GHGI_T_A_14,Total (All Fuels) Residential,,,,F0100

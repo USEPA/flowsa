@@ -309,6 +309,53 @@ source_names:
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
   "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
 
+## Major CO2 Sources
+  "EPA_GHGI_T_A_14":  # CO2 emissions from stationary combustion and transportation
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    year: 2016
+    fedefl_mapping: 'GHGI'
+    activity_sets:
+      activity_set_1: #direct allocation
+        names:
+            - "Total (All Fuels) Residential"
+        allocation_method: direct
+        allocation_source: None
+        allocation_from_scale: national
+    ### Commercial
+      activity_set_2: # Commercial Coal
+        <<: *use_allocation
+        names:
+            - "Commercial Coal Commercial"
+        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
+      activity_set_3: # Commercial Natural Gas
+        <<: *use_allocation
+        names:
+            - "Natural Gas Commercial"
+        clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
+      activity_set_4: # Commercial Petroleum
+        <<: *use_allocation
+        names:
+            - "Total Petroleum Commercial"
+        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
+    ### Industrial
+       # activity_set_5: # Industrial Coal - needs further allocation
+       #   <<: *use_allocation
+       #   names:
+       #       - "Industrial Other Coal Industrial"
+       #   clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
+       # activity_set_6: # Industrial Natural Gas - needs further allocation
+       #   <<: *use_allocation
+       #   names:
+       #       - "Natural Gas Industrial"
+       #  clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
+      activity_set_7: # Industrial Petroleum
+        <<: *use_allocation
+        names:
+            - "Total Petroleum Industrial"
+        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
+    ### Transportation
 
 ## Stationary Combustion
   "EPA_GHGI_T_3_8":  &stationary_combustion # CH4 emissions from stationary combustion
