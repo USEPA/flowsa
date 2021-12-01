@@ -83,7 +83,7 @@ TBL_META = {
         "desc": "Table 3-21:  Adjusted Consumption of Fossil Fuels for Non-Energy Uses (TBtu)"
     },
     "EPA_GHGI_T_3_22": {
-        "class": "Energy", "unit": "Other", "compartment": "air",
+        "class": "Chemicals", "unit": "Other", "compartment": "air",
         "activity": "2018 Adjusted Non-Energy Use Fossil Fuel - __type__",
         "desc": "Table 3-22:  2019 Adjusted Non-Energy Use Fossil Fuel "
                 "Consumption, Storage, and Emissions",
