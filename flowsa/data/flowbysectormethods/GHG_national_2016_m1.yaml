@@ -138,6 +138,11 @@ source_names:
       #   allocation_flow:
       #   allocation_compartment: None
       #   allocation_from_scale: national
+      activity_set_8:
+        <<: *use_allocation
+        names:
+        - "N2O from Product Uses" #N2O
+        clean_parameter: {"325120": 'ActivityProducedBy'} # Industrial gases
 
 ##Fossil Fuels
   "EPA_GHGI_T_3_63": &natgas #CH4 from Natural Gas Systems

@@ -29,6 +29,9 @@ EPA_GHGI_T_2_1,Composting,NAICS_2012_Code,562,,562000
 EPA_GHGI_T_2_1,Incineration of Waste,NAICS_2012_Code,562,,562000
 EPA_GHGI_T_2_1,Nitric Acid Production,NAICS_2012_Code,32531,,325310
 EPA_GHGI_T_2_1,Adipic Acid Production,NAICS_2012_Code,32519,,325190
+EPA_GHGI_T_2_1,N2O from Product Uses,NAICS_2012_Code,621,,"621, 622, 623"
+EPA_GHGI_T_2_1,N2O from Product Uses,NAICS_2012_Code,622,,
+EPA_GHGI_T_2_1,N2O from Product Uses,NAICS_2012_Code,623,,
 EPA_GHGI_T_2_1,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",NAICS_2012_Code,32519,,325190
 EPA_GHGI_T_2_1,Electronics Industry,NAICS_2012_Code,334413,,"334413, name change from Semiconductor Manufacture"
 EPA_GHGI_T_2_1,HCFC22 Production,NAICS_2012_Code,32512,,325120
