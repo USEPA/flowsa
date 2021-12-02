@@ -502,15 +502,15 @@ source_names:
             - "Aluminum Production"
           allocation_method: direct
           allocation_from_scale: national
-  "EPA_GHGI_T_4_84": # HFCs, SF6, CO2 from magnesium production
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      year: 2016
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        activity_set_1:
-            <<: *electricity_make # Make table allocation
-            names:
-            - "Magnesium Production and Processing"
-            clean_parameter: {"T008": 'ActivityConsumedBy'} # Gross Output
+  # "EPA_GHGI_T_4_84": # HFCs, SF6, CO2 from magnesium production
+  #     data_format: 'FBA'
+  #     class: Chemicals
+  #     geoscale_to_use: national
+  #     year: 2016
+  #     fedefl_mapping: 'GHGI'
+  #     activity_sets:
+  #       activity_set_1:
+  #           <<: *electricity_make # Make table allocation
+  #           names:
+  #           - "Magnesium Production and Processing"
+  #           clean_parameter: {"T008": 'ActivityConsumedBy'} # Gross Output
