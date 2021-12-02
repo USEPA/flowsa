@@ -204,6 +204,9 @@ def main(**kwargs):
                 # subset by flowname if exists
                 if 'source_flows' in attr:
                     flows_subset = flows_subset[flows_subset['FlowName'].isin(attr['source_flows'])]
+                if len(flows_subset) == 0:
+                    log.warning(f"no data found for flows in {aset}")
+                    continue
                 # if activities are sector-like, check sectors are valid
                 if check_activities_sector_like(k):
                     flows_subset2 = replace_naics_w_naics_from_another_year(
