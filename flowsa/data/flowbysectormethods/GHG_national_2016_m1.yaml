@@ -297,11 +297,11 @@ source_names:
   "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
 
 ## Major CO2 Sources
-  "EPA_GHGI_T_A_14":  # CO2 emissions from stationary combustion and transportation
+  "EPA_GHGI_T_A_17":  # CO2 emissions from stationary combustion and transportation
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: 2013 #TODO update to A_14 for 2016 when available
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1: #direct allocation

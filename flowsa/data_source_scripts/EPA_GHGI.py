@@ -14,21 +14,17 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.settings import log, datapath
 
-DEFAULT_YEAR = 9999
-
-# Decided to add tables as a constant in the source code because
-# the YML config isn't available in the ghg_call method.
-# Only keeping years 2010-2018 for the following tables:
+# Read in relevant GHGI tables from yaml
 sourcefile = datapath + 'GHGI_tables.yaml'
 with open(sourcefile, 'r') as f:
-     table_dict = yaml.safe_load(f)
+    table_dict = yaml.safe_load(f)
 
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
 A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
 A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
                    'Emissions (MMT CO2 Eq.) from Energy Use']
 
-SPECIAL_FORMAT = ["3-10", "3-22", "4-46", "4-50", "4-80", "A-17", "A-93", "A-94", "A-118", "5-29"]
+SPECIAL_FORMAT = ["3-10", "3-22", "4-46", "4-50", "4-80", "A-17", "5-29"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
 Activity_Format_A = ["T_5_30", "T_A_17", "T_ES_5"]
 Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
@@ -406,8 +402,7 @@ def ghg_parse(dataframe_list, args):
             df.loc[df["Unit"] != 'TBtu', 'ActivityConsumedBy'] = 'None'
 
         if 'Year' not in df.columns:
-          #  df['Year'] = meta.get("year", DEFAULT_YEAR)
-          df['Year'] = args['year']
+            df['Year'] = args['year']
 
         if source_name == "EPA_GHGI_T_4_33":
             df = df.rename(columns={'Year': 'ActivityProducedBy', 'ActivityProducedBy': 'Year'})
@@ -640,8 +635,6 @@ def ghg_parse(dataframe_list, args):
                 df = df.rename(columns={'FlowName': 'ActivityConsumedBy', 'ActivityConsumedBy': 'FlowName'})
             else:
                 df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
-           # if source_name == "EPA_GHGI_T_2_1":
-           #     df["FlowName"] = "CO2 eq"
 
         df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
