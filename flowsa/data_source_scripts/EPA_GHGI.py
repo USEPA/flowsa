@@ -8,30 +8,20 @@ https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 
 import io
 import zipfile
+import yaml
 import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.settings import log
+from flowsa.settings import log, datapath
 
 DEFAULT_YEAR = 9999
 
 # Decided to add tables as a constant in the source code because
 # the YML config isn't available in the ghg_call method.
 # Only keeping years 2010-2018 for the following tables:
-TABLES = {
-    "Ch 2 - Trends": ["2-1"],
-    "Ch 3 - Energy": ["3-8", "3-9", "3-10", "3-14", "3-15", "3-22",
-                      "3-38", "3-40", "3-42", "3-63", "3-65", "3-67"],
-    "Ch 4 - Industrial Processes": ["4-14", "4-33", "4-46", "4-48", "4-50",
-                                    "4-80", "4-94", "4-99", "4-101"],
-    "Ch 5 - Agriculture": ["5-3", "5-7", "5-18", "5-19", "5-29"],
-    "Executive Summary": ["ES-5"]
-
-}
-
-ANNEX_TABLES = {
-     "Annex": ["A-17", "A-76", "A-77", "A-101"]
-}
+sourcefile = datapath + 'GHGI_tables.yaml'
+with open(sourcefile, 'r') as f:
+     table_dict = yaml.safe_load(f)
 
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
 A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
@@ -45,186 +35,6 @@ Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
 
 DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
-
-TBL_META = {
-    "EPA_GHGI_T_2_1": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 2-1:  Recent Trends in U.S. Greenhouse Gas Emissions and Sinks (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_8": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CH4",
-        "desc": "Table 3-8:  CH4 Emissions from Stationary Combustion (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_9": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "N2O",
-        "desc": "Table 3-9:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_10": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CH4",
-        "desc": "Table 3-10:  CO2, CH4, and N2O Emissions from Fossil Fuel Combustion by Sector (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_14": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CH4",
-        "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_15": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "N2O",
-        "desc": "Table 3-15:  N2O Emissions from Mobile Combustion (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_21": {
-        "class": "Energy", "unit": "TBtu", "compartment": "air",
-        "activity": "TBtu",
-        "desc": "Table 3-21:  Adjusted Consumption of Fossil Fuels for Non-Energy Uses (TBtu)"
-    },
-    "EPA_GHGI_T_3_22": {
-        "class": "Chemicals", "unit": "Other", "compartment": "air",
-        "activity": "2018 Adjusted Non-Energy Use Fossil Fuel - __type__",
-        "desc": "Table 3-22:  2019 Adjusted Non-Energy Use Fossil Fuel "
-                "Consumption, Storage, and Emissions",
-        "year": "2018"
-    },
-    "EPA_GHGI_T_3_38": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CH4",
-        "desc": "Table 3?38:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_40": {
-        "class": "Chemicals", "unit": "MMT CO2", "compartment": "air",
-        "activity": "CO2",
-        "desc": "Table 3-40:  CO2 Emissions from Petroleum Systems (MMT CO2)"
-    },
-    "EPA_GHGI_T_3_42": {
-        "class": "Chemicals", "unit": "MT CO2", "compartment": "air",
-        "activity": "N2O",
-        "desc": "Table 3-42:  N2O Emissions from Petroleum Systems (Metric Tons CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_63": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CH4",
-        "desc": "Table 3-63:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)a"
-    },
-    "EPA_GHGI_T_3_67": {
-        "class": "Chemicals", "unit": "MT CO2e", "compartment": "air",
-        "activity": "N2O",
-        "desc": "Table 3-67: N2O Emissions from Natural Gas Systems (Metric Tons CO2 Eq.)"
-    },
-    "EPA_GHGI_T_3_65": {
-        "class": "Chemicals", "unit": "MMT CO2", "compartment": "air",
-        "activity": "CO2",
-        "desc": "Table 3-65:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
-    },
-    "EPA_GHGI_T_4_14": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 4-14:  CO2 Emissions from Other Process Uses of Carbonates (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_4_33": {
-        "class": "Chemicals", "unit": "Other", "compartment": "air",
-        "activity": "N2O",
-        "desc": "Table 4-33:  N2O Emissions from Caprolactam Production (MMT CO2 Eq. and kt N2O)"
-    },
-    "EPA_GHGI_T_4_46": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 4-46: CO2 and CH4 Emissions from Petrochemical Production (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_4_48": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "kt",
-        "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
-    },
-    "EPA_GHGI_T_4_49": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "kt",
-        "desc": "Table 4-49:  Approach 2 Quantitative Uncertainty Estimates for CH4 Emissions from Petrochemical Production and CO2 Emissions from Petrochemical Production (MMT CO2 Eq. and Percent) "
-    },
-    "EPA_GHGI_T_4_50": {
-        "class": "Chemicals", "unit": "Other", "compartment": "air",
-        "activity": "HFC-23",
-        "desc": "Table 4-50: HFC-23 Emissions from HCFC-22 Production (MMT CO2 Eq. and kt HFC-23)"
-    },
-    "EPA_GHGI_T_4_80": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_4_94": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
-                "Electronics Manufacture [1] (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_4_99": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 4-99:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_4_101": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "HFCs and PFCs",
-        "desc": "Table 4-101:  Emissions of HFCs and PFCs from "
-                "ODS Substitutes (MMT CO2 Eq.) by Sector"
-    },
-    "EPA_GHGI_T_5_3": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CH4",
-        "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_5_7": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 5-7:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_5_18": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 5-18:  Direct N2O Emissions from Agricultural " +
-                "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_5_19": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_5_29": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table 5-29: CH4 and N2O Emissions from Field Burning of Agricultural Residues (MMT CO2 Eq.)"
-    },
-    "EPA_GHGI_T_A_17": {
-        "class": "Energy", "unit": "Other", "compartment": "air",
-        "activity": "CO2",
-        "desc": "2012 Energy Consumption Data and CO2 Emissions from "
-                "Fossil Fuel Combustion by Fuel Type"
-    },
-    "EPA_GHGI_T_A_76": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "NOx",
-        "desc": "NOx Emissions from Stationary Combustion (kt)"
-    },
-    "EPA_GHGI_T_A_77": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "CO",
-        "desc": "CO Emissions from Stationary Combustion (kt)"
-    },
-    "EPA_GHGI_T_A_101": {
-        "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "activity": "NMVOC",
-        "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
-    },
-    "EPA_GHGI_T_ES_5": {
-        "class": "Chemicals", "unit": "MMT CO2e", "compartment": "air",
-        "activity": "CO2e",
-        "desc": "Table ES-5: U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
-                "from Land Use, Land-Use Change, and Forestry (MMT CO2 Eq.)"
-    },
-}
 
 YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
 
@@ -342,10 +152,10 @@ def ghg_call(url, response_load, args):
         frames = []
         if 'annex' in url:
             is_annex = True
-            t_tables = ANNEX_TABLES
+            t_tables = table_dict['Annex']
         else:
             is_annex = False
-            t_tables = TABLES
+            t_tables = table_dict['Tables']
         for chapter, tables in t_tables.items():
             for table in tables:
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
@@ -447,13 +257,24 @@ def get_unnamed_cols(df):
     return [col for col in df.columns if "Unnamed" in col]
 
 
+def get_table_meta(source_name):
+    """Find and return table meta from source_name."""
+    if "_A_" in source_name:
+        td = table_dict['Annex']
+    else:
+        td = table_dict['Tables']
+    for chapter in td.keys():
+        for k, v in td[chapter].items():
+            if k.replace("-","_") in source_name:
+                return v
+
 def is_consumption(source_name):
     """
     Determine whether the given source contains consumption or production data.
     :param source_name: df
     :return: True or False
     """
-    if 'consum' in TBL_META[source_name]['desc'].lower():
+    if 'consum' in get_table_meta(source_name)['desc'].lower():
         return True
     return False
 
@@ -554,7 +375,7 @@ def ghg_parse(dataframe_list, args):
         df["Unit"] = "Other"
 
         # Update classes:
-        meta = TBL_META[source_name]
+        meta = get_table_meta(source_name)
         if source_name == "EPA_GHGI_T_3_21" and int(args["year"]) < 2015:
             # skip don't do anything: The lines are blank
             print("There is no data for this year and source")
