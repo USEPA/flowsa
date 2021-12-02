@@ -243,8 +243,7 @@ def eia_mecs_energy_call(url, response_load, args):
     # load .yaml file containing information about each energy table
     # (the .yaml includes information such as column names, units, and
     # which rows to grab)
-    filename = 'EIA_MECS_energy tables'
-    sourcefile = datapath + filename + '.yaml'
+    sourcefile = datapath + 'EIA_MECS_energy_tables.yaml'
     with open(sourcefile, 'r') as f:
         table_dict = yaml.safe_load(f)
 
