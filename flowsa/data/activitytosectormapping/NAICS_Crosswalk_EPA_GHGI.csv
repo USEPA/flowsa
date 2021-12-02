@@ -34,12 +34,8 @@ EPA_GHGI_T_2_1,N2O from Product Uses,NAICS_2012_Code,622,,
 EPA_GHGI_T_2_1,N2O from Product Uses,NAICS_2012_Code,623,,
 EPA_GHGI_T_2_1,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",NAICS_2012_Code,32519,,325190
 EPA_GHGI_T_2_1,Electronics Industry,NAICS_2012_Code,334413,,"334413, name change from Semiconductor Manufacture"
-EPA_GHGI_T_2_1,HCFC22 Production,NAICS_2012_Code,32512,,325120
 EPA_GHGI_T_2_1,Electrical Transmission and Distribution,NAICS_2012_Code,2211,,221100
 EPA_GHGI_T_2_1,Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
-EPA_GHGI_T_2_1,Magnesium Production and Processing,NAICS_2012_Code,331410,,"331410, 331490, 331520"
-EPA_GHGI_T_2_1,Magnesium Production and Processing,NAICS_2012_Code,33149,,
-EPA_GHGI_T_2_1,Magnesium Production and Processing,NAICS_2012_Code,33152,,
 EPA_GHGI_T_2_1,Liming,NAICS_2012_Code,111,,"111, 112"
 EPA_GHGI_T_2_1,Liming,NAICS_2012_Code,112,,
 EPA_GHGI_T_2_1,Urea Fertilization,NAICS_2012_Code,111,,"111, 112"
@@ -335,8 +331,12 @@ EPA_GHGI_T_A_14,Commercial Coal Commercial,,,,"2213, 42, 44, 45, 493, 5, 6, 7, 8
 EPA_GHGI_T_A_14,Natural Gas Commercial,,,,
 EPA_GHGI_T_A_14,Total Petroleum Commercial,,,,
 EPA_GHGI_T_A_14,Total (All Fuels) Residential,,,,F0100
+EPA_GHGI_T_4_50,HCFC-22 Production,NAICS_2012_Code,325120,,325120
 EPA_GHGI_T_4_94,Electronics Production,NAICS_2012_Code,334413,,334413
 EPA_GHGI_T_4_80,Aluminum Production,NAICS_2012_Code,331313,,331313
+EPA_GHGI_T_4_84,Magnesium Production and Processing,NAICS_2012_Code,331410,,"331410, 331490, 331520"
+EPA_GHGI_T_4_84,Magnesium Production and Processing,NAICS_2012_Code,33149,,
+EPA_GHGI_T_4_84,Magnesium Production and Processing,NAICS_2012_Code,33152,,
 EPA_GHGI_T_4_101,Refrigeration/Air Conditioning,,,,All sectors
 EPA_GHGI_T_4_101,Aerosols,,,,excluded
 EPA_GHGI_T_4_101,Foams,,,,All sectors

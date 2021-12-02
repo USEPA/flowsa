@@ -610,7 +610,7 @@ def ghg_parse(dataframe_list, args):
             elif source_name == "EPA_GHGI_T_4_50":
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
-                    df.loc[index, 'ActivityProducedBy'] = "HFC-23 Production"
+                    df.loc[index, 'ActivityProducedBy'] = "HCFC-22 Production"
                     if "kt" in apb_value:
                         df.loc[index, 'Unit'] = "kt"
                     else:

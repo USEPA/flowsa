@@ -116,7 +116,7 @@ Tables:
         "compartment": "air"
         "activity": "kt"
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
-      "4-50": # Not currently used
+      "4-50":
         "class": "Chemicals"
         "unit": "Other"
         "compartment": "air"

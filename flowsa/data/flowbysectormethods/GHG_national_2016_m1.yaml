@@ -42,14 +42,14 @@ source_names:
           - "Adipic Acid Production" #N2O
           - "Caprolactam, Glyoxal, and Glyoxylic Acid Production" #CH4
           - "Electronics Industry" #N2O
-        source_flows: ["CO2", "CH4", "N2O"]
+        source_flows: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
       activity_set_2:
         names:
           - "Electrical Transmission and Distribution" #SF6
-        source_flows: ["SF6", "NF3"]
+        source_flows: ["SF6"]
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
@@ -466,6 +466,18 @@ source_names:
           clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
 ## Other Emissions
+  "EPA_GHGI_T_4_50": # HFCs from HCFC-22 production #TODO limit to just the kt unit
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:
+          names:
+            - "HCFC-22 Production"
+          allocation_method: direct
+          allocation_from_scale: national
   "EPA_GHGI_T_4_94": # HFCs and other emissions from electronics manufacture
       data_format: 'FBA'
       class: Chemicals
