@@ -48,7 +48,6 @@ source_names:
         allocation_from_scale: national
       activity_set_2:
         names:
-          - "Electronics Industry" #SF6, NF3
           - "Electrical Transmission and Distribution" #SF6
         source_flows: ["SF6", "NF3"]
         allocation_method: direct
