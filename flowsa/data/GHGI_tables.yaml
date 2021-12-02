@@ -92,7 +92,7 @@ Tables:
         "desc": "Table 3-67: N2O Emissions from Natural Gas Systems (Metric Tons CO2 Eq.)"
 
   "Ch 4 - Industrial Processes":
-      "4-14": # Emissions captured in in 2-1
+      "4-14": # Emissions captured in 2-1
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
@@ -104,7 +104,7 @@ Tables:
         "compartment": "air"
         "activity": "N2O"
         "desc": "Table 4-33:  N2O Emissions from Caprolactam Production (MMT CO2 Eq. and kt N2O)"
-      "4-46":
+      "4-46": # Emissions captured in 2-1
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
@@ -116,7 +116,7 @@ Tables:
         "compartment": "air"
         "activity": "kt"
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
-      "4-50":
+      "4-50": # Not currently used
         "class": "Chemicals"
         "unit": "Other"
         "compartment": "air"
@@ -136,7 +136,7 @@ Tables:
         "desc": >
             "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
             "Electronics Manufacture [1] (MMT CO2 Eq.)"
-      "4-99":
+      "4-99":  # Not currently used
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
@@ -188,7 +188,7 @@ Tables:
         "desc": "Table 5-29: CH4 and N2O Emissions from Field Burning of Agricultural Residues (MMT CO2 Eq.)"
 
   "Executive Summary":
-      "ES-5":
+      "ES-5":  # Not currently used
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"

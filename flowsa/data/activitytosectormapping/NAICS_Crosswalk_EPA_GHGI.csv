@@ -335,3 +335,10 @@ EPA_GHGI_T_A_14,Commercial Coal Commercial,,,,"2213, 42, 44, 45, 493, 5, 6, 7, 8
 EPA_GHGI_T_A_14,Natural Gas Commercial,,,,
 EPA_GHGI_T_A_14,Total Petroleum Commercial,,,,
 EPA_GHGI_T_A_14,Total (All Fuels) Residential,,,,F0100
+EPA_GHGI_T_4_94,Electronics Production,NAICS_2012_Code,334413,,334413
+EPA_GHGI_T_4_80,Aluminum Production,NAICS_2012_Code,331313,,331313
+EPA_GHGI_T_4_101,Refrigeration/Air Conditioning,,,,All sectors
+EPA_GHGI_T_4_101,Aerosols,,,,excluded
+EPA_GHGI_T_4_101,Foams,,,,All sectors
+EPA_GHGI_T_4_101,Solvents,,,,excluded
+EPA_GHGI_T_4_101,Fire Protection,,,,excluded

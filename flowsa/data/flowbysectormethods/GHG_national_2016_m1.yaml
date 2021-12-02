@@ -146,7 +146,7 @@ source_names:
         - "N2O from Product Uses" #N2O
         clean_parameter: {"325120": 'ActivityProducedBy'} # Industrial gases
 
-##Fossil Fuels
+## Fossil Fuels
   "EPA_GHGI_T_3_63": &natgas #CH4 from Natural Gas Systems
     data_format: 'FBA'
     class: Chemicals
@@ -408,6 +408,7 @@ source_names:
 
   "EPA_GHGI_T_3_9": *stationary_combustion # N2O emissions from stationary combustion
 
+## Other sources
   "EPA_GHGI_T_4_46": #CO2 for selected petrochemicals
       data_format: 'FBA'
       class: Chemicals
@@ -484,4 +485,28 @@ source_names:
             - "Transportation Lubricants"
           clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
-
+## Other Emissions
+  "EPA_GHGI_T_4_94": # HFCs and other emissions from electronics manufacture
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Electronics Production"
+          allocation_method: direct
+          allocation_from_scale: national
+  "EPA_GHGI_T_4_80": # PFCs from aluminum production
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Aluminum Production"
+          allocation_method: direct
+          allocation_from_scale: national
