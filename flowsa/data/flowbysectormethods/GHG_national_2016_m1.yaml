@@ -337,7 +337,7 @@ source_names:
         allocation_source_class: "Energy" # fuel consumption
         allocation_source_year: 2014
         allocation_flow:
-          - "Coal"
+            - "Coal"
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: mecs_energy_fba_cleanup # use energy basis
@@ -355,7 +355,7 @@ source_names:
         names:
             - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
-          - "Natural Gas"
+            - "Natural Gas"
     ### Transportation
 
 ## Stationary Combustion
@@ -364,6 +364,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2016
+    clean_fba_df_fxn: allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1: #direct allocation
@@ -386,18 +387,31 @@ source_names:
         <<: *use_allocation
         names:
             - "Fuel Oil Commercial"
+            - "Fuel Oil Industrial"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
       activity_set_4: # Commercial Natural gas
         <<: *use_allocation
         names:
             - "Natural gas Commercial"
+            - "Natural gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      # activity_set_5: # Industrial
-      #   names:
-      #       - "Coal Industrial"
-      #       - "Natural gas Industrial"
-      #       - "Fuel Oil Industrial"
-      #       - "Wood Industrial"
+      activity_set_5:
+        <<: *use_allocation
+        names:
+            - "Coal Industrial
+        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
+      activity_set_6: # Industrial
+        <<: *fuel_MECS
+        names:
+            - "Coal Industrial - Manufacturing"
+        allocation_flow:
+            - "Coal"
+      activity_set_7: # Industrial
+        <<: *fuel_MECS
+        names:
+            - "Natural gas Industrial - Manufacturing"
+        allocation_flow:
+            - "Natural Gas"
 
 
   "EPA_GHGI_T_3_9": *stationary_combustion # N2O emissions from stationary combustion
