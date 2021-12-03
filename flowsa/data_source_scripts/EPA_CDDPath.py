@@ -55,7 +55,7 @@ def epa_cddpath_parse(dataframe_list, args):
     """
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
-    
+
     # hardcode
     df['Class'] = 'Other'  # confirm this
     df['SourceName'] = 'EPA_CDDPath'  # confirm this
@@ -90,21 +90,19 @@ def combine_cdd_path(url, response_load, args):
     df_csv = write_cdd_path_from_csv()
     df_excel = epa_cddpath_call(url, response_load, args)
     df_excel = df_excel[~df_excel['FlowName'].isin(df_csv['FlowName'])]
-    
+
     df = pd.concat([df_csv, df_excel], ignore_index=True)
     return df
 
 
-def assign_wood_to_engineering(df, **kwargs):
+def assign_wood_to_engineering(df):
     """clean_fba_df_fxn that reclassifies Wood from 'Other' to
     'Other - Wood' so that its mapping can be adjusted to only use
     237990/Heavy engineering NAICS according to method in Meyer et al. 2020
     :param df: df, FBA of CDDPath
-    :param kwargs: additional arguments can include 'attr', a
-    dictionary of FBA method yaml parameters
     :return: df, CDDPath FBA with wood reassigned
     """
-    
+
     # Update wood to a new activity for improved mapping
     df.loc[((df.FlowName == 'Wood') &
            (df.ActivityProducedBy == 'Other')),
