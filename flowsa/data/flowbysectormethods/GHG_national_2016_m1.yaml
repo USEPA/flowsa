@@ -299,9 +299,10 @@ source_names:
 ## Major CO2 Sources
   "EPA_GHGI_T_A_17":  # CO2 emissions from stationary combustion and transportation
     data_format: 'FBA'
-    class: Chemicals
+    class:
     geoscale_to_use: national
     year: 2013 #TODO update to A_14 for 2016 when available
+    clean_fba_df_fxn: allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1: #direct allocation
@@ -310,38 +311,51 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-    ### Commercial
-      activity_set_2: # Commercial Coal
+      activity_set_2: # Coal
         <<: *use_allocation
         names:
             - "Commercial Coal Commercial"
+            - "Industrial Other Coal Industrial"
         clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
-      activity_set_3: # Commercial Natural Gas
+      activity_set_3: # Natural Gas
         <<: *use_allocation
         names:
             - "Natural Gas Commercial"
+            - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      activity_set_4: # Commercial Petroleum
+      activity_set_4: # Petroleum
         <<: *use_allocation
         names:
             - "Total Petroleum Commercial"
-        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
-    ### Industrial
-       # activity_set_5: # Industrial Coal - needs further allocation
-       #   <<: *use_allocation
-       #   names:
-       #       - "Industrial Other Coal Industrial"
-       #   clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
-       # activity_set_6: # Industrial Natural Gas - needs further allocation
-       #   <<: *use_allocation
-       #   names:
-       #       - "Natural Gas Industrial"
-       #  clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      activity_set_7: # Industrial Petroleum
-        <<: *use_allocation
-        names:
             - "Total Petroleum Industrial"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
+      activity_set_5: &fuel_MECS # Industrial Coal for Manufacturing
+        names:
+            - "Industrial Other Coal Industrial - Manufacturing"
+        allocation_method: proportional
+        allocation_source: "EIA_MECS_Energy"
+        allocation_source_class: "Energy" # fuel consumption
+        allocation_source_year: 2014
+        allocation_flow:
+          - "Coal"
+        allocation_compartment: None
+        allocation_from_scale: national
+        clean_allocation_fba: mecs_energy_fba_cleanup # use energy basis
+        clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
+        helper_source: "BLS_QCEW"
+        helper_method: proportional-flagged
+        helper_source_class: "Employment"
+        helper_source_year: 2014
+        helper_flow: None
+        helper_from_scale: national
+        clean_helper_fba: clean_bls_qcew_fba
+        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+      activity_set_6: # Industrial Natural Gas for manufacturing
+        <<: *fuel_MECS
+        names:
+            - "Natural Gas Industrial - Manufacturing"
+        allocation_flow:
+          - "Natural Gas"
     ### Transportation
 
 ## Stationary Combustion
@@ -420,7 +434,8 @@ source_names:
             - "Industry Industrial Other Coal"
           allocation_method: direct
           allocation_from_scale: national
-        activity_set_2: &nonfuel_MECS #consumed petroleum products
+        activity_set_2: # consumed petroleum products
+          <<: *fuel_MECS
           names:
             - "Industry Asphalt & Road Oil"
             - "Industry Distillate Fuel Oil"
@@ -435,28 +450,16 @@ source_names:
             - "Industry Special Naphtha"
             - "Industry Still Gas"
             - "Industry Waxes"
-          allocation_method: proportional
           allocation_source: "EIA_MECS_Energy"
-          allocation_source_class: "Other" #nonfuel consumption
-          allocation_source_year: 2014
+          allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
-            - "Other" #consistent with original, but other flows may be better
-          allocation_compartment: None
-          allocation_from_scale: national
-          clean_allocation_fba: mecs_energy_fba_cleanup #use energy basis
-          clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
-          helper_source: "BLS_QCEW"
-          helper_method: proportional-flagged
-          helper_source_class: "Employment"
-          helper_source_year: 2014
-          helper_flow: None
-          helper_from_scale: national
-          clean_helper_fba: clean_bls_qcew_fba
-          clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-        activity_set_3:
-          <<: *nonfuel_MECS #consumed nat gas to chemical plants
+            - "Other" # consistent with original, but other flows may be better
+        activity_set_3: # consumed nat gas to chemical plants
+          <<: *fuel_MECS
           names:
             - "Industry Natural Gas to       Chemical Plants"
+          allocation_source: "EIA_MECS_Energy"
+          allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
             - "Natural Gas"
         activity_set_4:

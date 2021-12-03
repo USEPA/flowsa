@@ -11,7 +11,9 @@ import zipfile
 import yaml
 import numpy as np
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, \
+    load_fba_w_standardized_units, dynamically_import_fxn
+from flowsa.common import convert_fba_unit
 from flowsa.settings import log, datapath
 
 # Read in relevant GHGI tables from yaml
@@ -648,3 +650,46 @@ def ghg_parse(dataframe_list, args):
     else:
         df = pd.DataFrame()
         return df
+
+
+def allocate_industrial_combustion(df, **kwargs):
+    """
+    Split industrial combustion emissions into two buckets to be further allocated.
+
+    clean_fba_df_fxn. Calculate the percentage of fuel consumption captured in
+    EIA MECS relative to EPA GHGI. Create new activities to distinguish those
+    which use EIA MECS as allocation source and those that use alternate source.
+    """
+    # TODO make this year dynamic
+    year = 2014
+    activities_to_split = {'Industrial Other Coal': 'Coal',
+                           'Natural Gas ': 'Natural Gas'} # note extra space
+
+    # Filter MECS for total national energy consumption for manufacturing sectors
+    mecs = load_fba_w_standardized_units(datasource='EIA_MECS_Energy',
+                                         year=year,
+                                         flowclass='Energy')
+    mecs = mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
+                    (mecs['Location'] == '00000')].reset_index(drop=True)
+    mecs = dynamically_import_fxn('EIA_MECS_Energy',
+                                  'mecs_energy_fba_cleanup')(mecs, None)
+
+    ghgi = load_fba_w_standardized_units(datasource=df['SourceName'][0],
+                                         year=df['Year'][0],
+                                         flowclass='Energy')
+    ghgi['Unit'] = 'Trillion Btu'
+    ghgi = convert_fba_unit(ghgi)
+
+    for k, v in activities_to_split.items():
+        # Calculate percent energy contribution from MECS based on v
+        mecs_energy = mecs.loc[mecs['FlowName'] == v, 'FlowAmount'].values[0]
+        ghgi_energy = ghgi.loc[ghgi['ActivityProducedBy'] == k, 'FlowAmount'].values[0]
+        pct = np.minimum(mecs_energy / ghgi_energy, 1)
+
+        df_subset = df.loc[df['ActivityProducedBy'] == k].reset_index(drop=True)
+        df_subset['FlowAmount'] = df_subset['FlowAmount'] * pct
+        df_subset['ActivityProducedBy'] = f"{k} - Manufacturing"
+        df.loc[df['ActivityProducedBy'] == k, 'FlowAmount'] = df['FlowAmount'] * (1-pct)
+        df = pd.concat([df, df_subset], ignore_index=True)
+
+    return df
