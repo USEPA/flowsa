@@ -493,6 +493,30 @@ source_names:
             - "Electronics Production"
           allocation_method: direct
           allocation_from_scale: national
+  "EPA_GHGI_T_4_101": # HFCs and PFCs from ODS Substitutes
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: clean_HFC_fba
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Refrigeration/Air Conditioning - Households"
+          allocation_method: direct
+          allocation_from_scale: national
+        activity_set_2:
+          <<: *use_allocation
+          names:
+            - "Refrigeration/Air Conditioning"
+          clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
+        activity_set_3:
+          <<: *use_allocation
+          names:
+            - "Foams"
+          clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
+                            "326150": 'ActivityProducedBy'} # Urethane and other foam
   "EPA_GHGI_T_4_80": # PFCs from aluminum production
       data_format: 'FBA'
       class: Chemicals

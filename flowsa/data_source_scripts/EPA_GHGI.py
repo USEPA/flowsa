@@ -15,6 +15,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
 from flowsa.common import convert_fba_unit
 from flowsa.settings import log, datapath
+from flowsa.schema import flow_by_activity_fields
 
 # Read in relevant GHGI tables from yaml
 sourcefile = datapath + 'GHGI_tables.yaml'
@@ -692,4 +693,58 @@ def allocate_industrial_combustion(df, **kwargs):
         df.loc[df['ActivityProducedBy'] == k, 'FlowAmount'] = df['FlowAmount'] * (1-pct)
         df = pd.concat([df, df_subset], ignore_index=True)
 
+    return df
+
+
+def split_HFCs_by_type(df):
+    """Speciates HFCs and PFCs for all activities based on T_4_99."""
+    splits = load_fba_w_standardized_units(datasource='EPA_GHGI_T_4_99',
+                                           year=df['Year'][0])
+    splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
+    splits = splits[['FlowName', 'pct']]
+
+    speciated_df = df.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
+                            axis=1, result_type='expand')
+    speciated_df.columns = splits['FlowName']
+    speciated_df = pd.concat([df, speciated_df], axis=1)
+    speciated_df = speciated_df.melt(id_vars=flow_by_activity_fields.keys(),
+                                     var_name='Flow')
+    speciated_df['FlowName'] = speciated_df['Flow']
+    speciated_df['FlowAmount'] = speciated_df['value']
+    speciated_df.drop(columns=['Flow', 'value'], inplace=True)
+
+    return df
+
+
+def subtract_HFC_transport_emissions(df):
+    """Remove the portion of transportation emissions which are sourced elsewhere."""
+    transport = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_103',
+                                              year=df['Year'][0])
+    value = 20
+    df.loc[df['ActivityProducedBy'] == 'Refrigeration/Air Conditioning',
+           'FlowAmount'] = df['FlowAmount'] - value
+
+    return df
+
+
+def allocate_HFC_to_residential(df):
+    """Split HFC emissions into two buckets to be further allocated.
+
+    Calculate the portion of Refrigerants applied to households based on production of
+    household: 335222
+    industry: 333415
+
+
+    """
+
+    return df
+
+def clean_HFC_fba(df, **kwargs):
+    """
+    clean_fba_df_fxn.
+    """
+
+    df = subtract_HFC_transport_emissions(df)
+    df = allocate_HFC_to_residential(df)
+    df = split_HFCs_by_type(df)
     return df

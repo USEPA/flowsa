@@ -136,7 +136,7 @@ Tables:
         "desc": >
             "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
             "Electronics Manufacture [1] (MMT CO2 Eq.)"
-      "4-99":  # Not currently used
+      "4-99":  # Used to speciate HFC emissions in 4-101
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
