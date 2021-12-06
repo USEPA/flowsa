@@ -12,7 +12,6 @@ import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
-import joblib
 from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
@@ -44,8 +43,6 @@ sector_level_key = {"NAICS_2": 2,
 # because unable to run calculation functions with text string
 WITHDRAWN_KEYWORD = np.nan
 
-memory = joblib.Memory(f'{datapath}.cache')
-
 
 def load_api_key(api_source):
     """
@@ -68,7 +65,6 @@ def load_api_key(api_source):
     return key
 
 
-@memory.cache()
 def make_url_request(url, set_cookies=False):
     """
     Makes request using requests library if http, or requests_ftp if ftp
