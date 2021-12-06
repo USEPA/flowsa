@@ -128,6 +128,12 @@ Tables:
         "compartment": "air"
         "activity": "CO2e"
         "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
+      "4-84":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "activity": "CO2e"
+        "desc": "Table 4-84: SF6, HFC-134a, FK 5-1-12 and CO2 Emissions from Magnesium Production and Processing (MMT CO2 Eq.)"
       "4-94":
         "class": "Chemicals"
         "unit": "MMT CO2e"
