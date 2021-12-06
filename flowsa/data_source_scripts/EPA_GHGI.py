@@ -612,14 +612,16 @@ def ghg_parse(dataframe_list, args):
             flow_name_list = ["CO2", "CH4", "N2O", "NF3", "HFCs", "PFCs", "SF6", "NF3", "CH4 a", "N2O b", "CO", "NOx"]
             for index, row in df.iterrows():
                 apb_value = row["ActivityProducedBy"]
-                if "CH4" in apb_value:
+                if "CH4" in apb_value and "LULUCF" not in apb_value:
                     apb_value = "CH4"
-                elif "N2O" in apb_value:
+                elif "N2O" in apb_value and apb_value != "N2O from Product Uses"\
+                        and "LULUCF" not in apb_value:
                     apb_value = "N2O"
                 elif "CO2" in apb_value:
                     apb_value = "CO2"
 
-                if apb_value in flow_name_list:
+                if apb_value in flow_name_list and apb_value != "N2O from Product Uses"\
+                        and "LULUCF" not in apb_value:
                     apbe_value = apb_value
                     df.loc[index, 'FlowName'] = apbe_value
                     df.loc[index, 'ActivityProducedBy'] = "All activities"
