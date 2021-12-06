@@ -10,7 +10,8 @@ Grabs FIPS codes from static URLs and creates crosswalk over the years.
 
 import io
 import pandas as pd
-from flowsa.common import clean_str_and_capitalize, make_url_request
+from esupy.remote import make_url_request
+from flowsa.common import clean_str_and_capitalize
 from flowsa.settings import datapath
 
 

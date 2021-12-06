@@ -15,7 +15,7 @@ SI obtained 08/26/2020
 
 import io
 import pandas as pd
-from flowsa.common import make_url_request
+from esupy.remote import make_url_request
 from flowsa.settings import externaldatapath
 
 # 2012--2018 fisheries data at state level

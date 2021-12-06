@@ -65,31 +65,6 @@ def load_api_key(api_source):
     return key
 
 
-def make_url_request(url, set_cookies=False):
-    """
-    Makes request using requests library if http, or requests_ftp if ftp
-    :param url: URL to query
-    :param set_cookies: bool, default set to False
-        set to True if cookies required
-    :return: response Object
-    """
-    session = (requests_ftp.ftp.FTPSession if urlsplit(url).scheme == 'ftp'
-               else requests.Session)
-    with session() as s:
-        try:
-            # The session object s preserves cookies, so the second s.get()
-            # will have the cookies that came from the first s.get()
-            if set_cookies:
-                s.get(url)
-            response = s.get(url)
-            response.raise_for_status()
-        except requests.exceptions.ConnectionError:
-            log.error("URL Connection Error for %s", url)
-        except requests.exceptions.HTTPError:
-            log.error('Error in URL request!')
-    return response
-
-
 def load_crosswalk(crosswalk_name):
     """
     Load NAICS crosswalk between the years 2007, 2012, 2017

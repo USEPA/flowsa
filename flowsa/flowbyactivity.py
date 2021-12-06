@@ -11,7 +11,8 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
-from flowsa.common import log, make_url_request, load_api_key, \
+from esupy.remote import make_url_request
+from flowsa.common import log, load_api_key, \
     load_yaml_dict, rename_log_file
 from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
