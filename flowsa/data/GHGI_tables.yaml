@@ -199,14 +199,86 @@ Tables:
 
 Annex:
   "Annex":
-      "A-17": # Separate emissions table for each year
+      "A-10": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "TBtu"
+        "desc": >
+          "2019 Energy Consumption Data by Fuel Type (TBtu)"
+          "and Adjusted Energy Consumption Data"
+      "A-11": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
         "compartment": "air"
         "activity": "CO2"
         "desc": >
-            "2012 Energy Consumption Data and CO2 Emissions from "
-            "Fossil Fuel Combustion by Fuel Type"
+          "2019 Energy Consumption Data and CO2 Emissions from
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-12": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2018 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-13": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2017 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-14": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2016 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-15": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2015 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-16": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2014 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-18": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2012 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-19": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2011 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+      "A-20": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2010 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
       "A-76": # Not a primary emissions datasource
         "class": "Chemicals"
         "unit": "kt"
@@ -219,9 +291,29 @@ Annex:
         "compartment": "air"
         "activity": "CO"
         "desc": "CO Emissions from Stationary Combustion (kt)"
+      "A-79": # Not a primary emissions datasource
+        "class": "Chemicals"
+        "unit": "mgal"
+        "compartment": "air"
+        "activity": "Fuel Consumption"
+        "desc": "Fuel Consumption by Fuel and Vehicle Type (million gallons unless otherwise specified)"
       "A-101": # Not a primary emissions datasource
         "class": "Chemicals"
         "unit": "kt"
         "compartment": "air"
         "activity": "NMVOC"
         "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
+      "A-103": # Not a primary emissions datasource
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": "HFC Emissions from Transportation Sources (MMT CO2 Eq.)"
+      "A-17": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2012 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"

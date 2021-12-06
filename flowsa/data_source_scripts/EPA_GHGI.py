@@ -27,10 +27,19 @@ A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)
 A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
                    'Emissions (MMT CO2 Eq.) from Energy Use']
 
-SPECIAL_FORMAT = ["3-10", "3-22", "4-46", "4-50", "4-80", "A-17", "5-29"]
+A_10_TBTU_1_HEADER = ["Total Consumption (TBtu) a", "Total Consumption (TBtu)"]
+A_10_TBTU_2_HEADER = ["Adjustments (TBtu) b", "Adjustments (TBtu)"]
+A_10_TBTU_3_HEADER = ["Total Adjusted Consumption (TBtu)"]
+
+A_TBTU_HEADER = ["Adjusted Consumption (TBtu) a", "Adjusted Consumption (TBtu)"]
+A_CO2_HEADER = ["Emissions b (MMT CO2 Eq.) from Energy Use", "Emissions (MMT CO2 Eq.) from Energy Use"]
+
+SPECIAL_FORMAT = ["3-10", "3-22", "4-46", "4-50", "4-80", "A-10", "A-11", "A-12", "A-13", "A-14", "A-15", "A-16",
+                  "A-17", "A-18", "A-19", "A-20", "A-93", "A-94", "A-118", "5-29"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
 Activity_Format_A = ["T_5_30", "T_A_17", "T_ES_5"]
 Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
+A_Table_List = ["A-11", "A-12", "A-13", "A-14", "A-15", "A-16", "A-17", "A-18", "A-19", "A-20"]
 
 DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
@@ -134,6 +143,37 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
     units = series.apply(lambda x: cell_get_units(x, default_units))
     return {'names': names, 'units': units}
 
+def annex_yearly_tables(data):
+    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                     header=[0, 1], thousands=",")
+    header_name = ""
+    newcols = []  # empty list to have new column names
+    for i in range(len(df.columns)):
+        fuel_type = str(df.iloc[0, i])
+        fuel_type = fuel_type.replace('Res.', 'Residential')
+        fuel_type = fuel_type.replace('Comm.', 'Commercial')
+        fuel_type = fuel_type.replace('Ind.', 'Industrial Other')
+        fuel_type = fuel_type.replace('Trans.', 'Transportation')
+        fuel_type = fuel_type.replace('Elec.', 'Electricity Power')
+        fuel_type = fuel_type.replace('Terr.', 'U.S. Territory')
+        fuel_type = fuel_type.strip()
+
+        col_name = df.columns[i][1]
+        if "Unnamed" in col_name:
+            column_name = header_name
+        elif col_name == A_TBTU_HEADER[0]:
+            column_name = A_TBTU_HEADER[1]
+            header_name = A_TBTU_HEADER[1]
+        elif col_name == A_CO2_HEADER[0]:
+            column_name = A_CO2_HEADER[1]
+            header_name = A_CO2_HEADER[1]
+
+        newcols.append(column_name + ' - ' + fuel_type)  # make and add new name to list
+    df.columns = newcols  # assign column names
+    df = df.iloc[1:, :]  # exclude first row
+    df = df.reset_index(drop=True)
+    return df
+
 
 def ghg_call(url, response_load, args):
     """
@@ -227,6 +267,91 @@ def ghg_call(url, response_load, args):
                             df = df.drop(nan_col, 1)
                             df.columns = [nan_col if x == fill_col else x for x in df.columns]
                             df['Year'] = year
+                        else:
+                            df = None
+                    elif table == 'A-10':
+                        # A-17  is similar to T 3-23, the entire table is 2012 and
+                        # headings are completely different.
+                        if str(year) == '2019':
+                            df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                             header=[0, 1], thousands=",")
+                            df = df.drop([0])
+                            new_headers = []
+                            header_grouping = ''
+                            header_name = ""
+                            newcols = []  # empty list to have new column names
+                            for i in range(len(df.columns)):
+                                fuel_type = str(df.iloc[0, i])
+                                fuel_type = fuel_type.replace('Res.', 'Residential')
+                                fuel_type = fuel_type.replace('Comm.', 'Commercial')
+                                fuel_type = fuel_type.replace('Ind.', 'Industrial Other')
+                                fuel_type = fuel_type.replace('Trans.', 'Transportation')
+                                fuel_type = fuel_type.replace('Elec.', 'Electricity Power')
+                                fuel_type = fuel_type.replace('Terr.', 'U.S. Territory')
+                                fuel_type = fuel_type.strip()
+
+                                col_name = df.columns[i][1]
+                                if "Unnamed" in col_name:
+                                    column_name = header_name
+                                elif col_name == A_10_TBTU_1_HEADER[0]:
+                                    column_name = A_10_TBTU_1_HEADER[1]
+                                    header_name = A_10_TBTU_1_HEADER[1]
+                                elif col_name == A_10_TBTU_2_HEADER[0]:
+                                    column_name = A_10_TBTU_2_HEADER[1]
+                                    header_name = A_10_TBTU_2_HEADER[1]
+                                elif col_name == A_10_TBTU_3_HEADER[0]:
+                                    header_name = A_10_TBTU_3_HEADER[0]
+
+                                newcols.append(column_name + ' - ' + fuel_type)  # make and add new name to list
+                            df.columns = newcols  # assign column names
+                            df = df.iloc[1:, :]  # exclude first row
+                            df['Year'] = year
+                            df = df.reset_index(drop=True)
+                    elif table == 'A-11':
+                        if str(year) == '2019':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-12':
+                        if str(year) == '2018':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-13':
+                        if str(year) == '2017':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-14':
+                        if str(year) == '2016':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-15':
+                        if str(year) == '2015':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-16':
+                        if str(year) == '2014':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-18':
+                        if str(year) == '2012':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-19':
+                        if str(year) == '2011':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
+                    elif table == 'A-20':
+                        if str(year) == '2010':
+                            df = annex_yearly_tables(data)
+                        else:
+                            df = None
                     else:
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
@@ -328,6 +453,8 @@ def ghg_parse(dataframe_list, args):
 
         df["FlowType"] = "ELEMENTARY_FLOW"
         df["Location"] = "00000"
+        annex_tables = ["EPA_GHGI_T_A_10", "EPA_GHGI_T_A_11", "EPA_GHGI_T_A_12", "EPA_GHGI_T_A_13", "EPA_GHGI_T_A_14",
+                        "EPA_GHGI_T_A_15", "EPA_GHGI_T_A_16", "EPA_GHGI_T_A_18", "EPA_GHGI_T_A_19", "EPA_GHGI_T_A_20"]
 
         id_vars = ["SourceName", "ActivityConsumedBy", "ActivityProducedBy", "FlowType", "Location"]
         if special_format and "Year" in df.columns:
@@ -343,11 +470,46 @@ def ghg_parse(dataframe_list, args):
                 df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
             else:
                 df = df.melt(id_vars=id_vars, var_name="Units", value_name="FlowAmount")
+        elif source_name in annex_tables:
+            if source_name == "EPA_GHGI_T_A_10":
+                df = df.drop(columns=['Year'])
+            df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
+            df["Year"] = args["year"]
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
             if source_name in switch_year_apb:
                 df = df.rename(columns={'ActivityProducedBy': 'Year', 'Year': 'ActivityProducedBy'})
 
+        if source_name in annex_tables:
+            for index, row in df.iterrows():
+                name = df.loc[index, 'FlowName']
+                if source_name == "EPA_GHGI_T_A_17":
+                    if "Other" in name:
+                        name_split = name.split(" Other")
+                        df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'] + " - " + name_split[
+                            0]
+                    elif "Emissions" in name:
+                        name_split = name.split(" Emissions")
+                        df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'] + " - " + name_split[
+                            0]
+                    elif "Adjusted" in name:
+                        name_split = name.split(" Adjusted")
+                        df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'] + " - " + name_split[
+                            0]
+                elif source_name in annex_tables:
+                    name_split = name.split(" (")
+                    name_split_1 = name_split[1].split(") ")
+
+                    name_split_1[1] = name_split_1[1].replace('- nan', '')
+
+                    df.loc[index, 'ActivityConsumedBy'] = str(df.loc[index, 'ActivityConsumedBy']) + " - " + str(
+                        name_split[0]) + " " + str(name_split_1[1])
+                    if name_split_1[0] == "MMT CO2 Eq.":
+                        df.loc[index, 'FlowName'] = "CO2"
+                        df.loc[index, 'Unit'] = "MMT CO2e"
+                    else:
+                        df.loc[index, 'FlowName'] = "Energy Consumption"
+                        df.loc[index, 'Unit'] = "TBtu"
 
         # Dropping all rows with value "+"
         try:
@@ -366,12 +528,14 @@ def ghg_parse(dataframe_list, args):
         df["FlowAmount"].replace("NO", np.nan, inplace=True)
         # Table A-118 has some IE values, dropping these.
         df["FlowAmount"].replace("IE", np.nan, inplace=True)
+        df["FlowAmount"].replace(r'NO ', np.nan, inplace=True)
 
         # Drop any nan rows
         df.dropna(subset=['FlowAmount'], inplace=True)
 
         df["Description"] = 'None'
-        df["Unit"] = "Other"
+        if source_name not in annex_tables:
+            df["Unit"] = "Other"
 
         # Update classes:
         meta = get_table_meta(source_name)
@@ -584,6 +748,14 @@ def ghg_parse(dataframe_list, args):
         elif source_name in double_activity:
             for index, row in df.iterrows():
                 df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
+        elif source_name in annex_tables:
+            for index, row in df.iterrows():
+                if df.loc[index, 'ActivityProducedBy'] == "None":
+                    df.loc[index, 'Unit'] = "TBtu"
+                    df.loc[index, 'FlowName'] = "Energy Consumption"
+                else:
+                    df.loc[index, 'Unit'] = "MMT CO2e"
+                    df.loc[index, 'FlowName'] = "CO2"
         else:
             if source_name in "EPA_GHGI_T_4_80":
                 for index, row in df.iterrows():
