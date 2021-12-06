@@ -12,7 +12,6 @@ import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
-import joblib
 from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
@@ -44,8 +43,6 @@ sector_level_key = {"NAICS_2": 2,
 # because unable to run calculation functions with text string
 WITHDRAWN_KEYWORD = np.nan
 
-memory = joblib.Memory(f'{datapath}.cache')
-
 
 def load_api_key(api_source):
     """
@@ -66,32 +63,6 @@ def load_api_key(api_source):
         log.error(f"Key file {api_source} not found. See github wiki for help "
                   "https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys")
     return key
-
-
-@memory.cache()
-def make_url_request(url, set_cookies=False):
-    """
-    Makes request using requests library if http, or requests_ftp if ftp
-    :param url: URL to query
-    :param set_cookies: bool, default set to False
-        set to True if cookies required
-    :return: response Object
-    """
-    session = (requests_ftp.ftp.FTPSession if urlsplit(url).scheme == 'ftp'
-               else requests.Session)
-    with session() as s:
-        try:
-            # The session object s preserves cookies, so the second s.get()
-            # will have the cookies that came from the first s.get()
-            if set_cookies:
-                s.get(url)
-            response = s.get(url)
-            response.raise_for_status()
-        except requests.exceptions.ConnectionError:
-            log.error("URL Connection Error for %s", url)
-        except requests.exceptions.HTTPError:
-            log.error('Error in URL request!')
-    return response
 
 
 def load_crosswalk(crosswalk_name):

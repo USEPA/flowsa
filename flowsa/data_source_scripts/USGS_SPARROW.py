@@ -12,7 +12,7 @@ Eliminated all columns with fraction in the title.
 import io
 import pandas as pd
 import xml.etree.ElementTree as ET
-from flowsa.common import make_url_request
+from esupy.remote import make_url_request
 
 
 def url_file(url):
