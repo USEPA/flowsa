@@ -535,7 +535,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: clean_HFC_fba
+      clean_fba_df_fxn: clean_HFC_fba # removes HFCs from transportation
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
@@ -554,6 +554,25 @@ source_names:
             - "Foams"
           clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
                             "326150": 'ActivityProducedBy'} # Urethane and other foam
+  "EPA_GHGI_T_A_103": # HFCs from Transportation
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: split_HFCs_by_type
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Heavy-Duty Vehicles"
+            - "Light-Duty Trucks"
+            - "Medium- and Heavy-Duty Trucks"
+            - "Passenger Cars"
+            - "Rail"
+            - "School and Tour Buses"
+            - "Ships and Boats"
+          allocation_method: direct
+          allocation_from_scale: national
   "EPA_GHGI_T_4_80": # PFCs from aluminum production
       data_format: 'FBA'
       class: Chemicals

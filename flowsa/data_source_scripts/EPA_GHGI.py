@@ -15,7 +15,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
 from flowsa.common import convert_fba_unit
 from flowsa.settings import log, datapath
-from flowsa.schema import flow_by_activity_fields
+from flowsa.schema import flow_by_activity_mapped_fields
 
 # Read in relevant GHGI tables from yaml
 sourcefile = datapath + 'GHGI_tables.yaml'
@@ -903,13 +903,13 @@ def split_HFCs_by_type(df):
                             axis=1, result_type='expand')
     speciated_df.columns = splits['FlowName']
     speciated_df = pd.concat([df, speciated_df], axis=1)
-    speciated_df = speciated_df.melt(id_vars=flow_by_activity_fields.keys(),
+    speciated_df = speciated_df.melt(id_vars=flow_by_activity_mapped_fields.keys(),
                                      var_name='Flow')
     speciated_df['FlowName'] = speciated_df['Flow']
     speciated_df['FlowAmount'] = speciated_df['value']
     speciated_df.drop(columns=['Flow', 'value'], inplace=True)
 
-    return df
+    return speciated_df
 
 
 def subtract_HFC_transport_emissions(df):
