@@ -598,7 +598,8 @@ def ghg_parse(dataframe_list, args):
 
         df = assign_fips_location_system(df, str(args['year']))
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
-        multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_4_46", "EPA_GHGI_T_5_7", "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]
+        multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_4_46", "EPA_GHGI_T_5_7",
+                            "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]
         source_No_activity = ["EPA_GHGI_T_3_22"]
         source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
                              "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
@@ -765,6 +766,10 @@ def ghg_parse(dataframe_list, args):
                 for index, row in df.iterrows():
                     df.loc[index, 'FlowName'] = df.loc[index, 'Units']
                     df.loc[index, 'ActivityProducedBy'] = "Aluminum Production"
+            elif source_name in "EPA_GHGI_T_4_84":
+                for index, row in df.iterrows():
+                    df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
+                    df.loc[index, 'ActivityProducedBy'] = "Magnesium Production and Processing"
             elif source_name in "EPA_GHGI_T_4_94":
                 for index, row in df.iterrows():
                     df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
