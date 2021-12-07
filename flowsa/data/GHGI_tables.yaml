@@ -175,7 +175,7 @@ Tables:
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
-        "activity": "CO2e"
+        "activity": "N2O"
         "desc": >
             "Table 5-18:  Direct N2O Emissions from Agricultural "
             "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
@@ -183,7 +183,7 @@ Tables:
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
-        "activity": "CO2e"
+        "activity": "N2O"
         "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
 
       "5-29":
@@ -309,7 +309,7 @@ Annex:
         "compartment": "air"
         "activity": "NMVOC"
         "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
-      "A-103": # Not a primary emissions datasource
+      "A-103":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
