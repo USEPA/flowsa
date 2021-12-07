@@ -937,6 +937,7 @@ def allocate_HFC_to_residential(df):
 
     return df
 
+
 def clean_HFC_fba(df):
     """
     clean_fba_before_mapping_df_fxn.
@@ -946,3 +947,8 @@ def clean_HFC_fba(df):
     df = allocate_HFC_to_residential(df)
     df = split_HFCs_by_type(df)
     return df
+
+
+def remove_HFC_kt(df):
+    """clean_fba_before_mapping_df_fxn."""
+    return df.loc[df['Unit'] != 'kt']

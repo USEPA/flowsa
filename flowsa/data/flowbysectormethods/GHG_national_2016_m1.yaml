@@ -506,11 +506,12 @@ source_names:
           clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
 ## Other Emissions
-  "EPA_GHGI_T_4_50": # HFCs from HCFC-22 production #TODO limit to just the kt unit
+  "EPA_GHGI_T_4_50": # HFCs from HCFC-22 production
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
       year: 2016
+      clean_fba_before_mapping_df_fxn: remove_HFC_kt
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
