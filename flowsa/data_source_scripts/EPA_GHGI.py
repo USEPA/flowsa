@@ -389,7 +389,7 @@ def get_table_meta(source_name):
         td = table_dict['Tables']
     for chapter in td.keys():
         for k, v in td[chapter].items():
-            if k.replace("-","_") in source_name:
+            if source_name.endswith(k.replace("-", "_")):
                 return v
 
 def is_consumption(source_name):
@@ -602,7 +602,7 @@ def ghg_parse(dataframe_list, args):
         source_No_activity = ["EPA_GHGI_T_3_22"]
         source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
                              "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
-                             "EPA_GHGI_T_A_77", "EPA_GHGI_T_3_10"]
+                             "EPA_GHGI_T_A_77", "EPA_GHGI_T_3_10", "EPA_GHGI_T_A_103"]
         source_activity_2 =  ["EPA_GHGI_T_3_38", "EPA_GHGI_T_3_63"]
         double_activity = ["EPA_GHGI_T_4_48"]
         note_par = ["EPA_GHGI_T_4_14", "EPA_GHGI_T_4_99"]
@@ -677,15 +677,17 @@ def ghg_parse(dataframe_list, args):
         elif source_name in source_activity_1:
             bool_apb = False
             apbe_value = ""
-            flow_name_list = ["Electric Power", "Industrial", "Commercial", "Residential", "U.S. Territories",
-                              "U.S. Territories a", "Transportation",
-                              "Fuel Type/Vehicle Type a", "Diesel On-Road b", "Alternative Fuel On-Road", "Non-Road c",
-                              "Gasoline On-Road b", "Non-Road", "Exploration a", "Production (Total)",
-                              "Crude Oil Transportation", "Refining", "Exploration b", "Cropland", "Grassland"]
+            activity_subtotal = ["Electric Power", "Industrial", "Commercial", "Residential", "U.S. Territories",
+                                 "U.S. Territories a", "Transportation",
+                                 "Fuel Type/Vehicle Type a", "Diesel On-Road b",
+                                 "Alternative Fuel On-Road", "Non-Road c",
+                                 "Gasoline On-Road b", "Non-Road", "Exploration a",
+                                 "Production (Total)", "Crude Oil Transportation", "Refining",
+                                 "Exploration b", "Cropland", "Grassland"]
             for index, row in df.iterrows():
                 apb_value = row["ActivityProducedBy"]
                 start_activity = row["FlowName"]
-                if apb_value in flow_name_list:
+                if apb_value in activity_subtotal:
                     if "U.S. Territories" in apb_value:
                         df.loc[index, 'Location'] = "99000"
                     elif "U.S. Territories" in apbe_value:
