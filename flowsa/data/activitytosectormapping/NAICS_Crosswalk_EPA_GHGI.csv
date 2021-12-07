@@ -417,22 +417,111 @@ EPA_GHGI_T_5_18,All activities Grassland,NAICS_2012_Code,112,,112
 EPA_GHGI_T_5_19,Volatilization & Atm. Deposition Cropland,NAICS_2012_Code,111,,111
 EPA_GHGI_T_5_19,Surface Leaching & Run-Off Cropland,NAICS_2012_Code,111,,111
 EPA_GHGI_T_5_19,All activities Grassland,NAICS_2012_Code,112,,112
-EPA_GHGI_T_A_14,Natural Gas Transportation,,,,"48, 491, 492, S00500, S00600, GSLGO, S00201, S00203, F01000"
-EPA_GHGI_T_A_14,Aviation Gasoline Transportation,,,,
-EPA_GHGI_T_A_14,Distillate Fuel Oil Transportation,,,,
-EPA_GHGI_T_A_14,Jet Fuel Transportation,,,,
-EPA_GHGI_T_A_14,LPG Transportation,,,,
-EPA_GHGI_T_A_14,Motor Gasoline Transportation,,,,
-EPA_GHGI_T_A_14,Residual Fuel Transportation,,,,
-EPA_GHGI_T_A_14,Industrial Other Coal Industrial,,,,"11, 21, 2212, 23"
-EPA_GHGI_T_A_14,Industrial Other Coal Industrial - Manufacturing,,,,"31, 32, 33"
-EPA_GHGI_T_A_14,Natural Gas Industrial,,,,"11, 21, 2212, 23"
-EPA_GHGI_T_A_14,Natural Gas Industrial - Manufacturing,,,,"31, 32, 33"
-EPA_GHGI_T_A_14,Total Petroleum Industrial,,,,"11, 21, 2212, 23, 31, 32, 33"
-EPA_GHGI_T_A_14,Commercial Coal Commercial,,,,"2213, 42, 44, 45, 493, 5, 6, 7, 8, S00102, GSLGE, GSLGH"
-EPA_GHGI_T_A_14,Natural Gas Commercial,,,,
-EPA_GHGI_T_A_14,Total Petroleum Commercial,,,,
-EPA_GHGI_T_A_14,Total (All Fuels) Residential,,,,F0100
+EPA_GHGI_T_A_14,Natural Gas Transportation,NAICS_2012_Code,48,,"48, 491, 492, S00500, S00600, GSLGO, S00201, S00203, F01000"
+EPA_GHGI_T_A_14,Natural Gas Transportation,NAICS_2012_Code,491,,
+EPA_GHGI_T_A_14,Natural Gas Transportation,NAICS_2012_Code,492,,
+EPA_GHGI_T_A_14,Natural Gas Transportation,NAICS_2012_Code,92,,
+EPA_GHGI_T_A_14,Natural Gas Transportation,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_A_14,Aviation Gasoline Transportation,NAICS_2012_Code,48,,
+EPA_GHGI_T_A_14,Aviation Gasoline Transportation,NAICS_2012_Code,491,,
+EPA_GHGI_T_A_14,Aviation Gasoline Transportation,NAICS_2012_Code,492,,
+EPA_GHGI_T_A_14,Aviation Gasoline Transportation,NAICS_2012_Code,92,,
+EPA_GHGI_T_A_14,Aviation Gasoline Transportation,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_A_14,Distillate Fuel Oil Transportation,NAICS_2012_Code,48,,
+EPA_GHGI_T_A_14,Distillate Fuel Oil Transportation,NAICS_2012_Code,491,,
+EPA_GHGI_T_A_14,Distillate Fuel Oil Transportation,NAICS_2012_Code,492,,
+EPA_GHGI_T_A_14,Distillate Fuel Oil Transportation,NAICS_2012_Code,92,,
+EPA_GHGI_T_A_14,Distillate Fuel Oil Transportation,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_A_14,Jet Fuel Transportation,NAICS_2012_Code,48,,
+EPA_GHGI_T_A_14,Jet Fuel Transportation,NAICS_2012_Code,491,,
+EPA_GHGI_T_A_14,Jet Fuel Transportation,NAICS_2012_Code,492,,
+EPA_GHGI_T_A_14,Jet Fuel Transportation,NAICS_2012_Code,92,,
+EPA_GHGI_T_A_14,Jet Fuel Transportation,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_A_14,LPG Transportation,NAICS_2012_Code,48,,
+EPA_GHGI_T_A_14,LPG Transportation,NAICS_2012_Code,491,,
+EPA_GHGI_T_A_14,LPG Transportation,NAICS_2012_Code,492,,
+EPA_GHGI_T_A_14,LPG Transportation,NAICS_2012_Code,92,,
+EPA_GHGI_T_A_14,LPG Transportation,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_A_14,Motor Gasoline Transportation,NAICS_2012_Code,48,,
+EPA_GHGI_T_A_14,Motor Gasoline Transportation,NAICS_2012_Code,491,,
+EPA_GHGI_T_A_14,Motor Gasoline Transportation,NAICS_2012_Code,492,,
+EPA_GHGI_T_A_14,Motor Gasoline Transportation,NAICS_2012_Code,92,,
+EPA_GHGI_T_A_14,Motor Gasoline Transportation,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_A_14,Residual Fuel Transportation,NAICS_2012_Code,48,,
+EPA_GHGI_T_A_14,Residual Fuel Transportation,NAICS_2012_Code,491,,
+EPA_GHGI_T_A_14,Residual Fuel Transportation,NAICS_2012_Code,492,,
+EPA_GHGI_T_A_14,Residual Fuel Transportation,NAICS_2012_Code,92,,
+EPA_GHGI_T_A_14,Residual Fuel Transportation,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial,NAICS_2012_Code,11,,"11, 21, 2212, 23"
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial,NAICS_2012_Code,21,,
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial,NAICS_2012_Code,2212,,
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial,NAICS_2012_Code,23,,
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial - Manufacturing,NAICS_2012_Code,31,,"31, 32, 33"
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial - Manufacturing,NAICS_2012_Code,32,,
+EPA_GHGI_T_A_14,Industrial Other Coal Industrial - Manufacturing,NAICS_2012_Code,33,,
+EPA_GHGI_T_A_14,Natural Gas Industrial,NAICS_2012_Code,11,,"11, 21, 2212, 23"
+EPA_GHGI_T_A_14,Natural Gas Industrial,NAICS_2012_Code,21,,
+EPA_GHGI_T_A_14,Natural Gas Industrial,NAICS_2012_Code,2212,,
+EPA_GHGI_T_A_14,Natural Gas Industrial,NAICS_2012_Code,23,,
+EPA_GHGI_T_A_14,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,31,,"31, 32, 33"
+EPA_GHGI_T_A_14,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,32,,
+EPA_GHGI_T_A_14,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,33,,
+EPA_GHGI_T_A_14,Total Petroleum Industrial,NAICS_2012_Code,11,,"11, 21, 2212, 23, 31, 32, 33"
+EPA_GHGI_T_A_14,Total Petroleum Industrial,NAICS_2012_Code,21,,
+EPA_GHGI_T_A_14,Total Petroleum Industrial,NAICS_2012_Code,2212,,
+EPA_GHGI_T_A_14,Total Petroleum Industrial,NAICS_2012_Code,23,,
+EPA_GHGI_T_A_14,Total Petroleum Industrial,NAICS_2012_Code,31,,
+EPA_GHGI_T_A_14,Total Petroleum Industrial,NAICS_2012_Code,32,,
+EPA_GHGI_T_A_14,Total Petroleum Industrial,NAICS_2012_Code,33,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,2213,,"2213, 42, 44, 45, 493, 5, 6, 7, 8, S00102, GSLGE, GSLGH"
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,42,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,44,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,45,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,493,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,51,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,52,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,53,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,54,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,55,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,56,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,61,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,62,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,71,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,72,,
+EPA_GHGI_T_A_14,Commercial Coal Commercial,NAICS_2012_Code,81,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,2213,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,42,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,44,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,45,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,493,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,51,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,52,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,53,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,54,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,55,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,56,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,61,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,62,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,71,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,72,,
+EPA_GHGI_T_A_14,Natural Gas Commercial,NAICS_2012_Code,81,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,2213,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,42,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,44,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,45,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,493,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,51,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,52,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,53,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,54,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,55,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,56,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,61,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,62,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,71,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,72,,
+EPA_GHGI_T_A_14,Total Petroleum Commercial,NAICS_2012_Code,81,,
+EPA_GHGI_T_A_14,Total (All Fuels) Residential,NAICS_2012_Code,F01000,,F0100
 EPA_GHGI_T_4_50,HCFC-22 Production,NAICS_2012_Code,325120,,325120
 EPA_GHGI_T_4_94,Electronics Production,NAICS_2012_Code,334413,,334413
 EPA_GHGI_T_4_80,Aluminum Production,NAICS_2012_Code,331313,,331313
@@ -491,3 +580,33 @@ EPA_GHGI_T_4_101,Foams,NAICS_2012_Code,92,,
 EPA_GHGI_T_4_101,Foams,NAICS_2012_Code,F01000,,
 EPA_GHGI_T_4_101,Solvents,,,,excluded
 EPA_GHGI_T_4_101,Fire Protection,,,,excluded
+EPA_GHGI_T_A_79,Gasoline Passenger Cars,,,,F01000
+EPA_GHGI_T_A_79,Gasoline Passenger Cars,,,,S00600
+EPA_GHGI_T_A_79,Gasoline Passenger Cars,,,,491000
+EPA_GHGI_T_A_79,Gasoline Passenger Cars,,,,GSLGO
+EPA_GHGI_T_A_79,Gasoline Light-Duty Trucks,,,,F01000
+EPA_GHGI_T_A_79,Gasoline Light-Duty Trucks,,,,492000
+EPA_GHGI_T_A_79,Gasoline Motorcycles,,,,F01000
+EPA_GHGI_T_A_79,Gasoline Buses,,,,485000
+EPA_GHGI_T_A_79,Gasoline Medium- and Heavy-Duty Trucks,,,,484000
+EPA_GHGI_T_A_79,Diesel Passenger Cars,,,,F01000
+EPA_GHGI_T_A_79,Diesel Light-Duty Trucks,,,,F01000
+EPA_GHGI_T_A_79,Diesel Buses,,,,485000
+EPA_GHGI_T_A_79,Diesel Buses,,,,48A000
+EPA_GHGI_T_A_79,Diesel Buses,,,,S00201
+EPA_GHGI_T_A_79,Diesel Medium- and Heavy-Duty Trucks,,,,484000
+EPA_GHGI_T_A_79,Diesel Medium- and Heavy-Duty Trucks,,,,S00203
+EPA_GHGI_T_A_79,LPG Passenger Cars,,,,F01000
+EPA_GHGI_T_A_79,LPG Buses,,,,485000
+EPA_GHGI_T_A_79,LPG Light-Duty Trucks,,,,F01000
+EPA_GHGI_T_A_79,LPG Medium- and Heavy-Duty Trucks,,,,484000
+EPA_GHGI_T_A_79,Gasoline Recreational Boats,,,,F01000
+EPA_GHGI_T_A_79,Diesel Recreational Boats,,,,F01000
+EPA_GHGI_T_A_79,Diesel Ships and Other Boats,,,,483000
+EPA_GHGI_T_A_79,Diesel Rail,,,,482000
+EPA_GHGI_T_A_79,Jet Fuel Commercial Aircraft,,,,481000
+EPA_GHGI_T_A_79,Jet Fuel General Aviation Aircraft,,,,481000
+EPA_GHGI_T_A_79,Jet Fuel Military Aircraft,,,,S00500
+EPA_GHGI_T_A_79,Aviation Gasoline General Aviation Aircraft,,,,481000
+EPA_GHGI_T_A_79,Residual Fuel Oil Ships and Other Boats,,,,483000
+EPA_GHGI_T_A_79,Natural Gas Pipelines,,,,486000

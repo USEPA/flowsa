@@ -235,9 +235,18 @@ source_names:
         allocation_from_scale: national
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-      # activity_set_3: # allocated based on USDA Animal operation land (acres)
-      #   names:
-      #       - "All activities Grassland"
+      activity_set_3: &grassland # allocated based on USDA Animal operation land (acres)
+        names:
+            - "All activities Grassland"
+        allocation_method: proportional
+        allocation_source: "USDA_CoA_Cropland_NAICS"
+        allocation_source_class: "Land"
+        allocation_source_year: 2017
+        allocation_flow:
+          - "FARM OPERATIONS"
+        allocation_compartment: None
+        allocation_from_scale: national
+
   "EPA_GHGI_T_5_19": #Indirect N2O emissions from agricultural soils
     data_format: 'FBA'
     class: Chemicals
@@ -251,9 +260,8 @@ source_names:
             - "Volatilization & Atm. Deposition Cropland"
             - "Surface Leaching & Run-Off Cropland"
         clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
-      # activity_set_3: # allocated based on USDA Animal operation land (acres)
-      #   names:
-      #       - "All activities Grassland"
+      activity_set_2: *grassland # allocated based on USDA Animal operation land (acres)
+
 
 ## Mobile Sources
   "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
@@ -297,11 +305,11 @@ source_names:
   "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
 
 ## Major CO2 Sources
-  "EPA_GHGI_T_A_17":  # CO2 emissions from stationary combustion and transportation
+  "EPA_GHGI_T_A_14":  # CO2 emissions from stationary combustion and transportation
     data_format: 'FBA'
     class:
     geoscale_to_use: national
-    year: 2013 #TODO update to A_14 for 2016 when available
+    year: &year 2016
     clean_fba_df_fxn: allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
@@ -357,6 +365,22 @@ source_names:
         allocation_flow:
             - "Natural Gas"
     ### Transportation
+      activity_set_7: # Natural Gas
+        names:
+            - "Natural Gas Transportation"
+        allocation_method: proportional
+        allocation_source: "EPA_GHGI_T_A_79"
+        allocation_source_class: "Energy"
+        allocation_source_year: *year
+        allocation_compartment: None
+        allocation_from_scale: national
+        helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        helper_method: proportional
+        helper_source_class: "Money"
+        helper_source_year: 2012
+        helper_flow: "USD2012"
+        helper_from_scale: national
+
 
 ## Stationary Combustion
   "EPA_GHGI_T_3_8":  &stationary_combustion # CH4 emissions from stationary combustion
@@ -412,7 +436,6 @@ source_names:
             - "Natural gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"
-
 
   "EPA_GHGI_T_3_9": *stationary_combustion # N2O emissions from stationary combustion
 
@@ -507,30 +530,30 @@ source_names:
             - "Electronics Production"
           allocation_method: direct
           allocation_from_scale: national
-  # "EPA_GHGI_T_4_101": # HFCs and PFCs from ODS Substitutes
-  #     data_format: 'FBA'
-  #     class: Chemicals
-  #     geoscale_to_use: national
-  #     year: 2016
-  #     clean_fba_df_fxn: clean_HFC_fba
-  #     fedefl_mapping: 'GHGI'
-  #     activity_sets:
-  #       activity_set_1:
-  #         names:
-  #           - "Refrigeration/Air Conditioning - Households"
-  #         allocation_method: direct
-  #         allocation_from_scale: national
-  #       activity_set_2:
-  #         <<: *use_allocation
-  #         names:
-  #           - "Refrigeration/Air Conditioning"
-  #         clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
-  #       activity_set_3:
-  #         <<: *use_allocation
-  #         names:
-  #           - "Foams"
-  #         clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
-  #                           "326150": 'ActivityProducedBy'} # Urethane and other foam
+  "EPA_GHGI_T_4_101": # HFCs and PFCs from ODS Substitutes
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      clean_fba_df_fxn: clean_HFC_fba
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:
+          names:
+            - "Refrigeration/Air Conditioning - Households"
+          allocation_method: direct
+          allocation_from_scale: national
+        activity_set_2:
+          <<: *use_allocation
+          names:
+            - "Refrigeration/Air Conditioning"
+          clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
+        activity_set_3:
+          <<: *use_allocation
+          names:
+            - "Foams"
+          clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
+                            "326150": 'ActivityProducedBy'} # Urethane and other foam
   "EPA_GHGI_T_4_80": # PFCs from aluminum production
       data_format: 'FBA'
       class: Chemicals
@@ -543,15 +566,15 @@ source_names:
             - "Aluminum Production"
           allocation_method: direct
           allocation_from_scale: national
-  # "EPA_GHGI_T_4_84": # HFCs, SF6, CO2 from magnesium production
-  #     data_format: 'FBA'
-  #     class: Chemicals
-  #     geoscale_to_use: national
-  #     year: 2016
-  #     fedefl_mapping: 'GHGI'
-  #     activity_sets:
-  #       activity_set_1:
-  #           <<: *electricity_make # Make table allocation
-  #           names:
-  #           - "Magnesium Production and Processing"
-  #           clean_parameter: {"T008": 'ActivityConsumedBy'} # Gross Output
+  "EPA_GHGI_T_4_84": # HFCs, SF6, CO2 from magnesium production
+      data_format: 'FBA'
+      class: Chemicals
+      geoscale_to_use: national
+      year: 2016
+      fedefl_mapping: 'GHGI'
+      activity_sets:
+        activity_set_1:
+            <<: *electricity_make # Make table allocation
+            names:
+            - "Magnesium Production and Processing"
+            clean_parameter: {"T008": 'ActivityConsumedBy'} # Gross Output
