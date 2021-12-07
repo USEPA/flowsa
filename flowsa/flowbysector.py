@@ -153,6 +153,12 @@ def main(**kwargs):
             flows = clean_df(flows, flow_by_activity_fields,
                              fba_fill_na_dict, drop_description=False)
 
+            # clean up fba before mapping, if specified in yaml
+            if "clean_fba_before_mapping_df_fxn" in v:
+                vLog.info("Cleaning up %s FlowByActivity", k)
+                flows = dynamically_import_fxn(
+                    k, v["clean_fba_before_mapping_df_fxn"])(flows)
+
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \
                 map_fbs_flows(flows, k, v, keep_fba_columns=True)

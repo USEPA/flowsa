@@ -15,7 +15,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
 from flowsa.common import convert_fba_unit
 from flowsa.settings import log, datapath
-from flowsa.schema import flow_by_activity_mapped_fields
+from flowsa.schema import flow_by_activity_fields
 
 # Read in relevant GHGI tables from yaml
 sourcefile = datapath + 'GHGI_tables.yaml'
@@ -903,7 +903,7 @@ def split_HFCs_by_type(df):
                             axis=1, result_type='expand')
     speciated_df.columns = splits['FlowName']
     speciated_df = pd.concat([df, speciated_df], axis=1)
-    speciated_df = speciated_df.melt(id_vars=flow_by_activity_mapped_fields.keys(),
+    speciated_df = speciated_df.melt(id_vars=flow_by_activity_fields.keys(),
                                      var_name='Flow')
     speciated_df['FlowName'] = speciated_df['Flow']
     speciated_df['FlowAmount'] = speciated_df['value']
@@ -937,7 +937,7 @@ def allocate_HFC_to_residential(df):
 
 def clean_HFC_fba(df):
     """
-    clean_fba_df_fxn.
+    clean_fba_before_mapping_df_fxn.
     """
 
     df = subtract_HFC_transport_emissions(df)

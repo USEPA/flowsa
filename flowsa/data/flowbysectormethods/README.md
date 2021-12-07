@@ -1,5 +1,5 @@
 # FlowBySector method yaml term descriptions
-Description of parameters in flowbysectormethods yamls. All values are strings unless noted. 
+Description of parameters in flowbysectormethods yamls. All values are strings unless noted.
 
 ## Terms
 ### Target FBS output specifications
@@ -20,14 +20,16 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 4. _geoscale_to_use_: the geoscale of the FBA set to use for sector allocation
    (national, state, or county)
 5. _year_: year of available dataset (ex. 2015)
-6. _clean_fba_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
-   the FBA data prior to allocating data to sectors. 
-7. _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py file to clean up/modify the
+6. _clean_fba_before_mapping_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
+   the FBA data prior to mapping flows.
+7. _clean_fba_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
+   the FBA data after mapping flows but prior to allocating data to sectors.
+8. _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py file to clean up/modify the
    FBA dataframe, after sector columns are added but prior to allocating data to sectors.
-8. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
+9. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
    the source_names
-9. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
-10. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
+10. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
+11. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
    which contains list of names for one or more activity_sets. If not supplied
    _names_ should be listed below within each activity set
 
@@ -55,7 +57,7 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 12. _clean_allocation_fba_: (optional) Function to clean up the allocation FBA, as defined in
     the source.py file
 13. _clean_allocation_fba_w_sec_: (optional) Function to clean up the allocation FBA, after
-    allocation activities are assigned SectorProducedBy and SectorConsumedBy columns    
+    allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
 14. _allocation_map_to_flow_list_: (optional) If the allocation df and source df need to be matched
     on Context and/or Flowable, set to 'True'
 15. _helper_source_: (optional) secondary df for sector allocation
@@ -92,7 +94,7 @@ If source data_format is specified as 'FBS_outside_flowsa':
 3. proportional: Activities are proportionally allocated to sectors using specified allocation data source
 4. proportional-flagged: Activities that are flagged (assigned a value of '1') are proportionally allocated
    to sectors using a specified allocation data source. Activities that are not flagged
-   (assigned a value of '0') are directly assigned to sectors. 
+   (assigned a value of '0') are directly assigned to sectors.
 
 ## Helper Method
 1. multiplication: Multiply the values in the allocation data source with values sharing the same sectors

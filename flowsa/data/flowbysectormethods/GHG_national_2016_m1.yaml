@@ -535,7 +535,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: clean_HFC_fba # removes HFCs from transportation
+      clean_fba_before_mapping_df_fxn: clean_HFC_fba # removes HFCs from transportation
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
@@ -559,7 +559,7 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       year: 2016
-      clean_fba_df_fxn: split_HFCs_by_type
+      clean_fba_before_mapping_df_fxn: split_HFCs_by_type
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
