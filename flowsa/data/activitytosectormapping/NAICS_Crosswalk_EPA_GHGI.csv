@@ -611,10 +611,10 @@ EPA_GHGI_T_A_79,Aviation Gasoline General Aviation Aircraft,,,,481000
 EPA_GHGI_T_A_79,Residual Fuel Oil Ships and Other Boats,,,,483000
 EPA_GHGI_T_A_79,Natural Gas Pipelines,,,,486000
 EPA_GHGI_T_A_103,Heavy-Duty Vehicles,NAICS_2012_Code,484,,484000
-EPA_GHGI_T_A_103,Light-Duty Trucks,,F010,,F01000
-EPA_GHGI_T_A_103,Medium- and Heavy-Duty Trucks,,484,,484000
-EPA_GHGI_T_A_103,Passenger Cars,,F010,,F01000
-EPA_GHGI_T_A_103,Rail,,482,,482000
-EPA_GHGI_T_A_103,School and Tour Buses,,485,,485000
-EPA_GHGI_T_A_103,Ships and Boats,,483,,483000
+EPA_GHGI_T_A_103,Light-Duty Trucks,NAICS_2012_Code,F010,,F01000
+EPA_GHGI_T_A_103,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,484,,484000
+EPA_GHGI_T_A_103,Passenger Cars,NAICS_2012_Code,F010,,F01000
+EPA_GHGI_T_A_103,Rail,NAICS_2012_Code,482,,482000
+EPA_GHGI_T_A_103,School and Tour Buses,NAICS_2012_Code,485,,485000
+EPA_GHGI_T_A_103,Ships and Boats,NAICS_2012_Code,483,,483000
 EPA_GHGI_T_A_103,Transit Buses,,,,excluded

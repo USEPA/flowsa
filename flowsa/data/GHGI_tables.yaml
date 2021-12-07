@@ -313,7 +313,7 @@ Annex:
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
-        "activity": "CO2"
+        "activity": "HFCs"
         "desc": "HFC Emissions from Transportation Sources (MMT CO2 Eq.)"
       "A-17": # Separate emissions table for each year
         "class": "Energy"
