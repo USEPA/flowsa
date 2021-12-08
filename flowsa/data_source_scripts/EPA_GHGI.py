@@ -803,7 +803,10 @@ def ghg_parse(dataframe_list, args):
             else:
                 for index, row in df.iterrows():
                     if "CO2" in df.loc[index, 'Unit']:
-                        df.loc[index, 'Unit'] = "MMT CO2e"
+                        if source_name == "EPA_GHGI_T_3_42" or source_name == "EPA_GHGI_T_3_67":
+                            df.loc[index, 'Unit'] = df.loc[index, 'Unit']
+                        else:
+                            df.loc[index, 'Unit'] = "MMT CO2e"
                     if "U.S. Territory" in df.loc[index, 'ActivityProducedBy']:
                         df.loc[index, 'Location'] = "99000"
 
