@@ -364,8 +364,7 @@ def ghg_call(url, response_load, args):
                     years.remove(str(year))
                     df = df.drop(columns=(DROP_COLS + years), errors='ignore')
                     # Assign SourceName now while we still have access to the table name:
-                    source_name = f"EPA_GHGI_T_{table.replace('-', '_')}"
-                    df["SourceName"] = source_name
+                    df["SourceName"] = f"EPA_GHGI_T_{table.replace('-', '_')}"
                     frames.append(df)
 
         # return pd.concat(frames)
@@ -498,13 +497,12 @@ def ghg_parse(dataframe_list, args):
                             0]
                 elif source_name in annex_tables:
                     name_split = name.split(" (")
-                    name_split_1 = name_split[1].split(") ")
 
-                    name_split_1[1] = name_split_1[1].replace('- nan', '')
-
-                    df.loc[index, 'ActivityConsumedBy'] = str(df.loc[index, 'ActivityConsumedBy']) + " - " + str(
-                        name_split[0]) + " " + str(name_split_1[1])
-                    if name_split_1[0] == "MMT CO2 Eq.":
+                    df.loc[index, 'ActivityConsumedBy'] = (
+                        f"{str(df.loc[index, 'ActivityConsumedBy'])}"
+                        f" - {name_split[1].split('- ')[1]}"
+                    )
+                    if name_split[0] == "Emissions":
                         df.loc[index, 'FlowName'] = "CO2"
                         df.loc[index, 'Unit'] = "MMT CO2e"
                     else:

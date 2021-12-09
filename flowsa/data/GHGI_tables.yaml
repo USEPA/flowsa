@@ -205,7 +205,7 @@ Tables:
 
 Annex:
   "Annex":
-      "A-10": # Separate emissions table for each year
+      "A-10": # Not currently used
         "class": "Energy"
         "unit": "Other"
         "compartment": "air"
