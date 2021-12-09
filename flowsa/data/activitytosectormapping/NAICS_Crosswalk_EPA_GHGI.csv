@@ -551,7 +551,8 @@ EPA_GHGI_T_4_101,Refrigeration/Air Conditioning,NAICS_2012_Code,71,,
 EPA_GHGI_T_4_101,Refrigeration/Air Conditioning,NAICS_2012_Code,72,,
 EPA_GHGI_T_4_101,Refrigeration/Air Conditioning,NAICS_2012_Code,81,,
 EPA_GHGI_T_4_101,Refrigeration/Air Conditioning,NAICS_2012_Code,92,,
-EPA_GHGI_T_4_101,Refrigeration/Air Conditioning - Households,NAICS_2012_Code,F01000,,Household portion
+EPA_GHGI_T_4_101,Refrigeration/Air Conditioning,NAICS_2012_Code,F01000,,
+EPA_GHGI_T_4_101,Refrigeration/Air Conditioning - Households,NAICS_2012_Code,F01000,,Exclusive household portion
 EPA_GHGI_T_4_101,Aerosols,,,,excluded
 EPA_GHGI_T_4_101,Foams,NAICS_2012_Code,11,,All sectors
 EPA_GHGI_T_4_101,Foams,NAICS_2012_Code,21,,

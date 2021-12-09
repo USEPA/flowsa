@@ -924,12 +924,13 @@ def split_HFCs_by_type(df):
 
 def subtract_HFC_transport_emissions(df):
     """Remove the portion of transportation emissions which are sourced elsewhere."""
-    transport = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_103',
-                                              year=df['Year'][0])
-    value = 20
+    transport_df = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_103',
+                                                 year=df['Year'][0])
+    activity_list = ['Mobile AC', 'Comfort Cooling for Trains and Buses',
+                     'Refrigerated Transport']
+    transport_df = transport_df[transport_df['ActivityProducedBy'].isin(activity_list)]
     df.loc[df['ActivityProducedBy'] == 'Refrigeration/Air Conditioning',
-           'FlowAmount'] = df['FlowAmount'] - value
-
+           'FlowAmount'] = df['FlowAmount'] - transport_df['FlowAmount'].sum()
     return df
 
 
@@ -939,18 +940,29 @@ def allocate_HFC_to_residential(df):
     Calculate the portion of Refrigerants applied to households based on production of
     household: 335222
     industry: 333415
-
-
     """
+    make_df = load_fba_w_standardized_units(datasource='BEA_Make_Detail_BeforeRedef',
+                                            year=2012)
+    household = make_df[(make_df['ActivityProducedBy'] == '335222') &
+                        (make_df['ActivityConsumedBy'] == '335222')
+                        ].reset_index()['FlowAmount'][0]
+    industry = make_df[(make_df['ActivityProducedBy'] == '333415') &
+                       (make_df['ActivityConsumedBy'] == '333415')
+                       ].reset_index()['FlowAmount'][0]
+
+    activity = 'Refrigeration/Air Conditioning'
+    df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
+    df_subset['FlowAmount'] = df_subset['FlowAmount'] * (household / (industry + household))
+    df_subset['ActivityProducedBy'] = f"{activity} - Households"
+    df.loc[df['ActivityProducedBy'] == activity,
+           'FlowAmount'] = df['FlowAmount'] * (industry / (industry + household))
+    df = pd.concat([df, df_subset], ignore_index=True)
 
     return df
 
 
 def clean_HFC_fba(df):
-    """
-    clean_fba_before_mapping_df_fxn.
-    """
-
+    """clean_fba_before_mapping_df_fxn."""
     df = subtract_HFC_transport_emissions(df)
     df = allocate_HFC_to_residential(df)
     df = split_HFCs_by_type(df)
