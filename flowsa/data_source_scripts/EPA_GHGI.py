@@ -14,7 +14,7 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
 from flowsa.common import convert_fba_unit
-from flowsa.settings import log, datapath
+from flowsa.settings import log, datapath, externaldatapath
 from flowsa.schema import flow_by_activity_fields
 
 # Read in relevant GHGI tables from yaml
@@ -200,16 +200,23 @@ def ghg_call(url, response_load, args):
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
                 if is_annex:
                     path = f"Annex/Table {table}.csv"
+                elif table == "GHGI_Table_3-21b":
+                    if str(year) != '2019':
+                        df = pd.read_csv(externaldatapath + "/" + table + ".csv",
+                                         skiprows=2, encoding="ISO-8859-1", thousands=",")
+                    else:
+                        df = None
                 else:
                     path = f"Chapter Text/{chapter}/Table {table}.csv"
-                data = f.open(path)
-                if table not in SPECIAL_FORMAT:
+                if table != "GHGI_Table_3-21b":
+                    data = f.open(path)
+                if table not in SPECIAL_FORMAT and table != "GHGI_Table_3-21b":
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
                 elif '3-' in table:
                     if table == '3-10':
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
-                    else:
+                    elif table != "GHGI_Table_3-21b":
                         # Skip first two rows, as usual, but make headers the next 3 rows:
                         df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                          header=[0, 1, 2], thousands=",")
@@ -542,7 +549,7 @@ def ghg_parse(dataframe_list, args):
         if source_name == "EPA_GHGI_T_3_21" and int(args["year"]) < 2015:
             # skip don't do anything: The lines are blank
             print("There is no data for this year and source")
-        else:
+        elif source_name not in annex_tables:
             df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
             df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
             df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
