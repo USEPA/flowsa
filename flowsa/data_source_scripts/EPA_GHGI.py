@@ -79,7 +79,7 @@ def fix_a17_headers(header):
         header = header.strip()
         header = header.replace('Res.', 'Residential')
         header = header.replace('Comm.', 'Commercial')
-        header = header.replace('Ind.', 'Industrial Other')
+        header = header.replace('Ind.', 'Industrial')
         header = header.replace('Trans.', 'Transportation')
         header = header.replace('Elec.', 'Electricity Power')
         header = header.replace('Terr.', 'U.S. Territory')
@@ -152,7 +152,7 @@ def annex_yearly_tables(data):
         fuel_type = str(df.iloc[0, i])
         fuel_type = fuel_type.replace('Res.', 'Residential')
         fuel_type = fuel_type.replace('Comm.', 'Commercial')
-        fuel_type = fuel_type.replace('Ind.', 'Industrial Other')
+        fuel_type = fuel_type.replace('Ind.', 'Industrial')
         fuel_type = fuel_type.replace('Trans.', 'Transportation')
         fuel_type = fuel_type.replace('Elec.', 'Electricity Power')
         fuel_type = fuel_type.replace('Terr.', 'U.S. Territory')
@@ -500,7 +500,7 @@ def ghg_parse(dataframe_list, args):
 
                     df.loc[index, 'ActivityConsumedBy'] = (
                         f"{str(df.loc[index, 'ActivityConsumedBy'])}"
-                        f" - {name_split[1].split('- ')[1]}"
+                        f" {name_split[1].split('- ')[1]}"
                     )
                     if name_split[0] == "Emissions":
                         df.loc[index, 'FlowName'] = "CO2"
@@ -839,14 +839,12 @@ def ghg_parse(dataframe_list, args):
 
 def get_manufacturing_energy_ratios(year):
     """Calculate energy ratio by fuel between GHGI and EIA MECS."""
-    # TODO make this year dynamic
-    year = 2014
-
     # activity correspondence between GHGI and MECS
-    activities_corr = {'Industrial Other Coal': 'Coal',
-                       'Natural Gas ': 'Natural Gas',  # note extra space
+    activities_corr = {'Industrial Other Coal Industrial': 'Coal',
+                       'Natural Gas  Industrial': 'Natural Gas',  # note extra space
                        }
 
+    # TODO make this year dynamic
     # Filter MECS for total national energy consumption for manufacturing sectors
     mecs = load_fba_w_standardized_units(datasource='EIA_MECS_Energy',
                                          year=year,
@@ -857,8 +855,8 @@ def get_manufacturing_energy_ratios(year):
                                   'mecs_energy_fba_cleanup')(mecs, None)
 
     # TODO dynamically change the table imported here based on year
-    ghgi = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_17',
-                                         year=2013,
+    ghgi = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_14',
+                                         year=2016,
                                          flowclass='Energy')
     ghgi['Unit'] = 'Trillion Btu'
     ghgi = convert_fba_unit(ghgi)
@@ -887,8 +885,8 @@ def allocate_industrial_combustion(df):
     pct_dict = get_manufacturing_energy_ratios(year)
 
     # activities reflect flows in A_14 and 3_8 and 3_9
-    activities_to_split = {'Industrial Other Coal': 'Coal',
-                           'Natural Gas ': 'Natural Gas',  # note extra space
+    activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
+                           'Natural Gas  Industrial': 'Natural Gas',  # note extra space
                            'Coal Industrial': 'Coal',
                            'Natural gas industrial': 'Natural Gas'}
 

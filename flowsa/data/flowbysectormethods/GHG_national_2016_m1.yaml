@@ -307,7 +307,7 @@ source_names:
 ## Major CO2 Sources
   "EPA_GHGI_T_A_14":  # CO2 emissions from stationary combustion and transportation
     data_format: 'FBA'
-    class:
+    class: # should be Chemicals
     geoscale_to_use: national
     year: &year 2016
     clean_fba_df_fxn: allocate_industrial_combustion
