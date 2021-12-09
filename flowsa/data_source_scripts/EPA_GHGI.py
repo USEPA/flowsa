@@ -505,9 +505,11 @@ def ghg_parse(dataframe_list, args):
                     if name_split[0] == "Emissions":
                         df.loc[index, 'FlowName'] = "CO2"
                         df.loc[index, 'Unit'] = "MMT CO2e"
+                        df.loc[index, 'Class'] = "Chemicals"
                     else:
                         df.loc[index, 'FlowName'] = "Energy Consumption"
                         df.loc[index, 'Unit'] = "TBtu"
+                        df.loc[index, 'Class'] = "Energy"
 
         # Dropping all rows with value "+"
         try:
