@@ -63,7 +63,7 @@ def produced_by(entry):
         return "Services Repair Personal"
 
 
-def calR_parse(dataframe_list, args):
+def calR_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
@@ -74,13 +74,13 @@ def calR_parse(dataframe_list, args):
     """
     data = {}
     output = pd.DataFrame()
-    
+
     data["Class"] = "Other"
     data['FlowType'] = "WASTE_FLOW"
     data["Location"] = "06000"
     # data["Compartment"] = "ground"
     data["SourceName"] = "CalRecycle_WasteCharacterization"
-    data["Year"] = args['year']
+    data["Year"] = year
     data['DataReliability'] = 5  # tmp
     data['DataCollection'] = 5  # tmp
 
@@ -104,7 +104,7 @@ def calR_parse(dataframe_list, args):
                         if value != "-":
                             data["FlowAmount"] = int(value)
                             output = output.append(data, ignore_index=True)
-    output = assign_fips_location_system(output, args['year'])
+    output = assign_fips_location_system(output, year)
     return output
 
 
@@ -113,13 +113,13 @@ def keep_generated_quantity(fba, **kwargs):
     Function to clean CalRecycles FBA to remove quantities not
     assigned as Generated
     :param fba: df, FBA format
-    :param kwargs: dictionary, can include attr, a dictionary of parameters in 
+    :param kwargs: dictionary, can include attr, a dictionary of parameters in
         the FBA method yaml
     :return: df, modified CalRecycles FBA
     """
     fba = fba[fba['Description'] == 'Generated']
     return fba
-    
+
 
 def apply_tons_per_employee_per_year_to_states(fbs):
     """
@@ -134,13 +134,13 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     # clean df
     bls = clean_bls_qcew_fba(bls)
     bls = add_sectors_to_flowbyactivity(bls)
-    
+
     # Subset BLS dataset
     sector_list = list(filter(None, fbs['SectorProducedBy'].unique()))
     bls = get_fba_allocation_subset(bls, 'BLS_QCEW', sector_list)
     bls = bls.rename(columns={'FlowAmount': 'Employees'})
     bls = bls[['Employees', 'Location', 'Year', 'SectorProducedBy']]
-    
+
     # Calculate tons per employee per year per material and sector in CA
     bls_CA = bls[bls['Location'] == '06000']  # California
     tpepy = fbs.merge(bls_CA, how='inner')
@@ -148,7 +148,7 @@ def apply_tons_per_employee_per_year_to_states(fbs):
                                out=np.zeros_like(tpepy['Employees']),
                                where=tpepy['Employees'] != 0)
     tpepy = tpepy.drop(columns=['Employees', 'FlowAmount', 'Location'])
-    
+
     # Apply TPEPY back to all employees in all states
     national_waste = tpepy.merge(bls, how='outer')
     national_waste['FlowAmount'] = \

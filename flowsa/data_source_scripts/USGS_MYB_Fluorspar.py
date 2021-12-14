@@ -34,7 +34,7 @@ SPAN_YEARS = "2013-2017"
 SPAN_YEARS_INPORTS = ["2016", "2017"]
 
 
-def usgs_fluorspar_url_helper(build_url, config, args):
+def usgs_fluorspar_url_helper(*, build_url, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -52,31 +52,30 @@ def usgs_fluorspar_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_fluorspar_call(url, r, args):
+def usgs_fluorspar_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin
     parsing df into FBA format
     :param url: string, url
-    :param r: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
+    :param year: year
     :return: pandas dataframe of original source data
     """
-    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(r.content),
+    df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                              sheet_name='T1')
 
-    if args['year'] in SPAN_YEARS_INPORTS:
-        df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content),
+    if year in SPAN_YEARS_INPORTS:
+        df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                                  sheet_name='T2')
-        df_raw_data_three = pd.io.excel.read_excel(io.BytesIO(r.content),
+        df_raw_data_three = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                                    sheet_name='T7')
-        df_raw_data_four = pd.io.excel.read_excel(io.BytesIO(r.content),
+        df_raw_data_four = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                                   sheet_name='T8')
 
     df_data_one = pd.DataFrame(df_raw_data_one.loc[5:15]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
-    if args['year'] in SPAN_YEARS_INPORTS:
+    if year in SPAN_YEARS_INPORTS:
         df_data_two = pd.DataFrame(df_raw_data_two.loc[7:8]).reindex()
         df_data_three = pd.DataFrame(df_raw_data_three.loc[19:19]).reindex()
         df_data_four = pd.DataFrame(df_raw_data_four.loc[11:11]).reindex()
@@ -99,12 +98,12 @@ def usgs_fluorspar_call(url, r, args):
                                "year_3", "space_5", "year_4", "space_6",
                                "year_5"]
     col_to_use = ["Production"]
-    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, year))
 
     for col in df_data_one.columns:
         if col not in col_to_use:
             del df_data_one[col]
-    if args['year'] in SPAN_YEARS_INPORTS:
+    if year in SPAN_YEARS_INPORTS:
         for col in df_data_two.columns:
             if col not in col_to_use:
                 del df_data_two[col]
@@ -116,7 +115,7 @@ def usgs_fluorspar_call(url, r, args):
                 del df_data_four[col]
     df_data_one["type"] = "data_one"
 
-    if args['year'] in SPAN_YEARS_INPORTS:
+    if year in SPAN_YEARS_INPORTS:
         # aluminum fluoride
         # cryolite
         df_data_two["type"] = "data_two"
@@ -132,10 +131,10 @@ def usgs_fluorspar_call(url, r, args):
     return df_data
 
 
-def usgs_fluorspar_parse(dataframe_list, args):
+def usgs_fluorspar_parse(*, df_list, source, year, **_):
     """
      Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
@@ -145,9 +144,9 @@ def usgs_fluorspar_parse(dataframe_list, args):
     row_to_use = ["Quantity", "Quantity3", "Total", "Hydrofluoric acid",
                   "Metallurgical", "Production"]
     prod = ""
-    name = usgs_myb_name(args["source"])
+    name = usgs_myb_name(source)
     dataframe = pd.DataFrame()
-    for df in dataframe_list:
+    for df in df_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Exports:3":
                 prod = "exports"
@@ -171,10 +170,10 @@ def usgs_fluorspar_parse(dataframe_list, args):
 
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
-                data["SourceName"] = args["source"]
-                data["Year"] = str(args["year"])
+                data["SourceName"] = source
+                data["Year"] = str(year)
                 data["Unit"] = "Metric Tons"
-                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, year)
                 if str(df.iloc[index][col_name]) == "W":
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
@@ -184,5 +183,5 @@ def usgs_fluorspar_parse(dataframe_list, args):
                 data['FlowName'] = name + " " + prod
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(
-                    dataframe, str(args["year"]))
+                    dataframe, str(year))
     return dataframe

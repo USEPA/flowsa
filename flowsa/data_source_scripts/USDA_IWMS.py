@@ -15,7 +15,7 @@ from flowsa.data_source_scripts.USDA_CoA_Cropland import \
     disaggregate_pastureland, disaggregate_cropland
 
 
-def iwms_url_helper(build_url, config, args):
+def iwms_url_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -24,8 +24,6 @@ def iwms_url_helper(build_url, config, args):
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -41,32 +39,29 @@ def iwms_url_helper(build_url, config, args):
     return urls_iwms
 
 
-def iwms_call(url, response_load, args):
+def iwms_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    iwms_json = json.loads(response_load.text)
+    iwms_json = json.loads(resp.text)
     # Convert response to dataframe
     df_iwms = pd.DataFrame(data=iwms_json["data"])
     return df_iwms
 
 
-def iwms_parse(dataframe_list, args):
+def iwms_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = pd.concat(dataframe_list, sort=False, ignore_index=True)
+    df = pd.concat(df_list, sort=False, ignore_index=True)
     # only interested in total water applied, not water
     # applied by type of irrigation
     df = df[df['domain_desc'] == 'TOTAL']
@@ -106,7 +101,7 @@ def iwms_parse(dataframe_list, args):
     df.loc[df['FlowAmount'] == "(Z)", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df['FlowAmount'] = df['FlowAmount'].str.replace(",", "", regex=True)
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # # Add hardcoded data
     df.loc[df['Unit'] == 'ACRES', 'Class'] = 'Land'
     df.loc[df['Unit'] == 'ACRE FEET / ACRE', 'Class'] = 'Water'

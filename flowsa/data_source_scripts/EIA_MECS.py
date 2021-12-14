@@ -21,7 +21,7 @@ from flowsa.data_source_scripts.EIA_CBECS_Land import \
     calculate_total_facility_land_area
 
 
-def eia_mecs_URL_helper(build_url, config, args):
+def eia_mecs_URL_helper(*, build_url, config, year, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url
@@ -43,9 +43,9 @@ def eia_mecs_URL_helper(build_url, config, args):
         # start with build url
         url = build_url
         # replace '__year__' in build url
-        url = url.replace('__year__', args['year'])
+        url = url.replace('__year__', year)
         # 2014 files are in .xlsx format; 2010 files are in .xls format
-        if args['year'] == '2010':
+        if year == '2010':
             url = url[:-1]
         # replace '__table__' in build url
         url = url.replace('__table__', table)
@@ -55,22 +55,22 @@ def eia_mecs_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_mecs_land_call(url, response_load, args):
+def eia_mecs_land_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_data = pd.read_excel(io.BytesIO(resp.content),
                                 sheet_name='Table 9.1')
-    df_raw_rse = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_rse = pd.read_excel(io.BytesIO(resp.content),
                                sheet_name='RSE 9.1')
-    if args["year"] == "2014":
+    if year == "2014":
         # skip rows and remove extra rows at end of dataframe
         df_rse = pd.DataFrame(df_raw_rse.loc[12:93]).reindex()
         df_data = pd.DataFrame(df_raw_data.loc[16:97]).reindex()

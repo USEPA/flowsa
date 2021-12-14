@@ -13,7 +13,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import convert_fba_unit
 
 
-def epa_nei_url_helper(build_url, _, args):
+def epa_nei_url_helper(*, build_url, year, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -21,9 +21,7 @@ def epa_nei_url_helper(build_url, _, args):
     does not parse the data, only modifies the urls from which data is
     obtained.
     :param build_url: string, base url
-    :param _: dictionary, items in FBA method yaml (unused)
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
+    :param year: year
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
@@ -35,41 +33,41 @@ def epa_nei_url_helper(build_url, _, args):
     }
 
     url = (build_url
-           .replace('__year__', args['year'])
-           .replace('__version__', version_dict[args['year']]))
+           .replace('__year__', year)
+           .replace('__version__', version_dict[year]))
 
     return [url]
 
 
-def epa_nei_call(_1, response, _2):
+def epa_nei_call(*, resp, **_):
     """
     Convert response for calling _1 to pandas dataframe
     :param _1: string, url (unused)
-    :param response: df, response from url call
+    :param resp: df, response from url call
     :param _2: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source') (unused)
     :return: pandas dataframe of original source data
     """
-    with ZipFile(io.BytesIO(response.content)) as z:
+    with ZipFile(io.BytesIO(resp.content)) as z:
         # Read in all .csv files from the zip archive as a list of dataframes
         df_list = [pd.read_csv(z.open(name)) for name in z.namelist()
                    if path.splitext(name)[1] == '.csv']
     return pd.concat(df_list)
 
 
-def epa_nei_global_parse(dataframe_list, args):
+def epa_nei_global_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(df_list, sort=True)
 
     # rename columns to match flowbyactivity format
-    if args['year'] == '2017':
+    if year == '2017':
         df = df.rename(columns={"pollutant desc": "FlowName",
                                 "total emissions": "FlowAmount",
                                 "scc": "ActivityProducedBy",
@@ -77,7 +75,7 @@ def epa_nei_global_parse(dataframe_list, args):
                                 "emissions uom": "Unit",
                                 "pollutant code": "Description"})
 
-    elif args['year'] == '2014':
+    elif year == '2014':
         df = df.rename(columns={"pollutant_desc": "FlowName",
                                 "total_emissions": "FlowAmount",
                                 "scc": "ActivityProducedBy",
@@ -85,7 +83,7 @@ def epa_nei_global_parse(dataframe_list, args):
                                 "uom": "Unit",
                                 "pollutant_cd": "Description"})
 
-    elif args['year'] == '2011' or args['year'] == '2008':
+    elif year == '2011' or year == '2008':
         df = df.rename(columns={"description": "FlowName",
                                 "total_emissions": "FlowAmount",
                                 "scc": "ActivityProducedBy",
@@ -116,24 +114,24 @@ def epa_nei_global_parse(dataframe_list, args):
     # add hardcoded data
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Class'] = "Chemicals"
-    df['SourceName'] = args['source']
+    df['SourceName'] = source
     df['Compartment'] = "air"
-    df['Year'] = args['year']
-    df = assign_fips_location_system(df, args['year'])
+    df['Year'] = year
+    df = assign_fips_location_system(df, year)
 
     return df
 
 
-def epa_nei_onroad_parse(dataframe_list, args):
+def epa_nei_onroad_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param source: source
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(df_list, source, year)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -142,17 +140,17 @@ def epa_nei_onroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonroad_parse(dataframe_list, args):
+def epa_nei_nonroad_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param source: source
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
 
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(df_list, source, year)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -161,17 +159,17 @@ def epa_nei_nonroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonpoint_parse(dataframe_list, args):
+def epa_nei_nonpoint_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param source: source
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
 
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(df_list, source, year)
 
     # Add DQ scores
     df['DataReliability'] = 3

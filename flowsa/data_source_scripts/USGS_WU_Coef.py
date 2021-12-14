@@ -16,12 +16,10 @@ from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def usgs_coef_parse(dataframe_list, args):
+def usgs_coef_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
@@ -42,7 +40,7 @@ def usgs_coef_parse(dataframe_list, args):
     df["Class"] = "Water"
     df["SourceName"] = "USGS_WU_Coef"
     df["Location"] = US_FIPS
-    df['Year'] = args['year']
+    df['Year'] = year
     df = assign_fips_location_system(df, '2005')
     df["Unit"] = "gallons/animal/day"
     df['DataReliability'] = 5  # tmp

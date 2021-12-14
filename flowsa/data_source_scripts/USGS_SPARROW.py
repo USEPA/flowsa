@@ -102,7 +102,7 @@ def name_replace(df_legend, df_raw):
     return df_raw
 
 
-def sparrow_url_helper(build_url, config, args):
+def sparrow_url_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -111,8 +111,6 @@ def sparrow_url_helper(build_url, config, args):
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -126,17 +124,15 @@ def sparrow_url_helper(build_url, config, args):
     return urls
 
 
-def sparrow_call(url, response_load, args):
+def sparrow_call(*, resp, url, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
+    :param resp: df, response from url call
     :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    text = response_load.content
+    text = resp.content
 
     ph = ['5cbf5150e4b09b8c0b700df3?f=__disk__bf%2F73%2F1f%2Fbf731fdf4e984'
           'a5cf50c0f1a140cda366cb8c1d3',
@@ -251,25 +247,24 @@ def sparrow_call(url, response_load, args):
     return df1
 
 
-def sparrow_parse(dataframe_list, args):
+def sparrow_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     df = pd.DataFrame()
     dataframe = pd.DataFrame()
-    for df in dataframe_list:
+    for df in df_list:
         df["Compartment "] = "ground"
         df["Class"] = "Chemicals"
         df["SourceName"] = "USGS_SPARROW"
         df["LocationSystem"] = 'HUC'
-        df["Year"] = str(args["year"])
+        df["Year"] = str(year)
         df["ActivityConsumedBy"] = None
 
-    dataframe = pd.concat(dataframe_list, ignore_index=True)
+    dataframe = pd.concat(df_list, ignore_index=True)
 
     return dataframe

@@ -17,7 +17,7 @@ from flowsa.validation import compare_df_units, \
     calculate_flowamount_diff_between_dfs
 
 
-def usgs_URL_helper(build_url, config, args):
+def usgs_URL_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -26,8 +26,6 @@ def usgs_URL_helper(build_url, config, args):
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -55,19 +53,17 @@ def usgs_URL_helper(build_url, config, args):
     return urls_usgs
 
 
-def usgs_call(url, response_load, args):
+def usgs_call(*, resp, url, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
     usgs_data = []
     metadata = []
-    with io.StringIO(response_load.text) as fp:
+    with io.StringIO(resp.text) as fp:
         for line in fp:
             if line[0] != '#':
                 if "16s" not in line:
@@ -94,16 +90,15 @@ def usgs_call(url, response_load, args):
     return df_usgs
 
 
-def usgs_parse(dataframe_list, args):
+def usgs_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    for df in dataframe_list:
+    for df in df_list:
         # add columns at national and state level that
         # only exist at the county level
         if 'state_cd' not in df:
@@ -115,9 +110,9 @@ def usgs_parse(dataframe_list, args):
         if 'county_nm' not in df:
             df['county_nm'] = ''
         if 'year' not in df:
-            df['year'] = args["year"]
+            df['year'] = year
     # concat data frame list based on geography and then parse data
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     df_n = df[df['geo'] == 'national']
     df_sc = df[df['geo'] != 'national']
     # drop columns that are all NAs
@@ -183,7 +178,7 @@ def usgs_parse(dataframe_list, args):
     # rename year column
     df = df.rename(columns={"year": "Year"})
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # hardcode column information
     df['Class'] = 'Water'
     df['SourceName'] = 'USGS_NWIS_WU'

@@ -24,32 +24,29 @@ from flowsa.literature_values import \
 from flowsa.validation import compare_df_units
 
 
-def mlu_call(url, response_load, args):
+def mlu_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    with io.StringIO(response_load.text) as fp:
+    with io.StringIO(resp.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
 
-def mlu_parse(dataframe_list, args):
+def mlu_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False
+    df = pd.concat(df_list, sort=False
                    ).drop(columns=['SortOrder', 'Region']
                           ).rename(columns={'Region or State': 'State'})
 
@@ -68,13 +65,13 @@ def mlu_parse(dataframe_list, args):
 
     # drop null values
     dfm2 = dfm[~dfm['Location'].isnull()].reset_index(drop=True)
-    dfm3 = assign_fips_location_system(dfm2, args['year'])
+    dfm3 = assign_fips_location_system(dfm2, year)
     # sub by year
     dfm3['Year'] = dfm3['Year'].astype(str)
-    dfm3 = dfm3[dfm3['Year'] == args['year']].reset_index(drop=True)
+    dfm3 = dfm3[dfm3['Year'] == year].reset_index(drop=True)
 
     dfm3["Class"] = "Land"
-    dfm3["SourceName"] = args['source']
+    dfm3["SourceName"] = source
     dfm3["ActivityProducedBy"] = None
     dfm3["ActivityConsumedBy"] = dfm3['FlowName']
     dfm3['FlowType'] = 'ELEMENTARY_FLOW'
