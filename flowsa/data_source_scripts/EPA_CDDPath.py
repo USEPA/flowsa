@@ -82,13 +82,13 @@ def write_cdd_path_from_csv():
     return df
 
 
-def combine_cdd_path(url, response_load, args):
+def combine_cdd_path(*, resp, **_):
     """Call function to generate combined dataframe from csv file and
     excel dataset, bringing only those flows from the excel file that are
     not in the csv file
     """
     df_csv = write_cdd_path_from_csv()
-    df_excel = epa_cddpath_call(url, response_load, args)
+    df_excel = epa_cddpath_call(resp=resp)
     df_excel = df_excel[~df_excel['FlowName'].isin(df_csv['FlowName'])]
 
     df = pd.concat([df_csv, df_excel], ignore_index=True)

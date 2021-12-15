@@ -59,7 +59,7 @@ def assemble_urls_for_query(*, source, year, config):
     # if there are url parameters defined in the yaml,
     # then build a url, else use "base_url"
     if (urlinfo := config['url']) == 'None':
-        return None
+        return [None]
 
     if 'url_params' in urlinfo:
         params = parse.urlencode(urlinfo['url_params'])

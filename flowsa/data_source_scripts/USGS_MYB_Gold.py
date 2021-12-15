@@ -79,7 +79,7 @@ def usgs_gold_call(*, resp, year, **_):
     return df_data
 
 
-def usgs_gold_parse(*, df_list, source, year):
+def usgs_gold_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format

@@ -86,10 +86,10 @@ def usgs_asbestos_call(*, resp, year, **_):
     return df_data
 
 
-def usgs_asbestos_parse(*, dataframe_list, source, year, **_):
+def usgs_asbestos_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param source: source
     :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
@@ -102,7 +102,7 @@ def usgs_asbestos_parse(*, dataframe_list, source, year, **_):
     des = name
     dataframe = pd.DataFrame()
     col_name = usgs_myb_year(SPAN_YEARS, year)
-    for df in dataframe_list:
+    for df in df_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == \
                     "Imports for consumption:":

@@ -131,7 +131,7 @@ def epa_nei_onroad_parse(*, df_list, source, year, **_):
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = epa_nei_global_parse(df_list, source, year)
+    df = epa_nei_global_parse(df_list=df_list, source=source, year=year)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -150,7 +150,7 @@ def epa_nei_nonroad_parse(*, df_list, source, year, **_):
         specifications
     """
 
-    df = epa_nei_global_parse(df_list, source, year)
+    df = epa_nei_global_parse(df_list=df_list, source=source, year=year)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -169,7 +169,7 @@ def epa_nei_nonpoint_parse(*, df_list, source, year, **_):
         specifications
     """
 
-    df = epa_nei_global_parse(df_list, source, year)
+    df = epa_nei_global_parse(df_list=df_list, source=source, year=year)
 
     # Add DQ scores
     df['DataReliability'] = 3
