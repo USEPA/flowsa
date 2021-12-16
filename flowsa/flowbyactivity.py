@@ -51,14 +51,15 @@ def assemble_urls_for_query(*, source, year, config):
     """
     Calls on helper functions defined in source.py files to
     replace parts of the url string
-    :param build_url: str, base url
+    :param source: str, data source
+    :param year: str, year
     :param config: dictionary, FBA yaml
-    :param args: dictionary, load parameters 'source' and 'year'
     :return: list, urls to call data from
     """
     # if there are url parameters defined in the yaml,
     # then build a url, else use "base_url"
-    if (urlinfo := config['url']) == 'None':
+    urlinfo = config['url']
+    if urlinfo == 'None':
         return [None]
 
     if 'url_params' in urlinfo:
@@ -93,7 +94,8 @@ def call_urls(*, url_list, source, year, config):
     The processing method is specific to
     the data source, so this function relies on a function in source.py
     :param url_list: list, urls to call
-    :param args: dictionary, load parameters 'source' and 'year'
+    :param source: str, data source
+    :param year: str, year
     :param config: dictionary, FBA yaml
     :return: list, dfs to concat and parse
     """
@@ -130,7 +132,8 @@ def parse_data(*, df_list, source, year, config):
     Calls on functions defined in source.py files, as parsing rules
     are specific to the data source.
     :param df_list: list, dfs to concat and parse
-    :param args: dictionary, load parameters 'source' and 'year'
+    :param source: str, data source
+    :param year: str, year
     :param config: dictionary, FBA yaml
     :return: df, single df formatted to FBA
     """
