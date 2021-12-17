@@ -89,12 +89,31 @@ def load_yaml_dict(filename):
     Load the information in 'source_catalog.yaml'
     :return: dictionary containing all information in source_catalog.yaml
     """
-    if filename == 'source_catalog':
-        yaml_load = f'{datapath}source_catalog.yaml'
-    else:
-        yaml_load = sourceconfigpath + filename + '.yaml'
-    with open(yaml_load, 'r') as f:
+    folder = datapath if filename == 'source_catalog' else sourceconfigpath
+    yaml_path = folder + filename + '.yaml'
+
+    with open(yaml_path, 'r') as f:
         config = yaml.safe_load(f)
+
+    # Allow for .yaml files to recursively inherit other .yaml files. Keys in
+    # children will overwrite the same key from a parent.
+    inherits = config.get('inherits_from')
+    while inherits:
+        yaml_path = folder + inherits + '.yaml'
+        with open(yaml_path, 'r') as f:
+            parent = yaml.safe_load(f)
+
+        # Check for common keys and log a warning if any are found
+        common_keys = [k for k in config if k in parent]
+        if common_keys:
+            log.warning(f'Keys {common_keys} from parent file {yaml_path} '
+                        f'were overwritten by child file.')
+
+        # Update inheritance information before updating the parent dict
+        inherits = parent.get('inherits_from')
+        parent.update(config)
+        config = parent
+
     return config
 
 
