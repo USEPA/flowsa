@@ -69,8 +69,7 @@ def assemble_urls_for_query(*, source, year, config):
         build_url = urlinfo['base_url']
 
     # substitute year from arguments and users api key into the url
-    if "__year__" in build_url:
-        build_url = build_url.replace("__year__", str(year))
+    build_url = build_url.replace("__year__", str(year))
     if "__apiKey__" in build_url:
         userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
         build_url = build_url.replace("__apiKey__", userAPIKey)
