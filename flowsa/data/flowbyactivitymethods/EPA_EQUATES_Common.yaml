@@ -33,7 +33,7 @@ parse:
     - SO2
     - PM10
     - PM25_TOT
-  excluded_fips: (78)...|(85)...|(88)...|..(777)
+  excluded_fips: (78)...|(85)...|(88)...|..(777)  # regex pattern
   rename_columns:  # Dict to rename columns {old_name: new_name}
     region_cd: Location
     scc: ActivityProducedBy
@@ -46,13 +46,6 @@ parse:
     SO2: Sulfur Dioxide
     PM10: Total PM10
     PM25_TOT: Total PM 2.5
-  unit_dict:
-    CO: ton
-    NO2: ton
-    O3: ton
-    SO2: ton
-    PM10: ton
-    PM25_TOT: ton
 url_replace_fxn: equates_url_helper
 years:
 - 2002
