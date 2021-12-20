@@ -1,0 +1,7 @@
+inherits_from: EPA_EQUATES_Common
+file_list:
+  2017:
+    - EQUATES_2017/inputs/nonpt/MYR_nonpt_2017only_2017NEI_NONPOINT_20200415_08sep2020_v0.csv
+    #- EQUATES_2017/inputs/nonpt/MYR_NONPOINT_gas_stations_2017only_08sep2020_v0.csv
+call_response_fxn: equates_call
+parse_response_fxn: equates_parse
