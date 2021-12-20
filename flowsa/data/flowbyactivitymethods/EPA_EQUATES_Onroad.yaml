@@ -1,0 +1,79 @@
+author: US Environmental Protection Agency
+source_name: EQUATES - EPA’s Air QUAlity TimE Series Project
+source_url: https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=350038&Lab=NERL
+bib_id: EPA_EQUATES
+api_name: EPA_EQUATES
+api_key_required: false
+format: tar.gz
+url:
+  confirm_gdrive: true
+  base_url: https://docs.google.com/uc?export=download
+  file_id_dict:
+    2002: 1jw_0216cTDSw-FrojrgGbKU5myl23ybv
+    2003: 1r_LTHBHJZPGpmlsF7OfjGSXGPoKlFmJY
+    2004: 1NcUrwU5DnK7V3hwLHiOLsJ_Tm4V4nCHs
+    2005: 1W1QBtNB89FfWdSE3RQdnFoedwjgn0ctB
+    2006: 1p7JtrjRHjsfwwPRzq1syzjMEXBJQBonw
+    2007: 1iyAgokaVho-Ic9gXTGBVuD4pHhYIi0dT
+    2008: 1Y6D0YJuMy97hlhG58R5LjmVrVqucNlgy
+    2009: 1K0irKK2UHSGx6hPJJpmVzfRurzSDVY1X
+    2010: 1_t5zw17BlMzPusgToaWg1rlVtcgKkh5e
+    2011: 17qLqwJllqX-XloScSNaxdviQDspTufep
+    2012: 11vKJK1DtuhCV2Bx3SWz_Mjok-t2CjEiS
+    2013: 1Rue8j92J60Z6POjtdJAZZIwdapfN6GwP
+    2014: 1TTzPa0vse1_z0On-82uBF53IQ6zY5DIX
+    2015: 1YwvF2v55oq0NDak2eS7ShNwzRk1XZ9_c
+    2016: 16JCgFvadxDGoMUVyaqMjFhB-v_7g1Qz0
+    2017: 1QIaSG3kyReCLUJXXgHubUZKuo1Q5pAsl
+parse:
+  file_list:
+    2017:
+      - EQUATES_2017/inputs/nonpt/MYR_nonpt_2017only_2017NEI_NONPOINT_20200415_08sep2020_v0.csv
+      #- EQUATES_2017/inputs/nonpt/MYR_NONPOINT_gas_stations_2017only_08sep2020_v0.csv
+  pollutant_list:
+    - CO
+    - NO2
+    - O3
+    - SO2
+    - PM10
+    - PM25_TOT
+  excluded_fips: (78)...|(85)...|(88)...|..(777)
+  rename_columns:  # Dict to rename columns {old_name: new_name}
+    region_cd: Location
+    scc: ActivityProducedBy
+    poll: Description
+    ann_value: FlowAmount
+  poll_name_dict:
+    CO: Carbon Monoxide
+    NO2: Nitrogen Dioxide
+    O3: Ozone
+    SO2: Sulfur Dioxide
+    PM10: Total PM10
+    PM25_TOT: Total PM 2.5
+  unit_dict:
+    CO: ton
+    NO2: ton
+    O3: ton
+    SO2: ton
+    PM10: ton
+    PM25_TOT: ton
+url_replace_fxn: equates_url_helper
+call_response_fxn: equates_call
+parse_response_fxn: equates_parse
+years:
+- 2002
+- 2003
+- 2004
+- 2005
+- 2006
+- 2007
+- 2008
+- 2009
+- 2010
+- 2011
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
