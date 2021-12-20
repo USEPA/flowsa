@@ -98,18 +98,18 @@ def call_urls(*, url_list, source, year, config):
     :param config: dictionary, FBA yaml
     :return: list, dfs to concat and parse
     """
-    # identify if url request requires cookies set
-    if 'allow_http_request_cookies' in config:
-        set_cookies = config['allow_http_request_cookies']
-    else:
-        set_cookies = False
+# identify if url request requires cookies set
+    set_cookies = config.get('allow_http_request_cookies')
+    confirm_gdrive = config.get('url').get('confirm_gdrive')
 
     # create dataframes list by iterating through url list
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
             log.info("Calling %s", url)
-            resp = make_url_request(url, set_cookies=set_cookies)
+            resp = make_url_request(url,
+                                    set_cookies=set_cookies,
+                                    confirm_gdrive=confirm_gdrive)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
                 df = dynamically_import_fxn(
