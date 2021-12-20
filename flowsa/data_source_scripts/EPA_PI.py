@@ -73,7 +73,7 @@ def name_and_unit_split(df_legend):
     return df_legend
 
 
-def pi_url_helper(build_url, config, args):
+def pi_url_helper(*, build_url, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -81,9 +81,6 @@ def pi_url_helper(build_url, config, args):
     does not parse the data, only modifies the urls from which data is
     obtained.
     :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -91,22 +88,20 @@ def pi_url_helper(build_url, config, args):
     return [url]
 
 
-def pi_call(url, response, args):
+def pi_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
-    :param url: string, url
-    :param response: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
+    :param year: year
     :return: pandas dataframe of original source data
     """
-    df_legend = pd.io.excel.read_excel(io.BytesIO(response.content),
+    df_legend = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                        sheet_name='Legend')
     df_legend = pd.DataFrame(df_legend.loc[0:18]).reindex()
     df_legend.columns = ["HUC_8", "HUC8 CODE"]
-    if args['year'] == '2002':
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content),
+    if year == '2002':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                         sheet_name='2002')
         df_raw = df_raw.rename(
             columns={'P_deposition': '2P_deposition',
@@ -114,8 +109,8 @@ def pi_call(url, response, args):
                      'livestock_demand_2007': 'livestock_demand',
                      'livestock_production_2007': 'livestock_production',
                      '02P_Hi_P': 'P_Hi_P', 'Surplus_2002': 'surplus'})
-    elif args['year'] == '2007':
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content),
+    elif year == '2007':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                         sheet_name='2007')
         df_raw = df_raw.rename(
             columns={'P_deposition': '2P_deposition',
@@ -125,7 +120,7 @@ def pi_call(url, response, args):
                      'livestock_production_2007': 'livestock_production',
                      '02P_Hi_P': 'P_Hi_P', 'Surplus_2007': 'surplus'})
     else:
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content),
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                         sheet_name='2012')
         df_raw = df_raw.rename(
             columns={'P_deposition': '2P_deposition',
@@ -164,10 +159,10 @@ def pi_call(url, response, args):
     return df
 
 
-def pi_parse(dataframe_list, args):
+def pi_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
@@ -176,11 +171,11 @@ def pi_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Production2", "Production", "Imports for consumption"]
     df = pd.DataFrame()
-    for df in dataframe_list:
+    for df in df_list:
 
         df["SourceName"] = "EPA_NI"
         df["LocationSystem"] = 'HUC'
-        df["Year"] = str(args["year"])
+        df["Year"] = str(year)
         df["FlowType"] = "ELEMENTARY_FLOW"
         df["Compartment"] = "ground"
     return df

@@ -26,12 +26,10 @@ from flowsa.common import get_state_FIPS
 from flowsa.settings import externaldatapath
 
 
-def noaa_parse(dataframe_list, args):
+def noaa_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
@@ -47,7 +45,7 @@ def noaa_parse(dataframe_list, args):
     df['State'] = df["State"].str.lower()
 
     # filter by year
-    df = df[df['Year'] == int(args['year'])]
+    df = df[df['Year'] == int(year)]
     # noaa differentiates between florida east and west,
     # which is not necessary for our purposes
     df['State'] = df['State'].str.replace(r'-east', '')
@@ -79,7 +77,7 @@ def noaa_parse(dataframe_list, args):
     df4["Class"] = "Money"
     df4["SourceName"] = "NOAA_Landings"
     df4["FlowName"] = None
-    df4 = assign_fips_location_system(df4, args['year'])
+    df4 = assign_fips_location_system(df4, year)
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
     df4['DataReliability'] = 5  # tmp

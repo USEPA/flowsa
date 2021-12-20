@@ -16,7 +16,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     equally_allocate_suppressed_parent_to_child_naics
 
 
-def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
+def CoA_Cropland_NAICS_URL_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -25,8 +25,6 @@ def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -57,31 +55,27 @@ def CoA_Cropland_NAICS_URL_helper(build_url, config, args):
     return urls
 
 
-def coa_cropland_NAICS_call(url, response_load, args):
+def coa_cropland_NAICS_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    cropland_json = json.loads(response_load.text)
+    cropland_json = json.loads(resp.text)
     df_cropland = pd.DataFrame(data=cropland_json["data"])
     return df_cropland
 
 
-def coa_cropland_NAICS_parse(dataframe_list, args):
+def coa_cropland_NAICS_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     # specify desired data based on domain_desc
     df = df[df['domain_desc'] == 'NAICS CLASSIFICATION']
     # only want ag land and farm operations
@@ -152,7 +146,7 @@ def coa_cropland_NAICS_parse(dataframe_list, args):
     df = df[~df['Description'].str.contains(
         'INSURANCE|OWNED|RENTED|FAILED|FALLOW|IDLE')].reset_index(drop=True)
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # Add hardcoded data
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland_NAICS"

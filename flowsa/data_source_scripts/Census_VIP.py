@@ -12,21 +12,18 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import US_FIPS
 
 
-def census_vip_call(url, response_load, args):
+def census_vip_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df = pd.read_excel(response_load.content,
+    df = pd.read_excel(resp.content,
                        sheet_name='Total',
                        header=3).dropna().reset_index(drop=True)
-    
+
     df.loc[df['Type of Construction:'].str.startswith("  "),
            'Type of Construction:'] = 'Nonresidential - ' + \
                                       df['Type of Construction:'].str.strip()
@@ -43,28 +40,28 @@ def census_vip_call(url, response_load, args):
                                          df_public['Type of Construction:']
     df_private['Type of Construction:'] = 'Private, ' + \
                                           df_private['Type of Construction:']
-    
+
     df2 = pd.concat([df_public, df_private], ignore_index=True)
-    
+
     df2 = df2.melt(id_vars=['Type of Construction:'],
                    var_name='Year',
                    value_name='FlowAmount')
 
     return df2
-    
 
-def census_vip_parse(dataframe_list, args):
+
+def census_vip_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     df['Year'] = df['Year'].astype(str)
-    df = df[df['Year'] == args['year']].reset_index(drop=True)
+    df = df[df['Year'] == year].reset_index(drop=True)
     df = df.rename(columns={'Type of Construction:': 'ActivityProducedBy'})
 
     df['Class'] = 'Money'
@@ -76,10 +73,10 @@ def census_vip_parse(dataframe_list, args):
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Compartment'] = None
     df['Location'] = US_FIPS
-    df = assign_fips_location_system(df, args['year'])
-    df['Year'] = args['year']
+    df = assign_fips_location_system(df, year)
+    df['Year'] = year
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
-    
+
     return df

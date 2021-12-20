@@ -20,12 +20,12 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.validation import compare_df_units
 
 
-def bh_call(url, response_load, args):
+def bh_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
@@ -33,7 +33,7 @@ def bh_call(url, response_load, args):
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
-        bh_df = tabula.read_pdf(io.BytesIO(response_load.content),
+        bh_df = tabula.read_pdf(io.BytesIO(resp.content),
                                 pages=x, stream=True)[0]
         bh_df_list.append(bh_df)
 
@@ -42,17 +42,15 @@ def bh_call(url, response_load, args):
     return bh_df
 
 
-def bh_parse(dataframe_list, args):
+def bh_parse(*, df_list, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
     # concat list of dataframes (info on each page)
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
                             "I-O description": "Description",
                             "gal/$M": "FlowAmount",
