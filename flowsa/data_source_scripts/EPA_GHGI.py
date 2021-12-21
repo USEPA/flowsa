@@ -196,12 +196,6 @@ def ghg_call(*, resp, url, year, **_):
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
                 if is_annex:
                     path = f"Annex/Table {table}.csv"
-                elif table == "3-22b":
-                    if str(year) != '2019':
-                        df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
-                                         skiprows=2, encoding="ISO-8859-1", thousands=",")
-                    else:
-                        df = None
                 else:
                     path = f"Chapter Text/{chapter}/Table {table}.csv"
                 if table != "3-22b":
@@ -213,6 +207,9 @@ def ghg_call(*, resp, url, year, **_):
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
                     elif table != "3-22b":
+                        if table == '3-22' and str(year) != '2019':
+                            df = None
+                            continue
                         # Skip first two rows, as usual, but make headers the next 3 rows:
                         df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                          header=[0, 1, 2], thousands=",")
@@ -233,13 +230,19 @@ def ghg_call(*, resp, url, year, **_):
                                 new_header = col[2]
                             new_headers.append(new_header)
                         df.columns = new_headers
+                    else: # table == "3-22b"
+                        if str(year) != '2019':
+                            df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
+                                             skiprows=2, encoding="ISO-8859-1", thousands=",")
+                        else:
+                            df = None
                 elif '4-' in table:
                     if table == '4-46':
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
                     else:
                         df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                     thousands=",", decimal=".")
+                                         thousands=",", decimal=".")
                 elif 'A-' in table:
                     if table == 'A-17':
                         # A-17  is similar to T 3-23, the entire table is 2012 and
@@ -599,7 +602,7 @@ def ghg_parse(*, df_list, year, **_):
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
         multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_4_46", "EPA_GHGI_T_5_7",
                             "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]
-        source_No_activity = ["EPA_GHGI_T_3_22"]
+        source_No_activity = ["EPA_GHGI_T_3_22", "EPA_GHGI_T_3_22b"]
         source_activity_1 = ["EPA_GHGI_T_3_8", "EPA_GHGI_T_3_9", "EPA_GHGI_T_3_14", "EPA_GHGI_T_3_15",
                              "EPA_GHGI_T_5_3", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_19", "EPA_GHGI_T_A_76",
                              "EPA_GHGI_T_A_77", "EPA_GHGI_T_3_10", "EPA_GHGI_T_A_103"]
