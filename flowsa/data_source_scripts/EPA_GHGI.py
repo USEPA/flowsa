@@ -47,7 +47,7 @@ DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996
 YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
 
 
-def ghg_url_helper(build_url, config, args):
+def ghg_url_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -56,8 +56,6 @@ def ghg_url_helper(build_url, config, args):
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -175,19 +173,17 @@ def annex_yearly_tables(data):
     return df
 
 
-def ghg_call(url, response_load, args):
+def ghg_call(*, resp, url, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
+    :param resp: df, response from url call
     :param url: string, url
-    :param r: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param year: year
     :return: pandas dataframe of original source data
     """
     df = None
-    year = args['year']
-    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         frames = []
         if 'annex' in url:
             is_annex = True
@@ -421,17 +417,16 @@ def strip_char(text):
     return text.strip()
 
 
-def ghg_parse(dataframe_list, args):
+def ghg_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     cleaned_list = []
-    for df in dataframe_list:
+    for df in df_list:
         special_format = False
         source_name = df["SourceName"][0]
         log.info('Processing Source Name %s', source_name)
@@ -466,7 +461,7 @@ def ghg_parse(dataframe_list, args):
         if special_format and "Year" in df.columns:
             id_vars.append("Year")
             # Cast Year column to numeric and delete any years != year
-            df = df[pd.to_numeric(df["Year"], errors="coerce") == int(args['year'])]
+            df = df[pd.to_numeric(df["Year"], errors="coerce") == int(year)]
 
         # Set index on the df:
         df.set_index(id_vars)
@@ -584,13 +579,10 @@ def ghg_parse(dataframe_list, args):
         # Some of the datasets, 4-43 and 4-80, still have years we don't want at this point.
         # Remove rows matching the years we don't want:
         try:
-
             if source_name in year_int:
-                df = df[df['Year'].isin([int(args['year'])])]
+                df = df[df['Year'].isin([int(year)])]
             else:
-                df = df[df['Year'].isin([args['year']])]
-
-
+                df = df[df['Year'].isin([year])]
 
         except AttributeError as ex:
             log.info(ex)
@@ -603,7 +595,7 @@ def ghg_parse(dataframe_list, args):
         df["DistributionType"] = 'None'
         df["LocationSystem"] = 'None'
 
-        df = assign_fips_location_system(df, str(args['year']))
+        df = assign_fips_location_system(df, str(year))
         modified_activity_list = ["EPA_GHGI_T_ES_5"]
         multi_chem_names = ["EPA_GHGI_T_2_1", "EPA_GHGI_T_4_46", "EPA_GHGI_T_5_7",
                             "EPA_GHGI_T_5_29", "EPA_GHGI_T_ES_5"]

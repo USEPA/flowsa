@@ -12,18 +12,15 @@ from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def eia_cbecs_water_call(url, response_load, args):
+def eia_cbecs_water_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df_raw = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw = pd.read_excel(io.BytesIO(resp.content),
                            sheet_name='data').dropna()
     # skip rows and remove extra rows at end of dataframe
     df = pd.DataFrame(df_raw.loc[10:25]).reindex()
@@ -37,17 +34,17 @@ def eia_cbecs_water_call(url, response_load, args):
     return df
 
 
-def eia_cbecs_water_parse(dataframe_list, args):
+def eia_cbecs_water_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False).dropna()
+    df = pd.concat(df_list, sort=False).dropna()
     # drop columns
     df = df.drop(columns=["Distribution of building 25th",
                           "Distribution of building Median",
@@ -75,10 +72,10 @@ def eia_cbecs_water_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of Buildings', 'Class'] = 'Other'
     df.loc[df['FlowName'] == "Total Floor Space", 'Class'] = 'Other'
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # hardcode columns
     df["SourceName"] = 'EIA_CBECS_Water'
-    df['Year'] = args["year"]
+    df['Year'] = year
     df['Location'] = US_FIPS
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp

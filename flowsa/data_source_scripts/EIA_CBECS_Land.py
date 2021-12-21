@@ -20,7 +20,7 @@ from flowsa.literature_values import \
 from flowsa.validation import calculate_flowamount_diff_between_dfs
 
 
-def eia_cbecs_land_URL_helper(build_url, config, args):
+def eia_cbecs_land_URL_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -29,8 +29,6 @@ def eia_cbecs_land_URL_helper(build_url, config, args):
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
@@ -45,20 +43,18 @@ def eia_cbecs_land_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_cbecs_land_call(url, response_load, args):
+def eia_cbecs_land_call(*, resp, url, **_):
     """
     Convert response for calling url to pandas dataframe, begin
     parsing df into FBA format
+    :param resp: df, response from url call
     :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_data = pd.read_excel(io.BytesIO(resp.content),
                                 sheet_name='data')
-    df_raw_rse = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_rse = pd.read_excel(io.BytesIO(resp.content),
                                sheet_name='rse')
 
     if "b5.xlsx" in url:
@@ -135,23 +131,21 @@ def eia_cbecs_land_call(url, response_load, args):
     return df
 
 
-def eia_cbecs_land_parse(dataframe_list, args):
+def eia_cbecs_land_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    # concat dataframes
     df_array = []
-    for dataframes in dataframe_list:
+    for dataframes in df_list:
         # rename column(s)
         dataframes = dataframes.rename(columns={'Name': 'ActivityConsumedBy'})
         if "Location" not in list(dataframes):
             dataframes["Location"] = US_FIPS
-            dataframes = assign_fips_location_system(dataframes, args['year'])
+            dataframes = assign_fips_location_system(dataframes, year)
             dataframes = dataframes.drop(dataframes[dataframes.Description ==
                                                     "Any elevators"].index)
             dataframes["Description"] = dataframes["Description"].apply(
@@ -186,7 +180,7 @@ def eia_cbecs_land_parse(dataframe_list, args):
     df.loc[df['Spread'].isin(["", " "]), 'Spread'] = 0
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_CBECS_Land'
-    df['Year'] = args["year"]
+    df['Year'] = year
     df['FlowName'] = "Commercial, " + df["ActivityConsumedBy"] + \
                      ", Total floorspace, " + df['Description']
     # if 'all buildings' at end of flowname, drop

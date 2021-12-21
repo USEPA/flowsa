@@ -192,7 +192,7 @@ def split(row, header, sub_header, next_line):
     return location_str, flow_name, flow_amount_no_comma
 
 
-def blm_pls_URL_helper(build_url, config, args):
+def blm_pls_URL_helper(*, build_url, year, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -208,7 +208,6 @@ def blm_pls_URL_helper(build_url, config, args):
     """
     # initiate url list for blm pls
     urls = []
-    year = args["year"]
     if year == '2015':
         url_base = config['url']
         url = url_base["base_url_2015"]
@@ -221,14 +220,12 @@ def blm_pls_URL_helper(build_url, config, args):
     return urls
 
 
-def blm_pls_call(url, response_load, args):
+def blm_pls_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: Response, response from url call
+    :param year: year
     :return: pandas dataframe of original source data
     """
     df = pd.DataFrame()
@@ -248,7 +245,7 @@ def blm_pls_call(url, response_load, args):
         "Reform Act Leases",
         "Reform Act Future Interest Leases"]
 
-    if args["year"] == "2007":
+    if year == "2007":
         sub_headers = {
             "Oil and Gas Pre-Reform Act Leases":
                 {"Public Domain": [99], "Acquired Lands": [99]},
@@ -327,7 +324,7 @@ def blm_pls_call(url, response_load, args):
         }
         competitive_page_numbers = [100, 101, 102]
         no_header_page_numbers = [123, 129]
-    elif args["year"] == "2011":
+    elif year == "2011":
         sub_headers = {
             "Oil and Gas Pre-Reform Act Leases":
                 {"Public Domain": [111], "Acquired Lands": [111, 112]},
@@ -403,7 +400,7 @@ def blm_pls_call(url, response_load, args):
         }
         competitive_page_numbers = [113, 114]
         no_header_page_numbers = [136]
-    elif args["year"] == "2012":
+    elif year == "2012":
         sub_headers = {
             "Oil and Gas Pre-Reform Act Leases":
                 {"Public Domain": [108], "Acquired Lands": [108, 109]},
@@ -492,7 +489,7 @@ def blm_pls_call(url, response_load, args):
             for page_number in pg:
                 found_header = False
 
-                pdf_page = tabula.read_pdf(io.BytesIO(response_load.content),
+                pdf_page = tabula.read_pdf(io.BytesIO(resp.content),
                                            pages=page_number, stream=True,
                                            guess=False)[0]
 
@@ -582,18 +579,17 @@ def blm_pls_call(url, response_load, args):
     return df
 
 
-def blm_pls_parse(dataframe_list, args):
+def blm_pls_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
     Location = []
     fips = get_all_state_FIPS_2()
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     df = df.drop(df[df.FlowAmount == ""].index)
     for index, row in df.iterrows():
         if row['LocationStr'] == "Total":
@@ -616,7 +612,7 @@ def blm_pls_parse(dataframe_list, args):
     df['Compartment'] = "ground"
     df["LocationSystem"] = "FIPS_2010"
     df["SourceName"] = 'BLM_PLS'
-    df['Year'] = args["year"]
+    df['Year'] = year
     df['Unit'] = "Acres"
     df['FlowType'] = 'ELEMENTARY_FLOW'
     df['DataReliability'] = 5  # tmp

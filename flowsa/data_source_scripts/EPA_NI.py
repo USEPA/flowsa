@@ -93,7 +93,7 @@ def name_and_unit_split(df_legend):
     return df_legend
 
 
-def ni_url_helper(build_url, config, args):
+def ni_url_helper(*, build_url, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -111,26 +111,26 @@ def ni_url_helper(build_url, config, args):
     return [url]
 
 
-def ni_call(url, response, args):
+def ni_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
     :param url: string, url
-    :param response: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_legend = pd.io.excel.read_excel(io.BytesIO(response.content),
+    df_legend = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                        sheet_name='Legend')
-    if args['year'] == '2002':
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content),
+    if year == '2002':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                         sheet_name='2002')
-    elif args['year'] == '2007':
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content),
+    elif year == '2007':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                         sheet_name='2007')
     else:
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content),
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                         sheet_name='2012')
 
     for col_name in df_raw.columns:
@@ -157,10 +157,10 @@ def ni_call(url, response, args):
     return df
 
 
-def ni_parse(dataframe_list, args):
+def ni_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
@@ -169,10 +169,10 @@ def ni_parse(dataframe_list, args):
     # load arguments necessary for function
 
     df = pd.DataFrame()
-    for df in dataframe_list:
+    for df in df_list:
         df["Class"] = "Chemicals"
         df["SourceName"] = "EPA_NI"
         df["LocationSystem"] = 'HUC'
-        df["Year"] = str(args["year"])
+        df["Year"] = str(year)
         df["FlowType"] = "ELEMENTARY_FLOW"
     return df

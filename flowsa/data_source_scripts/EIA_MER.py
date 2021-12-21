@@ -14,7 +14,7 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def eia_mer_url_helper(build_url, config, args):
+def eia_mer_url_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url
@@ -23,8 +23,6 @@ def eia_mer_url_helper(build_url, config, args):
     data is obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
@@ -35,17 +33,14 @@ def eia_mer_url_helper(build_url, config, args):
     return urls
 
 
-def eia_mer_call(url, response_load, args):
+def eia_mer_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin
     parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: response, response from url call
     :return: pandas dataframe of original source data
     """
-    with io.StringIO(response_load.text) as fp:
+    with io.StringIO(resp.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
@@ -93,21 +88,21 @@ def decide_consumed(desc):
     return 'None'
 
 
-def eia_mer_parse(dataframe_list, args):
+def eia_mer_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     # Filter only the rows we want, YYYYMM field beginning with 201,
     # for 2010's.
     # For doing year-by-year based on args['year']
-    min_year = int(args['year'] + '00')
-    max_year = int(str(int(args['year']) + 1) + '00')
+    min_year = int(year + '00')
+    max_year = int(str(int(year) + 1) + '00')
     df = df[df['YYYYMM'] > min_year]
     df = df[df['YYYYMM'] < max_year]
 
@@ -140,7 +135,7 @@ def eia_mer_parse(dataframe_list, args):
 
     output = pd.DataFrame(sums)
 
-    output = assign_fips_location_system(output, args["year"])
+    output = assign_fips_location_system(output, year)
 
     # hard code data
     output['Class'] = 'Energy'

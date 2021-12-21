@@ -17,18 +17,18 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 # Read pdf into list of DataFrame
-def epa_cddpath_call(url, response_load, args):
+def epa_cddpath_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df = (pd.io.excel.read_excel(io.BytesIO(response_load.content),
+    df = (pd.io.excel.read_excel(io.BytesIO(resp.content),
                                  sheet_name='Final Results',
                                  # exclude extraneous rows & cols
                                  header=2, nrows=30, usecols="A, B, E",
@@ -44,17 +44,17 @@ def epa_cddpath_call(url, response_load, args):
     return df
 
 
-def epa_cddpath_parse(dataframe_list, args):
+def epa_cddpath_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     # concat list of dataframes (info on each page)
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
 
     # hardcode
     df['Class'] = 'Other'  # confirm this
@@ -64,8 +64,8 @@ def epa_cddpath_parse(dataframe_list, args):
     df.loc[df['ActivityProducedBy'].isna(), 'ActivityProducedBy'] = 'Buildings'
     # df['Compartment'] = 'waste'  # confirm this
     df['Location'] = US_FIPS
-    df = assign_fips_location_system(df, args['year'])
-    df['Year'] = args['year']
+    df = assign_fips_location_system(df, year)
+    df['Year'] = year
     # df['MeasureofSpread'] = "NA"  # none available
     df['DataReliability'] = 5  # confirm this
     df['DataCollection'] = 5  # confirm this
@@ -82,13 +82,13 @@ def write_cdd_path_from_csv():
     return df
 
 
-def combine_cdd_path(url, response_load, args):
+def combine_cdd_path(*, resp, **_):
     """Call function to generate combined dataframe from csv file and
     excel dataset, bringing only those flows from the excel file that are
     not in the csv file
     """
     df_csv = write_cdd_path_from_csv()
-    df_excel = epa_cddpath_call(url, response_load, args)
+    df_excel = epa_cddpath_call(resp=resp)
     df_excel = df_excel[~df_excel['FlowName'].isin(df_csv['FlowName'])]
 
     df = pd.concat([df_csv, df_excel], ignore_index=True)

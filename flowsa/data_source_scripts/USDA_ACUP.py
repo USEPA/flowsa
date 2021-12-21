@@ -11,7 +11,7 @@ from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, abbrev_us_state, log
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def acup_url_helper(build_url, config, args):
+def acup_url_helper(*, build_url, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -43,17 +43,14 @@ def acup_url_helper(build_url, config, args):
     return urls
 
 
-def acup_call(url, response_load, args):
+def acup_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    response_json = json.loads(response_load.text)
+    response_json = json.loads(resp.text)
     # not all states have data, so return empty df if does not exist
     try:
         df = pd.DataFrame(data=response_json["data"])
@@ -64,16 +61,16 @@ def acup_call(url, response_load, args):
     return df
 
 
-def acup_parse(dataframe_list, args):
+def acup_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = pd.concat(dataframe_list, ignore_index=True)
+    df = pd.concat(df_list, ignore_index=True)
 
     # drop unused columns
     df = df.drop(columns=['agg_level_desc', 'location_desc', 'state_alpha',
@@ -136,10 +133,10 @@ def acup_parse(dataframe_list, args):
     df.loc[df['Spread'] == "(D)", 'Spread'] = WITHDRAWN_KEYWORD
 
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # Add hardcoded data
     df['Class'] = "Chemicals"
-    df['SourceName'] = args['source']
+    df['SourceName'] = source
     df['FlowType'] = 'ELEMENTARY_FLOW'
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = 5  # tmp
