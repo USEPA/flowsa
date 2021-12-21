@@ -82,7 +82,7 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba_w_sec: disaggregate_iwms_to_6_digit_naics
+        clean_allocation_fba_w_sec: disaggregate_iwms_to_6_digit_naics_for_water_withdrawal
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"

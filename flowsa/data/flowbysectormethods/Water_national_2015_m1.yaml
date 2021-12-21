@@ -58,13 +58,14 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
         helper_source_year: 2018
         helper_flow: None
         helper_from_scale: state
+        clean_helper_fba_wsec: iwms_aggregation
       activity_set_4:
         names:
         - "Livestock"

@@ -293,6 +293,45 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method, **kwa
     return fba_w_sector
 
 
+def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
+        fba_w_sector, attr, method, **kwargs):
+    """
+    Disaggregate usda coa cropland to naics 6
+    :param fba_w_sector: df, CoA cropland data, FBA format with sector columns
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :param kwargs: dictionary, arguments that might be required for other functions.
+           Currently includes data source name.
+    :return: df, CoA cropland with disaggregated NAICS sectors
+    """
+
+    # define the activity and sector columns to base modifications on
+    # these definitions will vary dependent on class type
+    activity_col = 'ActivityConsumedBy'
+    sector_col = 'SectorConsumedBy'
+
+    # drop rows without assigned sectors
+    fba_w_sector = fba_w_sector[~fba_w_sector[sector_col].isna()].reset_index(drop=True)
+
+    # modify the flowamounts related to the 6 naics 'orchards' are mapped to
+    fba_w_sector = modify_orchard_flowamounts(fba_w_sector, activity_column=activity_col)
+
+    # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
+    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, method, year=attr['allocation_source_year'],
+                                            sector_column=sector_col,
+                                            download_FBA_if_missing=kwargs[
+                                                'download_FBA_if_missing'],
+                                            parameter_drop=['1125'])
+
+    # use ratios of usda 'harvested cropland' to determine missing 6 digit naics
+    fba_w_sector = disaggregate_cropland(fba_w_sector, attr,
+                                         method, year=attr['allocation_source_year'],
+                                         sector_column=sector_col,
+                                         download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+
+    return fba_w_sector
+
+
 def modify_orchard_flowamounts(fba, activity_column):
     """
     In the CoA cropland crosswalk, the activity 'orchards' is mapped
@@ -311,7 +350,8 @@ def modify_orchard_flowamounts(fba, activity_column):
     return fba
 
 
-def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column, download_FBA_if_missing):
+def disaggregate_pastureland(fba_w_sector, attr, method, year,
+                             sector_column, download_FBA_if_missing, **kwargs):
     """
     The USDA CoA Cropland irrigated pastureland data only links
     to the 3 digit NAICS '112'. This function uses state
@@ -347,7 +387,10 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column, do
         # subset to rows related to pastureland
         df_f = df_f.loc[df_f['ActivityConsumedBy'].apply(lambda x: x[0:3]) == '112']
         # drop rows with "&'
-        df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')].reset_index(drop=True)
+        df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
+        if 'parameter_drop' in kwargs:
+            # drop aquaculture because pastureland not used for aquaculture
+            df_f = df_f[~df_f['ActivityConsumedBy'].isin(kwargs['parameter_drop'])]
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
         # estimate suppressed data by equal allocation
