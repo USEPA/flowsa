@@ -629,6 +629,32 @@ def rename_log_file(filename, fb_meta):
     shutil.copy(log_file, new_log_name)
 
 
+def return_true_source_catalog_name(sourcename):
+    """
+    Drop any extensions on source name until find the name in source catalog
+    """
+    while (load_yaml_dict('source_catalog').get(sourcename) is None) & ('_' in sourcename):
+        sourcename = sourcename.rsplit("_", 1)[0]
+    return sourcename
+
+
+def check_activities_sector_like(sourcename_load):
+    """
+    Check if the activities in a df are sector-like,
+    if cannot find the sourcename in the source catalog, drop extensions on the
+    source name
+    """
+    sourcename = return_true_source_catalog_name(sourcename_load)
+
+    try:
+        sectorLike = load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']
+    except KeyError:
+        log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
+                  sourcename_load, sourcename)
+
+    return sectorLike
+
+
 def str2bool(v):
     """
     Convert string to boolean

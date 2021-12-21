@@ -32,4 +32,4 @@ if __name__ == '__main__':
     df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" +
-              "Crosswalk_BEA_2012_Detail_toNAICS.csv", index=False)
+              "NAICS_Crosswalk_BEA_2012_Detail.csv", index=False)

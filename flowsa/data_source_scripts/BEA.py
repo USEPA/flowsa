@@ -110,7 +110,7 @@ def bea_make_detail_br_parse(*, year, **_):
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
-    df["SourceName"] = "BEA_Make_BR"
+    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
     # original unit in million USD
@@ -159,17 +159,18 @@ def bea_make_ar_parse(*, year, **_):
     return df
 
 
-def subset_BEA_Use(df, attr, **_):
+def subset_BEA_table(df, attr, **_):
     """
-    Function to modify loaded BEA table based on data in the FBA method yaml
+    Modify loaded BEA table (make or use) based on data in the FBA method yaml
     :param df: df, flowbyactivity format
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe
     """
-    commodity = attr['clean_parameter']
-    df = df.loc[df['ActivityProducedBy'] == commodity]
+    # extract commodity to filter and which Activity column used to filter
+    (commodity, ActivityCol), *rest = attr['clean_parameter'].items()
+    df = df.loc[df[ActivityCol] == commodity].reset_index(drop=True)
 
     # set column to None to enable generalizing activity column later
-    df.loc[:, 'ActivityProducedBy'] = None
+    df.loc[:, ActivityCol] = None
 
     return df

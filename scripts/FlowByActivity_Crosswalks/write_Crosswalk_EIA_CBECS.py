@@ -70,4 +70,4 @@ if __name__ == '__main__':
 
         # save as csv
         df.to_csv(datapath + "activitytosectormapping/" +
-                  "Crosswalk_EIA_CBECS_" + r + "_toNAICS.csv", index=False)
+                  "NAICS_Crosswalk_EIA_CBECS_" + r + ".csv", index=False)
