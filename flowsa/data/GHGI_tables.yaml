@@ -304,7 +304,7 @@ Annex:
         "activity": "CO"
         "desc": "CO Emissions from Stationary Combustion (kt)"
       "A-79": # Not a primary emissions datasource
-        "class": "Chemicals"
+        "class": "Energy"
         "unit": "mgal"
         "compartment": "air"
         "activity": "Fuel Consumption"
