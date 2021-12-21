@@ -21,5 +21,3 @@ file_list:
   2010:
     #- EQUATES_2010/inputs/nonpt/MYR_nonpt_2010only_08sep2020_v0.csv
     - EQUATES_2010/inputs/nonpt/MYR_NONPOINT_gas_stations_interpolation_2010only_09sep2020_v0.csv
-call_response_fxn: equates_call
-parse_response_fxn: equates_parse
