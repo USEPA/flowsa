@@ -130,7 +130,7 @@ def proportional_allocation(df, attr):
     return allocation_df
 
 
-def proportional_allocation_by_location_and_activity(df, sectorcolumn):
+def proportional_allocation_by_location_and_activity(df_load, sectorcolumn):
     """
     Creates a proportional allocation within each aggregated sector within a location
     :param df: df with sector columns
@@ -139,18 +139,25 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     """
 
     # tmp replace NoneTypes with empty cells
-    df = replace_NoneType_with_empty_cells(df)
+    df = replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
 
-    # denominator summed from highest level of sector grouped by location
-    short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
-    # want to create denominator based on short_length
-    denom_df = \
-        df.loc[df[sectorcolumn].apply(lambda x:
-                                      len(x) == short_length)].reset_index(drop=True)
+    # want to create denominator based on shortest length naics for each
+    # activity/location
     grouping_cols = [e for e in ['FlowName', 'Location', 'Activity',
-                                 'ActivityConsumedBy', 'ActivityProducedBy']
-                     if e in denom_df.columns.values.tolist()]
-    denom_df.loc[:, 'Denominator'] = denom_df.groupby(grouping_cols)['HelperFlow'].transform('sum')
+                                 'ActivityConsumedBy', 'ActivityProducedBy',
+                                 'Class', 'SourceName', 'Unit', 'FlowType',
+                                 'Compartment', 'Year']
+                     if e in df.columns.values.tolist()]
+    activity_cols = [e for e in ['Activity', 'ActivityConsumedBy',
+                                 'ActivityProducedBy']
+                     if e in df.columns.values.tolist()]
+    # trim whitespace
+    df['Sector'] = df['Sector'].str.strip()
+    denom_df = \
+        df.loc[df['Sector'].str.len().sort_values().index].drop_duplicates(
+            subset=activity_cols)
+    denom_df.loc[:, 'Denominator'] = \
+        denom_df.groupby(grouping_cols)['HelperFlow'].transform('sum')
 
     # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
     possible_column_headers = ('Location', 'LocationSystem', 'Year',
