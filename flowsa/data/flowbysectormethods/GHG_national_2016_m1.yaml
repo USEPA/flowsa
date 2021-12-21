@@ -476,11 +476,11 @@ source_names:
           names:
             - "Industry Asphalt & Road Oil"
             - "Industry Distillate Fuel Oil"
-            - "Industry HGL"
+            - "Industry LPG"
             - "Industry Lubricants"
             - "Industry Miscellaneous Products"
-            - "Industry Naphtha (<401° F)"
-            - "Industry Other Oil (>401° F)"
+            - "Industry Naphtha (<401 F)"
+            - "Industry Other Oil (>401 F)"
             - "Industry Other Petroleum (Misc. Prod.)"
             - "Industry Pentanes Plus"
             - "Industry Petroleum Coke"
@@ -494,7 +494,7 @@ source_names:
         activity_set_3: # consumed nat gas to chemical plants
           <<: *fuel_MECS
           names:
-            - "Industry Natural Gas to       Chemical Plants"
+            - "Industry Natural Gas to Chemical Plants"
           allocation_source: "EIA_MECS_Energy"
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
