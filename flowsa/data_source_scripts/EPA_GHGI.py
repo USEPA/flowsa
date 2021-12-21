@@ -196,7 +196,7 @@ def ghg_call(*, resp, url, year, **_):
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
                 if is_annex:
                     path = f"Annex/Table {table}.csv"
-                elif table == "3-21b":
+                elif table == "3-22b":
                     if str(year) != '2019':
                         df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
                                          skiprows=2, encoding="ISO-8859-1", thousands=",")
@@ -204,15 +204,15 @@ def ghg_call(*, resp, url, year, **_):
                         df = None
                 else:
                     path = f"Chapter Text/{chapter}/Table {table}.csv"
-                if table != "3-21b":
+                if table != "3-22b":
                     data = f.open(path)
-                if table not in SPECIAL_FORMAT and table != "3-21b":
+                if table not in SPECIAL_FORMAT and table != "3-22b":
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
                 elif '3-' in table:
                     if table == '3-10':
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
-                    elif table != "3-21b":
+                    elif table != "3-22b":
                         # Skip first two rows, as usual, but make headers the next 3 rows:
                         df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                          header=[0, 1, 2], thousands=",")
