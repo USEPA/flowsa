@@ -296,8 +296,8 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method, **kwa
 def modify_orchard_flowamounts(fba, activity_column):
     """
     In the CoA cropland crosswalk, the activity 'orchards' is mapped
-    to six 6-digit naics. Therefore, after mapping,
-    divide the orchard flow amount by 6.
+    to eight 6-digit naics. Therefore, after mapping,
+    divide the orchard flow amount by 8.
     :param fba: A FlowByActiivty df mapped to sectors
     :param activity_column: The activity column to base FlowAmount modifications
            on (ActivityProducedBy or ActivityConsumedBy)
@@ -305,7 +305,8 @@ def modify_orchard_flowamounts(fba, activity_column):
     """
 
     # divide the Orchards data allocated to NAICS by 6 to avoid double counting
-    fba.loc[fba[activity_column] == 'ORCHARDS', 'FlowAmount'] = fba['FlowAmount'] / 6
+    fba.loc[fba[activity_column] == 'ORCHARDS',
+            'FlowAmount'] = fba['FlowAmount'] / 8
 
     return fba
 
