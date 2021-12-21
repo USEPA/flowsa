@@ -41,7 +41,7 @@ Tables:
         "activity": "N2O"
         "desc": "Table 3-15:  N2O Emissions from Mobile Combustion (MMT CO2 Eq.)"
 
-      "GHGI_Table_3-21b":
+      "3-21b":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"

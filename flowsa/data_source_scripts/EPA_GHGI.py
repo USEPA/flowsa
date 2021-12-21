@@ -196,23 +196,23 @@ def ghg_call(*, resp, url, year, **_):
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
                 if is_annex:
                     path = f"Annex/Table {table}.csv"
-                elif table == "GHGI_Table_3-21b":
+                elif table == "3-21b":
                     if str(year) != '2019':
-                        df = pd.read_csv(externaldatapath + "/" + table + ".csv",
+                        df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
                                          skiprows=2, encoding="ISO-8859-1", thousands=",")
                     else:
                         df = None
                 else:
                     path = f"Chapter Text/{chapter}/Table {table}.csv"
-                if table != "GHGI_Table_3-21b":
+                if table != "3-21b":
                     data = f.open(path)
-                if table not in SPECIAL_FORMAT and table != "GHGI_Table_3-21b":
+                if table not in SPECIAL_FORMAT and table != "3-21b":
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
                 elif '3-' in table:
                     if table == '3-10':
                         df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
-                    elif table != "GHGI_Table_3-21b":
+                    elif table != "3-21b":
                         # Skip first two rows, as usual, but make headers the next 3 rows:
                         df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                          header=[0, 1, 2], thousands=",")
@@ -475,7 +475,7 @@ def ghg_parse(*, df_list, year, **_):
             if source_name == "EPA_GHGI_T_A_10":
                 df = df.drop(columns=['Year'])
             df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
-            df["Year"] = args["year"]
+            df["Year"] = year
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
             if source_name in switch_year_apb:
@@ -541,7 +541,7 @@ def ghg_parse(*, df_list, year, **_):
 
         # Update classes:
         meta = get_table_meta(source_name)
-        if source_name == "EPA_GHGI_T_3_21" and int(args["year"]) < 2015:
+        if source_name == "EPA_GHGI_T_3_21" and int(year) < 2015:
             # skip don't do anything: The lines are blank
             print("There is no data for this year and source")
         elif source_name not in annex_tables:
@@ -571,7 +571,7 @@ def ghg_parse(*, df_list, year, **_):
             df.loc[df["Unit"] != 'TBtu', 'ActivityConsumedBy'] = 'None'
 
         if 'Year' not in df.columns:
-            df['Year'] = args['year']
+            df['Year'] = year
 
         if source_name == "EPA_GHGI_T_4_33":
             df = df.rename(columns={'Year': 'ActivityProducedBy', 'ActivityProducedBy': 'Year'})
