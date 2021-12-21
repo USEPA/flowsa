@@ -20,7 +20,7 @@ from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
     activity_fields
 from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
-    sourceconfigpath, log
+    sourceconfigpath, log, flowbysectormethodpath
 
 
 # Sets default Sector Source Name
@@ -84,16 +84,27 @@ def load_crosswalk(crosswalk_name):
     return cw
 
 
-def load_yaml_dict(filename):
+def load_yaml_dict(filename, flowbytype=None):
     """
     Load the information in 'source_catalog.yaml'
     :return: dictionary containing all information in source_catalog.yaml
     """
-    folder = datapath if filename == 'source_catalog' else sourceconfigpath
+    if filename == 'source_config':
+        folder = datapath
+    else:
+        if flowbytype == 'FBA':
+            folder = sourceconfigpath
+        elif flowbytype == 'FBS':
+            folder = flowbysectormethodpath
+        else:
+            raise KeyError('Must specify either \'FBA\' or \'FBS\'')
     yaml_path = folder + filename + '.yaml'
 
-    with open(yaml_path, 'r') as f:
-        config = yaml.safe_load(f)
+    try:
+        with open(yaml_path, 'r') as f:
+            config = yaml.safe_load(f)
+    except IOError:
+        log.error('%s method file not found', flowbytype)
 
     # Allow for .yaml files to recursively inherit other .yaml files. Keys in
     # children will overwrite the same key from a parent.

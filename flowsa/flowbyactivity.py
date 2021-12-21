@@ -192,7 +192,7 @@ def main(**kwargs):
     year = kwargs['year']
 
     # assign yaml parameters (common.py fxn)
-    config = load_yaml_dict(source)
+    config = load_yaml_dict(source, flowbytype='FBA')
 
     log.info("Creating dataframe list")
     # year input can either be sequential years (e.g. 2007-2009) or single year
