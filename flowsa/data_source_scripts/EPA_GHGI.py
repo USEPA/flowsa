@@ -860,16 +860,14 @@ def get_manufacturing_energy_ratios(year):
     ghgi = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_14',
                                          year=2016,
                                          flowclass='Energy')
-    ghgi['Unit'] = 'Trillion Btu'
-    ghgi = convert_fba_unit(ghgi)
 
     pct_dict = {}
-    for k, v in activities_corr.items():
+    for sector, fuel in activities_corr.items():
         # Calculate percent energy contribution from MECS based on v
-        mecs_energy = mecs.loc[mecs['FlowName'] == v, 'FlowAmount'].values[0]
-        ghgi_energy = ghgi.loc[ghgi['ActivityProducedBy'] == k, 'FlowAmount'].values[0]
+        mecs_energy = mecs.loc[mecs['FlowName'] == fuel, 'FlowAmount'].values[0]
+        ghgi_energy = ghgi.loc[ghgi['ActivityConsumedBy'] == sector, 'FlowAmount'].values[0]
         pct = np.minimum(mecs_energy / ghgi_energy, 1)
-        pct_dict[v] = pct
+        pct_dict[fuel] = pct
 
     return pct_dict
 
@@ -892,11 +890,14 @@ def allocate_industrial_combustion(df):
                            'Coal Industrial': 'Coal',
                            'Natural gas industrial': 'Natural Gas'}
 
-    for k, v in activities_to_split.items():
-        df_subset = df.loc[df['ActivityProducedBy'] == k].reset_index(drop=True)
-        df_subset['FlowAmount'] = df_subset['FlowAmount'] * pct_dict[v]
-        df_subset['ActivityProducedBy'] = f"{k} - Manufacturing"
-        df.loc[df['ActivityProducedBy'] == k, 'FlowAmount'] = df['FlowAmount'] * (1-pct_dict[v])
+    for activity, fuel in activities_to_split.items():
+        df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
+        if len(df_subset) == 0:
+            continue
+        df_subset['FlowAmount'] = df_subset['FlowAmount'] * pct_dict[fuel]
+        df_subset['ActivityProducedBy'] = f"{activity} - Manufacturing"
+        df.loc[df['ActivityProducedBy'] == activity,
+               'FlowAmount'] = df['FlowAmount'] * (1-pct_dict[fuel])
         df = pd.concat([df, df_subset], ignore_index=True)
 
     return df
