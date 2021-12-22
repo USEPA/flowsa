@@ -412,7 +412,7 @@ def strip_char(text):
     Removes the footnote chars from the text
     """
     text = text + " "
-    notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", " i ", " j ", " k "]
+    notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", " i ", " j ", " k ", " b,c ", " h,i ", " f,g "]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -441,7 +441,6 @@ def ghg_parse(*, df_list, year, **_):
         drop_cols = get_unnamed_cols(df)
         df = df.drop(columns=drop_cols, errors='ignore')
         is_cons = is_consumption(source_name)
-
         if not special_format or "T_4_" not in source_name:
             # Rename the PK column from data_type to "ActivityProducedBy" or "ActivityConsumedBy":
             if is_cons:
@@ -764,6 +763,19 @@ def ghg_parse(*, df_list, year, **_):
                     df.loc[index, 'Unit'] = "MMT CO2e"
                     df.loc[index, 'FlowName'] = "CO2"
                     df.loc[index, 'Compartment'] = 'air'
+        elif source_name == "EPA_GHGI_T_A_79":
+            df = df.rename(
+                columns={'ActivityProducedBy': 'ActivityConsumedBy', 'ActivityConsumedBy': 'ActivityProducedBy'})
+            fuel_name = ""
+            for index, row in df.iterrows():
+                if row["ActivityConsumedBy"].startswith(' '):
+                    df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'].strip()
+                    df.loc[index, 'FlowName'] = fuel_name
+                else:
+                    fuel_name = df.loc[index, 'ActivityConsumedBy']
+                    fuel_name = strip_char(fuel_name)
+                    df.loc[index, 'ActivityConsumedBy'] = "All activities"
+                    df.loc[index, 'FlowName'] = fuel_name
         else:
             if source_name in "EPA_GHGI_T_4_80":
                 for index, row in df.iterrows():
