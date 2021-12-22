@@ -767,15 +767,19 @@ def ghg_parse(*, df_list, year, **_):
             df = df.rename(
                 columns={'ActivityProducedBy': 'ActivityConsumedBy', 'ActivityConsumedBy': 'ActivityProducedBy'})
             fuel_name = ""
+            A_79_unit_dict = {'Natural Gas': 'trillion cubic feet',
+                              'Electricity': 'million kilowatt-hours'}
             for index, row in df.iterrows():
-                if row["ActivityConsumedBy"].startswith(' '):
-                    df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'].strip()
+                if row["ActivityConsumedBy"].startswith(' '): # indicates subcategory
+                    df.loc[index, 'ActivityConsumedBy'] = strip_char(df.loc[index, 'ActivityConsumedBy'])
                     df.loc[index, 'FlowName'] = fuel_name
-                else:
+                else: # fuel header
                     fuel_name = df.loc[index, 'ActivityConsumedBy']
                     fuel_name = strip_char(fuel_name)
                     df.loc[index, 'ActivityConsumedBy'] = "All activities"
                     df.loc[index, 'FlowName'] = fuel_name
+                if fuel_name in A_79_unit_dict.keys():
+                    df.loc[index, 'Unit'] = A_79_unit_dict[fuel_name]
         else:
             if source_name in "EPA_GHGI_T_4_80":
                 for index, row in df.iterrows():
