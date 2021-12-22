@@ -46,7 +46,7 @@ from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs, \
     check_for_negative_flowamounts
-from flowsa.allocation import allocate_dropped_sector_data
+from flowsa.allocation import equally_allocate_parent_to_child_naics
 
 
 def parse_args():
@@ -284,7 +284,7 @@ def main(**kwargs):
                 vLog.info('Searching for and allocating FlowAmounts for any parent '
                           'NAICS that were dropped in the subset to '
                           '%s child NAICS', method['target_sector_level'])
-                fbs_agg_2 = allocate_dropped_sector_data(fbs_agg, method['target_sector_level'])
+                fbs_agg_2 = equally_allocate_parent_to_child_naics(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
                 compare_activity_to_sector_flowamounts(

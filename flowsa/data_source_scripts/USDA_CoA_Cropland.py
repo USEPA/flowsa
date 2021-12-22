@@ -16,7 +16,7 @@ from flowsa.schema import flow_by_sector_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, \
     sector_disaggregation, sector_ratios, \
     load_fba_w_standardized_units, equally_allocate_suppressed_parent_to_child_naics
-from flowsa.allocation import allocate_by_sector, allocate_dropped_sector_data
+from flowsa.allocation import allocate_by_sector, equally_allocate_parent_to_child_naics
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
@@ -534,7 +534,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column, downl
     crop = crop.drop(columns=['Location_tmp'])
 
     # equally allocate any further missing naics
-    crop = allocate_dropped_sector_data(crop, 'NAICS_6')
+    crop = equally_allocate_parent_to_child_naics(crop, 'NAICS_6')
 
     # pasture data
     pasture = \
