@@ -213,6 +213,9 @@ def main(**kwargs):
                 if len(flows_subset) == 0:
                     log.warning(f"no data found for flows in {aset}")
                     continue
+                if len(flows_subset[flows_subset['FlowAmount'] != 0]) == 0:
+                    log.warning(f"all flow data for {aset} is 0")
+                    continue
                 # if activities are sector-like, check sectors are valid
                 if check_activities_sector_like(k):
                     flows_subset2 = replace_naics_w_naics_from_another_year(
