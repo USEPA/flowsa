@@ -132,9 +132,11 @@ def proportional_allocation(df, attr):
 
 def proportional_allocation_by_location_and_activity(df_load, sectorcolumn):
     """
-    Creates a proportional allocation within each aggregated sector within a location
-    :param df: df with sector columns
-    :param sectorcolumn: str, sector column for which to create allocation ratios
+    Creates a proportional allocation within each aggregated sector within
+    a location
+    :param df_load: df with sector columns
+    :param sectorcolumn: str, sector column for which to create allocation
+        ratios
     :return: df, with 'FlowAmountRatio' and 'HelperFlow' columns
     """
 
@@ -152,22 +154,28 @@ def proportional_allocation_by_location_and_activity(df_load, sectorcolumn):
                                  'ActivityProducedBy']
                      if e in df.columns.values.tolist()]
     # trim whitespace
-    df['Sector'] = df['Sector'].str.strip()
-    denom_df = \
-        df.loc[df['Sector'].str.len().sort_values().index].drop_duplicates(
-            subset=activity_cols)
+    df[sectorcolumn] = df[sectorcolumn].str.strip()
+    # to create the denominator dataframe first add a column that captures
+    # the sector length
+    denom_df = df.assign(sLen=df[sectorcolumn].str.len())
+    denom_df = denom_df[denom_df['sLen'] == denom_df.groupby(activity_cols)[
+        'sLen'].transform(min)].drop(columns='sLen')
     denom_df.loc[:, 'Denominator'] = \
         denom_df.groupby(grouping_cols)['HelperFlow'].transform('sum')
 
-    # list of column headers, that if exist in df, should be aggregated using the weighted avg fxn
+    # list of column headers, that if exist in df, should be aggregated
+    # using the weighted avg fxn
     possible_column_headers = ('Location', 'LocationSystem', 'Year',
-                               'Activity', 'ActivityConsumedBy', 'ActivityProducedBy')
+                               'Activity', 'ActivityConsumedBy',
+                               'ActivityProducedBy')
     # list of column headers that do exist in the df being aggregated
-    column_headers = [e for e in possible_column_headers if e in denom_df.columns.values.tolist()]
+    column_headers = [e for e in possible_column_headers
+                      if e in denom_df.columns.values.tolist()]
     merge_headers = column_headers.copy()
     column_headers.append('Denominator')
     # create subset of denominator values based on Locations and Activities
-    denom_df_2 = denom_df[column_headers].drop_duplicates().reset_index(drop=True)
+    denom_df_2 = \
+        denom_df[column_headers].drop_duplicates().reset_index(drop=True)
     # merge the denominator column with fba_w_sector df
     allocation_df = df.merge(denom_df_2,
                              how='left',
@@ -176,10 +184,12 @@ def proportional_allocation_by_location_and_activity(df_load, sectorcolumn):
     # calculate ratio
     allocation_df.loc[:, 'FlowAmountRatio'] = \
         allocation_df['HelperFlow'] / allocation_df['Denominator']
-    allocation_df = allocation_df.drop(columns=['Denominator']).reset_index(drop=True)
-    # where parent NAICS are not found in the allocation dataset, make sure those
-    # child NAICS are not dropped
-    allocation_df['FlowAmountRatio'] = allocation_df['FlowAmountRatio'].fillna(1)
+    allocation_df = allocation_df.drop(
+        columns=['Denominator']).reset_index(drop=True)
+    # where parent NAICS are not found in the allocation dataset, make sure
+    # those child NAICS are not dropped
+    allocation_df['FlowAmountRatio'] = \
+        allocation_df['FlowAmountRatio'].fillna(1)
     # fill empty cols with NoneType
     allocation_df = replace_strings_with_NoneType(allocation_df)
     # fill na values with 0
