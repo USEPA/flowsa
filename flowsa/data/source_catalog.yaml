@@ -3,7 +3,7 @@ Blackhurst_IO:
     - Water
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_aggregation_level: "disaggregated"
 BLM_PLS:
   class:
     - Land
