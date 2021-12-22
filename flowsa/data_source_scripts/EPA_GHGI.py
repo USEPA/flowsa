@@ -8,7 +8,6 @@ https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 
 import io
 import zipfile
-import yaml
 import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
@@ -16,11 +15,6 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.common import convert_fba_unit
 from flowsa.settings import log, datapath, externaldatapath
 from flowsa.schema import flow_by_activity_fields
-
-# Read in relevant GHGI tables from yaml
-sourcefile = datapath + 'GHGI_tables.yaml'
-with open(sourcefile, 'r') as f:
-    table_dict = yaml.safe_load(f)
 
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
 A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
@@ -173,13 +167,14 @@ def annex_yearly_tables(data):
     return df
 
 
-def ghg_call(*, resp, url, year, **_):
+def ghg_call(*, resp, url, year, config, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
     :param resp: df, response from url call
     :param url: string, url
     :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: pandas dataframe of original source data
     """
     df = None
@@ -187,10 +182,10 @@ def ghg_call(*, resp, url, year, **_):
         frames = []
         if 'annex' in url:
             is_annex = True
-            t_tables = table_dict['Annex']
+            t_tables = config['Annex']
         else:
             is_annex = False
-            t_tables = table_dict['Tables']
+            t_tables = config['Tables']
         for chapter, tables in t_tables.items():
             for table in tables:
                 # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
@@ -386,24 +381,24 @@ def get_unnamed_cols(df):
     return [col for col in df.columns if "Unnamed" in col]
 
 
-def get_table_meta(source_name):
+def get_table_meta(source_name, config):
     """Find and return table meta from source_name."""
     if "_A_" in source_name:
-        td = table_dict['Annex']
+        td = config['Annex']
     else:
-        td = table_dict['Tables']
+        td = config['Tables']
     for chapter in td.keys():
         for k, v in td[chapter].items():
             if source_name.endswith(k.replace("-", "_")):
                 return v
 
-def is_consumption(source_name):
+def is_consumption(source_name, config):
     """
     Determine whether the given source contains consumption or production data.
     :param source_name: df
     :return: True or False
     """
-    if 'consum' in get_table_meta(source_name)['desc'].lower():
+    if 'consum' in get_table_meta(source_name, config)['desc'].lower():
         return True
     return False
 
@@ -420,11 +415,12 @@ def strip_char(text):
     return text.strip()
 
 
-def ghg_parse(*, df_list, year, **_):
+def ghg_parse(*, df_list, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
     :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
@@ -440,7 +436,7 @@ def ghg_parse(*, df_list, year, **_):
         # Specify to ignore errors in case one of the drop_cols is missing.
         drop_cols = get_unnamed_cols(df)
         df = df.drop(columns=drop_cols, errors='ignore')
-        is_cons = is_consumption(source_name)
+        is_cons = is_consumption(source_name, config)
         if not special_format or "T_4_" not in source_name:
             # Rename the PK column from data_type to "ActivityProducedBy" or "ActivityConsumedBy":
             if is_cons:
@@ -542,7 +538,7 @@ def ghg_parse(*, df_list, year, **_):
             df["Unit"] = "Other"
 
         # Update classes:
-        meta = get_table_meta(source_name)
+        meta = get_table_meta(source_name, config)
         if source_name == "EPA_GHGI_T_3_21" and int(year) < 2015:
             # skip don't do anything: The lines are blank
             print("There is no data for this year and source")
