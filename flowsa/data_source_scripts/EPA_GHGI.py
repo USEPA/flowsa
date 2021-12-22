@@ -763,6 +763,7 @@ def ghg_parse(*, df_list, year, **_):
                 else:
                     df.loc[index, 'Unit'] = "MMT CO2e"
                     df.loc[index, 'FlowName'] = "CO2"
+                    df.loc[index, 'Compartment'] = 'air'
         else:
             if source_name in "EPA_GHGI_T_4_80":
                 for index, row in df.iterrows():
@@ -973,3 +974,8 @@ def clean_HFC_fba(df):
 def remove_HFC_kt(df):
     """clean_fba_before_mapping_df_fxn."""
     return df.loc[df['Unit'] != 'kt']
+
+if __name__ == "__main__":
+    import flowsa
+    fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
+    df = clean_HFC_fba(fba)

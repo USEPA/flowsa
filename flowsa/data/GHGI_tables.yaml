@@ -72,7 +72,7 @@ Tables:
         "desc": "Table 3-40:  CO2 Emissions from Petroleum Systems (MMT CO2)"
       "3-42":
         "class": "Chemicals"
-        "unit": "MT CO2"
+        "unit": "MT CO2e"
         "compartment": "air"
         "activity": "N2O"
         "desc": "Table 3-42:  N2O Emissions from Petroleum Systems (Metric Tons CO2 Eq.)"
