@@ -421,7 +421,7 @@ source_names:
         helper_flow: ["USD2012"]
         helper_from_scale: national
         clean_helper_fba: subset_BEA_table
-        clean_parameter: {"324110": 'ActivityConsumedBy'} # use of petroleum products
+        clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
       activity_set_13:
         <<: *transport_use
         names:
