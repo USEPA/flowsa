@@ -11,6 +11,12 @@ years:
 - 2011
 - 2014
 - 2017
+version_dict:
+    '2017': '2017v1/2017neiApr'
+    '2014': '2014v2/2014neiv2'
+    '2011': '2011v2/2011neiv2'
+    '2008': '2008neiv3'
+
 col_dict:
     '2008': &col_dict
         "FlowName": "description"

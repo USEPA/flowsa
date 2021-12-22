@@ -13,7 +13,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import convert_fba_unit
 
 
-def epa_nei_url_helper(*, build_url, year, **_):
+def epa_nei_url_helper(*, build_url, year, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -22,16 +22,11 @@ def epa_nei_url_helper(*, build_url, year, **_):
     obtained.
     :param build_url: string, base url
     :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
-    version_dict = {
-        '2017': '2017v1/2017neiApr',
-        '2014': '2014v2/2014neiv2',
-        '2011': '2011v2/2011neiv2',
-        '2008': '2008neiv3'
-    }
-
+    version_dict = config['version_dict']
     url = (build_url
            .replace('__year__', year)
            .replace('__version__', version_dict[year]))
