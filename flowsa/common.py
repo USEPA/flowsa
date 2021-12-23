@@ -89,7 +89,7 @@ def load_yaml_dict(filename, flowbytype=None):
     Load the information in 'source_catalog.yaml'
     :return: dictionary containing all information in source_catalog.yaml
     """
-    if filename == 'source_config':
+    if filename == 'source_catalog':
         folder = datapath
     else:
         if flowbytype == 'FBA':
