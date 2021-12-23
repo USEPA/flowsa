@@ -148,33 +148,41 @@ def proportional_allocation(df, attr):
     return allocation_df
 
 
-def proportional_allocation_by_location_and_activity(df, sectorcolumn):
+def proportional_allocation_by_location_and_activity(df_load, sectorcolumn):
     """
     Creates a proportional allocation within each aggregated
     sector within a location
-    :param df: df with sector columns
+    :param df_load: df with sector columns
     :param sectorcolumn: str, sector column for which to create
          allocation ratios
     :return: df, with 'FlowAmountRatio' and 'HelperFlow' columns
     """
 
     # tmp replace NoneTypes with empty cells
-    df = replace_NoneType_with_empty_cells(df)
+    df = replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
 
-    # denominator summed from highest level of sector grouped by location
-    short_length = min(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
-    # want to create denominator based on short_length
-    denom_df = \
-        df.loc[df[sectorcolumn].apply(
-            lambda x: len(x) == short_length)].reset_index(drop=True)
+    # want to create denominator based on shortest length naics for each
+    # activity/location
     grouping_cols = [e for e in ['FlowName', 'Location', 'Activity',
-                                 'ActivityConsumedBy', 'ActivityProducedBy']
-                     if e in denom_df.columns.values.tolist()]
+                                 'ActivityConsumedBy', 'ActivityProducedBy',
+                                 'Class', 'SourceName', 'Unit', 'FlowType',
+                                 'Compartment', 'Year']
+                     if e in df.columns.values.tolist()]
+    activity_cols = [e for e in ['Activity', 'ActivityConsumedBy',
+                                 'ActivityProducedBy']
+                     if e in df.columns.values.tolist()]
+    # trim whitespace
+    df[sectorcolumn] = df[sectorcolumn].str.strip()
+    # to create the denominator dataframe first add a column that captures
+    # the sector length
+    denom_df = df.assign(sLen=df[sectorcolumn].str.len())
+    denom_df = denom_df[denom_df['sLen'] == denom_df.groupby(activity_cols)[
+        'sLen'].transform(min)].drop(columns='sLen')
     denom_df.loc[:, 'Denominator'] = \
         denom_df.groupby(grouping_cols)['HelperFlow'].transform('sum')
 
-    # list of column headers, that if exist in df, should be
-    # aggregated using the weighted avg fxn
+    # list of column headers, that if exist in df, should be aggregated
+    # using the weighted avg fxn
     possible_column_headers = ('Location', 'LocationSystem', 'Year',
                                'Activity', 'ActivityConsumedBy',
                                'ActivityProducedBy')
@@ -184,8 +192,8 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     merge_headers = column_headers.copy()
     column_headers.append('Denominator')
     # create subset of denominator values based on Locations and Activities
-    denom_df_2 = denom_df[column_headers]\
-        .drop_duplicates().reset_index(drop=True)
+    denom_df_2 = \
+        denom_df[column_headers].drop_duplicates().reset_index(drop=True)
     # merge the denominator column with fba_w_sector df
     allocation_df = df.merge(denom_df_2,
                              how='left',
@@ -194,10 +202,10 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     # calculate ratio
     allocation_df.loc[:, 'FlowAmountRatio'] = \
         allocation_df['HelperFlow'] / allocation_df['Denominator']
-    allocation_df = \
-        allocation_df.drop(columns=['Denominator']).reset_index(drop=True)
-    # where parent NAICS are not found in the allocation dataset,
-    # make sure those child NAICS are not dropped
+    allocation_df = allocation_df.drop(
+        columns=['Denominator']).reset_index(drop=True)
+    # where parent NAICS are not found in the allocation dataset, make sure
+    # those child NAICS are not dropped
     allocation_df['FlowAmountRatio'] = \
         allocation_df['FlowAmountRatio'].fillna(1)
     # fill empty cols with NoneType
@@ -208,7 +216,7 @@ def proportional_allocation_by_location_and_activity(df, sectorcolumn):
     return allocation_df
 
 
-def allocate_dropped_sector_data(df_load, target_sector_level):
+def equally_allocate_parent_to_child_naics(df_load, target_sector_level):
     """
     Determine rows of data that will be lost if subset data at
     target sector level.
