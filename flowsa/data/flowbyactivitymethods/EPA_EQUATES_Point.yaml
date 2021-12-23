@@ -1,6 +1,0 @@
-inherits_from: EPA_EQUATES_Common
-file_list:
-  2017:
-    - EQUATES_2017/inputs/ptegu/egucems_2017NEI_POINT_20200412_08jul2020_nf_v1.csv
-    - EQUATES_2017/inputs/airports/airports_2017NEIpost_POINT_20200618_25jun2020_v1.csv
-    - EQUATES_2017/inputs/pt_oilgas/oilgas_2017NEIpost_POINT_20200514_02sep2020_v2.csv
