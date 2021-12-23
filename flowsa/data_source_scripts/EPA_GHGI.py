@@ -941,7 +941,7 @@ def subtract_HFC_transport_emissions(df):
     transport_df = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_103',
                                                  year=df['Year'][0])
     activity_list = ['Mobile AC', 'Comfort Cooling for Trains and Buses',
-                     'Refrigerated Transport']
+                     'Refrigerated Transport'] # Total of all sub categories
     transport_df = transport_df[transport_df['ActivityProducedBy'].isin(activity_list)]
     df.loc[df['ActivityProducedBy'] == 'Refrigeration/Air Conditioning',
            'FlowAmount'] = df['FlowAmount'] - transport_df['FlowAmount'].sum()
@@ -975,10 +975,40 @@ def allocate_HFC_to_residential(df):
     return df
 
 
+def split_HFC_foams(df):
+    """Split HFC emissions from foams into two buckets to be allocated separately.
+
+    Calculate the portion for
+    Polystyrene: 326140
+    Urethane: 326150
+    """
+    make_df = load_fba_w_standardized_units(datasource='BEA_Make_Detail_BeforeRedef',
+                                            year=2012)
+    polystyrene = make_df[(make_df['ActivityProducedBy'] == '326140') &
+                          (make_df['ActivityConsumedBy'] == '326140')
+                          ].reset_index()['FlowAmount'][0]
+    urethane = make_df[(make_df['ActivityProducedBy'] == '326150') &
+                       (make_df['ActivityConsumedBy'] == '326150')
+                       ].reset_index()['FlowAmount'][0]
+
+    activity = 'Foams'
+    df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
+    df_subset['FlowAmount'] = df_subset['FlowAmount'] * (polystyrene / (urethane + polystyrene))
+    df_subset['ActivityProducedBy'] = f"{activity} - Polystyrene"
+    df.loc[df['ActivityProducedBy'] == activity,
+           'FlowAmount'] = df['FlowAmount'] * (urethane / (urethane + polystyrene))
+    df.loc[df['ActivityProducedBy'] == activity,
+           'ActivityProducedBy'] = f"{activity} - Urethane"
+    df = pd.concat([df, df_subset], ignore_index=True)
+
+    return df
+
+
 def clean_HFC_fba(df):
     """clean_fba_before_mapping_df_fxn."""
     df = subtract_HFC_transport_emissions(df)
     df = allocate_HFC_to_residential(df)
+    df = split_HFC_foams(df)
     df = split_HFCs_by_type(df)
     return df
 

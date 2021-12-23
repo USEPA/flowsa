@@ -598,9 +598,13 @@ source_names:
         activity_set_3:
           <<: *use_allocation
           names:
-            - "Foams"
-          clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
-                            "326150": 'ActivityProducedBy'} # Urethane and other foam
+            - "Foams - Polystyrene"
+          clean_parameter: {"326140": 'ActivityProducedBy'} # Polystyrene foam
+        activity_set_4:
+          <<: *use_allocation
+          names:
+            - "Foams - Urethane"
+          clean_parameter: {"326150": 'ActivityProducedBy'} # Urethane and other foam
   "EPA_GHGI_T_A_103": # HFCs from Transportation
       data_format: 'FBA'
       class: Chemicals
