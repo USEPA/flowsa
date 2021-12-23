@@ -29,7 +29,7 @@ from flowsa.common import fips_number_key, load_yaml_dict, \
     str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
     fbs_default_grouping_fields, fbs_grouping_fields_w_activities, \
-    logoutputpath
+    logoutputpath, load_yaml_dict
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
 from flowsa.settings import log, vLog, flowbysectormethodpath, \
@@ -66,21 +66,6 @@ def parse_args():
                          "rather than generating the FBAs in FLOWSA.")
     args = vars(ap.parse_args())
     return args
-
-
-def load_method(method_name):
-    """
-    Loads a flowbysector method from a YAML
-    :param method_name: str, FBS method name (ex. 'Water_national_m1_2015')
-    :return: dictionary, items in the FBS method yaml
-    """
-    sfile = flowbysectormethodpath + method_name + '.yaml'
-    try:
-        with open(sfile, 'r') as f:
-            method = yaml.safe_load(f)
-    except IOError:
-        log.error("FlowBySector method file not found.")
-    return method
 
 
 def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
@@ -139,7 +124,7 @@ def main(**kwargs):
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
-    method = load_method(method_name)
+    method = load_yaml_dict(method_name, flowbytype='FBS')
     # create dictionary of data and allocation datasets
     fb = method['source_names']
     # Create empty list for storing fbs files
