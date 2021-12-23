@@ -18,7 +18,7 @@ from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
     load_fba_w_standardized_units
 from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
-    allocate_dropped_sector_data, equal_allocation
+    equally_allocate_parent_to_child_naics, equal_allocation
 from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.validation import check_if_data_exists_at_geoscale
@@ -48,7 +48,7 @@ def direct_allocation_method(fbs, k, names, method):
                              (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
             # check if an Activity maps to more than one sector, if so, equally allocate
             fbs_subset = equal_allocation(fbs_subset)
-            fbs_subset = allocate_dropped_sector_data(fbs_subset, method['target_sector_level'])
+            fbs_subset = equally_allocate_parent_to_child_naics(fbs_subset, method['target_sector_level'])
             activity_list.append(fbs_subset)
             n_allocated.append(n)
         fbs = pd.concat(activity_list, ignore_index=True)

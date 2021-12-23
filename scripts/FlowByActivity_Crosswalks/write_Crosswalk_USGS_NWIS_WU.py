@@ -81,8 +81,6 @@ def assign_naics(df):
                                 columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Thermoelectric Power', '221114']],
                                 columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221115']],
-                                columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Thermoelectric Power', '221116']],
                                 columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Thermoelectric Power', '221117']],
