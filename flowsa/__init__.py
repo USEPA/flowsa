@@ -130,13 +130,16 @@ def getFlowBySector(methodname,
     return fbs
 
 
-def collapse_FlowBySector(methodname):
+def collapse_FlowBySector(methodname,
+                          download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+                          download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Returns fbs with one sector column in place of two
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-    fbs = flowsa.getFlowBySector(methodname)
+    fbs = flowsa.getFlowBySector(methodname, download_FBAs_if_missing,
+                                 download_FBS_if_missing)
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
     # check data for NoneType in sector column
