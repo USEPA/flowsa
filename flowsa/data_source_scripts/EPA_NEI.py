@@ -13,7 +13,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.common import convert_fba_unit
 
 
-def epa_nei_url_helper(*, build_url, year, **_):
+def epa_nei_url_helper(*, build_url, year, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -22,16 +22,11 @@ def epa_nei_url_helper(*, build_url, year, **_):
     obtained.
     :param build_url: string, base url
     :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
-    version_dict = {
-        '2017': '2017v1/2017neiApr',
-        '2014': '2014v2/2014neiv2',
-        '2011': '2011v2/2011neiv2',
-        '2008': '2008neiv3'
-    }
-
+    version_dict = config['version_dict']
     url = (build_url
            .replace('__year__', year)
            .replace('__version__', version_dict[year]))
@@ -55,41 +50,20 @@ def epa_nei_call(*, resp, **_):
     return pd.concat(df_list)
 
 
-def epa_nei_global_parse(*, df_list, source, year, **_):
+def epa_nei_global_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     df = pd.concat(df_list, sort=True)
 
     # rename columns to match flowbyactivity format
-    if year == '2017':
-        df = df.rename(columns={"pollutant desc": "FlowName",
-                                "total emissions": "FlowAmount",
-                                "scc": "ActivityProducedBy",
-                                "fips code": "Location",
-                                "emissions uom": "Unit",
-                                "pollutant code": "Description"})
-
-    elif year == '2014':
-        df = df.rename(columns={"pollutant_desc": "FlowName",
-                                "total_emissions": "FlowAmount",
-                                "scc": "ActivityProducedBy",
-                                "state_and_county_fips_code": "Location",
-                                "uom": "Unit",
-                                "pollutant_cd": "Description"})
-
-    elif year == '2011' or year == '2008':
-        df = df.rename(columns={"description": "FlowName",
-                                "total_emissions": "FlowAmount",
-                                "scc": "ActivityProducedBy",
-                                "state_and_county_fips_code": "Location",
-                                "uom": "Unit",
-                                "pollutant_cd": "Description"})
+    col_dict = {value: key for (key, value) in config['col_dict'][year].items()}
+    df = df.rename(columns=col_dict)
 
     # make sure FIPS are string and 5 digits
     df['Location'] = df['Location'].astype('str').apply('{:0>5}'.format)
@@ -100,12 +74,8 @@ def epa_nei_global_parse(*, df_list, source, year, **_):
     df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
 
     # drop all other columns
-    df.drop(columns=df.columns.difference(['FlowName',
-                                           'FlowAmount',
-                                           'ActivityProducedBy',
-                                           'Location',
-                                           'Unit',
-                                           'Description']), inplace=True)
+    df.drop(columns=df.columns.difference(
+        list(config['col_dict'][year].keys())), inplace=True)
 
     # to align with other processed NEI data (Point from StEWI), units are
     # converted during FBA creation instead of maintained
@@ -122,16 +92,18 @@ def epa_nei_global_parse(*, df_list, source, year, **_):
     return df
 
 
-def epa_nei_onroad_parse(*, df_list, source, year, **_):
+def epa_nei_onroad_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
     :param source: source
     :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = epa_nei_global_parse(df_list=df_list, source=source, year=year)
+    df = epa_nei_global_parse(df_list=df_list, source=source,
+                              year=year, config=config)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -140,17 +112,19 @@ def epa_nei_onroad_parse(*, df_list, source, year, **_):
     return df
 
 
-def epa_nei_nonroad_parse(*, df_list, source, year, **_):
+def epa_nei_nonroad_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
     :param source: source
     :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
 
-    df = epa_nei_global_parse(df_list=df_list, source=source, year=year)
+    df = epa_nei_global_parse(df_list=df_list, source=source,
+                              year=year, config=config)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -159,17 +133,19 @@ def epa_nei_nonroad_parse(*, df_list, source, year, **_):
     return df
 
 
-def epa_nei_nonpoint_parse(*, df_list, source, year, **_):
+def epa_nei_nonpoint_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
     :param source: source
     :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
 
-    df = epa_nei_global_parse(df_list=df_list, source=source, year=year)
+    df = epa_nei_global_parse(df_list=df_list, source=source,
+                              year=year, config=config)
 
     # Add DQ scores
     df['DataReliability'] = 3
