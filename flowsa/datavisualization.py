@@ -25,6 +25,8 @@ def addSectorNames(df):
 
     df = df.merge(cw[['Sector', 'SectorName']], how='left')
 
+    df = df.reset_index(drop=True)
+
     return df
 
 
@@ -78,7 +80,10 @@ def plotFBSresults(method_dict, graphtype, sector_length_display=None,
 
     elif graphtype == 'method_comparison':
         g = sns.relplot(data=df3, x="FlowAmount", y="SectorName",
-                        hue="methodname")
+                        hue="methodname", palette="colorblind",
+                        aspect=1.5)
+        g._legend.set_title('Flow-By-Sector Method')
+        # g.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         g.set_axis_labels("Flow Amount", "")
         g.tight_layout()
 
