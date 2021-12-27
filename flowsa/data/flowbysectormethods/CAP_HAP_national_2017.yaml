@@ -28,7 +28,7 @@ source_names:
           - "AREA HARVESTED"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
       activity_set_3: #Fuel Combustion - Industry #only allocating to 3digits
         allocation_source: "EIA_MECS_Energy"

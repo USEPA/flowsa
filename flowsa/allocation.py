@@ -269,6 +269,11 @@ def equally_allocate_parent_to_child_naics(df_load, target_sector_level):
             else:
                 merge_cols = ['Class', 'FlowType',
                               'Location', 'LocationSystem', 'Unit', 'Year']
+            # If there are activity columns, add activity columns to the
+            # merge columns to ensure there isn't any data loss/the data
+            # merges correctly
+            # if 'ActivityConsumedBy' in df_y.columns:
+            #     merge_cols.extend(['ActivityProducedBy', 'ActivityConsumedBy'])
 
             df_m = pd.merge(df_x, df_y[merge_cols + ['spb_tmp', 'scb_tmp']],
                             how='left',
