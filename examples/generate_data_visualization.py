@@ -5,7 +5,10 @@
 """
 Generate plots to explore Flow-By-Sector model outputs
 """
+
 import flowsa
+from flowsa.settings import plotoutputpath
+import matplotlib.pyplot as plt
 
 sectors = ['111']
 sector_length_display = 6
@@ -18,21 +21,25 @@ method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
                'Employment 2017': 'Employment_national_2017'}
 
 
-fig1 = flowsa.generateFBSplot(method_dict, plottype,
-                              sector_length_display=sector_length_display,
-                              sectors_to_include=sectors,
-                              plot_title='Direct Resource Use for Cropland'
-                              )
+flowsa.generateFBSplot(method_dict, plottype,
+                       sector_length_display=sector_length_display,
+                       sectors_to_include=sectors,
+                       plot_title='Direct Resource Use for Cropland'
+                       )
+# Can manually adjust the figure pop up before saving
+plt.savefig(f"{plotoutputpath}crop_resource_use.png", dpi=300)
+
 
 # Compare the results between water method 1 and method 2
 plottype = 'method_comparison'
 method_dict = {'Water Withdrawal M1 2015': 'Water_national_2015_m1',
                'Water Withdrawal M2 2015': 'Water_national_2015_m2'}
 
-fig2 = flowsa.generateFBSplot(method_dict, plottype,
-                              sector_length_display=sector_length_display,
-                              sectors_to_include=sectors,
-                              plot_title='Comparison of National Water '
-                                         'Withdrawals Method 1 and '
-                                         'Method 2 for Cropland Subset'
+flowsa.generateFBSplot(method_dict, plottype,
+                       sector_length_display=sector_length_display,
+                       sectors_to_include=sectors,
+                       plot_title='Comparison of National Water Withdrawals '
+                                  'Method 1 and Method 2 for Cropland Subset'
                               )
+# Can manually adjust the figure pop up before saving
+plt.savefig(f"{plotoutputpath}crop_water_comp.png", dpi=300)
