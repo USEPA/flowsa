@@ -50,10 +50,7 @@ def stewicombo_to_sector(yaml_load):
     else:
         functions = yaml_load['functions']
 
-    if 'local_inventory_name' in yaml_load:
-        inventory_name = yaml_load['local_inventory_name']
-    else:
-        inventory_name = None
+    inventory_name = yaml_load.get('local_inventory_name')
 
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
 
@@ -70,7 +67,7 @@ def stewicombo_to_sector(yaml_load):
 
     if df is None:
         ## Inventories not found for stewicombo, return empty FBS
-        return None
+        return
 
     df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
@@ -228,24 +225,20 @@ def extract_facility_data(inventory_dict):
     :return: df
     """
     import stewi
-    facility_mapping = pd.DataFrame()
+    facilities_list = []
     # load facility data from stewi output directory, keeping only the facility IDs,
     # and geographic information
-    inventory_list = list(inventory_dict.keys())
 
-    for i in range(len(inventory_dict)):
-        # define inventory name as inventory type + inventory year (e.g., NEI_2017)
-        database = inventory_list[i]
-        year = list(inventory_dict.values())[i]
-        inventory_name = database + '_' + year
+    for database, year in inventory_dict.values():
         facilities = stewi.getInventoryFacilities(database, year)
         facilities = facilities[['FacilityID', 'State', 'County', 'NAICS']]
         if len(facilities[facilities.duplicated(subset='FacilityID', keep=False)]) > 0:
-            log.debug('Duplicate facilities in %s - keeping first listed', inventory_name)
+            log.debug(f'Duplicate facilities in {database}_{year} - keeping first listed')
             facilities.drop_duplicates(subset='FacilityID',
                                        keep='first', inplace=True)
-        facility_mapping = facility_mapping.append(facilities)
+        facilities_list.append(facilities)
 
+    facility_mapping = pd.concat(facilities_list, ignore_index=True)
     # Apply FIPS to facility locations
     facility_mapping = apply_county_FIPS(facility_mapping)
 
@@ -475,13 +468,13 @@ def check_for_missing_sector_data(df, target_sector_level):
 
     return df_allocated
 
+
 def add_stewi_metadata(inventory_dict):
     """
     Access stewi metadata for generating FBS metdata file
     :param inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
-    :return meta: combined dictionary of metadata from each inventory
+    :return: combined dictionary of metadata from each inventory
     """
     from stewicombo.globals import compile_metadata
-    meta = compile_metadata(inventory_dict)
-    return meta
+    return compile_metadata(inventory_dict)
