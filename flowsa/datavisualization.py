@@ -30,14 +30,14 @@ def addSectorNames(df):
     return df
 
 
-def plotFBSresults(method_dict, graphtype, sector_length_display=None,
-                   sectors_to_include=None):
+def plotFBSresults(method_dict, plottype, sector_length_display=None,
+                   sectors_to_include=None, plot_title=None):
     """
     Plot the results of FBS models. Graphic can either be a faceted
     scatterplot or a method comparison
     :param method_dict: dictionary, key is the label, value is the FBS
         methodname
-    :param graphtype: str, 'facet_grid' or 'method_comparison'
+    :param plottype: str, 'facet_graph' or 'method_comparison'
     :param sector_length_display: numeric, sector length by which to
     aggregate, default is 'None' which returns the max sector length in a
     dataframe
@@ -49,9 +49,9 @@ def plotFBSresults(method_dict, graphtype, sector_length_display=None,
     df_list = []
     for label, method in method_dict.items():
         dfm = flowsa.collapse_FlowBySector(method)
-        if graphtype == 'facet_grid':
+        if plottype == 'facet_graph':
             dfm['methodname'] = dfm['Unit'].apply(lambda x: f"{label} ({x})")
-        elif graphtype == 'method_comparison':
+        elif plottype == 'method_comparison':
             dfm['methodname'] = label
         df_list.append(dfm)
     df = pd.concat(df_list, ignore_index=True)
@@ -70,21 +70,28 @@ def plotFBSresults(method_dict, graphtype, sector_length_display=None,
 
     sns.set_style("whitegrid")
 
-    if graphtype == 'facet_grid':
+    # set plot title
+    if plot_title is not None:
+        title = plot_title
+    else:
+        title = ""
+
+    if plottype == 'facet_graph':
         g = sns.FacetGrid(df3, col="methodname",
-                          sharex=False, margin_titles=False)
+                          sharex=False, aspect=1.5, margin_titles=False)
         g.map_dataframe(sns.scatterplot, x="FlowAmount", y="SectorName")
         g.set_axis_labels("Flow Amount", "")
         g.set_titles(col_template="{col_name}")
+        # adjust overall graphic title
+        if plot_title is not None:
+            g.fig.subplots_adjust(top=.8)
+            g.fig.suptitle(title)
         g.tight_layout()
 
-    elif graphtype == 'method_comparison':
+    elif plottype == 'method_comparison':
         g = sns.relplot(data=df3, x="FlowAmount", y="SectorName",
                         hue="methodname", palette="colorblind",
-                        aspect=1.5)
+                        aspect=1.5).set(title=title)
         g._legend.set_title('Flow-By-Sector Method')
-        # g.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         g.set_axis_labels("Flow Amount", "")
         g.tight_layout()
-
-    # g.savefig("facet_plot.png")
