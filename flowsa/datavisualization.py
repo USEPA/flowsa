@@ -90,8 +90,10 @@ def plotFBSresults(method_dict, plottype, sector_length_display=None,
 
     elif plottype == 'method_comparison':
         g = sns.relplot(data=df3, x="FlowAmount", y="SectorName",
-                        hue="methodname", palette="colorblind",
-                        aspect=1.5).set(title=title)
+                        hue="methodname", alpha=0.7, style="methodname",
+                        palette="colorblind",
+                        aspect=1.5
+                        ).set(title=title)
         g._legend.set_title('Flow-By-Sector Method')
         g.set_axis_labels("Flow Amount", "")
         g.tight_layout()
