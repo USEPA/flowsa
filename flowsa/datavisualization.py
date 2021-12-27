@@ -6,9 +6,9 @@ Functions to plot Flow-By-Sector results
 """
 
 import pandas as pd
+import seaborn as sns
 import flowsa
 from flowsa.common import load_crosswalk
-import seaborn as sns
 
 
 def addSectorNames(df):
