@@ -1,7 +1,6 @@
 # write_Crosswalk_BLS_GreenIndustries.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 A NAICS list for green goods and services industries created in 2010.
@@ -17,7 +16,7 @@ https://www.bls.gov/green/industry_by_naics.pdf
 
 """
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.settings import datapath
 
 # read the csv loaded as a raw datafile
 df_raw = pd.read_csv(datapath + "BLS_GreenIndustries_Raw.csv")

@@ -1,7 +1,6 @@
 # write_Crosswalk_USDA_ERS_FIWS.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USDA_ERS_FIWS to NAICS_12.
@@ -12,7 +11,7 @@ The assigned NAICS line up with 7/8 digit USDA CoA Cropland/Livestock
 """
 
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 def assign_naics(df):

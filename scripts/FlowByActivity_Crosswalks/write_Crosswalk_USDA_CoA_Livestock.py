@@ -1,7 +1,6 @@
 # write_Crosswalk_USDA_CoA_Livestock.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the downloaded USDA_CoA_Livestock to NAICS_12.
@@ -15,7 +14,7 @@ NAICS8 are based on NAICS definitions from the Census.
 """
 
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 

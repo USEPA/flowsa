@@ -1,0 +1,15 @@
+source_name: USGS Minneral Yearbook Stone Crushed
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-stonc-adv.xlsx
+date_generated: '2021-03-26'
+# api_name: USGS_MYB_Stone_Crushed
+# api_key_required: false
+years_available: 2013-2017
+format: xls
+url:
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-stonc-adv.xlsx
+url_replace_fxn: usgs_stonecr_url_helper
+call_response_fxn: usgs_stonecr_call
+parse_response_fxn: usgs_stonecr_parse
+years:
+  - 2017
+

@@ -1,0 +1,15 @@
+source_name: USGS Minneral Yearbook Asbestos
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-asbes-adv.xlsx
+date_generated: '2021-03-26'
+years_available: 2014-2018
+api_name: USGS_MYB_Asbestos
+api_key_required: false
+format: xls
+url:
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-asbes-adv.xlsx
+url_replace_fxn: usgs_asbestos_url_helper
+call_response_fxn: usgs_asbestos_call
+parse_response_fxn: usgs_asbestos_parse
+years:
+  - 2017
+

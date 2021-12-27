@@ -11,9 +11,10 @@ Last updated: Thursday, April 16, 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import get_all_state_FIPS_2, vLogDetailed
+from flowsa.common import get_all_state_FIPS_2
+from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import load_household_sector_codes
+from flowsa.common import load_crosswalk
 from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2013, \
     get_area_of_urban_land_occupied_by_houses_2013, \
     get_transportation_sectors_based_on_FHA_fees, get_urban_land_use_for_airports, \
@@ -21,36 +22,27 @@ from flowsa.literature_values import get_area_of_rural_land_occupied_by_houses_2
 from flowsa.validation import compare_df_units
 
 
-def mlu_call(**kwargs):
+def mlu_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     with io.StringIO(response_load.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
     return df
 
 
-def mlu_parse(**kwargs):
+def mlu_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     output = pd.DataFrame()
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
@@ -293,7 +285,7 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
     rural_res = get_area_of_rural_land_occupied_by_houses_2013()
 
     # household codes
-    household = load_household_sector_codes()
+    household = load_crosswalk('household')
     household = household['Code'].drop_duplicates().tolist()
 
     # in df, where sector is a personal expenditure value, and

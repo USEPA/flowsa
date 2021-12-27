@@ -25,35 +25,41 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import log, vLog, flowbysectormethodpath, flow_by_sector_fields, \
-    fips_number_key, flow_by_activity_fields, load_source_catalog, \
-    flowbysectoractivitysetspath, flow_by_sector_fields_w_activity, \
-    paths, fba_activity_fields, rename_log_file, \
+from flowsa.common import fips_number_key, load_yaml_dict, \
+    str2bool, \
+    fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, fbs_default_grouping_fields, \
     fbs_grouping_fields_w_activities, logoutputpath
+from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, flow_by_sector_fields_w_activity
+from flowsa.settings import log, vLog, flowbysectormethodpath, \
+    flowbysectoractivitysetspath, paths
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, function_allocation_method, \
     dataset_allocation_method
 from flowsa.sectormapping import add_sectors_to_flowbyactivity, map_fbs_flows, \
     get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
-    aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn
+    aggregator, subset_df_by_geoscale, sector_disaggregation, dynamically_import_fxn, \
+    update_geoscale
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, reset_fbs_dq_scores
-from flowsa.validation import allocate_dropped_sector_data,\
-    compare_activity_to_sector_flowamounts, \
+from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs
+from flowsa.allocation import allocate_dropped_sector_data
 
 
 def parse_args():
     """
-    Make year and source script parameters
+    Make method parameters
     :return: dictionary, 'method'
     """
     ap = argparse.ArgumentParser()
     ap.add_argument("-m", "--method",
                     required=True, help="Method for flow by sector file. "
                                         "A valid method config file must exist with this name.")
+    ap.add_argument("-d", "--download_FBAs_if_missing", type=str2bool,
+                    required=False, help="Option to download any FBAs not saved locally rather"
+                                         "than generating the FBAs in FLOWSA.")
     args = vars(ap.parse_args())
     return args
 
@@ -73,32 +79,40 @@ def load_method(method_name):
     return method
 
 
-def load_source_dataframe(k, v):
+def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
     """
     Load the source dataframe. Data can be a FlowbyActivity or
     FlowBySector parquet stored in flowsa, or a FlowBySector
     formatted dataframe from another package.
-    :param k: str, The datasource name
-    :param v: dictionary, The datasource parameters
+    :param sourcename: str, The datasource name
+    :param source_dict: dictionary, The datasource parameters
+    :param download_FBA_if_missing: Bool, if True will download FBAs from
+       Data Commons. Default is False.
     :return: df of identified parquet
     """
-    if v['data_format'] == 'FBA':
+    if source_dict['data_format'] == 'FBA':
         # if yaml specifies a geoscale to load, use parameter to filter dataframe
-        if 'source_fba_load_scale' in v:
-            geo_level = v['source_fba_load_scale']
+        if 'source_fba_load_scale' in source_dict:
+            geo_level = source_dict['source_fba_load_scale']
         else:
             geo_level = None
-        vLog.info("Retrieving flowbyactivity for datasource %s in year %s", k, str(v['year']))
-        flows_df = flowsa.getFlowByActivity(datasource=k, year=v['year'], flowclass=v['class'],
-                                            geographic_level=geo_level)
-    elif v['data_format'] == 'FBS':
-        vLog.info("Retrieving flowbysector for datasource %s", k)
-        flows_df = flowsa.getFlowBySector(k)
-    elif v['data_format'] == 'FBS_outside_flowsa':
-        vLog.info("Retrieving flowbysector for datasource %s", k)
-        flows_df = dynamically_import_fxn(k, v["FBS_datapull_fxn"])(v)
+        vLog.info("Retrieving Flow-By-Activity for datasource %s in year %s",
+                  sourcename, str(source_dict['year']))
+        flows_df = flowsa.getFlowByActivity(datasource=sourcename,
+                                            year=source_dict['year'],
+                                            flowclass=source_dict['class'],
+                                            geographic_level=geo_level,
+                                            download_FBA_if_missing=download_FBA_if_missing)
+    elif source_dict['data_format'] == 'FBS':
+        vLog.info("Retrieving flowbysector for datasource %s", sourcename)
+        flows_df = flowsa.getFlowBySector(sourcename)
+    elif source_dict['data_format'] == 'FBS_outside_flowsa':
+        vLog.info("Retrieving flowbysector for datasource %s", sourcename)
+        flows_df = dynamically_import_fxn(sourcename,
+                                          source_dict["FBS_datapull_fxn"])(source_dict)
     else:
-        vLog.error("Data format not specified in method file for datasource %s", k)
+        vLog.error("Data format not specified in method "
+                   "file for datasource %s", sourcename)
 
     return flows_df
 
@@ -114,6 +128,7 @@ def main(**kwargs):
         kwargs = parse_args()
 
     method_name = kwargs['method']
+    download_FBA_if_missing = kwargs.get('download_FBAs_if_missing')
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
@@ -124,7 +139,7 @@ def main(**kwargs):
     fbs_list = []
     for k, v in fb.items():
         # pull fba data for allocation
-        flows = load_source_dataframe(k, v)
+        flows = load_source_dataframe(k, v, download_FBA_if_missing)
 
         if v['data_format'] == 'FBA':
             # ensure correct datatypes and that all fields exist
@@ -146,6 +161,8 @@ def main(**kwargs):
             else:
                 aset_names = None
 
+            # master list of activity names read in from data source
+            ml_act = []
             # create dictionary of allocation datasets for different activities
             activities = v['activity_sets']
             # subset activity data and allocate to sector
@@ -156,6 +173,15 @@ def main(**kwargs):
                 else:
                     names = attr['names']
 
+                # to avoid double counting data from the same source, in the event there are
+                # values in both the APB and ACB columns, if an activity has
+                # already been read in and allocated, remove that activity from the mapped flows
+                # regardless of what activity set the data was read in
+                flows_mapped = flows_mapped[~((flows_mapped[fba_activity_fields[0]].isin(ml_act)) |
+                                              (flows_mapped[fba_activity_fields[1]].isin(ml_act))
+                                              )].reset_index(drop=True)
+                ml_act.extend(names)
+
                 vLog.info("Preparing to handle %s in %s", aset, k)
                 # subset fba data by activity
                 flows_subset =\
@@ -164,7 +190,7 @@ def main(**kwargs):
                                )].reset_index(drop=True)
 
                 # if activities are sector-like, check sectors are valid
-                if load_source_catalog()[k]['sector-like_activities']:
+                if load_yaml_dict('source_catalog')[k]['sector-like_activities']:
                     flows_subset2 =\
                         replace_naics_w_naics_from_another_year(flows_subset,
                                                                 method['target_sector_source'])
@@ -217,13 +243,13 @@ def main(**kwargs):
                     fbs =\
                         dataset_allocation_method(flows_mapped_wsec, attr,
                                                   names, method, k, v, aset,
-                                                  method_name, aset_names)
+                                                  method_name, aset_names, download_FBA_if_missing)
 
                 # drop rows where flowamount = 0 (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
 
                 # define grouping columns dependent on sectors being activity-like or not
-                if load_source_catalog()[k]['sector-like_activities'] is False:
+                if load_yaml_dict('source_catalog')[k]['sector-like_activities'] is False:
                     groupingcols = fbs_grouping_fields_w_activities
                     groupingdict = flow_by_sector_fields_w_activity
                 else:
@@ -292,6 +318,10 @@ def main(**kwargs):
                 log.info("Completed flowbysector for %s", aset)
                 fbs_list.append(fbs_sector_subset)
         else:
+            if 'clean_fbs_df_fxn' in v:
+                flows = dynamically_import_fxn(v["clean_fbs_df_fxn_source"],
+                                               v["clean_fbs_df_fxn"])(flows)
+            flows = update_geoscale(flows, method['target_geoscale'])
             # if the loaded flow dt is already in FBS format, append directly to list of FBS
             log.info("Append %s to FBS list", k)
             # ensure correct field datatypes and add any missing fields

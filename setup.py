@@ -2,20 +2,19 @@
 Setup for flowsa package
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='0.3.2',
-    packages=['flowsa'],
+    version='0.4.1',
+    packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
-    package_data={'flowsa': [
-        "data/*.*", "output/*.*"]},
+    package_data={'flowsa': ["data/*.*"]},
     include_package_data=True,
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.0.8#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy@v0.1.7#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories@v0.10.0#egg=StEWI',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
         'pandas>=1.3.2',
         'pip>=9',
         'setuptools>=41',
@@ -28,7 +27,9 @@ setup(
         'requests_ftp==0.3.1',
         'tabula-py>=2.1.1',
         'numpy>=1.20.1',
-        'bibtexparser>=1.2.0'
+        'bibtexparser>=1.2.0',
+        'joblib >= 1.1.0',
+        'python-dotenv >= 0.19.1'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',

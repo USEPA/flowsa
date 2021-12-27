@@ -9,10 +9,11 @@ import os
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from flowsa.flowbysector import load_method
-from flowsa.common import outputpath, biboutputpath, load_sourceconfig, \
-    load_values_from_literature_citations_config, paths, log, \
+from flowsa.common import load_yaml_dict, \
+    load_values_from_literature_citations_config, \
     load_fbs_methods_additional_fbas_config, load_functions_loading_fbas_config,\
     find_true_file_path, sourceconfigpath
+from flowsa.settings import outputpath, biboutputpath, log
 
 
 def generate_list_of_sources_in_fbs_method(methodname):
@@ -31,7 +32,7 @@ def generate_list_of_sources_in_fbs_method(methodname):
         try:
             sources.append([fbs_k, fbs_v['year']])
         except KeyError:
-            log.info('Could not append %s to datasource list', fbs_k)
+            log.info('Could not append %s to datasource list because missing year', fbs_k)
             continue
         activities = fbs_v['activity_sets']
         for aset, attr in activities.items():
@@ -52,6 +53,9 @@ def generate_list_of_sources_in_fbs_method(methodname):
                         fxn_config = load_functions_loading_fbas_config()[fxn][fba]
                         sources.append([fxn_config['source'], y])
     except KeyError:
+        # if no additional fbas than pass
+        log.info(f'There are no additional Flow-By-Activities '
+                 'used in generating %s', methodname)
         pass
 
     return sources
@@ -71,7 +75,7 @@ def load_source_dict(sourcename):
     except KeyError:
         # else check if file exists, then try loading citation information from source yaml
         sourcename = find_true_file_path(sourceconfigpath, sourcename, "yaml")
-        config = load_sourceconfig(sourcename)
+        config = load_yaml_dict(sourcename)
 
     return config
 
@@ -132,8 +136,8 @@ def generate_fbs_bibliography(methodname):
                         # append each entry to a list of BibDatabase entries
                         bib_list.append(db)
                 except KeyError:
-                    log.warning('Missing information needed to create bib for %s, %s',
-                                source[0], source[1])
+                    log.exception('Missing information needed to create bib for %s, %s',
+                                  source[0], source[1])
                     continue
 
     # write out bibliography

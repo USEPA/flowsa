@@ -1,0 +1,15 @@
+source_name: USGS Minneral Yearbook Lithium
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-lithi.xls
+date_generated: '2021-03-26'
+years_available: 2013-2017
+# api_name: USGS_MYB_Lithium
+# api_key_required: false
+format: xls
+url:
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-lithi.xls
+url_replace_fxn: usgs_lithium_url_helper
+call_response_fxn: usgs_lithium_call
+parse_response_fxn: usgs_lithium_parse
+years:
+  - 2017
+

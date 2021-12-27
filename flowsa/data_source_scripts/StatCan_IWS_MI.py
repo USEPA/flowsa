@@ -12,23 +12,19 @@ from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator,\
     load_fba_w_standardized_units
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
-    load_bea_crosswalk, call_country_code, WITHDRAWN_KEYWORD
+    load_crosswalk, call_country_code, WITHDRAWN_KEYWORD
 from flowsa.validation import compare_df_units
 
 
-def sc_call(**kwargs):
+def sc_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     # Convert response to dataframe
     # read all files in the stat canada zip
     with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
@@ -41,18 +37,13 @@ def sc_call(**kwargs):
     return df
 
 
-def sc_parse(**kwargs):
+def sc_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     # concat dataframes
     df = pd.concat(dataframe_list, sort=False)
     # drop columns
@@ -102,7 +93,7 @@ def sc_parse(**kwargs):
     return df
 
 
-def convert_statcan_data_to_US_water_use(df, attr):
+def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
     """
     Use Canadian GDP data to convert 3 digit canadian water use to us water
     use:
@@ -116,7 +107,8 @@ def convert_statcan_data_to_US_water_use(df, attr):
     # load Canadian GDP data
     gdp = load_fba_w_standardized_units(datasource='StatCan_GDP',
                                         year=attr['allocation_source_year'],
-                                        flowclass='Money')
+                                        flowclass='Money',
+                                        download_FBA_if_missing=download_FBA_if_missing)
 
     # drop 31-33
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
@@ -149,10 +141,11 @@ def convert_statcan_data_to_US_water_use(df, attr):
     # load Canadian GDP data
     us_gdp_load = load_fba_w_standardized_units(datasource='BEA_GDP_GrossOutput',
                                                 year=attr['allocation_source_year'],
-                                                flowclass='Money')
+                                                flowclass='Money',
+                                                download_FBA_if_missing=download_FBA_if_missing)
 
     # load bea crosswalk
-    cw_load = load_bea_crosswalk()
+    cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates()
     cw = cw[cw['NAICS_2012_Code'].apply(lambda x:
                                         len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)

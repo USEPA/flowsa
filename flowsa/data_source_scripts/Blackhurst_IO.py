@@ -21,19 +21,15 @@ from flowsa.validation import compare_df_units
 
 
 # Read pdf into list of DataFrame
-def bh_call(**kwargs):
+def bh_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
@@ -45,17 +41,13 @@ def bh_call(**kwargs):
     return bh_df
 
 
-def bh_parse(**kwargs):
+def bh_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-
     # concat list of dataframes (info on each page)
     df = pd.concat(dataframe_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
@@ -90,7 +82,8 @@ def convert_blackhurst_data_to_gal_per_year(df, **kwargs):
     # load the bea make table
     bmt = load_fba_w_standardized_units(datasource='BEA_Make_AR',
                                         year=kwargs['attr']['allocation_source_year'],
-                                        flowclass='Money')
+                                        flowclass='Money',
+                                        download_FBA_if_missing=kwargs['download_FBA_if_missing'])
     # drop rows with flowamount = 0
     bmt = bmt[bmt['FlowAmount'] != 0]
 
@@ -124,7 +117,8 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs)
 
     # load 2002 employment data
     bls = load_fba_w_standardized_units(datasource='BLS_QCEW', year='2002',
-                                        flowclass='Employment', geographic_level='national')
+                                        flowclass='Employment', geographic_level='national',
+                                        download_FBA_if_missing=kwargs['download_FBA_if_missing'])
 
     # clean df
     bls = clean_bls_qcew_fba(bls, attr=attr)
@@ -169,7 +163,7 @@ def convert_blackhurst_data_to_gal_per_employee(df_wsec, attr, method, **kwargs)
     return df_wratio
 
 
-def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
+def scale_blackhurst_results_to_usgs_values(df_to_scale, attr, download_FBA_if_missing):
     """
     Scale the initial estimates for Blackhurst-based mining estimates to USGS values.
     Oil-based sectors are allocated a larger percentage of the difference between initial
@@ -184,8 +178,8 @@ def scale_blackhurst_results_to_usgs_values(df_to_scale, attr):
     # determine national level published withdrawal data for usgs mining in FBS method year
     pv_load = load_fba_w_standardized_units(datasource="USGS_NWIS_WU",
                                             year=str(attr['helper_source_year']),
-                                            flowclass='Water'
-                                            )
+                                            flowclass='Water',
+                                            download_FBA_if_missing=download_FBA_if_missing)
 
     pv_sub = pv_load[(pv_load['Location'] == str(US_FIPS)) &
                      (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)

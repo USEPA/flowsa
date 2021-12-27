@@ -7,7 +7,8 @@ Create a crosswalk linking Blackhurst IO vectors to NAICS
 
 """
 import pandas as pd
-from flowsa.common import datapath, load_bea_crosswalk
+from flowsa.common import load_crosswalk
+from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
@@ -18,7 +19,7 @@ def assign_naics(df):
     :return: df with assigned Sector columns
     """
 
-    cw_load = load_bea_crosswalk()
+    cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code',
                   'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # least aggregate level that applies is 5 digits

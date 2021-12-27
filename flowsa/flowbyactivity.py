@@ -9,14 +9,15 @@ EX: --year 2015 --source USGS_NWIS_WU
 """
 
 import argparse
-import requests
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
-from flowsa.common import log, make_http_request, load_api_key, load_sourceconfig, \
-    paths, rename_log_file
+from flowsa.common import log, make_http_request, load_api_key, load_yaml_dict, \
+    rename_log_file
+from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
-from flowsa.flowbyfunctions import flow_by_activity_fields, fba_fill_na_dict, \
+from flowsa.flowbyfunctions import fba_fill_na_dict, \
     dynamically_import_fxn
+from flowsa.schema import flow_by_activity_fields
 from flowsa.dataclean import clean_df
 
 
@@ -87,12 +88,10 @@ def assemble_urls_for_query(build_url, config, args):
     if "url_replace_fxn" in config:
         # dynamically import and call on function
         urls = dynamically_import_fxn(args['source'],
-                                      config["url_replace_fxn"])(build_url=build_url,
-                                                                 config=config, args=args)
+                                      config["url_replace_fxn"])(build_url, config, args)
+        return urls
     else:
-        urls = []
-        urls.append(build_url)
-    return urls
+        return [build_url]
 
 
 def call_urls(url_list, args, config):
@@ -106,24 +105,22 @@ def call_urls(url_list, args, config):
     :param config: dictionary, FBA yaml
     :return: list, dfs to concat and parse
     """
-    # start requests session
-    s = requests.Session()
     # identify if url request requires cookies set
     if 'allow_http_request_cookies' in config:
-        set_cookies = 'yes'
+        set_cookies = config['allow_http_request_cookies']
     else:
-        set_cookies = 'no'
+        set_cookies = False
 
     # create dataframes list by iterating through url list
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
             log.info("Calling %s", url)
-            r = make_http_request(url, requests_session=s, set_cookies=set_cookies)
+            r = make_http_request(url, set_cookies=set_cookies)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
                 df = dynamically_import_fxn(args['source'],
-                                            config["call_response_fxn"])(url=url, r=r, args=args)
+                                            config["call_response_fxn"])(url, r, args)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):
@@ -140,7 +137,6 @@ def parse_data(dataframe_list, args, config):
     :param config: dictionary, FBA yaml
     :return: df, single df formatted to FBA
     """
-    # if hasattr(sys.modules[__name__], config["parse_response_fxn"]):
     if "parse_response_fxn" in config:
         # dynamically import and call on function
         df = dynamically_import_fxn(args['source'],
@@ -188,18 +184,21 @@ def main(**kwargs):
         kwargs = parse_args()
 
     # assign yaml parameters (common.py fxn)
-    config = load_sourceconfig(kwargs['source'])
+    config = load_yaml_dict(kwargs['source'])
 
     log.info("Creating dataframe list")
-    # @@@01082021JS - Range of years defined, to support split into multiple Parquets:
+    # year input can either be sequential years (e.g. 2007-2009) or single year
     if '-' in str(kwargs['year']):
         years = str(kwargs['year']).split('-')
-        min_year = int(years[0])
-        max_year = int(years[1]) + 1
-        year_iter = list(range(min_year, max_year))
+        year_iter = list(range(int(years[0]), int(years[1]) + 1))
     else:
         # Else only a single year defined, create an array of one:
         year_iter = [kwargs['year']]
+
+    # check that year(s) are listed in the method yaml, return warning if not
+    years_list = list(set(list(map(int, year_iter))).difference(config['years']))
+    if len(years_list) != 0:
+        log.warning(f'Years not listed in FBA method yaml: {years_list}, data might not exist')
 
     for p_year in year_iter:
         kwargs['year'] = str(p_year)
@@ -211,9 +210,9 @@ def main(**kwargs):
         dataframe_list = call_urls(urls, kwargs, config)
         # concat the dataframes and parse data with specific instructions from source.py
         log.info("Concat dataframe list and parse data")
-        df = parse_data(dataframe_list, kwargs, config)
-        if isinstance(df, list):
-            for frame in df:
+        dfs = parse_data(dataframe_list, kwargs, config)
+        if isinstance(dfs, list):
+            for frame in dfs:
                 if not len(frame.index) == 0:
                     try:
                         source_names = frame['SourceName']
@@ -222,7 +221,7 @@ def main(**kwargs):
                         source_name = kwargs['source']
                     process_data_frame(frame, source_name, kwargs['year'], config)
         else:
-            process_data_frame(df, kwargs['source'], kwargs['year'], config)
+            process_data_frame(dfs, kwargs['source'], kwargs['year'], config)
 
 
 if __name__ == '__main__':

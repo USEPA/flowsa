@@ -1,0 +1,15 @@
+source_name: USGS Minneral Yearbook Gold
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-gold.xls
+date_generated: '2021-03-26'
+# api_name: USGS_MYB_Gold
+# api_key_required: false
+years_available: 2013-2017
+format: xls
+url:
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-gold.xls
+url_replace_fxn: usgs_gold_url_helper
+call_response_fxn: usgs_gold_call
+parse_response_fxn: usgs_gold_parse
+years:
+  - 2017
+

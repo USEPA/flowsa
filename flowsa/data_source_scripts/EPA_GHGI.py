@@ -10,7 +10,8 @@ import io
 import zipfile
 import numpy as np
 import pandas as pd
-from flowsa.flowbyfunctions import assign_fips_location_system, log
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.settings import log
 
 DEFAULT_YEAR = 9999
 
@@ -35,6 +36,8 @@ A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
 
 SPECIAL_FORMAT = ["3-22", "4-43", "4-80", "A-17", "A-93", "A-94", "A-118"]
 SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
+Activity_Format_A = ["T_5_30", "T_A_17", "T_ES_5"]
+Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
 
 DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
              "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
@@ -42,152 +45,149 @@ DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996
 TBL_META = {
     "EPA_GHGI_T_2_1": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Recent Trends in U.S. Greenhouse Gas Emissions and Sinks",
+        "activity": "Recent Trends in U.S. Greenhouse Gas Emissions and Sinks",
         "desc": "Table 2-1:  Recent Trends in U.S. Greenhouse Gas Emissions and Sinks (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_10": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CH4 Emissions from Stationary Combustion",
+        "activity": "Stationary Combustion",
         "desc": "Table 3-10:  CH4 Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_11": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "N2O Emissions from Stationary Combustion",
+        "activity": "Stationary Combustion",
         "desc": "Table 3-11:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_14": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CH4 Emissions from Mobile Combustion",
+        "activity": "Mobile Combustion",
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_15": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CH4 Emissions from Mobile Combustion",
+        "activity": "Mobile Combustion",
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_21": {
         "class": "Energy", "unit": "TBtu", "compartment": "air",
-        "flow_name": "Adjusted Consumption of Fossil Fuels for Non-Energy Uses",
+        "activity": "Adjusted Consumption of Fossil Fuels for Non-Energy Uses",
         "desc": "Table 3-21:  Adjusted Consumption of Fossil Fuels for Non-Energy Uses (TBtu)"
     },
     "EPA_GHGI_T_3_22": {
         "class": "Energy", "unit": "Other", "compartment": "air",
-        "flow_name": "2018 Adjusted Non-Energy Use Fossil Fuel - __type__",
+        "activity": "2018 Adjusted Non-Energy Use Fossil Fuel - __type__",
         "desc": "Table 3-22:  2018 Adjusted Non-Energy Use Fossil Fuel "
                 "Consumption, Storage, and Emissions",
         "year": "2018"
     },
     "EPA_GHGI_T_3_37": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CH4 Emissions from Petroleum Systems",
+        "activity": "Petroleum Systems",
         "desc": "Table 3-37:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_38": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "flow_name": "CH4 Emissions from Petroleum Systems",
+        "activity": "Petroleum Systems",
         "desc": "Table 3-38:  CH4 Emissions from Petroleum Systems (kt CH4)"
     },
     "EPA_GHGI_T_3_39": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CO2 Emissions from Petroleum Systems",
+        "activity": "Petroleum Systems",
         "desc": "Table 3-39:  CO2 Emissions from Petroleum Systems (MMT CO2)"
     },
     "EPA_GHGI_T_3_57": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CH4 Emissions from Natural Gas Systems",
+        "activity": "Natural Gas Systems",
         "desc": "Table 3-57:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_3_59": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Non-combustion CO2 Emissions from Natural Gas Systems",
+        "activity": "Natural Gas Systems",
         "desc": "Table 3-59:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
     },
     "EPA_GHGI_T_4_43": {
         "class": "Chemicals", "unit": "Other", "compartment": "air",
-        "flow_name": "CO2 Emissions from Soda Ash Production",
+        "activity": "Soda Ash Production",
         "desc": "Table 4-43:  CO2 Emissions from Soda Ash Production"
     },
     "EPA_GHGI_T_4_80": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "PFC Emissions from Aluminum Production",
+        "activity": "Aluminum Production",
         "desc": "Table 4-80:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_48": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "flow_name": "Production of Selected Petrochemicals",
+        "activity": "Production of Selected Petrochemicals",
         "desc": "Table 4-48:  Production of Selected Petrochemicals (kt)"
     },
     "EPA_GHGI_T_4_94": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture",
+        "activity": "Electronics Manufacture",
         "desc": "Table 4-94:  PFC, HFC, SF6, NF3, and N2O Emissions from "
                 "Electronics Manufacture [1] (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_99": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Emissions of HFCs and PFCs from ODS Substitutes",
+        "activity": "ODS Substitutes",
         "desc": "Table 4-99:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_4_101": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Emissions of HFCs and PFCs from ODS Substitutes",
+        "activity": "ODS Substitutes",
         "desc": "Table 4-101:  Emissions of HFCs and PFCs from "
                 "ODS Substitutes (MMT CO2 Eq.) by Sector"
     },
     "EPA_GHGI_T_5_3": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CH4 Emissions from Enteric Fermentation",
+        "activity": "Enteric Fermentation",
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_7": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "CH4 and N2O Emissions from Manure Management",
+        "activity": "Manure Management",
         "desc": "Table 5-7:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_18": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Direct N2O Emissions from Agricultural Soils "
-                     "by Land Use Type and N Input Type",
+        "activity": "Agricultural Soils by Land Use Type and N Input Type",
         "desc": "Table 5-18:  Direct N2O Emissions from Agricultural " +
                 "Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_19": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "Indirect N2O Emissions from Agricultural Soils",
+        "activity": "Agricultural Soils",
         "desc": "Table 5-19:  Indirect N2O Emissions from Agricultural Soils (MMT CO2 Eq.)"
     },
     "EPA_GHGI_T_5_30": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "flow_name": "CH4, N2O, CO, and NOx Emissions from Field Burning of Agricultural Residues",
+        "activity": "Field Burning of Agricultural Residues",
         "desc": "Table 5-30:  CH4, N2O, CO, and NOx Emissions from Field "
                 "Burning of Agricultural Residues (kt)"
     },
     "EPA_GHGI_T_A_17": {
         "class": "Energy", "unit": "Other", "compartment": "air",
-        "flow_name": "2012 Energy Consumption Data and CO2 Emissions from "
-                     "Fossil Fuel Combustion - __type__",
+        "activity": "Fossil Fuel Combustion - __type__",
         "desc": "2012 Energy Consumption Data and CO2 Emissions from "
                 "Fossil Fuel Combustion by Fuel Type"
     },
     "EPA_GHGI_T_A_93": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "flow_name": "NOx Emissions from Stationary Combustion",
+        "activity": "Stationary Combustion",
         "desc": "NOx Emissions from Stationary Combustion (kt)"
     },
     "EPA_GHGI_T_A_94": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "flow_name": "CO Emissions from Stationary Combustion",
+        "activity": "Stationary Combustion",
         "desc": "CO Emissions from Stationary Combustion (kt)"
     },
     "EPA_GHGI_T_A_118": {
         "class": "Chemicals", "unit": "kt", "compartment": "air",
-        "flow_name": "NMVOCs Emissions from Mobile Combustion",
+        "activity": "Mobile Combustion",
         "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
     },
     "EPA_GHGI_T_ES_5": {
         "class": "Chemicals", "unit": "MMT", "compartment": "air",
-        "flow_name": "U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
-                     "from Land Use, Land-Use Change, and Forestry",
+        "activity": "Land Use, Land-Use Change, and Forestry",
         "desc": "Table ES-5: U.S. Greenhouse Gas Emissions and Removals (Net Flux) " +
                 "from Land Use, Land-Use Change, and Forestry (MMT CO2 Eq.)"
     },
@@ -196,24 +196,18 @@ TBL_META = {
 YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"]
 
 
-def ghg_url_helper(**kwargs):
+def ghg_url_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param kwargs: potential arguments include:
-                   build_url: string, base url
-                   config: dictionary, items in FBA method yaml
-                   args: dictionary, arguments specified when running flowbyactivity.py
-                   flowbyactivity.py ('year' and 'source')
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
-
-    # load the arguments necessary for function
-    build_url = kwargs['build_url']
-    config = kwargs['config']
-
     annex_url = config['url']['annex_url']
     return [build_url, annex_url]
 
@@ -297,21 +291,15 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
     return {'names': names, 'units': units}
 
 
-def ghg_call(**kwargs):
+def ghg_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    url = kwargs['url']
-    response_load = kwargs['r']
-    args = kwargs['args']
-
     df = None
     year = args['year']
     with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
@@ -424,18 +412,13 @@ def is_consumption(source_name):
     return False
 
 
-def ghg_parse(**kwargs):
+def ghg_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     cleaned_list = []
     for df in dataframe_list:
         special_format = False
@@ -513,11 +496,11 @@ def ghg_parse(**kwargs):
         df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
         df.loc[df["SourceName"] == source_name, "Compartment"] = meta["compartment"]
         if not special_format or "T_4_" in source_name:
-            df.loc[df["SourceName"] == source_name, "FlowName"] = meta["flow_name"]
+            df.loc[df["SourceName"] == source_name, "FlowName"] = meta["activity"]
         else:
             if "T_4_" not in source_name:
                 flow_name_units = series_separate_name_and_units(df["FlowName"],
-                                                                 meta["flow_name"],
+                                                                 meta["activity"],
                                                                  meta["unit"])
                 df['Unit'] = flow_name_units['units']
                 df.loc[df["SourceName"] == source_name, "FlowName"] = flow_name_units['names']
@@ -553,8 +536,32 @@ def ghg_parse(**kwargs):
 
         df = assign_fips_location_system(df, str(args['year']))
 
+        if is_cons:
+            df = df.rename(columns={'FlowName': 'ActivityConsumedBy', 'ActivityConsumedBy': 'FlowName'})
+        else:
+            df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
+
+# "EPA_GHGI_T_2_1", "EPA_GHGI_T_3_21", "EPA_GHGI_T_4_48", "EPA_GHGI_T_5_18", "EPA_GHGI_T_5_30",
+        modified_activity_list = ["EPA_GHGI_T_ES_5"]
+
+        if source_name in modified_activity_list:
+
+            if is_cons:
+                df = df.rename(columns={'FlowName': 'ActivityConsumedBy', 'ActivityConsumedBy': 'FlowName'})
+            else:
+                df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
+            if source_name == "EPA_GHGI_T_2_1":
+                df["FlowName"] = "CO2 eq"
+
+
+
+
+
+
         df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
+
+
 
     if cleaned_list:
         for df in cleaned_list:

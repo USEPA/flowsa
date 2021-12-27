@@ -10,35 +10,30 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
-    flow_by_sector_fields, fbs_default_grouping_fields, fbs_fill_na_dict, \
+    fbs_default_grouping_fields, fbs_fill_na_dict, \
     fba_wsec_default_grouping_fields
+from flowsa.schema import flow_by_sector_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, sector_disaggregation, sector_ratios, \
-    load_fba_w_standardized_units, estimate_suppressed_data
-from flowsa.allocation import allocate_by_sector
+    load_fba_w_standardized_units, equally_allocate_parent_to_child_naics
+from flowsa.allocation import allocate_by_sector, allocate_dropped_sector_data
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType, clean_df
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
-from flowsa.validation import compare_df_units, allocate_dropped_sector_data
+from flowsa.validation import compare_df_units
 
 
-def CoA_Cropland_URL_helper(**kwargs):
+def CoA_Cropland_URL_helper(build_url, config, args):
     """
     This helper function uses the "build_url" input from flowbyactivity.py, which
     is a base url for data imports that requires parts of the url text string
     to be replaced with info specific to the data year.
     This function does not parse the data, only modifies the urls from which data is obtained.
-    :param kwargs: potential arguments include:
-                   build_url: string, base url
-                   config: dictionary, items in FBA method yaml
-                   args: dictionary, arguments specified when running flowbyactivity.py
-                   flowbyactivity.py ('year' and 'source')
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :param args: dictionary, arguments specified when running flowbyactivity.py
+        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
-
-    # load the arguments necessary for function
-    build_url = kwargs['build_url']
-    config = kwargs['config']
-
     # initiate url list for coa cropland data
     urls = []
 
@@ -85,36 +80,27 @@ def CoA_Cropland_URL_helper(**kwargs):
     return urls
 
 
-def coa_cropland_call(**kwargs):
+def coa_cropland_call(url, response_load, args):
     """
     Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: potential arguments include:
-                   url: string, url
-                   response_load: df, response from url call
-                   args: dictionary, arguments specified when running
-                   flowbyactivity.py ('year' and 'source')
+    :param kwargs: url: string, url
+    :param kwargs: response_load: df, response from url call
+    :param kwargs: args: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # load arguments necessary for function
-    response_load = kwargs['r']
-
     cropland_json = json.loads(response_load.text)
     df_cropland = pd.DataFrame(data=cropland_json["data"])
     return df_cropland
 
 
-def coa_cropland_parse(**kwargs):
+def coa_cropland_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    dataframe_list = kwargs['dataframe_list']
-    args = kwargs['args']
-
     df = pd.concat(dataframe_list, sort=False)
     # specify desired data based on domain_desc
     df = df[~df['domain_desc'].isin(
@@ -225,6 +211,7 @@ def coa_cropland_parse(**kwargs):
     # Add hardcoded data
     df['Class'] = np.where(df["Unit"] == 'ACRES', "Land", "Other")
     df['SourceName'] = "USDA_CoA_Cropland"
+    df['FlowType'] = 'ELEMENTARY_FLOW'
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
@@ -291,14 +278,15 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba_w_sector, attr, method, **kwa
     fba_w_sector = modify_orchard_flowamounts(fba_w_sector, activity_column=activity_col)
 
     # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
-    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, method,
-                                            year=attr['allocation_source_year'],
-                                            sector_column=sector_col)
+    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, method, year=attr['allocation_source_year'],
+                                           sector_column=sector_col,
+                                           download_FBA_if_missing=kwargs['download_FBA_if_missing'])
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit naics
     fba_w_sector = disaggregate_cropland(fba_w_sector, attr,
                                          method, year=attr['allocation_source_year'],
-                                         sector_column=sector_col)
+                                         sector_column=sector_col,
+                                         download_FBA_if_missing=kwargs['download_FBA_if_missing'])
 
     return fba_w_sector
 
@@ -320,7 +308,7 @@ def modify_orchard_flowamounts(fba, activity_column):
     return fba
 
 
-def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
+def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column, download_FBA_if_missing):
     """
     The USDA CoA Cropland irrigated pastureland data only links
     to the 3 digit NAICS '112'. This function uses state
@@ -346,7 +334,8 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         # load usda coa cropland naics
         df_f = load_fba_w_standardized_units(datasource='USDA_CoA_Cropland_NAICS',
                                              year=year,
-                                             flowclass='Land')
+                                             flowclass='Land',
+                                             download_FBA_if_missing=download_FBA_if_missing)
         # subset to land in farms data
         df_f = df_f[df_f['FlowName'] == 'FARM OPERATIONS']
         # subset to rows related to pastureland
@@ -356,12 +345,12 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(df_f, sectorsourcename=method['target_sector_source'])
         # estimate suppressed data by equal allocation
-        df_f = estimate_suppressed_data(df_f, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
+        df_f = equally_allocate_parent_to_child_naics(df_f, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
         # create proportional ratios
         group_cols = fba_wsec_default_grouping_fields
         group_cols = [e for e in group_cols if
                       e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
-        df_f = allocate_by_sector(df_f, 'proportional', group_cols)
+        df_f = allocate_by_sector(df_f, attr, 'proportional', group_cols)
         # tmp drop NoneTypes
         df_f = replace_NoneType_with_empty_cells(df_f)
         # drop naics = '11
@@ -393,7 +382,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year, sector_column):
     return fba_w_sector
 
 
-def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
+def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column, download_FBA_if_missing):
     """
     In the event there are 4 (or 5) digit naics for cropland
     at the county level, use state level harvested cropland to
@@ -420,7 +409,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
 
     # load the relevant state level harvested cropland by naics
     naics = load_fba_w_standardized_units(datasource="USDA_CoA_Cropland_NAICS", year=year,
-                                          flowclass='Land')
+                                          flowclass='Land', download_FBA_if_missing=download_FBA_if_missing)
     # subset the harvested cropland by naics
     naics = naics[naics['FlowName'] == 'AG LAND, CROPLAND, HARVESTED'].reset_index(drop=True)
     # drop the activities that include '&'
@@ -428,14 +417,12 @@ def disaggregate_cropland(fba_w_sector, attr, method, year, sector_column):
     # add sectors
     naics = add_sectors_to_flowbyactivity(naics, sectorsourcename=method['target_sector_source'])
     # estimate suppressed data by equally allocating parent to child naics
-    naics = estimate_suppressed_data(naics, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
+    naics = equally_allocate_parent_to_child_naics(naics, 'SectorConsumedBy', 3, 'USDA_CoA_Cropland_NAICS')
     # add missing fbs fields
     naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
 
     # aggregate sectors to create any missing naics levels
     group_cols = fbs_default_grouping_fields
-    # group_cols = [e for e in group_cols if e not in ('SectorProducedBy', 'SectorConsumedBy')]
-    # group_cols.append(sector_column)
     naics2 = sector_aggregation(naics, group_cols)
     # add missing naics5/6 when only one naics5/6 associated with a naics4
     naics3 = sector_disaggregation(naics2)

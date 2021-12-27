@@ -1,0 +1,14 @@
+source_name: USGS Minneral Yearbook Manufactured Abrasive
+citable_url: https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/atoms/files/myb1-2017-abras.xls
+date_generated: '2021-03-26'
+years_available: 2017-2018
+# api_name: USGS_MYB_ManufacturedAbrasive
+# api_key_required: false
+format: xlsx
+url:
+  base_url: https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/atoms/files/myb1-2017-abras.xls
+url_replace_fxn: usgs_ma_url_helper
+call_response_fxn: usgs_ma_call
+parse_response_fxn: usgs_ma_parse
+years:
+  - 2017

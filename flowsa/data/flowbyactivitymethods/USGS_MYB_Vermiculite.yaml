@@ -1,0 +1,17 @@
+# Downloads and parses CSV from USGS Vermiculite Statistics and Information on an annual basis.
+---
+source_name: USGS Minneral Yearbook Vermiculite
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-vermi-adv.xlsx
+date_generated: '2021-03-19'
+years_available: 2014-2018
+# api_name: USGS_MYB_Vermiculite
+# api_key_required: false
+format: xls
+url:
+  base_url: "https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-vermi-adv.xlsx"
+url_replace_fxn: usgs_vermiculite_url_helper
+call_response_fxn: usgs_vermiculite_call
+parse_response_fxn: usgs_vermiculite_parse
+years:
+  - 2017
+

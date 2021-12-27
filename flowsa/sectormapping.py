@@ -7,9 +7,11 @@ Contains mapping functions
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
-from flowsa.common import datapath, SECTOR_SOURCE_NAME, activity_fields, load_source_catalog, \
-    load_sector_crosswalk, log, fba_activity_fields
-from flowsa.flowbyfunctions import fbs_activity_fields, load_sector_length_crosswalk
+from flowsa.common import load_yaml_dict, \
+    load_crosswalk, fba_activity_fields, SECTOR_SOURCE_NAME
+from flowsa.schema import activity_fields
+from flowsa.settings import crosswalkpath, log
+from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
@@ -23,7 +25,7 @@ def get_activitytosector_mapping(source):
         source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
-    mapping = pd.read_csv(datapath+'activitytosectormapping/'+'Crosswalk_'+source+'_toNAICS.csv',
+    mapping = pd.read_csv(crosswalkpath +'Crosswalk_'+source+'_toNAICS.csv',
                           dtype={'Activity': 'str',
                                  'Sector': 'str'})
     return mapping
@@ -41,7 +43,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
     """
 
     # First check if source activities are NAICS like - if so make it into a mapping file
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
 
     # for s in pd.unique(flowbyactivity_df['SourceName']):
     s = pd.unique(flowbyactivity_df['SourceName'])[0]
@@ -59,7 +61,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
             levelofSectoragg = kwargs['overwrite_sectorlevel']
     # if data are provided in NAICS format, use the mastercrosswalk
     if src_info['sector-like_activities']:
-        cw = load_sector_crosswalk()
+        cw = load_crosswalk('sector')
         sectors = cw.loc[:, [SECTOR_SOURCE_NAME]]
         # Create mapping df that's just the sectors at first
         mapping = sectors.drop_duplicates()
@@ -86,7 +88,7 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         if levelofSectoragg == 'aggregated':
             mapping = expand_naics_list(mapping, sectorsourcename)
     # Merge in with flowbyactivity by
-    flowbyactivity_wsector_df = flowbyactivity_df
+    flowbyactivity_wsector_df = flowbyactivity_df.copy(deep=True)
     for k, v in activity_fields.items():
         sector_direction = k
         flowbyactivity_field = v[0]["flowbyactivity"]
@@ -100,7 +102,9 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df, sectorsourcename=SECTOR_SOU
         # Merge them in. Critical this is a left merge to preserve all unmapped rows
         flowbyactivity_wsector_df = pd.merge(flowbyactivity_wsector_df,mappings_df_tmp,
                                              how='left', on=flowbyactivity_field)
-    flowbyactivity_wsector_df = flowbyactivity_wsector_df.replace({np.nan: None})
+    for c in ['SectorProducedBy', 'ProducedBySectorType',
+              'SectorConsumedBy', 'ConsumedBySectorType']:
+        flowbyactivity_wsector_df[c] = flowbyactivity_wsector_df[c].replace({np.nan: None})
     # add sector source name
     flowbyactivity_wsector_df = flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
 
@@ -122,7 +126,7 @@ def expand_naics_list(df, sectorsourcename):
     """
 
     # load master crosswalk
-    cw = load_sector_crosswalk()
+    cw = load_crosswalk('sector')
     sectors = cw.loc[:, [sectorsourcename]]
     # drop duplicates
     sectors = sectors.drop_duplicates().dropna()
@@ -183,7 +187,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames, **kwargs):
                     subset_by_column_value = True
 
     # load the source catalog
-    cat = load_source_catalog()
+    cat = load_yaml_dict('source_catalog')
     src_info = cat[source]
     if src_info['sector-like_activities'] is False:
         # read in source crosswalk
@@ -361,7 +365,7 @@ def get_sector_list(sector_level):
     :return: list, sectors at specified sector level
     """
 
-    cw = load_sector_length_crosswalk()
+    cw = load_crosswalk('sector length')
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list

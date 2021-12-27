@@ -21,20 +21,17 @@ Data output saved as csv, retaining assigned file name "foss_landings.csv"
 
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import externaldatapath, get_state_FIPS
+from flowsa.common import get_state_FIPS
+from flowsa.settings import externaldatapath
 
 
-def noaa_parse(**kwargs):
+def noaa_parse(dataframe_list, args):
     """
     Combine, parse, and format the provided dataframes
-    :param kwargs: potential arguments include:
-                   dataframe_list: list of dataframes to concat and format
-                   args: dictionary, used to run flowbyactivity.py ('year' and 'source')
+    :param dataframe_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity specifications
     """
-    # load arguments necessary for function
-    args = kwargs['args']
-
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "foss_landings.csv")
 

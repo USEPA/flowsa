@@ -1,7 +1,6 @@
 # write_Crosswalk_USGS_WU_Coef.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-# ingwersen.wesley@epa.gov
 
 """
 Create a crosswalk linking the USGS Water Use Coefficients
@@ -10,8 +9,9 @@ Activity Names and manually assigning to NAICS
 
 """
 import pandas as pd
-from flowsa.common import datapath
+from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
+
 
 def assign_naics(df):
     """

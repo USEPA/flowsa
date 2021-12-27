@@ -7,7 +7,8 @@ Create a crosswalk linking BEA to NAICS for Make Tables
 
 """
 import pandas as pd
-from flowsa.common import datapath, load_bea_crosswalk
+from flowsa.common import load_crosswalk
+from flowsa.settings import datapath
 from scripts.common_scripts import unique_activity_names, order_crosswalk
 
 
@@ -17,7 +18,7 @@ def assign_naics(df_load):
     :param df_load: df, a FlowByActivity subset that contains unique activity names
     :return: df with assigned Sector columns
     """
-    cw_load = load_bea_crosswalk()
+    cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code',
                   'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # drop all rows with naics >6

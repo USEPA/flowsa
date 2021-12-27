@@ -1,0 +1,15 @@
+source_name: USGS Minneral Yearbook Gallium
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-galli-adv.xlsx
+date_generated: '2021-03-26'
+# api_name: USGS_MYB_Gallium
+# api_key_required: false
+years_available: 2014-2018
+format: xls
+url:
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-galli-adv.xlsx
+url_replace_fxn: usgs_gallium_url_helper
+call_response_fxn: usgs_gallium_call
+parse_response_fxn: usgs_gallium_parse
+years:
+  - 2017
+
