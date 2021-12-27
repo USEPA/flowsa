@@ -29,6 +29,11 @@ fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
 logoutputpath = outputpath + 'Log/'
+plotoutputpath = outputpath + 'Plots/'
+
+# ensure directories exist
+create_paths_if_missing(logoutputpath)
+create_paths_if_missing(plotoutputpath)
 
 DEFAULT_DOWNLOAD_IF_MISSING = False
 
@@ -42,7 +47,7 @@ scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 # logs that are also included in the general info log, one for very specific
 # validation that is only included in the validation log, and a console
 # printout that includes general and validation, but not detailed validation
-create_paths_if_missing(logoutputpath)
+
 
 # format for logging .txt generated
 formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
