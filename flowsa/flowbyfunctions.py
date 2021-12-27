@@ -12,10 +12,11 @@ import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, load_yaml_dict, \
     load_crosswalk, fbs_fill_na_dict, \
-    fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
-    fba_activity_fields, fba_default_grouping_fields, \
-    fba_wsec_default_grouping_fields, fips_number_key, fba_fill_na_dict, \
-    get_flowsa_base_name, fba_mapped_default_grouping_fields
+    fbs_collapsed_default_grouping_fields, return_true_source_catalog_name, \
+    fbs_collapsed_fill_na_dict, fba_activity_fields, \
+    fips_number_key, fba_fill_na_dict, check_activities_sector_like, \
+    fba_mapped_default_grouping_fields, fba_default_grouping_fields, \
+    fba_wsec_default_grouping_fields, get_flowsa_base_name
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
 from flowsa.settings import datasourcescriptspath, log
@@ -192,13 +193,8 @@ def sector_aggregation(df_load, group_cols):
     # if aggregating a df with a 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
-        # load source catalog
-        cat = load_yaml_dict('source_catalog')
-        # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
-        # load catalog info for source
-        src_info = cat[s]
-        sector_like_activities = src_info['sector-like_activities']
+        sector_like_activities = check_activities_sector_like(s)
 
     # if activities are source like, drop from df and group calls,
     # add back in as copies of sector columns columns to keep
@@ -301,13 +297,8 @@ def sector_disaggregation(df_load):
     # a df with a 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
-        # load source catalog
-        cat = load_yaml_dict('source_catalog')
-        # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
-        # load catalog info for source
-        src_info = cat[s]
-        sector_like_activities = src_info['sector-like_activities']
+        sector_like_activities = check_activities_sector_like(s)
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
@@ -675,13 +666,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # if aggregating a df with a 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
-        # load source catalog
-        cat = load_yaml_dict('source_catalog')
-        # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
-        # load catalog info for source
-        src_info = cat[s]
-        sector_like_activities = src_info['sector-like_activities']
+        sector_like_activities = check_activities_sector_like(s)
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
