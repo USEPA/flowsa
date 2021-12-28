@@ -71,7 +71,7 @@ def load_crosswalk(crosswalk_name):
     :return: df, NAICS crosswalk over the years
     """
 
-    cw_dict = {'sector_timseries': 'NAICS_Crosswalk_TimeSeries',
+    cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
                'sector_length': 'NAICS_2012_Crosswalk',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
