@@ -405,7 +405,7 @@ def get_sector_list(sector_level):
     :return: list, sectors at specified sector level
     """
 
-    cw = load_crosswalk('sector length')
+    cw = load_crosswalk('sector_length')
     sector_list = cw[sector_level].unique().tolist()
 
     return sector_list

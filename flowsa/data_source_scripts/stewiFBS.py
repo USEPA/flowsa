@@ -376,7 +376,7 @@ def naics_expansion(facility_NAICS):
     """
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_crosswalk('sector length')
+    cw_load = load_crosswalk('sector_length')
     cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
 
     # subset the naics 4 and 5 columns
@@ -447,7 +447,7 @@ def check_for_missing_sector_data(df, target_sector_level):
 
     activity_field = "SectorProducedBy"
     rows_lost = pd.DataFrame()
-    cw_load = load_crosswalk('sector length')
+    cw_load = load_crosswalk('sector_length')
     for i in range(3, sector_level_key[target_sector_level]):
         # create df of i length
         df_subset = df.loc[df[activity_field].apply(lambda x: len(x) == i)]

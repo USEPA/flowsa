@@ -309,7 +309,7 @@ def sector_disaggregation(df_load):
         df = df[df_cols]
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_crosswalk('sector length')
+    cw_load = load_crosswalk('sector_length')
 
     # for loop min length to 6 digits, where min length cannot be less than 2
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -682,7 +682,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
                              'Description']]
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_crosswalk('sector length')
+    cw_load = load_crosswalk('sector_length')
     cw_melt = cw_load.melt(
         id_vars=["NAICS_6"], var_name="NAICS_Length",
         value_name="NAICS_Match").drop(
