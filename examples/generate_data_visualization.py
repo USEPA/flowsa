@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 
 # Produce facet graph of resources associated with cropland sectors
-sectors = ['111']
+sectors = ['112']
 sector_length_display = 6
 plottype = 'facet_graph'
 method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
@@ -23,10 +23,10 @@ method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
 flowsa.generateFBSplot(method_dict, plottype,
                        sector_length_display=sector_length_display,
                        sectors_to_include=sectors,
-                       plot_title='Direct Resource Use for Cropland'
+                       plot_title='Direct Resource Use for Livestock'
                        )
 # Can manually adjust the figure pop up before saving
-plt.savefig(f"{plotoutputpath}crop_resource_use.png", dpi=300)
+plt.savefig(f"{plotoutputpath}livestock_resource_use.png", dpi=300)
 
 
 # Compare the results between water method 1 and method 2
