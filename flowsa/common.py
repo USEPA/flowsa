@@ -84,6 +84,21 @@ def load_crosswalk(crosswalk_name):
     return cw
 
 
+def return_bea_codes_used_as_naics():
+    """
+
+    :return: list of BEA codes used as NAICS
+    """
+    cw_list = []
+    for cw in ['household', 'government']:
+        df = load_crosswalk(cw)
+        cw_list.append(df)
+    # concat data into single dataframe
+    cw = pd.concat(cw_list, sort=False)
+    code_list = cw['Code'].drop_duplicates().values.tolist()
+    return code_list
+
+
 def load_yaml_dict(filename, flowbytype=None):
     """
     Load the information in 'source_catalog.yaml'
