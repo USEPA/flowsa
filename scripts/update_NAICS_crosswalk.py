@@ -23,61 +23,6 @@ from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_
 from flowsa.settings import datapath, crosswalkpath
 
 
-def write_naics_2012_crosswalk():
-    """
-    Create a NAICS 2 - 6 digit crosswalk
-    :return:
-    """
-
-    # load the useeior mastercrosswalk
-    cw_load = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", dtype=str)
-
-    # load BEA codes that will act as NAICS
-    house = load_crosswalk('household')
-    govt = load_crosswalk('government')
-    bea = pd.concat([house, govt], ignore_index=True).rename(
-        columns={'Code': 'NAICS_2012_Code',
-                 'NAICS_Level_to_Use_For': 'secLength'})
-    bea = bea[['NAICS_2012_Code', 'secLength']]
-
-    # extract naics 2012 code column and drop duplicates and empty cells
-    cw = cw_load[['NAICS_2012_Code']].drop_duplicates()
-    cw = replace_NoneType_with_empty_cells(cw)
-    cw = cw[cw['NAICS_2012_Code'] != '']
-    # also drop the existing household and government codes because not all
-    # inclusive and does not conform to NAICS length standards
-    cw = cw[~cw['NAICS_2012_Code'].str.startswith(
-        tuple(['F0', 'S0']))].reset_index(drop=True)
-
-    # add column of sector length
-    cw['secLength'] = cw['NAICS_2012_Code'].apply(
-        lambda x: f"NAICS_{str(len(x))}")
-    # add bea codes subbing for NAICS
-    cw2 = pd.concat([cw, bea], ignore_index=True)
-
-    # create dictionary of dataframes
-    d = dict(tuple(cw2.groupby('secLength')))
-
-    for l in range(2, 12):
-        d[f'NAICS_{l}'] = d[f'NAICS_{l}'][['NAICS_2012_Code']].reset_index(
-            drop=True).rename(
-            columns={'NAICS_2012_Code': f'NAICS_{l}'})
-
-    naics_cw = d['NAICS_2']
-    for l in range(3, 7):
-        naics_cw = (d[f'NAICS_{l}'].assign(temp=d[f'NAICS_{l}'][
-            f'NAICS_{l}'].str.extract(
-            pat=f"({'|'.join(naics_cw[f'NAICS_{l-1}'])})")).merge(
-            naics_cw, how='right', left_on='temp',
-            right_on=f'NAICS_{l-1}',
-            suffixes=['', '_y'])).drop(columns=['temp'])
-
-    # reorder
-    naics_cw = naics_cw.reindex(sorted(naics_cw.columns), axis=1)
-    # save as csv
-    naics_cw.to_csv(datapath + "NAICS_2012_Crosswalk.csv", index=False)
-
-
 def load_naics_02_to_07_crosswalk():
     """
     Load the 2002 to 2007 crosswalk from US Census
@@ -110,7 +55,7 @@ def update_naics_crosswalk():
     flowsa datasets - want to add any NAICS > 6 digits
 
     Add NAICS 2002
-    :return:
+    :return: df of NAICS that include any unofficial NAICS
     """
 
     # read useeior master crosswalk, subset NAICS columns
@@ -197,9 +142,64 @@ def update_naics_crosswalk():
                          'NAICS_2012_Code', 'NAICS_2017_Code']]
 
     # save as csv
-    naics_cw.to_csv(datapath + "NAICS_Crosswalk.csv", index=False)
+    naics_cw.to_csv(datapath + "NAICS_Crosswalk_TimeSeries.csv", index=False)
+
+
+def write_naics_2012_crosswalk():
+    """
+    Create a NAICS 2 - 6 digit crosswalk
+    :return:
+    """
+
+    # load the useeior mastercrosswalk
+    cw_load = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", dtype=str)
+
+    # load BEA codes that will act as NAICS
+    house = load_crosswalk('household')
+    govt = load_crosswalk('government')
+    bea = pd.concat([house, govt], ignore_index=True).rename(
+        columns={'Code': 'NAICS_2012_Code',
+                 'NAICS_Level_to_Use_For': 'secLength'})
+    bea = bea[['NAICS_2012_Code', 'secLength']]
+
+    # extract naics 2012 code column and drop duplicates and empty cells
+    cw = cw_load[['NAICS_2012_Code']].drop_duplicates()
+    cw = replace_NoneType_with_empty_cells(cw)
+    cw = cw[cw['NAICS_2012_Code'] != '']
+    # also drop the existing household and government codes because not all
+    # inclusive and does not conform to NAICS length standards
+    cw = cw[~cw['NAICS_2012_Code'].str.startswith(
+        tuple(['F0', 'S0']))].reset_index(drop=True)
+
+    # add column of sector length
+    cw['secLength'] = cw['NAICS_2012_Code'].apply(
+        lambda x: f"NAICS_{str(len(x))}")
+    # add bea codes subbing for NAICS
+    cw2 = pd.concat([cw, bea], ignore_index=True)
+
+    # create dictionary of dataframes
+    d = dict(tuple(cw2.groupby('secLength')))
+
+    for l in range(2, 12):
+        d[f'NAICS_{l}'] = d[f'NAICS_{l}'][['NAICS_2012_Code']].reset_index(
+            drop=True).rename(
+            columns={'NAICS_2012_Code': f'NAICS_{l}'})
+
+    naics_cw = d['NAICS_2']
+    for l in range(3, 7):
+        naics_cw = (d[f'NAICS_{l}'].assign(temp=d[f'NAICS_{l}'][
+            f'NAICS_{l}'].str.extract(
+            pat=f"({'|'.join(naics_cw[f'NAICS_{l-1}'])})")).merge(
+            naics_cw, how='right', left_on='temp',
+            right_on=f'NAICS_{l-1}',
+            suffixes=['', '_y'])).drop(columns=['temp'])
+
+    # reorder
+    naics_cw = naics_cw.reindex(sorted(naics_cw.columns), axis=1)
+    # save as csv
+    naics_cw.to_csv(datapath + "NAICS_2012_Crosswalk.csv", index=False)
 
 
 if __name__ == '__main__':
-    write_naics_2012_crosswalk()
     update_naics_crosswalk()
+    write_naics_2012_crosswalk()
