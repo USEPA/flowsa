@@ -59,8 +59,7 @@ def update_naics_crosswalk():
     """
 
     # read useeior master crosswalk, subset NAICS columns
-    naics_load = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv",
-                             dtype=str)
+    naics_load = load_crosswalk('BEA')
     naics = naics_load[['NAICS_2007_Code', 'NAICS_2012_Code', 'NAICS_2017_Code'
                         ]].drop_duplicates().reset_index(drop=True)
     # convert all rows to string
@@ -151,8 +150,8 @@ def write_naics_2012_crosswalk():
     :return:
     """
 
-    # load the useeior mastercrosswalk
-    cw_load = pd.read_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", dtype=str)
+    # load the useeior mastercrosswalk subset to the naics timeseries
+    cw_load = load_crosswalk('sector_timeseries')
 
     # load BEA codes that will act as NAICS
     house = load_crosswalk('household')
@@ -180,7 +179,7 @@ def write_naics_2012_crosswalk():
     # create dictionary of dataframes
     d = dict(tuple(cw2.groupby('secLength')))
 
-    for l in range(2, 12):
+    for l in range(2, 9):
         d[f'NAICS_{l}'] = d[f'NAICS_{l}'][['NAICS_2012_Code']].reset_index(
             drop=True).rename(
             columns={'NAICS_2012_Code': f'NAICS_{l}'})
