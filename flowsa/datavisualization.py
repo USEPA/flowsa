@@ -95,5 +95,5 @@ def plotFBSresults(method_dict, plottype, sector_length_display=None,
                         aspect=1.5
                         ).set(title=title)
         g._legend.set_title('Flow-By-Sector Method')
-        g.set_axis_labels("Flow Amount", "")
+        g.set_axis_labels(f"Flow Amount ({df3['Unit'][0]})", "")
         g.tight_layout()
