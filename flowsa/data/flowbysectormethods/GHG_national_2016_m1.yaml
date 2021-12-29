@@ -414,13 +414,14 @@ source_names:
         allocation_flow: ['Distillate Fuel Oil (Diesel Fuel)']
         allocation_compartment: None
         allocation_from_scale: national
+        clean_allocation_fba_w_sec: keep_six_digit_naics
         helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
         helper_method: proportional
         helper_source_class: "Money"
         helper_source_year: 2012
         helper_flow: ["USD2012"]
         helper_from_scale: national
-        clean_helper_fba: subset_BEA_table
+        clean_helper_fba_wsec: subset_and_allocate_BEA_table
         clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
       activity_set_13:
         <<: *transport_use

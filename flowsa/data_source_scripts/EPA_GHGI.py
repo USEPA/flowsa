@@ -13,6 +13,7 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
 from flowsa.common import convert_fba_unit
+from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.settings import log, datapath, externaldatapath
 from flowsa.schema import flow_by_activity_fields
 
@@ -1016,6 +1017,14 @@ def clean_HFC_fba(df):
 def remove_HFC_kt(df):
     """clean_fba_before_mapping_df_fxn."""
     return df.loc[df['Unit'] != 'kt']
+
+
+def keep_six_digit_naics(df_w_sec, **_):
+    df_w_sec = replace_NoneType_with_empty_cells(df_w_sec)
+    df_w_sec = df_w_sec.loc[
+        (df_w_sec['SectorProducedBy'].apply(lambda x: len(x) == 6)) |
+        (df_w_sec['SectorConsumedBy'].apply(lambda x: len(x) == 6))]
+    return df_w_sec
 
 if __name__ == "__main__":
     import flowsa
