@@ -261,10 +261,10 @@ def sector_aggregation(df_load, group_cols):
             agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
 
-    # manually modify non-NAICS codes that might exist in sector
-    # domestic/household
-    df = df.replace({'F0': 'F010',
-                     'F01': 'F010'})
+    # # manually modify non-NAICS codes that might exist in sector
+    # # domestic/household
+    # df = df.replace({'F0': 'F010',
+    #                  'F01': 'F010'})
     # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
 
