@@ -1019,7 +1019,23 @@ def remove_HFC_kt(df):
     return df.loc[df['Unit'] != 'kt']
 
 
+def adjust_transport_activities(df, **_):
+    """clean_allocation_fba"""
+    activities = {'Gasoline': ['Light-Duty Trucks',
+                               'Passenger Cars'],
+                  'Distillate Fuel Oil (Diesel Fuel)':
+                      ['Medium- and Heavy-Duty Trucks',
+                       'Buses'],
+                 }
+    for k, v in activities.items():
+        df.loc[(df['ActivityConsumedBy'].isin(v)) &
+               (df['FlowName'] == k),
+               'ActivityConsumedBy'] = df['ActivityConsumedBy'] + f" - {k}"
+    return df
+
+
 def keep_six_digit_naics(df_w_sec, **_):
+    """clean_allocation_fba_w_sec"""
     df_w_sec = replace_NoneType_with_empty_cells(df_w_sec)
     df_w_sec = df_w_sec.loc[
         (df_w_sec['SectorProducedBy'].apply(lambda x: len(x) == 6)) |

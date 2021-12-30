@@ -410,10 +410,11 @@ source_names:
         allocation_method: proportional
         allocation_source: "EPA_GHGI_T_A_79"
         allocation_source_class: "Energy"
-        allocation_source_year: *year
+        allocation_source_year: 2012
         allocation_flow: ['Distillate Fuel Oil (Diesel Fuel)']
         allocation_compartment: None
         allocation_from_scale: national
+        clean_allocation_fba: adjust_transport_activities
         clean_allocation_fba_w_sec: keep_six_digit_naics
         helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
         helper_method: proportional
