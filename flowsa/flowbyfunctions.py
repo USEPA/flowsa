@@ -312,8 +312,12 @@ def sector_disaggregation(df_load):
     cw_load = load_crosswalk('sector_length')
 
     # for loop min length to 6 digits, where min length cannot be less than 2
-    length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
-        lambda x: x.str.len()).min().min()
+    fields_list = []
+    for i in range(2):
+        if not (df[fbs_activity_fields[i]] == "").all():
+            fields_list.append(fbs_activity_fields[i])
+
+    length = df[fields_list].apply(lambda x: x.str.len()).min().min()
     if length < 2:
         length = 2
     # appends missing naics levels to df
