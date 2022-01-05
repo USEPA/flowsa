@@ -378,7 +378,7 @@ source_names:
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
-        helper_source_year: 2017 # change to *year
+        helper_source_year: *year
         helper_flow:
           - "Number of employees"
         helper_from_scale: national
