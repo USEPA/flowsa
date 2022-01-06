@@ -14,18 +14,19 @@ import numpy as np
 from flowsa.common import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
-from flowsa.allocation import proportional_allocation_by_location_and_activity
+from flowsa.allocation import \
+    proportional_allocation_by_location_and_activity
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.validation import compare_df_units
 
 
-def bh_call(url, response_load, args):
+def bh_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
@@ -33,7 +34,7 @@ def bh_call(url, response_load, args):
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
-        bh_df = tabula.read_pdf(io.BytesIO(response_load.content),
+        bh_df = tabula.read_pdf(io.BytesIO(resp.content),
                                 pages=x, stream=True)[0]
         bh_df_list.append(bh_df)
 
@@ -42,17 +43,15 @@ def bh_call(url, response_load, args):
     return bh_df
 
 
-def bh_parse(dataframe_list, args):
+def bh_parse(*, df_list, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
     # concat list of dataframes (info on each page)
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
                             "I-O description": "Description",
                             "gal/$M": "FlowAmount",
@@ -175,55 +174,55 @@ def convert_blackhurst_data_to_kg_per_employee(
 
 
 def scale_blackhurst_results_to_usgs_values(
-        df_to_scale, attr, download_FBA_if_missing):
+        df_load, attr,  download_FBA_if_missing):
     """
     Scale the initial estimates for Blackhurst-based mining estimates to
     USGS values. Oil-based sectors are allocated a larger percentage of the
-    difference between initial water withdrawal estimates and published
-    USGS values.
+    difference between initial water withdrawal estimates and published USGS
+    values.
 
-    This method is based off the Water Satellite Table created by Yang
-    and Ingwersen, 2017
-    :param df_to_scale: df, fba dataframe to be modified
+    This method is based off the Water Satellite Table created by Yang and
+    Ingwersen, 2017
+    :param df_load: df, fba dataframe to be modified
     :param attr: dictionary, attribute data from method yaml for activity set
-    :param download_FBA_if_missing: bool, indicate if missing FBAs should
-        be downloaded from Data Commons
+    :param download_FBA_if_missing: bool, indicate if missing FBAs should be
+        downloaded from Data Commons
     :return: scaled fba results
     """
-    # determine national level published withdrawal data for usgs
-    # mining in FBS method year
+    # determine national level published withdrawal data for usgs mining
+    # in FBS method year
     pv_load = load_fba_w_standardized_units(
         datasource="USGS_NWIS_WU", year=str(attr['helper_source_year']),
         flowclass='Water', download_FBA_if_missing=download_FBA_if_missing)
 
-    pv_sub = pv_load[
-        (pv_load['Location'] == str(US_FIPS)) &
-        (pv_load['ActivityConsumedBy'] == 'Mining')].reset_index(drop=True)
-    pv = pv_sub['FlowAmount'].loc[0]
-
-    # sum quantity of water withdrawals already allocated to sectors
-    av = df_to_scale['FlowAmount'].sum()
-
+    pv_sub = pv_load[(pv_load['ActivityConsumedBy'] == 'Mining') &
+                     (pv_load['Compartment'] == 'total') &
+                     (pv_load['FlowName'] == 'total')].reset_index(drop=True)
+    # rename the published value flow name and merge with Blackhurst data
+    pv_sub = pv_sub.rename(columns={'FlowAmount': 'pv'})
+    df = df_load.merge(pv_sub[['Location', 'pv']], how='left')
     # calculate the difference between published value and allocated value
-    vd = pv - av
+    # for each naics length
+    df = df.assign(nLen=df['SectorConsumedBy'].apply(lambda x: len(x)))
+    # calculate initial FlowAmount accounted for
+    df = df.assign(av=df.groupby('nLen')['FlowAmount'].transform('sum'))
+    # calc difference
+    df = df.assign(vd=df['pv'] - df['av'])
 
     # subset df to scale into oil and non-oil sectors
-    df_to_scale['sector_label'] = np.where(
-        df_to_scale['SectorConsumedBy'].apply(lambda x: x[0:5] == '21111'),
-        'oil', 'nonoil')
-    df_to_scale['ratio'] = np.where(
-        df_to_scale['sector_label'] == 'oil', 2 / 3, 1 / 3)
-    df_to_scale['label_sum'] = df_to_scale.groupby(
-        ['Location', 'sector_label'])['FlowAmount'].transform('sum')
-    df_to_scale.loc[:, 'value_difference'] = vd.astype(float)
+    df['sector_label'] = np.where(df['SectorConsumedBy'].apply(
+        lambda x: x[0:5] == '21111'), 'oil', 'nonoil')
+    df['ratio'] = np.where(df['sector_label'] == 'oil', 2 / 3, 1 / 3)
+    df['label_sum'] = df.groupby(['Location', 'nLen', 'sector_label'])[
+        'FlowAmount'].transform('sum')
 
     # calculate revised water withdrawal allocation
-    df_scaled = df_to_scale.copy()
+    df_scaled = df.copy()
     df_scaled.loc[:, 'FlowAmount'] = \
         df_scaled['FlowAmount'] + \
         (df_scaled['FlowAmount'] / df_scaled['label_sum']) * \
-        (df_scaled['ratio'] * df_scaled['value_difference'])
-    df_scaled = df_scaled.drop(
-        columns=['sector_label', 'ratio', 'label_sum', 'value_difference'])
+        (df_scaled['ratio'] * df_scaled['vd'])
+    df_scaled = df_scaled.drop(columns=['sector_label', 'ratio', 'nLen',
+                                        'label_sum', 'pv', 'av', 'vd'])
 
     return df_scaled

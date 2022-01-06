@@ -14,12 +14,10 @@ from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def bea_gdp_parse(dataframe_list, args):
+def bea_gdp_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
@@ -33,7 +31,7 @@ def bea_gdp_parse(dataframe_list, args):
                  var_name="Year",
                  value_name="FlowAmount")
 
-    df = df[df['Year'] == args['year']]
+    df = df[df['Year'] == year]
     # hardcode data
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
@@ -50,16 +48,14 @@ def bea_gdp_parse(dataframe_list, args):
     return df
 
 
-def bea_use_detail_br_parse(dataframe_list, args):
+def bea_use_detail_br_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param year: year)
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    csv_load = f'{externaldatapath}BEA_{str(args["year"])}' \
+    csv_load = f'{externaldatapath}BEA_{str(year)}' \
                f'_Detail_Use_PRO_BeforeRedef.csv'
     df_raw = pd.read_csv(csv_load)
 
@@ -71,9 +67,9 @@ def bea_use_detail_br_parse(dataframe_list, args):
                  var_name="ActivityConsumedBy",
                  value_name="FlowAmount")
 
-    df['Year'] = str(args['year'])
+    df['Year'] = str(year)
     # hardcode data
-    df['FlowName'] = "USD" + str(args['year'])
+    df['FlowName'] = "USD" + str(year)
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
@@ -89,17 +85,15 @@ def bea_use_detail_br_parse(dataframe_list, args):
     return df
 
 
-def bea_make_detail_br_parse(dataframe_list, args):
+def bea_make_detail_br_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param year: year
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) +
+    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(year) +
                          "_Detail_Make_BeforeRedef.csv")
 
     # first column is the industry
@@ -110,9 +104,9 @@ def bea_make_detail_br_parse(dataframe_list, args):
                  var_name="ActivityConsumedBy",
                  value_name="FlowAmount")
 
-    df['Year'] = str(args['year'])
+    df['Year'] = str(year)
     # hardcode data
-    df['FlowName'] = "USD" + str(args['year'])
+    df['FlowName'] = "USD" + str(year)
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
@@ -128,7 +122,7 @@ def bea_make_detail_br_parse(dataframe_list, args):
     return df
 
 
-def bea_make_ar_parse(dataframe_list, args):
+def bea_make_ar_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
@@ -138,7 +132,7 @@ def bea_make_ar_parse(dataframe_list, args):
         flowbyactivity specifications
     """
     # df = pd.concat(dataframe_list, sort=False)
-    df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] +
+    df_load = pd.read_csv(externaldatapath + "BEA_" + year +
                           "_Make_AfterRedef.csv", dtype="str")
     # strip whitespace
     df = df_load.apply(lambda x: x.str.strip())
@@ -157,7 +151,7 @@ def bea_make_ar_parse(dataframe_list, args):
     df['SourceName'] = 'BEA_Make_AR'
     df['Unit'] = 'USD'
     df['Location'] = US_FIPS
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     df['FlowName'] = 'Gross Output Producer Value After Redef'
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
@@ -165,7 +159,7 @@ def bea_make_ar_parse(dataframe_list, args):
     return df
 
 
-def subset_BEA_Use(df, attr, **kwargs):
+def subset_BEA_Use(df, attr, **_):
     """
     Function to modify loaded BEA table based on data in the FBA method yaml
     :param df: df, flowbyactivity format

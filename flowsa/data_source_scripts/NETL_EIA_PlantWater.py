@@ -14,7 +14,7 @@ from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def netl_eia_parse(dataframe_list, args):
+def netl_eia_parse(*, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
@@ -25,7 +25,7 @@ def netl_eia_parse(dataframe_list, args):
     """
     # load the csv file
     DATA_FILE = f"NETL-EIA_powerplants_water_withdraw_consume_data_" \
-                f"{args['year']}.csv"
+                f"{year}.csv"
     df_load = pd.read_csv(f"{externaldatapath}{DATA_FILE}",
                           index_col=0, low_memory=False)
 
@@ -137,7 +137,7 @@ def netl_eia_parse(dataframe_list, args):
 
     df4['Class'] = np.where(df4['FlowName'].str.contains('Water|discharge'),
                             "Water", "Energy")
-    df4['SourceName'] = args['source']
+    df4['SourceName'] = source
     df4['DataReliability'] = 1
     df4['DataCollection'] = 5
     df4['FlowType'] = "ELEMENTARY_FLOW"
@@ -147,7 +147,7 @@ def netl_eia_parse(dataframe_list, args):
         columns=['860 Cooling Type 1', 'Generator Primary Technology',
                  'Water Type', 'County', 'State', 'State_y',
                  'Water Source Name'])
-    df4 = assign_fips_location_system(df4, str(args["year"]))
+    df4 = assign_fips_location_system(df4, str(year))
 
     return df4
 

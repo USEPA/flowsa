@@ -7,13 +7,9 @@
 import shutil
 import os
 import yaml
-import requests
-import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
-import joblib
-from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
@@ -21,7 +17,7 @@ from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
     activity_fields
 from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
-    sourceconfigpath, log
+    sourceconfigpath, log, flowbysectormethodpath
 
 
 # Sets default Sector Source Name
@@ -43,8 +39,6 @@ sector_level_key = {"NAICS_2": 2,
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
 WITHDRAWN_KEYWORD = np.nan
-
-memory = joblib.Memory(f'{datapath}.cache')
 
 
 def load_api_key(api_source):
@@ -68,32 +62,6 @@ def load_api_key(api_source):
     return key
 
 
-@memory.cache()
-def make_url_request(url, set_cookies=False):
-    """
-    Makes request using requests library if http, or requests_ftp if ftp
-    :param url: URL to query
-    :param set_cookies: bool, default set to False
-        set to True if cookies required
-    :return: response Object
-    """
-    session = (requests_ftp.ftp.FTPSession if urlsplit(url).scheme == 'ftp'
-               else requests.Session)
-    with session() as s:
-        try:
-            # The session object s preserves cookies, so the second s.get()
-            # will have the cookies that came from the first s.get()
-            if set_cookies:
-                s.get(url)
-            response = s.get(url)
-            response.raise_for_status()
-        except requests.exceptions.ConnectionError:
-            log.error("URL Connection Error for %s", url)
-        except requests.exceptions.HTTPError:
-            log.error('Error in URL request!')
-    return response
-
-
 def load_crosswalk(crosswalk_name):
     """
     Load NAICS crosswalk between the years 2007, 2012, 2017
@@ -102,6 +70,7 @@ def load_crosswalk(crosswalk_name):
 
     cw_dict = {'sector': 'NAICS_Crosswalk',
                'sector length': 'NAICS_2012_Crosswalk',
+               'sector_name': 'NAICS_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
                'BEA': 'NAICS_to_BEA_Crosswalk'
@@ -113,17 +82,48 @@ def load_crosswalk(crosswalk_name):
     return cw
 
 
-def load_yaml_dict(filename):
+def load_yaml_dict(filename, flowbytype=None):
     """
-    Load the information in 'source_catalog.yaml'
-    :return: dictionary containing all information in source_catalog.yaml
+    Load the information in a yaml file, from source_catalog, or FBA,
+    or FBS files
+    :return: dictionary containing all information in yaml
     """
     if filename == 'source_catalog':
-        yaml_load = f'{datapath}source_catalog.yaml'
+        folder = datapath
     else:
-        yaml_load = sourceconfigpath + filename + '.yaml'
-    with open(yaml_load, 'r') as f:
-        config = yaml.safe_load(f)
+        if flowbytype == 'FBA':
+            folder = sourceconfigpath
+        elif flowbytype == 'FBS':
+            folder = flowbysectormethodpath
+        else:
+            raise KeyError('Must specify either \'FBA\' or \'FBS\'')
+    yaml_path = folder + filename + '.yaml'
+
+    try:
+        with open(yaml_path, 'r') as f:
+            config = yaml.safe_load(f)
+    except IOError:
+        log.error('%s method file not found', flowbytype)
+
+    # Allow for .yaml files to recursively inherit other .yaml files. Keys in
+    # children will overwrite the same key from a parent.
+    inherits = config.get('inherits_from')
+    while inherits:
+        yaml_path = folder + inherits + '.yaml'
+        with open(yaml_path, 'r') as f:
+            parent = yaml.safe_load(f)
+
+        # Check for common keys and log a warning if any are found
+        common_keys = [k for k in config if k in parent]
+        if common_keys:
+            log.warning(f'Keys {common_keys} from parent file {yaml_path} '
+                        f'were overwritten by child file.')
+
+        # Update inheritance information before updating the parent dict
+        inherits = parent.get('inherits_from')
+        parent.update(config)
+        config = parent
+
     return config
 
 

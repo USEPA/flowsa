@@ -29,7 +29,7 @@ from flowsa.common import fips_number_key, load_yaml_dict, \
     str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
     fbs_default_grouping_fields, fbs_grouping_fields_w_activities, \
-    logoutputpath
+    logoutputpath, load_yaml_dict
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
 from flowsa.settings import log, vLog, flowbysectormethodpath, \
@@ -46,9 +46,9 @@ from flowsa.dataclean import clean_df, harmonize_FBS_columns, \
     reset_fbs_dq_scores
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
-    replace_naics_w_naics_from_another_year, \
-    calculate_flowamount_diff_between_dfs, check_for_negative_flowamounts
-from flowsa.allocation import allocate_dropped_sector_data
+    replace_naics_w_naics_from_another_year, calculate_flowamount_diff_between_dfs, \
+    check_for_negative_flowamounts
+from flowsa.allocation import equally_allocate_parent_to_child_naics
 
 
 def parse_args():
@@ -66,21 +66,6 @@ def parse_args():
                          "rather than generating the FBAs in FLOWSA.")
     args = vars(ap.parse_args())
     return args
-
-
-def load_method(method_name):
-    """
-    Loads a flowbysector method from a YAML
-    :param method_name: str, FBS method name (ex. 'Water_national_m1_2015')
-    :return: dictionary, items in the FBS method yaml
-    """
-    sfile = flowbysectormethodpath + method_name + '.yaml'
-    try:
-        with open(sfile, 'r') as f:
-            method = yaml.safe_load(f)
-    except IOError:
-        log.error("FlowBySector method file not found.")
-    return method
 
 
 def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
@@ -139,7 +124,7 @@ def main(**kwargs):
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
-    method = load_method(method_name)
+    method = load_yaml_dict(method_name, flowbytype='FBS')
     # create dictionary of data and allocation datasets
     fb = method['source_names']
     # Create empty list for storing fbs files
@@ -302,12 +287,10 @@ def main(**kwargs):
                 # check if any sector information is lost before reaching
                 # the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                vLog.info('Searching for and allocating FlowAmounts '
-                          'for any parent NAICS that were dropped in the '
-                          'subset to %s child NAICS',
-                          method['target_sector_level'])
-                fbs_agg_2 = allocate_dropped_sector_data(
-                    fbs_agg, method['target_sector_level'])
+                vLog.info('Searching for and allocating FlowAmounts for any parent '
+                          'NAICS that were dropped in the subset to '
+                          '%s child NAICS', method['target_sector_level'])
+                fbs_agg_2 = equally_allocate_parent_to_child_naics(fbs_agg, method['target_sector_level'])
 
                 # compare flowbysector with flowbyactivity
                 compare_activity_to_sector_flowamounts(

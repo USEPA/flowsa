@@ -25,7 +25,7 @@ from flowsa.dataclean import add_missing_flow_by_fields, \
     replace_strings_with_NoneType
 
 
-def BLS_QCEW_URL_helper(build_url, config, args):
+def BLS_QCEW_URL_helper(*, build_url, year, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -42,26 +42,23 @@ def BLS_QCEW_URL_helper(build_url, config, args):
     urls = []
 
     url = build_url
-    url = url.replace('__year__', str(args['year']))
+    url = url.replace('__year__', str(year))
     urls.append(url)
 
     return urls
 
 
-def bls_qcew_call(url, response_load, args):
+def bls_qcew_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
     # initiate dataframes list
     df_list = []
     # unzip folder that contains bls data in ~4000 csv files
-    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         # read in file names
         for name in f.namelist():
             # Only want state info
@@ -77,17 +74,17 @@ def bls_qcew_call(url, response_load, args):
         return df
 
 
-def bls_qcew_parse(dataframe_list, args):
+def bls_qcew_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     # Concat dataframes
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     # drop rows don't need
     df = df[~df['area_fips'].str.contains(
         'C|USCMS|USMSA|USNMS')].reset_index(drop=True)
@@ -124,7 +121,7 @@ def bls_qcew_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
     df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # add hard code data
     df['SourceName'] = 'BLS_QCEW'
     # Add tmp DQ scores

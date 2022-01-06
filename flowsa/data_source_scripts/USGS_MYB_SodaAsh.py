@@ -55,7 +55,7 @@ def description(value, code):
     return return_val
 
 
-def soda_url_helper(build_url, config, args):
+def soda_url_helper(*, build_url, config, year, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -64,32 +64,29 @@ def soda_url_helper(build_url, config, args):
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
+    :param year: year
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
     url = build_url
-    url = url.replace('__format__', str(config['formats'][args["year"]]))
-    url = url.replace('__url_text__', str(config['url_texts'][args["year"]]))
+    url = url.replace('__format__', str(config['formats'][year]))
+    url = url.replace('__url_text__', str(config['url_texts'][year]))
     return [url]
 
 
-def soda_call(url, r, args):
+def soda_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
-    :param url: string, url
-    :param r: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
+    :param year: year
     :return: pandas dataframe of original source data
     """
 
     col_to_use = ["Production", "NAICS code", "End use", "year_5", "total"]
 
-    if str(args["year"]) in SPAN_YEARS_T4:
-        df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+    if str(year) in SPAN_YEARS_T4:
+        df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                              sheet_name='T4')
         df_data_one = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
         df_data_one = df_data_one.reset_index()
@@ -108,7 +105,7 @@ def soda_call(url, r, args):
                                    "space_6", "y1_4", "space_7", "year_5",
                                    "space_8", "space_9"]
 
-    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(r.content),
+    df_raw_data_two = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                              sheet_name='T1')
     df_data_two = pd.DataFrame(df_raw_data_two.loc[6:18]).reindex()
     df_data_two = df_data_two.reset_index()
@@ -119,7 +116,7 @@ def soda_call(url, r, args):
                                "year_2", "space_3", "year_3", "space_4",
                                "year_4", "space_5", "year_5"]
 
-    if str(args["year"]) in SPAN_YEARS_T4:
+    if str(year) in SPAN_YEARS_T4:
         for col in df_data_one.columns:
             if col not in col_to_use:
                 del df_data_one[col]
@@ -128,7 +125,7 @@ def soda_call(url, r, args):
         if col not in col_to_use:
             del df_data_two[col]
 
-    if str(args["year"]) in SPAN_YEARS_T4:
+    if str(year) in SPAN_YEARS_T4:
         frames = [df_data_one, df_data_two]
     else:
         frames = [df_data_two]
@@ -138,10 +135,10 @@ def soda_call(url, r, args):
     return df_data
 
 
-def soda_parse(dataframe_list, args):
+def soda_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
@@ -152,17 +149,17 @@ def soda_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Quantity", "Quantity2"]
     prod = ""
-    name = usgs_myb_name(args["source"])
+    name = usgs_myb_name(source)
     des = name
     col_name = "year_5"
     dataframe = pd.DataFrame()
-    for df in dataframe_list:
+    for df in df_list:
         for index, row in df.iterrows():
             data = usgs_myb_static_varaibles()
             data["Unit"] = "Thousand metric tons"
             data["FlowAmount"] = str(df.iloc[index][col_name])
-            data["SourceName"] = args["source"]
-            data["Year"] = str(args["year"])
+            data["SourceName"] = source
+            data["Year"] = str(year)
             data['FlowName'] = name
 
             if str(df.iloc[index]["Production"]) != "nan":
@@ -176,8 +173,8 @@ def soda_parse(dataframe_list, args):
                     prod = "production"
                 if df.iloc[index]["Production"].strip() in row_to_use:
                     product = df.iloc[index]["Production"].strip()
-                    data["SourceName"] = args["source"]
-                    data["Year"] = str(args["year"])
+                    data["SourceName"] = source
+                    data["Year"] = str(year)
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                     if str(df.iloc[index][col_name]) == "W":
                         data["FlowAmount"] = WITHDRAWN_KEYWORD
@@ -186,7 +183,7 @@ def soda_parse(dataframe_list, args):
                     data['FlowName'] = name + " " + prod
                     dataframe = dataframe.append(data, ignore_index=True)
                     dataframe = assign_fips_location_system(
-                        dataframe, str(args["year"]))
+                        dataframe, str(year))
             else:
                 data["Class"] = "Chemicals"
                 data["Context"] = None
@@ -212,5 +209,5 @@ def soda_parse(dataframe_list, args):
                 if df.iloc[index]["End use"].strip() != "Glass:":
                     dataframe = dataframe.append(data, ignore_index=True)
                     dataframe = assign_fips_location_system(
-                        dataframe, str(args["year"]))
+                        dataframe, str(year))
     return dataframe

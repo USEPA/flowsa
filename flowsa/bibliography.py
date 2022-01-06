@@ -9,11 +9,11 @@ import os
 import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
-from flowsa.flowbysector import load_method
 from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, \
     load_fbs_methods_additional_fbas_config, \
-    load_functions_loading_fbas_config, get_flowsa_base_name, sourceconfigpath
+    load_functions_loading_fbas_config, get_flowsa_base_name, \
+    sourceconfigpath, load_yaml_dict
 from flowsa.settings import outputpath, biboutputpath, log
 
 
@@ -25,7 +25,7 @@ def generate_list_of_sources_in_fbs_method(methodname):
     """
     sources = []
     # load the fbs method yaml
-    fbs_yaml = load_method(methodname)
+    fbs_yaml = load_yaml_dict(methodname, flowbytype='FBS')
 
     # create list of data and allocation data sets
     fbs = fbs_yaml['source_names']
@@ -82,7 +82,7 @@ def load_source_dict(sourcename):
         # else check if file exists, then try loading
         # citation information from source yaml
         sourcename = get_flowsa_base_name(sourceconfigpath, sourcename, "yaml")
-        config = load_yaml_dict(sourcename)
+        config = load_yaml_dict(sourcename, flowbytype='FBA')
 
     return config
 
@@ -127,7 +127,7 @@ def generate_fbs_bibliography(methodname):
                 # when different source names
                 try:
                     if (config['source_name'], config['author'], source[1],
-                    config['source_url']) not in source_set:
+                            config['source_url']) not in source_set:
                         source_set.add((config['source_name'],
                                         config['author'],
                                         source[1],

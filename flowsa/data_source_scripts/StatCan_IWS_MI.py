@@ -16,19 +16,16 @@ from flowsa.common import fba_default_grouping_fields, US_FIPS, \
 from flowsa.validation import compare_df_units
 
 
-def sc_call(url, response_load, args):
+def sc_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: response, response from url call
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
     # read all files in the stat canada zip
-    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         # read in file names
         for name in f.namelist():
             # if filename does not contain "MetaData", then create dataframe
@@ -38,17 +35,16 @@ def sc_call(url, response_load, args):
     return df
 
 
-def sc_parse(dataframe_list, args):
+def sc_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     # drop columns
     df = df.drop(columns=['COORDINATE', 'DECIMALS', 'DGUID', 'SYMBOL',
                           'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR'])
@@ -96,7 +92,7 @@ def sc_parse(dataframe_list, args):
     df["DataCollection"] = 4
 
     # subset based on year
-    df = df[df['Year'] == args['year']]
+    df = df[df['Year'] == year]
 
     return df
 

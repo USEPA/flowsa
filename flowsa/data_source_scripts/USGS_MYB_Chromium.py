@@ -33,7 +33,7 @@ from flowsa.data_source_scripts.USGS_MYB_Common import *
 SPAN_YEARS = "2014-2018"
 
 
-def usgs_chromium_url_helper(build_url, config, args):
+def usgs_chromium_url_helper(*, build_url, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -51,17 +51,17 @@ def usgs_chromium_url_helper(build_url, config, args):
     return [url]
 
 
-def usgs_chromium_call(url, r, args):
+def usgs_chromium_call(*, resp, year, **_):
     """"
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
     :param url: string, url
-    :param r: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(r.content),
+    df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                          sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[4:24]).reindex()
     df_data = df_data.reset_index()
@@ -77,7 +77,7 @@ def usgs_chromium_call(url, r, args):
                            "space_4", "year_4", "space_5", "year_5", "space_6"]
 
     col_to_use = ["Production"]
-    col_to_use.append(usgs_myb_year(SPAN_YEARS, args["year"]))
+    col_to_use.append(usgs_myb_year(SPAN_YEARS, year))
     for col in df_data.columns:
         if col not in col_to_use:
             del df_data[col]
@@ -85,10 +85,10 @@ def usgs_chromium_call(url, r, args):
     return df_data
 
 
-def usgs_chromium_parse(dataframe_list, args):
+def usgs_chromium_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
@@ -97,11 +97,11 @@ def usgs_chromium_parse(dataframe_list, args):
     data = {}
     row_to_use = ["Secondary2", "Total"]
     prod = ""
-    name = usgs_myb_name(args["source"])
+    name = usgs_myb_name(source)
     des = name
     dataframe = pd.DataFrame()
-    col_name = usgs_myb_year(SPAN_YEARS, args["year"])
-    for df in dataframe_list:
+    col_name = usgs_myb_year(SPAN_YEARS, year)
+    for df in df_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Imports:":
                 product = "imports"
@@ -112,13 +112,13 @@ def usgs_chromium_parse(dataframe_list, args):
 
             if df.iloc[index]["Production"].strip() in row_to_use:
                 data = usgs_myb_static_varaibles()
-                data["SourceName"] = args["source"]
-                data["Year"] = str(args["year"])
+                data["SourceName"] = source
+                data["Year"] = str(year)
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = name + " " + product
                 data["Description"] = name
                 data["ActivityProducedBy"] = name
-                col_name = usgs_myb_year(SPAN_YEARS, args["year"])
+                col_name = usgs_myb_year(SPAN_YEARS, year)
                 if str(df.iloc[index][col_name]) == "--" or \
                         str(df.iloc[index][col_name]) == "(3)":
                     data["FlowAmount"] = str(0)
@@ -126,5 +126,5 @@ def usgs_chromium_parse(dataframe_list, args):
                     data["FlowAmount"] = str(df.iloc[index][col_name])
                 dataframe = dataframe.append(data, ignore_index=True)
                 dataframe = assign_fips_location_system(
-                    dataframe, str(args["year"]))
+                    dataframe, str(year))
     return dataframe

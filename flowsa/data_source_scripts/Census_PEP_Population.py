@@ -12,7 +12,7 @@ from flowsa.common import US_FIPS, load_api_key, get_all_state_FIPS_2
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def Census_pop_URL_helper(build_url, config, args):
+def Census_pop_URL_helper(*, build_url, year, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url
@@ -20,9 +20,8 @@ def Census_pop_URL_helper(build_url, config, args):
     function does not parse the data, only modifies the urls from which
     data is obtained.
     :param build_url: string, base url
+    :param year: year
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
@@ -30,7 +29,7 @@ def Census_pop_URL_helper(build_url, config, args):
 
     # get date code for july 1 population numbers
     for k, v in config['datecodes'].items():
-        if str(args['year']) == str(k):
+        if str(year) == str(k):
             dc = str(v)
 
     # the url for 2010 and earlier is different
@@ -44,7 +43,7 @@ def Census_pop_URL_helper(build_url, config, args):
 
     for c in config['agg_levels']:
         # this timeframe requires state fips at the county level in the url
-        if '2010' < args['year'] < '2015' and c == 'county':
+        if '2010' < year < '2015' and c == 'county':
             for b in FIPS_2:
                 url = build_url
                 url = url.replace("__aggLevel__", c)
@@ -54,18 +53,18 @@ def Census_pop_URL_helper(build_url, config, args):
                 url = url.replace("&key", "&in=state:" + b + "&key")
                 urls.append(url)
         else:
-            if args['year'] > '2010':
+            if year > '2010':
                 url = build_url
                 url = url.replace("__aggLevel__", c)
                 url = url.replace("__DateCode__", dc)
                 # url date variable different pre 2018
-                if args['year'] < '2018':
+                if year < '2018':
                     url = url.replace("DATE_CODE", 'DATE_')
                 # url for 2011 - 2014 slightly modified
-                if args['year'] < '2015' and c != 'county':
+                if year < '2015' and c != 'county':
                     url = url.replace("population?&", 'natstprc?')
                 urls.append(url)
-            elif args['year'] == '2010':
+            elif year == '2010':
                 url = url2000
                 url = url.replace("__aggLevel__", c)
                 url = url.replace("&in=state:__stateFIPS__", '')
@@ -77,35 +76,32 @@ def Census_pop_URL_helper(build_url, config, args):
     return urls
 
 
-def census_pop_call(url, response_load, args):
+def census_pop_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    json_load = json.loads(response_load.text)
+    json_load = json.loads(resp.text)
     # convert response to dataframe
     df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])
     return df
 
 
-def census_pop_parse(dataframe_list, args):
+def census_pop_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
+    :param df_list: list of dataframes to concat and format
     :param args: dictionary, used to run flowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     # Add year
-    df['Year'] = args["year"]
+    df['Year'] = year
     # drop puerto rico
     df = df[df['state'] != '72']
     # replace null county cells with '000'
@@ -119,7 +115,7 @@ def census_pop_parse(dataframe_list, args):
     # rename columns
     df = df.rename(columns={"POP": "FlowAmount"})
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # hardcode dta
     df['Class'] = 'Other'
     df['SourceName'] = 'Census_PEP_Population'

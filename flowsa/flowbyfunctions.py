@@ -220,7 +220,7 @@ def sector_aggregation(df_load, group_cols):
         # df where either sector column is length or both columns are
         df1 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i)) |
                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))
-            |
+                 |
                  ((df['SectorProducedBy'].apply(lambda x: len(x) == i)) &
                   (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))]
 
@@ -233,7 +233,7 @@ def sector_aggregation(df_load, group_cols):
         # second dataframe where length is l - 1
         df2 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) |
                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1)))
-            |
+                 |
                  ((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) &
                   (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1))
                   )].rename(columns={'SectorProducedBy': 'SPB',
@@ -426,16 +426,16 @@ def assign_fips_location_system(df, year_of_data):
     # ensure year integer
     year_of_data = int(year_of_data)
     if year_of_data >= 2015:
-        df.loc[:, 'LocationSystem'] = 'FIPS_2015'
+        df['LocationSystem'] = 'FIPS_2015'
     elif 2013 <= year_of_data < 2015:
-        df.loc[:, 'LocationSystem'] = 'FIPS_2013'
+        df['LocationSystem'] = 'FIPS_2013'
     elif 2010 <= year_of_data < 2013:
-        df.loc[:, 'LocationSystem'] = 'FIPS_2010'
+        df['LocationSystem'] = 'FIPS_2010'
     elif year_of_data < 2010:
         log.warning(
             "Missing FIPS codes from crosswalk for %s. "
             "Assigning to FIPS_2010", str(year_of_data))
-        df.loc[:, 'LocationSystem'] = 'FIPS_2010'
+        df['LocationSystem'] = 'FIPS_2010'
 
     return df
 
@@ -457,7 +457,7 @@ def collapse_fbs_sectors(fbs):
         fbs["SectorProducedBy"]
     fbs.loc[(fbs["FlowType"] == 'WASTE_FLOW') &
             (fbs['SectorProducedBy'].isnull()),
-        'Sector'] = fbs["SectorConsumedBy"]
+            'Sector'] = fbs["SectorConsumedBy"]
     fbs.loc[(fbs["FlowType"] == 'ELEMENTARY_FLOW') &
             (fbs['SectorProducedBy'].isnull()),
             'Sector'] = fbs["SectorConsumedBy"]

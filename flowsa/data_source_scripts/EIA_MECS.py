@@ -9,11 +9,10 @@ Last updated: 8 Sept. 2020
 """
 
 import io
-import yaml
 import pandas as pd
 import numpy as np
 from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
-from flowsa.settings import datapath, vLogDetailed
+from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
@@ -21,7 +20,7 @@ from flowsa.data_source_scripts.EIA_CBECS_Land import \
     calculate_total_facility_land_area
 
 
-def eia_mecs_URL_helper(build_url, config, args):
+def eia_mecs_URL_helper(*, build_url, config, year, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url
@@ -43,9 +42,9 @@ def eia_mecs_URL_helper(build_url, config, args):
         # start with build url
         url = build_url
         # replace '__year__' in build url
-        url = url.replace('__year__', args['year'])
+        url = url.replace('__year__', year)
         # 2014 files are in .xlsx format; 2010 files are in .xls format
-        if args['year'] == '2010':
+        if year == '2010':
             url = url[:-1]
         # replace '__table__' in build url
         url = url.replace('__table__', table)
@@ -55,22 +54,22 @@ def eia_mecs_URL_helper(build_url, config, args):
     return urls
 
 
-def eia_mecs_land_call(url, response_load, args):
+def eia_mecs_land_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing df
     into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_data = pd.read_excel(io.BytesIO(resp.content),
                                 sheet_name='Table 9.1')
-    df_raw_rse = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_rse = pd.read_excel(io.BytesIO(resp.content),
                                sheet_name='RSE 9.1')
-    if args["year"] == "2014":
+    if year == "2014":
         # skip rows and remove extra rows at end of dataframe
         df_rse = pd.DataFrame(df_raw_rse.loc[12:93]).reindex()
         df_data = pd.DataFrame(df_raw_data.loc[16:97]).reindex()
@@ -164,17 +163,16 @@ def eia_mecs_land_call(url, response_load, args):
     return df
 
 
-def eia_mecs_land_parse(dataframe_list, args):
+def eia_mecs_land_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
     df_array = []
-    for dataframes in dataframe_list:
+    for dataframes in df_list:
 
         dataframes = dataframes.rename(
             columns={'NAICS Code(a)': 'ActivityConsumedBy'})
@@ -214,12 +212,12 @@ def eia_mecs_land_parse(dataframe_list, args):
     df.loc[df['FlowAmount'] == "N", 'FlowAmount'] = WITHDRAWN_KEYWORD
     df["Class"] = 'Land'
     df["SourceName"] = 'EIA_MECS_Land'
-    df['Year'] = args["year"]
+    df['Year'] = year
     df["Compartment"] = 'ground'
     df['MeasureofSpread'] = "RSE"
     df['Location'] = US_FIPS
     df['Unit'] = unit
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
@@ -230,29 +228,25 @@ def eia_mecs_land_parse(dataframe_list, args):
     return df
 
 
-def eia_mecs_energy_call(url, response_load, args):
+def eia_mecs_energy_call(*, resp, year, config, **_):
     """
     Convert response for calling url to pandas dataframe, begin
     parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param resp: df, response from url call
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: pandas dataframe of original source data
     """
-    # load .yaml file containing information about each energy table
+    # load dictionary containing information about each energy table
     # (the .yaml includes information such as column names, units, and
     # which rows to grab)
-    filename = 'EIA_MECS_energy tables'
-    sourcefile = datapath + filename + '.yaml'
-    with open(sourcefile, 'r') as f:
-        table_dict = yaml.safe_load(f)
+    table_dict = config['table_dict']
 
     # read raw data into dataframe
     # (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
-    df_raw_data = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_data = pd.read_excel(io.BytesIO(resp.content),
                                 sheet_name=0, header=None)
-    df_raw_rse = pd.read_excel(io.BytesIO(response_load.content),
+    df_raw_rse = pd.read_excel(io.BytesIO(resp.content),
                                sheet_name=1, header=None)
 
     # retrieve table name from cell A3 of Excel file
@@ -267,21 +261,21 @@ def eia_mecs_energy_call(url, response_load, args):
     # - add columns denoting census region, relative standard error, units
     # - concatenate census region data into master dataframe
     df_data = pd.DataFrame()
-    for region in table_dict[args['year']][table]['regions']:
+    for region in table_dict[year][table]['regions']:
 
         # grab relevant columns
         # (this is a necessary step because code was retaining some seemingly
         # blank columns) determine number of columns in table, based on
         # number of column names
-        num_cols = len(table_dict[args['year']][table]['col_names'])
+        num_cols = len(table_dict[year][table]['col_names'])
         # keep only relevant columns
         df_raw_data = df_raw_data.iloc[:, 0:num_cols]
         df_raw_rse = df_raw_rse.iloc[:, 0:num_cols]
 
         # grab relevant rows
         # get indices for relevant rows
-        grab_rows = table_dict[args['year']][table]['regions'][region]
-        grab_rows_rse = table_dict[args['year']][table]['rse_regions'][region]
+        grab_rows = table_dict[year][table]['regions'][region]
+        grab_rows_rse = table_dict[year][table]['rse_regions'][region]
         # keep only relevant rows
         df_data_region = pd.DataFrame(
             df_raw_data.loc[grab_rows[0] - 1:grab_rows[1] - 1]).reindex()
@@ -289,21 +283,21 @@ def eia_mecs_energy_call(url, response_load, args):
             grab_rows_rse[0] - 1:grab_rows_rse[1] - 1]).reindex()
 
         # assign column names
-        df_data_region.columns = table_dict[args['year']][table]['col_names']
-        df_rse_region.columns = table_dict[args['year']][table]['col_names']
+        df_data_region.columns = table_dict[year][table]['col_names']
+        df_rse_region.columns = table_dict[year][table]['col_names']
 
         # "unpivot" dataframe from wide format to long format
         # ('NAICS code' and 'Subsector and Industry' are identifier variables)
         # (all other columns are value variables)
         df_data_region = pd.melt(
             df_data_region,
-            id_vars=table_dict[args['year']][table]['col_names'][0:2],
-            value_vars=table_dict[args['year']][table]['col_names'][2:],
+            id_vars=table_dict[year][table]['col_names'][0:2],
+            value_vars=table_dict[year][table]['col_names'][2:],
             var_name='FlowName', value_name='FlowAmount')
         df_rse_region = pd.melt(
             df_rse_region,
-            id_vars=table_dict[args['year']][table]['col_names'][0:2],
-            value_vars=table_dict[args['year']][table]['col_names'][2:],
+            id_vars=table_dict[year][table]['col_names'][0:2],
+            value_vars=table_dict[year][table]['col_names'][2:],
             var_name='FlowName', value_name='Spread')
 
         # add census region
@@ -323,7 +317,7 @@ def eia_mecs_energy_call(url, response_load, args):
             df_data_region['Unit'] = 'Trillion Btu'
             df_data_region['FlowName'] = df_data_region['FlowName']
 
-        data_type = table_dict[args['year']][table]['data_type']
+        data_type = table_dict[year][table]['data_type']
         if data_type == 'nonfuel consumption':
             df_data_region['Class'] = 'Other'
         elif data_type == 'fuel consumption':
@@ -338,33 +332,33 @@ def eia_mecs_energy_call(url, response_load, args):
     return df_data
 
 
-def eia_mecs_energy_parse(dataframe_list, args):
+def eia_mecs_energy_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :param source: source
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     from flowsa.common import assign_census_regions
 
     # concatenate dataframe list into single dataframe
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(df_list, sort=True)
 
     # rename columns to match standard flowbyactivity format
     df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
                             'Subsector and Industry': 'Description'})
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
     # add hardcoded data
-    df["SourceName"] = args['source']
+    df["SourceName"] = source
     df["Compartment"] = None
     df['FlowType'] = 'TECHNOSPHERE_FLOWS'
-    df['Year'] = args["year"]
+    df['Year'] = year
     df['MeasureofSpread'] = "RSE"
     # assign location codes and location system
     df.loc[df['Location'] == 'Total United States', 'Location'] = US_FIPS
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     df = assign_census_regions(df)
     df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     df['DataReliability'] = 5  # tmp
