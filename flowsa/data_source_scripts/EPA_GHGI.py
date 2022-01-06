@@ -1006,7 +1006,8 @@ def split_HFC_foams(df):
 
 
 def clean_HFC_fba(df):
-    """clean_fba_before_mapping_df_fxn."""
+    """Adjust HFC emissions for improved parsing.
+    clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_101."""
     df = subtract_HFC_transport_emissions(df)
     df = allocate_HFC_to_residential(df)
     df = split_HFC_foams(df)
@@ -1015,12 +1016,14 @@ def clean_HFC_fba(df):
 
 
 def remove_HFC_kt(df):
-    """clean_fba_before_mapping_df_fxn."""
+    """Remove records of emissions in kt, data are also provided in MMT CO2e.
+    clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_50."""
     return df.loc[df['Unit'] != 'kt']
 
 
 def adjust_transport_activities(df, **_):
-    """clean_allocation_fba"""
+    """Update activity names for improved transportatin parsing.
+    clean_allocation_fba used in EPA_GHGI_T_A_14"""
     activities = {'Gasoline': ['Light-Duty Trucks',
                                'Passenger Cars'],
                   'Distillate Fuel Oil (Diesel Fuel)':
@@ -1035,7 +1038,8 @@ def adjust_transport_activities(df, **_):
 
 
 def keep_six_digit_naics(df_w_sec, **_):
-    """clean_allocation_fba_w_sec"""
+    """Keep only activities at the 6-digit NAICS level
+    clean_allocation_fba_w_sec used for EPA_GHGI_T_A_79"""
     df_w_sec = replace_NoneType_with_empty_cells(df_w_sec)
     df_w_sec = df_w_sec.loc[
         (df_w_sec['SectorProducedBy'].apply(lambda x: len(x) == 6)) |
