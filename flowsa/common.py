@@ -7,12 +7,9 @@
 import shutil
 import os
 import yaml
-import requests
-import requests_ftp
 import pandas as pd
 import numpy as np
 import pycountry
-from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
@@ -73,6 +70,7 @@ def load_crosswalk(crosswalk_name):
 
     cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
                'sector_length': 'NAICS_2012_Crosswalk',
+               'sector_name': 'NAICS_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
                'BEA': 'NAICS_to_BEA_Crosswalk'
@@ -101,8 +99,9 @@ def return_bea_codes_used_as_naics():
 
 def load_yaml_dict(filename, flowbytype=None):
     """
-    Load the information in 'source_catalog.yaml'
-    :return: dictionary containing all information in source_catalog.yaml
+    Load the information in a yaml file, from source_catalog, or FBA,
+    or FBS files
+    :return: dictionary containing all information in yaml
     """
     if filename == 'source_catalog':
         folder = datapath

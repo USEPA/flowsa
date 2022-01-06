@@ -28,7 +28,9 @@ setup(
         'tabula-py>=2.1.1',
         'numpy>=1.20.1',
         'bibtexparser>=1.2.0',
-        'python-dotenv >= 0.19.1'
+        'python-dotenv >= 0.19.1',
+        'seaborn>=0.11.2',
+        'matplotlib>=3.4.3'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',

@@ -134,21 +134,50 @@ NAICS_2012_Code,NAICS_2012_Name
 211,Oil and Gas Extraction
 2111,Oil and Gas Extraction
 21111,Oil and Gas Extraction
+211111,Crude Petroleum and Natural Gas Extraction
+211112,Natural Gas Liquid Extraction
 212,Mining (except Oil and Gas)
 2121,Coal Mining
 21211,Coal Mining
+212111,Bituminous Coal and Lignite Surface Mining
+212112,Bituminous Coal Underground Mining
+212113,Anthracite Mining
 2122,Metal Ore Mining
 21221,Iron Ore Mining
+212210,Iron Ore Mining
 21222,Gold Ore and Silver Ore Mining
+212221,Gold Ore Mining
+212222,Silver Ore Mining
 21223,"Copper, Nickel, Lead, and Zinc Mining"
+212231,Lead Ore and Zinc Ore Mining
+212234,Copper Ore and Nickel Ore Mining
 21229,Other Metal Ore Mining
+212291,Uranium-Radium-Vanadium Ore Mining
+212299,All Other Metal Ore Mining
 2123,Nonmetallic Mineral Mining and Quarrying
 21231,Stone Mining and Quarrying
+212311,Dimension Stone Mining and Quarrying
+212312,Crushed and Broken Limestone Mining and Quarrying
+212313,Crushed and Broken Granite Mining and Quarrying
+212319,Other Crushed and Broken Stone Mining and Quarrying
 21232,"Sand, Gravel, Clay, and Ceramic and Refractory Minerals Mining and Quarrying"
+212321,Construction Sand and Gravel Mining
+212322,Industrial Sand Mining
+212324,Kaolin and Ball Clay Mining
+212325,Clay and Ceramic and Refractory Minerals Mining
 21239,Other Nonmetallic Mineral Mining and Quarrying
+212391,"Potash, Soda, and Borate Mineral Mining"
+212392,Phosphate Rock Mining
+212393,Other Chemical and Fertilizer Mineral Mining
+212399,All Other Nonmetallic Mineral Mining
 213,Support Activities for Mining
 2131,Support Activities for Mining
 21311,Support Activities for Mining
+213111,Drilling Oil and Gas Wells
+213112,Support Activities for Oil and Gas Operations
+213113,Support Activities for Coal Mining
+213114,Support Activities for Metal Mining
+213115,Support Activities for Nonmetallic Minerals (except Fuels) Mining
 22,Utilities
 221,Utilities
 2211,"Electric Power Generation, Transmission and Distribution"
