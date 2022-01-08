@@ -10,9 +10,9 @@ import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
 from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
-    get_county_FIPS, update_geoscale, load_yaml_dict, \
+    get_county_FIPS, update_geoscale, \
     load_crosswalk, fbs_fill_na_dict, \
-    fbs_collapsed_default_grouping_fields, return_true_source_catalog_name, \
+    fbs_collapsed_default_grouping_fields, \
     fbs_collapsed_fill_na_dict, fba_activity_fields, \
     fips_number_key, fba_fill_na_dict, check_activities_sector_like, \
     fba_mapped_default_grouping_fields, fba_default_grouping_fields, \
@@ -260,12 +260,6 @@ def sector_aggregation(df_load, group_cols):
             # append to df
             agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
-
-    # # manually modify non-NAICS codes that might exist in sector
-    # # domestic/household
-    # df = df.replace({'F0': 'F010',
-    #                  'F01': 'F010'})
-    # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
 
     # if activities are source-like, set col values as
