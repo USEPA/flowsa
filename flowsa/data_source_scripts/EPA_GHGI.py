@@ -12,9 +12,8 @@ import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
-from flowsa.common import convert_fba_unit
 from flowsa.dataclean import replace_NoneType_with_empty_cells
-from flowsa.settings import log, datapath, externaldatapath
+from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
 
 A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']

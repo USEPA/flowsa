@@ -15,7 +15,7 @@ import shutil
 import tarfile
 from io import BytesIO
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import convert_fba_unit
+from flowsa.dataclean import standardize_units
 
 
 def equates_url_helper(*, build_url, year, config, **_):
@@ -86,7 +86,7 @@ def equates_parse(*, df_list, source, year, config, **_):
     # to align with other processed NEI data (Point from StEWI), units are
     # converted during FBA creation instead of maintained
     df['Unit'] = 'TON'
-    df = convert_fba_unit(df)
+    df = standardize_units(df)
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Class'] = "Chemicals"
     df['SourceName'] = source

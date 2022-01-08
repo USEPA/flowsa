@@ -193,7 +193,7 @@ def standardize_units(df):
         np.where(df['Unit'] == 'Quadrillion Btu', 'MJ', df['Unit'])
 
     # Convert Energy unit "Trillion Btu" to MJ
-    # 1 Tril = .0010550559 x 10^14
+    # 1 Tril = .0010550559 x 10^12
     df.loc[:, 'FlowAmount'] = \
         np.where(df['Unit'].isin(['Trillion Btu', 'TBtu']),
                  df['FlowAmount'] * mj_in_btu * (10 ** 12),
@@ -201,6 +201,7 @@ def standardize_units(df):
     df.loc[:, 'Unit'] = \
         np.where(df['Unit'].isin(['Trillion Btu', 'TBtu']), 'MJ', df['Unit'])
 
+    # Convert million cubic meters to gallons (for water)
     df.loc[:, 'FlowAmount'] = \
         np.where(df['Unit'] == 'million Cubic metres/year',
                  df['FlowAmount'] * 264.172 * (10**6) * gallon_water_to_kg,
