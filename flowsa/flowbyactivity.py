@@ -63,7 +63,8 @@ def assemble_urls_for_query(*, source, year, config):
         return [None]
 
     if 'url_params' in urlinfo:
-        params = parse.urlencode(urlinfo['url_params'])
+        params = parse.urlencode(urlinfo['url_params'], safe='=&%',
+                                 quote_via=parse.quote)
         build_url = urlinfo['base_url'] + urlinfo['api_path'] + params
     else:
         build_url = urlinfo['base_url']
