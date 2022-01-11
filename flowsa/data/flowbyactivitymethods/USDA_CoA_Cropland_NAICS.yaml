@@ -7,16 +7,23 @@ api_key_required: true
 format: json
 url:
   base_url: https://quickstats.nass.usda.gov/api/
-  api_path: api_GET/?key=__apiKey__   #__apiKey__ should be substituted with user's api key
+  #__apiKey__ should be substituted with user's api key
+  api_path: api_GET/?key=__apiKey__&
   url_params:
     source_desc: CENSUS
     sector_desc: ECONOMICS
     statisticcat_desc: AREA&statisticcat_desc=AREA OPERATED
     commodity_desc: AG LAND&commodity_desc=FARM OPERATIONS
-    unit_desc: ACRES&unit_desc=OPERATIONS   # want two unit types
-    agg_level_desc: __aggLevel__   # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL", "STATE", or "COUNTY"
-    state_alpha: __stateAlpha__   # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
-    year: __year__   # __year__ is used to trigger a replace function to substitute in year
+    # want two unit types
+    unit_desc: ACRES&unit_desc=OPERATIONS
+    # __aggLevel__ triggers a replace fxn to substitute in "NATIONAL",
+    # "STATE", or "COUNTY"
+    agg_level_desc: __aggLevel__
+    # dynamically substitute the 50 state acronyms. This parameter doesn't
+    # exist for national level
+    state_alpha: __stateAlpha__
+    # __year__ is used to trigger a replace function to substitute in year
+    year: __year__
   key_param: key
 url_replace_fxn: CoA_Cropland_NAICS_URL_helper
 call_response_fxn: coa_cropland_NAICS_call
