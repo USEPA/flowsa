@@ -100,7 +100,7 @@ def call_urls(*, url_list, source, year, config):
     """
 # identify if url request requires cookies set
     set_cookies = config.get('allow_http_request_cookies')
-    confirm_gdrive = config.get('url').get('confirm_gdrive')
+    confirm_gdrive = config.get('confirm_gdrive')
 
     # create dataframes list by iterating through url list
     data_frames_list = []
