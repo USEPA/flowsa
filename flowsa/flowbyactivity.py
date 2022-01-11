@@ -13,8 +13,8 @@ import pandas as pd
 from urllib import parse
 from esupy.processed_data_mgmt import write_df_to_file
 from esupy.remote import make_url_request
-from flowsa.common import log, load_api_key, \
-    load_yaml_dict, rename_log_file
+from flowsa.common import log, load_api_key, sourceconfigpath, \
+    load_yaml_dict, rename_log_file, get_flowsa_base_name
 from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import fba_fill_na_dict, \
@@ -191,8 +191,13 @@ def main(**kwargs):
     source = kwargs['source']
     year = kwargs['year']
 
-    # assign yaml parameters (common.py fxn)
-    config = load_yaml_dict(source, flowbytype='FBA')
+    # assign yaml parameters (common.py fxn), drop any extensions to FBA
+    # filename if run into error
+    try:
+        config = load_yaml_dict(source, flowbytype='FBA')
+    except UnboundLocalError:
+        source = get_flowsa_base_name(sourceconfigpath, source, "yaml")
+        config = load_yaml_dict(source, flowbytype='FBA')
 
     log.info("Creating dataframe list")
     # year input can either be sequential years (e.g. 2007-2009) or single year
