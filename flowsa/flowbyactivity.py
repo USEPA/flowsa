@@ -196,7 +196,9 @@ def main(**kwargs):
     try:
         config = load_yaml_dict(source, flowbytype='FBA')
     except UnboundLocalError:
+        log.info(f'Could not find Flow-By-Activity config file for {source}')
         source = get_flowsa_base_name(sourceconfigpath, source, "yaml")
+        log.info(f'Generating FBA for {source}')
         config = load_yaml_dict(source, flowbytype='FBA')
 
     log.info("Creating dataframe list")
