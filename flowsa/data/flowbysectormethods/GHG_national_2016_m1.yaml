@@ -1,10 +1,11 @@
 %YAML 1.1
 
 ---
-# m1 for the GHG national replicates the method used in the National GHG Industry Attribution Model, except that
-# sector attribution is to 6-digit NAICS, rather than the BEA 2012 IO schema
+# m1 for the GHG national replicates the method used in the National GHG Industry Attribution Model
+#(https://doi.org/10.23719/1517571), except that sector attribution is to 6-digit NAICS,
+# rather than the BEA 2012 IO schema
 
-target_sector_level: NAICS_6 #this should perhaps be 4 or 5 to be closer to BEA_2012
+target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 source_names:
