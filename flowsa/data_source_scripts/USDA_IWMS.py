@@ -38,7 +38,6 @@ def iwms_url_helper(*, build_url, config, **_):
     for x in config['agg_levels']:
         url = build_url
         url = url.replace("__aggLevel__", x)
-        url = url.replace(" ", "%20")
         urls_iwms.append(url)
     return urls_iwms
 

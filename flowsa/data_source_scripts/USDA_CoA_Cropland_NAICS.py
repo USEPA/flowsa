@@ -42,7 +42,6 @@ def CoA_Cropland_NAICS_URL_helper(*, build_url, config, **_):
             url = build_url
             url = url.replace("__aggLevel__", x)
             url = url.replace("&state_alpha=__stateAlpha__", "")
-            url = url.replace(" ", "%20")
             urls.append(url)
         else:
             # substitute in state acronyms for state and county url calls
@@ -50,7 +49,6 @@ def CoA_Cropland_NAICS_URL_helper(*, build_url, config, **_):
                 url = build_url
                 url = url.replace("__aggLevel__", x)
                 url = url.replace("__stateAlpha__", z)
-                url = url.replace(" ", "%20")
                 urls.append(url)
     return urls
 
