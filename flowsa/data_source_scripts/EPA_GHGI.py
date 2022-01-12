@@ -265,7 +265,7 @@ def ghg_call(*, resp, url, year, config, **_):
                             df.columns = new_headers
                             nan_col = 'Electricity Power Emissions (MMT CO2 Eq.) from Energy Use'
                             fill_col = 'Unnamed: 12_level_1 Emissions (MMT CO2 Eq.) from Energy Use'
-                            df = df.drop(nan_col, 1)
+                            df = df.drop(columns=nan_col)
                             df.columns = [nan_col if x == fill_col else x for x in df.columns]
                             df['Year'] = year
                         else:
