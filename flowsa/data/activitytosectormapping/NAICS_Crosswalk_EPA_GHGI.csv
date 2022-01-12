@@ -252,6 +252,14 @@ EPA_GHGI_T_3_8,Coal Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or 
 EPA_GHGI_T_3_8,Fuel Oil Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
 EPA_GHGI_T_3_8,Natural gas Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
 EPA_GHGI_T_3_8,Wood Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)"
+EPA_GHGI_T_3_8,Coal Electric Power,NAICS_2012_Code,S00101,,
+EPA_GHGI_T_3_8,Fuel Oil Electric Power,NAICS_2012_Code,S00101,,
+EPA_GHGI_T_3_8,Natural gas Electric Power,NAICS_2012_Code,S00101,,
+EPA_GHGI_T_3_8,Wood Electric Power,NAICS_2012_Code,S00101,,
+EPA_GHGI_T_3_8,Coal Electric Power,NAICS_2012_Code,S00202,,
+EPA_GHGI_T_3_8,Fuel Oil Electric Power,NAICS_2012_Code,S00202,,
+EPA_GHGI_T_3_8,Natural gas Electric Power,NAICS_2012_Code,S00202,,
+EPA_GHGI_T_3_8,Wood Electric Power,NAICS_2012_Code,S00202,,
 EPA_GHGI_T_3_8,Coal Residential,NAICS_2012_Code,F01000,,F01000
 EPA_GHGI_T_3_8,Fuel Oil Residential,NAICS_2012_Code,F01000,,
 EPA_GHGI_T_3_8,Natural Gas Residential,NAICS_2012_Code,F01000,,
