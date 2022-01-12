@@ -51,7 +51,7 @@ def equates_call(*, resp, year, config, **_):
             tar.getmembers()  # Index the tarball
             df_list = [pd.read_csv(BytesIO(tar.extractfile(file).read()),
                                    comment='#')
-                       for file in config['file_list'][year]]
+                       for file in config['file_list'][int(year)]]
             return pd.concat(df_list)
 
 
