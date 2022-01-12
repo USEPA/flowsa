@@ -149,7 +149,7 @@ EPA_GHGI_T_5_7,Sheep,NAICS_2012_Code,11241,,112A00
 EPA_GHGI_T_5_7,Swine,NAICS_2012_Code,1122,,112A00
 EPA_GHGI_T_5_7,Poultry,NAICS_2012_Code,1123,,112300
 EPA_GHGI_T_4_46,Acrylonitrile,NAICS_2012_Code,325199,,325411 (incorrect in original?)
-EPA_GHGI_T_4_46,Carbon Black,NAICS_2012_Code,325180,,3252A0
+EPA_GHGI_T_4_46,Carbon Black,NAICS_2012_Code,325180,,3252A0 (incorrect in original?)
 EPA_GHGI_T_4_46,Ethylene,NAICS_2012_Code,324110,,324110
 EPA_GHGI_T_4_46,Ethylene Dichloride,NAICS_2012_Code,325120,,not mapped
 EPA_GHGI_T_4_46,Ethylene Oxide,NAICS_2012_Code,325199,,325411 (incorrect in original?)
