@@ -11,7 +11,7 @@ Last updated: 2018-11-07
 
 import io
 import pandas as pd
-from flowsa.common import US_FIPS
+from flowsa.location import US_FIPS
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 

@@ -9,13 +9,14 @@ import pandas as pd
 import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
-from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
-    get_county_FIPS, update_geoscale, load_yaml_dict, \
+from flowsa.common import fbs_activity_fields, load_yaml_dict, \
     load_crosswalk, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
     fba_activity_fields, fba_default_grouping_fields, \
-    fba_wsec_default_grouping_fields, fips_number_key, fba_fill_na_dict, \
+    fba_wsec_default_grouping_fields, fba_fill_na_dict, \
     get_flowsa_base_name, fba_mapped_default_grouping_fields
+from flowsa.location import US_FIPS, get_state_FIPS, \
+    get_county_FIPS, update_geoscale, fips_number_key
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
 from flowsa.settings import datasourcescriptspath, log

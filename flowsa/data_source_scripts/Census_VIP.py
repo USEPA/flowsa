@@ -9,7 +9,7 @@ https://www.census.gov/construction/c30/c30index.html
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import US_FIPS
+from flowsa.location import US_FIPS
 
 
 def census_vip_call(*, resp, **_):

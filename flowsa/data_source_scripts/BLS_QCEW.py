@@ -16,7 +16,8 @@ import zipfile
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, fba_default_grouping_fields
+from flowsa.location import US_FIPS
+from flowsa.common import fba_default_grouping_fields
 from flowsa.schema import flow_by_activity_wsec_fields, \
     flow_by_activity_mapped_wsec_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \

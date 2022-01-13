@@ -25,11 +25,12 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import fips_number_key, load_yaml_dict, \
+from flowsa.location import fips_number_key
+from flowsa.common import load_yaml_dict, \
     str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
     fbs_default_grouping_fields, fbs_grouping_fields_w_activities, \
-    logoutputpath, load_yaml_dict
+    logoutputpath
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
 from flowsa.settings import log, vLog, flowbysectormethodpath, \
