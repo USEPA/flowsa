@@ -8,6 +8,7 @@ source_names:
     geoscale_to_use: state
     year: 2017
     clean_fba_df_fxn: clean_NEI_fba_no_pesticides
+    apply_urban_rural: True
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
     activity_sets:
@@ -151,6 +152,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     clean_fba_df_fxn: clean_NEI_fba
+    apply_urban_rural: True
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
     activity_sets:
@@ -188,6 +190,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     clean_fba_df_fxn: clean_NEI_fba
+    apply_urban_rural: True
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Onroad_2017_asets.csv'
     activity_sets:

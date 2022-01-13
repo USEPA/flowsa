@@ -138,6 +138,11 @@ def main(**kwargs):
             flows = clean_df(flows, flow_by_activity_fields,
                              fba_fill_na_dict, drop_description=False)
 
+            # split data by urban and rural
+            if v.get('apply_urban_rural'):
+                vLog.info(f"Splitting {k} into urban and rural quantities "
+                          "by FIPS.")
+
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \
                 map_fbs_flows(flows, k, v, keep_fba_columns=True)
