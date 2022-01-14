@@ -12,8 +12,8 @@ from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import US_FIPS, sector_level_key, \
-    load_yaml_dict, \
-    load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
+    check_activities_sector_like, load_crosswalk, \
+    SECTOR_SOURCE_NAME, fba_activity_fields, \
     fba_default_grouping_fields, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
 
@@ -49,7 +49,8 @@ def check_if_activities_match_sectors(fba):
         activities.extend(fba[f])
 
     # Get list of module default sectors
-    flowsa_sector_list = list(load_crosswalk('sector')[SECTOR_SOURCE_NAME])
+    flowsa_sector_list = list(load_crosswalk('sector_timeseries')[
+                                  SECTOR_SOURCE_NAME])
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
@@ -333,7 +334,7 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
-    if load_yaml_dict('source_catalog')[source_name]['sector-like_activities']:
+    if check_activities_sector_like(source_name):
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector '
                    'ratios for a dataset with sector-like activities because '
                    'if there are modifications to flowamounts for a sector, '
@@ -448,10 +449,6 @@ def compare_fba_geo_subset_and_fbs_output_totals(
     vLog.info('Comparing Flow-By-Activity subset by activity and geography to '
               'the subset Flow-By-Sector FlowAmount total.')
 
-    # load source catalog
-    cat = load_yaml_dict('source_catalog')
-    src_info = cat[source_name]
-
     # determine from scale
     if fips_number_key[source_attr['geoscale_to_use']] < \
             fips_number_key[activity_attr['allocation_from_scale']]:
@@ -462,7 +459,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(
     # extract relevant geoscale data or aggregate existing data
     fba = subset_df_by_geoscale(fba_load, from_scale,
                                 method['target_geoscale'])
-    if src_info['sector-like_activities']:
+    if check_activities_sector_like(source_name):
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
         fba = fba[['Class', 'FlowAmount', 'Unit', 'Context',
@@ -685,7 +682,7 @@ def melt_naics_crosswalk():
     """
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = load_crosswalk('sector')
+    cw_load = load_crosswalk('sector_timeseries')
 
     # create melt table of possible 2007 and 2017 naics that can
     # be mapped to 2012
@@ -730,7 +727,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
 
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = load_crosswalk('sector')
+    cw_load = load_crosswalk('sector_timeseries')
     cw = cw_load[sectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk

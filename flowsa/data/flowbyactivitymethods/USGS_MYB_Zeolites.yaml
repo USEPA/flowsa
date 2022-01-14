@@ -6,7 +6,7 @@ date_generated: '2021-03-19'
 years_available: 2014-2018
 format: xls
 url:
-  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb-2018--zeoli-adv.xlsx
+  base_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-zeolites.xls
 url_replace_fxn: usgs_zeolites_url_helper
 call_response_fxn: usgs_zeolites_call
 parse_response_fxn: usgs_zeolites_parse

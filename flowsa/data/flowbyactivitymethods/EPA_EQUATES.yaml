@@ -5,8 +5,8 @@ bib_id: EPA_EQUATES
 api_name: EPA_EQUATES
 api_key_required: false
 format: tar.gz
+confirm_gdrive: true
 url:
-  confirm_gdrive: true
   base_url: https://docs.google.com/uc?export=download
   file_id_dict:
     2002: 1jw_0216cTDSw-FrojrgGbKU5myl23ybv

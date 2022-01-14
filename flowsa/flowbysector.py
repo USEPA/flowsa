@@ -25,7 +25,7 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import fips_number_key, load_yaml_dict, \
+from flowsa.common import fips_number_key, check_activities_sector_like, \
     str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
     fbs_default_grouping_fields, fbs_grouping_fields_w_activities, \
@@ -138,6 +138,12 @@ def main(**kwargs):
             flows = clean_df(flows, flow_by_activity_fields,
                              fba_fill_na_dict, drop_description=False)
 
+            # clean up fba before mapping, if specified in yaml
+            if "clean_fba_before_mapping_df_fxn" in v:
+                vLog.info("Cleaning up %s FlowByActivity", k)
+                flows = dynamically_import_fxn(
+                    k, v["clean_fba_before_mapping_df_fxn"])(flows)
+
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \
                 map_fbs_flows(flows, k, v, keep_fba_columns=True)
@@ -186,11 +192,20 @@ def main(**kwargs):
                     (flows_mapped[fba_activity_fields[1]].isin(names)
                      )].reset_index(drop=True)
 
+                # subset by flowname if exists
+                if 'source_flows' in attr:
+                    flows_subset = flows_subset[flows_subset['FlowName'].isin(attr['source_flows'])]
+                if len(flows_subset) == 0:
+                    log.warning(f"no data found for flows in {aset}")
+                    continue
+                if len(flows_subset[flows_subset['FlowAmount'] != 0]) == 0:
+                    log.warning(f"all flow data for {aset} is 0")
+                    continue
                 # if activities are sector-like, check sectors are valid
-                if load_yaml_dict('source_catalog'
-                                  )[k]['sector-like_activities']:
+                if check_activities_sector_like(k):
                     flows_subset2 = replace_naics_w_naics_from_another_year(
                         flows_subset, method['target_sector_source'])
+
                     # check impact on df FlowAmounts
                     vLog.info('Calculate FlowAmount difference caused by '
                               'replacing NAICS Codes with %s, saving '
@@ -253,8 +268,7 @@ def main(**kwargs):
 
                 # define grouping columns dependent on sectors
                 # being activity-like or not
-                if load_yaml_dict('source_catalog'
-                                  )[k]['sector-like_activities'] is False:
+                if check_activities_sector_like(k) is False:
                     groupingcols = fbs_grouping_fields_w_activities
                     groupingdict = flow_by_sector_fields_w_activity
                 else:

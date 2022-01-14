@@ -7,9 +7,10 @@ Functions to allocate data using additional data sources
 
 import numpy as np
 import pandas as pd
-from flowsa.common import load_yaml_dict, US_FIPS, \
-    fba_activity_fields, fbs_activity_fields, \
-    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields
+from flowsa.common import US_FIPS, fba_activity_fields, \
+    fbs_activity_fields, fba_mapped_wsec_default_grouping_fields, \
+    fba_wsec_default_grouping_fields, check_activities_sector_like, \
+    return_bea_codes_used_as_naics
 from flowsa.schema import activity_fields
 from flowsa.settings import log
 from flowsa.validation import check_allocation_ratios, \
@@ -36,7 +37,7 @@ def direct_allocation_method(fbs, k, names, method):
     log.info('Directly assigning activities to sectors')
     # for each activity, if activities are not sector like,
     # check that there is no data loss
-    if load_yaml_dict('source_catalog')[k]['sector-like_activities'] is False:
+    if check_activities_sector_like(k) is False:
         activity_list = []
         n_allocated = []
         for n in names:
@@ -339,7 +340,20 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
             df_w_sector.merge(
                 helper_allocation[['Location', 'Sector', 'HelperFlow']],
                 left_on=['Location', sector_col_to_merge],
-                right_on=['Location', 'Sector'])
+                right_on=['Location', 'Sector'],
+                how='left')
+        # load bea codes that sub for naics
+        bea = return_bea_codes_used_as_naics()
+        # replace sector column and helperflow value if the sector column to
+        # merge is in the bea list to prevent dropped data
+        modified_fba_allocation['Sector'] = \
+            np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
+                     modified_fba_allocation[sector_col_to_merge],
+                     modified_fba_allocation['Sector'])
+        modified_fba_allocation['HelperFlow'] = \
+            np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
+                     modified_fba_allocation['FlowAmount'],
+                     modified_fba_allocation['HelperFlow'])
 
     # modify flow amounts using helper data
     if 'multiplication' in attr['helper_method']:
