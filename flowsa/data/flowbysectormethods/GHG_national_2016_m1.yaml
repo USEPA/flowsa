@@ -232,6 +232,9 @@ source_names:
         allocation_source_year: 2017
         allocation_flow:
           - "AREA HARVESTED"
+          - "AREA BEARING & NON-BEARING" # Orchards
+          - "AREA GROWN" # Berry totals
+          - "AREA IN PRODUCTION" # Vegetable totals
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
