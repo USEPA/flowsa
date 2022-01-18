@@ -13,11 +13,13 @@ except NameError:
     MODULEPATH = 'flowsa/'
 
 datapath = MODULEPATH + 'data/'
-sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
-flowbysectormethodpath = datapath + 'flowbysectormethods/'
-flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
+
+methodpath = MODULEPATH + 'methods/'
+sourceconfigpath = methodpath + 'flowbyactivitymethods/'
+flowbysectormethodpath = methodpath + 'flowbysectormethods/'
+flowbysectoractivitysetspath = methodpath + 'flowbysectoractivitysets/'
 
 datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
