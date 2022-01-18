@@ -8,15 +8,19 @@ api_key_required: true
 format: json
 url:
   base_url: https://quickstats.nass.usda.gov/api/
-  api_path: api_GET/?key=__apiKey__    #__apiKey__ should be substituted with user's api key
+  #__apiKey__ substituted with user's api key
+  api_path: api_GET/?key=__apiKey__&
   url_params:
     source_desc: SURVEY
     sector_desc: ENVIRONMENTAL
     unit_desc: LB
-    domain_desc: __domainLevel__ # __domainLevel__ triggers a replace function
+    # __domainLevel__ triggers a replace function
+    domain_desc: __domainLevel__
     agg_level_desc: STATE
-    state_alpha: __stateAlpha__    # dynamically substitute the 50 state acronyms.
-    year: __year__    # __year__ is used to trigger a replace function to substitute in year
+    # dynamically substitute the 50 state acronyms.
+    state_alpha: __stateAlpha__
+    # __year__ is used to trigger a replace function to substitute in year
+    year: __year__
   key_param: key
 url_replace_fxn: acup_url_helper
 call_response_fxn: acup_call

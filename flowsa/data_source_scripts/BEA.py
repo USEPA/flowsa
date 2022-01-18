@@ -9,17 +9,19 @@ Generation of BEA Gross Output data as FBA, csv files for BEA data
 originate from USEEIOR and were originally generated on 2020-07-14.
 """
 import pandas as pd
-from flowsa.common import US_FIPS
+from flowsa.common import US_FIPS, fbs_activity_fields
+from flowsa.schema import activity_fields
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.fbs_allocation import allocation_helper
 
 
-def bea_gdp_parse(dataframe_list, args):
+def bea_gdp_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param year: year
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # Read directly into a pandas df
     df_raw = pd.read_csv(externaldatapath + "BEA_GDP_GrossOutput_IO.csv")
@@ -31,7 +33,7 @@ def bea_gdp_parse(dataframe_list, args):
                  var_name="Year",
                  value_name="FlowAmount")
 
-    df = df[df['Year'] == args['year']]
+    df = df[df['Year'] == year]
     # hardcode data
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
@@ -39,7 +41,8 @@ def bea_gdp_parse(dataframe_list, args):
     df['FlowName'] = 'Gross Output'
     df["SourceName"] = "BEA_GDP_GrossOutput"
     df["Location"] = US_FIPS
-    df['LocationSystem'] = "FIPS_2015"  # state FIPS codes have not changed over last decade
+    # state FIPS codes have not changed over last decade
+    df['LocationSystem'] = "FIPS_2015"
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
@@ -47,14 +50,15 @@ def bea_gdp_parse(dataframe_list, args):
     return df
 
 
-def bea_use_detail_br_parse(dataframe_list, args):
+def bea_use_detail_br_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param year: year)
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
-    csv_load = externaldatapath + "BEA_" + str(args['year']) + "_Detail_Use_PRO_BeforeRedef.csv"
+    csv_load = f'{externaldatapath}BEA_{str(year)}' \
+               f'_Detail_Use_PRO_BeforeRedef.csv'
     df_raw = pd.read_csv(csv_load)
 
     # first column is the commodity being consumed
@@ -65,16 +69,17 @@ def bea_use_detail_br_parse(dataframe_list, args):
                  var_name="ActivityConsumedBy",
                  value_name="FlowAmount")
 
-    df['Year'] = str(args['year'])
+    df['Year'] = str(year)
     # hardcode data
-    df['FlowName'] = "USD" + str(args['year'])
+    df['FlowName'] = "USD" + str(year)
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
     df["SourceName"] = "BEA_Use_Detail_PRO_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
-    df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
+    # original unit in million USD
+    df['FlowAmount'] = df['FlowAmount'] * 1000000
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
@@ -82,15 +87,15 @@ def bea_use_detail_br_parse(dataframe_list, args):
     return df
 
 
-def bea_make_detail_br_parse(dataframe_list, args):
+def bea_make_detail_br_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param year: year
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(args['year']) +
+    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(year) +
                          "_Detail_Make_BeforeRedef.csv")
 
     # first column is the industry
@@ -101,16 +106,17 @@ def bea_make_detail_br_parse(dataframe_list, args):
                  var_name="ActivityConsumedBy",
                  value_name="FlowAmount")
 
-    df['Year'] = str(args['year'])
+    df['Year'] = str(year)
     # hardcode data
-    df['FlowName'] = "USD" + str(args['year'])
+    df['FlowName'] = "USD" + str(year)
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
-    df["SourceName"] = "BEA_Make_BR"
+    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
-    df['FlowAmount'] = df['FlowAmount'] * 1000000  # original unit in million USD
+    # original unit in million USD
+    df['FlowAmount'] = df['FlowAmount'] * 1000000
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
@@ -118,15 +124,17 @@ def bea_make_detail_br_parse(dataframe_list, args):
     return df
 
 
-def bea_make_ar_parse(dataframe_list, args):
+def bea_make_ar_parse(*, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     # df = pd.concat(dataframe_list, sort=False)
-    df_load = pd.read_csv(externaldatapath + "BEA_" + args['year'] +
+    df_load = pd.read_csv(externaldatapath + "BEA_" + year +
                           "_Make_AfterRedef.csv", dtype="str")
     # strip whitespace
     df = df_load.apply(lambda x: x.str.strip())
@@ -145,7 +153,7 @@ def bea_make_ar_parse(dataframe_list, args):
     df['SourceName'] = 'BEA_Make_AR'
     df['Unit'] = 'USD'
     df['Location'] = US_FIPS
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     df['FlowName'] = 'Gross Output Producer Value After Redef'
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
@@ -153,17 +161,44 @@ def bea_make_ar_parse(dataframe_list, args):
     return df
 
 
-def subset_BEA_Use(df, attr, **kwargs):
+def subset_BEA_table(df, attr, **_):
     """
-    Function to modify loaded BEA table based on data in the FBA method yaml
+    Modify loaded BEA table (make or use) based on data in the FBA method yaml
     :param df: df, flowbyactivity format
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe
     """
-    commodity = attr['clean_parameter']
-    df = df.loc[df['ActivityProducedBy'] == commodity]
+    # extract commodity to filter and which Activity column used to filter
+    (commodity, ActivityCol), *rest = attr['clean_parameter'].items()
+    df = df.loc[df[ActivityCol] == commodity].reset_index(drop=True)
 
     # set column to None to enable generalizing activity column later
-    df.loc[:, 'ActivityProducedBy'] = None
-
+    df.loc[:, ActivityCol] = None
+    if set(fbs_activity_fields).issubset(df.columns):
+        for v in activity_fields.values():
+            if v[0]['flowbyactivity'] == ActivityCol:
+                SectorCol = v[1]['flowbysector']
+        df.loc[:, SectorCol] = None
     return df
+
+
+def subset_and_allocate_BEA_table(df, attr, **_):
+    """
+    Temporary function to mimic use of 2nd helper allocation dataset
+    """
+    df = subset_BEA_table(df, attr)
+    v = {'geoscale_to_use': 'national'}
+    method2 = {'target_sector_source': 'NAICS_2012_Code'}
+    attr2 = {"helper_source": "BLS_QCEW",
+             "helper_method": "proportional",
+             "helper_source_class": "Employment",
+             "helper_source_year": 2012,
+             "helper_flow": ["Number of employees"],
+             "helper_from_scale": "national",
+             "allocation_from_scale": "national",
+             "clean_helper_fba": "clean_bls_qcew_fba",
+             "clean_helper_fba_wsec": "bls_clean_allocation_fba_w_sec"}
+    df2 = allocation_helper(df, attr2, method2, v, False)
+    # Drop remaining rows with no sectors e.g. T001 and other final demands
+    df2 = df2.dropna(subset=['SectorConsumedBy']).reset_index(drop=True)
+    return df2

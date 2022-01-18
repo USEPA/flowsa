@@ -7,7 +7,8 @@ api_key_required: true
 format: json
 url:
   base_url: https://quickstats.nass.usda.gov/api/
-  api_path: api_GET/?key=__apiKey__   #__apiKey__ should be substituted with user's api key
+  #__apiKey__ should be substituted with user's api key
+  api_path: api_GET/?key=__apiKey__&
   url_params:
     source_desc: CENSUS   # the data is from the survey, not census - miscategorized online
     sector_desc: CROPS

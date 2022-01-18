@@ -55,10 +55,9 @@ flow_by_sector_fields = \
      'FlowUUID': [{'dtype': 'str'}, {'required': True}]
      }
 flow_by_sector_fields_w_activity = flow_by_sector_fields.copy()
-flow_by_sector_fields_w_activity.update({'ActivityProducedBy': [{'dtype': 'str'},
-                                                                {'required': False}],
-                                         'ActivityConsumedBy': [{'dtype': 'str'},
-                                                                {'required': False}]})
+flow_by_sector_fields_w_activity.update(
+ {'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],
+  'ActivityConsumedBy': [{'dtype': 'str'}, {'required': False}]})
 flow_by_sector_collapsed_fields = \
     {'Flowable': [{'dtype': 'str'}, {'required': True}],
      'Class': [{'dtype': 'str'}, {'required': True}],

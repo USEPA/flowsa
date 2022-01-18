@@ -12,9 +12,9 @@ setup(
     package_data={'flowsa': ["data/*.*"]},
     include_package_data=True,
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories#egg=StEWI',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
         'pandas>=1.3.2',
         'pip>=9',
         'setuptools>=41',
@@ -28,8 +28,9 @@ setup(
         'tabula-py>=2.1.1',
         'numpy>=1.20.1',
         'bibtexparser>=1.2.0',
-        'joblib >= 1.1.0',
-        'python-dotenv >= 0.19.1'
+        'python-dotenv >= 0.19.1',
+        'seaborn>=0.11.2',
+        'matplotlib>=3.4.3'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',

@@ -14,10 +14,6 @@ source_names:
       activity_set_1: #Direct
         allocation_method: direct
         allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: national
       activity_set_2: #Crops
         allocation_source: "USDA_CoA_Cropland"
@@ -67,7 +63,7 @@ source_names:
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
-      activity_set_5: # mobile sources and fuel storage
+      activity_set_5: &use_allocation # mobile sources and fuel storage
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         allocation_method: proportional
         allocation_source_class: "Money"
@@ -76,8 +72,8 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "324110"
+        clean_allocation_fba: subset_BEA_table
+        clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
@@ -88,25 +84,8 @@ source_names:
         clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_6: # fertilizers
-        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-        allocation_method: proportional
-        allocation_source_class: "Money"
-        allocation_source_year: 2012
-        allocation_flow:
-          - "USD2012"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "325310"
-        helper_source: "BLS_QCEW"
-        helper_method: proportional
-        helper_source_class: "Employment"
-        helper_source_year: 2012
-        helper_flow:
-          - "Number of employees"
-        helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        <<: *use_allocation
+        clean_parameter: {"325310": 'ActivityProducedBy'}
       activity_set_7: # Gross Output
         allocation_source: "BEA_GDP_GrossOutput"
         allocation_method: proportional
@@ -126,25 +105,8 @@ source_names:
         clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_8: # pesticides
-        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-        allocation_method: proportional
-        allocation_source_class: "Money"
-        allocation_source_year: 2012
-        allocation_flow:
-          - "USD2012"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "325320"
-        helper_source: "BLS_QCEW"
-        helper_method: proportional
-        helper_source_class: "Employment"
-        helper_source_year: 2012
-        helper_flow:
-          - "Number of employees"
-        helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        <<: *use_allocation
+        clean_parameter: {"325320": 'ActivityProducedBy'}
   "EPA_NEI_Nonroad":
     data_format: 'FBA'
     class: Chemicals
@@ -157,31 +119,10 @@ source_names:
       activity_set_1: #Direct
         allocation_method: direct
         allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: national
       activity_set_2: # off-highway vehicles and equipment
-        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-        allocation_method: proportional
-        allocation_source_class: "Money"
-        allocation_source_year: 2012
-        allocation_flow:
-          - "USD2012"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "324110"
-        helper_source: "BLS_QCEW"
-        helper_method: proportional
-        helper_source_class: "Employment"
-        helper_source_year: 2012
-        helper_flow:
-          - "Number of employees"
-        helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        <<: *use_allocation
+        clean_parameter: {"324110": 'ActivityProducedBy'}
   "EPA_NEI_Onroad":
     data_format: 'FBA'
     class: Chemicals
@@ -194,31 +135,10 @@ source_names:
       activity_set_1: #Direct
         allocation_method: direct
         allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: national
       activity_set_2: # highway vehicles and gas stations
-        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-        allocation_method: proportional
-        allocation_source_class: "Money"
-        allocation_source_year: 2012
-        allocation_flow:
-          - "USD2012"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_Use
-        clean_parameter: "324110"
-        helper_source: "BLS_QCEW"
-        helper_method: proportional
-        helper_source_class: "Employment"
-        helper_source_year: 2012
-        helper_flow:
-          - "Number of employees"
-        helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        <<: *use_allocation
+        clean_parameter: {"324110": 'ActivityProducedBy'}
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: stewicombo_to_sector

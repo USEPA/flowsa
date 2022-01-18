@@ -2,13 +2,13 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Pulls Statistics Canada data on water intake and discharge for 3 digit NAICS from 2005 - 2015
+Pulls Statistics Canada data on water intake and discharge for 3
+digit NAICS from 2005 - 2015
 """
 
 import io
 import zipfile
 import pandas as pd
-from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator,\
     load_fba_w_standardized_units
 from flowsa.common import fba_default_grouping_fields, US_FIPS, \
@@ -16,18 +16,16 @@ from flowsa.common import fba_default_grouping_fields, US_FIPS, \
 from flowsa.validation import compare_df_units
 
 
-def sc_call(url, response_load, args):
+def sc_call(*, resp, **_):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    Convert response for calling url to pandas dataframe,
+    begin parsing df into FBA format
+    :param resp: response, response from url call
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
     # read all files in the stat canada zip
-    with zipfile.ZipFile(io.BytesIO(response_load.content), "r") as f:
+    with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         # read in file names
         for name in f.namelist():
             # if filename does not contain "MetaData", then create dataframe
@@ -37,33 +35,39 @@ def sc_call(url, response_load, args):
     return df
 
 
-def sc_parse(dataframe_list, args):
+def sc_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     # drop columns
     df = df.drop(columns=['COORDINATE', 'DECIMALS', 'DGUID', 'SYMBOL',
                           'TERMINATED', 'UOM_ID', 'SCALAR_ID', 'VECTOR'])
     # rename columns
-    df = df.rename(columns={'GEO': 'Location',
-                            'North American Industry Classification System (NAICS)': 'Description',
-                            'REF_DATE': 'Year',
-                            'STATUS': 'Spread',
-                            'VALUE': "FlowAmount",
-                            'Water use parameter': 'FlowName'})
+    df = df.rename(
+        columns={'GEO': 'Location',
+                 'North American Industry Classification System (NAICS)':
+                     'Description',
+                 'REF_DATE': 'Year',
+                 'STATUS': 'Spread',
+                 'VALUE': "FlowAmount",
+                 'Water use parameter': 'FlowName'})
     # extract NAICS as activity column. rename activity based on flowname
     df['Activity'] = df['Description'].str.extract('.*\[(.*)\].*')
     df.loc[df['Description'] == 'Total, all industries', 'Activity'] = '31-33'
-    df.loc[df['Description'] == 'Other manufacturing industries', 'Activity'] = 'Other'
+    df.loc[df['Description'] == 'Other manufacturing industries',
+           'Activity'] = 'Other'
     df['FlowName'] = df['FlowName'].str.strip()
-    df.loc[df['FlowName'] == 'Water intake', 'ActivityConsumedBy'] = df['Activity']
-    df.loc[df['FlowName'].isin(['Water discharge',
-                                'Water recirculation']), 'ActivityProducedBy'] = df['Activity']
+    df.loc[df['FlowName'] == 'Water intake', 'ActivityConsumedBy'] = \
+        df['Activity']
+    df.loc[df['FlowName'].isin(
+        ['Water discharge', 'Water recirculation']), 'ActivityProducedBy'] = \
+        df['Activity']
     # create "unit" column
     df["Unit"] = "million " + df["UOM"] + "/year"
     # drop columns used to create unit and activity columns
@@ -88,7 +92,7 @@ def sc_parse(dataframe_list, args):
     df["DataCollection"] = 4
 
     # subset based on year
-    df = df[df['Year'] == args['year']]
+    df = df[df['Year'] == year]
 
     return df
 
@@ -101,16 +105,16 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
     - us gdp
     :param df: df, FBA format
     :param attr: dictionary, attribute data from method yaml for activity set
-    :param download_FBA_if_missing: bool, True if would like to download missing
-      FBAs from Data Commons, False if FBAs should be generated locally
+    :param download_FBA_if_missing: bool, True if would like to download
+        missing FBAs from Data Commons, False if FBAs should be generated
+        locally
     :return: df, FBA format, flowamounts converted
     """
 
     # load Canadian GDP data
-    gdp = load_fba_w_standardized_units(datasource='StatCan_GDP',
-                                        year=attr['allocation_source_year'],
-                                        flowclass='Money',
-                                        download_FBA_if_missing=download_FBA_if_missing)
+    gdp = load_fba_w_standardized_units(
+        datasource='StatCan_GDP', year=attr['allocation_source_year'],
+        flowclass='Money', download_FBA_if_missing=download_FBA_if_missing)
 
     # drop 31-33
     gdp = gdp[gdp['ActivityProducedBy'] != '31-33']
@@ -134,25 +138,27 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
 
     # convert Location to US
     df_m.loc[:, 'Location'] = US_FIPS
-    df_m = assign_fips_location_system(df_m, str(attr['allocation_source_year']))
+    df_m = assign_fips_location_system(
+        df_m, str(attr['allocation_source_year']))
 
     # load us gdp
     # load Canadian GDP data
-    us_gdp_load = load_fba_w_standardized_units(datasource='BEA_GDP_GrossOutput',
-                                                year=attr['allocation_source_year'],
-                                                flowclass='Money',
-                                                download_FBA_if_missing=download_FBA_if_missing)
+    us_gdp_load = load_fba_w_standardized_units(
+        datasource='BEA_GDP_GrossOutput', year=attr['allocation_source_year'],
+        flowclass='Money', download_FBA_if_missing=download_FBA_if_missing)
 
     # load bea crosswalk
     cw_load = load_crosswalk('BEA')
     cw = cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']].drop_duplicates()
-    cw = cw[cw['NAICS_2012_Code'].apply(lambda x:
-                                        len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)
+    cw = cw[cw['NAICS_2012_Code'].apply(
+        lambda x: len(str(x)) == 3)].drop_duplicates().reset_index(drop=True)
 
     # merge
-    us_gdp = pd.merge(us_gdp_load, cw, how='left',
-                      left_on='ActivityProducedBy', right_on='BEA_2012_Detail_Code')
-    us_gdp = us_gdp.drop(columns=['ActivityProducedBy', 'BEA_2012_Detail_Code'])
+    us_gdp = pd.merge(
+        us_gdp_load, cw, how='left', left_on='ActivityProducedBy',
+        right_on='BEA_2012_Detail_Code')
+    us_gdp = us_gdp.drop(
+        columns=['ActivityProducedBy', 'BEA_2012_Detail_Code'])
     # rename columns
     us_gdp = us_gdp.rename(columns={'NAICS_2012_Code': 'ActivityProducedBy'})
     # agg by naics
@@ -166,7 +172,8 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
 
     df_m2.loc[:, 'FlowAmount'] = df_m2['FlowAmount'] * (df_m2['us_gdp'])
     df_m2.loc[:, 'Unit'] = 'kg'
-    df_m2 = df_m2.rename(columns={'ActivityProducedBy_x': 'ActivityProducedBy'})
+    df_m2 = df_m2.rename(
+        columns={'ActivityProducedBy_x': 'ActivityProducedBy'})
     df_m2 = df_m2.drop(columns=['ActivityProducedBy_y', 'us_gdp'])
 
     return df_m2

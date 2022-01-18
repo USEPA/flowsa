@@ -21,12 +21,12 @@ from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.validation import compare_df_units
 
 
-def bh_call(url, response_load, args):
+def bh_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
     :param url: string, url
-    :param response_load: df, response from url call
+    :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
@@ -34,7 +34,7 @@ def bh_call(url, response_load, args):
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
-        bh_df = tabula.read_pdf(io.BytesIO(response_load.content),
+        bh_df = tabula.read_pdf(io.BytesIO(resp.content),
                                 pages=x, stream=True)[0]
         bh_df_list.append(bh_df)
 
@@ -43,17 +43,15 @@ def bh_call(url, response_load, args):
     return bh_df
 
 
-def bh_parse(dataframe_list, args):
+def bh_parse(*, df_list, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
-        ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity
-        specifications
+    :param df_list: list of dataframes to concat and format
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     # concat list of dataframes (info on each page)
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
                             "I-O description": "Description",
                             "gal/$M": "FlowAmount",
@@ -89,8 +87,7 @@ def convert_blackhurst_data_to_kg_per_year(df, **kwargs):
         datasource='BEA_Make_AR',
         year=kwargs['attr']['allocation_source_year'],
         flowclass='Money',
-        download_FBA_if_missing=kwargs['download_FBA_if_missing']
-    )
+        download_FBA_if_missing=kwargs['download_FBA_if_missing'])
     # drop rows with flowamount = 0
     bmt = bmt[bmt['FlowAmount'] != 0]
 
@@ -99,8 +96,7 @@ def convert_blackhurst_data_to_kg_per_year(df, **kwargs):
     bh_df_revised = pd.merge(
         df, bmt[['FlowAmount', 'ActivityProducedBy', 'Location']],
         left_on=['ActivityConsumedBy', 'Location'],
-        right_on=['ActivityProducedBy', 'Location']
-    )
+        right_on=['ActivityProducedBy', 'Location'])
 
     bh_df_revised.loc[:, 'FlowAmount'] = ((bh_df_revised['FlowAmount_x']) *
                                           (bh_df_revised['FlowAmount_y']))
@@ -165,8 +161,9 @@ def convert_blackhurst_data_to_kg_per_employee(
     df_wratio = df_wratio[df_wratio['Employees'] != 0]
 
     # calculate gal/employee in 2002
-    df_wratio.loc[:, 'FlowAmount'] = (df_wratio['FlowAmount'] * df_wratio[
-        'EmployeeRatio']) / df_wratio['Employees']
+    df_wratio.loc[:, 'FlowAmount'] = \
+        (df_wratio['FlowAmount'] * df_wratio['EmployeeRatio']) / \
+        df_wratio['Employees']
     df_wratio.loc[:, 'Unit'] = 'kg/p'
 
     # drop cols

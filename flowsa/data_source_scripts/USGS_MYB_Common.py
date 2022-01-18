@@ -11,8 +11,13 @@ from flowsa.settings import log
 
 
 def usgs_myb_year(years, current_year_str):
-    """Sets the column for the string based on the year.
-        Checks that the year you picked is in the last file."""
+    """
+    Sets the column for the string based on the year. Checks that the year
+    you picked is in the last file.
+    :param years: string, with hypthon
+    :param current_year_str: string, year of interest
+    :return: string, year
+    """
     years_array = years.split("-")
     lower_year = int(years_array[0])
     upper_year = int(years_array[1])
@@ -21,12 +26,14 @@ def usgs_myb_year(years, current_year_str):
         column_val = current_year - lower_year + 1
         return "year_" + str(column_val)
     else:
-        log.info("Your year is out of scope. Pick a year between %s and %s", lower_year, upper_year)
+        log.info("Your year is out of scope. Pick a year between %s and %s",
+                 lower_year, upper_year)
 
 
 def usgs_myb_name(USGS_Source):
     """
-    Takes the USGS source name and parses it so it can be used in other parts of Flow by activity.
+    Takes the USGS source name and parses it so it can be used in other parts
+    of Flow by activity.
     :param USGS_Source: string, usgs source name
     :return:
     """
@@ -45,7 +52,8 @@ def usgs_myb_name(USGS_Source):
 
 def usgs_myb_static_varaibles():
     """
-    Populates the data values for Flow by activity that are the same for all of USGS_MYB Files
+    Populates the data values for Flow by activity that are the same
+    for all of USGS_MYB Files
     :return:
     """
     data = {}
@@ -59,7 +67,11 @@ def usgs_myb_static_varaibles():
 
 
 def usgs_myb_remove_digits(value_string):
-    """Eliminates numbers in a string"""
+    """
+    Eliminates numbers in a string
+    :param value_string:
+    :return:
+    """
     remove_digits = str.maketrans('', '', digits)
     return_string = value_string.translate(remove_digits)
     return return_string
