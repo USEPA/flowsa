@@ -19,7 +19,7 @@ externaldatapath = datapath + 'external_data/'
 methodpath = MODULEPATH + 'methods/'
 sourceconfigpath = methodpath + 'flowbyactivitymethods/'
 flowbysectormethodpath = methodpath + 'flowbysectormethods/'
-flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
+flowbysectoractivitysetspath = methodpath + 'flowbysectoractivitysets/'
 
 datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
