@@ -38,7 +38,6 @@ def CoA_Livestock_URL_helper(*, build_url, config, **_):
             url_ls = build_url
             url_ls = url_ls.replace("__aggLevel__", x)
             url_ls = url_ls.replace("&state_alpha=__stateAlpha__", "")
-            url_ls = url_ls.replace(" ", "%20")
             urls_livestock.append(url_ls)
         else:
             # substitute in state acronyms for state and county url calls
@@ -46,7 +45,6 @@ def CoA_Livestock_URL_helper(*, build_url, config, **_):
                 url_ls = build_url
                 url_ls = url_ls.replace("__aggLevel__", x)
                 url_ls = url_ls.replace("__stateAlpha__", y)
-                url_ls = url_ls.replace(" ", "%20")
                 urls_livestock.append(url_ls)
     return urls_livestock
 
