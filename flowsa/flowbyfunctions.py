@@ -106,10 +106,6 @@ def aggregator(df, groupbycols):
     # tmp replace null values with empty cells
     df = replace_NoneType_with_empty_cells(df)
 
-    # drop columns with flowamount = 0
-    # todo: determine impact of dropping next statemetn
-    df = df[df['FlowAmount'] != 0]
-
     # list of column headers, that if exist in df, should be
     # aggregated using the weighted avg fxn
     possible_column_headers = \
