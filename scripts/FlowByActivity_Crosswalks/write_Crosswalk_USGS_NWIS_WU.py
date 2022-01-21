@@ -81,8 +81,6 @@ def assign_naics(df):
                                 columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Thermoelectric Power', '221114']],
                                 columns=['Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Thermoelectric Power', '221115']],
-                                columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Thermoelectric Power', '221116']],
                                 columns=['Activity', 'Sector']), sort=True)
     df = df.append(pd.DataFrame([['Thermoelectric Power', '221117']],
@@ -124,4 +122,4 @@ if __name__ == '__main__':
     df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" +
-              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+              "NAICS_Crosswalk_" + datasource + ".csv", index=False)

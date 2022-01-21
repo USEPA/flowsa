@@ -6,98 +6,64 @@ Pulls EPA National Emissions Inventory (NEI) data for nonpoint sources
 """
 
 import io
-import zipfile
+from zipfile import ZipFile
+from os import path
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import convert_fba_unit
+from flowsa.dataclean import standardize_units
 
 
-def epa_nei_url_helper(build_url, config, args):
+def epa_nei_url_helper(*, build_url, year, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data is
+    obtained.
     :param build_url: string, base url
+    :param year: year
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into
+        Flow-By-Activity format
     """
-    urls = []
-    url = build_url
+    version_dict = config['version_dict']
+    url = (build_url
+           .replace('__year__', year)
+           .replace('__version__', version_dict[year]))
 
-    url = url.replace('__year__', args['year'])
-
-    if args['year'] == '2017':
-        url = url.replace('__version__', '2017v1/2017neiApr')
-    elif args['year'] == '2014':
-        url = url.replace('__version__', '2014v2/2014neiv2')
-    elif args['year'] == '2011':
-        url = url.replace('__version__', '2011v2/2011neiv2')
-    elif args['year'] == '2008':
-        url = url.replace('__version__', '2008neiv3')
-    urls.append(url)
-    return urls
+    return [url]
 
 
-def epa_nei_call(url, response_load, args):
+def epa_nei_call(*, resp, **_):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response_load: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    Convert response for calling _1 to pandas dataframe
+    :param _1: string, url (unused)
+    :param resp: df, response from url call
+    :param _2: dictionary, arguments specified when running
+        flowbyactivity.py ('year' and 'source') (unused)
     :return: pandas dataframe of original source data
     """
-    z = zipfile.ZipFile(io.BytesIO(response_load.content))
-    # create a list of files contained in the zip archive
-    znames = z.namelist()
-    # retain only those files that are in .csv format
-    znames = [s for s in znames if '.csv' in s]
-    # initialize the dataframe
-    df = pd.DataFrame()
-    # for all of the .csv data files in the .zip archive,
-    # read the .csv files into a dataframe
-    # and concatenate with the master dataframe
-    for i in range(len(znames)):
-        df = pd.concat([df, pd.read_csv(z.open(znames[i]))])
-    return df
+    with ZipFile(io.BytesIO(resp.content)) as z:
+        # Read in all .csv files from the zip archive as a list of dataframes
+        df_list = [pd.read_csv(z.open(name)) for name in z.namelist()
+                   if path.splitext(name)[1] == '.csv']
+    return pd.concat(df_list)
 
 
-def epa_nei_global_parse(dataframe_list, args):
+def epa_nei_global_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
-    df = pd.concat(dataframe_list, sort=True)
+    df = pd.concat(df_list, sort=True)
 
     # rename columns to match flowbyactivity format
-    if args['year'] == '2017':
-        df = df.rename(columns={"pollutant desc": "FlowName",
-                                "total emissions": "FlowAmount",
-                                "scc": "ActivityProducedBy",
-                                "fips code": "Location",
-                                "emissions uom": "Unit",
-                                "pollutant code": "Description"})
-
-    elif args['year'] == '2014':
-        df = df.rename(columns={"pollutant_desc": "FlowName",
-                                "total_emissions": "FlowAmount",
-                                "scc": "ActivityProducedBy",
-                                "state_and_county_fips_code": "Location",
-                                "uom": "Unit",
-                                "pollutant_cd": "Description"})
-
-    elif args['year'] == '2011' or args['year'] == '2008':
-        df = df.rename(columns={"description": "FlowName",
-                                "total_emissions": "FlowAmount",
-                                "scc": "ActivityProducedBy",
-                                "state_and_county_fips_code": "Location",
-                                "uom": "Unit",
-                                "pollutant_cd": "Description"})
+    col_dict = {value: key for (key, value) in config['col_dict'][year].items()}
+    df = df.rename(columns=col_dict)
 
     # make sure FIPS are string and 5 digits
     df['Location'] = df['Location'].astype('str').apply('{:0>5}'.format)
@@ -108,36 +74,36 @@ def epa_nei_global_parse(dataframe_list, args):
     df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
 
     # drop all other columns
-    df.drop(columns=df.columns.difference(['FlowName',
-                                           'FlowAmount',
-                                           'ActivityProducedBy',
-                                           'Location',
-                                           'Unit',
-                                           'Description']), inplace=True)
+    df.drop(columns=df.columns.difference(
+        list(config['col_dict'][year].keys())), inplace=True)
 
     # to align with other processed NEI data (Point from StEWI), units are
     # converted during FBA creation instead of maintained
-    df = convert_fba_unit(df)
+    df = standardize_units(df)
 
     # add hardcoded data
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Class'] = "Chemicals"
-    df['SourceName'] = args['source']
+    df['SourceName'] = source
     df['Compartment'] = "air"
-    df['Year'] = args['year']
-    df = assign_fips_location_system(df, args['year'])
+    df['Year'] = year
+    df = assign_fips_location_system(df, year)
 
     return df
 
 
-def epa_nei_onroad_parse(dataframe_list, args):
+def epa_nei_onroad_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param df_list: list of dataframes to concat and format
+    :param source: source
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(df_list=df_list, source=source,
+                              year=year, config=config)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -146,15 +112,19 @@ def epa_nei_onroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonroad_parse(dataframe_list, args):
+def epa_nei_nonroad_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param df_list: list of dataframes to concat and format
+    :param source: source
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
 
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(df_list=df_list, source=source,
+                              year=year, config=config)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -163,15 +133,19 @@ def epa_nei_nonroad_parse(dataframe_list, args):
     return df
 
 
-def epa_nei_nonpoint_parse(dataframe_list, args):
+def epa_nei_nonpoint_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param df_list: list of dataframes to concat and format
+    :param source: source
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
 
-    df = epa_nei_global_parse(dataframe_list, args)
+    df = epa_nei_global_parse(df_list=df_list, source=source,
+                              year=year, config=config)
 
     # Add DQ scores
     df['DataReliability'] = 3
@@ -191,7 +165,8 @@ def clean_NEI_fba(fba):
     fba = drop_GHGs(fba)
     # Remove the portion of PM10 that is PM2.5 to eliminate double counting,
     # rename FlowName and Flowable, and update UUID
-    fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)', ['PM2.5 Primary (Filt + Cond)'])
+    fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)',
+                              ['PM2.5 Primary (Filt + Cond)'])
     # # link to FEDEFL
     # import fedelemflowlist
     # mapping = fedelemflowlist.get_flowmapping('NEI')
@@ -201,8 +176,8 @@ def clean_NEI_fba(fba):
     PM_list = ['Particulate matter, > 2.5μm and ≤ 10μm',
                'a320e284-d276-3167-89b3-19d790081c08']
     fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
-            ['FlowName','Flowable','FlowUUID']] = ['PM10-PM2.5',
-                                                   PM_list[0], PM_list[1]]
+            ['FlowName', 'Flowable', 'FlowUUID']] = ['PM10-PM2.5',
+                                                     PM_list[0], PM_list[1]]
     return fba
 
 
@@ -235,8 +210,9 @@ def remove_duplicate_NEI_flows(df):
 
 def drop_GHGs(df):
     """
-    GHGs are included in some NEI datasets. If these data are not compiled together
-    with GHGRP, need to remove them as they will be tracked from a different source
+    GHGs are included in some NEI datasets. If these data are not
+    compiled together with GHGRP, need to remove them as they will be
+    tracked from a different source
     :param df: df, FBA format
     :return: df
     """""
@@ -256,8 +232,8 @@ def drop_GHGs(df):
 
 def drop_pesticides(df):
     """
-    To avoid overlap with other datasets, emissions of pesticides from pesticide
-    application are removed.
+    To avoid overlap with other datasets, emissions of pesticides
+    from pesticide application are removed.
     :param df: df, FBA format
     :return: df
     """
@@ -295,20 +271,24 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     :param contributing_flows: list, flownames contributing to aggregate flow
     :return: df, FBA format, modified flows
     """
-    match_conditions = ['ActivityProducedBy', 'Compartment', 'Location', 'Year']
+    match_conditions = ['ActivityProducedBy', 'Compartment',
+                        'Location', 'Year']
 
     df_contributing_flows = df.loc[df['FlowName'].isin(contributing_flows)]
-    df_contributing_flows = df_contributing_flows.groupby(match_conditions,
-                                                          as_index=False)['FlowAmount'].sum()
+    df_contributing_flows = df_contributing_flows.groupby(
+        match_conditions, as_index=False)['FlowAmount'].sum()
 
     df_contributing_flows['FlowName'] = aggregate_flow
-    df_contributing_flows['ContributingAmount'] = df_contributing_flows['FlowAmount']
+    df_contributing_flows['ContributingAmount'] = \
+        df_contributing_flows['FlowAmount']
     df_contributing_flows.drop(columns=['FlowAmount'], inplace=True)
-    df = df.merge(df_contributing_flows, how='left', on=match_conditions.append('FlowName'))
+    df = df.merge(df_contributing_flows, how='left',
+                  on=match_conditions.append('FlowName'))
     df[['ContributingAmount']] = df[['ContributingAmount']].fillna(value=0)
     df['FlowAmount'] = df['FlowAmount'] - df['ContributingAmount']
     df.drop(columns=['ContributingAmount'], inplace=True)
 
     # Make sure the aggregate flow is non-negative
-    df.loc[((df.FlowName == aggregate_flow) & (df.FlowAmount <= 0)), "FlowAmount"] = 0
+    df.loc[((df.FlowName == aggregate_flow) & (df.FlowAmount <= 0)),
+           "FlowAmount"] = 0
     return df

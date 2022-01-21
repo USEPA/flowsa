@@ -1,0 +1,18 @@
+# Downloads and parses CSV from USGS IronOre Statistics and Information on an annual basis.
+---
+source_name: USGS Mineral Yearbook Iron Ore
+citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-feore-adv.xlsx
+date_generated: '2021-03-19'
+years_available: 2014-2018
+format: xls
+url:
+  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-feore-adv.xlsx
+url_replace_fxn: usgs_iron_ore_url_helper
+call_response_fxn: usgs_iron_ore_call
+parse_response_fxn: usgs_iron_ore_parse
+years:
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018

@@ -23,7 +23,7 @@ def assign_naics(df):
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
-    ## coa equivalent to soybean farming: 11111
+    # coa equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
 
     # coa aggregates to oilseed (except soybean) farming: 11112
@@ -177,4 +177,4 @@ if __name__ == '__main__':
         # sort df
         df = order_crosswalk(df)
         # save as csv
-        df.to_csv(f"{datapath}activitytosectormapping/Crosswalk_{d}_toNAICS.csv", index=False)
+        df.to_csv(f"{datapath}activitytosectormapping/NAICS_Crosswalk_{d}.csv", index=False)

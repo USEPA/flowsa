@@ -16,7 +16,8 @@ import flowsa
 flowsa.seeAvailableFlowByModels('FBS')
 
 # load FBS from local directory, if does not exist, method will run
-fbs_water = flowsa.getFlowBySector('Water_national_2015_m1', download_FBAs_if_missing=True)
+fbs_water = flowsa.getFlowBySector('Water_national_2015_m1',
+                                   download_FBAs_if_missing=True)
 
 # collapse the FBS - output has 'Sector' column instead of
 # 'SectorProducedBy' and 'SectorConsumedBy' columns

@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='0.4.1',
+    version='1.1',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     package_data={'flowsa': ["data/*.*"]},
@@ -28,8 +28,9 @@ setup(
         'tabula-py>=2.1.1',
         'numpy>=1.20.1',
         'bibtexparser>=1.2.0',
-        'joblib >= 1.1.0',
-        'python-dotenv >= 0.19.1'
+        'python-dotenv >= 0.19.1',
+        'seaborn>=0.11.2',
+        'matplotlib>=3.4.3'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='CC0',

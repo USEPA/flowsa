@@ -1,8 +1,6 @@
 # write_FIPS_from_Census.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
-
-
 """
 Grabs FIPS codes from static URLs and creates crosswalk over the years.
 
@@ -12,9 +10,10 @@ Grabs FIPS codes from static URLs and creates crosswalk over the years.
 
 import io
 import pandas as pd
+from esupy.remote import make_url_request
 from flowsa.common import clean_str_and_capitalize
 from flowsa.settings import datapath
-from flowsa.flowbyactivity import make_http_request
+
 
 def stripcounty(s):
     """
@@ -43,7 +42,7 @@ def annual_fips(years):
             url = "https://www2.census.gov/programs-surveys/popest/geographies/" + \
                   year + "/all-geocodes-v" + year + ".xlsx"
 
-        r = make_http_request(url)
+        r = make_url_request(url)
         raw_df = pd.read_excel(io.BytesIO(r.content)).dropna().reset_index(drop=True)
 
         # skip the first few rows
@@ -119,6 +118,7 @@ def annual_fips_name(df_fips_codes, years):
         df = pd.merge(df, fips_dic['FIPS_' + year], on='FIPS_' + year)
     return df
 
+
 def read_fips_2010():
     """
     Read the 2010 FIPS from census website
@@ -150,7 +150,7 @@ def read_fips_2010():
 
 if __name__ == '__main__':
 
-    ##### consider modifying to include data for all years, as there are county level name changes
+    # consider modifying to include data for all years, as there are county level name changes
 
     # years data interested in (list)
     years = ['2015']
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     # Accessed 04/10/2020
     df = fips_dic['FIPS_2015']
 
-    #### modify columns depicting how counties have changed over the years - starting 2010
+    # modify columns depicting how counties have changed over the years - starting 2010
 
     # 2013 had two different/renamed fips
     df_13 = pd.DataFrame(df['FIPS_2015'])
