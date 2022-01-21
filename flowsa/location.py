@@ -321,6 +321,8 @@ def merge_urb_cnty_pct(df):
     if pct_na != 0: 
         print(f'WARNING {pct_na} FIPS codes did not merge successfully.\n'
               'In pct_pop_urb, the resulting "nan" values are not equal to 0%.')
+    
+    df = reshape_urb_rur_df(df)
     return df
 
 
@@ -399,3 +401,53 @@ def shift_census_cnty_tbl(df, year):
     df['Location'] = df[f'FIPS_{year}']
     df = df[['Location','pct_pop_urb']].drop_duplicates()
     return df 
+
+def reshape_urb_rur_df(df):
+    """
+    Pivot a df with urban (and thereby rural) population percentage values
+    to long format, such that each row is purely urban or rural. Then scale
+    FlowAmount quantities by these percentages and append '/urban' and '/rural'
+    to Compartment labels.    
+    :param df: pandas dataframe
+    :return: pandas dataframe with rows disaggregated by urban/rural population
+    """
+    try:
+        df['pct_pop_rur'] = 1 - df['pct_pop_urb']
+    except KeyError:
+        print('Must pass a df with pct_pop_urb values')
+        return None
+    # grab list of "id_vars" we want to preserve
+    df_id_vars = df.columns[~df.columns.str.match(r'pct_pop_\w{3}')].tolist()
+    # rename pct_pop_X columns to pre-emptively label SubCompartment
+    df = df.rename(columns={'pct_pop_urb':'Urban', 'pct_pop_rur':'Rural'})
+    df = pd.melt(df, id_vars = df_id_vars,
+                 value_vars=['Urban','Rural'],
+                 var_name='SubCompartment', value_name='pct_pop')
+    # drop 0-value rows + duplicates (i.e., nan vals passed in pct_pop_urb col)
+    df = df[df['pct_pop']!=0].drop_duplicates()
+    df['FlowAmount'] = df['FlowAmount']*df['pct_pop']
+    df['Compartment'] = df['Compartment'] + '/' + df['SubCompartment'] # append
+    df = df.drop(columns=['SubCompartment','pct_pop'])
+    return df
+
+if __name__ == "__main__":
+    import flowsa
+    import time
+    # cnty_raw = flowsa.getFlowByActivity('Census_PEP_Population',2016)
+    # cnty_raw = pd.read_json('https://api.census.gov/data/2015/pep/population?get=POP&for=county&key=1d54982773d33d4c4315f5bb156fbdb7c83382ba')
+    # cnty_int = (cnty_raw.copy(deep=True)
+    #            .rename(columns=cnty_raw.iloc[0])  # set first row as header
+    #            .drop(cnty_raw.index[0])
+    #            .reset_index(drop=True))
+    # cnty_int['Location'] = cnty_int['state'] + cnty_int['county'] # construct FIPS
+    # cnty_int['LocationSystem'] = 'FIPS_2015'
+    # cnty_int['Compartment'] = 'Air'
+    # cnty_int['FlowAmount'] = pd.to_numeric(cnty_int['POP'])/1000
+      
+    # cnty_new = merge_urb_cnty_pct(cnty_int.copy(deep=True))
+    # cnty_long = reshape_urb_rur_df(cnty_new.copy(deep=True))
+    
+    temp_FBA = flowsa.getFlowByActivity('EPA_NEI_Nonroad',2017)
+    start_time = time.time()
+    test_FBA = merge_urb_cnty_pct(temp_FBA)  # as of 01/21/22 takes 39s
+    print("--- %s seconds ---" % (time.time() - start_time))
