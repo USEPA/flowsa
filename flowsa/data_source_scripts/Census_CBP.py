@@ -17,24 +17,24 @@ from flowsa.common import get_all_state_FIPS_2, get_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def Census_CBP_URL_helper(build_url, config, args):
+def Census_CBP_URL_helper(*, build_url, year, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data
+    is obtained.
     :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :param year: year
+    :return: list, urls to call, concat, parse, format into
+        Flow-By-Activity format
     """
     urls_census = []
     # This section gets the census data by county instead of by state.
     # This is only for years 2010 and 2011. This is done because the State
     # query that gets all counties returns too many results and errors out.
-    if args["year"] in ['2010', '2011']:
-        if args["year"] == '2011':
+    if year in ['2010', '2011']:
+        if year == '2011':
             fips_year = '2010'
         else:
             fips_year = '2010'
@@ -48,7 +48,7 @@ def Census_CBP_URL_helper(build_url, config, args):
             url = url.replace("__stateFIPS__", state_digit)
             url = url.replace("__countyFIPS__", county_digit)
 
-            if args["year"] == "2010":
+            if year == "2010":
                 # These are the counties where data is not available.
                 # s signifies state code and y indicates year.
                 s_02_y_10 = ["105", "195", "198", "230", "275"]
@@ -71,9 +71,9 @@ def Census_CBP_URL_helper(build_url, config, args):
                 s_15_y_11 = ["005"]
                 s_48_y_11 = ["269", "301"]
 
-                # There are specific counties in various states for the year 2011
-                # that do not have data. For these counties a URL is not generated
-                # as if there is no data then an error occurs.
+                # There are specific counties in various states for the year
+                # 2011 that do not have data. For these counties a URL is
+                # not generated as if there is no data then an error occurs.
                 if state_digit == "02" and county_digit in s_02_y_11 or \
                         state_digit == "15" and county_digit in s_15_y_11 or \
                         state_digit == "48" and county_digit in s_48_y_11:
@@ -86,10 +86,10 @@ def Census_CBP_URL_helper(build_url, config, args):
             url = build_url
             url = url.replace("__stateFIPS__", c)
             # specified NAICS code year depends on year of data
-            if args["year"] in ['2017']:
+            if year in ['2017']:
                 url = url.replace("__NAICS__", "NAICS2017")
                 url = url.replace("__countyFIPS__", "*")
-            if args["year"] in ['2012', '2013', '2014', '2015', '2016']:
+            if year in ['2012', '2013', '2014', '2015', '2016']:
                 url = url.replace("__NAICS__", "NAICS2012")
                 url = url.replace("__countyFIPS__", "*")
             urls_census.append(url)
@@ -97,32 +97,32 @@ def Census_CBP_URL_helper(build_url, config, args):
     return urls_census
 
 
-def census_cbp_call(url, response_load, args):
+def census_cbp_call(*, resp, **_):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param url: string, url
-    :param response_load: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    Convert response for calling url to pandas dataframe, begin
+        parsing df into FBA format
+    :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    cbp_json = json.loads(response_load.text)
+    cbp_json = json.loads(resp.text)
     # convert response to dataframe
-    df_census = pd.DataFrame(data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
+    df_census = pd.DataFrame(
+        data=cbp_json[1:len(cbp_json)], columns=cbp_json[0])
     return df_census
 
 
-def census_cbp_parse(dataframe_list, args):
+def census_cbp_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
     """
     # concat dataframes
-    df = pd.concat(dataframe_list, sort=False)
+    df = pd.concat(df_list, sort=False)
     # Add year
-    df['Year'] = args["year"]
+    df['Year'] = year
     # convert county='999' to line for full state
     df.loc[df['county'] == '999', 'county'] = '000'
     # Make FIPS as a combo of state and county codes
@@ -146,9 +146,10 @@ def census_cbp_parse(dataframe_list, args):
                             'EMP': 'Number of employees',
                             'PAYANN': 'Annual payroll'})
     # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year", "Description"],
-                 var_name="FlowName",
-                 value_name="FlowAmount")
+    df = df.melt(
+        id_vars=["Location", "ActivityProducedBy", "Year", "Description"],
+        var_name="FlowName",
+        value_name="FlowAmount")
     # specify unit based on flowname
     df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
     # specify class
@@ -156,7 +157,7 @@ def census_cbp_parse(dataframe_list, args):
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
     df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
     # add location system based on year of data
-    df = assign_fips_location_system(df, args['year'])
+    df = assign_fips_location_system(df, year)
     # hard code data
     df['SourceName'] = 'Census_CBP'
     # Add tmp DQ scores

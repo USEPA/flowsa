@@ -24,7 +24,12 @@ def import_useeior_mastercrosswalk():
     # import the useeior package (r package)
     useeior = packages.importr('useeior')
     # load the .Rd file for
-    cw = packages.data(useeior).fetch('MasterCrosswalk2012')['MasterCrosswalk2012']
+    cw = packages.data(useeior).fetch(
+        'MasterCrosswalk2012')['MasterCrosswalk2012']
 
     # save as csv
     cw.to_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", index=False)
+
+
+if __name__ == '__main__':
+    import_useeior_mastercrosswalk()
