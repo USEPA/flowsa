@@ -25,7 +25,7 @@ import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.location import fips_number_key
+from flowsa.location import fips_number_key, merge_urb_cnty_pct
 from flowsa.common import load_yaml_dict, \
     str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
@@ -143,6 +143,7 @@ def main(**kwargs):
             if v.get('apply_urban_rural'):
                 vLog.info(f"Splitting {k} into urban and rural quantities "
                           "by FIPS.")
+                flows = merge_urb_cnty_pct(flows)
 
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \
