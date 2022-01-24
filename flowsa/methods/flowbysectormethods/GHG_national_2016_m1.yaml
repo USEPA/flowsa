@@ -313,7 +313,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: *ghgi_year
+    year: 2016 # Table A_14 is specific to 2016
     clean_fba_df_fxn: allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
