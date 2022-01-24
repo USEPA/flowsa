@@ -13,7 +13,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: &ghgi_year 2016
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:
@@ -132,7 +132,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:
@@ -151,7 +151,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:
@@ -171,7 +171,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct
@@ -189,7 +189,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:
@@ -212,7 +212,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:  # allocated based on fertilizer use
@@ -255,7 +255,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:  # allocated based on fertilizer use
@@ -272,7 +272,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
       activity_set_1:  #this set is direct
@@ -313,7 +313,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: &year 2016
+    year: *ghgi_year
     clean_fba_df_fxn: allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
@@ -375,14 +375,14 @@ source_names:
         allocation_method: proportional
         allocation_source: "EPA_GHGI_T_A_79"
         allocation_source_class: "Energy"
-        allocation_source_year: *year
+        allocation_source_year: *ghgi_year
         allocation_flow: ['Natural Gas']
         allocation_compartment: None
         allocation_from_scale: national
         helper_source: "BLS_QCEW"
         helper_method: proportional
         helper_source_class: "Employment"
-        helper_source_year: *year
+        helper_source_year: *ghgi_year
         helper_flow:
           - "Number of employees"
         helper_from_scale: national
@@ -440,7 +440,7 @@ source_names:
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016
+    year: *ghgi_year
     clean_fba_df_fxn: allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
@@ -497,7 +497,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct
@@ -515,7 +515,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:  #this set is direct for coal products
@@ -562,7 +562,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       clean_fba_before_mapping_df_fxn: remove_HFC_kt
       fedefl_mapping: 'GHGI'
       activity_sets:
@@ -575,7 +575,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
@@ -587,7 +587,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       clean_fba_before_mapping_df_fxn: clean_HFC_fba # removes HFCs from transportation
       fedefl_mapping: 'GHGI'
       activity_sets:
@@ -615,7 +615,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       clean_fba_before_mapping_df_fxn: split_HFCs_by_type
       fedefl_mapping: 'GHGI'
       activity_sets:
@@ -634,7 +634,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
@@ -646,7 +646,7 @@ source_names:
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
-      year: 2016
+      year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
