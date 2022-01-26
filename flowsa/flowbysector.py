@@ -162,8 +162,12 @@ def main(**kwargs):
 
             # if activity_sets are specified in a file, call them here
             if 'activity_set_file' in v:
-                aset_names = pd.read_csv(flowbysectoractivitysetspath +
-                                         v['activity_set_file'], dtype=str)
+                if fbsconfigpath is not None:
+                    aspath = f'{fbsconfigpath}flowbysectoractivitysets/'
+                else:
+                    aspath = flowbysectoractivitysetspath
+                aset_names = pd.read_csv(aspath + v['activity_set_file'],
+                                         dtype=str)
             else:
                 aset_names = None
 
