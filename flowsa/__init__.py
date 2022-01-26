@@ -83,7 +83,7 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname,
+def getFlowBySector(methodname, fbsconfigpath=None,
                     download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                     download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
@@ -117,6 +117,7 @@ def getFlowBySector(methodname,
         # Data Commons
         flowsa.flowbysector.main(
             method=methodname,
+            fbsconfigpath=fbsconfigpath,
             download_FBAs_if_missing=download_FBAs_if_missing
         )
         # Now load the fbs

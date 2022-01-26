@@ -97,7 +97,7 @@ def return_bea_codes_used_as_naics():
     return code_list
 
 
-def load_yaml_dict(filename, flowbytype=None):
+def load_yaml_dict(filename, flowbytype=None, filepath=None):
     """
     Load the information in a yaml file, from source_catalog, or FBA,
     or FBS files
@@ -106,12 +106,17 @@ def load_yaml_dict(filename, flowbytype=None):
     if filename == 'source_catalog':
         folder = datapath
     else:
-        if flowbytype == 'FBA':
-            folder = sourceconfigpath
-        elif flowbytype == 'FBS':
-            folder = flowbysectormethodpath
+        # first check if a filepath for the yaml is specified, as is the
+        # case with FBS method files located outside FLOWSA
+        if filepath is not None:
+            folder = filepath
         else:
-            raise KeyError('Must specify either \'FBA\' or \'FBS\'')
+            if flowbytype == 'FBA':
+                folder = sourceconfigpath
+            elif flowbytype == 'FBS':
+                folder = flowbysectormethodpath
+            else:
+                raise KeyError('Must specify either \'FBA\' or \'FBS\'')
     yaml_path = folder + filename + '.yaml'
 
     try:
@@ -231,8 +236,8 @@ fba_mapped_wsec_default_grouping_fields = get_flow_by_groupby_cols(
 fbs_default_grouping_fields = get_flow_by_groupby_cols(
     flow_by_sector_fields)
 fbs_grouping_fields_w_activities = (
-    fbs_default_grouping_fields + (['ActivityProducedBy',
-                                    'ActivityConsumedBy']))
+        fbs_default_grouping_fields + (['ActivityProducedBy',
+                                        'ActivityConsumedBy']))
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(
     flow_by_sector_collapsed_fields)
 fba_wsec_default_grouping_fields = get_flow_by_groupby_cols(
@@ -584,7 +589,8 @@ def return_true_source_catalog_name(sourcename):
     """
     Drop any extensions on source name until find the name in source catalog
     """
-    while (load_yaml_dict('source_catalog').get(sourcename) is None) & ('_' in sourcename):
+    while (load_yaml_dict('source_catalog').get(sourcename) is None) & (
+            '_' in sourcename):
         sourcename = sourcename.rsplit("_", 1)[0]
     return sourcename
 
@@ -598,7 +604,8 @@ def check_activities_sector_like(sourcename_load):
     sourcename = return_true_source_catalog_name(sourcename_load)
 
     try:
-        sectorLike = load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']
+        sectorLike = load_yaml_dict('source_catalog')[sourcename][
+            'sector-like_activities']
     except KeyError:
         log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
                   sourcename_load, sourcename)

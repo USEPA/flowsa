@@ -60,6 +60,10 @@ def parse_args():
     ap.add_argument("-m", "--method", required=True,
                     help="Method for flow by sector file. A valid method "
                          "config file must exist with this name.")
+    ap.add_argument("-c", "--fbsconfigpath",
+                    type=str2bool, required=False,
+                    help="Option to specify where to find the FBS method "
+                         "yaml.")
     ap.add_argument("-d", "--download_FBAs_if_missing",
                     type=str2bool, required=False,
                     help="Option to download any FBAs not saved locally "
@@ -120,11 +124,13 @@ def main(**kwargs):
         kwargs = parse_args()
 
     method_name = kwargs['method']
+    fbsconfigpath = kwargs.get('fbsconfigpath')
     download_FBA_if_missing = kwargs.get('download_FBAs_if_missing')
     # assign arguments
     vLog.info("Initiating flowbysector creation for %s", method_name)
     # call on method
-    method = load_yaml_dict(method_name, flowbytype='FBS')
+    method = load_yaml_dict(method_name, flowbytype='FBS',
+                            filepath=fbsconfigpath)
     # create dictionary of data and allocation datasets
     fb = method['source_names']
     # Create empty list for storing fbs files
