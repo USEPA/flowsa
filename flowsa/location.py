@@ -289,13 +289,13 @@ def merge_urb_cnty_pct(df):
     :return: pandas dataframe with new column of urban population percentages
     """
     if any(i is None for i in df['LocationSystem']):
-        print('LocationSystem column contains one or more None values')
+        log.error('LocationSystem column contains one or more None values')
         return None
     elif any('FIPS' not in i for i in set(df['LocationSystem'])):
-        print('LocationSystem column contains non-FIPS labels')
+        log.error('LocationSystem column contains non-FIPS labels')
         return None  # check derived from flowsa FBA format specs
     elif any(df['Location'].str.len() != 5):
-        print('One or more FIPS codes are not expressed as 5-digits; review data')
+        log.error('One or more FIPS codes are not expressed as 5-digits; review data')
         return None
     
     # expects uniform LocationSystem values (i.e., single FIPS_yyyy year code)
@@ -303,14 +303,14 @@ def merge_urb_cnty_pct(df):
     try: 
         year = years.item()  # extract year element from length-1 array
     except ValueError:
-        print('LocationSystem contains >1 "FIPS_yyyy" code')
+        log.error('LocationSystem contains >1 "FIPS_yyyy" code')
         return None
     
     years_xwalk = extract_fips_years(  # from xwalk headers
         pd.read_csv(datapath + 'FIPS_Crosswalk.csv', nrows=0).columns)
 
     if not {year} <= set(years_xwalk):  # compare data years as sets
-        print('LocationSystem incompatible with FIPS_Crosswalk.csv')
+        log.error('LocationSystem incompatible with FIPS_Crosswalk.csv')
         return None
 
     pct_urb = get_census_cnty_tbl(year)
@@ -319,8 +319,8 @@ def merge_urb_cnty_pct(df):
     # find unmerged nan pct_pop_urb values
     pct_na = sum(df['pct_pop_urb'].isna())
     if pct_na != 0: 
-        print(f'WARNING {pct_na} FIPS codes did not merge successfully.\n'
-              'In pct_pop_urb, the resulting "nan" values are not equal to 0%.')
+        log.error(f'WARNING {pct_na} FIPS codes did not merge successfully.\n'
+                  'In pct_pop_urb, "nan" values are not equal to 0%.')
     
     df = reshape_urb_rur_df(df)
     return df
@@ -348,14 +348,14 @@ def get_census_cnty_tbl(year):
     
     # screen for data availability; limited to 2010-2019 for now
     if (year - (year%10)) != 2010:
-        print('County-level data year not yet available')
+        log.error('County-level data year not yet available')
         return None
     
     try:
         df = pd.read_csv(cnty_url, encoding='iso-8859-1',
                           usecols = ['STATE','COUNTY','POP_COU','POP_URBAN'])
     except urllib.error.HTTPError:
-        print(f'File unavailable, check Census domain status: \n{cnty_url}')
+        log.error(f'File unavailable, check Census domain status: \n{cnty_url}')
         return None
     
     df['STATE'] = df['STATE'].apply(lambda x: '{0:0>2}'.format(x))
@@ -414,14 +414,14 @@ def reshape_urb_rur_df(df):
     try:
         df['pct_pop_rur'] = 1 - df['pct_pop_urb']
     except KeyError:
-        print('Must pass a df with pct_pop_urb values')
+        log.error('Must pass a df with pct_pop_urb values')
         return None
     # grab list of "id_vars" we want to preserve
     df_id_vars = df.columns[~df.columns.str.match(r'pct_pop_\w{3}')].tolist()
     # rename pct_pop_X columns to pre-emptively label SubCompartment
-    df = df.rename(columns={'pct_pop_urb':'Urban', 'pct_pop_rur':'Rural'})
+    df = df.rename(columns={'pct_pop_urb':'urban', 'pct_pop_rur':'rural'})
     df = pd.melt(df, id_vars = df_id_vars,
-                 value_vars=['Urban','Rural'],
+                 value_vars=['urban','rural'],
                  var_name='SubCompartment', value_name='pct_pop')
     # drop 0-value rows + duplicates (i.e., nan vals passed in pct_pop_urb col)
     df = df[df['pct_pop']!=0].drop_duplicates()
@@ -429,25 +429,3 @@ def reshape_urb_rur_df(df):
     df['Compartment'] = df['Compartment'] + '/' + df['SubCompartment'] # append
     df = df.drop(columns=['SubCompartment','pct_pop'])
     return df
-
-if __name__ == "__main__":
-    import flowsa
-    import time
-    # cnty_raw = flowsa.getFlowByActivity('Census_PEP_Population',2016)
-    # cnty_raw = pd.read_json('https://api.census.gov/data/2015/pep/population?get=POP&for=county&key=1d54982773d33d4c4315f5bb156fbdb7c83382ba')
-    # cnty_int = (cnty_raw.copy(deep=True)
-    #            .rename(columns=cnty_raw.iloc[0])  # set first row as header
-    #            .drop(cnty_raw.index[0])
-    #            .reset_index(drop=True))
-    # cnty_int['Location'] = cnty_int['state'] + cnty_int['county'] # construct FIPS
-    # cnty_int['LocationSystem'] = 'FIPS_2015'
-    # cnty_int['Compartment'] = 'Air'
-    # cnty_int['FlowAmount'] = pd.to_numeric(cnty_int['POP'])/1000
-      
-    # cnty_new = merge_urb_cnty_pct(cnty_int.copy(deep=True))
-    # cnty_long = reshape_urb_rur_df(cnty_new.copy(deep=True))
-    
-    temp_FBA = flowsa.getFlowByActivity('EPA_NEI_Nonroad',2017)
-    start_time = time.time()
-    test_FBA = merge_urb_cnty_pct(temp_FBA)  # as of 01/21/22 takes 39s
-    print("--- %s seconds ---" % (time.time() - start_time))
