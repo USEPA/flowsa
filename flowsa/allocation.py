@@ -289,7 +289,7 @@ def equally_allocate_parent_to_child_naics(df_load, target_sector_level):
             # match sectors with target sector length sectors
             # import cw and subset to current sector length
             # and target sector length
-            cw_load = load_crosswalk('sector length')
+            cw_load = load_crosswalk('sector_length')
             nlength = list(sector_level_key.keys()
                            )[list(sector_level_key.values()).index(i)]
             cw = cw_load[[nlength, target_sector_level]].drop_duplicates()

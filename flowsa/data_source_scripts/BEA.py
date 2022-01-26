@@ -10,8 +10,11 @@ originate from USEEIOR and were originally generated on 2020-07-14.
 """
 import pandas as pd
 from flowsa.location import US_FIPS
+from flowsa.common import fbs_activity_fields
+from flowsa.schema import activity_fields
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.fbs_allocation import allocation_helper
 
 
 def bea_gdp_parse(*, year, **_):
@@ -110,7 +113,7 @@ def bea_make_detail_br_parse(*, year, **_):
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
-    df["SourceName"] = "BEA_Make_BR"
+    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
     # original unit in million USD
@@ -159,17 +162,44 @@ def bea_make_ar_parse(*, year, **_):
     return df
 
 
-def subset_BEA_Use(df, attr, **_):
+def subset_BEA_table(df, attr, **_):
     """
-    Function to modify loaded BEA table based on data in the FBA method yaml
+    Modify loaded BEA table (make or use) based on data in the FBA method yaml
     :param df: df, flowbyactivity format
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe
     """
-    commodity = attr['clean_parameter']
-    df = df.loc[df['ActivityProducedBy'] == commodity]
+    # extract commodity to filter and which Activity column used to filter
+    (commodity, ActivityCol), *rest = attr['clean_parameter'].items()
+    df = df.loc[df[ActivityCol] == commodity].reset_index(drop=True)
 
     # set column to None to enable generalizing activity column later
-    df.loc[:, 'ActivityProducedBy'] = None
-
+    df.loc[:, ActivityCol] = None
+    if set(fbs_activity_fields).issubset(df.columns):
+        for v in activity_fields.values():
+            if v[0]['flowbyactivity'] == ActivityCol:
+                SectorCol = v[1]['flowbysector']
+        df.loc[:, SectorCol] = None
     return df
+
+
+def subset_and_allocate_BEA_table(df, attr, **_):
+    """
+    Temporary function to mimic use of 2nd helper allocation dataset
+    """
+    df = subset_BEA_table(df, attr)
+    v = {'geoscale_to_use': 'national'}
+    method2 = {'target_sector_source': 'NAICS_2012_Code'}
+    attr2 = {"helper_source": "BLS_QCEW",
+             "helper_method": "proportional",
+             "helper_source_class": "Employment",
+             "helper_source_year": 2012,
+             "helper_flow": ["Number of employees"],
+             "helper_from_scale": "national",
+             "allocation_from_scale": "national",
+             "clean_helper_fba": "clean_bls_qcew_fba",
+             "clean_helper_fba_wsec": "bls_clean_allocation_fba_w_sec"}
+    df2 = allocation_helper(df, attr2, method2, v, False)
+    # Drop remaining rows with no sectors e.g. T001 and other final demands
+    df2 = df2.dropna(subset=['SectorConsumedBy']).reset_index(drop=True)
+    return df2

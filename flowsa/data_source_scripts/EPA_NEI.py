@@ -10,7 +10,7 @@ from zipfile import ZipFile
 from os import path
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import convert_fba_unit
+from flowsa.dataclean import standardize_units
 
 
 def epa_nei_url_helper(*, build_url, year, config, **_):
@@ -79,7 +79,7 @@ def epa_nei_global_parse(*, df_list, source, year, config, **_):
 
     # to align with other processed NEI data (Point from StEWI), units are
     # converted during FBA creation instead of maintained
-    df = convert_fba_unit(df)
+    df = standardize_units(df)
 
     # add hardcoded data
     df['FlowType'] = "ELEMENTARY_FLOW"

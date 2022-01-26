@@ -45,4 +45,4 @@ df3 = df3.sort_values('Sector')
 df3.reset_index(drop=True, inplace=True)
 # save as csv
 df3.to_csv(datapath + "activitytosectormapping/" +
-           "Crosswalk_BLS_GreenIndustries_toNAICS.csv", index=False)
+           "NAICS_Crosswalk_BLS_GreenIndustries.csv", index=False)

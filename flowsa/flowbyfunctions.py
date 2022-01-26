@@ -9,12 +9,13 @@ import pandas as pd
 import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
-from flowsa.common import fbs_activity_fields, load_yaml_dict, \
+from flowsa.common import fbs_activity_fields, \
     load_crosswalk, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
     fba_activity_fields, fba_default_grouping_fields, \
     fba_wsec_default_grouping_fields, fba_fill_na_dict, \
-    get_flowsa_base_name, fba_mapped_default_grouping_fields
+    get_flowsa_base_name, fba_mapped_default_grouping_fields, \
+    check_activities_sector_like
 from flowsa.location import US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, fips_number_key
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
@@ -193,13 +194,8 @@ def sector_aggregation(df_load, group_cols):
     # if aggregating a df with a 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
-        # load source catalog
-        cat = load_yaml_dict('source_catalog')
-        # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
-        # load catalog info for source
-        src_info = cat[s]
-        sector_like_activities = src_info['sector-like_activities']
+        sector_like_activities = check_activities_sector_like(s)
 
     # if activities are source like, drop from df and group calls,
     # add back in as copies of sector columns columns to keep
@@ -265,12 +261,6 @@ def sector_aggregation(df_load, group_cols):
             # append to df
             agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
-
-    # manually modify non-NAICS codes that might exist in sector
-    # domestic/household
-    df = df.replace({'F0': 'F010',
-                     'F01': 'F010'})
-    # drop any duplicates created by modifying sector codes
     df = df.drop_duplicates()
 
     # if activities are source-like, set col values as
@@ -302,13 +292,8 @@ def sector_disaggregation(df_load):
     # a df with a 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
-        # load source catalog
-        cat = load_yaml_dict('source_catalog')
-        # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
-        # load catalog info for source
-        src_info = cat[s]
-        sector_like_activities = src_info['sector-like_activities']
+        sector_like_activities = check_activities_sector_like(s)
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
@@ -319,11 +304,15 @@ def sector_disaggregation(df_load):
         df = df[df_cols]
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_crosswalk('sector length')
+    cw_load = load_crosswalk('sector_length')
 
     # for loop min length to 6 digits, where min length cannot be less than 2
-    length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
-        lambda x: x.str.len()).min().min()
+    fields_list = []
+    for i in range(2):
+        if not (df[fbs_activity_fields[i]] == "").all():
+            fields_list.append(fbs_activity_fields[i])
+
+    length = df[fields_list].apply(lambda x: x.str.len()).min().min()
     if length < 2:
         length = 2
     # appends missing naics levels to df
@@ -676,13 +665,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # if aggregating a df with a 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
-        # load source catalog
-        cat = load_yaml_dict('source_catalog')
-        # for s in pd.unique(flowbyactivity_df['SourceName']):
         s = pd.unique(df_load['SourceName'])[0]
-        # load catalog info for source
-        src_info = cat[s]
-        sector_like_activities = src_info['sector-like_activities']
+        sector_like_activities = check_activities_sector_like(s)
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
@@ -697,7 +681,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
                              'Description']]
 
     # load naics 2 to naics 6 crosswalk
-    cw_load = load_crosswalk('sector length')
+    cw_load = load_crosswalk('sector_length')
     cw_melt = cw_load.melt(
         id_vars=["NAICS_6"], var_name="NAICS_Length",
         value_name="NAICS_Match").drop(

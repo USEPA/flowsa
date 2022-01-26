@@ -55,14 +55,13 @@ def CoA_Cropland_URL_helper(*, build_url, config, **_):
                 url = url.replace("&state_alpha=__stateAlpha__", "")
                 if y == "ECONOMICS":
                     url = url.replace(
-                        "AREA HARVESTED&statisticcat_desc=AREA IN PRODUCTION&"
-                        "statisticcat_desc=TOTAL&statisticcat_desc=AREA "
-                        "BEARING %26 NON-BEARING",
-                        "AREA&statisticcat_desc=AREA OPERATED")
+                        "AREA%20HARVESTED&statisticcat_desc=AREA%20IN%20"
+                        "PRODUCTION&statisticcat_desc=TOTAL&statisticcat_desc="
+                        "AREA%20BEARING%20%26%20NON-BEARING",
+                        "AREA&statisticcat_desc=AREA%20OPERATED")
                 else:
-                    url = url.replace("&commodity_desc=AG LAND&commodity_desc"
-                                      "=FARM OPERATIONS", "")
-                url = url.replace(" ", "%20")
+                    url = url.replace("&commodity_desc=AG%20LAND&"
+                                      "commodity_desc=FARM%20OPERATIONS", "")
                 urls.append(url)
             else:
                 # substitute in state acronyms for state and county url calls
@@ -73,14 +72,13 @@ def CoA_Cropland_URL_helper(*, build_url, config, **_):
                     url = url.replace("__stateAlpha__", z)
                     if y == "ECONOMICS":
                         url = url.replace(
-                            "AREA HARVESTED&statisticcat_desc=AREA IN "
+                            "AREA%20HARVESTED&statisticcat_desc=AREA%20IN%20"
                             "PRODUCTION&statisticcat_desc=TOTAL&"
-                            "statisticcat_desc=AREA BEARING %26 NON-BEARING",
-                            "AREA&statisticcat_desc=AREA OPERATED")
+                            "statisticcat_desc=AREA%20BEARING%20%26%20NON-BEARING",
+                            "AREA&statisticcat_desc=AREA%20OPERATED")
                     else:
-                        url = url.replace("&commodity_desc=AG LAND&commodity_"
-                                          "desc=FARM OPERATIONS", "")
-                    url = url.replace(" ", "%20")
+                        url = url.replace("&commodity_desc=AG%20LAND&commodity_"
+                                          "desc=FARM%20OPERATIONS", "")
                     urls.append(url)
     return urls
 

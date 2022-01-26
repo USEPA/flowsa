@@ -61,8 +61,8 @@ def load_crosswalk(crosswalk_name):
     :return: df, NAICS crosswalk over the years
     """
 
-    cw_dict = {'sector': 'NAICS_Crosswalk',
-               'sector length': 'NAICS_2012_Crosswalk',
+    cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
+               'sector_length': 'NAICS_2012_Crosswalk',
                'sector_name': 'NAICS_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
@@ -73,6 +73,21 @@ def load_crosswalk(crosswalk_name):
 
     cw = pd.read_csv(f'{datapath}{fn}.csv', dtype="str")
     return cw
+
+
+def return_bea_codes_used_as_naics():
+    """
+
+    :return: list of BEA codes used as NAICS
+    """
+    cw_list = []
+    for cw in ['household', 'government']:
+        df = load_crosswalk(cw)
+        cw_list.append(df)
+    # concat data into single dataframe
+    cw = pd.concat(cw_list, sort=False)
+    code_list = cw['Code'].drop_duplicates().values.tolist()
+    return code_list
 
 
 def load_yaml_dict(filename, flowbytype=None):
@@ -243,80 +258,6 @@ def capitalize_first_letter(string):
     return return_string.strip()
 
 
-def convert_fba_unit(df):
-    """
-    Convert unit to standard
-    :param df: df, FBA flowbyactivity
-    :return: df, FBA with standarized units
-    """
-    # Convert Water units 'Bgal/d' and 'Mgal/d' to Mgal
-    days_in_year = 365
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'Bgal/d',
-        df['FlowAmount'] * 1000 * days_in_year,
-        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Bgal/d',
-                                 'Mgal', df['Unit'])
-
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'Mgal/d',
-        df['FlowAmount'] * days_in_year,
-        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Mgal/d',
-                                 'Mgal', df['Unit'])
-
-    # Convert Land unit 'Thousand Acres' to 'Acres
-    acres_in_thousand_acres = 1000
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'Thousand Acres',
-        df['FlowAmount'] * acres_in_thousand_acres,
-        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Thousand Acres',
-                                 'Acres', df['Unit'])
-
-    # Convert Energy unit "Quadrillion Btu" to MJ
-    mj_in_btu = .0010550559
-    # 1 Quad = .0010550559 x 10^15
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'Quadrillion Btu',
-        df['FlowAmount'] * mj_in_btu * (10 ** 15),
-        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Quadrillion Btu',
-                                 'MJ', df['Unit'])
-
-    # Convert Energy unit "Trillion Btu" to MJ
-    # 1 Tril = .0010550559 x 10^14
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'Trillion Btu',
-        df['FlowAmount'] * mj_in_btu * (10 ** 14),
-        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'Trillion Btu',
-                                 'MJ', df['Unit'])
-
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'million Cubic metres/year',
-        df['FlowAmount'] * 264.172,
-        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'] == 'million Cubic metres/year',
-                                 'Mgal', df['Unit'])
-
-    # Convert mass units (LB or TON) to kg
-    ton_to_kg = 907.185
-    lb_to_kg = 0.45359
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'TON',
-        df['FlowAmount'] * ton_to_kg,
-        df['FlowAmount'])
-    df.loc[:, 'FlowAmount'] = np.where(
-        df['Unit'] == 'LB',
-        df['FlowAmount'] * lb_to_kg,
-        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where((df['Unit'] == 'TON') | (df['Unit'] == 'LB'),
-                                 'kg', df['Unit'])
-
-    return df
-
-
 def get_flowsa_base_name(filedirectory, filename, extension):
     """
     If filename does not match filename within flowsa due to added extensions
@@ -369,6 +310,32 @@ def rename_log_file(filename, fb_meta):
     # rename the standard log file name (os.rename throws error if file
     # already exists)
     shutil.copy(log_file, new_log_name)
+
+
+def return_true_source_catalog_name(sourcename):
+    """
+    Drop any extensions on source name until find the name in source catalog
+    """
+    while (load_yaml_dict('source_catalog').get(sourcename) is None) & ('_' in sourcename):
+        sourcename = sourcename.rsplit("_", 1)[0]
+    return sourcename
+
+
+def check_activities_sector_like(sourcename_load):
+    """
+    Check if the activities in a df are sector-like,
+    if cannot find the sourcename in the source catalog, drop extensions on the
+    source name
+    """
+    sourcename = return_true_source_catalog_name(sourcename_load)
+
+    try:
+        sectorLike = load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']
+    except KeyError:
+        log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
+                  sourcename_load, sourcename)
+
+    return sectorLike
 
 
 def str2bool(v):

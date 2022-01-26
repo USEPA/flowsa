@@ -186,7 +186,7 @@ def seeAvailableFlowByModels(flowbytype):
             # drop file extension
             f = os.path.splitext(file)[0]
             if flowbytype == 'FBA':
-                s = load_yaml_dict(f)
+                s = load_yaml_dict(f, 'FBA')
                 try:
                     years = s['years']
                 except KeyError:
