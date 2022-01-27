@@ -7,10 +7,10 @@ Functions to allocate data using additional data sources
 
 import numpy as np
 import pandas as pd
-from flowsa.common import US_FIPS, fba_activity_fields, \
-    fbs_activity_fields, fba_mapped_wsec_default_grouping_fields, \
-    fba_wsec_default_grouping_fields, check_activities_sector_like, \
-    return_bea_codes_used_as_naics
+from flowsa.common import fba_activity_fields, fbs_activity_fields, \
+    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields, \
+    check_activities_sector_like, return_bea_codes_used_as_naics
+from flowsa.location import US_FIPS
 from flowsa.schema import activity_fields
 from flowsa.settings import log
 from flowsa.validation import check_allocation_ratios, \

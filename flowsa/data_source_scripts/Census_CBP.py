@@ -13,7 +13,7 @@ This script is designed to run with a configuration parameter
 import json
 import pandas as pd
 import numpy as np
-from flowsa.common import get_all_state_FIPS_2, get_county_FIPS
+from flowsa.location import get_all_state_FIPS_2, get_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 

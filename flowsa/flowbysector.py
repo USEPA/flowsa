@@ -21,18 +21,18 @@ you need functions to clean up the FBA
 """
 
 import argparse
-import yaml
 import pandas as pd
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.common import fips_number_key, check_activities_sector_like, \
+from flowsa.location import fips_number_key, merge_urb_cnty_pct
+from flowsa.common import load_yaml_dict, check_activities_sector_like, \
     str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
     fbs_default_grouping_fields, fbs_grouping_fields_w_activities, \
-    logoutputpath, load_yaml_dict
+    logoutputpath
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
-from flowsa.settings import log, vLog, flowbysectormethodpath, \
+from flowsa.settings import log, vLog, \
     flowbysectoractivitysetspath, paths
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.fbs_allocation import direct_allocation_method, \
@@ -143,6 +143,12 @@ def main(**kwargs):
             # ensure correct datatypes and that all fields exist
             flows = clean_df(flows, flow_by_activity_fields,
                              fba_fill_na_dict, drop_description=False)
+
+            # split data by urban and rural
+            if v.get('apply_urban_rural'):
+                vLog.info(f"Splitting {k} into urban and rural quantities "
+                          "by FIPS.")
+                flows = merge_urb_cnty_pct(flows)
 
             # clean up fba before mapping, if specified in yaml
             if "clean_fba_before_mapping_df_fxn" in v:
