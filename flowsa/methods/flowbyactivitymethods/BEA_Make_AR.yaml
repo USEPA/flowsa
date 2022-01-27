@@ -1,7 +1,8 @@
-author: BEA
-source_name: BEA_Make_AR
-source_url: ' '
-original_data_download_date: ' '
+author: Bureau of Economic Analysis
+source_name: Make Detail After Redefinitions
+source_url: https://www.bea.gov/industry/industry-underlying-estimates
+source_publication_date: 2020
+original_data_download_date: '2020-10-29'
 bib_id: BEA_Make_AR
 api_name: None
 api_key_required: false

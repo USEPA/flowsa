@@ -1,6 +1,7 @@
 author: US Department of Agriculture
 source_name: Major Land Uses
 source_url: https://www.ers.usda.gov/data-products/major-land-uses/
+source_publication_date: 2017
 bib_id: USDA_ERS_MLU_csv
 api_name: USDA_ERS_MLU
 api_key_required: false

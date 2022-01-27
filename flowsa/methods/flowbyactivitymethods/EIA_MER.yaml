@@ -1,6 +1,7 @@
 author: US Energy Information Administration
 source_name: Monthly Energy Review
 source_url: https://www.eia.gov/totalenergy/data/monthly/
+source_publication_date: ''
 bib_id: EIA_MER
 api_name: EIA_MER
 format: pdf

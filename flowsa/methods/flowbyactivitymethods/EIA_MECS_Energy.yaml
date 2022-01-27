@@ -1,6 +1,7 @@
 author: US Energy Information Administration
 source_name: Manufacturing Energy Consumption Survey
 source_url: https://www.eia.gov/consumption/manufacturing/
+source_publication_date: {'2010': '2013', '2014': '2017', '2018': '2021'}
 bib_id: EIA_MECS
 api_name: EIA_MECS_Energy
 api_key_required: false

@@ -1,6 +1,7 @@
 author: US Geological Survey
 source_name: Water Data for the Nation
 source_url: https://waterdata.usgs.gov/nwis
+source_publication_date: 2018
 bib_id: USGS_NWIS_WU
 api_name: USGS
 api_key_required: false

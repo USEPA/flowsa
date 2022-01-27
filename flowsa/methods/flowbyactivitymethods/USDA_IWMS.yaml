@@ -1,7 +1,8 @@
-author: US Department of Agriculture
+author: USDA NASS
 source_name: Irrigation and Water Management Survey
-source_url: https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Farm_and_Ranch_Irrigation/index.php
-bib_id: USDA_IWMS
+source_url: https://quickstats.nass.usda.gov/
+source_publication_date: 2017
+bib_id: USDA_CoA
 api_name: USDA_Quickstats
 api_key_required: true
 format: json
