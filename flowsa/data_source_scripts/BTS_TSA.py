@@ -21,7 +21,7 @@ def tsa_call(*, resp, year, **_):
     :return: pandas dataframe of original source data
     '''
     df = pd.read_csv(BytesIO(resp.content))
-    df = df[df.year == year]
+    df = df[df.year == int(year)]
     return df
 
 
