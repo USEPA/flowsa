@@ -8,7 +8,8 @@ Functions used to import and parse USDA Census of Ag Livestock data
 
 import json
 import pandas as pd
-from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, abbrev_us_state
+from flowsa.location import US_FIPS, abbrev_us_state
+from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
