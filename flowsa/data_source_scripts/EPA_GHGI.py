@@ -541,7 +541,7 @@ def ghg_parse(*, df_list, year, config, **_):
         meta = get_table_meta(source_name, config)
         if source_name == "EPA_GHGI_T_3_21" and int(year) < 2015:
             # skip don't do anything: The lines are blank
-            print("There is no data for this year and source")
+            log.info("There is no data for this year and source")
         elif source_name not in annex_tables:
             df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
             df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
