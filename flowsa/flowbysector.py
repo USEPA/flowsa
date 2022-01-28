@@ -29,7 +29,7 @@ from flowsa.common import load_yaml_dict, check_activities_sector_like, \
     str2bool, fba_activity_fields, rename_log_file, \
     fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
     fbs_default_grouping_fields, fbs_grouping_fields_w_activities, \
-    logoutputpath
+    logoutputpath, load_yaml_dict, datapath
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
 from flowsa.settings import log, vLog, \
@@ -112,6 +112,31 @@ def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
     return flows_df
 
 
+def return_activity_set_names(v, fbsconfigpath):
+    """
+    Return activity set names, if there is a file. If the fbsconfigpath is not
+    None, meaning the method yaml is loaded from outside the flowsa repo,
+    first check for an activity set file in the fbsconfigpath.
+    :param v:
+    :param fbsconfigpath:
+    :return:
+    """
+    # if activity_sets are specified in a file, call them here
+    if 'activity_set_file' in v:
+        # first check if the activity set file exists in the fbsconfigpath
+        if os.path.isfile(f"{fbsconfigpath}flowbysectoractivitysets/"
+                          f"{v['activity_set_file']}"):
+            # if the file exists, reset the activitysetpath
+            flowbysectoractivitysetspath = \
+                f"{fbsconfigpath}flowbysectoractivitysets/"
+        # load activity set
+        aset_names = pd.read_csv(aspath + v['activity_set_file'], dtype=str)
+    else:
+        aset_names = None
+
+    return aset_names
+
+
 def main(**kwargs):
     """
     Creates a flowbysector dataset
@@ -167,15 +192,7 @@ def main(**kwargs):
                     k, v["clean_fba_df_fxn"])(flows_mapped)
 
             # if activity_sets are specified in a file, call them here
-            if 'activity_set_file' in v:
-                if fbsconfigpath is not None:
-                    aspath = f'{fbsconfigpath}flowbysectoractivitysets/'
-                else:
-                    aspath = flowbysectoractivitysetspath
-                aset_names = pd.read_csv(aspath + v['activity_set_file'],
-                                         dtype=str)
-            else:
-                aset_names = None
+            aset_names = return_activity_set_names(v,fbsconfigpath)
 
             # master list of activity names read in from data source
             ml_act = []
