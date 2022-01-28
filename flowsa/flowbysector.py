@@ -126,14 +126,16 @@ def return_activity_set_names(v, fbsconfigpath):
     if 'activity_set_file' in v:
         # first check if the activity set file exists in the fbsconfigpath
         if os.path.isfile(f"{fbsconfigpath}flowbysectoractivitysets/"
-                          f"{v['activity_set_file']}.csv"):
+                          f"{v['activity_set_file']}"):
             # if the file exists, reset the activitysetpath
             flowbysectoractivitysetspath = \
                 f"{fbsconfigpath}flowbysectoractivitysets/"
             log.info('Loading activity set file from %s',
                      flowbysectoractivitysetspath)
         # load activity set
-        aset_names = pd.read_csv(aspath + v['activity_set_file'], dtype=str)
+        aset_names =pd.read_csv(
+            f"{flowbysectoractivitysetspath}{v['activity_set_file']}",
+            dtype=str)
     else:
         aset_names = None
 
@@ -267,7 +269,8 @@ def main(**kwargs):
                 flows_subset_wsec = add_sectors_to_flowbyactivity(
                     flows_subset_geo,
                     sectorsourcename=method['target_sector_source'],
-                    allocationmethod=attr['allocation_method'])
+                    allocationmethod=attr['allocation_method'],
+                    fbsconfigpath=fbsconfigpath)
                 # clean up fba with sectors, if specified in yaml
                 if "clean_fba_w_sec_df_fxn" in v:
                     vLog.info("Cleaning up %s FlowByActivity with sectors", k)

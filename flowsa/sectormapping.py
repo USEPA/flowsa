@@ -111,7 +111,7 @@ def add_sectors_to_flowbyactivity(
         # if source data activities are text strings, or sector-like
         # activities should be modified, call on the manually
         # created source crosswalks
-        mapping = get_activitytosector_mapping(s, fbsconfigpath)
+        mapping = get_activitytosector_mapping(s, fbsconfigpath=fbsconfigpath)
         # filter by SectorSourceName of interest
         mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
         # drop SectorSourceName
