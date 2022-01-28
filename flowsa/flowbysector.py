@@ -22,6 +22,7 @@ you need functions to clean up the FBA
 
 import argparse
 import pandas as pd
+import os
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
 from flowsa.location import fips_number_key, merge_urb_cnty_pct
