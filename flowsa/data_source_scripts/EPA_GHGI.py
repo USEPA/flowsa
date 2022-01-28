@@ -35,7 +35,7 @@ ANNEX_ENERGY_TABLES = ["A-10", "A-11", "A-12", "A-13", "A-14", "A-15", "A-16",
 
 SPECIAL_FORMAT = ["3-10", "3-22", "3-22b", "4-46", "5-29",
                   "A-93", "A-94", "A-118", ]
-SRC_NAME_SPECIAL_FORMAT = ["3_22", "4_43", "4_80"]
+SRC_NAME_SPECIAL_FORMAT = ["3-22", "4-43", "4-80"]
 
 DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
     start="1990", end="2010", freq='Y').year.astype(str))
@@ -286,7 +286,7 @@ def ghg_parse(*, df_list, year, config, **_):
     for df in df_list:
         special_format = False
         source_name = df["SourceName"][0]
-        table_name = source_name[11:]
+        table_name = source_name[11:].replace("_","-")
         log.info(f'Processing {source_name}')
         if table_name in SRC_NAME_SPECIAL_FORMAT:
             special_format = True
@@ -327,9 +327,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
             else:
                 df = df.melt(id_vars=id_vars, var_name="Units", value_name="FlowAmount")
-        elif source_name in annex_tables:
-            if source_name == "EPA_GHGI_T_A_10":
-                df = df.drop(columns=['Year'])
+        elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
             df["Year"] = year
         else:
@@ -337,7 +335,7 @@ def ghg_parse(*, df_list, year, config, **_):
             if source_name in switch_year_apb:
                 df = df.rename(columns={'ActivityProducedBy': 'Year', 'Year': 'ActivityProducedBy'})
 
-        if source_name in annex_tables:
+        if table_name in ANNEX_ENERGY_TABLES:
             for index, row in df.iterrows():
                 name = df.loc[index, 'FlowName']
                 if source_name == "EPA_GHGI_T_A_17":
@@ -353,7 +351,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         name_split = name.split(" Adjusted")
                         df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'] + " - " + name_split[
                             0]
-                elif source_name in annex_tables:
+                else:
                     name_split = name.split(" (")
 
                     df.loc[index, 'ActivityConsumedBy'] = (
@@ -392,7 +390,7 @@ def ghg_parse(*, df_list, year, config, **_):
         df.dropna(subset=['FlowAmount'], inplace=True)
 
         df["Description"] = 'None'
-        if source_name not in annex_tables:
+        if table_name not in ANNEX_ENERGY_TABLES:
             df["Unit"] = "Other"
 
         # Update classes:
@@ -400,7 +398,7 @@ def ghg_parse(*, df_list, year, config, **_):
         if source_name == "EPA_GHGI_T_3_21" and int(year) < 2015:
             # skip don't do anything: The lines are blank
             print("There is no data for this year and source")
-        elif source_name not in annex_tables:
+        elif table_name not in ANNEX_ENERGY_TABLES:
             df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
             df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
             df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
@@ -608,7 +606,7 @@ def ghg_parse(*, df_list, year, config, **_):
         elif source_name in double_activity:
             for index, row in df.iterrows():
                 df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
-        elif source_name in annex_tables:
+        elif table_name in ANNEX_ENERGY_TABLES:
             for index, row in df.iterrows():
                 if df.loc[index, 'ActivityProducedBy'] == "None":
                     df.loc[index, 'Unit'] = "TBtu"
@@ -907,4 +905,4 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.flowbyactivity.main(year=2019, source='EPA_GHGI')
+    fba = flowsa.flowbyactivity.main(year=2016, source='EPA_GHGI')
