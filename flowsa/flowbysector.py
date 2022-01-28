@@ -125,7 +125,7 @@ def return_activity_set_names(v, fbsconfigpath):
     if 'activity_set_file' in v:
         # first check if the activity set file exists in the fbsconfigpath
         if os.path.isfile(f"{fbsconfigpath}flowbysectoractivitysets/"
-                          f"{v['activity_set_file']}"):
+                          f"{v['activity_set_file']}.csv"):
             # if the file exists, reset the activitysetpath
             flowbysectoractivitysetspath = \
                 f"{fbsconfigpath}flowbysectoractivitysets/"
