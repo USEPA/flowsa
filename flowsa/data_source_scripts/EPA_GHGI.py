@@ -16,29 +16,31 @@ from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
 
-A_17_COMMON_HEADERS = ['Res.', 'Comm.', 'Ind.', 'Trans.', 'Elec.', 'Terr.', 'Total']
-A_17_TBTU_HEADER = ['Adjusted Consumption (TBtu)a', 'Adjusted Consumption (TBtu)']
-A_17_CO2_HEADER = ['Emissionsb (MMT CO2 Eq.) from Energy Use',
-                   'Emissions (MMT CO2 Eq.) from Energy Use']
+SECTOR_DICT = {'Res.': 'Residential',
+               'Comm.': 'Commercial',
+               'Ind.': 'Industrial',
+               'Trans.': 'Transportation',
+               'Elec.': 'Electricity Power',
+               'Terr.': 'U.S. Territory'}
 
-A_10_TBTU_1_HEADER = ["Total Consumption (TBtu) a", "Total Consumption (TBtu)"]
-A_10_TBTU_2_HEADER = ["Adjustments (TBtu) b", "Adjustments (TBtu)"]
-A_10_TBTU_3_HEADER = ["Total Adjusted Consumption (TBtu)"]
+ANNEX_HEADERS = {"Total Consumption (TBtu) a": "Total Consumption (TBtu)",
+                 "Adjustments (TBtu) b": "Adjustments (TBtu)",
+                 "Adjusted Consumption (TBtu) a": "Adjusted Consumption (TBtu)",
+                 "Emissions b (MMT CO2 Eq.) from Energy Use": "Emissions (MMT CO2 Eq.) from Energy Use"
+                 }
 
-A_TBTU_HEADER = ["Adjusted Consumption (TBtu) a", "Adjusted Consumption (TBtu)"]
-A_CO2_HEADER = ["Emissions b (MMT CO2 Eq.) from Energy Use", "Emissions (MMT CO2 Eq.) from Energy Use"]
+# Tables for annual CO2 emissions from fossil fuel combustion
+ANNEX_ENERGY_TABLES = ["A-10", "A-11", "A-12", "A-13", "A-14", "A-15", "A-16",
+                       "A-17", "A-18", "A-19", "A-20"]
 
-SPECIAL_FORMAT = ["3-10", "3-22", "4-46", "4-50", "4-80", "A-10", "A-11", "A-12", "A-13", "A-14", "A-15", "A-16",
-                  "A-17", "A-18", "A-19", "A-20", "A-93", "A-94", "A-118", "5-29"]
-SRC_NAME_SPECIAL_FORMAT = ["T_3_22", "T_4_43", "T_4_80", "T_A_17"]
-Activity_Format_A = ["T_5_30", "T_A_17", "T_ES_5"]
-Activity_Format_B = ["T_2_1", "T_3_21", "T_3_22", "T_4_48", "T_5_18"]
-A_Table_List = ["A-11", "A-12", "A-13", "A-14", "A-15", "A-16", "A-17", "A-18", "A-19", "A-20"]
+SPECIAL_FORMAT = ["3-10", "3-22", "3-22b", "4-46", "5-29",
+                  "A-93", "A-94", "A-118", ]
+SRC_NAME_SPECIAL_FORMAT = ["3_22", "4_43", "4_80"]
 
-DROP_COLS = ["Unnamed: 0", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998",
-             "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009"]
+DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
+    start="1990", end="2010", freq='Y').year.astype(str))
 
-YEARS = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
+YEARS = list(pd.date_range(start="2010", end="2020", freq='Y').year.astype(str))
 
 
 def ghg_url_helper(*, build_url, config, **_):
@@ -55,27 +57,6 @@ def ghg_url_helper(*, build_url, config, **_):
     """
     annex_url = config['url']['annex_url']
     return [build_url, annex_url]
-
-
-def fix_a17_headers(header):
-    """
-    Fix A-17 headers, trim white spaces, convert shortened words such as Elec., Res., etc.
-    :param header: str, column header
-    :return: str, modified column header
-    """
-    if header == A_17_TBTU_HEADER[0]:
-        header = f' {A_17_TBTU_HEADER[1].strip()}'.replace('')
-    elif header == A_17_CO2_HEADER[0]:
-        header = f' {A_17_CO2_HEADER[1].strip()}'
-    else:
-        header = header.strip()
-        header = header.replace('Res.', 'Residential')
-        header = header.replace('Comm.', 'Commercial')
-        header = header.replace('Ind.', 'Industrial')
-        header = header.replace('Trans.', 'Transportation')
-        header = header.replace('Elec.', 'Electricity Power')
-        header = header.replace('Terr.', 'U.S. Territory')
-    return header
 
 
 def cell_get_name(value, default_flow_name):
@@ -135,30 +116,27 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
     units = series.apply(lambda x: cell_get_units(x, default_units))
     return {'names': names, 'units': units}
 
-def annex_yearly_tables(data):
+def annex_yearly_tables(data, table=None):
+    """Special handling of ANNEX Energy Tables"""
     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                      header=[0, 1], thousands=",")
+    if table == "A-10":
+        # Extra row to drop in this table
+        df = df.drop([0])
     header_name = ""
     newcols = []  # empty list to have new column names
     for i in range(len(df.columns)):
         fuel_type = str(df.iloc[0, i])
-        fuel_type = fuel_type.replace('Res.', 'Residential')
-        fuel_type = fuel_type.replace('Comm.', 'Commercial')
-        fuel_type = fuel_type.replace('Ind.', 'Industrial')
-        fuel_type = fuel_type.replace('Trans.', 'Transportation')
-        fuel_type = fuel_type.replace('Elec.', 'Electricity Power')
-        fuel_type = fuel_type.replace('Terr.', 'U.S. Territory')
+        for abbrev, full_name in SECTOR_DICT.items():
+            fuel_type = fuel_type.replace(abbrev, full_name)
         fuel_type = fuel_type.strip()
 
         col_name = df.columns[i][1]
         if "Unnamed" in col_name:
             column_name = header_name
-        elif col_name == A_TBTU_HEADER[0]:
-            column_name = A_TBTU_HEADER[1]
-            header_name = A_TBTU_HEADER[1]
-        elif col_name == A_CO2_HEADER[0]:
-            column_name = A_CO2_HEADER[1]
-            header_name = A_CO2_HEADER[1]
+        elif col_name in ANNEX_HEADERS.keys():
+            column_name = ANNEX_HEADERS[col_name]
+            header_name = ANNEX_HEADERS[col_name]
 
         newcols.append(column_name + ' - ' + fuel_type)  # make and add new name to list
     df.columns = newcols  # assign column names
@@ -188,177 +166,58 @@ def ghg_call(*, resp, url, year, config, **_):
             t_tables = config['Tables']
         for chapter, tables in t_tables.items():
             for table in tables:
-                # path = os.path.join("Chapter Text", chapter, f"Table {table}.csv")
+                tbl_year = tables[table].get('year')
+                if tbl_year is not None and tbl_year != year:
+                    # Skip tables when the year does not align with target year
+                    continue
+
                 if is_annex:
                     path = f"Annex/Table {table}.csv"
                 else:
                     path = f"Chapter Text/{chapter}/Table {table}.csv"
-                if table != "3-22b":
+
+                # Handle special case of table 3-22 in external data folder
+                if table == "3-22b":
+                    if str(year) == '2019':
+                        # Skip 3-22b for year 2019 (use 3-22 instead)
+                        continue
+                    else:
+                        df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
+                                         skiprows=2, encoding="ISO-8859-1", thousands=",")
+                else:
                     data = f.open(path)
-                if table not in SPECIAL_FORMAT and table != "3-22b":
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1", thousands=",")
-                elif '3-' in table:
-                    if table == '3-10':
-                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                         thousands=",", decimal=".")
-                    elif table != "3-22b":
-                        if table == '3-22' and str(year) != '2019':
-                            df = None
-                            continue
-                        # Skip first two rows, as usual, but make headers the next 3 rows:
-                        df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                         header=[0, 1, 2], thousands=",")
-                        # The next two rows are headers and the third is units:
-                        new_headers = []
-                        for col in df.columns:
-                            # unit = col[2]
-                            new_header = 'Unnamed: 0'
-                            if 'Unnamed' not in col[0]:
-                                if 'Unnamed' not in col[1]:
-                                    new_header = f'{col[0]} {col[1]}'
-                                else:
-                                    new_header = col[0]
-                                if 'Unnamed' not in col[2]:
-                                    new_header += f' {col[2]}'
-                                # unit = col[2]
-                            elif 'Unnamed' in col[0] and 'Unnamed' not in col[2]:
-                                new_header = col[2]
-                            new_headers.append(new_header)
-                        df.columns = new_headers
-                    else: # table == "3-22b"
-                        if str(year) != '2019':
-                            df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
-                                             skiprows=2, encoding="ISO-8859-1", thousands=",")
-                        else:
-                            df = None
-                elif '4-' in table:
-                    if table == '4-46':
-                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                         thousands=",", decimal=".")
-                    else:
-                        df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                         thousands=",", decimal=".")
-                elif 'A-' in table:
-                    if table == 'A-17':
-                        # A-17  is similar to T 3-23, the entire table is 2012 and
-                        # headings are completely different.
-                        if str(year) == '2013':
-                            df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                             header=[0, 1], thousands=",")
-                            new_headers = []
-                            header_grouping = ''
-                            for col in df.columns:
-                                if 'Unnamed' in col[0]:
-                                    # new_headers.append(f'{header_grouping}{col[1]}')
-                                    new_headers.append(f'{fix_a17_headers(col[1])}'
-                                                       f'{header_grouping}')
-                                else:
-                                    if len(col) == 2:
-                                        # header_grouping = f'{col[0]}__'
-                                        if col[0] == A_17_TBTU_HEADER[0]:
-                                            header_grouping = f' {A_17_TBTU_HEADER[1].strip()}'
-                                        else:
-                                            header_grouping = f' {A_17_CO2_HEADER[1].strip()}'
-                                    # new_headers.append(f'{header_grouping}{col[1]}')
-                                    new_headers.append(f'{fix_a17_headers(col[1])}'
-                                                       f'{header_grouping}')
-                            df.columns = new_headers
-                            nan_col = 'Electricity Power Emissions (MMT CO2 Eq.) from Energy Use'
-                            fill_col = 'Unnamed: 12_level_1 Emissions (MMT CO2 Eq.) from Energy Use'
-                            df = df.drop(columns=nan_col)
-                            df.columns = [nan_col if x == fill_col else x for x in df.columns]
-                            df['Year'] = year
-                        else:
-                            df = None
-                    elif table == 'A-10':
-                        # A-17  is similar to T 3-23, the entire table is 2012 and
-                        # headings are completely different.
-                        if str(year) == '2019':
-                            df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                             header=[0, 1], thousands=",")
-                            df = df.drop([0])
-                            new_headers = []
-                            header_grouping = ''
-                            header_name = ""
-                            newcols = []  # empty list to have new column names
-                            for i in range(len(df.columns)):
-                                fuel_type = str(df.iloc[0, i])
-                                fuel_type = fuel_type.replace('Res.', 'Residential')
-                                fuel_type = fuel_type.replace('Comm.', 'Commercial')
-                                fuel_type = fuel_type.replace('Ind.', 'Industrial Other')
-                                fuel_type = fuel_type.replace('Trans.', 'Transportation')
-                                fuel_type = fuel_type.replace('Elec.', 'Electricity Power')
-                                fuel_type = fuel_type.replace('Terr.', 'U.S. Territory')
-                                fuel_type = fuel_type.strip()
 
-                                col_name = df.columns[i][1]
-                                if "Unnamed" in col_name:
-                                    column_name = header_name
-                                elif col_name == A_10_TBTU_1_HEADER[0]:
-                                    column_name = A_10_TBTU_1_HEADER[1]
-                                    header_name = A_10_TBTU_1_HEADER[1]
-                                elif col_name == A_10_TBTU_2_HEADER[0]:
-                                    column_name = A_10_TBTU_2_HEADER[1]
-                                    header_name = A_10_TBTU_2_HEADER[1]
-                                elif col_name == A_10_TBTU_3_HEADER[0]:
-                                    header_name = A_10_TBTU_3_HEADER[0]
-
-                                newcols.append(column_name + ' - ' + fuel_type)  # make and add new name to list
-                            df.columns = newcols  # assign column names
-                            df = df.iloc[1:, :]  # exclude first row
-                            df['Year'] = year
-                            df = df.reset_index(drop=True)
-                    elif table == 'A-11':
-                        if str(year) == '2019':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-12':
-                        if str(year) == '2018':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-13':
-                        if str(year) == '2017':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-14':
-                        if str(year) == '2016':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-15':
-                        if str(year) == '2015':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-16':
-                        if str(year) == '2014':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-18':
-                        if str(year) == '2012':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-19':
-                        if str(year) == '2011':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    elif table == 'A-20':
-                        if str(year) == '2010':
-                            df = annex_yearly_tables(data)
-                        else:
-                            df = None
-                    else:
-                        df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                         thousands=",", decimal=".")
-                elif '5-' in table:
+                if table not in SPECIAL_FORMAT + ANNEX_ENERGY_TABLES:
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                     thousands=",")
+                elif table in ['3-10', '4-46', '5-29',
+                               'A-93', 'A-94', 'A-118']:
+                    # Skip single row
                     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")
+                elif table == "3-22":
+                    # Skip first two rows, as usual, but make headers the next 3 rows:
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                     header=[0, 1, 2], thousands=",")
+                    # The next two rows are headers and the third is units:
+                    new_headers = []
+                    for col in df.columns:
+                        # unit = col[2]
+                        new_header = 'Unnamed: 0'
+                        if 'Unnamed' not in col[0]:
+                            if 'Unnamed' not in col[1]:
+                                new_header = f'{col[0]} {col[1]}'
+                            else:
+                                new_header = col[0]
+                            if 'Unnamed' not in col[2]:
+                                new_header += f' {col[2]}'
+                            # unit = col[2]
+                        elif 'Unnamed' in col[0] and 'Unnamed' not in col[2]:
+                            new_header = col[2]
+                        new_headers.append(new_header)
+                    df.columns = new_headers
+                elif table in ANNEX_ENERGY_TABLES:
+                    df = annex_yearly_tables(data, table)
 
                 if df is not None and len(df.columns) > 1:
                     years = YEARS.copy()
@@ -367,8 +226,6 @@ def ghg_call(*, resp, url, year, config, **_):
                     # Assign SourceName now while we still have access to the table name:
                     df["SourceName"] = f"EPA_GHGI_T_{table.replace('-', '_')}"
                     frames.append(df)
-
-        # return pd.concat(frames)
         return frames
 
 
@@ -407,7 +264,8 @@ def strip_char(text):
     Removes the footnote chars from the text
     """
     text = text + " "
-    notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", " i ", " j ", " k ", " b,c ", " h,i ", " f,g "]
+    notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ",
+             " h ", " i ", " j ", " k ", " b,c ", " h,i ", " f,g "]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -428,10 +286,10 @@ def ghg_parse(*, df_list, year, config, **_):
     for df in df_list:
         special_format = False
         source_name = df["SourceName"][0]
-        log.info('Processing Source Name %s', source_name)
-        for src in SRC_NAME_SPECIAL_FORMAT:
-            if src in source_name:
-                special_format = True
+        table_name = source_name[11:]
+        log.info(f'Processing {source_name}')
+        if table_name in SRC_NAME_SPECIAL_FORMAT:
+            special_format = True
 
         # Specify to ignore errors in case one of the drop_cols is missing.
         drop_cols = get_unnamed_cols(df)
@@ -1047,5 +905,6 @@ def keep_six_digit_naics(df_w_sec, **_):
 
 if __name__ == "__main__":
     import flowsa
-    fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
-    df = clean_HFC_fba(fba)
+    # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
+    # df = clean_HFC_fba(fba)
+    fba = flowsa.flowbyactivity.main(year=2019, source='EPA_GHGI')

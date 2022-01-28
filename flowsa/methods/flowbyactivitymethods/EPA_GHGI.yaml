@@ -244,6 +244,7 @@ Annex:
         "desc": >
           "2019 Energy Consumption Data by Fuel Type (TBtu)"
           "and Adjusted Energy Consumption Data"
+        "year": "2019"
       "A-11": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -252,6 +253,7 @@ Annex:
         "desc": >
           "2019 Energy Consumption Data and CO2 Emissions from
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2019"
       "A-12": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -260,6 +262,7 @@ Annex:
         "desc": >
           "2018 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2018"
       "A-13": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -268,6 +271,7 @@ Annex:
         "desc": >
           "2017 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2017"
       "A-14": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -276,6 +280,7 @@ Annex:
         "desc": >
           "2016 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2016"
       "A-15": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -284,6 +289,7 @@ Annex:
         "desc": >
           "2015 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2015"
       "A-16": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -292,6 +298,16 @@ Annex:
         "desc": >
           "2014 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2014"
+      "A-17": # Separate emissions table for each year
+        "class": "Energy"
+        "unit": "Other"
+        "compartment": "air"
+        "activity": "CO2"
+        "desc": >
+          "2013 Energy Consumption Data and CO2 Emissions from "
+          "Fossil Fuel Combustion by Fuel Type"
+        "year": "2013"
       "A-18": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -300,6 +316,7 @@ Annex:
         "desc": >
           "2012 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2012"
       "A-19": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -308,6 +325,7 @@ Annex:
         "desc": >
           "2011 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2011"
       "A-20": # Separate emissions table for each year
         "class": "Energy"
         "unit": "Other"
@@ -316,6 +334,7 @@ Annex:
         "desc": >
           "2010 Energy Consumption Data and CO2 Emissions from "
           "Fossil Fuel Combustion by Fuel Type"
+        "year": "2010"
       "A-76": # Not a primary emissions datasource
         "class": "Chemicals"
         "unit": "kt"
@@ -346,11 +365,4 @@ Annex:
         "compartment": "air"
         "activity": "HFCs"
         "desc": "HFC Emissions from Transportation Sources (MMT CO2 Eq.)"
-      "A-17": # Separate emissions table for each year
-        "class": "Energy"
-        "unit": "Other"
-        "compartment": "air"
-        "activity": "CO2"
-        "desc": >
-          "2012 Energy Consumption Data and CO2 Emissions from "
-          "Fossil Fuel Combustion by Fuel Type"
+
