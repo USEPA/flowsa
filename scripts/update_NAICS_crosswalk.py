@@ -78,8 +78,7 @@ def update_naics_crosswalk():
     # and add to naics list
     missing_naics_df_list = []
     # read in all the crosswalk csv files (ends in toNAICS.csv)
-    for file_name in glob.glob(
-            datapath + "activitytosectormapping/" + 'NAICS_Crosswalk_*.csv'):
+    for file_name in glob.glob(crosswalkpath + 'NAICS_Crosswalk_*.csv'):
         # skip Statistics Canada GDP because not all sectors relevant
         if file_name != crosswalkpath + 'Crosswalk_StatCan_GDP_toNAICS.csv':
             df = pd.read_csv(file_name, low_memory=False, dtype=str)
