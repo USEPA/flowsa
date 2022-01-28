@@ -12,7 +12,7 @@ from flowsa.common import get_flowsa_base_name, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.schema import activity_fields
-from flowsa.settings import crosswalkpath, log
+from flowsa.settings import log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
@@ -23,6 +23,7 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
     :param source: str, the data source name
     :return: a pandas df for a standard ActivitytoSector mapping
     """
+    from flowsa.settings import crosswalkpath
     # first determine activity to sector mapping file name
     if 'EPA_NEI' in source:
         source = 'SCC'
