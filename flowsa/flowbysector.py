@@ -293,7 +293,7 @@ def main(**kwargs):
                 else:
                     fbs = dataset_allocation_method(
                         flows_mapped_wsec, attr, names, method, k, v, aset,
-                        aset_names, download_FBA_if_missing)
+                        aset_names, download_FBA_if_missing, fbsconfigpath)
 
                 # drop rows where flowamount = 0
                 # (although this includes dropping suppressed data)

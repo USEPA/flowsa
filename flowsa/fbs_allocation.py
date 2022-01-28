@@ -81,7 +81,8 @@ def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
 
 
 def dataset_allocation_method(flow_subset_mapped, attr, names, method,
-                              k, v, aset, aset_names, download_FBA_if_missing):
+                              k, v, aset, aset_names,
+                              download_FBA_if_missing, fbsconfigpath):
     """
     Method of allocation using a specified data source
     :param flow_subset_mapped: FBA subset mapped using federal
@@ -128,7 +129,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     fba_allocation_subset = \
         get_fba_allocation_subset(fba_allocation_wsec, k, names,
                                   flowSubsetMapped=flow_subset_mapped,
-                                  allocMethod=attr['allocation_method'])
+                                  allocMethod=attr['allocation_method'],
+                                  fbsconfigpath=fbsconfigpath)
 
     # if there is an allocation helper dataset, modify allocation df
     if 'helper_source' in attr:
@@ -161,7 +163,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
             get_fba_allocation_subset(fba_allocation_subset, k, [n],
                                       flowSubsetMapped=flow_subset_mapped,
                                       allocMethod=attr['allocation_method'],
-                                      activity_set_names=aset_names)
+                                      activity_set_names=aset_names,
+                                      fbsconfigpath=fbsconfigpath)
         if len(fba_allocation_subset_2) == 0:
             log.info("No data found to allocate %s", n)
         else:
