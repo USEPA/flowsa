@@ -90,6 +90,8 @@ def getFlowBySector(methodname, fbsconfigpath=None,
     Loads stored FlowBySector output or generates it if it doesn't exist,
     then loads
     :param methodname: string, Name of an available method for the given class
+    :param fbsconfigpath: str, path to the FBS method file if loading a file
+        from outside the flowsa repository
     :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
         used in generating the FBS from remote server prior to generating if
         file not found locally
