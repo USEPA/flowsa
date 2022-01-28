@@ -40,6 +40,7 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
             external_mappingpath, mapfn, 'csv')
         if os.path.isfile(f"{external_mappingpath}"
                           f"{activity_mapping_source_name}.csv"):
+            log.info("Loading crosswalk from %s", external_mappingpath)
             crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')

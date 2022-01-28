@@ -130,6 +130,8 @@ def return_activity_set_names(v, fbsconfigpath):
             # if the file exists, reset the activitysetpath
             flowbysectoractivitysetspath = \
                 f"{fbsconfigpath}flowbysectoractivitysets/"
+            log.info('Loading activity set file from %s',
+                     flowbysectoractivitysetspath)
         # load activity set
         aset_names = pd.read_csv(aspath + v['activity_set_file'], dtype=str)
     else:
