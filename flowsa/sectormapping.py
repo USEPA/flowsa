@@ -4,6 +4,7 @@
 """
 Contains mapping functions
 """
+import os.path
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
@@ -16,28 +17,42 @@ from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
-def get_activitytosector_mapping(source):
+def get_activitytosector_mapping(source, fbsconfigpath=None):
     """
     Gets  the activity-to-sector mapping
     :param source: str, the data source name
     :return: a pandas df for a standard ActivitytoSector mapping
     """
-
+    # first determine activity to sector mapping file name
     if 'EPA_NEI' in source:
         source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
+
+    # identify mapping file name
+    mapfn = f'NAICS_Crosswalk_{source}'
+
+    # if FBS method file loaded from outside the flowsa directory, check if
+    # there is also a crosswalk
+    external_mappingpath = f"{fbsconfigpath}activitytosectormapping/"
+    if os.path.exists(external_mappingpath):
+        activity_mapping_source_name = get_flowsa_base_name(
+            external_mappingpath, mapfn, 'csv')
+        if os.path.isfile(f"{external_mappingpath}"
+                          f"{activity_mapping_source_name}.csv"):
+            crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
-        crosswalkpath, f'NAICS_Crosswalk_{source}', 'csv')
+        crosswalkpath, mapfn, 'csv')
     mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',
-                          dtype={'Activity': 'str',
-                                 'Sector': 'str'})
-    # some mapping tables will have data for multiple sources, while other mapping tables
-    # are used for multiple sources (like EPA_NEI or BEA mentioned above)
-    # so if find the exact source name in the ActivitySourceName column use those rows
-    # if the mapping file returns empty, use the original mapping file
-    # subset df to keep rows where ActivitySourceName matches source name
-    mapping2 = mapping[mapping['ActivitySourceName'] == source].reset_index(drop=True)
+                          dtype={'Activity': 'str', 'Sector': 'str'})
+    # some mapping tables will have data for multiple sources, while other
+    # mapping tables are used for multiple sources (like EPA_NEI or BEA
+    # mentioned above) so if find the exact source name in the
+    # ActivitySourceName column use those rows if the mapping file returns
+    # empty, use the original mapping file subset df to keep rows where
+    # ActivitySourceName matches source name
+    mapping2 = mapping[mapping['ActivitySourceName'] == source].reset_index(
+        drop=True)
     if len(mapping2) > 0:
         return mapping2
     else:
