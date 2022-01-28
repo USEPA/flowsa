@@ -35,7 +35,7 @@ ANNEX_ENERGY_TABLES = ["A-10", "A-11", "A-12", "A-13", "A-14", "A-15", "A-16",
 
 SPECIAL_FORMAT = ["3-10", "3-22", "3-22b", "4-46", "5-29",
                   "A-93", "A-94", "A-118", ]
-SRC_NAME_SPECIAL_FORMAT = ["3-22", "4-43", "4-80"]
+SRC_NAME_SPECIAL_FORMAT = ["3-22", "4-80"]
 
 DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
     start="1990", end="2010", freq='Y').year.astype(str))
@@ -292,10 +292,13 @@ def ghg_parse(*, df_list, year, config, **_):
             special_format = True
 
         # Specify to ignore errors in case one of the drop_cols is missing.
-        drop_cols = get_unnamed_cols(df)
-        df = df.drop(columns=drop_cols, errors='ignore')
+        df = df.drop(columns=get_unnamed_cols(df), errors='ignore')
         is_cons = is_consumption(source_name, config)
-        if not special_format or "T_4_" not in source_name:
+        if special_format or "T_4_" in source_name:
+            df["ActivityConsumedBy"] = 'None'
+            df["ActivityProducedBy"] = 'None'
+
+        else:
             # Rename the PK column from data_type to "ActivityProducedBy" or "ActivityConsumedBy":
             if is_cons:
                 df = df.rename(columns={df.columns[0]: "ActivityConsumedBy"})
@@ -303,17 +306,13 @@ def ghg_parse(*, df_list, year, config, **_):
             else:
                 df = df.rename(columns={df.columns[0]: "ActivityProducedBy"})
                 df["ActivityConsumedBy"] = 'None'
-        else:
-            df["ActivityConsumedBy"] = 'None'
-            df["ActivityProducedBy"] = 'None'
-
 
         df["FlowType"] = "ELEMENTARY_FLOW"
         df["Location"] = "00000"
-        annex_tables = ["EPA_GHGI_T_A_10", "EPA_GHGI_T_A_11", "EPA_GHGI_T_A_12", "EPA_GHGI_T_A_13", "EPA_GHGI_T_A_14",
-                        "EPA_GHGI_T_A_15", "EPA_GHGI_T_A_16", "EPA_GHGI_T_A_18", "EPA_GHGI_T_A_19", "EPA_GHGI_T_A_20"]
 
-        id_vars = ["SourceName", "ActivityConsumedBy", "ActivityProducedBy", "FlowType", "Location"]
+        id_vars = ["SourceName", "ActivityConsumedBy", "ActivityProducedBy",
+                   "FlowType", "Location"]
+
         if special_format and "Year" in df.columns:
             id_vars.append("Year")
             # Cast Year column to numeric and delete any years != year
@@ -321,18 +320,18 @@ def ghg_parse(*, df_list, year, config, **_):
 
         # Set index on the df:
         df.set_index(id_vars)
-        switch_year_apb = ["EPA_GHGI_T_4_14", "EPA_GHGI_T_4_50"]
+
         if special_format:
-            if "T_4_" not in source_name:
+            if "T_4_" not in source_name: # 3-22
                 df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
-            else:
+            else: # 4-80
                 df = df.melt(id_vars=id_vars, var_name="Units", value_name="FlowAmount")
         elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
             df["Year"] = year
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
-            if source_name in switch_year_apb:
+            if table_name in ['4-14', '4-50']:
                 df = df.rename(columns={'ActivityProducedBy': 'Year', 'Year': 'ActivityProducedBy'})
 
         if table_name in ANNEX_ENERGY_TABLES:
@@ -367,7 +366,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         df.loc[index, 'Unit'] = "TBtu"
                         df.loc[index, 'Class'] = "Energy"
 
-        # Dropping all rows with value "+"
+        # Dropping all rows with value "+": represents non-zero value
         try:
             df = df[~df["FlowAmount"].str.contains("\\+", na=False)]
         except AttributeError as ex:
@@ -380,7 +379,7 @@ def ghg_parse(*, df_list, year, config, **_):
 
         # Convert all empty cells to nan cells
         df["FlowAmount"].replace("", np.nan, inplace=True)
-        # Table 3-10 has some NO values, dropping these.
+        # Table 3-10 has some NO (Not Occuring) values, dropping these.
         df["FlowAmount"].replace("NO", np.nan, inplace=True)
         # Table A-118 has some IE values, dropping these.
         df["FlowAmount"].replace("IE", np.nan, inplace=True)
@@ -389,16 +388,9 @@ def ghg_parse(*, df_list, year, config, **_):
         # Drop any nan rows
         df.dropna(subset=['FlowAmount'], inplace=True)
 
-        df["Description"] = 'None'
-        if table_name not in ANNEX_ENERGY_TABLES:
-            df["Unit"] = "Other"
-
         # Update classes:
         meta = get_table_meta(source_name, config)
-        if source_name == "EPA_GHGI_T_3_21" and int(year) < 2015:
-            # skip don't do anything: The lines are blank
-            print("There is no data for this year and source")
-        elif table_name not in ANNEX_ENERGY_TABLES:
+        if table_name not in ANNEX_ENERGY_TABLES:
             df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
             df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
             df.loc[df["SourceName"] == source_name, "Description"] = meta["desc"]
@@ -430,7 +422,7 @@ def ghg_parse(*, df_list, year, config, **_):
         if source_name == "EPA_GHGI_T_4_33":
             df = df.rename(columns={'Year': 'ActivityProducedBy', 'ActivityProducedBy': 'Year'})
         year_int = ["EPA_GHGI_T_4_33", "EPA_GHGI_T_4_50"]
-        # Some of the datasets, 4-43 and 4-80, still have years we don't want at this point.
+        # Some of the datasets, 4-80, still have years we don't want at this point.
         # Remove rows matching the years we don't want:
         try:
             if source_name in year_int:
