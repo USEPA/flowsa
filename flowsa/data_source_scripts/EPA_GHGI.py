@@ -13,7 +13,7 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
 from flowsa.dataclean import replace_NoneType_with_empty_cells
-from flowsa.settings import log, externaldatapath
+from flowsa.settings import log, externaldatapath, GIT_HASH
 from flowsa.schema import flow_by_activity_fields
 
 SECTOR_DICT = {'Res.': 'Residential',
@@ -166,6 +166,8 @@ def ghg_call(*, resp, url, year, config, **_):
             t_tables = config['Tables']
         for chapter, tables in t_tables.items():
             for table in tables:
+                if not table.startswith('A-14'): continue # TODO
+
                 tbl_year = tables[table].get('year')
                 if tbl_year is not None and tbl_year != year:
                     # Skip tables when the year does not align with target year
@@ -284,6 +286,7 @@ def ghg_parse(*, df_list, year, config, **_):
     """
     cleaned_list = []
     for df in df_list:
+        df_orig = df
         special_format = False
         source_name = df["SourceName"][0]
         table_name = source_name[11:].replace("_","-")
@@ -294,12 +297,12 @@ def ghg_parse(*, df_list, year, config, **_):
         # Specify to ignore errors in case one of the drop_cols is missing.
         df = df.drop(columns=get_unnamed_cols(df), errors='ignore')
         is_cons = is_consumption(source_name, config)
-        if special_format or "T_4_" in source_name:
+        if special_format: # or "T_4_" in source_name:
             df["ActivityConsumedBy"] = 'None'
             df["ActivityProducedBy"] = 'None'
 
         else:
-            # Rename the PK column from data_type to "ActivityProducedBy" or "ActivityConsumedBy":
+            # Rename to "ActivityProducedBy" or "ActivityConsumedBy":
             if is_cons:
                 df = df.rename(columns={df.columns[0]: "ActivityConsumedBy"})
                 df["ActivityProducedBy"] = 'None'
@@ -321,6 +324,8 @@ def ghg_parse(*, df_list, year, config, **_):
         # Set index on the df:
         df.set_index(id_vars)
 
+        meta = get_table_meta(source_name, config)
+
         if special_format:
             if "T_4_" not in source_name: # 3-22
                 df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
@@ -329,42 +334,32 @@ def ghg_parse(*, df_list, year, config, **_):
         elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
             df["Year"] = year
+            for index, row in df.iterrows():
+                col_name = row['FlowName']
+                acb = row['ActivityConsumedBy'].strip()
+                name_split = col_name.split(" (")
+                source = name_split[1].split('- ')[1]
+                # Append column name after dash to activity
+                activity = f"{acb.strip()} {name_split[1].split('- ')[1]}"
+
+                df.loc[index, 'Description'] = meta['desc']
+                if name_split[0] == "Emissions":
+                    df.loc[index, 'FlowName'] = meta['emission']
+                    df.loc[index, 'Unit'] = meta['emission_unit']
+                    df.loc[index, 'Class'] = meta['emission_class']
+                    df.loc[index, 'Compartment'] = meta['emission_compartment']
+                    df.loc[index, 'ActivityProducedBy'] = activity
+                    df.loc[index, 'ActivityConsumedBy'] = "None"
+                else: # "Consumption"
+                    df.loc[index, 'FlowName'] = acb
+                    df.loc[index, 'Unit'] = meta['unit']
+                    df.loc[index, 'Class'] = meta['class']
+                    df.loc[index, 'ActivityProducedBy'] = "None"
+                    df.loc[index, 'ActivityConsumedBy'] = source
         else:
             df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
             if table_name in ['4-14', '4-50']:
                 df = df.rename(columns={'ActivityProducedBy': 'Year', 'Year': 'ActivityProducedBy'})
-
-        if table_name in ANNEX_ENERGY_TABLES:
-            for index, row in df.iterrows():
-                name = df.loc[index, 'FlowName']
-                if source_name == "EPA_GHGI_T_A_17":
-                    if "Other" in name:
-                        name_split = name.split(" Other")
-                        df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'] + " - " + name_split[
-                            0]
-                    elif "Emissions" in name:
-                        name_split = name.split(" Emissions")
-                        df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'] + " - " + name_split[
-                            0]
-                    elif "Adjusted" in name:
-                        name_split = name.split(" Adjusted")
-                        df.loc[index, 'ActivityConsumedBy'] = df.loc[index, 'ActivityConsumedBy'] + " - " + name_split[
-                            0]
-                else:
-                    name_split = name.split(" (")
-
-                    df.loc[index, 'ActivityConsumedBy'] = (
-                        f"{str(df.loc[index, 'ActivityConsumedBy'])}"
-                        f" {name_split[1].split('- ')[1]}"
-                    )
-                    if name_split[0] == "Emissions":
-                        df.loc[index, 'FlowName'] = "CO2"
-                        df.loc[index, 'Unit'] = "MMT CO2e"
-                        df.loc[index, 'Class'] = "Chemicals"
-                    else:
-                        df.loc[index, 'FlowName'] = "Energy Consumption"
-                        df.loc[index, 'Unit'] = "TBtu"
-                        df.loc[index, 'Class'] = "Energy"
 
         # Dropping all rows with value "+": represents non-zero value
         df["FlowAmount"].replace("\+", np.nan, inplace=True, regex=True)
@@ -381,8 +376,6 @@ def ghg_parse(*, df_list, year, config, **_):
         # Drop any nan rows
         df.dropna(subset=['FlowAmount'], inplace=True)
 
-        # Update classes:
-        meta = get_table_meta(source_name, config)
         if table_name not in ANNEX_ENERGY_TABLES:
             df.loc[df["SourceName"] == source_name, "Class"] = meta["class"]
             df.loc[df["SourceName"] == source_name, "Unit"] = meta["unit"]
@@ -400,14 +393,14 @@ def ghg_parse(*, df_list, year, config, **_):
 
         # We also need to fix the Activity PRODUCED or CONSUMED, now that we know units.
         # Any units TBtu will be CONSUMED, all other units will be PRODUCED. 3-10 only?
-        if is_cons:
-            df['ActivityProducedBy'] = df['ActivityConsumedBy']
-            df.loc[df["Unit"] == 'TBtu', 'ActivityProducedBy'] = 'None'
-            df.loc[df["Unit"] != 'TBtu', 'ActivityConsumedBy'] = 'None'
-        else:
-            df['ActivityConsumedBy'] = df['ActivityProducedBy']
-            df.loc[df["Unit"] == 'TBtu', 'ActivityProducedBy'] = 'None'
-            df.loc[df["Unit"] != 'TBtu', 'ActivityConsumedBy'] = 'None'
+        # if is_cons:
+        #     df['ActivityProducedBy'] = df['ActivityConsumedBy']
+        #     df.loc[df["Unit"] == 'TBtu', 'ActivityProducedBy'] = 'None'
+        #     df.loc[df["Unit"] != 'TBtu', 'ActivityConsumedBy'] = 'None'
+        # else:
+        #     df['ActivityConsumedBy'] = df['ActivityProducedBy']
+        #     df.loc[df["Unit"] == 'TBtu', 'ActivityProducedBy'] = 'None'
+        #     df.loc[df["Unit"] != 'TBtu', 'ActivityConsumedBy'] = 'None'
 
         if 'Year' not in df.columns:
             df['Year'] = year
@@ -420,7 +413,7 @@ def ghg_parse(*, df_list, year, config, **_):
         try:
             if table_name in ['4-33', '4-50']:
                 df = df[df['Year'].isin([int(year)])]
-            else:
+            else: # breaks 4-14
                 df = df[df['Year'].isin([year])]
 
         except AttributeError as ex:
@@ -558,15 +551,6 @@ def ghg_parse(*, df_list, year, config, **_):
         elif source_name in double_activity:
             for index, row in df.iterrows():
                 df.loc[index, 'FlowName'] = df.loc[index, 'ActivityProducedBy']
-        elif table_name in ANNEX_ENERGY_TABLES:
-            for index, row in df.iterrows():
-                if df.loc[index, 'ActivityProducedBy'] == "None":
-                    df.loc[index, 'Unit'] = "TBtu"
-                    df.loc[index, 'FlowName'] = "Energy Consumption"
-                else:
-                    df.loc[index, 'Unit'] = "MMT CO2e"
-                    df.loc[index, 'FlowName'] = "CO2"
-                    df.loc[index, 'Compartment'] = 'air'
         elif source_name == "EPA_GHGI_T_A_79":
             df = df.rename(
                 columns={'ActivityProducedBy': 'ActivityConsumedBy', 'ActivityConsumedBy': 'ActivityProducedBy'})
@@ -625,12 +609,13 @@ def ghg_parse(*, df_list, year, config, **_):
                         df.loc[index, 'ActivityProducedBy'] = text_split[0]
             else:
                 for index, row in df.iterrows():
-                    if "CO2" in df.loc[index, 'Unit']:
-                        if source_name == "EPA_GHGI_T_3_42" or source_name == "EPA_GHGI_T_3_67":
+                    if "CO2" in row['Unit']:
+                        if table_name in ["3-42", "3-67"]:
                             df.loc[index, 'Unit'] = df.loc[index, 'Unit']
                         else:
                             df.loc[index, 'Unit'] = "MMT CO2e"
-                    if "U.S. Territory" in df.loc[index, 'ActivityProducedBy']:
+                    if "U.S. Territory" in [row['ActivityProducedBy'],
+                                            row['ActivityConsumedBy']]:
                         df.loc[index, 'Location'] = "99000"
 
             df.drop(df.loc[df['ActivityProducedBy'] == "Total"].index, inplace=True)
@@ -652,7 +637,7 @@ def ghg_parse(*, df_list, year, config, **_):
     for df in cleaned_list:
         # Remove commas from numbers again in case any were missed:
         df["FlowAmount"].replace(',', '', regex=True, inplace=True)
-    pd.concat(cleaned_list).to_csv('ghgi.csv')
+    pd.concat(cleaned_list).to_csv(f'ghgi_{GIT_HASH}.csv')
     return cleaned_list
 
 
