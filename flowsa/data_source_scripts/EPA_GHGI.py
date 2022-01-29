@@ -367,16 +367,9 @@ def ghg_parse(*, df_list, year, config, **_):
                         df.loc[index, 'Class'] = "Energy"
 
         # Dropping all rows with value "+": represents non-zero value
-        try:
-            df = df[~df["FlowAmount"].str.contains("\\+", na=False)]
-        except AttributeError as ex:
-            log.info(ex)
+        df["FlowAmount"].replace("\+", np.nan, inplace=True, regex=True)
         # Dropping all rows with value "NE"
-        try:
-            df = df[~df["FlowAmount"].str.contains("NE", na=False)]
-        except AttributeError as ex:
-            log.info(ex)
-
+        df["FlowAmount"].replace("NE", np.nan, inplace=True)
         # Convert all empty cells to nan cells
         df["FlowAmount"].replace("", np.nan, inplace=True)
         # Table 3-10 has some NO (Not Occuring) values, dropping these.
@@ -485,7 +478,6 @@ def ghg_parse(*, df_list, year, config, **_):
             if source_name == "EPA_GHGI_T_ES_5":
                 df = df.rename(columns={'FlowName': 'ActivityProducedBy', 'ActivityProducedBy': 'FlowName'})
         elif source_name in source_No_activity:
-            bool_apb = False
             apbe_value = ""
             flow_name_list = ["Industry", "Transportation", "U.S. Territories"]
             for index, row in df.iterrows():
@@ -497,26 +489,17 @@ def ghg_parse(*, df_list, year, config, **_):
                 else:
                     apb_value = row["ActivityProducedBy"]
                     if apb_value in flow_name_list:
+                        # set header
                         apbe_value = apb_value
-                        if apb_value == "U.S. Territories":
-                            df.loc[index, 'Location'] = "99000"
-                        df.loc[index, 'FlowName'] = "CO2"
                         df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + "All activities"
-                        bool_apb = True
                     else:
-                        if bool_apb == True:
-                            df.loc[index, 'FlowName'] = "CO2"
-                            apb_txt = df.loc[index, 'ActivityProducedBy']
-                            apb_txt = strip_char(apb_txt)
-                            if apbe_value == "U.S. Territories":
-                                df.loc[index, 'Location'] = "99000"
-                            df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + apb_txt
-                        else:
-                            apb_txt = df.loc[index, 'ActivityProducedBy']
-                            apb_txt = strip_char(apb_txt)
-                            df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + apb_txt
-                        if "Total" == apb_value or "Total " == apb_value:
-                            df = df.drop(index)
+                        # apply header
+                        apb_txt = strip_char(apb_value)
+                        df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + apb_txt
+                    if apbe_value == "U.S. Territories":
+                            df.loc[index, 'Location'] = "99000"
+                    if "Total" == apb_value or "Total " == apb_value:
+                        df = df.drop(index)
         elif source_name in source_activity_1:
             apbe_value = ""
             activity_subtotal = ["Electric Power", "Industrial", "Commercial", "Residential", "U.S. Territories",
@@ -537,11 +520,12 @@ def ghg_parse(*, df_list, year, config, **_):
                     apb_txt = strip_char(apb_value)
                     df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
                     if source_name == "EPA_GHGI_T_3_10":
+                        df.loc[index, 'ActivityProducedBy'] = apbe_value
                         df.loc[index, 'FlowName'] = apb_txt
-                if apb_value.startswith("Total"):
-                    df = df.drop(index)
                 if "U.S. Territories" in apbe_value:
                     df.loc[index, 'Location'] = "99000"
+                if apb_value.startswith("Total"):
+                    df = df.drop(index)
         elif source_name in source_activity_2:
             bool_apb = False
             apbe_value = ""
@@ -665,15 +649,11 @@ def ghg_parse(*, df_list, year, config, **_):
         df = df.loc[:, ~df.columns.duplicated()]
         cleaned_list.append(df)
 
-    if cleaned_list:
-        for df in cleaned_list:
-            # Remove commas from numbers again in case any were missed:
-            df["FlowAmount"].replace(',', '', regex=True, inplace=True)
-        return cleaned_list
-        # df = pd.concat(cleaned_list)
-    else:
-        df = pd.DataFrame()
-        return df
+    for df in cleaned_list:
+        # Remove commas from numbers again in case any were missed:
+        df["FlowAmount"].replace(',', '', regex=True, inplace=True)
+    pd.concat(cleaned_list).to_csv('ghgi.csv')
+    return cleaned_list
 
 
 def get_manufacturing_energy_ratios(year):
