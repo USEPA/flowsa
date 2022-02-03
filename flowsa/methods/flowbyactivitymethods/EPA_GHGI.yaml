@@ -70,6 +70,7 @@ Tables:
         "class": "Chemicals"
         "unit": "Other"
         "compartment": "air"
+        "flow": "CO2"
         "activity": "2019 Adjusted Non-Energy Use Fossil Fuel - __type__"
         "desc": "Table 3-22:  2019 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions"
         "year": "2019"
@@ -242,9 +243,11 @@ Annex:
   "Annex":
       "A-10": # Not currently used
         "class": "Energy"
-        "unit": "Other"
-        "compartment": "air"
-        "activity": "TBtu"
+        "unit": "TBtu"
+        "emission_compartment": "air"
+        "emission": "CO2"
+        "emission_unit": "MMT CO2e"
+        "emission_class": "Chemicals"
         "desc": >
           2019 Energy Consumption Data by Fuel Type (TBtu)
           and Adjusted Energy Consumption Data

@@ -77,7 +77,7 @@ def cell_get_name(value, default_flow_name):
             name = f'{name.strip()} {sub}'
         else:
             found_units = True
-    return default_flow_name.replace('__type__', name.strip())
+    return name.strip()
 
 
 def cell_get_units(value, default_units):
@@ -313,7 +313,17 @@ def ghg_parse(*, df_list, year, config, **_):
 
         meta = get_table_meta(source_name, config)
 
-        if table_name in ['3-22', '4-14', '4-33', '4-50', '4-80']:
+        if table_name in ['3-22']:
+            df = df.melt(id_vars=id_vars, var_name=meta.get('melt_var'), value_name="FlowAmount")
+            df = df.rename(columns={"ActivityConsumedBy": "ActivityProducedBy",
+                                    "ActivityProducedBy": "ActivityConsumedBy"})
+            name_unit = series_separate_name_and_units(df['FlowName'],
+                                                       meta['activity'],
+                                                       meta['unit'])
+            df['FlowName'] = name_unit['names']
+            df['Unit'] = name_unit['units']
+            df['Year'] = year
+        elif table_name in ['4-14', '4-33', '4-50', '4-80']:
             # When Year is the first column in the table, need to make this correction
             df = df.rename(columns={'ActivityProducedBy': 'Year',
                                     'Year': 'ActivityProducedBy'})
@@ -324,7 +334,7 @@ def ghg_parse(*, df_list, year, config, **_):
             elif 'ActivityProducedBy' not in df:
                 df["ActivityProducedBy"] = 'None'
             id_vars.append('Year')
-            df = df.melt(id_vars=id_vars, var_name=meta.get('melt_var'), value_name="FlowAmount")
+            df = df.melt(id_vars=id_vars, var_name=melt_var, value_name="FlowAmount")
 
         elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
@@ -424,6 +434,7 @@ def ghg_parse(*, df_list, year, config, **_):
                     bool_apb = True
                 elif apb_value.startswith('LULUCF'):
                     df.loc[index, 'FlowName'] = 'CO2e'
+                    df.loc[index, 'ActivityProducedBy'] = strip_char(apb_value)
                 elif apb_value.startswith('Total'):
                     df = df.drop(index)
                 else:
@@ -443,7 +454,10 @@ def ghg_parse(*, df_list, year, config, **_):
                 if df.loc[index, 'Unit'] != "MMT CO2e":
                     df = df.drop(index)
                 else:
-                    apb_value = row["ActivityProducedBy"]
+                    df.loc[index, 'FlowName'] = meta.get('flow')
+                    # use .join and split to remove interior spaces
+                    apb_value = " ".join(row["ActivityProducedBy"].split())
+                    apb_value = apb_value.replace("°", "")
                     if apb_value in flow_name_list:
                         # set header
                         apbe_value = apb_value
@@ -568,8 +582,8 @@ def ghg_parse(*, df_list, year, config, **_):
         df['FlowName'] = df['FlowName'].str.strip()
 
         # Update location for terriory-based activities
-        df.loc[(df['ActivityProducedBy'].str.contains("U.S. Territory")) |
-               (df['ActivityConsumedBy'].str.contains("U.S. Territory")),
+        df.loc[(df['ActivityProducedBy'].str.contains("U.S. Territor")) |
+               (df['ActivityConsumedBy'].str.contains("U.S. Territor")),
                'Location'] = "99000"
 
         df.drop(df.loc[df['ActivityProducedBy'] == "Total"].index, inplace=True)
@@ -781,4 +795,4 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.flowbyactivity.main(year=2019, source='EPA_GHGI')
+    fba = flowsa.flowbyactivity.main(year=2016, source='EPA_GHGI')
