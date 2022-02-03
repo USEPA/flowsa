@@ -13,7 +13,7 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, dynamically_import_fxn
 from flowsa.dataclean import replace_NoneType_with_empty_cells
-from flowsa.settings import log, externaldatapath, GIT_HASH
+from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
 
 SECTOR_DICT = {'Res.': 'Residential',
@@ -26,7 +26,8 @@ SECTOR_DICT = {'Res.': 'Residential',
 ANNEX_HEADERS = {"Total Consumption (TBtu) a": "Total Consumption (TBtu)",
                  "Adjustments (TBtu) b": "Adjustments (TBtu)",
                  "Adjusted Consumption (TBtu) a": "Adjusted Consumption (TBtu)",
-                 "Emissions b (MMT CO2 Eq.) from Energy Use": "Emissions (MMT CO2 Eq.) from Energy Use"
+                 "Emissions b (MMT CO2 Eq.) from Energy Use":
+                     "Emissions (MMT CO2 Eq.) from Energy Use"
                  }
 
 # Tables for annual CO2 emissions from fossil fuel combustion
@@ -139,7 +140,7 @@ def annex_yearly_tables(data, table=None):
             column_name = ANNEX_HEADERS[col_name]
             header_name = ANNEX_HEADERS[col_name]
 
-        newcols.append(column_name + ' - ' + fuel_type)  # make and add new name to list
+        newcols.append(f"{column_name} - {fuel_type}")
     df.columns = newcols  # assign column names
     df = df.iloc[1:, :]  # exclude first row
     df = df.reset_index(drop=True)
@@ -225,9 +226,10 @@ def ghg_call(*, resp, url, year, config, **_):
                     years = YEARS.copy()
                     years.remove(str(year))
                     df = df.drop(columns=(DROP_COLS + years), errors='ignore')
-                    # Assign SourceName now while we still have access to the table name:
                     df["SourceName"] = f"EPA_GHGI_T_{table.replace('-', '_')}"
                     frames.append(df)
+                else:
+                    log.warning(f"Error in generating {table}")
         return frames
 
 
@@ -313,7 +315,9 @@ def ghg_parse(*, df_list, year, config, **_):
         meta = get_table_meta(source_name, config)
 
         if table_name in ['3-22']:
-            df = df.melt(id_vars=id_vars, var_name=meta.get('melt_var'), value_name="FlowAmount")
+            df = df.melt(id_vars=id_vars,
+                         var_name=meta.get('melt_var'),
+                         value_name="FlowAmount")
             df = df.rename(columns={"ActivityConsumedBy": "ActivityProducedBy",
                                     "ActivityProducedBy": "ActivityConsumedBy"})
             name_unit = series_separate_name_and_units(df['FlowName'],
@@ -322,6 +326,7 @@ def ghg_parse(*, df_list, year, config, **_):
             df['FlowName'] = name_unit['names']
             df['Unit'] = name_unit['units']
             df['Year'] = year
+
         elif table_name in ['4-14', '4-33', '4-50', '4-80']:
             # When Year is the first column in the table, need to make this correction
             df = df.rename(columns={'ActivityProducedBy': 'Year',
@@ -333,10 +338,12 @@ def ghg_parse(*, df_list, year, config, **_):
             elif 'ActivityProducedBy' not in df:
                 df["ActivityProducedBy"] = 'None'
             id_vars.append('Year')
-            df = df.melt(id_vars=id_vars, var_name=melt_var, value_name="FlowAmount")
+            df = df.melt(id_vars=id_vars, var_name=melt_var,
+                         value_name="FlowAmount")
 
         elif table_name in ANNEX_ENERGY_TABLES:
-            df = df.melt(id_vars=id_vars, var_name="FlowName", value_name="FlowAmount")
+            df = df.melt(id_vars=id_vars, var_name="FlowName",
+                         value_name="FlowAmount")
             df["Year"] = year
             for index, row in df.iterrows():
                 col_name = row['FlowName']
@@ -361,8 +368,11 @@ def ghg_parse(*, df_list, year, config, **_):
                     df.loc[index, 'Class'] = meta['class']
                     df.loc[index, 'ActivityProducedBy'] = "None"
                     df.loc[index, 'ActivityConsumedBy'] = source
-        else: # Standard years (one or more) as column headers
-            df = df.melt(id_vars=id_vars, var_name="Year", value_name="FlowAmount")
+
+        else:
+            # Standard years (one or more) as column headers
+            df = df.melt(id_vars=id_vars, var_name="Year",
+                         value_name="FlowAmount")
 
 
         # Dropping all rows with value "+": represents non-zero value
@@ -381,11 +391,12 @@ def ghg_parse(*, df_list, year, config, **_):
         df.dropna(subset=['FlowAmount'], inplace=True)
 
         if table_name not in ANNEX_ENERGY_TABLES:
-            df.loc[df["SourceName"] == source_name, "Class"] = meta.get("class")
             if 'Unit' not in df:
                 df.loc[df["SourceName"] == source_name, "Unit"] = meta.get("unit")
             if 'FlowName' not in df:
                 df.loc[df["SourceName"] == source_name, "FlowName"] = meta.get("flow")
+
+            df.loc[df["SourceName"] == source_name, "Class"] = meta.get("class")
             df.loc[df["SourceName"] == source_name, "Description"] = meta.get("desc")
             df.loc[df["SourceName"] == source_name, "Compartment"] = meta.get("compartment")
 
@@ -460,11 +471,13 @@ def ghg_parse(*, df_list, year, config, **_):
                     if apb_value in flow_name_list:
                         # set header
                         apbe_value = apb_value
-                        df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + "All activities"
+                        df.loc[index, 'ActivityProducedBy'
+                               ] = f"{apbe_value} All activities"
                     else:
                         # apply header
                         apb_txt = strip_char(apb_value)
-                        df.loc[index, 'ActivityProducedBy'] = apbe_value + " " + apb_txt
+                        df.loc[index, 'ActivityProducedBy'
+                               ] = f"{apbe_value} {apb_txt}"
                     if "Total" == apb_value or "Total " == apb_value:
                         df = df.drop(index)
 
@@ -472,26 +485,30 @@ def ghg_parse(*, df_list, year, config, **_):
             apbe_value = ""
             activity_subtotal = ["Electric Power", "Industrial", "Commercial",
                                  "Residential", "U.S. Territories",
-                                 "U.S. Territories a", "Transportation",
-                                 "Fuel Type/Vehicle Type a", "Diesel On-Road b",
-                                 "Alternative Fuel On-Road", "Non-Road c",
-                                 "Gasoline On-Road b", "Non-Road", "Exploration a",
-                                 "Production (Total)", "Crude Oil Transportation", "Refining",
-                                 "Exploration b", "Cropland", "Grassland"]
+                                 "Transportation",
+                                 "Fuel Type/Vehicle Type", "Diesel On-Road",
+                                 "Alternative Fuel On-Road", "Non-Road",
+                                 "Gasoline On-Road", "Exploration",
+                                 "Production (Total)", "Refining",
+                                 "Crude Oil Transportation",
+                                 "Cropland", "Grassland"]
             for index, row in df.iterrows():
-                apb_value = row["ActivityProducedBy"]
+                apb_value = strip_char(row["ActivityProducedBy"])
                 if apb_value in activity_subtotal:
                     # set the header
-                    apbe_value = strip_char(apb_value)
-                    df.loc[index, 'ActivityProducedBy'] = "All activities" + " " + apbe_value
+                    apbe_value = apb_value
+                    df.loc[index, 'ActivityProducedBy'
+                           ] = f"All activities {apbe_value}"
                 else:
                     # apply the header
-                    apb_txt = strip_char(apb_value)
-                    if table_name == "3-10": # Separate Flows and activities for this table
+                    apb_txt = apb_value
+                    if table_name == "3-10":
+                        # Separate Flows and activities for this table
                         df.loc[index, 'ActivityProducedBy'] = apbe_value
                         df.loc[index, 'FlowName'] = apb_txt
                     else:
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
+                        df.loc[index, 'ActivityProducedBy'
+                               ] = f"{apb_txt} {apbe_value}"
                 if apb_value.startswith("Total"):
                     df = df.drop(index)
 
@@ -500,7 +517,8 @@ def ghg_parse(*, df_list, year, config, **_):
             apbe_value = ""
             flow_name_list = ["Explorationb", "Production", "Processing",
                               "Transmission and Storage", "Distribution",
-                              "Crude Oil Transportation", "Refining", "Exploration" ]
+                              "Crude Oil Transportation", "Refining",
+                              "Exploration"]
             for index, row in df.iterrows():
                 apb_value = row["ActivityProducedBy"]
                 start_activity = row["FlowName"]
@@ -518,11 +536,13 @@ def ghg_parse(*, df_list, year, config, **_):
                         apb_txt = strip_char(apb_txt)
                         if apb_txt == "Gathering and Boostingc":
                             apb_txt = "Gathering and Boosting"
-                        df.loc[index, 'ActivityProducedBy'] = apbe_value + " - " + apb_txt
+                        df.loc[index, 'ActivityProducedBy'
+                               ] = f"{apbe_value} - {apb_txt}"
                     else:
                         apb_txt = df.loc[index, 'ActivityProducedBy']
                         apb_txt = strip_char(apb_txt)
-                        df.loc[index, 'ActivityProducedBy'] = apb_txt + " " + apbe_value
+                        df.loc[index, 'ActivityProducedBy'
+                               ] = f"{apb_txt} {apbe_value}"
                 if "Total" == apb_value or "Total " == apb_value:
                   df = df.drop(index)
 
@@ -532,10 +552,13 @@ def ghg_parse(*, df_list, year, config, **_):
                               'Electricity': 'million kilowatt-hours'}
             df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
             for index, row in df.iterrows():
-                if row["ActivityConsumedBy"].startswith(' '): # indicates subcategory
-                    df.loc[index, 'ActivityConsumedBy'] = strip_char(df.loc[index, 'ActivityConsumedBy'])
+                if row["ActivityConsumedBy"].startswith(' '):
+                    # indicates subcategory
+                    df.loc[index, 'ActivityConsumedBy'] = strip_char(
+                        df.loc[index, 'ActivityConsumedBy'])
                     df.loc[index, 'FlowName'] = fuel_name
-                else: # fuel header
+                else:
+                    # fuel header
                     fuel_name = df.loc[index, 'ActivityConsumedBy']
                     fuel_name = strip_char(fuel_name)
                     df.loc[index, 'ActivityConsumedBy'] = "All activities"
@@ -548,15 +571,18 @@ def ghg_parse(*, df_list, year, config, **_):
                 # Assign activity as flow for technosphere flows
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
-            if table_name in ["4-84", "4-94", "4-99"]:
+
+            elif table_name in ["4-84", "4-94", "4-99"]:
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
+
             elif table_name in ["4-33", "4-50", "4-80"]:
                 # Table with units or flows as columns
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
                 df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
                 df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
+
             elif table_name in ["4-14", "4-99"]:
                 # Remove notes from activity names
                 for index, row in df.iterrows():
@@ -564,10 +590,12 @@ def ghg_parse(*, df_list, year, config, **_):
                     if "(" in apb_value:
                         text_split = apb_value.split("(")
                         df.loc[index, 'ActivityProducedBy'] = text_split[0]
+
             elif table_name in ["A-101", "A-103"]:
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
                     df.loc[index, 'ActivityProducedBy'] = apb_value
+
             else:
                 for index, row in df.iterrows():
                     if "CO2" in row['Unit']:
@@ -711,7 +739,8 @@ def allocate_HFC_to_residential(df):
 
     activity = 'Refrigeration/Air Conditioning'
     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
-    df_subset['FlowAmount'] = df_subset['FlowAmount'] * (household / (industry + household))
+    df_subset['FlowAmount'] = df_subset[
+        'FlowAmount'] * (household / (industry + household))
     df_subset['ActivityProducedBy'] = f"{activity} - Households"
     df.loc[df['ActivityProducedBy'] == activity,
            'FlowAmount'] = df['FlowAmount'] * (industry / (industry + household))
@@ -738,10 +767,11 @@ def split_HFC_foams(df):
 
     activity = 'Foams'
     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
-    df_subset['FlowAmount'] = df_subset['FlowAmount'] * (polystyrene / (urethane + polystyrene))
+    df_subset['FlowAmount'] = df_subset[
+        'FlowAmount'] * (polystyrene / (urethane + polystyrene))
     df_subset['ActivityProducedBy'] = f"{activity} - Polystyrene"
-    df.loc[df['ActivityProducedBy'] == activity,
-           'FlowAmount'] = df['FlowAmount'] * (urethane / (urethane + polystyrene))
+    df.loc[df['ActivityProducedBy'] == activity, 'FlowAmount'] = df[
+        'FlowAmount'] * (urethane / (urethane + polystyrene))
     df.loc[df['ActivityProducedBy'] == activity,
            'ActivityProducedBy'] = f"{activity} - Urethane"
     df = pd.concat([df, df_subset], ignore_index=True)
