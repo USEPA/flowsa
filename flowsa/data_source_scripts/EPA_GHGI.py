@@ -286,7 +286,6 @@ def ghg_parse(*, df_list, year, config, **_):
     """
     cleaned_list = []
     for df in df_list:
-        df_orig = df
         source_name = df["SourceName"][0]
         table_name = source_name[11:].replace("_","-")
         log.info(f'Processing {source_name}')
@@ -594,16 +593,15 @@ def ghg_parse(*, df_list, year, config, **_):
         df["FlowAmount"].replace(',', '', regex=True, inplace=True)
         cleaned_list.append(df)
 
-    pd.concat(cleaned_list).to_csv(f'ghgi_{GIT_HASH}.csv')
     return cleaned_list
 
 
 def get_manufacturing_energy_ratios(year):
     """Calculate energy ratio by fuel between GHGI and EIA MECS."""
-    # activity correspondence between GHGI and MECS
-    activities_corr = {'Industrial Other Coal Industrial': 'Coal',
-                       'Natural Gas  Industrial': 'Natural Gas',  # note extra space
-                       }
+    # flow correspondence between GHGI and MECS
+    flow_corr = {'Industrial Other Coal': 'Coal',
+                 'Natural Gas': 'Natural Gas',
+                 }
 
     # TODO make this year dynamic
     # Filter MECS for total national energy consumption for manufacturing sectors
@@ -619,14 +617,15 @@ def get_manufacturing_energy_ratios(year):
     ghgi = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_14',
                                          year=2016,
                                          flowclass='Energy')
+    ghgi = ghgi[ghgi['ActivityConsumedBy']=='Industrial'].reset_index(drop=True)
 
     pct_dict = {}
-    for sector, fuel in activities_corr.items():
+    for ghgi_flow, mecs_flow in flow_corr.items():
         # Calculate percent energy contribution from MECS based on v
-        mecs_energy = mecs.loc[mecs['FlowName'] == fuel, 'FlowAmount'].values[0]
-        ghgi_energy = ghgi.loc[ghgi['ActivityConsumedBy'] == sector, 'FlowAmount'].values[0]
+        mecs_energy = mecs.loc[mecs['FlowName'] == mecs_flow, 'FlowAmount'].values[0]
+        ghgi_energy = ghgi.loc[ghgi['FlowName'] == ghgi_flow, 'FlowAmount'].values[0]
         pct = np.minimum(mecs_energy / ghgi_energy, 1)
-        pct_dict[fuel] = pct
+        pct_dict[mecs_flow] = pct
 
     return pct_dict
 
@@ -645,7 +644,7 @@ def allocate_industrial_combustion(df):
 
     # activities reflect flows in A_14 and 3_8 and 3_9
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
-                           'Natural Gas  Industrial': 'Natural Gas',  # note extra space
+                           'Natural Gas Industrial': 'Natural Gas',
                            'Coal Industrial': 'Coal',
                            'Natural gas industrial': 'Natural Gas'}
 

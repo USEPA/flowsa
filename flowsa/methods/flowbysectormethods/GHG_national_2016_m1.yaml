@@ -332,8 +332,8 @@ source_names:
       activity_set_3: # Natural Gas
         <<: *use_allocation
         names:
-            - "Natural Gas  Commercial" # Note extra space
-            - "Natural Gas  Industrial" # Note extra space
+            - "Natural Gas Commercial"
+            - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
       activity_set_4: # Petroleum
         <<: *use_allocation
@@ -365,13 +365,13 @@ source_names:
       activity_set_6: # Industrial Natural Gas for manufacturing
         <<: *fuel_MECS
         names:
-            - "Natural Gas  Industrial - Manufacturing" # Note extra space
+            - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"
     ### Transportation
       activity_set_7: &transport_direct
         names:
-            - "Natural Gas  Transportation" # Note extra space
+            - "Natural Gas Transportation"
         allocation_method: proportional
         allocation_source: "EPA_GHGI_T_A_79"
         allocation_source_class: "Energy"
