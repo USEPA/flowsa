@@ -83,13 +83,15 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname,
+def getFlowBySector(methodname, fbsconfigpath=None,
                     download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                     download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Loads stored FlowBySector output or generates it if it doesn't exist,
     then loads
     :param methodname: string, Name of an available method for the given class
+    :param fbsconfigpath: str, path to the FBS method file if loading a file
+        from outside the flowsa repository
     :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
         used in generating the FBS from remote server prior to generating if
         file not found locally
@@ -117,6 +119,7 @@ def getFlowBySector(methodname,
         # Data Commons
         flowsa.flowbysector.main(
             method=methodname,
+            fbsconfigpath=fbsconfigpath,
             download_FBAs_if_missing=download_FBAs_if_missing
         )
         # Now load the fbs
