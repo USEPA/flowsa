@@ -1,0 +1,14 @@
+author: Office of Resource Conservation and Recovery
+source_name: 2018 Wasted Food Report Estimates of generation and management of wasted food in the United States in 2018
+source_url:
+bib_id: EPA_WFR
+api_name: EPA_WFR
+api_key_required: false
+format: pdf  # Table
+url:
+  base_url: https://www.epa.gov/sites/default/files/2020-11/documents/2018_wasted_food_report-11-9-20_final_.pdf
+allow_http_request_cookies: True
+call_response_fxn: epa_wfr_call
+parse_response_fxn: epa_wfr_parse
+years:
+- 2018
