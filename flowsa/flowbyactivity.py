@@ -13,8 +13,8 @@ import pandas as pd
 from urllib import parse
 from esupy.processed_data_mgmt import write_df_to_file
 from esupy.remote import make_url_request
-from flowsa.common import log, load_api_key, \
-    load_yaml_dict, rename_log_file
+from flowsa.common import log, load_api_key, sourceconfigpath, \
+    load_yaml_dict, rename_log_file, get_flowsa_base_name
 from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import fba_fill_na_dict, \
@@ -63,7 +63,8 @@ def assemble_urls_for_query(*, source, year, config):
         return [None]
 
     if 'url_params' in urlinfo:
-        params = parse.urlencode(urlinfo['url_params'])
+        params = parse.urlencode(urlinfo['url_params'], safe='=&%',
+                                 quote_via=parse.quote)
         build_url = urlinfo['base_url'] + urlinfo['api_path'] + params
     else:
         build_url = urlinfo['base_url']
@@ -98,18 +99,18 @@ def call_urls(*, url_list, source, year, config):
     :param config: dictionary, FBA yaml
     :return: list, dfs to concat and parse
     """
-    # identify if url request requires cookies set
-    if 'allow_http_request_cookies' in config:
-        set_cookies = config['allow_http_request_cookies']
-    else:
-        set_cookies = False
+# identify if url request requires cookies set
+    set_cookies = config.get('allow_http_request_cookies')
+    confirm_gdrive = config.get('confirm_gdrive')
 
     # create dataframes list by iterating through url list
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
             log.info("Calling %s", url)
-            resp = make_url_request(url, set_cookies=set_cookies)
+            resp = make_url_request(url,
+                                    set_cookies=set_cookies,
+                                    confirm_gdrive=confirm_gdrive)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
                 df = dynamically_import_fxn(
@@ -191,8 +192,15 @@ def main(**kwargs):
     source = kwargs['source']
     year = kwargs['year']
 
-    # assign yaml parameters (common.py fxn)
-    config = load_yaml_dict(source)
+    # assign yaml parameters (common.py fxn), drop any extensions to FBA
+    # filename if run into error
+    try:
+        config = load_yaml_dict(source, flowbytype='FBA')
+    except UnboundLocalError:
+        log.info(f'Could not find Flow-By-Activity config file for {source}')
+        source = get_flowsa_base_name(sourceconfigpath, source, "yaml")
+        log.info(f'Generating FBA for {source}')
+        config = load_yaml_dict(source, flowbytype='FBA')
 
     log.info("Creating dataframe list")
     # year input can either be sequential years (e.g. 2007-2009) or single year

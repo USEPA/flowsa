@@ -11,10 +11,10 @@ from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
     subset_df_by_geoscale, sector_aggregation
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
-from flowsa.common import US_FIPS, sector_level_key, \
-    check_activities_sector_like, load_crosswalk, \
-    SECTOR_SOURCE_NAME, fba_activity_fields, \
-    fba_default_grouping_fields, fips_number_key
+from flowsa.common import sector_level_key, \
+    load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
+    fba_default_grouping_fields, check_activities_sector_like
+from flowsa.location import US_FIPS, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
 
 
@@ -49,7 +49,8 @@ def check_if_activities_match_sectors(fba):
         activities.extend(fba[f])
 
     # Get list of module default sectors
-    flowsa_sector_list = list(load_crosswalk('sector')[SECTOR_SOURCE_NAME])
+    flowsa_sector_list = list(load_crosswalk('sector_timeseries')[
+                                  SECTOR_SOURCE_NAME])
     activities_missing_sectors = set(activities) - set(flowsa_sector_list)
 
     if len(activities_missing_sectors) > 0:
@@ -681,7 +682,7 @@ def melt_naics_crosswalk():
     """
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = load_crosswalk('sector')
+    cw_load = load_crosswalk('sector_timeseries')
 
     # create melt table of possible 2007 and 2017 naics that can
     # be mapped to 2012
@@ -726,7 +727,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
 
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = load_crosswalk('sector')
+    cw_load = load_crosswalk('sector_timeseries')
     cw = cw_load[sectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk

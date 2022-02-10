@@ -91,6 +91,16 @@ def assign_naics(df):
         pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
                      ), ignore_index=True, sort=True)
+    # orange groves
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS',
+                                  'NAICS_2012_Code', '11131']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
+    # citrus except orange groves
+    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS',
+                                  'NAICS_2012_Code', '11132']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'PEANUTS', 'Sector'] = '111992'
 

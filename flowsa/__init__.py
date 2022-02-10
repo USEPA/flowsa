@@ -30,6 +30,7 @@ from flowsa.validation import check_for_nonetypes_in_sector_col, \
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
+from flowsa.datavisualization import plotFBSresults
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
@@ -82,13 +83,15 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname,
+def getFlowBySector(methodname, fbsconfigpath=None,
                     download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                     download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Loads stored FlowBySector output or generates it if it doesn't exist,
     then loads
     :param methodname: string, Name of an available method for the given class
+    :param fbsconfigpath: str, path to the FBS method file if loading a file
+        from outside the flowsa repository
     :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
         used in generating the FBS from remote server prior to generating if
         file not found locally
@@ -116,6 +119,7 @@ def getFlowBySector(methodname,
         # Data Commons
         flowsa.flowbysector.main(
             method=methodname,
+            fbsconfigpath=fbsconfigpath,
             download_FBAs_if_missing=download_FBAs_if_missing
         )
         # Now load the fbs
@@ -130,13 +134,16 @@ def getFlowBySector(methodname,
     return fbs
 
 
-def collapse_FlowBySector(methodname):
+def collapse_FlowBySector(methodname,
+                          download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+                          download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
     Returns fbs with one sector column in place of two
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-    fbs = flowsa.getFlowBySector(methodname)
+    fbs = flowsa.getFlowBySector(methodname, download_FBAs_if_missing,
+                                 download_FBS_if_missing)
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
     # check data for NoneType in sector column
@@ -182,7 +189,7 @@ def seeAvailableFlowByModels(flowbytype):
             # drop file extension
             f = os.path.splitext(file)[0]
             if flowbytype == 'FBA':
-                s = load_yaml_dict(f)
+                s = load_yaml_dict(f, 'FBA')
                 try:
                     years = s['years']
                 except KeyError:
@@ -201,3 +208,23 @@ def seeAvailableFlowByModels(flowbytype):
     # print data in human-readable format
     pprint.pprint(data_print, width=79, compact=True)
     return data_print
+
+
+def generateFBSplot(method_dict, plottype, sector_length_display=None,
+                   sectors_to_include=None, plot_title=None):
+    """
+    Plot the results of FBS models. Graphic can either be a faceted
+    scatterplot or a method comparison
+    :param method_dict: dictionary, key is the label, value is the FBS
+        methodname
+    :param plottype: str, 'facet_graph' or 'method_comparison'
+    :param sector_length_display: numeric, sector length by which to
+    aggregate, default is 'None' which returns the max sector length in a
+    dataframe
+    :param sectors_to_include: list, sectors to include in output. Sectors
+    are subset by all sectors that "start with" the values in this list
+    :return: graphic displaying results of FBS models
+    """
+
+    plotFBSresults(method_dict, plottype, sector_length_display,
+                   sectors_to_include, plot_title)

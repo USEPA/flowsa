@@ -9,7 +9,7 @@ https://www.census.gov/construction/c30/c30index.html
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import US_FIPS
+from flowsa.location import US_FIPS
 
 
 def census_vip_call(*, resp, **_):
@@ -33,8 +33,8 @@ def census_vip_call(*, resp, **_):
     index_2 = np.where(df['Type of Construction:'].str.startswith(
         "Total Public Construction"))[0][0]
 
-    df_private = df.iloc[index_1+1:index_2, :]
-    df_public = df.iloc[index_2+1:, :]
+    df_private = df.iloc[index_1+1:index_2, :].reset_index(drop=True)
+    df_public = df.iloc[index_2+1:, :].reset_index(drop=True)
 
     df_public['Type of Construction:'] = 'Public, ' + \
                                          df_public['Type of Construction:']

@@ -9,11 +9,11 @@ Last updated: 8 Sept. 2020
 """
 
 import io
-import yaml
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
-from flowsa.settings import datapath, vLogDetailed
+from flowsa.location import US_FIPS
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
@@ -229,22 +229,19 @@ def eia_mecs_land_parse(*, df_list, year, **_):
     return df
 
 
-def eia_mecs_energy_call(*, resp, year, **_):
+def eia_mecs_energy_call(*, resp, year, config, **_):
     """
     Convert response for calling url to pandas dataframe, begin
     parsing df into FBA format
-    :param url: string, url
     :param resp: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
     :return: pandas dataframe of original source data
     """
-    # load .yaml file containing information about each energy table
+    # load dictionary containing information about each energy table
     # (the .yaml includes information such as column names, units, and
     # which rows to grab)
-    sourcefile = datapath + 'EIA_MECS_energy_tables.yaml'
-    with open(sourcefile, 'r') as f:
-        table_dict = yaml.safe_load(f)
+    table_dict = config['table_dict']
 
     # read raw data into dataframe
     # (include both Sheet 1 (data) and Sheet 2 (relative standard errors))
@@ -345,7 +342,7 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    from flowsa.common import assign_census_regions
+    from flowsa.location import assign_census_regions
 
     # concatenate dataframe list into single dataframe
     df = pd.concat(df_list, sort=True)
