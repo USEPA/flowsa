@@ -8,7 +8,8 @@ Inclues helper functions for calling and parsing data
 
 import json
 import pandas as pd
-from flowsa.common import US_FIPS, load_api_key, get_all_state_FIPS_2
+from flowsa.location import US_FIPS, get_all_state_FIPS_2
+from flowsa.common import load_api_key
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 

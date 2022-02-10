@@ -15,3 +15,5 @@ tabula-py >= 2.1.1             # PDF reader
 numpy>=1.20.1                  # Library used for arrays
 bibtexparser>=1.2.0            # Generates bibtex
 python-dotenv >= 0.19.1        # Reads .env files
+seaborn >= 0.11.2              # Plotting
+matplotlib >= 3.4.3            # Plotting

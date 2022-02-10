@@ -8,9 +8,9 @@ Scrapes data from 2018 Wasted Food Report.
 import io
 import tabula
 import pandas as pd
-from flowsa.common import US_FIPS
+from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from string import ascii_letters, ascii_uppercase
+from string import ascii_uppercase
 
 
 def epa_wfr_call(*, resp, **_):
@@ -44,7 +44,7 @@ def epa_wfr_call(*, resp, **_):
         df = drop_rows(df)
         df_list.append(df)
     for d in df_list:
-        result = result.append(d)
+        result = pd.concat([result, d])
     result = fix_row_names(result)
     result = split_problem_column(result)
     result = reorder_df(result)
