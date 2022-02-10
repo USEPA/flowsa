@@ -44,7 +44,7 @@ def epa_wfr_call(*, resp, **_):
         df = drop_rows(df)
         df_list.append(df)
     for d in df_list:
-        result = result.append(d)
+        result = pd.concat([result, d])
     result = fix_row_names(result)
     result = split_problem_column(result)
     result = reorder_df(result)
