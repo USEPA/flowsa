@@ -33,14 +33,14 @@ def epa_wfr_call(*, resp, **_):
                              pages=x, stream=True)
         if len(df_l[0].columns) == 12:
             df = df_l[0].set_axis(
-                ['MANAGEMENT PATHWAY', 'MANUFACTURING/ PROCESSING', 'RESIDENTIAL', 'RETAIL', 'WHOLESALE', 'HOTELS',
-                 'seven', 'eight', 'K-12 SCHOOLS',  'FOOD BANKS', 'INTERMEDIATE AMOUNT MANAGED',
-                 'TOTAL MANAGED BY EACH PATHWAY'], axis=1, inplace=False)
+                ['Management Pathway', 'Manufacturing/Processing', 'Residential', 'Retail', 'Wholesale', 'Hotels',
+                 'seven', 'eight', 'K-12 Schools',  'Food Banks', 'Intermediate Amount Managed',
+                 'Total Managed by Each Pathway'], axis=1, inplace=False)
         else:
             df = df_l[0].set_axis(
-                ['MANAGEMENT PATHWAY', 'MANUFACTURING/ PROCESSING', 'RESIDENTIAL', 'RETAIL', 'WHOLESALE', 'HOTELS',
-                 'seven', 'K-12 SCHOOLS', 'FOOD BANKS', 'INTERMEDIATE AMOUNT MANAGED',
-                 'TOTAL MANAGED BY EACH PATHWAY'], axis=1, inplace=False)
+                ['Management Pathway', 'Manufacturing/Processing', 'Residential', 'Retail', 'Wholesale', 'Hotels',
+                 'seven', 'K-12 Schools',  'Food Banks', 'Intermediate Amount Managed',
+                 'Total Managed by Each Pathway'], axis=1, inplace=False)
         df = drop_rows(df)
         df_list.append(df)
     for d in df_list:
@@ -73,7 +73,7 @@ def epa_wfr_parse(*, df_list, year, **_):
     df = assign_fips_location_system(df, year)
     df['Year'] = year
     df['Unit'] = 'short tons'
-    df['Description'] = 'EXCESS FOOD AND FOOD WASTE MANAGED BY SECTOR (TONS)'
+    df['Description'] = 'Excess food and food waste managed by sector (Tons)'
     return df
 
 def drop_rows(df):
@@ -87,7 +87,7 @@ def drop_rows(df):
     :return: df
     """
     df = df.drop(index=[0, 1, 2, 3])
-    df = df.dropna(axis=0, subset=['MANUFACTURING/ PROCESSING'])
+    df = df.dropna(axis=0, subset=['Manufacturing/Processing'])
     return df
 
 def fix_row_names(df):
@@ -99,12 +99,12 @@ def fix_row_names(df):
     :param df: dataframe
     :return: df
     """
-    acb = ['Food Donation', 'Animal Feed', 'Codigestion/ Anaerobic Digestion', 'Composting/ Aerobic Processes',
-                   'Bio-based Materials/ Biochemical Processing', 'Land Application', 'Sewer/ Wastewater Treatment',
+    acb = ['Food Donation', 'Animal Feed', 'Codigestion/Anaerobic Digestion', 'Composting/Aerobic Processes',
+                   'Bio-based Materials/Biochemical Processing', 'Land Application', 'Sewer/Wastewater Treatment',
                    'Landfill', 'Controlled Combustion', 'Total Food Waste & Excess Food', 'Percent of Total']
     df['ActivityConsumedBy'] = acb
     df = df.reset_index()
-    df = df.drop(columns=['index', 'MANAGEMENT PATHWAY'])
+    df = df.drop(columns=['index', 'Management Pathway'])
     df = df.drop(index=[9, 10])
     return df
 
@@ -166,16 +166,16 @@ def split_problem_column(df):
             colleges_list.append(seven_array[7])
 
         index = index + 1
-    df['RESTAURANTS/ FOOD SERVICES'] = restaurants_list
-    df['SPORTS VENUES'] = sports_list
-    df['HOSPITALS'] = hospitals_list
-    df['NURSING HOMES'] = nursing_list
-    df['MILITARY INSTALLATIONS'] = military_list
-    df['OFFICE BUILDINGS'] = office_list
-    df['CORRECTIONAL FACILITIES'] = correctional_list
-    df['COLLEGES & UNIVERSITIES'] = colleges_list
-    df = df.drop(columns=['seven', 'eight', 'INTERMEDIATE AMOUNT MANAGED',
-                 'TOTAL MANAGED BY EACH PATHWAY'])
+    df['Restaurants/Food Services'] = restaurants_list
+    df['Sports Venues'] = sports_list
+    df['Hospitals'] = hospitals_list
+    df['Nursing Homes'] = nursing_list
+    df['Military Installations'] = military_list
+    df['Office Buildings'] = office_list
+    df['Correctional Facilities'] = correctional_list
+    df['Colleges & Universities'] = colleges_list
+    df = df.drop(columns=['seven', 'eight', 'Intermediate Amount Managed',
+                 'Total Managed by Each Pathway'])
 
     return df
 
