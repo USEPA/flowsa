@@ -8,9 +8,9 @@ Scrapes data from 2018 Wasted Food Report.
 import io
 import tabula
 import pandas as pd
-from flowsa.common import US_FIPS
+from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from string import ascii_letters, ascii_uppercase
+from string import ascii_uppercase
 
 
 def epa_wfr_call(*, resp, **_):
