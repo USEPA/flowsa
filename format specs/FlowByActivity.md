@@ -2,7 +2,7 @@
 
 Field | Type | Required? | Description
 ----- | ---- | --------  | -----------
-Class | String | Y | Class of the flow. See [Flow Classes](./README.md#FlowClasses).   
+Class | String | Y | Class of the flow. See [Flow Classes](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-classes).   
 SourceName | String | Y | Name of data source
 FlowName | String | Y | ID or name of flow in its native source
 FlowAmount | Numeric | Y | The amount of a given flow in its native unit
