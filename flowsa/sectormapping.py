@@ -189,7 +189,7 @@ def expand_naics_list(df, sectorsourcename):
             sectors[sectorsourcename].apply(lambda x: x[0:dig]) == i]
         if len(n) != 0:
             n = n.assign(Sector=i)
-            naics_df = naics_df.append(n)
+            naics_df = pd.concat([naics_df, n])
 
     # merge df to retain activityname/sectortype info
     naics_expanded = df.merge(naics_df, how='left')
