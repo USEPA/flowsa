@@ -124,18 +124,16 @@ def return_activity_set_names(v, fbsconfigpath):
     """
     # if activity_sets are specified in a file, call them here
     if 'activity_set_file' in v:
+        aspath = flowbysectoractivitysetspath
         # first check if the activity set file exists in the fbsconfigpath
         if os.path.isfile(f"{fbsconfigpath}flowbysectoractivitysets/"
                           f"{v['activity_set_file']}"):
             # if the file exists, reset the activitysetpath
-            flowbysectoractivitysetspath = \
-                f"{fbsconfigpath}flowbysectoractivitysets/"
-            log.info('Loading activity set file from %s',
-                     flowbysectoractivitysetspath)
+            aspath = f"{fbsconfigpath}flowbysectoractivitysets/"
+            log.info('Loading activity set file from %s', aspath)
         # load activity set
-        aset_names =pd.read_csv(
-            f"{flowbysectoractivitysetspath}{v['activity_set_file']}",
-            dtype=str)
+        aset_names = pd.read_csv(f"{aspath}{v['activity_set_file']}",
+                                 dtype=str)
     else:
         aset_names = None
 
@@ -197,7 +195,7 @@ def main(**kwargs):
                     k, v["clean_fba_df_fxn"])(flows_mapped)
 
             # if activity_sets are specified in a file, call them here
-            aset_names = return_activity_set_names(v,fbsconfigpath)
+            aset_names = return_activity_set_names(v, fbsconfigpath)
 
             # master list of activity names read in from data source
             ml_act = []

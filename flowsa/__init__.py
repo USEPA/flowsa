@@ -134,7 +134,7 @@ def getFlowBySector(methodname, fbsconfigpath=None,
     return fbs
 
 
-def collapse_FlowBySector(methodname,
+def collapse_FlowBySector(methodname, fbsconfigpath=None,
                           download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                           download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
@@ -142,7 +142,8 @@ def collapse_FlowBySector(methodname,
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-    fbs = flowsa.getFlowBySector(methodname, download_FBAs_if_missing,
+    fbs = flowsa.getFlowBySector(methodname, fbsconfigpath,
+                                 download_FBAs_if_missing,
                                  download_FBS_if_missing)
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
