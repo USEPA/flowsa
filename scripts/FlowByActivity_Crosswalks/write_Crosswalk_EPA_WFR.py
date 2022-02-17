@@ -1,11 +1,18 @@
-# write_Crosswalk_BLM_PLS.py (scripts)
+# write_Crosswalk_EPA_WRF.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 
 """
-Create a crosswalk linking the downloaded BLM_PLS to NAICS_Code_2012.
+Create a crosswalk linking the downloaded EPA Wasted Food Report activities to NAICS_Code_2012.
 Created by selecting unique Activity Names and
 manually assigning to NAICS
+
+ Sector assignments are based off Table 4
+    https://www.epa.gov/sites/default/files/2020-11/documents/2018_wasted_food_report-11-9-20_final_.pdf
+ 
+ Definitions of the waste management pathways are in the Wasted food measurement
+ methodology scoping memo
+ https://www.epa.gov/sites/production/files/2020-06/documents/food_measurement_methodology_scoping_memo-6-18-20.pdf
 
 """
 import pandas as pd
@@ -16,9 +23,6 @@ from scripts.common_scripts import unique_activity_names, order_crosswalk
 def assign_naics(df):
     """
     Function to assign NAICS codes to each dataframe activity
-
-    Sector assignments are based off Table 4
-    https://www.epa.gov/sites/default/files/2020-11/documents/2018_wasted_food_report-11-9-20_final_.pdf
 
     :param df: df, a FlowByActivity subset that contains unique activity names
     :return: df with assigned Sector columns
@@ -67,23 +71,52 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Sports Venues', 'Sector'] = ''
 
     # Activities consuming the food waste
+    # Diverting material from the food supply chain (directly or after processing) to animals
     # todo: assign animal feed to animal production sector (112)?
     df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = ''
+    
+    # Converting material into industrial products. Ex. creating fibers for packaging material, 
+    # bioplastics , feathers (e.g., for pillows), and rendering fat, oil, or grease into a raw material to make products 
+    # such as soaps, biodiesel, or cosmetics. “Biochemical processing” does not refer to anaerobic 
+    # digestion or production of bioethanol through fermentation.
     # todo: assign to biomass electric gen (221117)?
     df.loc[df['Activity'] == 'Bio-based Materials/Biochemical Processing',
            'Sector'] = ''
+    
+    # Breaking down material via bacteria in the absence of oxygen. Generates biogas 
+    # and nutrient-rich matter. This destination includes fermentation 
+    # (converting carbohydrates via microbes into alcohols in the absence of oxygen to create 
+    # products such as biofuels).
     # todo: assign...
     df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = ''
+    
+    # Composting refers to the production of organic material (via aerobic processes)
+    # that can be used as a soil amendment
     # todo: assign to "Fertilizer (Mixing Only) Manufacturing" for "compost
     #  manufacturing" (325314) or "Other Nonhazardous Waste Treatment and
     #  Disposal" for the "compost dumps" component (562219)
     df.loc[df['Activity'] == 'Composting/Aerobic Processes', 'Sector'] = ''
+    
+    # Sending material to a facility that is specifically designed for combustion
+    # in a controlled manner, which may include some form of energy recovery
     df.loc[df['Activity'] == 'Controlled Combustion', 'Sector'] = '562213'
+   
+    # collection and redistribution of unspoiled excess food to feed people through
+    # food pantries, food banks and other food rescue programs
     # todo: assign...
     df.loc[df['Activity'] == 'Food Donation', 'Sector'] = ''
+    
+    # Spreading, spraying, injecting, or incorporating organic material onto or
+    # below the surface of the land to enhance soil quality
     # todo: assign land application to farming sector (111)?
     df.loc[df['Activity'] == 'Land Application', 'Sector'] = ''
+    
+    # Sending material to an area of land or an excavated site that is specifically
+    # designed and built to receive wastes
     df.loc[df['Activity'] == 'Landfill', 'Sector'] = '562212'
+    
+    # Sending material down the sewer (with or without prior treatment), including that
+    # which may go to a facility designed to treat wastewater
     df.loc[df['Activity'] == 'Sewer/Wastewater Treatment', 'Sector'] = '22132'
 
     # break each sector into seperate line
