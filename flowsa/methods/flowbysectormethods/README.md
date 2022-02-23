@@ -20,17 +20,18 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 4. _geoscale_to_use_: the geoscale of the FBA set to use for sector allocation
    (national, state, or county)
 5. _year_: year of available dataset (ex. 2015)
-6. _apply_urban_rural_: Assign flow quantities as urban or rural based on population density by FIPS.
-7. _clean_fba_before_mapping_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
+6. _activity_to_sector_mapping_: (optional) name of activity to sector mapping file, if not provided will use the source name
+7. _apply_urban_rural_: Assign flow quantities as urban or rural based on population density by FIPS.
+8. _clean_fba_before_mapping_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
    the FBA data prior to mapping flows.
-8. _clean_fba_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
+9. _clean_fba_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
    the FBA data prior to allocating data to sectors.
-9. _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py file to clean up/modify the
+10. _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py file to clean up/modify the
    FBA dataframe, after sector columns are added but prior to allocating data to sectors.
-10. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
+11. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
    the source_names
-11. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
-12. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
+12. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
+13. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
    which contains list of names for one or more activity_sets. If not supplied
    _names_ should be listed below within each activity set
 

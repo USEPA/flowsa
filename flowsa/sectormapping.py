@@ -25,8 +25,6 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
     """
     from flowsa.settings import crosswalkpath
     # first determine activity to sector mapping file name
-    if 'EPA_NEI' in source:
-        source = 'SCC'
     if 'BEA' in source:
         source = 'BEA_2012_Detail'
 

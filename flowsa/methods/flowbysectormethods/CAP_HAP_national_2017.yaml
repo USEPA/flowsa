@@ -7,6 +7,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: state
     year: 2017
+    activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
@@ -112,6 +113,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2017
+    activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
@@ -128,6 +130,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2017
+    activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Onroad_2017_asets.csv'
