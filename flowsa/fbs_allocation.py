@@ -128,7 +128,9 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     # with activity subset
     log.info("Subsetting %s for sectors in %s", attr['allocation_source'], k)
     fba_allocation_subset = \
-        get_fba_allocation_subset(fba_allocation_wsec, k, names,
+        get_fba_allocation_subset(fba_allocation_wsec,
+                                  v.get('activity_to_sector_mapping', k),
+                                  names,
                                   flowSubsetMapped=flow_subset_mapped,
                                   allocMethod=attr['allocation_method'],
                                   fbsconfigpath=fbsconfigpath)
@@ -161,7 +163,9 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
               (fba_allocation_subset[fba_activity_fields[1]].isin(n_allocated))
               )].reset_index(drop=True)
         fba_allocation_subset_2 = \
-            get_fba_allocation_subset(fba_allocation_subset, k, [n],
+            get_fba_allocation_subset(fba_allocation_subset,
+                                      v.get('activity_to_sector_mapping', k),
+                                      [n],
                                       flowSubsetMapped=flow_subset_mapped,
                                       allocMethod=attr['allocation_method'],
                                       activity_set_names=aset_names,
@@ -272,7 +276,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
 
     # load the allocation FBA
     helper_allocation = \
-        load_map_clean_fba(method, attr, fba_sourcename=attr['helper_source'],
+        load_map_clean_fba(method, attr,
+                           fba_sourcename=attr['helper_source'],
                            df_year=attr['helper_source_year'],
                            flowclass=attr['helper_source_class'],
                            geoscale_from=attr['helper_from_scale'],
