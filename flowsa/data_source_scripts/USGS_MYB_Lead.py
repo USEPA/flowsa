@@ -118,8 +118,7 @@ def usgs_lead_parse(*, df_list, source, year, **_):
                 data["SourceName"] = source
                 data["Year"] = str(year)
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = name + " " + product + \
-                                   " " + df.iloc[index]["Production"]
+                data['FlowName'] = name + " " + product
                 data["ActivityProducedBy"] = df.iloc[index]["Production"]
 
                 if int(year) == 2013:
