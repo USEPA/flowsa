@@ -76,7 +76,7 @@ def noaa_parse(*, year, **_):
     # hardcode data
     df4["Class"] = "Money"
     df4["SourceName"] = "NOAA_Landings"
-    df4["FlowName"] = None
+    df4["FlowName"] = "Commercial"
     df4 = assign_fips_location_system(df4, year)
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
