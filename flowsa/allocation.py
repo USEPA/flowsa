@@ -71,7 +71,7 @@ def allocate_by_sector(df_w_sectors, attr, allocation_method,
     if len(df_w_sectors) == 0:
         return df_w_sectors_nonflagged
     else:
-        df1 = sector_aggregation(df_w_sectors, group_cols)
+        df1 = sector_aggregation(df_w_sectors)
         # run sector disaggregation to capture one-to-one
         # naics4/5/6 relationships
         df2 = sector_disaggregation(df1)

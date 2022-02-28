@@ -177,7 +177,7 @@ def sector_ratios(df, sectorcolumn):
     return df_w_ratios
 
 
-def sector_aggregation(df_load, group_cols):
+def sector_aggregation(df_load):
     """
     Function that checks if a sector length exists, and if not,
     sums the less aggregated sector
@@ -759,7 +759,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     dfn2 = dfn[dfn['FlowAmount'] != 0].reset_index(drop=True)
     dfn2 = dfn2.drop(columns=['secLength'])
 
-    dff = sector_aggregation(dfn2, fba_wsec_default_grouping_fields)
+    dff = sector_aggregation(dfn2)
 
     # if activities are source-like, set col values as copies
     # of the sector columns

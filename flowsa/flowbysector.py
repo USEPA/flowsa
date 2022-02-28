@@ -293,7 +293,7 @@ def main(**kwargs):
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
-                fbs_sec_agg = sector_aggregation(fbs_geo_agg, groupingcols)
+                fbs_sec_agg = sector_aggregation(fbs_geo_agg)
                 # add missing naics5/6 when only one naics5/6
                 # associated with a naics4
                 fbs_agg = sector_disaggregation(fbs_sec_agg)

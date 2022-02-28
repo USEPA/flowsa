@@ -471,7 +471,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(
         group_cols_agg = ['Class', 'Context', 'Unit', 'Location',
                           'LocationSystem', 'SectorProducedBy',
                           'SectorConsumedBy']
-        fba = sector_aggregation(fba, group_cols_agg)
+        fba = sector_aggregation(fba)
         # subset fba to only include NAICS2
         fba = replace_NoneType_with_empty_cells(fba)
         fba = fba[fba['SectorConsumedBy'].apply(lambda x: len(x) == 2) |

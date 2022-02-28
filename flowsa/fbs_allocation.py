@@ -421,8 +421,7 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
                          'Denominator', 'FlowAmountRatio'])
         # run sector aggregation
         modified_fba_allocation = \
-            sector_aggregation(modified_fba_allocation,
-                               fba_wsec_default_grouping_fields)
+            sector_aggregation(modified_fba_allocation)
 
     # drop rows of 0
     modified_fba_allocation =\
