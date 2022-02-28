@@ -225,12 +225,24 @@ def equally_allocate_parent_to_child_naics(df_load, method):
     :param target_sector_level: str, target NAICS level for FBS output
     :return: df, with all child NAICS at target sector level
     """
+    # determine which sector level to use, use the least aggregated level
+    sector_level = method.get('target_sector_level')
+    # if secondary sector levels are identified, set the sector level to the
+    # least aggregated
+    sector_level_list = [sector_level]
+    if 'target_subset_sector_level' in method:
+        sector_level_dict = method.get('target_subset_sector_level')
+        for k, v in sector_level_dict.items():
+            sector_level_list = sector_level_list + [k]
+        sector_subset_dict = dict((k, sector_level_key[k]) for k in
+                                  sector_level_list if k in sector_level_key)
+        sector_level = max(sector_subset_dict, key=sector_subset_dict.get)
 
     # exclude nonsectors
     df = replace_NoneType_with_empty_cells(df_load)
 
     rows_lost = pd.DataFrame()
-    for i in range(2, sector_level_key[target_sector_level]):
+    for i in range(2, sector_level_key[sector_level]):
         # create df of i length
         df_x1 = \
             df.loc[(df[fbs_activity_fields[0]].apply(lambda x: len(x) == i)) &
@@ -292,7 +304,7 @@ def equally_allocate_parent_to_child_naics(df_load, method):
             cw_load = load_crosswalk('sector_length')
             nlength = list(sector_level_key.keys()
                            )[list(sector_level_key.values()).index(i)]
-            cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
+            cw = cw_load[[nlength, sector_level]].drop_duplicates()
             # add column with counts
             cw['sector_count'] = \
                 cw.groupby(nlength)[nlength].transform('count')
@@ -302,15 +314,15 @@ def equally_allocate_parent_to_child_naics(df_load, method):
                             left_on=[fbs_activity_fields[0]],
                             right_on=[nlength])
             rl_m.loc[rl_m[fbs_activity_fields[0]] != '',
-                     fbs_activity_fields[0]] = rl_m[target_sector_level]
-            rl_m = rl_m.drop(columns=[nlength, target_sector_level])
+                     fbs_activity_fields[0]] = rl_m[sector_level]
+            rl_m = rl_m.drop(columns=[nlength, sector_level])
 
             rl_m2 = pd.merge(rl_m, cw, how='left',
                              left_on=[fbs_activity_fields[1]],
                              right_on=[nlength])
             rl_m2.loc[rl_m2[fbs_activity_fields[1]] != '',
-                      fbs_activity_fields[1]] = rl_m2[target_sector_level]
-            rl_m2 = rl_m2.drop(columns=[nlength, target_sector_level])
+                      fbs_activity_fields[1]] = rl_m2[sector_level]
+            rl_m2 = rl_m2.drop(columns=[nlength, sector_level])
 
             # create one sector count column
             rl_m2['sector_count_x'] = \
@@ -334,7 +346,7 @@ def equally_allocate_parent_to_child_naics(df_load, method):
     if len(rows_lost) != 0:
         vLogDetailed.info('Allocating FlowAmounts equally to '
                           'each %s associated with the sectors previously '
-                          'dropped', target_sector_level)
+                          'dropped', sector_level)
 
     # add rows of missing data to the fbs sector subset
     df_w_lost_data = pd.concat([df, rows_lost], ignore_index=True, sort=True)
