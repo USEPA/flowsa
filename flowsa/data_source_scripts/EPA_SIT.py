@@ -44,6 +44,9 @@ def epa_sit_parse(*, source, year, config, **_):
                 if sheet_dict.get('subgroup') == 'flow':
                     df.loc[ind, 'FlowName'] = subheader
                     df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {active_header}'
+                elif sheet_dict.get('subgroup') == 'activitybyflow':
+                    df.loc[ind, 'FlowName'] = active_header
+                    df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {subheader}'
                 else:
                     df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {active_header}, {subheader}'
 
@@ -52,7 +55,7 @@ def epa_sit_parse(*, source, year, config, **_):
         # rename columns
         df = df.rename(columns={year: 'FlowAmount'})
         # add sheet-specific hardcoded data
-        if sheet_dict.get('subgroup') != 'flow':
+        if 'subgroup' not in sheet_dict:
             df['FlowName'] = sheet_dict.get('flow')
         df['Unit'] = sheet_dict.get('unit')
         df['Description'] = sheetname

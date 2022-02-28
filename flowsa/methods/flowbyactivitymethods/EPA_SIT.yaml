@@ -68,6 +68,7 @@ sheet_dict:
             - Electric Utilities
             - TOTAL
         subgroup: flow
+
     'Mobile Combustion CH4':
         sheetname: Mobile Combustion
         header: 55
@@ -80,6 +81,7 @@ sheet_dict:
             - Non-Highway
             - Alternative Fuel Vehicles
             - Total
+
     'Mobile Combustion N2O':
         sheetname: Mobile Combustion
         header: 82
@@ -92,6 +94,7 @@ sheet_dict:
             - Non-Highway
             - Alternative Fuel Vehicles
             - Total
+
     'Coal':
         header: 3
         nrows: 5
@@ -100,3 +103,35 @@ sheet_dict:
         headers:
             - Coal Mining
             - Abandoned Coal Mines
+
+    'IP':
+        nrows: 20
+        unit: MTCO2e
+        headers:
+            - Carbon Dioxide Emissions
+            - Nitrous Oxide Emissions
+            - HFC, PFC, SF6 and NF3 Emissions
+            - Total Emissions
+        subgroup: 'activitybyflow'
+
+    'Agriculture':
+        sheetname: Agriculture
+        header: 26
+        nrows: 12
+        unit: MMT
+        headers:
+            - Carbon Dioxide
+            - Methane
+            - Nitrous Oxide
+        subgroup: 'activitybyflow'
+
+    'Agriculture N2O':
+        sheetname: Agriculture
+        header: 41
+        nrows: 13
+        unit: MT
+        flow: N2O
+        headers:
+            - Direct
+            - Indirect
+            - TOTAL
