@@ -7,10 +7,10 @@ Functions to allocate data using additional data sources
 
 import numpy as np
 import pandas as pd
-from flowsa.common import US_FIPS, fba_activity_fields, \
-    fbs_activity_fields, fba_mapped_wsec_default_grouping_fields, \
-    fba_wsec_default_grouping_fields, check_activities_sector_like, \
-    return_bea_codes_used_as_naics
+from flowsa.common import fba_activity_fields, fbs_activity_fields, \
+    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields, \
+    check_activities_sector_like, return_bea_codes_used_as_naics
+from flowsa.location import US_FIPS
 from flowsa.schema import activity_fields
 from flowsa.settings import log
 from flowsa.validation import check_allocation_ratios, \
@@ -46,15 +46,15 @@ def direct_allocation_method(fbs, k, names, method):
             fbs = fbs[~((fbs[fba_activity_fields[0]].isin(n_allocated)) |
                       (fbs[fba_activity_fields[1]].isin(n_allocated))
                         )].reset_index(drop=True)
-            log.debug('Checking for %s at %s',
-                      n, method['target_sector_level'])
+            log.debug('Checking for %s at target sector level', n)
             fbs_subset = \
                 fbs[(fbs[fba_activity_fields[0]] == n) |
                     (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
             # check if an Activity maps to more than one sector,
             # if so, equally allocate
             fbs_subset = equal_allocation(fbs_subset)
-            fbs_subset = equally_allocate_parent_to_child_naics(fbs_subset, method['target_sector_level'])
+            fbs_subset = equally_allocate_parent_to_child_naics(
+                fbs_subset, method)
             activity_list.append(fbs_subset)
             n_allocated.append(n)
         fbs = pd.concat(activity_list, ignore_index=True)
@@ -81,7 +81,8 @@ def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
 
 
 def dataset_allocation_method(flow_subset_mapped, attr, names, method,
-                              k, v, aset, aset_names, download_FBA_if_missing):
+                              k, v, aset, aset_names,
+                              download_FBA_if_missing, fbsconfigpath):
     """
     Method of allocation using a specified data source
     :param flow_subset_mapped: FBA subset mapped using federal
@@ -120,6 +121,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
                            geoscale_from=attr['allocation_from_scale'],
                            geoscale_to=v['geoscale_to_use'],
                            download_FBA_if_missing=download_FBA_if_missing,
+                           fbsconfigpath=fbsconfigpath,
                            **fba_dict)
 
     # subset fba datasets to only keep the sectors associated
@@ -128,7 +130,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     fba_allocation_subset = \
         get_fba_allocation_subset(fba_allocation_wsec, k, names,
                                   flowSubsetMapped=flow_subset_mapped,
-                                  allocMethod=attr['allocation_method'])
+                                  allocMethod=attr['allocation_method'],
+                                  fbsconfigpath=fbsconfigpath)
 
     # if there is an allocation helper dataset, modify allocation df
     if 'helper_source' in attr:
@@ -161,7 +164,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
             get_fba_allocation_subset(fba_allocation_subset, k, [n],
                                       flowSubsetMapped=flow_subset_mapped,
                                       allocMethod=attr['allocation_method'],
-                                      activity_set_names=aset_names)
+                                      activity_set_names=aset_names,
+                                      fbsconfigpath=fbsconfigpath)
         if len(fba_allocation_subset_2) == 0:
             log.info("No data found to allocate %s", n)
         else:
@@ -443,7 +447,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
 
 
 def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
-                       geoscale_from, geoscale_to, **kwargs):
+                       geoscale_from, geoscale_to, fbsconfigpath=None,
+                       **kwargs):
     """
     Load, clean, and map a FlowByActivity df
     :param method: dictionary, FBS method yaml
@@ -505,7 +510,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # assign sector to allocation dataset
     log.info("Adding sectors to %s", fba_sourcename)
     fba_wsec = add_sectors_to_flowbyactivity(fba, sectorsourcename=method[
-        'target_sector_source'])
+        'target_sector_source'], fbsconfigpath=fbsconfigpath)
 
     # call on fxn to further clean up/disaggregate the fba
     # allocation data, if exists

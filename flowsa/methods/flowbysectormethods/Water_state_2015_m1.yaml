@@ -1,4 +1,5 @@
 target_sector_level: NAICS_4
+target_subset_sector_level: {NAICS_6: ['1133', '1125']}
 target_sector_source: NAICS_2012_Code
 target_geoscale: state
 source_names:

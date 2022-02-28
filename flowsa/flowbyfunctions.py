@@ -9,14 +9,15 @@ import pandas as pd
 import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
-from flowsa.common import fbs_activity_fields, US_FIPS, get_state_FIPS, \
-    get_county_FIPS, update_geoscale, \
+from flowsa.common import fbs_activity_fields, \
     load_crosswalk, fbs_fill_na_dict, \
-    fbs_collapsed_default_grouping_fields, \
-    fbs_collapsed_fill_na_dict, fba_activity_fields, \
-    fips_number_key, fba_fill_na_dict, check_activities_sector_like, \
-    fba_mapped_default_grouping_fields, fba_default_grouping_fields, \
-    fba_wsec_default_grouping_fields, get_flowsa_base_name
+    fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
+    fba_activity_fields, fba_default_grouping_fields, \
+    fba_wsec_default_grouping_fields, fba_fill_na_dict, \
+    get_flowsa_base_name, fba_mapped_default_grouping_fields, \
+    check_activities_sector_like
+from flowsa.location import US_FIPS, get_state_FIPS, \
+    get_county_FIPS, update_geoscale, fips_number_key
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
 from flowsa.settings import datasourcescriptspath, log
@@ -875,3 +876,21 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
         fba = standardize_units(fba)
 
     return fba
+
+def subset_df_by_sector_list(df_load, sector_list):
+    """
+    Subset a df based on a list of sectors
+    :param df_load: df to be subset
+    :param sector_list: list, sectors to keep in df
+    :return: df, subset by the sector list
+    """
+    df = replace_NoneType_with_empty_cells(df_load)
+    df = df[(df['SectorProducedBy'].isin(sector_list) &
+             (df['SectorConsumedBy'] == '')
+             ) | (
+            (df['SectorProducedBy'] == '') &
+            df['SectorConsumedBy'].isin(sector_list)
+    ) | (
+            df['SectorProducedBy'].isin(sector_list) &
+            df['SectorConsumedBy'].isin(sector_list))]
+    return df

@@ -1,0 +1,30 @@
+author: US Bureau of Transportation Statistics
+source_name: TSA - Transportation Satellite Account
+source_url: https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=350038&Lab=NERL
+bib_id: BTS_TSA
+api_name: BTS_TSA
+format: .csv
+url:
+  base_url: https://data.bts.gov/api/views/5yqg-88j3/rows.csv?accessType=DOWNLOAD&api_foundry=true
+call_response_fxn: tsa_call
+parse_response_fxn: tsa_parse
+parse:
+  rename_columns_use:  # Dict to rename columns from USE table {old_name: new_name}
+    col_code: ActivityProducedBy
+    row_label: Description
+    dollars: FlowAmount
+    year: Year
+  rename_columns_make:  # Dict to rename columns from MAKE table {old_name: new_name}
+    row_code: ActivityProducedBy
+    col_label: Description
+    dollars: FlowAmount
+    year: Year
+years:
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019

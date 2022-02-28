@@ -6,7 +6,7 @@
 Common functions used when loading and parsing USGS Mineral Yearbook data
 """
 from string import digits
-from flowsa.common import US_FIPS
+from flowsa.location import US_FIPS
 from flowsa.settings import log
 
 
