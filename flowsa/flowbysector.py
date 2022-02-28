@@ -339,8 +339,8 @@ def main(**kwargs):
                 # the target sector length, if so,
                 # allocate values equally to disaggregated sectors
                 vLog.info('Searching for and allocating FlowAmounts for any '
-                          'parent NAICS that were dropped in the subset to '
-                          '%s child NAICS', method['target_sector_level'])
+                          'parent NAICS dropped while subsetting the '
+                          'dataframe')
                 fbs_agg_2 = equally_allocate_parent_to_child_naics(
                     fbs_agg, method)
 

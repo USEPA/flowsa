@@ -197,10 +197,24 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config, attr):
         flow_alloc_df2.groupby(
             groupcols, dropna=False, as_index=False).agg(
             {"FlowAmountRatio": sum})
+
     # keep only rows of specified sector length
+
+    # return sector level specified in method yaml
+    sector_level_list = [config.get('target_sector_level')]
+    # if secondary sector levels are identified, add to list of sectors to keep
+    if 'target_subset_sector_level' in config:
+        sector_level_dict = config.get('target_subset_sector_level')
+        for k, v in sector_level_dict.items():
+            sector_level_list = sector_level_list + [k]
+        sector_subset_dict = dict((k, sector_level_key[k]) for k in
+                                  sector_level_list if k in sector_level_key)
+        sector_level_list = list(sector_subset_dict.values())
+
+    # subset df, necessary because not all of the sectors are
+    # NAICS and can get duplicate rows
     flow_alloc_df4 = flow_alloc_df3[
-        flow_alloc_df3['SectorLength'] == sector_level_key[
-            config['target_sector_level']]].reset_index(drop=True)
+        flow_alloc_df3['SectorLength'].isin(sector_level_list)].reset_index(drop=True)
     # keep data where the flowamountratio is greater than or
     # less than 1 by 0.005
     tolerance = 0.01
@@ -209,10 +223,10 @@ def check_allocation_ratios(flow_alloc_df_load, activity_set, config, attr):
         (flow_alloc_df4['FlowAmountRatio'] > 1 + tolerance)]
 
     if len(flow_alloc_df5) > 0:
-        vLog.info('There are %s instances at a sector length of %s '
+        vLog.info('There are %s instances within %s '
                   'where the allocation ratio for a location is greater '
                   'than or less than 1 by at least %s. See Validation Log',
-                  len(flow_alloc_df5), config["target_sector_level"],
+                  len(flow_alloc_df5), sector_level_list,
                   str(tolerance))
 
     # add to validation log
