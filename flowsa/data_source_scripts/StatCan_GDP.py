@@ -12,7 +12,7 @@ DOI: https://doi.org/10.25318/3610040101-eng
 import io
 import zipfile
 import pandas as pd
-from flowsa.common import call_country_code
+from flowsa.location import call_country_code
 
 
 def sc_gdp_call(*, resp, **_):

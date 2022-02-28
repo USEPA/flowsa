@@ -11,10 +11,10 @@ from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
     subset_df_by_geoscale, sector_aggregation
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
-from flowsa.common import US_FIPS, sector_level_key, \
-    check_activities_sector_like, load_crosswalk, \
-    SECTOR_SOURCE_NAME, fba_activity_fields, \
-    fba_default_grouping_fields, fips_number_key
+from flowsa.common import sector_level_key, \
+    load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
+    fba_default_grouping_fields, check_activities_sector_like
+from flowsa.location import US_FIPS, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
 
 

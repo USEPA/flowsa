@@ -1,7 +1,7 @@
 author: BEA
 source_name: BEA_Make_Detail_BeforeRedef
-source_url: ' '
-original_data_download_date: ' '
+source_url: 'https://www.bea.gov/industry/input-output-accounts-data'
+original_data_download_date: '2020-07-14'
 bib_id: BEA_Make_BR
 api_name: None
 api_key_required: false

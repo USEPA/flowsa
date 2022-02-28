@@ -20,16 +20,17 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 4. _geoscale_to_use_: the geoscale of the FBA set to use for sector allocation
    (national, state, or county)
 5. _year_: year of available dataset (ex. 2015)
-6. _clean_fba_before_mapping_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
+6. _apply_urban_rural_: Assign flow quantities as urban or rural based on population density by FIPS.
+7. _clean_fba_before_mapping_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
    the FBA data prior to mapping flows.
-7. _clean_fba_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
-   the FBA data after mapping flows but prior to allocating data to sectors.
-8. _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py file to clean up/modify the
+8. _clean_fba_df_fxn_: (optional) calls on function in the source.py file to clean up/modify
+   the FBA data prior to allocating data to sectors.
+9. _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py file to clean up/modify the
    FBA dataframe, after sector columns are added but prior to allocating data to sectors.
-9. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
+10. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
    the source_names
-10. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
-11. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
+11. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
+12. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
    which contains list of names for one or more activity_sets. If not supplied
    _names_ should be listed below within each activity set
 
@@ -39,42 +40,42 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
    Activity Produced/Consumed By fields. Required if not provided in activity_set_file.
 3. _source_flows_: (list, optional) specify the 'FlowName'(s) from the FBA to use.
     If not provided, all flows are used.
-3. _allocation_method_: currently written for 'direct', 'allocation_function',
+4. _allocation_method_: currently written for 'direct', 'allocation_function',
    'proportional', and 'proportional-flagged'. See descriptions below.
-4. _allocation_source_: The primary data source used to allocate main FBA for
+5. _allocation_source_: The primary data source used to allocate main FBA for
    specified activity to sectors
-5. _literature_sources_: (optional)
-6. _allocation_source_class_: specific 'FlowClass' found in the allocation source
+6. _literature_sources_: (optional)
+7. _allocation_source_class_: specific 'FlowClass' found in the allocation source
    flowbyactivity parquet
-7. _allocation_source_year_: specific to the allocation datasets, use the year relevant
+8. _allocation_source_year_: specific to the allocation datasets, use the year relevant
    to the main FBA dataframe
-8. _allocation_flow_: (list) the relevant 'FlowName' values, as found in the source
+9. _allocation_flow_: (list) the relevant 'FlowName' values, as found in the source
    flowbyactivity parquet. Use 'None' to capture all flows.
-9. _allocation_compartment_: (list) the relevant 'Compartment' values, as found in the source
+10. _allocation_compartment_: (list) the relevant 'Compartment' values, as found in the source
    flowbyactivity parquet. Use 'None' to capture all compartments.
-10. _allocation_from_scale_: national, state, or county - dependent on allocation source,
+11. _allocation_from_scale_: national, state, or county - dependent on allocation source,
    as not every level exits for sources
-11. _allocation_fba_load_scale_: (optional) Can indicate geographic level of FBA to load,
+12. _allocation_fba_load_scale_: (optional) Can indicate geographic level of FBA to load,
     helpful when an FBA ia large
-12. _clean_allocation_fba_: (optional) Function to clean up the allocation FBA, as defined in
+13. _clean_allocation_fba_: (optional) Function to clean up the allocation FBA, as defined in
     the source.py file
-13. _clean_allocation_fba_w_sec_: (optional) Function to clean up the allocation FBA, after
+14. _clean_allocation_fba_w_sec_: (optional) Function to clean up the allocation FBA, after
     allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
-14. _allocation_map_to_flow_list_: (optional) If the allocation df and source df need to be matched
+15. _allocation_map_to_flow_list_: (optional) If the allocation df and source df need to be matched
     on Context and/or Flowable, set to 'True'
-15. _helper_source_: (optional) secondary df for sector allocation
-16. _helper_method_: currently written for 'multiplication', 'proportional', and 'proportional-flagged'
-17. _helper_source_class_: specific 'FlowClass' found in the allocation source
+16. _helper_source_: (optional) secondary df for sector allocation
+17. _helper_method_: currently written for 'multiplication', 'proportional', and 'proportional-flagged'
+18. _helper_source_class_: specific 'FlowClass' found in the allocation source
     flowbyactivity parquet
-18. _helper_source_year_: specific to the allocation datasets, use the year relevant
+19. _helper_source_year_: specific to the allocation datasets, use the year relevant
     to the main FBA dataframe
-19. _helper_flow_: (list) the relevant 'FlowName' values, as found in the source
+20. _helper_flow_: (list) the relevant 'FlowName' values, as found in the source
     flowbyactivity parquet
-20. _helper_from_scale_: national, state, or county - dependent on allocation source,
+21. _helper_from_scale_: national, state, or county - dependent on allocation source,
     as not every level exits for sources
-21. _clean_helper_fba_: (optional) Function to clean up the helper FBA, as defined in
+22. _clean_helper_fba_: (optional) Function to clean up the helper FBA, as defined in
     the source.py file
-22. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
+23. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
     allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
 
 ### Source specifications (in FBS format)

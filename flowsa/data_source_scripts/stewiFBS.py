@@ -17,8 +17,8 @@ from esupy.dqi import get_weighted_average
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.sectormapping import map_flows
-from flowsa.common import apply_county_FIPS, sector_level_key, \
-    update_geoscale, load_crosswalk
+from flowsa.location import apply_county_FIPS, update_geoscale
+from flowsa.common import load_crosswalk, sector_level_key
 from flowsa.schema import flow_by_sector_fields
 from flowsa.settings import log
 from flowsa.validation import replace_naics_w_naics_from_another_year
