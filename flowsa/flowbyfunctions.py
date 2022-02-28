@@ -262,6 +262,12 @@ def sector_aggregation(df_load, group_cols):
             agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
             df = df.append(agg_sectors, sort=False).reset_index(drop=True)
     df = df.drop_duplicates()
+    # also drop the existing household and government codes because not all
+    # inclusive and does not conform to NAICS length standards
+    for s in ['Produced', 'Consumed']:
+        df = df[~df[f'Sector{s}By'].isin(['F0', 'F01', 'F0100', 'S0', 'S00',
+                                          'S001', 'S002', 'S0010', 'S0020']
+                                         )].reset_index(drop=True)
 
     # if activities are source-like, set col values as
     # copies of the sector columns
