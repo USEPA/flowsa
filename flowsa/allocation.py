@@ -216,7 +216,7 @@ def proportional_allocation_by_location_and_activity(df_load, sectorcolumn):
     return allocation_df
 
 
-def equally_allocate_parent_to_child_naics(df_load, target_sector_level):
+def equally_allocate_parent_to_child_naics(df_load, method):
     """
     Determine rows of data that will be lost if subset data at
     target sector level.

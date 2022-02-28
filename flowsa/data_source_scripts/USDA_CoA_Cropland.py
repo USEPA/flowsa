@@ -580,7 +580,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
     crop = crop.drop(columns=['Location_tmp'])
 
     # equally allocate any further missing naics
-    crop = equally_allocate_parent_to_child_naics(crop, 'NAICS_6')
+    crop = equally_allocate_parent_to_child_naics(crop, method)
 
     # pasture data
     pasture = \

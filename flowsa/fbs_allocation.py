@@ -54,7 +54,7 @@ def direct_allocation_method(fbs, k, names, method):
             # check if an Activity maps to more than one sector,
             # if so, equally allocate
             fbs_subset = equal_allocation(fbs_subset)
-            fbs_subset = equally_allocate_parent_to_child_naics(fbs_subset, method['target_sector_level'])
+            fbs_subset = equally_allocate_parent_to_child_naics(fbs_subset, method)
             activity_list.append(fbs_subset)
             n_allocated.append(n)
         fbs = pd.concat(activity_list, ignore_index=True)

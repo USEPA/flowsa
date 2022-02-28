@@ -338,10 +338,11 @@ def main(**kwargs):
                 # check if any sector information is lost before reaching
                 # the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                vLog.info('Searching for and allocating FlowAmounts for any parent '
-                          'NAICS that were dropped in the subset to '
+                vLog.info('Searching for and allocating FlowAmounts for any '
+                          'parent NAICS that were dropped in the subset to '
                           '%s child NAICS', method['target_sector_level'])
-                fbs_agg_2 = equally_allocate_parent_to_child_naics(fbs_agg, method['target_sector_level'])
+                fbs_agg_2 = equally_allocate_parent_to_child_naics(
+                    fbs_agg, method)
 
                 # compare flowbysector with flowbyactivity
                 compare_activity_to_sector_flowamounts(
@@ -359,6 +360,10 @@ def main(**kwargs):
                 # NAICS and can get duplicate rows
                 fbs_sector_subset = subset_df_by_sector_list(
                     fbs_agg_2, sector_list)
+
+                # test
+                test = fbs_sector_subset[fbs_sector_subset[
+                    'ActivityConsumedBy'] == 'Aquaculture']
 
                 # drop activity columns
                 fbs_sector_subset = fbs_sector_subset.drop(
