@@ -415,14 +415,48 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
     return fbs_mapped, mapping_files
 
 
-def get_sector_list(sector_level):
+def get_sector_list(sector_level, secondary_sector_level_dict=None):
     """
     Create a sector list at the specified sector level
     :param sector_level: str, NAICS level
+    :param secondary_sector_level_dict: dict, additional sectors to keep,
+    key is the secondary target NAICS level, value is a list of NAICS at the
+    "sector_level" that should also include a further disaggregated subset
+    of the data
+    ex. sector_level = 'NAICS_4'
+        secondary_sector_level_dict = {'NAICS_6': ['1133', '1125']}
     :return: list, sectors at specified sector level
     """
-
+    # load crosswalk
     cw = load_crosswalk('sector_length')
-    sector_list = cw[sector_level].unique().tolist()
+
+    # first determine if there are sectors in a secondary target sector
+    # level that should be included in the sector list. If there are,
+    # add the sectors at the specified sector length and add the parent
+    # sectors at the target sector length to a list to be dropped from
+    # the sector list.
+
+    # create empty lists for sector list and parent sectors to drop
+    sector_list = []
+    sector_drop = []
+    # loop through identified secondary sector levels in a dictionary
+    if secondary_sector_level_dict is not None:
+        for k, v in secondary_sector_level_dict.items():
+            cw_melt = cw.melt(
+                id_vars=[k], var_name="NAICS_Length",
+                value_name="NAICS_Match").drop_duplicates()
+            cw_sub = cw_melt[cw_melt['NAICS_Match'].isin(v)]
+            sector_add = cw_sub[k].unique().tolist()
+            sector_list = sector_list + sector_add
+            sector_drop = sector_drop + v
+
+    # sectors at primary sector level
+    sector_col = cw[[sector_level]].drop_duplicates()
+    # drop any sectors that are already accounted for at a secondary sector
+    # length
+    sector_col = sector_col[~sector_col[sector_level].isin(sector_drop)]
+    # add sectors to list
+    sector_add = sector_col[sector_level].tolist()
+    sector_list = sector_list + sector_add
 
     return sector_list

@@ -870,3 +870,21 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
         fba = standardize_units(fba)
 
     return fba
+
+def subset_df_by_sector_list(df_load, sector_list):
+    """
+    Subset a df based on a list of sectors
+    :param df_load: df to be subset
+    :param sector_list: list, sectors to keep in df
+    :return: df, subset by the sector list
+    """
+    df = replace_NoneType_with_empty_cells(df_load)
+    df = df[(df['SectorProducedBy'].isin(sector_list) &
+             (df['SectorConsumedBy'] == '')
+             ) | (
+            (df['SectorProducedBy'] == '') &
+            df['SectorConsumedBy'].isin(sector_list)
+    ) | (
+            df['SectorProducedBy'].isin(sector_list) &
+            df['SectorConsumedBy'].isin(sector_list))]
+    return df

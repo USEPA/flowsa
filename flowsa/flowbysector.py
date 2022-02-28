@@ -42,7 +42,7 @@ from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
     map_fbs_flows, get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, \
-    dynamically_import_fxn, update_geoscale
+    dynamically_import_fxn, update_geoscale, subset_df_by_sector_list
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, \
     reset_fbs_dq_scores
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
@@ -349,23 +349,16 @@ def main(**kwargs):
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
-                sector_list = get_sector_list(method['target_sector_level'])
+                secondary_sector_level = \
+                    method.get('target_subset_sector_level')
+                sector_list = get_sector_list(
+                    method['target_sector_level'],
+                    secondary_sector_level_dict=secondary_sector_level)
 
                 # subset df, necessary because not all of the sectors are
                 # NAICS and can get duplicate rows
-                fbs_1 = fbs_agg_2.loc[
-                    (fbs_agg_2[fbs_activity_fields[0]].isin(sector_list)) &
-                    (fbs_agg_2[fbs_activity_fields[1]].isin(sector_list))].\
-                    reset_index(drop=True)
-                fbs_2 = fbs_agg_2.loc[
-                    (fbs_agg_2[fbs_activity_fields[0]].isin(sector_list)) &
-                    (fbs_agg_2[fbs_activity_fields[1]].isnull())].\
-                    reset_index(drop=True)
-                fbs_3 = fbs_agg_2.loc[
-                    (fbs_agg_2[fbs_activity_fields[0]].isnull()) &
-                    (fbs_agg_2[fbs_activity_fields[1]].isin(sector_list))].\
-                    reset_index(drop=True)
-                fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
+                fbs_sector_subset = subset_df_by_sector_list(
+                    fbs_agg_2, sector_list)
 
                 # drop activity columns
                 fbs_sector_subset = fbs_sector_subset.drop(
