@@ -39,6 +39,7 @@ sheet_dict:
     'CO2FFC':
         nrows: 32
         unit: MMTCO2e
+        flow: CO2
         headers:
             - Residential
             - Commercial
@@ -50,9 +51,52 @@ sheet_dict:
     'IndirectCO2':
         nrows: 45
         unit: MMTCO2e
+        flow: CO2
         headers:
             - Residential
             - Commercial
             - Industrial
             - Transportation
             - TOTAL
+    'Stationary':
+        nrows: 15
+        unit: MMTCO2e
+        headers:
+            - Residential
+            - Commercial
+            - Industrial
+            - Electric Utilities
+            - TOTAL
+        subgroup: flow
+    'Mobile Combustion CH4':
+        sheetname: Mobile Combustion
+        header: 55
+        nrows: 21
+        flow: CH4
+        unit: MTCO2e
+        headers:
+            - Gasoline Highway
+            - Diesel Highway
+            - Non-Highway
+            - Alternative Fuel Vehicles
+            - Total
+    'Mobile Combustion N2O':
+        sheetname: Mobile Combustion
+        header: 82
+        nrows: 21
+        flow: N2O
+        unit: MTCO2e
+        headers:
+            - Gasoline Highway
+            - Diesel Highway
+            - Non-Highway
+            - Alternative Fuel Vehicles
+            - Total
+    'Coal':
+        header: 3
+        nrows: 5
+        unit: MTCO2e
+        flow: CH4
+        headers:
+            - Coal Mining
+            - Abandoned Coal Mines

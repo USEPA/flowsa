@@ -5,7 +5,7 @@ Parses EPA SIT data to flowbyactivity format.
 """
 
 import pandas as pd
-from flowsa.settings import externaldatapath
+from flowsa.settings import externaldatapath, log
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS
 
@@ -19,38 +19,42 @@ def epa_sit_parse(*, source, year, config, **_):
     df0 = pd.DataFrame()
 
     # for each sheet in the Excel file containing data...
-    for sheetname in sheet_dict:
-        print('Loading data from', state, 'SIT file', filename, 'sheet', sheetname, '...')
-        number_of_rows = sheet_dict[sheetname]['nrows'] # number of rows to grab from the sheet
+    for table, sheet_dict in config.get('sheet_dict').items():
+        sheetname = sheet_dict.get('sheetname', table)
+        log.info(f'Loading data from sheet: {sheetname}...')
         # read in data from Excel sheet
         df = pd.read_excel(filepath,
                            sheet_name = sheetname,
-                           header=2,
+                           header=sheet_dict.get('header', 2),
                            usecols="B:AG",
-                           nrows=number_of_rows)
+                           nrows=sheet_dict.get('nrows'))
         df.columns = df.columns.map(str) # make sure column headers are imported as strings
-        df['ActivityProducedBy'] = df['Emissions (MMTCO2 Eq.)']
-        list_of_headers = sheet_dict[sheetname]['headers'] # list of emissions categories
+        df['ActivityProducedBy'] = df.iloc[:,0]
 
         # for each row in the data table...
         # ...emissions categories will be renamed with the format 'sheet name, emissions category'
         # ...emissions subcategories will be renamed with the format 'sheet name, emissions category, emissions subcategory'
         for ind in df.index:
             current_header = df['ActivityProducedBy'][ind]
-            if current_header in list_of_headers:
+            if current_header in sheet_dict.get('headers'):
                 active_header = current_header
                 df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {active_header}'
             else:
                 subheader = df['ActivityProducedBy'][ind].lstrip()
-                df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {active_header}, {subheader}'
+                if sheet_dict.get('subgroup') == 'flow':
+                    df.loc[ind, 'FlowName'] = subheader
+                    df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {active_header}'
+                else:
+                    df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {active_header}, {subheader}'
 
         # drop all columns except the desired emissions year and the emissions activity source
-        df = df.filter([year, 'ActivityProducedBy'])
+        df = df.filter([year, 'ActivityProducedBy', 'FlowName'])
         # rename columns
         df = df.rename(columns={year: 'FlowAmount'})
         # add sheet-specific hardcoded data
-        df['FlowName'] = 'CO2e'
-        df['Unit'] = sheet_dict[sheetname]['unit']
+        if sheet_dict.get('subgroup') != 'flow':
+            df['FlowName'] = sheet_dict.get('flow')
+        df['Unit'] = sheet_dict.get('unit')
         df['Description'] = sheetname
         # concatenate dataframe from each sheet with existing master dataframe
         df0 = pd.concat([df0, df])
@@ -72,3 +76,8 @@ def epa_sit_parse(*, source, year, config, **_):
     df0 = assign_fips_location_system(df0, '2015')
 
     return df0
+
+if __name__ == '__main__':
+    import flowsa
+    flowsa.flowbyactivity.main(source='EPA_SIT', year='2017')
+    fba = flowsa.getFlowByActivity('EPA_SIT', '2017')
