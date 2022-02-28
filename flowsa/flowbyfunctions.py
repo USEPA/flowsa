@@ -264,8 +264,8 @@ def sector_aggregation(df_load, group_cols):
     # also drop the existing household and government codes because not all
     # inclusive and does not conform to NAICS length standards
     for s in ['Produced', 'Consumed']:
-        df = df[~df[f'Sector{s}By'].isin(['F0', 'F01', 'S0', 'S00', 'S001',
-                                          'S002', 'S0010', 'S0020']
+        df = df[~df[f'Sector{s}By'].isin(['F0', 'F01', 'F0100', 'S0', 'S00',
+                                          'S001', 'S002', 'S0010', 'S0020']
                                          )].reset_index(drop=True)
 
     # if activities are source-like, set col values as
