@@ -35,9 +35,11 @@ def epa_sit_parse(*, source, year, config, **_):
         # ...emissions categories will be renamed with the format 'sheet name, emissions category'
         # ...emissions subcategories will be renamed with the format 'sheet name, emissions category, emissions subcategory'
         for ind in df.index:
-            current_header = df['ActivityProducedBy'][ind]
+            current_header = df['ActivityProducedBy'][ind].rstrip()
             if current_header in sheet_dict.get('headers'):
                 active_header = current_header
+                if sheet_dict.get('subgroup') == 'activitybyflow':
+                    df.loc[ind, 'FlowName'] = active_header
                 df.loc[ind,'ActivityProducedBy'] = f'{sheetname}, {active_header}'
             else:
                 subheader = df['ActivityProducedBy'][ind].lstrip()

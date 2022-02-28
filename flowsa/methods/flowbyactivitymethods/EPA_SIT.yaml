@@ -104,6 +104,22 @@ sheet_dict:
             - Coal Mining
             - Abandoned Coal Mines
 
+    'Gas and Oil':
+        header: 17
+        nrows: 5
+        unit: MT
+        flow: CH4
+        headers:
+            - Natural Gas
+            - Oil
+
+#    'Natural Gas Flaring':
+#        sheetname: 'Gas and Oil'
+#        header: 24
+#        nrows: 1
+#        unit: MMT
+#        flow: CO2
+
     'IP':
         nrows: 20
         unit: MTCO2e
@@ -135,3 +151,26 @@ sheet_dict:
             - Direct
             - Indirect
             - TOTAL
+
+    'Waste Combustion':
+        sheetname: Waste
+        header: 25
+        nrows: 7
+        unit: MTCO2e
+        headers:
+            - CO2
+            - N2O
+            - CH4
+            - Total CO2, N2O, CH4 Emissions
+        subgroup: 'activitybyflow'
+
+    'Wastewater':
+        header: 3
+        nrows: 8
+        unit: MMTCO2e
+        headers:
+            - Municipal CH4
+            - Municipal N2O
+            - Industrial CH4
+            - Total Emissions
+        subgroup: 'activitybyflow'
