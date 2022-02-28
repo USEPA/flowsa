@@ -121,6 +121,12 @@ EPA_GHGI:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+EPA_StateGHGI:
+  class:
+    - Chemicals
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
 EPA_NEI_Nonpoint:
   class:
   - Chemicals
