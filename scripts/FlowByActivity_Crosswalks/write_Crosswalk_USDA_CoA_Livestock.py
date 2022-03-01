@@ -33,8 +33,8 @@ def assign_naics(df):
     # dual-purpose cattle ranching and farming: 11213
     df.loc[df['Activity'] == 'CATTLE, (EXCL COWS)', 'Sector'] = '112130A'
     df.loc[df['Activity'] == 'CATTLE, COWS', 'Sector'] = '112130B'
-    df.loc[df['Activity'] == 'CATTLE, COWS, BEEF', 'Sector'] = '112130B1'
-    df.loc[df['Activity'] == 'CATTLE, COWS, MILK', 'Sector'] = '112130B2'
+    # df.loc[df['Activity'] == 'CATTLE, COWS, BEEF', 'Sector'] = '112130B1'
+    # df.loc[df['Activity'] == 'CATTLE, COWS, MILK', 'Sector'] = '112130B2'
 
     # hog and pig farming: 1122
     df.loc[df['Activity'] == 'HOGS', 'Sector'] = '1122'
@@ -64,7 +64,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'OSTRICHES', 'Sector'] = '112390F'
     df.loc[df['Activity'] == 'PARTRIDGES, HUNGARIAN', 'Sector'] = '112390G'
     df.loc[df['Activity'] == 'PEAFOWL, HENS & COCKS', 'Sector'] = '112390H'
-    df.loc[df['Activity'] == 'PHEASANTS', 'Sector'] = '1123900J'
+    df.loc[df['Activity'] == 'PHEASANTS', 'Sector'] = '112390J'
     df.loc[df['Activity'] == 'PIGEONS & SQUAB', 'Sector'] = '112390K'
     df.loc[df['Activity'] == 'POULTRY, OTHER', 'Sector'] = '112390L'
     df.loc[df['Activity'] == 'QUAIL', 'Sector'] = '112390M'
