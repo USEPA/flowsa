@@ -13,7 +13,7 @@ from flowsa.common import fbs_activity_fields, \
     load_crosswalk, fbs_fill_na_dict, \
     fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
     fba_activity_fields, fba_default_grouping_fields, \
-    fba_wsec_default_grouping_fields, fba_fill_na_dict, \
+    load_sector_length_cw_melt, fba_fill_na_dict, \
     get_flowsa_base_name, fba_mapped_default_grouping_fields, \
     check_activities_sector_like
 from flowsa.location import US_FIPS, get_state_FIPS, \
@@ -184,12 +184,13 @@ def sector_aggregation(df_load):
     sums the less aggregated sector
     :param df_load: Either a flowbyactivity df with sectors or
        a flowbysector df
-    :param group_cols: columns by which to aggregate
     :return: df, with aggregated sector values
     """
     # ensure None values are not strings
     df = replace_NoneType_with_empty_cells(df_load)
 
+    # determine grouping columns - based on datatype
+    group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
     # determine if activities are sector-like,
     # if aggregating a df with a 'SourceName'
     sector_like_activities = False
@@ -197,85 +198,64 @@ def sector_aggregation(df_load):
         s = pd.unique(df_load['SourceName'])[0]
         sector_like_activities = check_activities_sector_like(s)
 
-    # if activities are source like, drop from df and group calls,
-    # add back in as copies of sector columns columns to keep
+    # if activities are sector like, drop columns while running ag then
+    # add back in
     if sector_like_activities:
-        group_cols = [e for e in group_cols if e not in
-                      ('ActivityProducedBy', 'ActivityConsumedBy')]
         # subset df
         df_cols = [e for e in df.columns if e not in
                    ('ActivityProducedBy', 'ActivityConsumedBy')]
+        group_cols = [e for e in group_cols if e not in
+                      ('ActivityProducedBy', 'ActivityConsumedBy')]
         df = df[df_cols]
+
+    # load naics length crosswwalk
+    cw_load = load_crosswalk('sector_length')
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
         lambda x: x.str.len()).max().max()
     length = int(length)
-    # for loop in reverse order longest length naics minus 1 to 2
+    # for loop in reverse order longest length NAICS minus 1 to 2
     # appends missing naics levels to df
     for i in range(length, 2, -1):
-        # df where either sector column is length or both columns are
-        df1 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i)) |
-                 (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))
-                 |
-                 ((df['SectorProducedBy'].apply(lambda x: len(x) == i)) &
-                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i)))]
+        dfm = subset_and_merge_df_by_sector_lengths(df, i, i-1)
+        # only keep values in left df, meaning there are no more
+        # aggregated naics in the df
+        dfm2 = dfm.query('_merge=="left_only"').drop(
+            columns=['_merge', 'SPB_tmp', 'SCB_tmp'])
 
-        # add new columns dropping last digit of sectors
-        df1 = df1.assign(
-            SPB=df1['SectorProducedBy'].apply(lambda x: x[0:i - 1]))
-        df1 = df1.assign(
-            SCB=df1['SectorConsumedBy'].apply(lambda x: x[0:i - 1]))
+        sector_merge = 'NAICS_' + str(i)
+        sector_add = 'NAICS_' + str(i - 1)
 
-        # second dataframe where length is l - 1
-        df2 = df[((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) |
-                 (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1)))
-                 |
-                 ((df['SectorProducedBy'].apply(lambda x: len(x) == i-1)) &
-                  (df['SectorConsumedBy'].apply(lambda x: len(x) == i-1))
-                  )].rename(columns={'SectorProducedBy': 'SPB',
-                                     'SectorConsumedBy': 'SCB'})
+        # subset the df by naics length
+        cw = cw_load[[sector_merge, sector_add]].drop_duplicates()
 
-        # merge the dfs
-        merge_cols = [col for col in df2.columns if hasattr(df2[col], 'str')]
-        # also drop activity and description cols
-        merge_cols = [c for c in merge_cols
-                      if c not in ['ActivityConsumedBy', 'ActivityProducedBy',
-                                   'Description']]
+        # loop through and add additional naics
+        sectype_list = ['Produced', 'Consumed']
+        for s in sectype_list:
+            dfm2 = dfm2.merge(cw, how='left', left_on=[f'Sector{s}By'],
+                              right_on=sector_merge)
+            dfm2[f'Sector{s}By'] = dfm2[sector_add]
+            dfm2 = dfm2.drop(columns=[sector_merge, sector_add])
+        dfm2 = replace_NoneType_with_empty_cells(dfm2)
 
-        if len(df2) > 0:
-            dfm = df1.merge(
-                df2[merge_cols], how='outer',
-                on=merge_cols, indicator=True).query(
-                '_merge=="left_only"').drop('_merge', axis=1)
+        # aggregate the new sector flow amounts
+        if 'FlowAmount' in dfm2.columns:
+            agg_sectors = aggregator(dfm2, group_cols)
+        # if FlowName is not in column and instead aggregating for the
+        # HelperFlow then simply sum helper flow column
         else:
-            dfm = df1.copy(deep=True)
-
-        if len(dfm) > 0:
-            # replace the SCB and SPB columns then aggregate and add to df
-            dfm['SectorProducedBy'] = dfm['SPB']
-            dfm['SectorConsumedBy'] = dfm['SCB']
-            dfm = dfm.drop(columns=(['SPB', 'SCB']))
-            # aggregate the new sector flow amounts
-            agg_sectors = aggregator(dfm, group_cols)
-            # append to df
-            agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
-            df = df.append(agg_sectors, sort=False).reset_index(drop=True)
-    df = df.drop_duplicates()
-    # also drop the existing household and government codes because not all
-    # inclusive and does not conform to NAICS length standards
-    for s in ['Produced', 'Consumed']:
-        df = df[~df[f'Sector{s}By'].isin(['F0', 'F01', 'F0100', 'S0', 'S00',
-                                          'S001', 'S002', 'S0010', 'S0020']
-                                         )].reset_index(drop=True)
-
+            agg_sectors = dfm2.groupby(group_cols)['HelperFlow']\
+                .sum().reset_index()
+        # append to df
+        agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
+        df = df.append(agg_sectors, sort=False,
+                       ignore_index=True).reset_index(drop=True)
     # if activities are source-like, set col values as
     # copies of the sector columns
-    if sector_like_activities:
+    if sector_like_activities & ('FlowAmount' in df.columns):
         df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
         df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
-        # reindex columns
-        df = df.reindex(df_load.columns, axis=1)
 
     # replace null values
     df = replace_strings_with_NoneType(df).reset_index(drop=True)
@@ -897,10 +877,9 @@ def subset_df_by_sector_lengths(df_load, sector_length_list):
 
 def subset_df_by_sector_list(df_load, sector_list):
     """
-    Subset a df based on a list of sectors
-    :param df_load: df to be subset
-    :param sector_list: list, sectors to keep in df
-    :return: df, subset by the sector list
+    :param df_load:
+    :param sector_list:
+    :return:
     """
     df = replace_NoneType_with_empty_cells(df_load)
     df = df[(df['SectorProducedBy'].isin(sector_list) &
