@@ -281,112 +281,53 @@ def sector_disaggregation(df_load):
         s = pd.unique(df_load['SourceName'])[0]
         sector_like_activities = check_activities_sector_like(s)
 
-    # if activities are source like, drop from df,
-    # add back in as copies of sector columns columns to keep
+    # if activities are sector like, drop columns while running disag then
+    # add back in
     if sector_like_activities:
-        # subset df
-        df_cols = [e for e in df.columns if e not in
-                   ('ActivityProducedBy', 'ActivityConsumedBy')]
-        df = df[df_cols]
+        df = df.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_crosswalk('sector_length')
 
-    # for loop min length to 6 digits, where min length cannot be less than 2
-    fields_list = []
-    for i in range(2):
-        if not (df[fbs_activity_fields[i]] == "").all():
-            fields_list.append(fbs_activity_fields[i])
-
-    length = df[fields_list].apply(lambda x: x.str.len()).min().min()
-    if length < 2:
-        length = 2
     # appends missing naics levels to df
-    for i in range(length, 6):
+    for i in range(2, 6):
+        dfm = subset_and_merge_df_by_sector_lengths(df, i, i + 1)
+
+        # only keep values in left column, meaning there are no less
+        # aggregated naics in the df
+        dfm2 = dfm.query('_merge=="left_only"').drop(
+            columns=['_merge', 'SPB_tmp', 'SCB_tmp'])
+
         sector_merge = 'NAICS_' + str(i)
-        sector_add = 'NAICS_' + str(i+1)
+        sector_add = 'NAICS_' + str(i + 1)
 
         # subset the df by naics length
         cw = cw_load[[sector_merge, sector_add]]
-        # only keep the rows where there is only one value
-        # in sector_add for a value in sector_merge
-        cw = cw.drop_duplicates(
-            subset=[sector_merge], keep=False).reset_index(drop=True)
-        sector_list = cw[sector_merge].values.tolist()
+        # first drop all duplicates
+        cw = cw.drop_duplicates()
+        # only keep the rows where there is only one value in sector_add for
+        # a value in sector_merge
+        cw = cw.drop_duplicates(subset=[sector_merge], keep=False).reset_index(
+            drop=True)
 
-        # subset df to sectors with length = i and length = i + 1
-        df_subset = df.loc[
-            df[fbs_activity_fields[0]].apply(lambda x: i + 1 >= len(x) >= i) |
-            df[fbs_activity_fields[1]].apply(lambda x: i + 1 >= len(x) >= i)]
-        # create new columns that are length i
-        df_subset = df_subset.assign(
-            SectorProduced_tmp=df_subset[fbs_activity_fields[0]].apply(
-                lambda x: x[0:i]))
-        df_subset = df_subset.assign(
-            SectorConsumed_tmp=df_subset[fbs_activity_fields[1]].apply(
-                lambda x: x[0:i]))
-        # subset the df to the rows where the tmp sector columns
-        # are in naics list
-        df_subset_1 = df_subset.loc[
-            (df_subset['SectorProduced_tmp'].isin(sector_list)) &
-            (df_subset['SectorConsumed_tmp'] == "")]
-        df_subset_2 = df_subset.loc[
-            (df_subset['SectorProduced_tmp'] == "") &
-            (df_subset['SectorConsumed_tmp'].isin(sector_list))]
-        df_subset_3 = df_subset.loc[
-            (df_subset['SectorProduced_tmp'].isin(sector_list)) &
-            (df_subset['SectorConsumed_tmp'].isin(sector_list))]
-        # concat existing dfs
-        df_subset = pd.concat([df_subset_1, df_subset_2, df_subset_3],
-                              sort=False)
-        # drop all rows with duplicate temp values, as a less aggregated
-        # naics exists list of column headers, that if exist in df, should
-        # be aggregated using the weighted avg fxn
-        possible_column_headers = ('Flowable', 'FlowName', 'Unit', 'Context',
-                                   'Compartment', 'Location', 'Year',
-                                   'SectorProduced_tmp', 'SectorConsumed_tmp')
-        # list of column headers that do exist in the df being subset
-        cols_to_drop = [e for e in possible_column_headers if e
-                        in df_subset.columns.values.tolist()]
-
-        df_subset = df_subset.drop_duplicates(
-            subset=cols_to_drop, keep=False).reset_index(drop=True)
-
-        # merge the naics cw
-        new_naics = pd.merge(df_subset, cw[[sector_merge, sector_add]],
-                             how='left', left_on=['SectorProduced_tmp'],
-                             right_on=[sector_merge])
-        new_naics = new_naics.rename(columns={sector_add: "SPB"})
-        new_naics = new_naics.drop(columns=[sector_merge])
-        new_naics = pd.merge(new_naics, cw[[sector_merge, sector_add]],
-                             how='left', left_on=['SectorConsumed_tmp'],
-                             right_on=[sector_merge])
-        new_naics = new_naics.rename(columns={sector_add: "SCB"})
-        new_naics = new_naics.drop(columns=[sector_merge])
-        # drop columns and rename new sector columns
-        new_naics = new_naics.drop(
-            columns=["SectorProducedBy", "SectorConsumedBy",
-                     "SectorProduced_tmp", "SectorConsumed_tmp"])
-        new_naics = new_naics.rename(
-            columns={"SPB": "SectorProducedBy",
-                     "SCB": "SectorConsumedBy"})
-        # append new naics to df
-        new_naics['SectorConsumedBy'] = \
-            new_naics['SectorConsumedBy'].replace({np.nan: ""})
-        new_naics['SectorProducedBy'] = \
-            new_naics['SectorProducedBy'].replace({np.nan: ""})
-        new_naics = replace_NoneType_with_empty_cells(new_naics)
-        df = pd.concat([df, new_naics], sort=True, ignore_index=True)
-    # replace blank strings with None
-    df = replace_strings_with_NoneType(df)
+        # loop through and add additional naics
+        sectype_list = ['Produced', 'Consumed']
+        for s in sectype_list:
+            # inner join - only keep rows where there are data in the crosswalk
+            dfm2 = dfm2.merge(cw, how='left', left_on=[f'Sector{s}By'],
+                              right_on=sector_merge)
+            dfm2[f'Sector{s}By'] = dfm2[sector_add]
+            dfm2 = dfm2.drop(columns=[sector_merge, sector_add])
+        dfm3 = dfm2.dropna(subset=['SectorProducedBy', 'SectorConsumedBy'],
+                           how='all')
+        dfm3 = replace_NoneType_with_empty_cells(dfm3)
+        df = pd.concat([df, dfm3], ignore_index=True)
 
     # if activities are source-like, set col values
     # as copies of the sector columns
     if sector_like_activities:
         df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
         df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
-        # reindex columns
-        df = df.reindex(df_load.columns, axis=1)
 
     return df
 
