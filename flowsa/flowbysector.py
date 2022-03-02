@@ -361,10 +361,6 @@ def main(**kwargs):
                 fbs_sector_subset = subset_df_by_sector_list(
                     fbs_agg_2, sector_list)
 
-                # test
-                test = fbs_sector_subset[fbs_sector_subset[
-                    'ActivityConsumedBy'] == 'Aquaculture']
-
                 # drop activity columns
                 fbs_sector_subset = fbs_sector_subset.drop(
                     ['ActivityProducedBy', 'ActivityConsumedBy'], axis=1,
