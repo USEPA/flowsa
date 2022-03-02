@@ -874,6 +874,6 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
                                           'SectorConsumedBy'],
                     right_on=merge_cols + ['SPB_tmp', 'SCB_tmp'],
                     indicator=True)
-    dfm = replace_strings_with_NoneType(dfm)
+    dfm = replace_NoneType_with_empty_cells(dfm)
 
     return dfm
