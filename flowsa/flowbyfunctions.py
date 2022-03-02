@@ -207,6 +207,7 @@ def sector_aggregation(df_load):
         group_cols = [e for e in group_cols if e not in
                       ('ActivityProducedBy', 'ActivityConsumedBy')]
         df = df[df_cols]
+        df = df.reset_index(drop=True)
 
     # load naics length crosswwalk
     cw_load = load_crosswalk('sector_length')
