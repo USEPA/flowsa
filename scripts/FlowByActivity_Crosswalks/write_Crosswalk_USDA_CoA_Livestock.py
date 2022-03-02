@@ -33,8 +33,6 @@ def assign_naics(df):
     # dual-purpose cattle ranching and farming: 11213
     df.loc[df['Activity'] == 'CATTLE, (EXCL COWS)', 'Sector'] = '112130A'
     df.loc[df['Activity'] == 'CATTLE, COWS', 'Sector'] = '112130B'
-    # df.loc[df['Activity'] == 'CATTLE, COWS, BEEF', 'Sector'] = '112130B1'
-    # df.loc[df['Activity'] == 'CATTLE, COWS, MILK', 'Sector'] = '112130B2'
 
     # hog and pig farming: 1122
     df.loc[df['Activity'] == 'HOGS', 'Sector'] = '1122'
@@ -47,7 +45,8 @@ def assign_naics(df):
 
     # broilers and other meat-type chicken production: 11232
     df.loc[df['Activity'] == 'CHICKENS, BROILERS', 'Sector'] = '112320A'
-    df.loc[df['Activity'] == 'CHICKENS, PULLETS, REPLACEMENT', 'Sector'] = '112320B'
+    df.loc[df['Activity'] == 'CHICKENS, PULLETS, REPLACEMENT',
+           'Sector'] = '112320B'
     df.loc[df['Activity'] == 'CHICKENS, ROOSTERS', 'Sector'] = '112320C'
 
     # turkey production: 11233
@@ -81,17 +80,6 @@ def assign_naics(df):
 
     # animal aquaculture: 1125
     df.loc[df['Activity'] == 'AQUACULTURE TOTALS', 'Sector'] = '1125'
-    # # part of Finfish farming
-    # df.loc[df['Activity'] == 'FOOD FISH, CATFISH', 'Sector'] = '112511A'
-    # df.loc[df['Activity'] == 'FOOD FISH, TROUT', 'Sector'] = '112511B'
-    # df.loc[df['Activity'] == 'FOOD FISH, (EXCL CATFISH & TROUT)', 'Sector'] = '112511C'
-    # df.loc[df['Activity'] == 'BAITFISH', 'Sector'] = '112511D'
-    # df.loc[df['Activity'] == 'ORNAMENTAL FISH', 'Sector'] = '112511E'
-    # df.loc[df['Activity'] == 'SPORT FISH', 'Sector'] = '112511F'
-    # # part of Shellfish farming
-    # df.loc[df['Activity'] == 'CRUSTACEANS', 'Sector'] = '112512A'
-    # df.loc[df['Activity'] == 'MOLLUSKS', 'Sector'] = '112512B'
-    # df.loc[df['Activity'] == 'AQUACULTURE, OTHER', 'Sector'] = '112519'
 
     # other animal production: 1129
 
@@ -100,10 +88,11 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'HONEY, BEE COLONIES', 'Sector'] = '112910B'
 
     # horse and other equine production: 11292
-    df.loc[df['Activity'] == 'EQUINE, (HORSES & PONIES) & (MULES & BURROS & DONKEYS)',
-           'Sector'] = '11292'
+    df.loc[df['Activity'] == 'EQUINE, (HORSES & PONIES) & (MULES & BURROS & ' \
+                             'DONKEYS)', 'Sector'] = '11292'
     df.loc[df['Activity'] == 'EQUINE, HORSES & PONIES', 'Sector'] = '112920A'
-    df.loc[df['Activity'] == 'EQUINE, MULES & BURROS & DONKEYS', 'Sector'] = '112920B'
+    df.loc[df['Activity'] == 'EQUINE, MULES & BURROS & DONKEYS',
+           'Sector'] = '112920B'
 
     # fur-bearing animal and rabbit production: 11293
     df.loc[df['Activity'] == 'MINK, LIVE', 'Sector'] = '112930A'
