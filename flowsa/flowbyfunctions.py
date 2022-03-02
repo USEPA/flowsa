@@ -286,6 +286,7 @@ def sector_disaggregation(df_load):
     # add back in
     if sector_like_activities:
         df = df.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
+        df = df.reset_index(drop=True)
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_crosswalk('sector_length')
@@ -321,6 +322,7 @@ def sector_disaggregation(df_load):
             dfm2 = dfm2.drop(columns=[sector_merge, sector_add])
         dfm3 = dfm2.dropna(subset=['SectorProducedBy', 'SectorConsumedBy'],
                            how='all')
+        dfm3 = dfm3.reset_index(drop=True)
         dfm3 = replace_NoneType_with_empty_cells(dfm3)
         df = pd.concat([df, dfm3], ignore_index=True)
 
@@ -631,7 +633,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
         indicator=True).query('_merge=="left_only"').drop('_merge', axis=1)
     dfm = replace_NoneType_with_empty_cells(dfm)
     dfm = dfm.fillna(0)
-    df = pd.concat([df, dfm], sort=True, ignore_index=True)
+    df = pd.concat([df, dfm], ignore_index=True)
     # add length column and subset the data
     # subtract out existing data at NAICS6 from total data
     # at a length where no suppressed data
