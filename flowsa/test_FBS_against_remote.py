@@ -25,7 +25,7 @@ def test_FBS_against_remote():
             print(f"{m} not found in remote server. Skipping...")
             continue
 
-        df = compare_FBS_results(m, m, download=True)
+        df = compare_FBS_results(m, m, compare_to_remote=True)
         if len(df) > 0:
             print(f"Saving differences in {m}")
             df.to_csv(f"{outdir}{m}_diff.csv", index=False)
