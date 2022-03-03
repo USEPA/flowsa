@@ -33,7 +33,7 @@ jobs:
 
     - name: Compare FBS with remote
       run: |
-        python test_examples.test_FBS_against_remote
+        python test_FBS_against_remote.py
 
     - name: Upload csv files
       uses: actions/upload-artifact@v2.3.0
