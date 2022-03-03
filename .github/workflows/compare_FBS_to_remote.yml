@@ -33,7 +33,7 @@ jobs:
 
     - name: Compare FBS with remote
       run: |
-        python flowsa.test_examples.test_FBS_against_remote
+        python test_examples.test_FBS_against_remote
 
     - name: Upload csv files
       uses: actions/upload-artifact@v2.3.0
@@ -41,6 +41,6 @@ jobs:
         # Artifact name
         name: FBS diff files
         # A file, directory or wildcard patter that describes what to upload
-        path: "flowsa/data/fbs_diff/*.csv"
+        path: "data/fbs_diff/*.csv"
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
         # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.
