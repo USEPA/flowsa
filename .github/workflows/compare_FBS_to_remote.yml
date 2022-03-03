@@ -3,7 +3,6 @@
 name: Validate FlowBySectors
 
 on:
-  push:
   pull_request:
     branches: [master, develop]
     types: [opened, reopened]   # excludes syncronize to avoid redundant trigger from commits on PRs
