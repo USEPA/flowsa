@@ -6,7 +6,7 @@ name: Python CI/CD tests
 
 on:
   push:
-    branches: [master, develop]
+    # branches: [master, develop]
     paths-ignore:               # prevents workflow execution when only these types of files are modified
       - '**.md'                 # wildcards prevent file in any repo dir from trigering workflow
       - '**.bib'
