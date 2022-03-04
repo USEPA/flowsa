@@ -17,9 +17,6 @@ def test_FBS_against_remote():
     if not os.path.exists(outdir):
         os.mkdir(outdir)
     for m in seeAvailableFlowByModels("FBS"):
-        if m.startswith('CAP_HAP_'): continue
-        if m.startswith('Water_'): continue
-        if m !='GRDREL_national_2017': continue
         status = download_from_remote(set_fb_meta(m, "FlowBySector"),
                                       paths)
 
