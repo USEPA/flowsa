@@ -19,6 +19,7 @@ def test_FBS_against_remote():
     for m in seeAvailableFlowByModels("FBS"):
         if m.startswith('CAP_HAP_'): continue
         if m.startswith('Water_'): continue
+        if m !='GRDREL_national_2017': continue
         status = download_from_remote(set_fb_meta(m, "FlowBySector"),
                                       paths)
 
@@ -28,7 +29,7 @@ def test_FBS_against_remote():
 
         df = compare_FBS_results(m, m, compare_to_remote=True)
         if len(df) > 0:
-            print(f"Saving differences in {m}")
+            print(f"Saving differences in {m} to {outdir}")
             df.to_csv(f"{outdir}{m}_diff.csv", index=False)
         else:
             print(f"No differences found in {m}")
