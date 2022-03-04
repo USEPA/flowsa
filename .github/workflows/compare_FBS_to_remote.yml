@@ -41,6 +41,6 @@ jobs:
         # Artifact name
         name: FBS diff files
         # A file, directory or wildcard patter that describes what to upload
-        path: ${{ LD_LIBRARY_PATH }}/**/fbs_diff/*_diff.csv
+        path: ${{ env.LD_LIBRARY_PATH }}/**/fbs_diff/*_diff.csv
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
         # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.
