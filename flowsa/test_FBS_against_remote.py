@@ -16,20 +16,21 @@ def test_FBS_against_remote():
     outdir = f"{datapath}fbs_diff/"
     if not os.path.exists(outdir):
         os.mkdir(outdir)
-    for m in seeAvailableFlowByModels("FBS"):
+    for m in seeAvailableFlowByModels("FBS", print_method=False):
         status = download_from_remote(set_fb_meta(m, "FlowBySector"),
                                       paths)
-
         if not status:
             print(f"{m} not found in remote server. Skipping...")
             continue
-
+        print("--------------------------------\n"
+              f"Method: {m}\n"
+              "--------------------------------")
         df = compare_FBS_results(m, m, compare_to_remote=True)
         if len(df) > 0:
-            print(f"Saving differences in {m} to {outdir}")
+            print(f"Saving differences in {m} to csv")
             df.to_csv(f"{outdir}{m}_diff.csv", index=False)
         else:
-            print(f"No differences found in {m}")
+            print(f"***No differences found in {m}***")
 
 if __name__ == "__main__":
     test_FBS_against_remote()
