@@ -329,7 +329,7 @@ def equally_allocate_parent_to_child_naics(df_load, target_sector_level):
                                      'represented in current data subset: '
                                      '{}'.format(' '.join(map(str, rl_list))),
                                      str(i))
-                rows_lost = rows_lost.append(rl_m3, ignore_index=True)
+                rows_lost = pd.concat([rows_lost, rl_m3], ignore_index=True)
 
     if len(rows_lost) != 0:
         vLogDetailed.info('Allocating FlowAmounts equally to '

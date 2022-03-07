@@ -256,7 +256,8 @@ def extract_facility_data(inventory_dict):
                       inventory_name)
             facilities.drop_duplicates(subset='FacilityID',
                                        keep='first', inplace=True)
-        facility_mapping = facility_mapping.append(facilities)
+        facility_mapping = pd.concat([facility_mapping, facilities],
+                                     ignore_index=True)
 
     # Apply FIPS to facility locations
     facility_mapping = apply_county_FIPS(facility_mapping)
