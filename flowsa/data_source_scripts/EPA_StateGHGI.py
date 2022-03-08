@@ -47,11 +47,26 @@ def epa_state_ghgi_parse(*, source, year, config, **_):
     activities = df[['ActivityProducedBy']].drop_duplicates()
 
     df['County'] = ''
-    df= apply_county_FIPS(df)
+    df = apply_county_FIPS(df)
     df = assign_fips_location_system(df, '2015')
     df.drop(columns=['County'], inplace=True)
 
     return df
+
+
+def remove_select_states(df, v):
+    """
+    clean_fba_df_fxn to remove selected states so they can be added
+    from alternate sources. State abbreviations must be passed as list
+    in method parameter 'state_list'
+    """
+    state_list = v.get('state_list')
+    state_df = pd.DataFrame(state_list, columns=['State'])
+    state_df['County'] =''
+    state_df = apply_county_FIPS(state_df)
+    df_subset = df[~df['Location'].isin(state_df['Location'])]
+    return df_subset
+
 
 if __name__ == '__main__':
     import flowsa
