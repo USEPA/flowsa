@@ -33,6 +33,12 @@ Tables:
         "desc": "Table 2-1:  Recent Trends in U.S. Greenhouse Gas Emissions and Sinks (MMT CO2 Eq.)"
 
   "Ch 3 - Energy":
+      "3-7":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "flow": "CO2"
+        "desc": "Table 3-7:  CO2 Emissions from Stationary Fossil Fuel Combustion (MMT CO2 Eq.)"
       "3-8":
         "class": "Chemicals"
         "unit": "MMT CO2e"

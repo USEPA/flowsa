@@ -7,6 +7,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: state
     year: 2017
+    activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
@@ -65,6 +66,7 @@ source_names:
         allocation_from_scale: state
       activity_set_5: &use_allocation # mobile sources and fuel storage
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        activity_to_sector_mapping: "BEA_2012_Detail"
         allocation_method: proportional
         allocation_source_class: "Money"
         allocation_source_year: 2012
@@ -88,6 +90,7 @@ source_names:
         clean_parameter: {"325310": 'ActivityProducedBy'}
       activity_set_7: # Gross Output
         allocation_source: "BEA_GDP_GrossOutput"
+        activity_to_sector_mapping: "BEA_2012_Detail"
         allocation_method: proportional
         allocation_source_class: "Money"
         allocation_source_year: 2017
@@ -112,6 +115,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2017
+    activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
@@ -128,6 +132,7 @@ source_names:
     class: Chemicals
     geoscale_to_use: national
     year: 2017
+    activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Onroad_2017_asets.csv'

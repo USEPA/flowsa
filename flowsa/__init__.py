@@ -134,7 +134,7 @@ def getFlowBySector(methodname, fbsconfigpath=None,
     return fbs
 
 
-def collapse_FlowBySector(methodname,
+def collapse_FlowBySector(methodname, fbsconfigpath=None,
                           download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                           download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     """
@@ -142,7 +142,8 @@ def collapse_FlowBySector(methodname,
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-    fbs = flowsa.getFlowBySector(methodname, download_FBAs_if_missing,
+    fbs = flowsa.getFlowBySector(methodname, fbsconfigpath,
+                                 download_FBAs_if_missing,
                                  download_FBS_if_missing)
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
@@ -166,10 +167,11 @@ def writeFlowBySectorBibliography(methodname):
     generate_fbs_bibliography(methodname)
 
 
-def seeAvailableFlowByModels(flowbytype):
+def seeAvailableFlowByModels(flowbytype, print_method=True):
     """
     Return available Flow-By-Activity or Flow-By-Sector models
     :param flowbytype: 'FBA' or 'FBS'
+    :param print_method: False to skip printing to console
     :return: console printout of available models
     """
 
@@ -205,8 +207,9 @@ def seeAvailableFlowByModels(flowbytype):
     else:
         data_print = fb_df
 
-    # print data in human-readable format
-    pprint.pprint(data_print, width=79, compact=True)
+    if print_method:
+        # print data in human-readable format
+        pprint.pprint(data_print, width=79, compact=True)
     return data_print
 
 

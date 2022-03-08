@@ -42,7 +42,7 @@ from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
     map_fbs_flows, get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, \
-    dynamically_import_fxn, update_geoscale
+    dynamically_import_fxn, update_geoscale, subset_df_by_sector_list
 from flowsa.dataclean import clean_df, harmonize_FBS_columns, \
     reset_fbs_dq_scores
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
@@ -124,18 +124,16 @@ def return_activity_set_names(v, fbsconfigpath):
     """
     # if activity_sets are specified in a file, call them here
     if 'activity_set_file' in v:
+        aspath = flowbysectoractivitysetspath
         # first check if the activity set file exists in the fbsconfigpath
         if os.path.isfile(f"{fbsconfigpath}flowbysectoractivitysets/"
                           f"{v['activity_set_file']}"):
             # if the file exists, reset the activitysetpath
-            flowbysectoractivitysetspath = \
-                f"{fbsconfigpath}flowbysectoractivitysets/"
-            log.info('Loading activity set file from %s',
-                     flowbysectoractivitysetspath)
+            aspath = f"{fbsconfigpath}flowbysectoractivitysets/"
+            log.info('Loading activity set file from %s', aspath)
         # load activity set
-        aset_names =pd.read_csv(
-            f"{flowbysectoractivitysetspath}{v['activity_set_file']}",
-            dtype=str)
+        aset_names = pd.read_csv(f"{aspath}{v['activity_set_file']}",
+                                 dtype=str)
     else:
         aset_names = None
 
@@ -197,7 +195,7 @@ def main(**kwargs):
                     k, v["clean_fba_df_fxn"])(flows_mapped)
 
             # if activity_sets are specified in a file, call them here
-            aset_names = return_activity_set_names(v,fbsconfigpath)
+            aset_names = return_activity_set_names(v, fbsconfigpath)
 
             # master list of activity names read in from data source
             ml_act = []
@@ -267,7 +265,7 @@ def main(**kwargs):
                 # of specified sector aggregation
                 log.info("Adding sectors to %s", k)
                 flows_subset_wsec = add_sectors_to_flowbyactivity(
-                    flows_subset_geo,
+                    flows_subset_geo, v.get('activity_to_sector_mapping'),
                     sectorsourcename=method['target_sector_source'],
                     allocationmethod=attr['allocation_method'],
                     fbsconfigpath=fbsconfigpath)
@@ -332,7 +330,7 @@ def main(**kwargs):
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
-                fbs_sec_agg = sector_aggregation(fbs_geo_agg, groupingcols)
+                fbs_sec_agg = sector_aggregation(fbs_geo_agg)
                 # add missing naics5/6 when only one naics5/6
                 # associated with a naics4
                 fbs_agg = sector_disaggregation(fbs_sec_agg)
@@ -340,10 +338,11 @@ def main(**kwargs):
                 # check if any sector information is lost before reaching
                 # the target sector length, if so,
                 # allocate values equally to disaggregated sectors
-                vLog.info('Searching for and allocating FlowAmounts for any parent '
-                          'NAICS that were dropped in the subset to '
-                          '%s child NAICS', method['target_sector_level'])
-                fbs_agg_2 = equally_allocate_parent_to_child_naics(fbs_agg, method['target_sector_level'])
+                vLog.info('Searching for and allocating FlowAmounts for any '
+                          'parent NAICS dropped while subsetting the '
+                          'dataframe')
+                fbs_agg_2 = equally_allocate_parent_to_child_naics(
+                    fbs_agg, method)
 
                 # compare flowbysector with flowbyactivity
                 compare_activity_to_sector_flowamounts(
@@ -351,23 +350,16 @@ def main(**kwargs):
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
-                sector_list = get_sector_list(method['target_sector_level'])
+                secondary_sector_level = \
+                    method.get('target_subset_sector_level')
+                sector_list = get_sector_list(
+                    method['target_sector_level'],
+                    secondary_sector_level_dict=secondary_sector_level)
 
                 # subset df, necessary because not all of the sectors are
                 # NAICS and can get duplicate rows
-                fbs_1 = fbs_agg_2.loc[
-                    (fbs_agg_2[fbs_activity_fields[0]].isin(sector_list)) &
-                    (fbs_agg_2[fbs_activity_fields[1]].isin(sector_list))].\
-                    reset_index(drop=True)
-                fbs_2 = fbs_agg_2.loc[
-                    (fbs_agg_2[fbs_activity_fields[0]].isin(sector_list)) &
-                    (fbs_agg_2[fbs_activity_fields[1]].isnull())].\
-                    reset_index(drop=True)
-                fbs_3 = fbs_agg_2.loc[
-                    (fbs_agg_2[fbs_activity_fields[0]].isnull()) &
-                    (fbs_agg_2[fbs_activity_fields[1]].isin(sector_list))].\
-                    reset_index(drop=True)
-                fbs_sector_subset = pd.concat([fbs_1, fbs_2, fbs_3])
+                fbs_sector_subset = subset_df_by_sector_list(
+                    fbs_agg_2, sector_list)
 
                 # drop activity columns
                 fbs_sector_subset = fbs_sector_subset.drop(
