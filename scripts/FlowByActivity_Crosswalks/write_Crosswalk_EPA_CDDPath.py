@@ -18,23 +18,23 @@ def assign_naics(df):
     """
 
     cw = pd.read_csv(externaldatapath + 'VIPNametoNAICStoFF.csv',
-                     usecols=['FF Source Category','2012_NAICS_Code'],
+                     usecols=['FF Source Category', '2012_NAICS_Code'],
                      dtype='str').drop_duplicates()
-    df = df.merge(cw, how = 'left', left_on = ['Activity'],
-                  right_on = ['FF Source Category'])
+    df = df.merge(cw, how='left', left_on=['Activity'],
+                  right_on=['FF Source Category'])
     df = df.drop(columns='FF Source Category')
     
     # append additional mapping for Wood see EPA_CDDPath.py
     # function assign_wood_to_engineering()
-    df = df.append({'Activity':'Other - Wood',
-                    'ActivitySourceName':'EPA_CDDPath',
-                    '2012_NAICS_Code':'237990'},
+    df = df.append({'Activity': 'Other - Wood',
+                    'ActivitySourceName': 'EPA_CDDPath',
+                    '2012_NAICS_Code': '237990'},
                    ignore_index=True)
     
-    df = df.rename(columns={'2012_NAICS_Code':'Sector'})
+    df = df.rename(columns={'2012_NAICS_Code': 'Sector'})
 
-    
     return df
+
 
 if __name__ == '__main__':
     # select years to pull unique activity names
@@ -56,4 +56,4 @@ if __name__ == '__main__':
     df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" +
-              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+              "NAICS_Crosswalk_" + datasource + ".csv", index=False)

@@ -7,17 +7,20 @@ from esupy.util import get_git_hash
 
 
 try:
-    MODULEPATH = os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
+    MODULEPATH = \
+        os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
 except NameError:
     MODULEPATH = 'flowsa/'
 
 datapath = MODULEPATH + 'data/'
-sourceconfigpath = datapath + 'flowbyactivitymethods/'
 crosswalkpath = datapath + 'activitytosectormapping/'
-flowbysectormethodpath = datapath + 'flowbysectormethods/'
-flowbysectoractivitysetspath = datapath + 'flowbysectoractivitysets/'
 externaldatapath = datapath + 'external_data/'
 scc_adjustmentpath = datapath + 'scc_adjustments/'
+
+methodpath = MODULEPATH + 'methods/'
+sourceconfigpath = methodpath + 'flowbyactivitymethods/'
+flowbysectormethodpath = methodpath + 'flowbysectormethods/'
+flowbysectoractivitysetspath = methodpath + 'flowbysectoractivitysets/'
 
 datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
 
@@ -29,19 +32,25 @@ fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
 logoutputpath = outputpath + 'Log/'
+plotoutputpath = outputpath + 'Plots/'
+
+# ensure directories exist
+create_paths_if_missing(logoutputpath)
+create_paths_if_missing(plotoutputpath)
 
 DEFAULT_DOWNLOAD_IF_MISSING = False
 
 # paths to scripts
-scriptpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + \
-             '/scripts/'
+scriptpath = \
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))
+                    ).replace('\\', '/') + '/scripts/'
 scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
 
-# define 4 logs, one for general information, one for major validation logs that are
-# also included in the general info log, one for very specific validation that is only
-# included in the validation log, and a console printout that includes general and
-# validation, but not detailed validation
-create_paths_if_missing(logoutputpath)
+# define 4 logs, one for general information, one for major validation
+# logs that are also included in the general info log, one for very specific
+# validation that is only included in the validation log, and a console
+# printout that includes general and validation, but not detailed validation
+
 
 # format for logging .txt generated
 formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
@@ -64,10 +73,12 @@ vLogDetailed.propagate = False
 
 # create handlers
 # create handler for overall logger
-log_fh = logging.FileHandler(logoutputpath+'flowsa.log', mode='w', encoding='utf-8')
+log_fh = logging.FileHandler(logoutputpath+'flowsa.log',
+                             mode='w', encoding='utf-8')
 log_fh.setFormatter(formatter)
 # create handler for general validation information
-vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log', mode='w', encoding='utf-8')
+vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log',
+                              mode='w', encoding='utf-8')
 vLog_fh.setFormatter(formatter)
 # create console handler
 ch = logging.StreamHandler(sys.stdout)
@@ -89,7 +100,11 @@ def return_pkg_version():
 
     # return version with git describe
     try:
-        tags = subprocess.check_output(["git", "describe", "--tags", "--always"]).decode().strip()
+        # set path to flowsa repository, necessary if running method files
+        # outside the flowsa repo
+        tags = subprocess.check_output(
+            ["git", "describe", "--tags", "--always"],
+            cwd=MODULEPATH).decode().strip()
         version = tags.split("-", 1)[0].replace('v', "")
     except subprocess.CalledProcessError:
         log.info('Unable to return version with git describe')

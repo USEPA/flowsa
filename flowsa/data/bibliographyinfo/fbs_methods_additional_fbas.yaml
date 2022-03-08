@@ -19,50 +19,50 @@ Land_national_2012:
         flowbyactivity_1: 2012
 Water_national_2010_m1:
   USGS_NWIS_WU:
-    activity_set_4:
+    activity_set_3:
       disaggregate_cropland:
         flowbyactivity_1: 2012
       disaggregate_pastureland:
         flowbyactivity_1: 2012
 Water_national_2010_m2:
   USGS_NWIS_WU:
-    activity_set_3:
+    activity_set_2:
       convert_statcan_data_to_US_water_use:
-        'flowbyactivity_1': 2010
-        'flowbyactivity_2': 2010
-    activity_set_4:
-      convert_blackhurst_data_to_gal_per_year:
+        'flowbyactivity_1': 2011
+        'flowbyactivity_2': 2011
+    activity_set_3:
+      convert_blackhurst_data_to_kg_per_year:
         flowbyactivity_1: 2002
-      convert_blackhurst_data_to_gal_per_employee:
+      convert_blackhurst_data_to_kg_per_employee:
         flowbyactivity_1: 2002
       scale_blackhurst_results_to_usgs_values:
         flowbyactivity_1: 2010
-    activity_set_5:
+    activity_set_4:
       disaggregate_cropland:
         flowbyactivity_1: 2012
       disaggregate_pastureland:
         flowbyactivity_1: 2012
 Water_national_2015_m1:
   USGS_NWIS_WU:
-    activity_set_4:
+    activity_set_3:
       disaggregate_cropland:
         flowbyactivity_1: 2017
       disaggregate_pastureland:
         flowbyactivity_1: 2017
 Water_national_2015_m2:
   USGS_NWIS_WU:
-    activity_set_3:
+    activity_set_2:
       convert_statcan_data_to_US_water_use:
         'flowbyactivity_1': 2015
         'flowbyactivity_2': 2015
-    activity_set_4:
-      convert_blackhurst_data_to_gal_per_year:
+    activity_set_3:
+      convert_blackhurst_data_to_kg_per_year:
         flowbyactivity_1: 2002
-      convert_blackhurst_data_to_gal_per_employee:
+      convert_blackhurst_data_to_kg_per_employee:
         flowbyactivity_1: 2002
       scale_blackhurst_results_to_usgs_values:
         flowbyactivity_1: 2015
-    activity_set_5:
+    activity_set_4:
       disaggregate_cropland:
         flowbyactivity_1: 2017
       disaggregate_pastureland:

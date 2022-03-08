@@ -37,7 +37,7 @@ def assign_naics(df):
     # coa equivalent to Animal Production and Aquaculture: 112
     df.loc[df['Activity'] == 'AG LAND, (EXCL HARVESTED CROPLAND)', 'Sector'] = '112'
 
-    ## coa equivalent to soybean farming: 11111
+    # coa equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
 
     # coa aggregates to oilseed (except soybean) farming: 11112
@@ -110,6 +110,16 @@ def assign_naics(df):
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
                                          'Sector']), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
+    # orange groves
+    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS',
+                                  'NAICS_2012_Code', '111310']],
+                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                                         'Sector']), ignore_index=True, sort=True)
+    # citrus except orange groves
+    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS',
+                                  'NAICS_2012_Code', '111320']],
                                 columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
                                          'Sector']), ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
@@ -188,4 +198,4 @@ if __name__ == '__main__':
     df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" +
-              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+              "NAICS_Crosswalk_" + datasource + ".csv", index=False)

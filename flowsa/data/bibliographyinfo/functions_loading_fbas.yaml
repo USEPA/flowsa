@@ -3,12 +3,12 @@ assign_nonpoint_dqi:
     source: Census_CBP
     year:
     flowclass:
-convert_blackhurst_data_to_gal_per_employee:
+convert_blackhurst_data_to_kg_per_employee:
   flowbyactivity_1:
     source: BLS_QCEW
     year: 2002
     flowclass: Employment
-convert_blackhurst_data_to_gal_per_year:
+convert_blackhurst_data_to_kg_per_year:
   flowbyactivity_1:
     source: BEA_Make_AR
     year: 2002

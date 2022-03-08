@@ -2,10 +2,6 @@
 # !/usr/bin/env python3
 # coding=utf-8
 
-import io
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.data_source_scripts.USGS_MYB_Common import *
-
 """
 Projects
 /
@@ -15,6 +11,11 @@ FLOWSA
 
 Years = 2002, 2007, 2012
 """
+
+import io
+import pandas as pd
+
+
 def name_and_unit_split(df_legend):
     for i in range(len(df_legend)):
         apb = df_legend.loc[i, "name"]
@@ -71,53 +72,63 @@ def name_and_unit_split(df_legend):
             df_legend.loc[i, "Compartment "] = "ground"
     return df_legend
 
-def pi_url_helper(build_url, config, args):
+
+def pi_url_helper(*, build_url, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py, which
-    is a base url for data imports that requires parts of the url text string
-    to be replaced with info specific to the data year.
-    This function does not parse the data, only modifies the urls from which data is obtained.
+    This helper function uses the "build_url" input from flowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data is
+    obtained.
     :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity format
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity
+        format
     """
     url = build_url
     return [url]
 
 
-def pi_call(url, response, args):
+def pi_call(*, resp, year, **_):
     """
-    Convert response for calling url to pandas dataframe, begin parsing df into FBA format
-    :param kwargs: url: string, url
-    :param kwargs: response: df, response from url call
-    :param kwargs: args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+    Convert response for calling url to pandas dataframe, begin parsing
+    df into FBA format
+    :param resp: df, response from url call
+    :param year: year
     :return: pandas dataframe of original source data
     """
-    df_legend = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='Legend')
+    df_legend = pd.io.excel.read_excel(io.BytesIO(resp.content),
+                                       sheet_name='Legend')
     df_legend = pd.DataFrame(df_legend.loc[0:18]).reindex()
     df_legend.columns = ["HUC_8", "HUC8 CODE"]
-    if args['year'] == '2002':
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2002')
-        df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition', 'livestock_Waste_2007': 'livestock_Waste',
-                                        'livestock_demand_2007': 'livestock_demand',
-                                        'livestock_production_2007': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
-                                        'Surplus_2002': 'surplus'})
-    elif args['year'] == '2007':
-        df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2007')
-        df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition', 'Crop_removal_2007': 'Crop_removal',
-                                        'livestock_Waste_2007': 'livestock_Waste',
-                                        'livestock_demand_2007': 'livestock_demand',
-                                        'livestock_production_2007': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
-                                        'Surplus_2007': 'surplus'})
+    if year == '2002':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
+                                        sheet_name='2002')
+        df_raw = df_raw.rename(
+            columns={'P_deposition': '2P_deposition',
+                     'livestock_Waste_2007': 'livestock_Waste',
+                     'livestock_demand_2007': 'livestock_demand',
+                     'livestock_production_2007': 'livestock_production',
+                     '02P_Hi_P': 'P_Hi_P', 'Surplus_2002': 'surplus'})
+    elif year == '2007':
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
+                                        sheet_name='2007')
+        df_raw = df_raw.rename(
+            columns={'P_deposition': '2P_deposition',
+                     'Crop_removal_2007': 'Crop_removal',
+                     'livestock_Waste_2007': 'livestock_Waste',
+                     'livestock_demand_2007': 'livestock_demand',
+                     'livestock_production_2007': 'livestock_production',
+                     '02P_Hi_P': 'P_Hi_P', 'Surplus_2007': 'surplus'})
     else:
-       df_raw = pd.io.excel.read_excel(io.BytesIO(response.content), sheet_name='2012')
-       df_raw = df_raw.rename(columns={'P_deposition': '2P_deposition',  'Crop_removal_2012': 'Crop_removal',
-           'livestock_Waste_2012': 'livestock_Waste', 'livestock_demand_2012': 'livestock_demand',
-           'livestock_production_2012': 'livestock_production', '02P_Hi_P': 'P_Hi_P',
-           'Surplus_2012': 'surplus'})
+        df_raw = pd.io.excel.read_excel(io.BytesIO(resp.content),
+                                        sheet_name='2012')
+        df_raw = df_raw.rename(
+            columns={'P_deposition': '2P_deposition',
+                     'Crop_removal_2012': 'Crop_removal',
+                     'livestock_Waste_2012': 'livestock_Waste',
+                     'livestock_demand_2012': 'livestock_demand',
+                     'livestock_production_2012': 'livestock_production',
+                     '02P_Hi_P': 'P_Hi_P', 'Surplus_2012': 'surplus'})
 
     for col_name in df_raw.columns:
         for i in range(len(df_legend)):
@@ -127,7 +138,8 @@ def pi_call(url, response, args):
                 df_legend.loc[i, "HUC_8"] = list[0]
 
             if col_name == df_legend.loc[i, "HUC_8"]:
-                df_raw = df_raw.rename(columns={col_name: df_legend.loc[i, "HUC8 CODE"]})
+                df_raw = df_raw.rename(
+                    columns={col_name: df_legend.loc[i, "HUC8 CODE"]})
     df_des = df_raw.filter(['HUC8 CODE', 'State Name'])
     df_raw = df_raw.drop(columns=['State Name', 'State FP Code'])
 
@@ -142,26 +154,28 @@ def pi_call(url, response, args):
     df = pd.merge(df, df_legend, on="name")
     df = df.drop(columns=["HUC_8", "name"])
     df = df.merge(df_des, left_on='HUC8 CODE', right_on='HUC8 CODE')
-    df = df.rename(columns={"HUC8 CODE": "Location", "State Name": "Description"})
+    df = df.rename(columns={"HUC8 CODE": "Location",
+                            "State Name": "Description"})
     return df
 
 
-def pi_parse(dataframe_list, args):
+def pi_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py ('year' and 'source')
-    :return: df, parsed and partially formatted to flowbyactivity specifications
+    :param df_list: list of dataframes to concat and format
+    :param args: dictionary, used to run flowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
     """
     data = {}
     row_to_use = ["Production2", "Production", "Imports for consumption"]
     df = pd.DataFrame()
-    for df in dataframe_list:
+    for df in df_list:
 
         df["SourceName"] = "EPA_NI"
         df["LocationSystem"] = 'HUC'
-        df["Year"] = str(args["year"])
+        df["Year"] = str(year)
         df["FlowType"] = "ELEMENTARY_FLOW"
         df["Compartment"] = "ground"
     return df
-

@@ -39,7 +39,6 @@ def assign_naics(df):
     # hog and pig farming: 1122
     df.loc[df['Activity'] == 'HOGS', 'Sector'] = '1122'
 
-
     # poultry and egg production: 1123
     df.loc[df['Activity'] == 'POULTRY TOTALS', 'Sector'] = '1123'
 
@@ -70,7 +69,6 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'POULTRY, OTHER', 'Sector'] = '112390L'
     df.loc[df['Activity'] == 'QUAIL', 'Sector'] = '112390M'
     df.loc[df['Activity'] == 'RHEAS', 'Sector'] = '112390N'
-
 
     # sheep and goat farming: 1124
     df.loc[df['Activity'] == 'SHEEP & GOATS TOTALS', 'Sector'] = '1124'
@@ -111,7 +109,6 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'MINK, LIVE', 'Sector'] = '112930A'
     df.loc[df['Activity'] == 'RABBITS, LIVE', 'Sector'] = '112930B'
 
-
     # all other animal production: 11299
     df.loc[df['Activity'] == 'ALPACAS', 'Sector'] = '112990A'
     df.loc[df['Activity'] == 'BISON', 'Sector'] = '112990B'
@@ -144,4 +141,4 @@ if __name__ == '__main__':
     df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" +
-              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+              "NAICS_Crosswalk_" + datasource + ".csv", index=False)

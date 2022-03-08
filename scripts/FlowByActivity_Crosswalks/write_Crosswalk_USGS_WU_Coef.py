@@ -34,7 +34,6 @@ def assign_naics(df):
     # hog and pig farming: 1122
     df.loc[df['Activity'] == 'Hogs and pigs', 'Sector'] = '1122'
 
-
     # poultry and egg production: 1123
 
     # chicken egg production: 11231
@@ -53,7 +52,6 @@ def assign_naics(df):
         pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11239']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
                      ), ignore_index=True, sort=True)
-
 
     # sheep and goat farming: 1124
 
@@ -78,7 +76,6 @@ def assign_naics(df):
         pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens', 'NAICS_2012_Code', '11293']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
                      ), ignore_index=True, sort=True)
-
 
     # all other animal production: 11299, manually add row
     df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Sheep and lambs', 'NAICS_2012_Code', '11299']],
@@ -109,4 +106,4 @@ if __name__ == '__main__':
     df = order_crosswalk(df)
     # save as csv
     df.to_csv(datapath + "activitytosectormapping/" +
-              "Crosswalk_" + datasource + "_toNAICS.csv", index=False)
+              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
