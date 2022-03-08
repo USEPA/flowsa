@@ -46,7 +46,7 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 5. _allocation_source_: The primary data source used to allocate main FBA for
    specified activity to sectors
 6. _literature_sources_: (optional)
-6. _activity_to_sector_mapping_: (optional) name of activity to sector mapping file, if not provided will use the source name
+7. _activity_to_sector_mapping_: (optional) name of activity to sector mapping file, if not provided will use the source name
 8. _allocation_source_class_: specific 'FlowClass' found in the allocation source
    flowbyactivity parquet
 9. _allocation_source_year_: specific to the allocation datasets, use the year relevant
@@ -67,17 +67,18 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
     on Context and/or Flowable, set to 'True'
 17. _helper_source_: (optional) secondary df for sector allocation
 18. _helper_method_: currently written for 'multiplication', 'proportional', and 'proportional-flagged'
-19. _helper_source_class_: specific 'FlowClass' found in the allocation source
+19. _helper_activity_to_sector_mapping_: (optional) name of activity to sector mapping file, if not provided will use the source name
+20. _helper_source_class_: specific 'FlowClass' found in the allocation source
     flowbyactivity parquet
-20. _helper_source_year_: specific to the allocation datasets, use the year relevant
+21. _helper_source_year_: specific to the allocation datasets, use the year relevant
     to the main FBA dataframe
-21. _helper_flow_: (list) the relevant 'FlowName' values, as found in the source
+22. _helper_flow_: (list) the relevant 'FlowName' values, as found in the source
     flowbyactivity parquet
-22. _helper_from_scale_: national, state, or county - dependent on allocation source,
+23. _helper_from_scale_: national, state, or county - dependent on allocation source,
     as not every level exits for sources
-23. _clean_helper_fba_: (optional) Function to clean up the helper FBA, as defined in
+24. _clean_helper_fba_: (optional) Function to clean up the helper FBA, as defined in
     the source.py file
-24. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
+25. _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA, after
     allocation activities are assigned SectorProducedBy and SectorConsumedBy columns
 
 ### Source specifications (in FBS format)

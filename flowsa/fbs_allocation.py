@@ -273,6 +273,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         fba_dict['clean_fba'] = attr['clean_helper_fba']
     if 'clean_helper_fba_wsec' in attr:
         fba_dict['clean_fba_w_sec'] = attr['clean_helper_fba_wsec']
+    if 'helper_activity_to_sector_mapping' in attr:
+        fba_dict['activity_to_sector_mapping'] = attr['helper_activity_to_sector_mapping']
 
     # load the allocation FBA
     helper_allocation = \
@@ -514,10 +516,13 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     fba = fba.reset_index(drop=True)
 
     # assign sector to allocation dataset
+    activity_to_sector_mapping = attr.get('activity_to_sector_mapping')
+    if 'activity_to_sector_mapping' in kwargs:
+        activity_to_sector_mapping = kwargs.get('activity_to_sector_mapping')
     log.info("Adding sectors to %s", fba_sourcename)
     fba_wsec = add_sectors_to_flowbyactivity(fba, sectorsourcename=method[
         'target_sector_source'],
-        activity_to_sector_mapping=attr.get('activity_to_sector_mapping'),
+        activity_to_sector_mapping=activity_to_sector_mapping,
         fbsconfigpath=fbsconfigpath)
 
     # call on fxn to further clean up/disaggregate the fba
