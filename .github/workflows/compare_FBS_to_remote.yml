@@ -6,7 +6,7 @@ on:
   # push: # removed to run only on pull request
   pull_request:
     branches: [master, develop]
-    types: [opened, reopened]   # excludes syncronize to avoid redundant trigger from commits on PRs
+    types: [opened, reopened, ready_for_review]   # excludes syncronize to avoid redundant trigger from commits on PRs
   workflow_dispatch:            # also allow manual trigger, for testing purposes
 
 jobs:

@@ -32,10 +32,12 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'AG LAND', 'Sector'] = '11'
 
     # coa equivalent to crop production: 111
-    df.loc[df['Activity'] == 'AG LAND, CROPLAND, HARVESTED', 'Sector'] = '111'
+    df.loc[df['Activity'] == 'AG LAND, CROPLAND, HARVESTED',
+           'Sector'] = '111'
 
     # coa equivalent to Animal Production and Aquaculture: 112
-    df.loc[df['Activity'] == 'AG LAND, (EXCL HARVESTED CROPLAND)', 'Sector'] = '112'
+    df.loc[df['Activity'] == 'AG LAND, (EXCL HARVESTED CROPLAND)',
+           'Sector'] = '112'
 
     # coa equivalent to soybean farming: 11111
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
@@ -51,15 +53,17 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'CAMELINA', 'Sector'] = '111120H'
 
     # coa aggregates to dry pea and bean farming: 11113
-    df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, (EXCL LIMA), INCL CHICKPEAS', 'Sector'] = '111130A'
-    df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS & LIMA)', 'Sector'] = '111130B'
+    df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, (EXCL LIMA), INCL CHICKPEAS',
+           'Sector'] = '111130A'
+    df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS & LIMA)',
+           'Sector'] = '111130B'
     df.loc[df['Activity'] == 'BEANS, DRY EDIBLE, LIMA', 'Sector'] = '111130C'
     df.loc[df['Activity'] == 'CHICKPEAS', 'Sector'] = '111130D'
     df.loc[df['Activity'] == 'LENTILS', 'Sector'] = '111130E'
     df.loc[df['Activity'] == 'PEAS, AUSTRIAN WINTER', 'Sector'] = '111130F'
     df.loc[df['Activity'] == 'PEAS, DRY EDIBLE', 'Sector'] = '111130G'
-    df.loc[df['Activity'] == 'PEAS, DRY, SOUTHERN (COWPEAS)', 'Sector'] = '111130H'
-    # df.loc[df['Activity'] == 'BEANS, MUNG', 'Sector'] = '' # last year published 2002
+    df.loc[df['Activity'] == 'PEAS, DRY, SOUTHERN (COWPEAS)',
+           'Sector'] = '111130H'
 
     # coa equivalent to wheat farming: 11114
     df.loc[df['Activity'] == 'WHEAT', 'Sector'] = '11114'
@@ -85,10 +89,9 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'TRITICALE', 'Sector'] = '111199I'
     df.loc[df['Activity'] == 'WILD RICE', 'Sector'] = '111199J'
     df.loc[df['Activity'] == 'EMMER & SPELT', 'Sector'] = '111199K'
-    # df.loc[df['Activity'] == 'SWEET RICE', 'Sector'] = '' # last year published 2002
 
     # coa equivalent to vegetable and melon farming: 1112
-    df.loc[df['Activity'] == 'VEGETABLE TOTALS', 'Sector'] = '1112'  # this category includes melons
+    df.loc[df['Activity'] == 'VEGETABLE TOTALS', 'Sector'] = '1112'
     df.loc[df['Activity'] == 'TARO', 'Sector'] = '111219'
 
     # coa aggregates to fruit and tree nut farming: 1113
@@ -97,31 +100,36 @@ def assign_naics(df):
     # orchards associated with 6 naics6, for now, after allocation,
     # divide values associated with these naics by 6
     df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111331'
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
     # orange groves
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS',
-                                  'NAICS_2012_Code', '111310']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111310']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
     # citrus except orange groves
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS',
-                                  'NAICS_2012_Code', '111320']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111320']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
     df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '111339'
 
@@ -129,10 +137,6 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'HORTICULTURE TOTALS', 'Sector'] = '1114'
     df.loc[df['Activity'] == 'CUT CHRISTMAS TREES', 'Sector'] = '111421A'
     df.loc[df['Activity'] == 'SHORT TERM WOODY CROPS', 'Sector'] = '111421B'
-
-    # coa equivalent to other crop farming: 1119
-    # df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '1119'
-    # df.loc[df['Activity'] == 'FIELD CROPS, OTHER', 'Sector'] = '1119'
 
     # coa equivalent to tobacco farming: 11191
     df.loc[df['Activity'] == 'TOBACCO', 'Sector'] = '11191'
@@ -146,28 +150,22 @@ def assign_naics(df):
 
     # coa aggregates to hay farming: 11194
     df.loc[df['Activity'] == 'HAY & HAYLAGE', 'Sector'] = '11194'
-    df.loc[df['Activity'] == 'HAY & HAYLAGE (EXCL ALFALFA)', 'Sector'] = '111940A'
+    df.loc[df['Activity'] == 'HAY & HAYLAGE (EXCL ALFALFA)',
+           'Sector'] = '111940A'
     df.loc[df['Activity'] == 'HAY & HAYLAGE, ALFALFA', 'Sector'] = '111940B'
-    # df.loc[df['Activity'] == 'HAY', 'Sector'] = '1119401'
-    # df.loc[df['Activity'] == 'HAY (EXCL ALFALFA)', 'Sector'] = '1119401A'
-    # df.loc[df['Activity'] == 'HAY, ALFALFA', 'Sector'] = '1119401B'
-    # df.loc[df['Activity'] == 'HAYLAGE', 'Sector'] = '1119402'
-    # df.loc[df['Activity'] == 'HAYLAGE (EXCL ALFALFA)', 'Sector'] = '1119402A'
-    # df.loc[df['Activity'] == 'HAYLAGE, ALFALFA', 'Sector'] = '1119402B'
 
     # coa aggregates to all other crop farming: 11199
     df.loc[df['Activity'] == 'SUGARBEETS', 'Sector'] = '111991A'
     df.loc[df['Activity'] == 'SUGARBEETS, SEED', 'Sector'] = '111991B'
     df.loc[df['Activity'] == 'PEANUTS', 'Sector'] = '111992'
     df.loc[df['Activity'] == 'DILL, OIL', 'Sector'] = '111998A'
-    df.loc[df['Activity'] == 'GRASSES & LEGUMES TOTALS, SEED', 'Sector'] = '111998B'
+    df.loc[df['Activity'] == 'GRASSES & LEGUMES TOTALS, SEED',
+           'Sector'] = '111998B'
     df.loc[df['Activity'] == 'GUAR', 'Sector'] = '111998C'
     df.loc[df['Activity'] == 'HERBS, DRY', 'Sector'] = '111998D'
     df.loc[df['Activity'] == 'HOPS', 'Sector'] = '111998E'
     df.loc[df['Activity'] == 'JOJOBA', 'Sector'] = '111998F'
     df.loc[df['Activity'] == 'MINT, OIL', 'Sector'] = '111998G'
-    # df.loc[df['Activity'] == 'MINT, PEPPERMINT, OIL', 'Sector'] = '111998G1'
-    # df.loc[df['Activity'] == 'MINT, SPEARMINT, OIL', 'Sector'] = '111998G2'
     df.loc[df['Activity'] == 'MISCANTHUS', 'Sector'] = '111998H'
     df.loc[df['Activity'] == 'MINT, TEA LEAVES', 'Sector'] = '111998K'
     df.loc[df['Activity'] == 'SWITCHGRASS', 'Sector'] = '111998L'
