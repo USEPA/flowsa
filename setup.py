@@ -9,7 +9,6 @@ setup(
     version='1.1',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
-    package_data={'flowsa': ["data/*.*"]},
     include_package_data=True,
     install_requires=[
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',

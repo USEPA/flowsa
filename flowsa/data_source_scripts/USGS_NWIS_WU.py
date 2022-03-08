@@ -9,8 +9,8 @@ Helper functions for importing, parsing, formatting USGS Water Use data
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import abbrev_us_state, fba_activity_fields,\
-    capitalize_first_letter, US_FIPS
+from flowsa.location import abbrev_us_state, US_FIPS
+from flowsa.common import fba_activity_fields, capitalize_first_letter
 from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.validation import compare_df_units, \
@@ -599,7 +599,8 @@ def check_golf_and_crop_irrigation_totals(df_load):
                                 'Crop_ACB', 'subset_sum', 'Diff'])
 
     if len(df_m3) != 0:
-        df_w_missing_crop = df_load.append(df_m3, sort=True, ignore_index=True)
+        df_w_missing_crop = pd.concat([df_load, df_m3], sort=True,
+                                      ignore_index=True)
         return df_w_missing_crop
     else:
         return df_load

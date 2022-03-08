@@ -10,9 +10,9 @@ Last updated: Monday, August 17, 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, get_region_and_division_codes, \
-    WITHDRAWN_KEYWORD, clean_str_and_capitalize, \
-    fba_mapped_default_grouping_fields
+from flowsa.location import US_FIPS, get_region_and_division_codes
+from flowsa.common import WITHDRAWN_KEYWORD, \
+    clean_str_and_capitalize, fba_mapped_default_grouping_fields
 from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.literature_values import \
@@ -207,9 +207,6 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
     :param column_to_standardize: str, column with the activity names
     :return: df with standardized activity names
     """
-
-    # from flowsa.common import clean_str_and_capitalize
-
     # standardize strings in provided column
     df[column_to_standardize] = \
         df[column_to_standardize].replace(

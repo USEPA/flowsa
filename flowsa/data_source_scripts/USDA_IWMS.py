@@ -11,7 +11,8 @@ import json
 import pandas as pd
 import numpy as np
 from esupy.dqi import get_weighted_average
-from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD, fba_wsec_default_grouping_fields
+from flowsa.location import US_FIPS
+from flowsa.common import WITHDRAWN_KEYWORD, fba_wsec_default_grouping_fields
 from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
@@ -142,7 +143,7 @@ def disaggregate_iwms_to_6_digit_naics_for_water_withdrawal(df, attr, method,
     # applying to multiply NAICS
     df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment',
                                'Location'], keep='first', inplace=True)
-    years = [attr['allocation_source_year'] - 1]
+    years = attr['allocation_source_year'] - 1
     df = df[~df[sector_column].isna()].reset_index(drop=True)
     # drop aquaculture when disaggregating pastureland because water use for
     # aquaculture calculated separately

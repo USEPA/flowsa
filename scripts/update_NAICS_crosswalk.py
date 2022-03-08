@@ -53,7 +53,6 @@ def update_naics_crosswalk():
     """
     update the useeior crosswalk with crosswalks created for
     flowsa datasets - want to add any NAICS > 6 digits
-
     Add NAICS 2002
     :return: df of NAICS that include any unofficial NAICS
     """
@@ -149,7 +148,6 @@ def write_naics_2012_crosswalk():
     Create a NAICS 2 - 6 digit crosswalk
     :return:
     """
-
     # load the useeior mastercrosswalk subset to the naics timeseries
     cw_load = load_crosswalk('sector_timeseries')
 
@@ -175,23 +173,25 @@ def write_naics_2012_crosswalk():
         lambda x: f"NAICS_{str(len(x))}")
     # add bea codes subbing for NAICS
     cw2 = pd.concat([cw, bea], ignore_index=True)
+    # return max string length
+    max_naics_length = cw['NAICS_2012_Code'].apply(lambda x: len(x)).max()
 
     # create dictionary of dataframes
     d = dict(tuple(cw2.groupby('secLength')))
 
-    for l in range(2, 9):
-        d[f'NAICS_{l}'] = d[f'NAICS_{l}'][['NAICS_2012_Code']].reset_index(
-            drop=True).rename(
-            columns={'NAICS_2012_Code': f'NAICS_{l}'})
+    for k in d.keys():
+        d[k].rename(columns=({'NAICS_2012_Code': k}), inplace=True)
 
     naics_cw = d['NAICS_2']
-    for l in range(3, 7):
+    for l in range(3, max_naics_length+1):
         naics_cw = (d[f'NAICS_{l}'].assign(temp=d[f'NAICS_{l}'][
             f'NAICS_{l}'].str.extract(
             pat=f"({'|'.join(naics_cw[f'NAICS_{l-1}'])})")).merge(
             naics_cw, how='right', left_on='temp',
             right_on=f'NAICS_{l-1}',
-            suffixes=['', '_y'])).drop(columns=['temp'])
+            suffixes=['', '_y'])).drop(columns=['temp', 'secLength_y'])
+    # drop seclength column
+    naics_cw = naics_cw.drop(columns='secLength')
 
     # reorder
     naics_cw = naics_cw.reindex(sorted(naics_cw.columns), axis=1)
