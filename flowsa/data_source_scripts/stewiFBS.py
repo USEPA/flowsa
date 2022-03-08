@@ -48,11 +48,7 @@ def stewicombo_to_sector(yaml_load):
     from flowsa.data_source_scripts.EPA_NEI import drop_GHGs
 
     # determine if fxns specified in FBS method yaml
-    if 'functions' not in yaml_load:
-        functions = []
-    else:
-        functions = yaml_load['functions']
-
+    functions = yaml_load.get('functions', [])
     inventory_name = yaml_load.get('local_inventory_name')
 
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
@@ -128,10 +124,7 @@ def stewi_to_sector(yaml_load):
     import stewi
 
     # determine if fxns specified in FBS method yaml
-    if 'functions' not in yaml_load:
-        functions = []
-    else:
-        functions = yaml_load['functions']
+    functions = yaml_load.get('functions', [])
 
     NAICS_level_value = sector_level_key[yaml_load['NAICS_level']]
     # run stewi to generate inventory and filter for LCI
@@ -194,13 +187,13 @@ def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file):
     df_fbp = remove_default_flow_overlaps(df_fbp, SCC=True)
 
     # merge in NAICS data
-    facility_df = df[['FacilityID', 'NAICS', 'Location']]
+    facility_df = df[['FacilityID', 'NAICS', 'Location']].reset_index(drop=True)
     facility_df.drop_duplicates(keep='first', inplace=True)
     df_fbp = df_fbp.merge(facility_df, how='left', on='FacilityID')
 
     df_fbp['Year'] = year
 
-    #TODO: expand naics list in scc file to include child naics
+    #TODO: expand naics list in scc file to include child naics automatically
     df_fbp = df_fbp.merge(scc, how='inner',
                           left_on=['NAICS', 'Process'],
                           right_on=['source_naics', 'source_scc'])
@@ -237,7 +230,7 @@ def extract_facility_data(inventory_dict):
     facilities_list = []
     # load facility data from stewi output directory, keeping only the
     # facility IDs, and geographic information
-    for database, year in inventory_dict.values():
+    for database, year in inventory_dict.items():
         facilities = stewi.getInventoryFacilities(database, year,
                                                   download_if_missing=True)
         facilities = facilities[['FacilityID', 'State', 'County', 'NAICS']]
@@ -506,3 +499,9 @@ def add_stewi_metadata(inventory_dict):
     """
     from stewicombo.globals import compile_metadata
     return compile_metadata(inventory_dict)
+
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.flowbysector.main(method='CAP_HAP_national_2017')
+    #flowsa.flowbysector.main(method='TRI_DMR_national_2017')
