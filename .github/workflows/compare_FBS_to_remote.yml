@@ -1,0 +1,46 @@
+# This workflow generates FlowBySector files and compares to the latest public version
+
+name: Validate FlowBySectors
+
+on:
+  # push: # removed to run only on pull request
+  pull_request:
+    branches: [master, develop]
+    types: [opened, reopened, ready_for_review]   # excludes syncronize to avoid redundant trigger from commits on PRs
+  workflow_dispatch:            # also allow manual trigger, for testing purposes
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+
+    - name: Update pip & install testing pkgs
+      run: |
+        python -VV
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pytest pytest-cov flake8
+
+    # install package & dependencies
+    - name: Install package and dependencies
+      run: |
+        pip install .
+
+    - name: Compare FBS with remote
+      run: |
+        python flowsa/test_FBS_against_remote.py
+
+    - name: Upload csv files
+      uses: actions/upload-artifact@v2.3.0
+      with:
+        # Artifact name
+        name: FBS diff files
+        # A file, directory or wildcard patter that describes what to upload
+        path: ${{ env.LD_LIBRARY_PATH }}/python3.10/site-packages/flowsa/data/fbs_diff/*_diff.csv
+        if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
+        # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.

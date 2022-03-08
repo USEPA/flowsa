@@ -8,7 +8,8 @@ Inclues helper functions for calling and parsing data
 
 import json
 import pandas as pd
-from flowsa.common import US_FIPS, load_api_key, get_all_state_FIPS_2
+from flowsa.location import US_FIPS, get_all_state_FIPS_2
+from flowsa.common import load_api_key
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -46,6 +47,7 @@ def Census_pop_URL_helper(*, build_url, year, config, **_):
         if '2010' < year < '2015' and c == 'county':
             for b in FIPS_2:
                 url = build_url
+                url = url.replace("population?", "cty?")
                 url = url.replace("__aggLevel__", c)
                 url = url.replace("__DateCode__", dc)
                 url = url.replace("population?&", 'cty?')
@@ -56,14 +58,32 @@ def Census_pop_URL_helper(*, build_url, year, config, **_):
             if year > '2010':
                 url = build_url
                 url = url.replace("__aggLevel__", c)
-                url = url.replace("__DateCode__", dc)
-                # url date variable different pre 2018
-                if year < '2018':
-                    url = url.replace("DATE_CODE", 'DATE_')
-                # url for 2011 - 2014 slightly modified
-                if year < '2015' and c != 'county':
-                    url = url.replace("population?&", 'natstprc?')
-                urls.append(url)
+                if year == '2020':
+                    url = url.replace("POP", 'POP_2020')
+                    url = url.replace("data/2020/pep/", 'data/2021/pep/')
+                    url = url.replace("for=county%3A%2A", "for=state:*")
+                    url = url.replace("&DATE_CODE=__DateCode__", "")
+                    urls.append(url)
+                elif year == '2021':
+                    url = url.replace("POP", 'POP_2021')
+                    url = url.replace("for=county%3A%2A&DATE_CODE=__DateCode__", "for=state:*")
+                    url = url.replace("for=county%3A%2A", "for=state:*")
+                    url = url.replace("&DATE_CODE=__DateCode__", "")
+                    urls.append(url)
+                else:
+                    url = url.replace("__DateCode__", dc)
+                    # url date variable different pre 2018
+                    if year == '2013' or year == '2014':
+                        url = url.replace("DATE_CODE", 'DATE_')
+                        url = url.replace("population", 'natstprc')
+                    elif year =='2020' or year =='2021':
+                        url = url.replace("&DATE_CODE=__DateCode__", '')
+                    elif year < '2018':
+                        url = url.replace("DATE_CODE", 'DATE_')
+                    # url for 2011 - 2014 slightly modified
+                    if year < '2015' and c != 'county':
+                        url = url.replace("population?&", 'natstprc?')
+                    urls.append(url)
             elif year == '2010':
                 url = url2000
                 url = url.replace("__aggLevel__", c)
@@ -104,16 +124,33 @@ def census_pop_parse(*, df_list, year, **_):
     df['Year'] = year
     # drop puerto rico
     df = df[df['state'] != '72']
-    # replace null county cells with '000'
-    df['county'] = df['county'].fillna('000')
-    # Make FIPS as a combo of state and county codes
-    df['Location'] = df['state'] + df['county']
-    # replace the null value representing the US with US fips
-    df.loc[df['us'] == '1', 'Location'] = US_FIPS
-    # drop columns
-    df = df.drop(columns=['state', 'county', 'us'])
+    if "county" in df.columns:
+        # replace null county cells with '000'
+        df['county'] = df['county'].fillna('000')
+        # Make FIPS as a combo of state and county codes
+        df['Location'] = df['state'] + df['county']
+        # replace the null value representing the US with US fips
+        if "us" in df.columns:
+            df.loc[df['us'] == '1', 'Location'] = US_FIPS
+            # drop columns
+            df = df.drop(columns=['state', 'county', 'us'])
+        else:
+            df = df.drop(columns=['state', 'county'])
+    else:
+        df['Location'] = df['state'] + '000'
+        if "us" in df.columns:
+            df.loc[df['us'] == '1', 'Location'] = US_FIPS
+            # drop columns
+            df = df.drop(columns=['state', 'us'])
+        else:
+            df = df.drop(columns=['state'])
     # rename columns
-    df = df.rename(columns={"POP": "FlowAmount"})
+    if year == "2020":
+        df = df.rename(columns={"POP_2020": "FlowAmount"})
+    elif year == "2021":
+        df = df.rename(columns={"POP_2021": "FlowAmount"})
+    else:
+        df = df.rename(columns={"POP": "FlowAmount"})
     # add location system based on year of data
     df = assign_fips_location_system(df, year)
     # hardcode dta

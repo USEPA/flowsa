@@ -2,11 +2,11 @@
 
 Field | Type | Required? | Description
 ----- | ---- | --------  | -----------
-Class | String | Y | Class of the flow. See [Flow Classes](./README.md#FlowClasses).   
+Class | String | Y | Class of the flow. See [Flow Classes](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-classes).   
 SourceName | String | Y | Name of data source
 FlowName | String | Y | ID or name of flow in its native source
 FlowAmount | Numeric | Y | The amount of a given flow in its native unit
-Unit | String | Y | SI unit acronym. `kg` for mass flows; `MJ` for energy flows
+Unit | String | Y | Unit of flow as provided by source
 FlowType | String | Y | `ELEMENTARY_FLOW`, `TECHNOSPHERE_FLOW`, or `WASTE_FLOW`. See <http://greendelta.github.io/olca-schema/FlowType.html>
 ActivityProducedBy | String | N* | An activity defined by the source producing a flow.
 ActivityConsumedBy | String | N* | An activity defined by the source receiving/consuming a flow.

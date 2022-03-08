@@ -11,7 +11,8 @@ Last updated: 8 Sept. 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
+from flowsa.location import US_FIPS
+from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import replace_strings_with_NoneType, \
@@ -341,7 +342,7 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    from flowsa.common import assign_census_regions
+    from flowsa.location import assign_census_regions
 
     # concatenate dataframe list into single dataframe
     df = pd.concat(df_list, sort=True)
@@ -573,7 +574,7 @@ def determine_flows_requiring_disaggregation(
             df_both3 = df_both3.drop(columns=['SubtractFlow'])
             # drop rows where 0
             # df_both = df_both[df_both['FlowAmount'] != 0]
-            df_merged = df_merged.append(df_both3, ignore_index=True)
+            df_merged = pd.concat([df_merged, df_both3], ignore_index=True)
         df_right = df_m[df_m['_merge'] == 'right_only']
         if len(df_right) != 0:
             df_right = df_right.drop(
@@ -586,7 +587,8 @@ def determine_flows_requiring_disaggregation(
             # reorder
             df_right = df_right[['FlowAmount', 'Location',
                                  sector_column, 'SectorMatch']]
-            df_not_merged = df_not_merged.append(df_right, ignore_index=True)
+            df_not_merged = pd.concat([df_not_merged, df_right],
+                                      ignore_index=True)
     # rename the flowamount column
     df_merged = df_merged.rename(columns={'FlowAmount': 'FlowAmountNew',
                                           sector_column: activity_column})

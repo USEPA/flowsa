@@ -19,10 +19,10 @@ import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.USGS_MYB_Common import *
 
-SPAN_YEARS = "2012-2016"
+SPAN_YEARS = "2012-2018"
 
 
-def usgs_lead_url_helper(*, build_url, **_):
+def usgs_lead_url_helper(*, year, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -33,6 +33,12 @@ def usgs_lead_url_helper(*, build_url, **_):
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
+    if int(year) < 2013:
+        build_url = 'https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2016-lead.xls'
+    elif int(year) < 2014:
+        build_url = 'https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-lead.xls'
+    else:
+        build_url = 'https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/atoms/files/myb1-2018-lead-adv.xlsx'
     url = build_url
     return [url]
 
@@ -63,7 +69,14 @@ def usgs_lead_call(*, resp, year, **_):
                            "space_4", "year_4", "space_5", "year_5"]
 
     col_to_use = ["Production", "Units"]
-    col_to_use.append(usgs_myb_year(SPAN_YEARS, year))
+    if int(year) == 2013:
+        modified_sy = "2013-2018"
+        col_to_use.append(usgs_myb_year(modified_sy, year))
+    elif int(year) > 2013:
+        modified_sy = "2014-2018"
+        col_to_use.append(usgs_myb_year(modified_sy, year))
+    else:
+        col_to_use.append(usgs_myb_year(SPAN_YEARS, year))
     for col in df_data.columns:
         if col not in col_to_use:
             del df_data[col]
@@ -105,10 +118,20 @@ def usgs_lead_parse(*, df_list, source, year, **_):
                 data["SourceName"] = source
                 data["Year"] = str(year)
                 data["Unit"] = "Metric Tons"
-                data['FlowName'] = name + " " + product + \
-                                   " " + df.iloc[index]["Production"]
+                data['FlowName'] = name + " " + product
                 data["ActivityProducedBy"] = df.iloc[index]["Production"]
-                col_name = usgs_myb_year(SPAN_YEARS, year)
+
+                if int(year) == 2013:
+                    modified_sy = "2013-2018"
+                    col_name = usgs_myb_year(modified_sy, year)
+                elif int(year) > 2013:
+                    modified_sy = "2014-2018"
+                    col_name = usgs_myb_year(modified_sy, year)
+                else:
+                    col_name = usgs_myb_year(SPAN_YEARS, year)
+
+
+
                 if str(df.iloc[index][col_name]) == "--":
                     data["FlowAmount"] = str(0)
                 else:

@@ -22,7 +22,7 @@ Data output saved as csv, retaining assigned file name "foss_landings.csv"
 
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.common import get_state_FIPS
+from flowsa.location import get_state_FIPS
 from flowsa.settings import externaldatapath
 
 
@@ -76,7 +76,7 @@ def noaa_parse(*, year, **_):
     # hardcode data
     df4["Class"] = "Money"
     df4["SourceName"] = "NOAA_Landings"
-    df4["FlowName"] = None
+    df4["FlowName"] = "Commercial"
     df4 = assign_fips_location_system(df4, year)
     df4["Unit"] = "$"
     df4["ActivityProducedBy"] = "All Species"
