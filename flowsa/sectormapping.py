@@ -24,12 +24,6 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
     :return: a pandas df for a standard ActivitytoSector mapping
     """
     from flowsa.settings import crosswalkpath
-    # first determine activity to sector mapping file name
-    if 'EPA_NEI' in source:
-        source = 'SCC'
-    if 'BEA' in source:
-        source = 'BEA_2012_Detail'
-
     # identify mapping file name
     mapfn = f'NAICS_Crosswalk_{source}'
 
@@ -41,7 +35,7 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
             external_mappingpath, mapfn, 'csv')
         if os.path.isfile(f"{external_mappingpath}"
                           f"{activity_mapping_source_name}.csv"):
-            log.info("Loading crosswalk from %s", external_mappingpath)
+            log.info(f"Loading {activity_mapping_source_name}.csv from {external_mappingpath}")
             crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
@@ -61,14 +55,15 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
         return mapping
 
 
-def add_sectors_to_flowbyactivity(
-        flowbyactivity_df, sectorsourcename=SECTOR_SOURCE_NAME,
+def add_sectors_to_flowbyactivity(flowbyactivity_df,
+        activity_to_sector_mapping=None, sectorsourcename=SECTOR_SOURCE_NAME,
         allocationmethod=None, overwrite_sectorlevel=None,
         fbsconfigpath=None):
     """
     Add Sectors from the Activity fields and mapped them to Sector
     from the crosswalk. No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
+    :param activity_to_sector_mapping: str, name for activity_to_sector mapping
     :param sectorsourcename: A sector source name, using package default
     :param allocationmethod: str, modifies function behavoir if = 'direct'
     :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
@@ -112,6 +107,8 @@ def add_sectors_to_flowbyactivity(
         # if source data activities are text strings, or sector-like
         # activities should be modified, call on the manually
         # created source crosswalks
+        if activity_to_sector_mapping:
+            s = activity_to_sector_mapping
         mapping = get_activitytosector_mapping(s, fbsconfigpath=fbsconfigpath)
         # filter by SectorSourceName of interest
         mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]

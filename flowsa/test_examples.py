@@ -1,7 +1,6 @@
 """
 Test functions work
 """
-
 import flowsa
 
 
@@ -17,3 +16,4 @@ def test_get_flows_by_sector():
 
 def test_write_bibliography():
     flowsa.writeFlowBySectorBibliography('Water_national_2015_m1')
+

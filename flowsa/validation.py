@@ -822,23 +822,31 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     return df
 
 
-def compare_FBS_results(fbs1_load, fbs2_load, ignore_metasources=False):
+def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
+                        compare_to_remote=False):
     """
     Compare a parquet on Data Commons to a parquet stored locally
-    :param fbs1_load: df, fbs format
-    :param fbs2_load: df, fbs format
+    :param fbs1: str, name of method 1
+    :param fbs2: str, name of method 2
     :param ignore_metasources: bool, True to compare fbs without
     matching metasources
+    :param compare_to_remote: bool, True to download fbs1 from remote and
+    compare to fbs2 generated here
     :return: df, comparison of the two dfs
     """
     import flowsa
 
-    # load first file (must be saved locally)
-    df1 = flowsa.getFlowBySector(fbs1_load).rename(
-        columns={'FlowAmount': 'FlowAmount_fbs1'})
+    # load first file
+    df1 = flowsa.getFlowBySector(fbs1,
+                                 download_FBS_if_missing=compare_to_remote
+                                 ).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
     df1 = replace_strings_with_NoneType(df1)
-    # load second file (must be saved locally)
-    df2 = flowsa.getFlowBySector(fbs2_load).rename(
+    # load second file
+    if compare_to_remote:
+        # Generate the FBS locally and then immediately load
+        flowsa.flowbysector.main(method=fbs2,
+                                 download_FBAs_if_missing=True)
+    df2 = flowsa.getFlowBySector(fbs2).rename(
         columns={'FlowAmount': 'FlowAmount_fbs2'})
     df2 = replace_strings_with_NoneType(df2)
     # compare df

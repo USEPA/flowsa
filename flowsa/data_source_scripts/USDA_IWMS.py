@@ -143,7 +143,7 @@ def disaggregate_iwms_to_6_digit_naics_for_water_withdrawal(df, attr, method,
     # applying to multiply NAICS
     df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment',
                                'Location'], keep='first', inplace=True)
-    years = [attr['allocation_source_year'] - 1]
+    years = attr['allocation_source_year'] - 1
     df = df[~df[sector_column].isna()].reset_index(drop=True)
     # drop aquaculture when disaggregating pastureland because water use for
     # aquaculture calculated separately

@@ -265,7 +265,7 @@ def main(**kwargs):
                 # of specified sector aggregation
                 log.info("Adding sectors to %s", k)
                 flows_subset_wsec = add_sectors_to_flowbyactivity(
-                    flows_subset_geo,
+                    flows_subset_geo, v.get('activity_to_sector_mapping'),
                     sectorsourcename=method['target_sector_source'],
                     allocationmethod=attr['allocation_method'],
                     fbsconfigpath=fbsconfigpath)
