@@ -192,7 +192,7 @@ def main(**kwargs):
             if "clean_fba_df_fxn" in v:
                 vLog.info("Cleaning up %s FlowByActivity", k)
                 flows_mapped = dynamically_import_fxn(
-                    k, v["clean_fba_df_fxn"])(flows_mapped)
+                    k, v["clean_fba_df_fxn"])(flows_mapped, v)
 
             # if activity_sets are specified in a file, call them here
             aset_names = return_activity_set_names(v, fbsconfigpath)
