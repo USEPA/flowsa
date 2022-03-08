@@ -203,8 +203,9 @@ def expand_naics_list(df, sectorsourcename):
 
 
 def get_fba_allocation_subset(fba_allocation, source, activitynames,
-                              flowSubsetMapped=None, allocMethod=None,
-                              activity_set_names=None, fbsconfigpath=None):
+                              sourceconfig=False, flowSubsetMapped=None,
+                              allocMethod=None, activity_set_names=None,
+                              fbsconfigpath=None):
     """
     Subset the fba allocation data based on NAICS associated with activity
     :param fba_allocation: df, FBA format
@@ -231,7 +232,9 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
 
     if check_activities_sector_like(source) is False:
         # read in source crosswalk
-        df = get_activitytosector_mapping(source, fbsconfigpath=fbsconfigpath)
+        df = get_activitytosector_mapping(
+            sourceconfig.get('activity_to_sector_mapping', source),
+            fbsconfigpath=fbsconfigpath)
         sec_source_name = df['SectorSourceName'][0]
         df = expand_naics_list(df, sec_source_name)
         # subset source crosswalk to only contain values

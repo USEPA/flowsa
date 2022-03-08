@@ -128,9 +128,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     # with activity subset
     log.info("Subsetting %s for sectors in %s", attr['allocation_source'], k)
     fba_allocation_subset = \
-        get_fba_allocation_subset(fba_allocation_wsec,
-                                  v.get('activity_to_sector_mapping', k),
-                                  names,
+        get_fba_allocation_subset(fba_allocation_wsec, k,
+                                  names, sourceconfig=v,
                                   flowSubsetMapped=flow_subset_mapped,
                                   allocMethod=attr['allocation_method'],
                                   fbsconfigpath=fbsconfigpath)
@@ -163,9 +162,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
               (fba_allocation_subset[fba_activity_fields[1]].isin(n_allocated))
               )].reset_index(drop=True)
         fba_allocation_subset_2 = \
-            get_fba_allocation_subset(fba_allocation_subset,
-                                      v.get('activity_to_sector_mapping', k),
-                                      [n],
+            get_fba_allocation_subset(fba_allocation_subset, k,
+                                      [n], sourceconfig=v,
                                       flowSubsetMapped=flow_subset_mapped,
                                       allocMethod=attr['allocation_method'],
                                       activity_set_names=aset_names,
