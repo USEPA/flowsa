@@ -66,6 +66,7 @@ source_names:
         allocation_from_scale: state
       activity_set_5: &use_allocation # mobile sources and fuel storage
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+        activity_to_sector_mapping: "BEA_2012_Detail"
         allocation_method: proportional
         allocation_source_class: "Money"
         allocation_source_year: 2012
@@ -89,6 +90,7 @@ source_names:
         clean_parameter: {"325310": 'ActivityProducedBy'}
       activity_set_7: # Gross Output
         allocation_source: "BEA_GDP_GrossOutput"
+        activity_to_sector_mapping: "BEA_2012_Detail"
         allocation_method: proportional
         allocation_source_class: "Money"
         allocation_source_year: 2017

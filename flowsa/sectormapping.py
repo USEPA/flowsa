@@ -24,10 +24,6 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
     :return: a pandas df for a standard ActivitytoSector mapping
     """
     from flowsa.settings import crosswalkpath
-    # first determine activity to sector mapping file name
-    if 'BEA' in source:
-        source = 'BEA_2012_Detail'
-
     # identify mapping file name
     mapfn = f'NAICS_Crosswalk_{source}'
 

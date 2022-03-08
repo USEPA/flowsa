@@ -516,7 +516,9 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # assign sector to allocation dataset
     log.info("Adding sectors to %s", fba_sourcename)
     fba_wsec = add_sectors_to_flowbyactivity(fba, sectorsourcename=method[
-        'target_sector_source'], fbsconfigpath=fbsconfigpath)
+        'target_sector_source'],
+        activity_to_sector_mapping=attr.get('activity_to_sector_mapping'),
+        fbsconfigpath=fbsconfigpath)
 
     # call on fxn to further clean up/disaggregate the fba
     # allocation data, if exists
