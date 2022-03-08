@@ -59,7 +59,8 @@ def stewicombo_to_sector(yaml_load):
 
     df = None
     if inventory_name is not None:
-        df = stewicombo.getInventory(inventory_name, True)
+        df = stewicombo.getInventory(inventory_name,
+                                     download_if_missing=True)
     if df is None:
         # run stewicombo to combine inventories, filter for LCI, remove overlap
         log.info('generating inventory in stewicombo')
@@ -137,7 +138,8 @@ def stewi_to_sector(yaml_load):
     df = pd.DataFrame()
     for database, year in yaml_load['inventory_dict'].items():
         inv = stewi.getInventory(
-            database, year, filter_for_LCI=True, US_States_Only=True)
+            database, year, filters=['filter_for_LCI', 'US_States_only'],
+            download_if_missing=True)
         inv['Year'] = year
         inv['MetaSources'] = database
         df = df.append(inv)
@@ -183,7 +185,9 @@ def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file):
     scc = pd.read_csv(scc_adjustmentpath + scc_file + '.csv', dtype='str')
 
     # obtain and prepare SCC dataset
-    df_fbp = stewi.getInventory('NEI', year, stewiformat='flowbyprocess')
+    df_fbp = stewi.getInventory('NEI', year,
+                                stewiformat='flowbyprocess',
+                                download_if_missing=True)
     df_fbp = df_fbp[df_fbp['Process'].isin(scc['source_scc'])]
     df_fbp['Source'] = 'NEI'
     df_fbp = addChemicalMatches(df_fbp)
@@ -233,9 +237,9 @@ def extract_facility_data(inventory_dict):
     facilities_list = []
     # load facility data from stewi output directory, keeping only the
     # facility IDs, and geographic information
-
     for database, year in inventory_dict.values():
-        facilities = stewi.getInventoryFacilities(database, year)
+        facilities = stewi.getInventoryFacilities(database, year,
+                                                  download_if_missing=True)
         facilities = facilities[['FacilityID', 'State', 'County', 'NAICS']]
         if len(facilities[facilities.duplicated(
                 subset='FacilityID', keep=False)]) > 0:
@@ -263,7 +267,8 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     # Access NAICS From facility matcher and assign based on FRS_ID
     all_NAICS = \
         facilitymatcher.get_FRS_NAICSInfo_for_facility_list(
-            frs_id_list=None, inventories_of_interest_list=inventory_list)
+            frs_id_list=None, inventories_of_interest_list=inventory_list,
+            download_if_missing=True)
     all_NAICS = all_NAICS.loc[all_NAICS['PRIMARY_INDICATOR'] == 'PRIMARY']
     all_NAICS.drop(columns=['PRIMARY_INDICATOR'], inplace=True)
     all_NAICS = naics_expansion(all_NAICS)

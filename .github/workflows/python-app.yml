@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint 
+# This workflow will install Python dependencies, run tests and lint
 # across operating systems, select versions of Python, and user + dev environments
 # For more info see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
@@ -15,9 +15,9 @@ on:
       - '.gitignore'
   pull_request:
     branches: [master, develop]
-    types: [opened, reopened]   # excludes syncronize to avoid redundant trigger from commits on PRs 
+    types: [opened, reopened]   # excludes syncronize to avoid redundant trigger from commits on PRs
     paths-ignore:
-      - '**.md'  
+      - '**.md'
       - '**.bib'
       - '**.ya?ml'
       - 'LICENSE'
@@ -32,33 +32,33 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         py-version: ['3.7', '3.8', '3.9', '3.10']
-        
+
     steps:
     - uses: actions/checkout@v2
-    
+
     # general Python setup
     - name: Set up Python ${{ matrix.py-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.py-version }}
-        
+
     - name: Update pip & install testing pkgs
       run: |
         python -VV
         python -m pip install --upgrade pip setuptools wheel
         pip install pytest pytest-cov flake8
-        
+
     # install package & dependencies
     - name: Install package and dependencies
       run: |
         pip install .
-        
+
     # linting & pytest
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        
+
     - name: Test with pytest
       run: |
         pytest --doctest-modules
