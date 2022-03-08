@@ -260,7 +260,7 @@ def sector_aggregation(df_load, group_cols):
             agg_sectors = aggregator(dfm, group_cols)
             # append to df
             agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
-            df = df.append(agg_sectors, sort=False).reset_index(drop=True)
+            df = pd.concat([df, agg_sectors], ignore_index=True)
     df = df.drop_duplicates()
 
     # if activities are source-like, set col values as
@@ -532,9 +532,11 @@ def return_activity_from_scale(df, provided_from_scale):
                 unique_activities_sub, unique_activities_i, which='both')
 
             # append unique activities and df with defined activity_from_scale
-            unique_activities_sub = unique_activities_sub.append(
-                df_missing_i[[fba_activity_fields[0], fba_activity_fields[1]]])
-            df_existing = df_existing.append(df_missing_i)
+            unique_activities_sub = pd.concat([unique_activities_sub,
+                df_missing_i[[fba_activity_fields[0], fba_activity_fields[1]]]],
+                                              ignore_index=True)
+            df_existing = pd.concat([df_existing, df_missing_i],
+                                    ignore_index=True)
             df_missing = dataframe_difference(
                 df_missing[[fba_activity_fields[0], fba_activity_fields[1]]],
                 df_existing_i[[fba_activity_fields[0],
