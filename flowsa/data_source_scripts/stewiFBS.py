@@ -12,6 +12,7 @@ Requires StEWI >= 0.9.5. https://github.com/USEPA/standardizedinventories
 """
 
 import sys
+import os
 import pandas as pd
 from esupy.dqi import get_weighted_average
 from flowsa.flowbyfunctions import assign_fips_location_system
@@ -24,7 +25,7 @@ from flowsa.settings import log, scc_adjustmentpath
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
-def stewicombo_to_sector(yaml_load):
+def stewicombo_to_sector(yaml_load, fbsconfigpath=None):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
     :param yaml_load: which may contain the following elements:
@@ -41,6 +42,7 @@ def stewicombo_to_sector(yaml_load):
         compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
         functions: list of functions (str) to call for additional processing
+    :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
     :return: df, FBS format
     """
 
@@ -93,7 +95,8 @@ def stewicombo_to_sector(yaml_load):
         df = reassign_scc_to_sectors(
             df, yaml_load['inventory_dict']['NEI'],
             NAICS_level_value,
-            yaml_load['reassign_scc_to_sectors'])
+            yaml_load['reassign_scc_to_sectors'],
+            fbsconfigpath)
 
     df['MetaSources'] = df['Source']
 
@@ -106,7 +109,7 @@ def stewicombo_to_sector(yaml_load):
     return fbs
 
 
-def stewi_to_sector(yaml_load):
+def stewi_to_sector(yaml_load, *_):
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
     :param yaml_load: which may contain the following elements:
@@ -160,7 +163,8 @@ def stewi_to_sector(yaml_load):
     return fbs
 
 
-def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file):
+def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file,
+                            fbsconfigpath):
     """
     Reassigns emissions from a specific SCC/NAICS combination to a new NAICS.
 
@@ -169,13 +173,21 @@ def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file):
     :param NAICS_level_value: desired NAICS aggregation level,
         using sector_level_key, should match target_sector_level
     :param scc_file:
+    :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
     :return: df
     """
     import stewi
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
 
-    scc = pd.read_csv(scc_adjustmentpath + scc_file + '.csv', dtype='str')
+    scc_path = f"{scc_adjustmentpath}{scc_file}.csv"
+    if fbsconfigpath:
+        scc_out_path = f"{fbsconfigpath}scc_adjustments/{scc_file}.csv"
+        if os.path.isfile(scc_out_path):
+            scc_path = scc_out_path
+            log.info(f"modifying sccs from {scc_path}")
+    log.info(f"modifying sccs from {scc_path}")
+    scc = pd.read_csv(scc_path, dtype='str')
 
     # obtain and prepare SCC dataset
     df_fbp = stewi.getInventory('NEI', year,
