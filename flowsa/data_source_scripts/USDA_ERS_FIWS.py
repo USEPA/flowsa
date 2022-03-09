@@ -11,7 +11,7 @@ Downloads the February 5, 2020 update
 import zipfile
 import io
 import pandas as pd
-from flowsa.common import US_FIPS, get_all_state_FIPS_2, us_state_abbrev
+from flowsa.location import US_FIPS, get_all_state_FIPS_2, us_state_abbrev
 
 
 def fiws_call(*, resp, **_):
