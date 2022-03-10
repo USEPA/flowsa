@@ -62,28 +62,8 @@ def bea_use_detail_br_parse(*, year, **_):
                f'_Detail_Use_PRO_BeforeRedef.csv'
     df_raw = pd.read_csv(csv_load)
 
-    # first column is the commodity being consumed
-    df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
-
-    # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["ActivityProducedBy"],
-                 var_name="ActivityConsumedBy",
-                 value_name="FlowAmount")
-
-    df['Year'] = str(year)
-    # hardcode data
-    df['FlowName'] = "USD" + str(year)
-    df["Class"] = "Money"
-    df["FlowType"] = "TECHNOSPHERE_FLOW"
-    df['Description'] = 'BEA_2012_Detail_Code'
+    df = bea_detail_parse(df_raw, year)
     df["SourceName"] = "BEA_Use_Detail_PRO_BeforeRedef"
-    df["Location"] = US_FIPS
-    df['LocationSystem'] = "FIPS_2015"
-    # original unit in million USD
-    df['FlowAmount'] = df['FlowAmount'] * 1000000
-    df["Unit"] = "USD"
-    df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  # tmp
 
     return df
 
@@ -96,10 +76,17 @@ def bea_make_detail_br_parse(*, year, **_):
         flowbyactivity specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(year) +
-                         "_Detail_Make_BeforeRedef.csv")
+    csv_load = f'{externaldatapath}BEA_{str(year)}' \
+               f'_Detail_Make_BeforeRedef.csv'
+    df_raw = pd.read_csv(csv_load)
 
-    # first column is the industry
+    df = bea_detail_parse(df_raw, year)
+    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
+
+    return df
+
+
+def bea_detail_parse(df_raw, year):
     df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
 
     # use "melt" fxn to convert colummns into rows
@@ -109,11 +96,10 @@ def bea_make_detail_br_parse(*, year, **_):
 
     df['Year'] = str(year)
     # hardcode data
-    df['FlowName'] = "USD" + str(year)
+    df['FlowName'] = f"USD{str(year)}"
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
-    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
     # original unit in million USD
@@ -121,7 +107,6 @@ def bea_make_detail_br_parse(*, year, **_):
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
-
     return df
 
 
