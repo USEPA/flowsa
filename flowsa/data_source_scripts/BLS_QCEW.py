@@ -134,18 +134,17 @@ def bls_qcew_parse(*, df_list, year, **_):
     return df
 
 
-def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
+def clean_bls_qcew_fba_for_employment_sat_table(fba, **_):
     """
     When creating the employment satellite table for use in useeior,
-    modify the flow name to match prior methodology for mapping/impact factors
+    modify the flow name to match prior methodology for mapping/impact factors.
+    clean_fba_df_fxn
 
-    :param fba_df: df, flowbyactivity
-    :param kwargs: dictionary, can include attr, a dictionary of parameters
-        in the FBA method yaml
+    :param fba: df, flowbyactivity
     :return: df, flowbyactivity, with modified flow names
     """
 
-    fba_df = clean_bls_qcew_fba(fba_df, **kwargs)
+    fba_df = clean_bls_qcew_fba(fba)
 
     # rename flowname value
     for c in ['FlowName', 'Flowable']:

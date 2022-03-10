@@ -436,7 +436,7 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(
     return df2
 
 
-def mecs_land_fba_cleanup(fba):
+def mecs_land_fba_cleanup(fba, **_):
     """
     Modify the EIA MECS Land FBA
     :param fba: df, EIA MECS Land FBA format
@@ -452,7 +452,7 @@ def mecs_land_fba_cleanup(fba):
     return fba
 
 
-def mecs_land_fba_cleanup_for_land_2012_fbs(fba):
+def mecs_land_fba_cleanup_for_land_2012_fbs(fba, **_):
     """
     The 'land_national_2012' FlowBySector uses MECS 2014 data, set
     MECS year to 2012
@@ -460,7 +460,7 @@ def mecs_land_fba_cleanup_for_land_2012_fbs(fba):
     :return: df, EIA MECS Land FBA modified
     """
 
-    fba = mecs_land_fba_cleanup(fba)
+    fba = mecs_land_fba_cleanup(fba=fba)
 
     # reset the EIA MECS Land year from 2014 to 2012 to match
     # the USDA ERS MLU year

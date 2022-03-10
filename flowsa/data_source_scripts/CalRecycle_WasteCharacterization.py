@@ -108,13 +108,11 @@ def calR_parse(*, year, **_):
     return output
 
 
-def keep_generated_quantity(fba, **kwargs):
+def keep_generated_quantity(fba, **_):
     """
     Function to clean CalRecycles FBA to remove quantities not
     assigned as Generated
     :param fba: df, FBA format
-    :param kwargs: dictionary, can include attr, a dictionary of parameters in
-        the FBA method yaml
     :return: df, modified CalRecycles FBA
     """
     fba = fba[fba['Description'] == 'Generated']

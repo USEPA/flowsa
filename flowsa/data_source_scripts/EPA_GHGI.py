@@ -658,7 +658,7 @@ def get_manufacturing_energy_ratios(year):
     return pct_dict
 
 
-def allocate_industrial_combustion(df):
+def allocate_industrial_combustion(fba, **_):
     """
     Split industrial combustion emissions into two buckets to be further allocated.
 
@@ -677,20 +677,21 @@ def allocate_industrial_combustion(df):
                            'Natural gas industrial': 'Natural Gas'}
 
     for activity, fuel in activities_to_split.items():
-        df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
+        df_subset = fba.loc[fba['ActivityProducedBy'] == activity].reset_index(drop=True)
         if len(df_subset) == 0:
             continue
         df_subset['FlowAmount'] = df_subset['FlowAmount'] * pct_dict[fuel]
         df_subset['ActivityProducedBy'] = f"{activity} - Manufacturing"
-        df.loc[df['ActivityProducedBy'] == activity,
-               'FlowAmount'] = df['FlowAmount'] * (1-pct_dict[fuel])
-        df = pd.concat([df, df_subset], ignore_index=True)
+        fba.loc[fba['ActivityProducedBy'] == activity,
+               'FlowAmount'] = fba['FlowAmount'] * (1-pct_dict[fuel])
+        fba = pd.concat([fba, df_subset], ignore_index=True)
 
-    return df
+    return fba
 
 
 def split_HFCs_by_type(df):
-    """Speciates HFCs and PFCs for all activities based on T_4_99."""
+    """Speciates HFCs and PFCs for all activities based on T_4_99.
+    clean_fba_before_mapping_df_fxn"""
     splits = load_fba_w_standardized_units(datasource='EPA_GHGI_T_4_99',
                                            year=df['Year'][0])
     splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
