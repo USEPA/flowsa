@@ -24,12 +24,6 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
     :return: a pandas df for a standard ActivitytoSector mapping
     """
     from flowsa.settings import crosswalkpath
-    # first determine activity to sector mapping file name
-    if 'EPA_NEI' in source:
-        source = 'SCC'
-    if 'BEA' in source:
-        source = 'BEA_2012_Detail'
-
     # identify mapping file name
     mapfn = f'NAICS_Crosswalk_{source}'
 
@@ -41,7 +35,7 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
             external_mappingpath, mapfn, 'csv')
         if os.path.isfile(f"{external_mappingpath}"
                           f"{activity_mapping_source_name}.csv"):
-            log.info("Loading crosswalk from %s", external_mappingpath)
+            log.info(f"Loading {activity_mapping_source_name}.csv from {external_mappingpath}")
             crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
@@ -61,14 +55,15 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
         return mapping
 
 
-def add_sectors_to_flowbyactivity(
-        flowbyactivity_df, sectorsourcename=SECTOR_SOURCE_NAME,
+def add_sectors_to_flowbyactivity(flowbyactivity_df,
+        activity_to_sector_mapping=None, sectorsourcename=SECTOR_SOURCE_NAME,
         allocationmethod=None, overwrite_sectorlevel=None,
         fbsconfigpath=None):
     """
     Add Sectors from the Activity fields and mapped them to Sector
     from the crosswalk. No allocation is performed.
     :param flowbyactivity_df: A standard flowbyactivity data frame
+    :param activity_to_sector_mapping: str, name for activity_to_sector mapping
     :param sectorsourcename: A sector source name, using package default
     :param allocationmethod: str, modifies function behavoir if = 'direct'
     :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
@@ -112,6 +107,8 @@ def add_sectors_to_flowbyactivity(
         # if source data activities are text strings, or sector-like
         # activities should be modified, call on the manually
         # created source crosswalks
+        if activity_to_sector_mapping:
+            s = activity_to_sector_mapping
         mapping = get_activitytosector_mapping(s, fbsconfigpath=fbsconfigpath)
         # filter by SectorSourceName of interest
         mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
@@ -206,8 +203,9 @@ def expand_naics_list(df, sectorsourcename):
 
 
 def get_fba_allocation_subset(fba_allocation, source, activitynames,
-                              flowSubsetMapped=None, allocMethod=None,
-                              activity_set_names=None, fbsconfigpath=None):
+                              sourceconfig=False, flowSubsetMapped=None,
+                              allocMethod=None, activity_set_names=None,
+                              fbsconfigpath=None):
     """
     Subset the fba allocation data based on NAICS associated with activity
     :param fba_allocation: df, FBA format
@@ -234,7 +232,9 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
 
     if check_activities_sector_like(source) is False:
         # read in source crosswalk
-        df = get_activitytosector_mapping(source, fbsconfigpath=fbsconfigpath)
+        df = get_activitytosector_mapping(
+            sourceconfig.get('activity_to_sector_mapping', source),
+            fbsconfigpath=fbsconfigpath)
         sec_source_name = df['SectorSourceName'][0]
         df = expand_naics_list(df, sec_source_name)
         # subset source crosswalk to only contain values
@@ -415,14 +415,48 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
     return fbs_mapped, mapping_files
 
 
-def get_sector_list(sector_level):
+def get_sector_list(sector_level, secondary_sector_level_dict=None):
     """
     Create a sector list at the specified sector level
     :param sector_level: str, NAICS level
+    :param secondary_sector_level_dict: dict, additional sectors to keep,
+    key is the secondary target NAICS level, value is a list of NAICS at the
+    "sector_level" that should also include a further disaggregated subset
+    of the data
+    ex. sector_level = 'NAICS_4'
+        secondary_sector_level_dict = {'NAICS_6': ['1133', '1125']}
     :return: list, sectors at specified sector level
     """
-
+    # load crosswalk
     cw = load_crosswalk('sector_length')
-    sector_list = cw[sector_level].unique().tolist()
+
+    # first determine if there are sectors in a secondary target sector
+    # level that should be included in the sector list. If there are,
+    # add the sectors at the specified sector length and add the parent
+    # sectors at the target sector length to a list to be dropped from
+    # the sector list.
+
+    # create empty lists for sector list and parent sectors to drop
+    sector_list = []
+    sector_drop = []
+    # loop through identified secondary sector levels in a dictionary
+    if secondary_sector_level_dict is not None:
+        for k, v in secondary_sector_level_dict.items():
+            cw_melt = cw.melt(
+                id_vars=[k], var_name="NAICS_Length",
+                value_name="NAICS_Match").drop_duplicates()
+            cw_sub = cw_melt[cw_melt['NAICS_Match'].isin(v)]
+            sector_add = cw_sub[k].unique().tolist()
+            sector_list = sector_list + sector_add
+            sector_drop = sector_drop + v
+
+    # sectors at primary sector level
+    sector_col = cw[[sector_level]].drop_duplicates()
+    # drop any sectors that are already accounted for at a secondary sector
+    # length
+    sector_col = sector_col[~sector_col[sector_level].isin(sector_drop)]
+    # add sectors to list
+    sector_add = sector_col[sector_level].tolist()
+    sector_list = sector_list + sector_add
 
     return sector_list

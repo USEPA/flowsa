@@ -167,10 +167,11 @@ def writeFlowBySectorBibliography(methodname):
     generate_fbs_bibliography(methodname)
 
 
-def seeAvailableFlowByModels(flowbytype):
+def seeAvailableFlowByModels(flowbytype, print_method=True):
     """
     Return available Flow-By-Activity or Flow-By-Sector models
     :param flowbytype: 'FBA' or 'FBS'
+    :param print_method: False to skip printing to console
     :return: console printout of available models
     """
 
@@ -206,8 +207,9 @@ def seeAvailableFlowByModels(flowbytype):
     else:
         data_print = fb_df
 
-    # print data in human-readable format
-    pprint.pprint(data_print, width=79, compact=True)
+    if print_method:
+        # print data in human-readable format
+        pprint.pprint(data_print, width=79, compact=True)
     return data_print
 
 

@@ -46,15 +46,15 @@ def direct_allocation_method(fbs, k, names, method):
             fbs = fbs[~((fbs[fba_activity_fields[0]].isin(n_allocated)) |
                       (fbs[fba_activity_fields[1]].isin(n_allocated))
                         )].reset_index(drop=True)
-            log.debug('Checking for %s at %s',
-                      n, method['target_sector_level'])
+            log.debug('Checking for %s at target sector level', n)
             fbs_subset = \
                 fbs[(fbs[fba_activity_fields[0]] == n) |
                     (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
             # check if an Activity maps to more than one sector,
             # if so, equally allocate
             fbs_subset = equal_allocation(fbs_subset)
-            fbs_subset = equally_allocate_parent_to_child_naics(fbs_subset, method['target_sector_level'])
+            fbs_subset = equally_allocate_parent_to_child_naics(
+                fbs_subset, method)
             activity_list.append(fbs_subset)
             n_allocated.append(n)
         fbs = pd.concat(activity_list, ignore_index=True)
@@ -128,7 +128,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     # with activity subset
     log.info("Subsetting %s for sectors in %s", attr['allocation_source'], k)
     fba_allocation_subset = \
-        get_fba_allocation_subset(fba_allocation_wsec, k, names,
+        get_fba_allocation_subset(fba_allocation_wsec, k,
+                                  names, sourceconfig=v,
                                   flowSubsetMapped=flow_subset_mapped,
                                   allocMethod=attr['allocation_method'],
                                   fbsconfigpath=fbsconfigpath)
@@ -161,7 +162,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
               (fba_allocation_subset[fba_activity_fields[1]].isin(n_allocated))
               )].reset_index(drop=True)
         fba_allocation_subset_2 = \
-            get_fba_allocation_subset(fba_allocation_subset, k, [n],
+            get_fba_allocation_subset(fba_allocation_subset, k,
+                                      [n], sourceconfig=v,
                                       flowSubsetMapped=flow_subset_mapped,
                                       allocMethod=attr['allocation_method'],
                                       activity_set_names=aset_names,
@@ -269,10 +271,13 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         fba_dict['clean_fba'] = attr['clean_helper_fba']
     if 'clean_helper_fba_wsec' in attr:
         fba_dict['clean_fba_w_sec'] = attr['clean_helper_fba_wsec']
+    if 'helper_activity_to_sector_mapping' in attr:
+        fba_dict['activity_to_sector_mapping'] = attr['helper_activity_to_sector_mapping']
 
     # load the allocation FBA
     helper_allocation = \
-        load_map_clean_fba(method, attr, fba_sourcename=attr['helper_source'],
+        load_map_clean_fba(method, attr,
+                           fba_sourcename=attr['helper_source'],
                            df_year=attr['helper_source_year'],
                            flowclass=attr['helper_source_class'],
                            geoscale_from=attr['helper_from_scale'],
@@ -425,8 +430,7 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
                          'Denominator', 'FlowAmountRatio'])
         # run sector aggregation
         modified_fba_allocation = \
-            sector_aggregation(modified_fba_allocation,
-                               fba_wsec_default_grouping_fields)
+            sector_aggregation(modified_fba_allocation)
 
     # drop rows of 0
     modified_fba_allocation =\
@@ -509,9 +513,14 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     fba = fba.reset_index(drop=True)
 
     # assign sector to allocation dataset
+    activity_to_sector_mapping = attr.get('activity_to_sector_mapping')
+    if 'activity_to_sector_mapping' in kwargs:
+        activity_to_sector_mapping = kwargs.get('activity_to_sector_mapping')
     log.info("Adding sectors to %s", fba_sourcename)
     fba_wsec = add_sectors_to_flowbyactivity(fba, sectorsourcename=method[
-        'target_sector_source'], fbsconfigpath=fbsconfigpath)
+        'target_sector_source'],
+        activity_to_sector_mapping=activity_to_sector_mapping,
+        fbsconfigpath=fbsconfigpath)
 
     # call on fxn to further clean up/disaggregate the fba
     # allocation data, if exists

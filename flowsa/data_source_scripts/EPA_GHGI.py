@@ -418,7 +418,7 @@ def ghg_parse(*, df_list, year, config, **_):
         multi_chem_names = ["2-1", "4-46", "5-7", "5-29", "ES-5"]
         source_No_activity = ["3-22", "3-22b"]
         # Handle tables with 1 parent level category
-        source_activity_1 = ["3-8", "3-9", "3-10", "3-14", "3-15",
+        source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-14", "3-15",
                              "5-18", "5-19", "A-76", "A-77",  "A-103"]
         # Tables with sub categories
         source_activity_2 =  ["3-38", "3-63"]

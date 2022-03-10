@@ -574,7 +574,7 @@ def determine_flows_requiring_disaggregation(
             df_both3 = df_both3.drop(columns=['SubtractFlow'])
             # drop rows where 0
             # df_both = df_both[df_both['FlowAmount'] != 0]
-            df_merged = df_merged.append(df_both3, ignore_index=True)
+            df_merged = pd.concat([df_merged, df_both3], ignore_index=True)
         df_right = df_m[df_m['_merge'] == 'right_only']
         if len(df_right) != 0:
             df_right = df_right.drop(
@@ -587,7 +587,8 @@ def determine_flows_requiring_disaggregation(
             # reorder
             df_right = df_right[['FlowAmount', 'Location',
                                  sector_column, 'SectorMatch']]
-            df_not_merged = df_not_merged.append(df_right, ignore_index=True)
+            df_not_merged = pd.concat([df_not_merged, df_right],
+                                      ignore_index=True)
     # rename the flowamount column
     df_merged = df_merged.rename(columns={'FlowAmount': 'FlowAmountNew',
                                           sector_column: activity_column})
