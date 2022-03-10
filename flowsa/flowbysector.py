@@ -182,7 +182,8 @@ def main(**kwargs):
             if "clean_fba_before_mapping_df_fxn" in v:
                 vLog.info("Cleaning up %s FlowByActivity", k)
                 flows = dynamically_import_fxn(
-                    k, v["clean_fba_before_mapping_df_fxn"])(flows)
+                    k, v["clean_fba_before_mapping_df_fxn"])(fba=flows,
+                                                             source_dict=v)
 
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \

@@ -689,18 +689,18 @@ def allocate_industrial_combustion(fba, **_):
     return fba
 
 
-def split_HFCs_by_type(df):
+def split_HFCs_by_type(fba, **_):
     """Speciates HFCs and PFCs for all activities based on T_4_99.
     clean_fba_before_mapping_df_fxn"""
     splits = load_fba_w_standardized_units(datasource='EPA_GHGI_T_4_99',
-                                           year=df['Year'][0])
+                                           year=fba['Year'][0])
     splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
     splits = splits[['FlowName', 'pct']]
 
-    speciated_df = df.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
+    speciated_df = fba.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
                             axis=1, result_type='expand')
     speciated_df.columns = splits['FlowName']
-    speciated_df = pd.concat([df, speciated_df], axis=1)
+    speciated_df = pd.concat([fba, speciated_df], axis=1)
     speciated_df = speciated_df.melt(id_vars=flow_by_activity_fields.keys(),
                                      var_name='Flow')
     speciated_df['FlowName'] = speciated_df['Flow']
@@ -780,20 +780,20 @@ def split_HFC_foams(df):
     return df
 
 
-def clean_HFC_fba(df):
+def clean_HFC_fba(fba, **_):
     """Adjust HFC emissions for improved parsing.
     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_101."""
-    df = subtract_HFC_transport_emissions(df)
+    df = subtract_HFC_transport_emissions(fba)
     df = allocate_HFC_to_residential(df)
     df = split_HFC_foams(df)
     df = split_HFCs_by_type(df)
     return df
 
 
-def remove_HFC_kt(df):
+def remove_HFC_kt(fba, **_):
     """Remove records of emissions in kt, data are also provided in MMT CO2e.
     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_50."""
-    return df.loc[df['Unit'] != 'kt']
+    return fba.loc[fba['Unit'] != 'kt']
 
 
 def adjust_transport_activities(df, **_):
