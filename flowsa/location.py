@@ -129,6 +129,7 @@ def update_geoscale(df, to_scale):
         df.loc[:, 'Location'] = US_FIPS
     return df
 
+
 def get_state_FIPS(year='2015'):
     """
     Filters FIPS df for state codes only
@@ -295,7 +296,8 @@ def merge_urb_cnty_pct(df):
         log.error('LocationSystem column contains non-FIPS labels')
         return None  # check derived from flowsa FBA format specs
     elif any(df['Location'].str.len() != 5):
-        log.error('One or more FIPS codes are not expressed as 5-digits; review data')
+        log.error('One or more FIPS codes are not expressed as 5-digits;'
+                  'review data')
         return None
 
     # expects uniform LocationSystem values (i.e., single FIPS_yyyy year code)
@@ -344,18 +346,20 @@ def get_census_cnty_tbl(year):
     calculate each area's urban population percentage.
     :param year: integer data year from a LocationSystem column (FIPS_yyyy)
     """
-    cnty_url = 'https://www2.census.gov/geo/docs/reference/ua/PctUrbanRural_County.txt'
+    cnty_url = ('https://www2.census.gov/geo/docs/'
+                'reference/ua/PctUrbanRural_County.txt')
 
     # screen for data availability; limited to 2010-2019 for now
-    if (year - (year%10)) != 2010:
+    if (year - (year % 10)) != 2010:
         log.error('County-level data year not yet available')
         return None
 
     try:
         df = pd.read_csv(cnty_url, encoding='iso-8859-1',
-                          usecols = ['STATE','COUNTY','POP_COU','POP_URBAN'])
+                         usecols=['STATE', 'COUNTY', 'POP_COU', 'POP_URBAN'])
     except urllib.error.HTTPError:
-        log.error(f'File unavailable, check Census domain status: \n{cnty_url}')
+        log.error(f'File unavailable, check Census domain status: '
+                  f'\n{cnty_url}')
         return None
 
     df['STATE'] = df['STATE'].apply(lambda x: '{0:0>2}'.format(x))
@@ -379,17 +383,17 @@ def shift_census_cnty_tbl(df, year):
     :param df: pandas df from get_census_cnty_tbl
     :param year: integer data year from a LocationSystem column (FIPS_yyyy)
     """
-    decade = (year - year%10)  # previous decennial census year
-    if year == decade: # if already a decennial census year
+    decade = (year - year % 10)  # previous decennial census year
+    if year == decade:  # if already a decennial census year
         df['Location'] = df[f'FIPS_{decade}']
-        df = df[['Location','pct_pop_urb']]  # keep only necessary cols
+        df = df[['Location', 'pct_pop_urb']]  # keep only necessary cols
         return df
     # splits identified by duplicated 'FIPS_{decade}' codes (A-->B, A-->C)
         # i.e., join by ['FIPS_{decade}'] field ensures pct_pop_urb inheritance
     # merges identified by duplicated 'FIPS_{year}' codes (A-->C, B-->C)
         # e.g., 51019 & 51515 --> 51019
     fips_xwalk = pd.read_csv(datapath + 'FIPS_Crosswalk.csv', dtype=str,
-                             usecols = [f'FIPS_{decade}',f'FIPS_{year}'])
+                             usecols=[f'FIPS_{decade}', f'FIPS_{year}'])
     df = pd.merge(df, fips_xwalk, how='left', on=f'FIPS_{decade}')
 
     # sums population counts where code-year values are duplicated
@@ -399,8 +403,9 @@ def shift_census_cnty_tbl(df, year):
                                .transform('sum'))
     df['pct_pop_urb'] = df[f'POP_URBAN_{year}'] / df[f'POP_COU_{year}']
     df['Location'] = df[f'FIPS_{year}']
-    df = df[['Location','pct_pop_urb']].drop_duplicates()
+    df = df[['Location', 'pct_pop_urb']].drop_duplicates()
     return df
+
 
 def reshape_urb_rur_df(df):
     """
@@ -419,13 +424,14 @@ def reshape_urb_rur_df(df):
     # grab list of "id_vars" we want to preserve
     df_id_vars = df.columns[~df.columns.str.match(r'pct_pop_\w{3}')].tolist()
     # rename pct_pop_X columns to pre-emptively label SubCompartment
-    df = df.rename(columns={'pct_pop_urb':'urban', 'pct_pop_rur':'rural'})
-    df = pd.melt(df, id_vars = df_id_vars,
-                 value_vars=['urban','rural'],
+    df = df.rename(columns={'pct_pop_urb': 'urban', 'pct_pop_rur': 'rural'})
+    df = pd.melt(df, id_vars=df_id_vars,
+                 value_vars=['urban', 'rural'],
                  var_name='SubCompartment', value_name='pct_pop')
     # drop 0-value rows + duplicates (i.e., nan vals passed in pct_pop_urb col)
-    df = df[df['pct_pop']!=0].drop_duplicates()
+    df = df[df['pct_pop'] != 0].drop_duplicates()
     df['FlowAmount'] = df['FlowAmount']*df['pct_pop']
-    df['Compartment'] = df['Compartment'] + '/' + df['SubCompartment'] # append
-    df = df.drop(columns=['SubCompartment','pct_pop'])
+    # append
+    df['Compartment'] = df['Compartment'] + '/' + df['SubCompartment']
+    df = df.drop(columns=['SubCompartment', 'pct_pop'])
     return df
