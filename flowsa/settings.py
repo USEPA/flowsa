@@ -15,7 +15,7 @@ except NameError:
 datapath = MODULEPATH + 'data/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 externaldatapath = datapath + 'external_data/'
-scc_adjustmentpath = datapath + 'scc_adjustments/'
+process_adjustmentpath = datapath + 'process_adjustments/'
 
 methodpath = MODULEPATH + 'methods/'
 sourceconfigpath = methodpath + 'flowbyactivitymethods/'

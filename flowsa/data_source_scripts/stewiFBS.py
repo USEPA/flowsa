@@ -21,7 +21,7 @@ from flowsa.sectormapping import map_flows
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.common import load_crosswalk, sector_level_key
 from flowsa.schema import flow_by_sector_fields
-from flowsa.settings import log, scc_adjustmentpath
+from flowsa.settings import log, process_adjustmentpath
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
@@ -91,11 +91,11 @@ def stewicombo_to_sector(yaml_load, fbsconfigpath=None):
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    if 'reassign_scc_to_sectors' in yaml_load:
-        df = reassign_scc_to_sectors(
+    if 'reassign_process_to_sectors' in yaml_load:
+        df = reassign_process_to_sectors(
             df, yaml_load['inventory_dict']['NEI'],
             NAICS_level_value,
-            yaml_load['reassign_scc_to_sectors'],
+            yaml_load['reassign_process_to_sectors'],
             fbsconfigpath)
 
     df['MetaSources'] = df['Source']
@@ -163,10 +163,11 @@ def stewi_to_sector(yaml_load, *_):
     return fbs
 
 
-def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file,
+def reassign_process_to_sectors(df, year, NAICS_level_value, scc_file,
                             fbsconfigpath):
     """
-    Reassigns emissions from a specific SCC/NAICS combination to a new NAICS.
+    Reassigns emissions from a specific process or SCC and NAICS combination
+    to a new NAICS.
 
     :param df: a dataframe of emissions and mapped faciliites from stewicombo
     :param year: year as str
@@ -180,20 +181,20 @@ def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file,
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
 
-    scc_path = f"{scc_adjustmentpath}{scc_file}.csv"
+    scc_path = f"{process_adjustmentpath}{scc_file}.csv"
     if fbsconfigpath:
-        scc_out_path = f"{fbsconfigpath}scc_adjustments/{scc_file}.csv"
+        scc_out_path = f"{fbsconfigpath}process_adjustments/{scc_file}.csv"
         if os.path.isfile(scc_out_path):
             scc_path = scc_out_path
-            log.info(f"modifying sccs from {scc_path}")
-    log.info(f"modifying sccs from {scc_path}")
+            log.info(f"modifying processes from {scc_path}")
+    log.info(f"modifying processes from {scc_path}")
     scc = pd.read_csv(scc_path, dtype='str')
 
     # obtain and prepare SCC dataset
     df_fbp = stewi.getInventory('NEI', year,
                                 stewiformat='flowbyprocess',
                                 download_if_missing=True)
-    df_fbp = df_fbp[df_fbp['Process'].isin(scc['source_scc'])]
+    df_fbp = df_fbp[df_fbp['Process'].isin(scc['source_process'])]
     df_fbp['Source'] = 'NEI'
     df_fbp = addChemicalMatches(df_fbp)
     df_fbp = remove_default_flow_overlaps(df_fbp, SCC=True)
@@ -208,7 +209,7 @@ def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file,
     #TODO: expand naics list in scc file to include child naics automatically
     df_fbp = df_fbp.merge(scc, how='inner',
                           left_on=['NAICS', 'Process'],
-                          right_on=['source_naics', 'source_scc'])
+                          right_on=['source_naics', 'source_process'])
 
     # subtract emissions by SCC from specific facilities
     df_emissions = df_fbp.groupby(['FacilityID', 'FlowName']).agg(
@@ -221,7 +222,7 @@ def reassign_scc_to_sectors(df, year, NAICS_level_value, scc_file,
     df.drop(columns=['Emissions'], inplace=True)
 
     # add back in emissions under the correct target NAICS
-    df_fbp.drop(columns=['Process', 'NAICS', 'source_naics', 'source_scc',
+    df_fbp.drop(columns=['Process', 'NAICS', 'source_naics', 'source_process',
                          'ProcessType', 'SRS_CAS', 'SRS_ID'],
                 inplace=True)
     df_fbp.rename(columns={'target_naics': 'NAICS'}, inplace=True)
