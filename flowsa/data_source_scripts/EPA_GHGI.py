@@ -143,6 +143,7 @@ def annex_yearly_tables(data, table=None):
         newcols.append(f"{column_name} - {fuel_type}")
     df.columns = newcols  # assign column names
     df = df.iloc[1:, :]  # exclude first row
+    df.dropna(how='all', inplace=True)
     df = df.reset_index(drop=True)
     return df
 
