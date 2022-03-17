@@ -128,8 +128,10 @@ def proportional_allocation(df, attr):
         denom_subset_cols = ['Location', 'LocationSystem', 'Year',
                              'Denominator']
 
-    denom_df = df.loc[(df['SectorProducedBy'].apply(lambda x: len(x) == 2)) |
-                      (df['SectorConsumedBy'].apply(lambda x: len(x) == 2))]
+    cw_load = load_crosswalk('sector_length')
+    cw = cw_load['NAICS_2'].drop_duplicates()
+    denom_df = df.loc[(df['SectorProducedBy'].isin(cw)) |
+                      (df['SectorConsumedBy'].isin(cw))]
 
     # generate denominator based on identified groupby cols
     denom_df = denom_df.assign(Denominator=denom_df.groupby(
