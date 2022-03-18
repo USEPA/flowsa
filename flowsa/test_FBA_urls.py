@@ -17,7 +17,8 @@ def test_FBA_urls():
         year = max(config['years'])
 
         if ((config.get('url', 'None') == 'None') or
-            (config.get('api_key_required', False))):
+            (config.get('api_key_required', False)) or
+            (m == 'EPA_EQUATES')):
             continue
 
         print("--------------------------------\n"
