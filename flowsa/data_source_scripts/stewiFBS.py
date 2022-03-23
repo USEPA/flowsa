@@ -383,7 +383,7 @@ def naics_expansion(facility_NAICS):
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_crosswalk('sector_length')
-    cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']]
+    cw = cw_load[['NAICS_4', 'NAICS_5', 'NAICS_6']].drop_duplicates()
 
     # subset the naics 4 and 5 columns
     cw4 = cw_load[['NAICS_4', 'NAICS_5']]
