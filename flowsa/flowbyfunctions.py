@@ -881,3 +881,37 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
     dfm = replace_NoneType_with_empty_cells(dfm)
 
     return dfm
+
+
+def assign_column_of_sector_levels(df, sectorcolumn):
+    """
+    Add additional column capturing the sector level in the two columns
+    :param df: df with at least on sector column
+    :param sectorcolumn: string, 'SectorProducedBy' or 'SectorConsumedBy'
+    :return: df with new column for sector length
+    """
+    # load cw with column of sector levels
+    cw = load_sector_length_cw_melt()
+
+    # merge df assigning sector length
+    df = df.merge(cw, how='left', left_on=sectorcolumn, right_on='Sector')
+
+    return df
+
+
+def assign_sector_match_column(df_load, sectorcolumn, sectorlength,
+                               sectorlengthmatch):
+
+    sector = 'NAICS_' + str(sectorlength)
+    sector_add = 'NAICS_' + str(sectorlengthmatch)
+
+    cw_load = load_crosswalk("sector_length")
+    cw = cw_load[[sector, sector_add]].drop_duplicates().reset_index(
+        drop=True)
+
+    df = df_load.merge(cw, how='left', left_on=sectorcolumn,
+                       right_on=sector
+                       ).rename(columns={sector_add: 'sector_group'}
+                                ).drop(columns=sector)
+
+    return df
