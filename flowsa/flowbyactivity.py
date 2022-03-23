@@ -99,7 +99,7 @@ def call_urls(*, url_list, source, year, config):
     :param config: dictionary, FBA yaml
     :return: list, dfs to concat and parse
     """
-# identify if url request requires cookies set
+    # identify if url request requires cookies set
     set_cookies = config.get('allow_http_request_cookies')
     confirm_gdrive = config.get('confirm_gdrive')
 
@@ -107,6 +107,7 @@ def call_urls(*, url_list, source, year, config):
     data_frames_list = []
     if url_list[0] is not None:
         for url in url_list:
+            df = None
             log.info("Calling %s", url)
             resp = make_url_request(url,
                                     set_cookies=set_cookies,
