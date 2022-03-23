@@ -304,9 +304,7 @@ def sector_disaggregation(df_load):
         sector_add = 'NAICS_' + str(i + 1)
 
         # subset the df by naics length
-        cw = cw_load[[sector_merge, sector_add]]
-        # first drop all duplicates
-        cw = cw.drop_duplicates()
+        cw = cw_load[[sector_merge, sector_add]].drop_duplicates()
         # only keep the rows where there is only one value in sector_add for
         # a value in sector_merge
         cw = cw.drop_duplicates(subset=[sector_merge], keep=False).reset_index(
@@ -614,7 +612,10 @@ def equally_allocate_suppressed_parent_to_child_naics(
 
     # load naics 2 to naics 6 crosswalk
     cw_load = load_crosswalk('sector_length')
-    cw_melt = cw_load.melt(
+    # only keep official naics
+    cw = cw_load.drop(columns=['NAICS_7'])
+    cw = cw.drop_duplicates()
+    cw_melt = cw.melt(
         id_vars=["NAICS_6"], var_name="NAICS_Length",
         value_name="NAICS_Match").drop(
         columns=['NAICS_Length']).drop_duplicates()
@@ -647,7 +648,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
         secLength=df_sup[sector_column].apply(lambda x: len(x)))
     df_sup2 = (df_sup.groupby(
         ['FlowName', 'Compartment', 'Location'])['secLength'].agg(
-        lambda x: x.min()-1).reset_index(name='secLengthsup'))
+        lambda x: x.min() - 1).reset_index(name='secLengthsup'))
 
     # merge the dfs and sub out the last sector lengths with
     # all data for each state drop states that don't have suppressed dat
