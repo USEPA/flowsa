@@ -154,14 +154,13 @@ def sector_ratios(df, sectorcolumn):
     # appends missing naics levels to df
     sec_ratios = []
     for i in range(length, 3, -1):
-        # subset df to sectors with length = i and length = i + 1
-        df_subset = df.loc[df[sectorcolumn].apply(lambda x: len(x) == i)]
+        # subset df to sectors with length = i
+        df_subset = subset_df_by_sector_lengths(df, [i])
         # create column for sector grouping
-        df_subset = df_subset.assign(
-            Sector_group=df_subset[sectorcolumn].apply(lambda x: x[0:i-1]))
+        df_subset = assign_sector_match_column(df_subset, sectorcolumn, i, i-1)
         # subset df to create denominator
-        df_denom = df_subset[['FlowAmount', 'Location', 'Sector_group']]
-        df_denom = df_denom.groupby(['Location', 'Sector_group'],
+        df_denom = df_subset[['FlowAmount', 'Location', 'sector_group']]
+        df_denom = df_denom.groupby(['Location', 'sector_group'],
                                     as_index=False).agg({"FlowAmount": sum})
         df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
         # merge the denominator column with fba_w_sector df
@@ -170,10 +169,10 @@ def sector_ratios(df, sectorcolumn):
         ratio_df.loc[:, 'FlowAmountRatio'] = \
             ratio_df['FlowAmount'] / ratio_df['Denominator']
         ratio_df = ratio_df.drop(
-            columns=['Denominator', 'Sector_group']).reset_index()
+            columns=['Denominator', 'sector_group'])
         sec_ratios.append(ratio_df)
     # concat list of dataframes (info on each page)
-    df_w_ratios = pd.concat(sec_ratios, sort=True).reset_index(drop=True)
+    df_w_ratios = pd.concat(sec_ratios, ignore_index=True)
 
     return df_w_ratios
 
@@ -640,21 +639,20 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # add length column and subset the data
     # subtract out existing data at NAICS6 from total data
     # at a length where no suppressed data
-    df = df.assign(secLength=df[sector_column].apply(lambda x: len(x)))
+    df = assign_column_of_sector_levels(df, sector_column)
 
     # add column for each state of sector length where
     # there are no missing values
-    df_sup = df_sup.assign(
-        secLength=df_sup[sector_column].apply(lambda x: len(x)))
+    df_sup = assign_column_of_sector_levels(df_sup, sector_column)
     df_sup2 = (df_sup.groupby(
-        ['FlowName', 'Compartment', 'Location'])['secLength'].agg(
+        ['FlowName', 'Compartment', 'Location'])['SectorLength'].agg(
         lambda x: x.min() - 1).reset_index(name='secLengthsup'))
 
     # merge the dfs and sub out the last sector lengths with
     # all data for each state drop states that don't have suppressed dat
     df1 = df.merge(df_sup2)
 
-    df2 = df1[df1['secLength'] == 6].reset_index(drop=True)
+    df2 = df1[df1['SectorLength'] == 6].reset_index(drop=True)
     # determine sector to merge on
     df2.loc[:, 'mergeSec'] = df2.apply(
         lambda x: x[sector_column][:x['secLengthsup']], axis=1)
@@ -685,7 +683,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # new df with estimated naics6
     dfn = pd.concat([df, dfe], ignore_index=True)
     dfn2 = dfn[dfn['FlowAmount'] != 0].reset_index(drop=True)
-    dfn2 = dfn2.drop(columns=['secLength'])
+    dfn2 = dfn2.drop(columns=['SectorLength', 'secLengthsup', 'Sector'])
 
     dff = sector_aggregation(dfn2)
 
@@ -699,6 +697,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
 
     # replace null values
     dff = replace_strings_with_NoneType(dff).reset_index(drop=True)
+
     return dff
 
 
