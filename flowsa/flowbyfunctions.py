@@ -577,7 +577,7 @@ def dataframe_difference(df1, df2, which=None):
 
 
 def equally_allocate_suppressed_parent_to_child_naics(
-        df_load, sector_column, groupcols):
+        df_load, method, sector_column, groupcols):
     """
     Estimate data suppression, by equally allocating parent NAICS
     values to child NAICS
@@ -724,31 +724,12 @@ def equally_allocate_suppressed_parent_to_child_naics(
     if len(negv) > 0:
         log.warning('There are negative values when allocating suppressed '
                     'parent data to child NAICS')
-
-    # sum_cols = [e for e in fba_default_grouping_fields if e not in
-    #             ['ActivityConsumedBy', 'ActivityProducedBy']]
-    # sum_cols = sum_cols + ['SectorProducedMatch', 'SectorConsumedMatch']
-    # df_sup2 = df_sup2.assign(
-    #     FlowAlloc=df_sup2.groupby(sum_cols)['TotFlow'].transform('sum'))
-    # rename columns for the merge and define merge cols
-    # df = df.rename(columns={sector_column: 'NewNAICS',
-    #                         'mergeSec': sector_column})
-    # keep flows with 0 flow
-    # df2 = df[df['FlowAmount'] == 0].reset_index(drop=True)
-    # m_cols = groupcols + ['NewNAICS', 'FlowAlloc']
-    # # merge the two dfs
-    # dfe = df1.merge(df3[m_cols])
     # add count column used to divide the unallocated flows
     sector_column_match = sector_column.replace('By', 'Match')
     df_sup3 = df_sup3.assign(secCount=df_sup3.groupby(mergecols)[
         sector_column_match].transform('count'))
     df_sup3 = df_sup3.assign(newFlow=df_sup3['FlowRemainder'] /
-                                      df_sup3['secCount'])
-    # # check for negative numbers
-    # n = dfe[dfe['newFlow'] < 0]
-    # if len(n) > 0:
-    #     log.warning('Negative numbers genearted when allocating suppressed '
-    #                 'parent to child NAICS data')
+                                     df_sup3['secCount'])
     # reassign values and drop columns
     df_sup3 = df_sup3.assign(FlowAmount=df_sup3['newFlow'])
     # dfe[sector_column] = dfe['NewNAICS'].copy()
@@ -770,10 +751,19 @@ def equally_allocate_suppressed_parent_to_child_naics(
         # reindex columns
         dff = dff.reindex(df_load.columns, axis=1)
 
+    # equally allocate parent to child naics where child naics are not
+    # included in the dataset - used to better compare values at each sector
+    # length
+    from flowsa.allocation import equally_allocate_parent_to_child_naics
+    dff2 = equally_allocate_parent_to_child_naics(dff, method)
+
+    dfc = check_summation_at_sector_lengths(df_load, dff2)
+
     # replace null values
     dff = replace_strings_with_NoneType(dff).reset_index(drop=True)
 
-    return dff
+
+    return dff2
 
 
 def collapse_activity_fields(df):

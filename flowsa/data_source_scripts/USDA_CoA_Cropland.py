@@ -429,7 +429,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year,
             df_f, sectorsourcename=method['target_sector_source'])
         # estimate suppressed data by equal allocation
         df_f = equally_allocate_suppressed_parent_to_child_naics(
-            df_f, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
+            df_f, method, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
         # create proportional ratios
         group_cols = [e for e in fba_wsec_default_grouping_fields if
                       e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
@@ -512,7 +512,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
         naics, sectorsourcename=method['target_sector_source'])
     # estimate suppressed data by equally allocating parent to child naics
     naics = equally_allocate_suppressed_parent_to_child_naics(
-        naics, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
+        naics, method, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
     # add missing fbs fields
     naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
 
