@@ -16,13 +16,13 @@ from flowsa.common import fbs_activity_fields, \
     load_sector_length_cw_melt, fba_fill_na_dict, \
     get_flowsa_base_name, fba_mapped_default_grouping_fields, \
     check_activities_sector_like
+from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
+    replace_NoneType_with_empty_cells, standardize_units
 from flowsa.location import US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, fips_number_key
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
 from flowsa.settings import datasourcescriptspath, log
-from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
-    replace_NoneType_with_empty_cells, standardize_units
 
 
 def create_geoscale_list(df, geoscale, year='2015'):
@@ -586,7 +586,15 @@ def equally_allocate_suppressed_parent_to_child_naics(
     :param groupcols: list, columns to group df by
     :return: df, with estimated suppressed data
     """
+    from flowsa.allocation import equally_allocate_parent_to_child_naics
+    from flowsa.validation import check_summation_at_sector_lengths
+
     df = sector_disaggregation(df_load)
+
+    # equally allocate parent to child naics where child naics are not
+    # included in the dataset
+    df = equally_allocate_parent_to_child_naics(df, method)
+
     df = replace_NoneType_with_empty_cells(df)
     df = df[df[sector_column] != '']
 
@@ -762,8 +770,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # replace null values
     dff = replace_strings_with_NoneType(dff).reset_index(drop=True)
 
-
-    return dff2
+    return dff
 
 
 def collapse_activity_fields(df):
