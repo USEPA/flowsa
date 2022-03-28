@@ -582,6 +582,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     Estimate data suppression, by equally allocating parent NAICS
     values to child NAICS
     :param df_load: df with sector columns
+    :param method: dictionary, FBS method yaml
     :param sector_column: str, column to estimate suppressed data for
     :param groupcols: list, columns to group df by
     :return: df, with estimated suppressed data
@@ -678,40 +679,41 @@ def equally_allocate_suppressed_parent_to_child_naics(
     merge_cols = [c for c in merge_cols
                   if c not in ['SectorConsumedBy', 'SectorProducedBy',
                                'Description']]
-    for i in range(2, 7):
-        # subset the df by length i
-        dfs = subset_df_by_sector_lengths(df_sup, [i])
+    # for i in range(2, 7):
+    # subset the df by length i
+    i = 6
+    dfs = subset_df_by_sector_lengths(df_sup, [i])
 
-        counter = 1
-        while dfs.isnull().values.any() and i-counter > 2:
-            # subset the crosswalk by i and i-1
-            cw = cw_load[[f'NAICS_{i}',
-                          f'NAICS_{i-counter}']].drop_duplicates()
-            # merge df with the cw to determine which sector to look for in
-            # non-suppressed data
-            for s in ['Produced', 'Consumed']:
-                dfs = dfs.merge(cw, how='left', left_on=f'Sector{s}By',
-                                right_on=f'NAICS_{i}').drop(
-                    columns=f'NAICS_{i}').rename(
-                    columns={f'NAICS_{i-counter}': f'Sector{s}Match'})
-                dfs[f'Sector{s}Match'] = dfs[f'Sector{s}Match'].fillna('')
-            # merge with non suppressed data
-            dfs = dfs.merge(dfns, how='left',
-                            left_on=merge_cols + ['SectorProducedMatch',
-                                                  'SectorConsumedMatch'],
-                            right_on=merge_cols + ['SectorProducedBy',
-                                                   'SectorConsumedBy'])
-            dfs['SectorMatchFlow'].fillna(dfs['FlowAmount_y'], inplace=True)
-            # drop all columns from the non suppressed data
-            dfs = dfs[dfs.columns[~dfs.columns.str.endswith('_y')]]
-            dfs.columns = dfs.columns.str.replace('_x', '')
-            # subset the df into rows assigned a new value and those not
-            dfs_assigned = dfs[~dfs['SectorMatchFlow'].isnull()]
-            dfs = dfs[dfs['SectorMatchFlow'].isnull()].drop(
-                columns=['SectorProducedMatch',
-                         'SectorConsumedMatch']).reset_index(drop=True)
-            df_sup2 = pd.concat([df_sup2, dfs_assigned], ignore_index=True)
-            counter = counter + 1
+    counter = 1
+    while dfs.isnull().values.any() and i-counter > 2:
+        # subset the crosswalk by i and i-1
+        cw = cw_load[[f'NAICS_{i}',
+                      f'NAICS_{i-counter}']].drop_duplicates()
+        # merge df with the cw to determine which sector to look for in
+        # non-suppressed data
+        for s in ['Produced', 'Consumed']:
+            dfs = dfs.merge(cw, how='left', left_on=f'Sector{s}By',
+                            right_on=f'NAICS_{i}').drop(
+                columns=f'NAICS_{i}').rename(
+                columns={f'NAICS_{i-counter}': f'Sector{s}Match'})
+            dfs[f'Sector{s}Match'] = dfs[f'Sector{s}Match'].fillna('')
+        # merge with non suppressed data
+        dfs = dfs.merge(dfns, how='left',
+                        left_on=merge_cols + ['SectorProducedMatch',
+                                              'SectorConsumedMatch'],
+                        right_on=merge_cols + ['SectorProducedBy',
+                                               'SectorConsumedBy'])
+        dfs['SectorMatchFlow'].fillna(dfs['FlowAmount_y'], inplace=True)
+        # drop all columns from the non suppressed data
+        dfs = dfs[dfs.columns[~dfs.columns.str.endswith('_y')]]
+        dfs.columns = dfs.columns.str.replace('_x', '')
+        # subset the df into rows assigned a new value and those not
+        dfs_assigned = dfs[~dfs['SectorMatchFlow'].isnull()]
+        dfs = dfs[dfs['SectorMatchFlow'].isnull()].drop(
+            columns=['SectorProducedMatch',
+                     'SectorConsumedMatch']).reset_index(drop=True)
+        df_sup2 = pd.concat([df_sup2, dfs_assigned], ignore_index=True)
+        counter = counter + 1
     # drop columns
     df_sup2 = df_sup2.drop(columns=['Sector', 'SectorLength'])
 
