@@ -8,7 +8,7 @@ Functions to check data is loaded and transformed correctly
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
-    subset_df_by_geoscale, sector_aggregation
+    subset_df_by_geoscale, sector_aggregation, subset_df_by_sector_lengths
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import sector_level_key, \
@@ -488,8 +488,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(
         fba = sector_aggregation(fba)
         # subset fba to only include NAICS2
         fba = replace_NoneType_with_empty_cells(fba)
-        fba = fba[fba['SectorConsumedBy'].apply(lambda x: len(x) == 2) |
-                  fba['SectorProducedBy'].apply(lambda x: len(x) == 2)]
+        fba = subset_df_by_sector_lengths(fba, [2])
     # subset/agg dfs
     col_subset = ['Class', 'FlowAmount', 'Unit', 'Context',
                   'Location', 'LocationSystem']
