@@ -582,44 +582,43 @@ def compare_fba_geo_subset_and_fbs_output_totals(
                   'for FlowByActivity and FlowBySector')
 
 
-def check_summation_at_sector_lengths(df):
+def check_summation_at_sector_lengths(df1, df2):
     """
     Check summed 'FlowAmount' values at each sector length
     :param df: df, requires Sector column
     :return: df, includes summed 'FlowAmount' values at each sector length
     """
+    from flowsa.flowbyfunctions import assign_column_of_sector_levels
 
-    # columns to keep
-    df_cols = [e for e in df.columns if e not in
-               ('MeasureofSpread', 'Spread', 'DistributionType', 'Min',
-                'Max', 'DataReliability', 'DataCollection', 'FlowType',
-                'Compartment', 'Description', 'Activity')]
-    # subset df
-    df2 = df[df_cols]
+    df_list = []
+    for df in [df1, df2]:
+        df = replace_NoneType_with_empty_cells(df)
+        for s in ['Produced', 'Consumed']:
+            df = assign_column_of_sector_levels(df, f'Sector{s}By').rename(columns={
+                'SectorLength': f'Sector{s}ByLength'})
+            df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].fillna(0)
+            # df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].astype(str)
+        # sum flowamounts by sector length
+        dfsum = df.groupby(['Location', 'SectorProducedByLength',
+                            'SectorConsumedByLength']).agg(
+            {'FlowAmount': 'sum'}).reset_index()
+        df_list.append(dfsum)
 
-    # rename columns and clean up df
-    df2 = df2[~df2['Sector'].isnull()]
+    df_list[0] = df_list[0].rename(columns={'FlowAmount': 'df1'})
+    df_list[1] = df_list[1].rename(columns={'FlowAmount': 'df2'})
+    dfm = df_list[0].merge(df_list[1], how='outer')
+    dfm = dfm.fillna(0)
+    dfm['flowIncrease_df1_to_df2_perc'] = (dfm['df2'] - dfm['df1'])/dfm[
+        'df1'] * 100
+    # dfm2 = dfm[dfm['flowIncrease_df1_to_df2'] != 0]
+    # drop cases where sector length is 0 because not included in naics cw
+    dfm2 = dfm[~((dfm['SectorProducedByLength'] == 0) & (dfm[
+        'SectorConsumedByLength'] == 0))]
+    # sort df
+    dfm2 = dfm2.sort_values(['Location', 'SectorProducedByLength',
+                             'SectorConsumedByLength']).reset_index(drop=True)
 
-    df2 = df2.assign(SectorLength=len(df2['Sector']))
-
-    # sum flowamounts by sector length
-    denom_df = df2.copy()
-    denom_df.loc[:, 'Denominator'] = denom_df.groupby(
-        ['Location', 'SectorLength'])['FlowAmount'].transform('sum')
-
-    summed_df = denom_df.drop(
-        columns=['Sector', 'FlowAmount']).drop_duplicates().reset_index(
-        drop=True)
-
-    # max value
-    maxv = max(summed_df['Denominator'].apply(lambda x: x))
-
-    # percent of total accounted for
-    summed_df = summed_df.assign(percentOfTot=summed_df['Denominator']/maxv)
-
-    summed_df = summed_df.sort_values(['SectorLength']).reset_index(drop=True)
-
-    return summed_df
+    return dfm2
 
 
 def check_for_nonetypes_in_sector_col(df):
