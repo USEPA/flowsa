@@ -7,7 +7,8 @@ Methods of allocating datasets
 """
 import pandas as pd
 from flowsa.settings import log
-from flowsa.common import fbs_activity_fields, sector_level_key, load_crosswalk
+from flowsa.common import fbs_activity_fields, sector_level_key, \
+    load_crosswalk, check_activities_sector_like
 from flowsa.settings import vLogDetailed
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType
@@ -244,12 +245,27 @@ def equally_allocate_parent_to_child_naics(df_load, method):
     # exclude nonsectors
     df = replace_NoneType_with_empty_cells(df_load)
 
+    # determine if activities are sector-like, if aggregating a df with a
+    # 'SourceName'
+    sector_like_activities = False
+    if 'SourceName' in df_load.columns:
+        s = pd.unique(df_load['SourceName'])[0]
+        sector_like_activities = check_activities_sector_like(s)
+
+    # if activities are source like, drop from df,
+    # add back in as copies of sector columns columns to keep
+    if sector_like_activities:
+        # subset df
+        df_cols = [e for e in df.columns if e not in
+                   ('ActivityProducedBy', 'ActivityConsumedBy')]
+        df = df[df_cols]
+
     rows_lost = pd.DataFrame()
     for i in range(2, sector_level_key[sector_level]):
-        dfm = subset_and_merge_df_by_sector_lengths(df_load, i, i+1)
+        dfm = subset_and_merge_df_by_sector_lengths(df, i, i+1)
 
         # extract the rows that are not disaggregated to more
-        # specific naics
+        # specific sectors
         rl = dfm.query('_merge=="left_only"').drop(
             columns=['_merge', 'SPB_tmp', 'SCB_tmp'])
         rl_list = rl[['SectorProducedBy', 'SectorConsumedBy']]\
@@ -298,8 +314,18 @@ def equally_allocate_parent_to_child_naics(df_load, method):
                           'each %s associated with the sectors previously '
                           'dropped', sector_level)
 
+    # if activities are source-like, set col values as copies
+    # of the sector columns
+    if sector_like_activities:
+        rows_lost = rows_lost.assign(ActivityProducedBy=
+                                     rows_lost['SectorProducedBy'])
+        rows_lost = rows_lost.assign(ActivityConsumedBy=
+                                     rows_lost['SectorConsumedBy'])
+        # reindex columns
+        rows_lost = rows_lost.reindex(df_load.columns, axis=1)
+
     # add rows of missing data to the fbs sector subset
-    df_w_lost_data = pd.concat([df, rows_lost], ignore_index=True, sort=True)
+    df_w_lost_data = pd.concat([df_load, rows_lost], ignore_index=True)
     df_w_lost_data = replace_strings_with_NoneType(df_w_lost_data)
 
     return df_w_lost_data
