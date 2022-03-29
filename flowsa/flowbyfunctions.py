@@ -897,7 +897,7 @@ def subset_df_by_sector_list(df_load, sector_list):
             df['SectorConsumedBy'].isin(sector_list)
     ) | (
             df['SectorProducedBy'].isin(sector_list) &
-            df['SectorConsumedBy'].isin(sector_list))]
+            df['SectorConsumedBy'].isin(sector_list))].reset_index(drop=True)
     return df
 
 
@@ -912,6 +912,7 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
         drop=True)
 
     # df where either sector column is length or both columns are
+    df = df.reset_index(drop=True)
     df1 = subset_df_by_sector_lengths(df, [length1])
     # second dataframe where length is length2
     df2 = subset_df_by_sector_lengths(df, [length2])
