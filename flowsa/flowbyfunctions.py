@@ -357,6 +357,33 @@ def assign_fips_location_system(df, year_of_data):
     return df
 
 
+def return_primary_sector_column(df_load):
+    """
+    Determine sector column with values
+    :param fbs: fbs df with two sector columns
+    :return: string, primary sector column
+    """
+    # determine the df_w_sector column to merge on
+    if 'Sector' in df_load.columns:
+        primary_sec_column = 'Sector'
+    else:
+        df = replace_strings_with_NoneType(df_load)
+        sec_consumed_list = \
+            df['SectorConsumedBy'].drop_duplicates().values.tolist()
+        sec_produced_list = \
+            df['SectorProducedBy'].drop_duplicates().values.tolist()
+        # if a sector field column is not all 'none', that is the column to
+        # merge
+        if all(v is None for v in sec_consumed_list):
+            primary_sec_column = 'SectorProducedBy'
+        elif all(v is None for v in sec_produced_list):
+            primary_sec_column = 'SectorConsumedBy'
+        else:
+            log.error('There are values in both SectorProducedBy and '
+                      'SectorConsumedBy, cannot isolate Sector column')
+    return primary_sec_column
+
+
 def collapse_fbs_sectors(fbs):
     """
     Collapses the Sector Produced/Consumed into a single column named "Sector"
