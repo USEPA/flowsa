@@ -313,14 +313,13 @@ def equally_allocate_parent_to_child_naics(df_load, method):
         vLogDetailed.info('Allocating FlowAmounts equally to '
                           'each %s associated with the sectors previously '
                           'dropped', sector_level)
-
-    # if activities are source-like, set col values as copies
-    # of the sector columns
-    if sector_like_activities:
-        rows_lost = rows_lost.assign(ActivityProducedBy=
-                                     rows_lost['SectorProducedBy'])
-        rows_lost = rows_lost.assign(ActivityConsumedBy=
-                                     rows_lost['SectorConsumedBy'])
+        # if activities are source-like, set col values as copies
+        # of the sector columns
+        if sector_like_activities:
+            rows_lost = rows_lost.assign(ActivityProducedBy=
+                                         rows_lost['SectorProducedBy'])
+            rows_lost = rows_lost.assign(ActivityConsumedBy=
+                                         rows_lost['SectorConsumedBy'])
         # reindex columns
         rows_lost = rows_lost.reindex(df_load.columns, axis=1)
 
