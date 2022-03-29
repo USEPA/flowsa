@@ -675,8 +675,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # add length column and subset the data
     # subtract out existing data at NAICS6 from total data
     # at a length where no suppressed data
-    df = assign_column_of_sector_levels(df, sector_column).drop(columns=[
-        'Sector'])
+    df = assign_column_of_sector_levels(df, sector_column)
     # df with non-suppressed data only
     dfns = df[df['FlowAmount'] != 0].reset_index(drop=True)
 
@@ -973,7 +972,7 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
     return dfm
 
 
-def assign_column_of_sector_levels(df, sectorcolumn):
+def assign_column_of_sector_levels(df_load, sectorcolumn):
     """
     Add additional column capturing the sector level in the two columns
     :param df: df with at least on sector column
@@ -982,10 +981,9 @@ def assign_column_of_sector_levels(df, sectorcolumn):
     """
     # load cw with column of sector levels
     cw = load_sector_length_cw_melt()
-
     # merge df assigning sector length
-    df = df.merge(cw, how='left', left_on=sectorcolumn, right_on='Sector')
-
+    df = df_load.merge(cw, how='left', left_on=sectorcolumn,
+                       right_on='Sector').drop(columns=['Sector'])
     return df
 
 
