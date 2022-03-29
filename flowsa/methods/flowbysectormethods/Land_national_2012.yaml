@@ -1,5 +1,7 @@
 %YAML 1.2
-# 'EIA_CBECS_Land' and 'EIA_MECS_Land' must be listed prior to 'USDA_ERS_MLU' for FBS creation
+# 'EIA_CBECS_Land' and 'EIA_MECS_Land' must be listed prior to
+# 'USDA_ERS_MLU' for FBS creation because the results of the two allocated
+# datasets are used within USDA_ERS_MLU sector attribution
 ---
 
 target_sector_level: NAICS_6
@@ -146,9 +148,10 @@ source_names:
           - 'Land in rural transportation facilities'
         allocation_method: allocation_function
         allocation_source: allocate_usda_ers_mlu_land_in_rural_transportation_areas
-        literature_sources: {"urban_land_use_for_airports": "2020",
-                             "urban_land_use_for_railroads": "2020",
-                             "transportation_sectors_based_on_FHA_fees": "1997"}
+        literature_sources: {
+          "urban_land_use_for_airports": "2020",
+          "urban_land_use_for_railroads": "2020",
+          "transportation_sectors_based_on_FHA_fees": "1997"}
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None
@@ -159,11 +162,12 @@ source_names:
           - 'Land in urban areas'
         allocation_method: allocation_function
         allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
-        literature_sources: {"area_of_urban_land_occupied_by_houses_2013": "2017",
-                             "transportation_sectors_based_on_FHA_fees": "1997",
-                             "urban_land_use_for_airports": "2020",
-                             "urban_land_use_for_railroads": "2020",
-                             "open_space_fraction_of_urban_area": "2020"}
+        literature_sources: {
+          "area_of_urban_land_occupied_by_houses_2013": "2017",
+          "transportation_sectors_based_on_FHA_fees": "1997",
+          "urban_land_use_for_airports": "2020",
+          "urban_land_use_for_railroads": "2020",
+          "open_space_fraction_of_urban_area": "2020"}
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None
@@ -174,7 +178,8 @@ source_names:
           - 'Other land'
         allocation_method: allocation_function
         allocation_source: allocate_usda_ers_mlu_other_land
-        literature_sources: {"area_of_rural_land_occupied_by_houses_2013": "2017" }
+        literature_sources: {
+          "area_of_rural_land_occupied_by_houses_2013": "2017" }
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None
