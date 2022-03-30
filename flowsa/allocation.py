@@ -6,10 +6,9 @@
 Methods of allocating datasets
 """
 import pandas as pd
-from flowsa.settings import log
 from flowsa.common import fbs_activity_fields, sector_level_key, \
     load_crosswalk, check_activities_sector_like
-from flowsa.settings import vLogDetailed
+from flowsa.settings import log, vLogDetailed
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType
 from flowsa.flowbyfunctions import sector_aggregation, \
@@ -337,12 +336,24 @@ def equal_allocation(fba_load):
     :param fba_load: df, FBA with activity columns mapped to sectors
     :return: df, with FlowAmount equally allocated to all mapped sectors
     """
-    from flowsa.flowbyfunctions import assign_column_of_sector_levels, \
-        return_primary_sector_column
+    from flowsa.flowbyfunctions import assign_columns_of_sector_levels
+
     # first check that all sector lengths are the same
-    sec_column = return_primary_sector_column(fba_load)
-    dfc = assign_column_of_sector_levels(fba_load, sec_column)
-    sec_lengths = dfc['SectorLength'].drop_duplicates().values.tolist()
+    dfc = assign_columns_of_sector_levels(fba_load)
+    # if duplicated rows, keep assignment to most specific sectors
+    duplicate_cols = [e for e in dfc.columns if e not in [
+        'SectorProducedByLength', 'SectorConsumedByLength']]
+    duplicate_df = dfc[dfc.duplicated(duplicate_cols)]
+    if len(duplicate_df) > 0:
+        log.info('Dropping rows duplicated due to assigning sector lengths '
+                 'for ambiguous sectors. Keeping sector length assignments '
+                 'to most specific sectors.')
+        dfc = dfc[dfc.duplicated(duplicate_cols, keep='first')]
+    sec_lengths = list(dfc[['SectorProducedByLength',
+                            'SectorConsumedByLength']].values.reshape(-1))
+    sec_lengths = list(set(sec_lengths))
+    if 0 in sec_lengths:
+        sec_lengths.remove(0)
     if len(sec_lengths) > 1:
         log.error('Cannot equally allocate because sector lengths vary. All '
                   'sectors must be the same sector level.')
@@ -357,6 +368,7 @@ def equal_allocation(fba_load):
     df_count = replace_strings_with_NoneType(df_count)
 
     # merge dfs
+    fba_load = replace_strings_with_NoneType(fba_load)
     dfm = fba_load.merge(df_count, how='left')
     # calc new flowamounts
     dfm['FlowAmount'] = dfm['FlowAmount'] / dfm['size'].astype(int)

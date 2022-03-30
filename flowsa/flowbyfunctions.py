@@ -681,7 +681,12 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # add length column and subset the data
     # subtract out existing data at NAICS6 from total data
     # at a length where no suppressed data
-    df = assign_column_of_sector_levels(df, sector_column)
+    drop_col = 'SectorConsumedByLength'
+    if sector_column == 'SectorConsumedBy':
+        drop_col = 'SectorProducedByLength'
+    df = assign_columns_of_sector_levels(df).rename(
+        columns={f'{sector_column}Length': 'SectorLength'}).drop(columns=[
+        drop_col])
     # df with non-suppressed data only
     dfns = df[df['FlowAmount'] != 0].reset_index(drop=True)
 
@@ -1015,6 +1020,15 @@ def assign_columns_of_sector_levels(df_load):
 
     # concat dfs
     dfc = pd.concat([df1, df2e], ignore_index=True)
+    dfc = dfc.sort_values(['SectorProducedByLength', 'SectorConsumedByLength'])
+
+    # check for duplicates. Rows might be duplicated if a sector is the same
+    # for multiple sector lengths
+    duplicate_cols = [e for e in dfc.columns if e not in [
+        'SectorProducedByLength', 'SectorConsumedByLength']]
+    duplicate_df = dfc[dfc.duplicated(duplicate_cols)]
+    if len(duplicate_df) > 0:
+        log.warning('There are duplicate rows caused by ambiguous sectors.')
 
     return dfc
 
