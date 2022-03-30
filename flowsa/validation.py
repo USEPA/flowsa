@@ -590,7 +590,7 @@ def compare_summation_at_sector_lengths_between_two_dfs(df1, df2):
     :return: df, comparison of sector summation results by region and
     printout if any child naics sum greater than parent naics
     """
-    from flowsa.flowbyfunctions import assign_column_of_sector_levels
+    from flowsa.flowbyfunctions import assign_columns_of_sector_levels
 
     agg_cols = ['Class', 'SourceName', 'FlowName', 'Unit', 'FlowType',
                 'Compartment', 'Location', 'Year', 'SectorProducedByLength',
@@ -599,10 +599,7 @@ def compare_summation_at_sector_lengths_between_two_dfs(df1, df2):
     df_list = []
     for df in [df1, df2]:
         df = replace_NoneType_with_empty_cells(df)
-        for s in ['Produced', 'Consumed']:
-            df = assign_column_of_sector_levels(df, f'Sector{s}By').rename(
-                columns={'SectorLength': f'Sector{s}ByLength'})
-            df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].fillna(0)
+        df = assign_columns_of_sector_levels(df)
         # sum flowamounts by sector length
         dfsum = df.groupby(agg_cols).agg({'FlowAmount': 'sum'}).reset_index()
         df_list.append(dfsum)
@@ -643,16 +640,12 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
     :return: comparison of flow values
     """
     from flowsa.flowbyfunctions import return_primary_sector_column, \
-        assign_sector_match_column, assign_column_of_sector_levels
+        assign_sector_match_column
 
     sector_column = return_primary_sector_column(df_load)
     merge_cols = ['Class', 'SourceName', 'FlowName', 'Unit', 'FlowType',
                   'Compartment', 'Location', 'Year']
     agg_cols = merge_cols + ['sector_group']
-    # df of naics6
-    # determine grouping columns - based on datatype
-    # groupcols = list(df.select_dtypes(include=['object', 'int']).columns)
-    # df3 = assign_column_of_sector_levels(df_load, sector_column)
     dfagg = pd.DataFrame()
     for i in range(3, 7):
         df = subset_df_by_sector_lengths(df_load, [i])

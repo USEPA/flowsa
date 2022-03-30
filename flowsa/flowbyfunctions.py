@@ -981,19 +981,42 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
     return dfm
 
 
-def assign_column_of_sector_levels(df_load, sectorcolumn):
+def assign_columns_of_sector_levels(df_load):
     """
     Add additional column capturing the sector level in the two columns
     :param df: df with at least on sector column
     :param sectorcolumn: string, 'SectorProducedBy' or 'SectorConsumedBy'
     :return: df with new column for sector length
     """
+    df = replace_NoneType_with_empty_cells(df_load)
     # load cw with column of sector levels
     cw = load_sector_length_cw_melt()
-    # merge df assigning sector length
-    df = df_load.merge(cw, how='left', left_on=sectorcolumn,
-                       right_on='Sector').drop(columns=['Sector'])
-    return df
+    # merge df assigning sector lengths
+    for s in ['Produced', 'Consumed']:
+        df = df.merge(cw, how='left', left_on=f'Sector{s}By',
+                           right_on='Sector').drop(columns=['Sector']).rename(
+            columns={'SectorLength': f'Sector{s}ByLength'})
+        df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].fillna(0)
+
+    # There are cases where non-traditional sectors (non naics) have
+    # multiple naics assignments. If there is a non-zero value in the other
+    # sector length column, keep that row because sector lengths must always
+    # match.
+    # subset df into two dfs, one where one sector column length has a zero
+    # value and the second where both sector length columns have non-zero
+    # values
+    df1 = df[(df['SectorProducedByLength'] == 0) |
+             (df['SectorConsumedByLength'] == 0)]
+
+    df2 = df[(df['SectorProducedByLength'] != 0) &
+             (df['SectorConsumedByLength'] != 0)]
+    # only keep rows where the values are equal
+    df2e = df2[df2['SectorProducedByLength'] == df2['SectorConsumedByLength']]
+
+    # concat dfs
+    dfc = pd.concat([df1, df2e], ignore_index=True)
+
+    return dfc
 
 
 def assign_sector_match_column(df_load, sectorcolumn, sectorlength,
