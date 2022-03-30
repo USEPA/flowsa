@@ -22,7 +22,7 @@ from flowsa.location import US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, fips_number_key
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
-from flowsa.settings import datasourcescriptspath, log
+from flowsa.settings import datasourcescriptspath, log, vLogDetailed
 
 
 def create_geoscale_list(df, geoscale, year='2015'):
@@ -615,12 +615,18 @@ def equally_allocate_suppressed_parent_to_child_naics(
     :return: df, with estimated suppressed data
     """
     from flowsa.allocation import equally_allocate_parent_to_child_naics
-    from flowsa.validation import check_summation_at_sector_lengths
+    from flowsa.validation import \
+        compare_child_to_parent_sectors_flowamounts, \
+        compare_summation_at_sector_lengths_between_two_dfs
 
+    vLogDetailed.info('Estimating suppressed data by equally allocating '
+                      'parent to child sectors.')
     df = sector_disaggregation(df_load)
 
     # equally allocate parent to child naics where child naics are not
     # included in the dataset
+    vLogDetailed.info('Before estimating suppressed data, equally allocate '
+                      'parent sectors to child sectors.')
     df = equally_allocate_parent_to_child_naics(df, method)
 
     df = replace_NoneType_with_empty_cells(df)
@@ -781,7 +787,10 @@ def equally_allocate_suppressed_parent_to_child_naics(
         # reindex columns
         dff = dff.reindex(df_load.columns, axis=1)
 
-    dfc = check_summation_at_sector_lengths(df_load, dff)
+    vLogDetailed.info('Checking results of allocating suppressed parent to '
+                      'child sectors. ')
+    compare_summation_at_sector_lengths_between_two_dfs(df_load, dff)
+    compare_child_to_parent_sectors_flowamounts(dff)
 
     # replace null values
     dff = replace_strings_with_NoneType(dff).reset_index(drop=True)
