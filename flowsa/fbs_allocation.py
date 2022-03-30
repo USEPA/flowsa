@@ -8,19 +8,22 @@ Functions to allocate data using additional data sources
 import numpy as np
 import pandas as pd
 from flowsa.common import fba_activity_fields, fbs_activity_fields, \
-    fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields, \
-    check_activities_sector_like, return_bea_codes_used_as_naics
+    fba_mapped_wsec_default_grouping_fields, \
+    fba_wsec_default_grouping_fields, check_activities_sector_like, \
+    return_bea_codes_used_as_naics
 from flowsa.location import US_FIPS
 from flowsa.schema import activity_fields
 from flowsa.settings import log
 from flowsa.validation import check_allocation_ratios, \
     check_if_location_systems_match
-from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
-    sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
-    load_fba_w_standardized_units
-from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
+from flowsa.flowbyfunctions import collapse_activity_fields, \
+    dynamically_import_fxn, sector_aggregation, sector_disaggregation, \
+    subset_df_by_geoscale, load_fba_w_standardized_units
+from flowsa.allocation import allocate_by_sector, \
+    proportional_allocation_by_location_and_activity, \
     equally_allocate_parent_to_child_naics, equal_allocation
-from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
+from flowsa.sectormapping import get_fba_allocation_subset, \
+    add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType
 from flowsa.validation import check_if_data_exists_at_geoscale
 
@@ -210,17 +213,17 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         compare_df_units(flow_subset_mapped, flow_allocation)
         # create list of columns to merge on
         if 'allocation_merge_columns' in attr:
-            fa_cols = \
-                ['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity'] + \
-                attr['allocation_merge_columns']
-            l_cols = \
-                ['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]] + \
-                attr['allocation_merge_columns']
-            r_cols = ['Location', 'Sector', 'FBA_Activity'] + \
-                     attr['allocation_merge_columns']
+            fa_cols = ([
+                'Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity'
+                ] + attr['allocation_merge_columns'])
+            l_cols = ([
+                'Location', j["flowbysector"], j["flowbyactivity"]
+                ] + attr['allocation_merge_columns'])
+            r_cols = (['Location', 'Sector', 'FBA_Activity']
+                      + attr['allocation_merge_columns'])
         else:
             fa_cols = ['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']
-            l_cols = ['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]]
+            l_cols = ['Location', j["flowbysector"], j["flowbyactivity"]]
             r_cols = ['Location', 'Sector', 'FBA_Activity']
         flow_subset_mapped = \
             flow_subset_mapped.merge(flow_allocation[fa_cols], left_on=l_cols,
@@ -272,7 +275,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
     if 'clean_helper_fba_wsec' in attr:
         fba_dict['clean_fba_w_sec'] = attr['clean_helper_fba_wsec']
     if 'helper_activity_to_sector_mapping' in attr:
-        fba_dict['activity_to_sector_mapping'] = attr['helper_activity_to_sector_mapping']
+        fba_dict['activity_to_sector_mapping'] = \
+            attr['helper_activity_to_sector_mapping']
 
     # load the allocation FBA
     helper_allocation = \
@@ -418,12 +422,12 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
                     ['FlowName', 'ActivityConsumedBy', 'Location',
                      'disaggregate_flag'])['HelperFlow'].transform('sum'))
         modified_fba_allocation = modified_fba_allocation.assign(
-            FlowAmountRatio=modified_fba_allocation['HelperFlow'] /
-                            modified_fba_allocation['Denominator'])
+            FlowAmountRatio=modified_fba_allocation['HelperFlow']
+            / modified_fba_allocation['Denominator'])
         modified_fba_allocation =\
             modified_fba_allocation.assign(
-                FlowAmount=modified_fba_allocation['FlowAmount'] *
-                           modified_fba_allocation['FlowAmountRatio'])
+                FlowAmount=modified_fba_allocation['FlowAmount']
+                * modified_fba_allocation['FlowAmountRatio'])
         modified_fba_allocation =\
             modified_fba_allocation.drop(
                 columns=['disaggregate_flag', 'Sector', 'HelperFlow',

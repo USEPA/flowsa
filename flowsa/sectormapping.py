@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 from flowsa.common import get_flowsa_base_name, \
-    return_true_source_catalog_name, check_activities_sector_like, \
+    get_catalog_info, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.schema import activity_fields
 from flowsa.settings import log
@@ -35,7 +35,8 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
             external_mappingpath, mapfn, 'csv')
         if os.path.isfile(f"{external_mappingpath}"
                           f"{activity_mapping_source_name}.csv"):
-            log.info(f"Loading {activity_mapping_source_name}.csv from {external_mappingpath}")
+            log.info(f"Loading {activity_mapping_source_name}.csv "
+                     f"from {external_mappingpath}")
             crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
@@ -55,10 +56,11 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
         return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df,
-        activity_to_sector_mapping=None, sectorsourcename=SECTOR_SOURCE_NAME,
-        allocationmethod=None, overwrite_sectorlevel=None,
-        fbsconfigpath=None):
+def add_sectors_to_flowbyactivity(
+    flowbyactivity_df, activity_to_sector_mapping=None,
+    sectorsourcename=SECTOR_SOURCE_NAME, allocationmethod=None,
+    overwrite_sectorlevel=None, fbsconfigpath=None
+):
     """
     Add Sectors from the Activity fields and mapped them to Sector
     from the crosswalk. No allocation is performed.
@@ -66,91 +68,65 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df,
     :param activity_to_sector_mapping: str, name for activity_to_sector mapping
     :param sectorsourcename: A sector source name, using package default
     :param allocationmethod: str, modifies function behavoir if = 'direct'
-    :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
+    :param fbsconfigpath, str, optional path to an FBS method outside
+        flowsa repo
     :return: a df with activity fields mapped to 'sectors'
     """
-    # First check if source activities are NAICS like -
-    # if so make it into a mapping file
-    s = pd.unique(flowbyactivity_df['SourceName'])[0]
-    # load catalog info for source, first check for sourcename used
-    # in source catalog
-    ts = return_true_source_catalog_name(s)
-    src_info = load_yaml_dict('source_catalog')[ts]
-    # read the pre-determined level of sector aggregation of
-    # each crosswalk from the source catalog
-    levelofSectoragg = src_info['sector_aggregation_level']
-    # if the FBS activity set is 'direct', overwrite the
-    # levelofsectoragg, or if specified in fxn call
-    if allocationmethod == 'direct':
-        levelofSectoragg = 'disaggregated'
-    if overwrite_sectorlevel is not None:
-        levelofSectoragg = overwrite_sectorlevel
-    # if data are provided in NAICS format, use the mastercrosswalk
-    if src_info['sector-like_activities']:
-        cw = load_crosswalk('sector_timeseries')
-        sectors = cw.loc[:, [SECTOR_SOURCE_NAME]]
-        # Create mapping df that's just the sectors at first
-        mapping = sectors.drop_duplicates()
-        # Add the sector twice as activities so mapping is identical
-        mapping = mapping.assign(Activity=sectors[SECTOR_SOURCE_NAME])
-        mapping = mapping.rename(columns={SECTOR_SOURCE_NAME: "Sector"})
-        # add columns so can run expand_naics_list_fxn
-        # if sector-like_activities = True, missing columns, so add
-        mapping['ActivitySourceName'] = s
-        # tmp assignment
-        mapping['SectorType'] = None
-        # Include all digits of naics in mapping, if levelofNAICSagg
-        # is specified as "aggregated"
-        if levelofSectoragg == 'aggregated':
-            mapping = expand_naics_list(mapping, sectorsourcename)
+    source = pd.unique(flowbyactivity_df['SourceName'])[0]
+    source_info = get_catalog_info(source)
+
+    # If source activites are NAICS-like create mapping columns directly.
+    if source_info['sector-like_activities']:
+        sectors = (load_crosswalk('sector_timeseries')
+                   .loc[:, [sectorsourcename]])
+        mapping = (sectors
+                   .assign(Activity=sectors[sectorsourcename],
+                           ActivitySourceName=source,
+                           SectorType=None)
+                   .rename(columns={sectorsourcename: "Sector"})
+                   .drop_duplicates())
+
+    # Otherwise, call on a manually created source crosswalk
     else:
-        # if source data activities are text strings, or sector-like
-        # activities should be modified, call on the manually
-        # created source crosswalks
-        if activity_to_sector_mapping:
-            s = activity_to_sector_mapping
-        mapping = get_activitytosector_mapping(s, fbsconfigpath=fbsconfigpath)
-        # filter by SectorSourceName of interest
-        mapping = mapping[mapping['SectorSourceName'] == sectorsourcename]
-        # drop SectorSourceName
-        mapping = mapping.drop(columns=['SectorSourceName'])
-        # Include all digits of naics in mapping, if levelofNAICSagg
-        # is specified as "aggregated"
-        if levelofSectoragg == 'aggregated':
-            mapping = expand_naics_list(mapping, sectorsourcename)
-    # Merge in with flowbyactivity by
+        activity = activity_to_sector_mapping or source
+        mapping = (get_activitytosector_mapping(activity,
+                                                fbsconfigpath=fbsconfigpath)
+                   .query("SectorSourceName == @sectorsourcename")
+                   .drop(columns=['SectorSourceName']))
+
+    if ((overwrite_sectorlevel
+         or source_info['sector_aggregation_level']) == 'aggregated'
+            and allocationmethod != 'direct'):
+        mapping = expand_naics_list(mapping, sectorsourcename)
+
+    # Initialize FBA_wsector dataframe to merge mapping columns onto
     flowbyactivity_wsector_df = flowbyactivity_df.copy(deep=True)
-    for k, v in activity_fields.items():
-        sector_direction = k
-        flowbyactivity_field = v[0]["flowbyactivity"]
-        flowbysector_field = v[1]["flowbysector"]
-        sector_type_field = sector_direction+'SectorType'
-        mappings_df_tmp = mapping.rename(
-            columns={'Activity': flowbyactivity_field,
-                     'Sector': flowbysector_field,
-                     'SectorType': sector_type_field})
-        # column doesn't exist for sector-like activities,
-        # so ignore if error occurs
-        mappings_df_tmp = mappings_df_tmp.drop(
-            columns=['ActivitySourceName'], errors='ignore')
-        # Merge them in. Critical this is a left merge to
-        # preserve all unmapped rows
-        flowbyactivity_wsector_df = pd.merge(
-            flowbyactivity_wsector_df, mappings_df_tmp, how='left',
-            on=flowbyactivity_field)
-    for c in ['SectorProducedBy', 'ProducedBySectorType',
-              'SectorConsumedBy', 'ConsumedBySectorType']:
-        flowbyactivity_wsector_df[c] = \
-            flowbyactivity_wsector_df[c].replace({np.nan: None})
-    # add sector source name
-    flowbyactivity_wsector_df = \
-        flowbyactivity_wsector_df.assign(SectorSourceName=sectorsourcename)
+    for sector_direction, fieldname_dict in activity_fields.items():
+        mappings_df_tmp = (mapping
+                           .rename(columns={
+                               'Activity': fieldname_dict['flowbyactivity'],
+                               'Sector': fieldname_dict['flowbysector'],
+                               'SectorType': sector_direction + 'SectorType'})
+                           .drop(columns=['ActivitySourceName'],
+                                 errors='ignore'))
+        # Critical this is a left merge to preserve unmapped rows.
+        flowbyactivity_wsector_df = (flowbyactivity_wsector_df
+                                     .merge(
+                                         mappings_df_tmp, how='left',
+                                         on=fieldname_dict['flowbyactivity']))
+
+    flowbyactivity_wsector_df = (flowbyactivity_wsector_df
+                                 .replace({
+                                     'SectorProducedBy': {np.nan: None},
+                                     'ProducedBySectorType': {np.nan: None},
+                                     'SectorConsumedBy': {np.nan: None},
+                                     'ConsumedBySectorType': {np.nan: None}})
+                                 .assign(SectorSourceName=sectorsourcename))
 
     # if activities are sector-like check that the sectors are in the crosswalk
-    if src_info['sector-like_activities']:
-        flowbyactivity_wsector_df =\
-            replace_naics_w_naics_from_another_year(flowbyactivity_wsector_df,
-                                                    sectorsourcename)
+    if source_info['sector-like_activities']:
+        flowbyactivity_wsector_df = replace_naics_w_naics_from_another_year(
+            flowbyactivity_wsector_df, sectorsourcename)
 
     return flowbyactivity_wsector_df
 
@@ -280,14 +256,14 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
                 (fba_allocation[fbs_activity_fields[0]].isin(
                     modified_activitynames)) |
                 (fba_allocation[fbs_activity_fields[1]].isin(
-                    modified_activitynames)
-                )].reset_index(drop=True)
+                    modified_activitynames))
+            ].reset_index(drop=True)
 
         else:
             fba_allocation_subset = fba_allocation.loc[
                 (fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
-                (fba_allocation[fbs_activity_fields[1]].isin(activitynames)
-                 )].reset_index(drop=True)
+                (fba_allocation[fbs_activity_fields[1]].isin(activitynames))
+            ].reset_index(drop=True)
 
     # if activity set names included in function call and activity set names
     # is not null, then subset data based on value and column specified

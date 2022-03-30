@@ -177,8 +177,8 @@ def subset_BEA_table(df, attr, **_):
     df.loc[:, ActivityCol] = None
     if set(fbs_activity_fields).issubset(df.columns):
         for v in activity_fields.values():
-            if v[0]['flowbyactivity'] == ActivityCol:
-                SectorCol = v[1]['flowbysector']
+            if v['flowbyactivity'] == ActivityCol:
+                SectorCol = v['flowbysector']
         df.loc[:, SectorCol] = None
     return df
 

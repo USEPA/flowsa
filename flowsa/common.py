@@ -29,7 +29,7 @@ sector_level_key = {"NAICS_2": 2,
                     "NAICS_5": 5,
                     "NAICS_6": 6}
 
-# withdrawn keyword changed to "none" over "W"
+# withdrawn keyword changed to np.nan over "W"
 # because unable to run calculation functions with text string
 WITHDRAWN_KEYWORD = np.nan
 
@@ -227,10 +227,10 @@ def get_flow_by_groupby_cols(flow_by_fields):
     return groupby_cols
 
 
-fba_activity_fields = [activity_fields['ProducedBy'][0]['flowbyactivity'],
-                       activity_fields['ConsumedBy'][0]['flowbyactivity']]
-fbs_activity_fields = [activity_fields['ProducedBy'][1]['flowbysector'],
-                       activity_fields['ConsumedBy'][1]['flowbysector']]
+fba_activity_fields = [activity_fields['ProducedBy']['flowbyactivity'],
+                       activity_fields['ConsumedBy']['flowbyactivity']]
+fbs_activity_fields = [activity_fields['ProducedBy']['flowbysector'],
+                       activity_fields['ConsumedBy']['flowbysector']]
 fba_fill_na_dict = create_fill_na_dict(flow_by_activity_fields)
 fbs_fill_na_dict = create_fill_na_dict(flow_by_sector_fields)
 fbs_collapsed_fill_na_dict = create_fill_na_dict(
@@ -267,15 +267,11 @@ def clean_str_and_capitalize(s):
 
 def capitalize_first_letter(string):
     """
-    Capitalize first letter of words
+    Capitalize first letter of words and strip excess white space
     :param string: str
     :return: str, modified
     """
-    return_string = ""
-    split_array = string.split(" ")
-    for s in split_array:
-        return_string = return_string + " " + s.capitalize()
-    return return_string.strip()
+    return ' '.join([s.capitalize() for s in string.split(' ')]).strip()
 
 
 def get_flowsa_base_name(filedirectory, filename, extension):
@@ -332,37 +328,32 @@ def rename_log_file(filename, fb_meta):
     shutil.copy(log_file, new_log_name)
 
 
-def return_true_source_catalog_name(sourcename):
+def get_catalog_info(source):
     """
-    Drop any extensions on source name until find the name in source catalog
+    Drop any extensions on source name until find the name in source catalog,
+    then load info from source catalog and return resulting dictionary
     """
-    while (load_yaml_dict('source_catalog').get(sourcename) is None) & (
-            '_' in sourcename):
-        sourcename = sourcename.rsplit("_", 1)[0]
-    return sourcename
+    catalog = load_yaml_dict('source_catalog')
+    source_base_name = source
+    while source_base_name not in catalog:
+        if '_' in source_base_name:
+            source_base_name, _ = source_base_name.rsplit('_', 1)
+        else:
+            log.error('%s or %s not found in %ssource_catalog.yaml',
+                      source, source_base_name, datapath)
+    return catalog[source_base_name]
 
 
-def check_activities_sector_like(sourcename_load):
+def check_activities_sector_like(source):
     """
-    Check if the activities in a df are sector-like,
-    if cannot find the sourcename in the source catalog, drop extensions on the
-    source name
+    Check if the activities in a df are sector-like
     """
-    sourcename = return_true_source_catalog_name(sourcename_load)
-
-    try:
-        sectorLike = load_yaml_dict('source_catalog')[sourcename][
-            'sector-like_activities']
-    except KeyError:
-        log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
-                  sourcename_load, sourcename)
-
-    return sectorLike
+    return get_catalog_info(source)['sector-like_activities']
 
 
 def str2bool(v):
     """
-    Convert string to boolean
+    Convert string to boolean. Only a few values are considered truthy.
     :param v: string
     :return: boolean
     """

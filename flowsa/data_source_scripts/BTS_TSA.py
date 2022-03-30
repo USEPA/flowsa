@@ -9,7 +9,6 @@ from io import BytesIO
 import pandas as pd
 from flowsa.common import fbs_activity_fields
 from flowsa.location import US_FIPS
-from flowsa.schema import activity_fields
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.fbs_allocation import allocation_helper
