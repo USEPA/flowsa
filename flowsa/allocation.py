@@ -263,7 +263,6 @@ def equally_allocate_parent_to_child_naics(df_load, method):
     rows_lost = pd.DataFrame()
     for i in range(2, sector_level_key[sector_level]):
         dfm = subset_and_merge_df_by_sector_lengths(df, i, i+1)
-
         # extract the rows that are not disaggregated to more
         # specific sectors
         rl = dfm.query('_merge=="left_only"').drop(
@@ -338,6 +337,16 @@ def equal_allocation(fba_load):
     :param fba_load: df, FBA with activity columns mapped to sectors
     :return: df, with FlowAmount equally allocated to all mapped sectors
     """
+    from flowsa.flowbyfunctions import assign_column_of_sector_levels, \
+        return_primary_sector_column
+    # first check that all sector lengths are the same
+    sec_column = return_primary_sector_column(fba_load)
+    dfc = assign_column_of_sector_levels(fba_load, sec_column)
+    sec_lengths = dfc['SectorLength'].drop_duplicates().values.tolist()
+    if len(sec_lengths) > 1:
+        log.error('Cannot equally allocate because sector lengths vary. All '
+                  'sectors must be the same sector level.')
+
     # create groupby cols by which to determine allocation
     fba_cols = fba_load.select_dtypes([object]).columns.to_list()
     groupcols = [e for e in fba_cols if e not in
