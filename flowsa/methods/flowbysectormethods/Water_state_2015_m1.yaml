@@ -1,5 +1,4 @@
-target_sector_level: NAICS_4
-target_sector_source: NAICS_2012_Code
+inherits_from: BEA_summary_target
 target_geoscale: state
 source_names:
   "USGS_NWIS_WU":
