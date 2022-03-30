@@ -582,26 +582,29 @@ def compare_fba_geo_subset_and_fbs_output_totals(
                   'for FlowByActivity and FlowBySector')
 
 
-def check_summation_at_sector_lengths(df1, df2):
+def compare_summation_at_sector_lengths_between_two_dfs(df1, df2):
     """
     Check summed 'FlowAmount' values at each sector length
-    :param df: df, requires Sector column
-    :return: df, includes summed 'FlowAmount' values at each sector length
+    :param df1: df, first df of values with sector columns
+    :param df2: df, second df of values with sector columns
+    :return: df, comparison of sector summation results by region and
+    printout if any child naics sum greater than parent naics
     """
     from flowsa.flowbyfunctions import assign_column_of_sector_levels
+
+    agg_cols = ['Class', 'SourceName', 'FlowName', 'Unit', 'FlowType',
+                'Compartment', 'Location', 'Year', 'SectorProducedByLength',
+                'SectorConsumedByLength']
 
     df_list = []
     for df in [df1, df2]:
         df = replace_NoneType_with_empty_cells(df)
         for s in ['Produced', 'Consumed']:
-            df = assign_column_of_sector_levels(df, f'Sector{s}By').rename(columns={
-                'SectorLength': f'Sector{s}ByLength'})
+            df = assign_column_of_sector_levels(df, f'Sector{s}By').rename(
+                columns={'SectorLength': f'Sector{s}ByLength'})
             df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].fillna(0)
-            # df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].astype(str)
         # sum flowamounts by sector length
-        dfsum = df.groupby(['Location', 'SectorProducedByLength',
-                            'SectorConsumedByLength']).agg(
-            {'FlowAmount': 'sum'}).reset_index()
+        dfsum = df.groupby(agg_cols).agg({'FlowAmount': 'sum'}).reset_index()
         df_list.append(dfsum)
 
     df_list[0] = df_list[0].rename(columns={'FlowAmount': 'df1'})
@@ -618,7 +621,75 @@ def check_summation_at_sector_lengths(df1, df2):
     dfm2 = dfm2.sort_values(['Location', 'SectorProducedByLength',
                              'SectorConsumedByLength']).reset_index(drop=True)
 
-    return dfm2
+    dfm3 = dfm2[dfm2['flowIncrease_df1_to_df2_perc'] < 0]
+
+    if len(dfm3) > 0:
+        log.info('See validation log fro cases where the second dataframe '
+                 'has flow amounts greater than the first dataframe at the '
+                 'same location/sector lengths.')
+        vLogDetailed.info('The second dataframe has flow amounts greater than '
+                          'the first dataframe at the same sector lengths: '
+                          '\n {}'.format(dfm3.to_string()))
+    else:
+        vLogDetailed.info('The second dataframe does not have flow amounts '
+                          'greater than the first dataframe at any sector '
+                          'length')
+
+
+def compare_child_to_parent_sectors_flowamounts(df_load):
+    """
+    Sum child sectors up to one sector and compare to parent sector values
+    :param df_load: df, contains sector columns
+    :return: comparison of flow values
+    """
+    from flowsa.flowbyfunctions import return_primary_sector_column, \
+        assign_sector_match_column, assign_column_of_sector_levels
+
+    sector_column = return_primary_sector_column(df_load)
+    merge_cols = ['Class', 'SourceName', 'FlowName', 'Unit', 'FlowType',
+                  'Compartment', 'Location', 'Year']
+    agg_cols = merge_cols + ['sector_group']
+    # df of naics6
+    # determine grouping columns - based on datatype
+    # groupcols = list(df.select_dtypes(include=['object', 'int']).columns)
+    # df3 = assign_column_of_sector_levels(df_load, sector_column)
+    dfagg = pd.DataFrame()
+    for i in range(3, 7):
+        df = subset_df_by_sector_lengths(df_load, [i])
+        df = assign_sector_match_column(df, sector_column, i, i-1)
+        df2 = df.groupby(agg_cols).agg(
+            {'FlowAmount': 'sum'}).rename(columns={
+            'FlowAmount': f'ChildNAICSSum'}).reset_index()
+        dfagg = pd.concat([dfagg, df2], ignore_index=True)
+    # also subset to naics 6 and concat
+    df3 = subset_df_by_sector_lengths(df_load, [6]).rename(columns={
+        sector_column: 'sector_group', 'FlowAmount': 'ChildNAICSSum'})
+    df3 = df3[merge_cols+['sector_group', 'ChildNAICSSum']]
+    dfagg = pd.concat([dfagg, df3])
+
+    # merge new df with summed child naics to original df
+    drop_cols = [e for e in df_load.columns if e in
+                 ['MeasureofSpread', 'Spread', 'DistributionType', 'Min',
+                  'Max', 'DataReliability', 'DataCollection', 'Description',
+                  'sector_group']]
+    dfm = df_load.merge(dfagg, how='left', left_on=merge_cols + [
+        sector_column], right_on=merge_cols+['sector_group']).drop(
+        columns=drop_cols)
+    dfm = dfm.assign(FlowDiff=dfm['ChildNAICSSum'] - dfm['FlowAmount'])
+
+    # subset df where child sectors sum to be greater than parent sectors
+    tolerance = 0.0001
+    dfm2 = dfm[dfm['FlowDiff'] > tolerance]
+
+    if len(dfm2) > 0:
+        log.info('See validation log for cases where child sectors sum to be '
+                 'greater than parent sectors.')
+        vLogDetailed.info('There are cases where child sectors sum to be '
+                          'greater than parent sectors: '
+                          '\n {}'.format(dfm2.to_string()))
+    else:
+        vLogDetailed.info('No child sectors sum to be greater than parent '
+                          'sectors.')
 
 
 def check_for_nonetypes_in_sector_col(df):
