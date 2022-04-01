@@ -321,27 +321,18 @@ def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
     :return: df, with flows mapped using federal elementary flow list or
         material flow list
     """
-
     # prior to mapping elementary flows, ensure all data
     # are in an annual format
     fba = convert_units_to_annual(fba)
 
-    keep_unmapped_rows = False
-
-    # if need to maintain FBA columns, create copies of columns
-    if kwargs != {}:
-        if ('keep_fba_columns' in kwargs) & \
-                (kwargs['keep_fba_columns'] is True):
-            fba['Flowable'] = fba['FlowName']
-            fba['Context'] = fba['Compartment']
-        # if keep unmapped rows identified in kwargs, then use
-        if 'keep_unmapped_rows' in kwargs:
-            keep_unmapped_rows = kwargs['keep_unmapped_rows']
-
-    # else, rename
+    if kwargs.get('keep_fba_columns'):
+        fba = fba.assign(Flowable=fba['FlowName'],
+                         Context=fba['Compartment'])
     else:
         fba = fba.rename(columns={'FlowName': 'Flowable',
                                   'Compartment': 'Context'})
+
+    keep_unmapped_rows = kwargs.get('keep_unmapped_rows') or False
 
     mapped_df = apply_flow_mapping(fba, from_fba_source,
                                    flow_type=flow_type,
@@ -371,18 +362,22 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
     """
     ignore_source_name = False
     if 'mfl_mapping' in v:
+        log.info("Mapping flows in %s to material flow list",
+                 from_fba_source)
         mapping_files = v['mfl_mapping']
-        log.info("Mapping flows in %s to material flow list", from_fba_source)
         flow_type = 'WASTE_FLOW'
         ignore_source_name = True
-    else:
+    elif 'fedefl_mapping' in v:
         log.info("Mapping flows in %s to federal elementary flow list",
                  from_fba_source)
-        if 'fedefl_mapping' in v:
-            mapping_files = v['fedefl_mapping']
-            ignore_source_name = True
-        else:
-            mapping_files = from_fba_source
+        mapping_files = v['fedefl_mapping']
+        flow_type = 'ELEMENTARY_FLOW'
+        ignore_source_name = True
+    else:
+        log.info("Mapping flows in %s to %s, since no federal elementary flow "
+                 "or material flow list information was provided",
+                 from_fba_source, from_fba_source)
+        mapping_files = from_fba_source
         flow_type = 'ELEMENTARY_FLOW'
 
     fbs_mapped = map_flows(fbs, mapping_files, flow_type,
