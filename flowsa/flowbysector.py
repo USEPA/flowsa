@@ -25,31 +25,30 @@ import pandas as pd
 import os
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
-from flowsa.location import fips_number_key, merge_urb_cnty_pct
-from flowsa.common import load_yaml_dict, check_activities_sector_like, \
-    str2bool, fba_activity_fields, rename_log_file, \
-    fbs_activity_fields, fba_fill_na_dict, fbs_fill_na_dict, \
+from flowsa.allocation import equally_allocate_parent_to_child_naics
+from flowsa.common import check_activities_sector_like, str2bool, \
+    fba_activity_fields, rename_log_file, fba_fill_na_dict, fbs_fill_na_dict, \
     fbs_default_grouping_fields, fbs_grouping_fields_w_activities, \
-    logoutputpath, load_yaml_dict, datapath
-from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
-    flow_by_sector_fields_w_activity
-from flowsa.settings import log, vLog, \
-    flowbysectoractivitysetspath, paths
-from flowsa.metadata import set_fb_meta, write_metadata
+    logoutputpath, load_yaml_dict
+from flowsa.dataclean import clean_df, harmonize_FBS_columns, \
+    reset_fbs_dq_scores
 from flowsa.fbs_allocation import direct_allocation_method, \
     function_allocation_method, dataset_allocation_method
-from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
-    map_fbs_flows, get_sector_list
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, \
     dynamically_import_fxn, update_geoscale, subset_df_by_sector_list
-from flowsa.dataclean import clean_df, harmonize_FBS_columns, \
-    reset_fbs_dq_scores
+from flowsa.location import fips_number_key, merge_urb_cnty_pct
+from flowsa.metadata import set_fb_meta, write_metadata
+from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
+    flow_by_sector_fields_w_activity
+from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
+    map_fbs_flows, get_sector_list
+from flowsa.settings import log, vLog, flowbysectoractivitysetspath, paths
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
-    replace_naics_w_naics_from_another_year, \
-    calculate_flowamount_diff_between_dfs, check_for_negative_flowamounts
-from flowsa.allocation import equally_allocate_parent_to_child_naics
+    replace_naics_w_naics_from_another_year, check_for_negative_flowamounts, \
+    compare_child_to_parent_sectors_flowamounts, \
+    calculate_flowamount_diff_between_dfs
 
 
 def parse_args():
