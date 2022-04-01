@@ -643,8 +643,21 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
         assign_sector_match_column
 
     sector_column = return_primary_sector_column(df_load)
-    merge_cols = ['Class', 'SourceName', 'FlowName', 'Unit', 'FlowType',
-                  'Compartment', 'Location', 'Year']
+    merge_cols = [e for e in df_load.columns if e in [
+        'Class', 'SourceName', 'MetaSources', 'FlowName', 'Unit',
+        'FlowType', 'Flowable', 'ActivityProducedBy', 'ActivityConsumedBy',
+        'Compartment', 'Context', 'Location', 'Year']]
+    # determine if activities are sector-like
+    if 'SourceName' in df_load.columns:
+        s = pd.unique(df_load['SourceName'])[0]
+    else:
+        s = pd.unique(df_load['MetaSources'])[0]
+    sector_like_activities = check_activities_sector_like(s)
+    # if activities are sector like, drop columns from merge group
+    if sector_like_activities:
+        merge_cols = [e for e in merge_cols if e not in (
+            'ActivityProducedBy', 'ActivityConsumedBy')]
+
     agg_cols = merge_cols + ['sector_group']
     dfagg = pd.DataFrame()
     for i in range(3, 7):
@@ -671,7 +684,7 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
     dfm = dfm.assign(FlowDiff=dfm['ChildNAICSSum'] - dfm['FlowAmount'])
 
     # subset df where child sectors sum to be greater than parent sectors
-    tolerance = 0.0001
+    tolerance = 0.001
     dfm2 = dfm[dfm['FlowDiff'] > tolerance]
 
     if len(dfm2) > 0:
@@ -682,6 +695,20 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
                           '\n {}'.format(dfm2.to_string()))
     else:
         vLogDetailed.info('No child sectors sum to be greater than parent '
+                          'sectors.')
+
+    # subset df where child sectors sum to be greater than parent sectors
+    tolerance = - 0.001
+    dfm3 = dfm[dfm['FlowDiff'] < tolerance]
+
+    if len(dfm3) > 0:
+        log.info('See validation log for cases where child sectors sum to be '
+                 'less than parent sectors.')
+        vLogDetailed.info('There are cases where child sectors sum to be '
+                          'greater than parent sectors: '
+                          '\n {}'.format(dfm3.to_string()))
+    else:
+        vLogDetailed.info('No child sectors sum to be less than parent '
                           'sectors.')
 
 
