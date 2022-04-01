@@ -17,7 +17,7 @@ from flowsa.validation import check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
-    load_fba_w_standardized_units
+    load_fba_w_standardized_units, aggregator
 from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
     equally_allocate_parent_to_child_naics, equal_allocation
 from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
@@ -194,20 +194,20 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
 
     # subset fba allocation table to the values in the activity
     # list, based on overlapping sectors
-    flow_subset_mapped = flow_subset_mapped.loc[
+    flow_subset_mapped2 = flow_subset_mapped.loc[
         (flow_subset_mapped[fbs_activity_fields[0]].isin(sector_list)) |
         (flow_subset_mapped[fbs_activity_fields[1]].isin(sector_list))]
 
     # check if fba and allocation dfs have the same LocationSystem
     log.info("Checking if flowbyactivity and allocation "
              "dataframes use the same location systems")
-    check_if_location_systems_match(flow_subset_mapped, flow_allocation)
+    check_if_location_systems_match(flow_subset_mapped2, flow_allocation)
 
     # merge fba df w/flow allocation dataset
     log.info("Merge %s and subset of %s", k, attr['allocation_source'])
     for i, j in activity_fields.items():
         # check units
-        compare_df_units(flow_subset_mapped, flow_allocation)
+        compare_df_units(flow_subset_mapped2, flow_allocation)
         # create list of columns to merge on
         if 'allocation_merge_columns' in attr:
             fa_cols = \
@@ -222,21 +222,21 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
             fa_cols = ['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']
             l_cols = ['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]]
             r_cols = ['Location', 'Sector', 'FBA_Activity']
-        flow_subset_mapped = \
-            flow_subset_mapped.merge(flow_allocation[fa_cols], left_on=l_cols,
+        flow_subset_mapped2 = \
+            flow_subset_mapped2.merge(flow_allocation[fa_cols], left_on=l_cols,
                                      right_on=r_cols, how='left')
 
     # merge the flowamount columns
-    flow_subset_mapped.loc[:, 'FlowAmountRatio'] =\
-        flow_subset_mapped['FlowAmountRatio_x'].fillna(
-            flow_subset_mapped['FlowAmountRatio_y'])
+    flow_subset_mapped2.loc[:, 'FlowAmountRatio'] =\
+        flow_subset_mapped2['FlowAmountRatio_x'].fillna(
+            flow_subset_mapped2['FlowAmountRatio_y'])
     # fill null rows with 0 because no allocation info
-    flow_subset_mapped['FlowAmountRatio'] = \
-        flow_subset_mapped['FlowAmountRatio'].fillna(0)
+    flow_subset_mapped2['FlowAmountRatio'] = \
+        flow_subset_mapped2['FlowAmountRatio'].fillna(0)
 
     # drop rows where there is no allocation data
-    fbs = flow_subset_mapped.dropna(
-        subset=['Sector_x', 'Sector_y'], how='all').reset_index()
+    fbs = flow_subset_mapped2.dropna(
+        subset=['Sector_x', 'Sector_y'], how='all').reset_index(drop=True)
 
     # calculate flow amounts for each sector
     log.info("Calculating new flow amounts using flow ratios")
@@ -247,7 +247,10 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y',
                             'FlowAmountRatio_y', 'FlowAmountRatio',
                             'FBA_Activity_x', 'FBA_Activity_y'])
-    return fbs
+    group_cols = list(fbs.select_dtypes(include=['object', 'int']).columns)
+    fbs2 = aggregator(fbs, group_cols)
+
+    return fbs2
 
 
 def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
