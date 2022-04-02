@@ -84,14 +84,15 @@ def stewicombo_to_sector(yaml_load):
         df = drop_GHGs(df)
         functions.remove('drop_GHGs')
     facility_mapping = extract_facility_data(yaml_load['inventory_dict'])
-    # use NAICS from facility matcher so drop them here
-    facility_mapping.drop(columns=['NAICS'], inplace=True)
+
     # merge dataframes to assign facility information based on facility IDs
-    df = pd.merge(df, facility_mapping, how='left',
-                  on='FacilityID')
+    df = pd.merge(df,
+                  facility_mapping.loc[:, facility_mapping.columns != 'NAICS'],
+                  how='left', on='FacilityID')
 
     all_NAICS = obtain_NAICS_from_facility_matcher(inventory_list)
-    df = pd.merge(df, all_NAICS, how='left', on=['FRS_ID', 'Source'])
+
+    df = assign_naics_to_stewicombo(df, all_NAICS, facility_mapping)
 
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
@@ -281,12 +282,30 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     all_NAICS = all_NAICS.loc[all_NAICS['PRIMARY_INDICATOR'] == 'PRIMARY']
     all_NAICS.drop(columns=['PRIMARY_INDICATOR'], inplace=True)
     all_NAICS = naics_expansion(all_NAICS)
-    if len(all_NAICS[all_NAICS.duplicated(
-            subset=['FRS_ID', 'Source'], keep=False)]) > 0:
-        log.debug('Duplicate primary NAICS reported - keeping first')
-        all_NAICS.drop_duplicates(subset=['FRS_ID', 'Source'],
-                                  keep='first', inplace=True)
     return all_NAICS
+
+
+def assign_naics_to_stewicombo(df, all_NAICS, facility_mapping):
+    """
+    Apply naics to combined inventory preferentially using FRS_ID.
+    When FRS_ID does not provide unique NAICS, then use NAICS assigned by
+    inventory source
+    :param df: combined inventory from stewicombo
+    :param all_NAICS: df of NAICS by FRS_ID
+    :param facility_mapping: df of NAICS by Facility_ID
+    """
+    # first merge in NAICS by FRS, but only where the FRS has a single NAICS
+    df = pd.merge(df, all_NAICS[~all_NAICS.duplicated(
+        subset=['FRS_ID', 'Source'], keep=False)],
+        how='left', on=['FRS_ID', 'Source'])
+
+    # next use NAICS from inventory sources
+    df = pd.merge(df, facility_mapping[['FacilityID', 'NAICS']], how='left',
+                  on='FacilityID', suffixes=(None, "_y"))
+    df['NAICS'].fillna(df['NAICS_y'], inplace=True)
+    df.drop(columns=['NAICS_y'], inplace=True)
+
+    return df
 
 
 def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
