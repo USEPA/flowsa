@@ -138,8 +138,19 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     inherits = config.get('inherits_from')
     while inherits:
         yaml_path = folder + inherits + '.yaml'
-        with open(yaml_path, 'r') as f:
-            parent = yaml.safe_load(f)
+        if (folder == filepath) & (not os.path.exists(yaml_path)):
+            # check first for inherits.yaml in filepath, then check
+            # repo path
+            if flowbytype == 'FBA':
+                folder = sourceconfigpath
+            elif flowbytype == 'FBS':
+                folder = flowbysectormethodpath
+            yaml_path = folder + inherits + '.yaml'
+        try:
+            with open(yaml_path, 'r') as f:
+                parent = yaml.safe_load(f)
+        except FileNotFoundError:
+            log.error(f'{inherits}.yaml file not found')
 
         # Check for common keys and log a warning if any are found
         common_keys = [k for k in config if k in parent]
