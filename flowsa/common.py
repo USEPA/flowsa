@@ -18,7 +18,6 @@ from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
 from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
     sourceconfigpath, log, flowbysectormethodpath
 
-
 # Sets default Sector Source Name
 SECTOR_SOURCE_NAME = 'NAICS_2012_Code'
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']

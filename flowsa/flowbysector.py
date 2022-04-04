@@ -73,7 +73,8 @@ def parse_args():
     return args
 
 
-def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
+def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing,
+                          fbsconfigpath=None):
     """
     Load the source dataframe. Data can be a FlowbyActivity or
     FlowBySector parquet stored in flowsa, or a FlowBySector
@@ -82,6 +83,7 @@ def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
     :param source_dict: dictionary, The datasource parameters
     :param download_FBA_if_missing: Bool, if True will download FBAs from
        Data Commons. Default is False.
+    :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
     :return: df of identified parquet
     """
     if source_dict['data_format'] == 'FBA':
@@ -105,7 +107,8 @@ def load_source_dataframe(sourcename, source_dict, download_FBA_if_missing):
     elif source_dict['data_format'] == 'FBS_outside_flowsa':
         vLog.info("Retrieving flowbysector for datasource %s", sourcename)
         flows_df = dynamically_import_fxn(
-            sourcename, source_dict["FBS_datapull_fxn"])(source_dict)
+            sourcename, source_dict["FBS_datapull_fxn"])(source_dict,
+                                                         fbsconfigpath)
     else:
         vLog.error("Data format not specified in method "
                    "file for datasource %s", sourcename)
@@ -119,7 +122,7 @@ def return_activity_set_names(v, fbsconfigpath):
     None, meaning the method yaml is loaded from outside the flowsa repo,
     first check for an activity set file in the fbsconfigpath.
     :param v:
-    :param fbsconfigpath:
+    :param fbsconfigpath: str, optional path to an FBS method outside flowsa repo
     :return:
     """
     # if activity_sets are specified in a file, call them here
@@ -165,7 +168,8 @@ def main(**kwargs):
     fbs_list = []
     for k, v in fb.items():
         # pull fba data for allocation
-        flows = load_source_dataframe(k, v, download_FBA_if_missing)
+        flows = load_source_dataframe(k, v, download_FBA_if_missing,
+                                      fbsconfigpath)
 
         if v['data_format'] == 'FBA':
             # ensure correct datatypes and that all fields exist
