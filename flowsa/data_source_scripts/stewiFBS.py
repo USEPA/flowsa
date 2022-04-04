@@ -163,7 +163,7 @@ def stewi_to_sector(yaml_load, *_):
     return fbs
 
 
-def reassign_process_to_sectors(df, year, NAICS_level_value, scc_file,
+def reassign_process_to_sectors(df, year, NAICS_level_value, file_list,
                             fbsconfigpath):
     """
     Reassigns emissions from a specific process or SCC and NAICS combination
@@ -173,7 +173,8 @@ def reassign_process_to_sectors(df, year, NAICS_level_value, scc_file,
     :param year: year as str
     :param NAICS_level_value: desired NAICS aggregation level,
         using sector_level_key, should match target_sector_level
-    :param scc_file:
+    :param file_list: list, one or more names of csv files in
+        process_adjustmentpath
     :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
     :return: df
     """
@@ -181,20 +182,22 @@ def reassign_process_to_sectors(df, year, NAICS_level_value, scc_file,
     from stewicombo.overlaphandler import remove_default_flow_overlaps
     from stewicombo.globals import addChemicalMatches
 
-    scc_path = f"{process_adjustmentpath}{scc_file}.csv"
-    if fbsconfigpath:
-        scc_out_path = f"{fbsconfigpath}process_adjustments/{scc_file}.csv"
-        if os.path.isfile(scc_out_path):
-            scc_path = scc_out_path
-            log.info(f"modifying processes from {scc_path}")
-    log.info(f"modifying processes from {scc_path}")
-    scc = pd.read_csv(scc_path, dtype='str')
+    df_adj = pd.DataFrame()
+    for file in file_list:
+        fpath = f"{process_adjustmentpath}{file}.csv"
+        if fbsconfigpath:
+            f_out_path = f"{fbsconfigpath}process_adjustments/{file}.csv"
+            if os.path.isfile(f_out_path):
+                fpath = f_out_path
+        log.info(f"modifying processes from {fpath}")
+        df_adj0 = pd.read_csv(fpath, dtype='str')
+        df_adj = pd.concat([df_adj, df_adj0], ignore_index=True)
 
     # obtain and prepare SCC dataset
     df_fbp = stewi.getInventory('NEI', year,
                                 stewiformat='flowbyprocess',
                                 download_if_missing=True)
-    df_fbp = df_fbp[df_fbp['Process'].isin(scc['source_process'])]
+    df_fbp = df_fbp[df_fbp['Process'].isin(df_adj['source_process'])]
     df_fbp['Source'] = 'NEI'
     df_fbp = addChemicalMatches(df_fbp)
     df_fbp = remove_default_flow_overlaps(df_fbp, SCC=True)
@@ -207,7 +210,7 @@ def reassign_process_to_sectors(df, year, NAICS_level_value, scc_file,
     df_fbp['Year'] = year
 
     #TODO: expand naics list in scc file to include child naics automatically
-    df_fbp = df_fbp.merge(scc, how='inner',
+    df_fbp = df_fbp.merge(df_adj, how='inner',
                           left_on=['NAICS', 'Process'],
                           right_on=['source_naics', 'source_process'])
 
