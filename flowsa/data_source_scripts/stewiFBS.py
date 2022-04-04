@@ -189,9 +189,17 @@ def reassign_process_to_sectors(df, year, NAICS_level_value, file_list,
             f_out_path = f"{fbsconfigpath}process_adjustments/{file}.csv"
             if os.path.isfile(f_out_path):
                 fpath = f_out_path
-        log.info(f"modifying processes from {fpath}")
+        log.debug(f"modifying processes from {fpath}")
         df_adj0 = pd.read_csv(fpath, dtype='str')
         df_adj = pd.concat([df_adj, df_adj0], ignore_index=True)
+
+    # Eliminate duplicate adjustments
+    df_adj.drop_duplicates(inplace=True)
+    if sum(df_adj.duplicated(subset=['source_naics', 'source_process'],
+                                  keep=False)) > 0:
+        log.warning('duplicate process adjustments')
+        df_adj.drop_duplicates(subset=['source_naics', 'source_process'],
+                               inplace=True)
 
     # obtain and prepare SCC dataset
     df_fbp = stewi.getInventory('NEI', year,
