@@ -16,9 +16,11 @@ import os
 import pandas as pd
 from esupy.dqi import get_weighted_average
 from flowsa.allocation import equally_allocate_parent_to_child_naics
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system,\
+    subset_df_by_sector_list
 from flowsa.dataclean import add_missing_flow_by_fields
-from flowsa.sectormapping import map_flows
+from flowsa.sectormapping import map_flows,\
+    get_sector_list
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.common import load_crosswalk, sector_level_key
 from flowsa.schema import flow_by_sector_fields
@@ -388,7 +390,6 @@ def prepare_stewi_fbs(df, yaml_load, method):
     fbs_mapped = add_missing_flow_by_fields(fbs_mapped, flow_by_sector_fields)
 
     fbs_mapped = equally_allocate_parent_to_child_naics(fbs_mapped, method)
-    # fbs_mapped = check_for_missing_sector_data(fbs_mapped, NAICS_level)
 
     # sort dataframe and reset index
     fbs_mapped = fbs_mapped.sort_values(
@@ -397,6 +398,15 @@ def prepare_stewi_fbs(df, yaml_load, method):
     # check the sector codes to make sure NAICS 2012 codes
     fbs_mapped = replace_naics_w_naics_from_another_year(
         fbs_mapped, 'NAICS_2012_Code')
+
+    # return sector level specified in method yaml
+    # load the crosswalk linking sector lengths
+    secondary_sector_level = method.get('target_subset_sector_level')
+    sector_list = get_sector_list(method['target_sector_level'],
+        secondary_sector_level_dict=secondary_sector_level)
+
+    # subset df to get NAICS at the target level
+    fbs_mapped = subset_df_by_sector_list(fbs_mapped, sector_list)
 
     return fbs_mapped
 
@@ -461,77 +471,6 @@ def naics_expansion(facility_NAICS):
         facility_NAICS = pd.concat([facility_NAICS, new_naics], sort=True)
 
     return facility_NAICS
-
-
-def check_for_missing_sector_data(df, target_sector_level):
-    """
-    Modeled after validation.py check_if_losing_sector_data
-    Allocates flow amount equally across child NAICS when parent NAICS
-    is not target_level
-    :param df: df
-    :param target_sector_level: str, final sector level of FBS (ex. NAICS_6)
-    :return: df with missing sector level data
-    """
-
-    from flowsa.dataclean import replace_NoneType_with_empty_cells
-    from flowsa.dataclean import replace_strings_with_NoneType
-
-    # temporarily replace null values with empty cells
-    df = replace_NoneType_with_empty_cells(df)
-
-    activity_field = "SectorProducedBy"
-    rows_lost = pd.DataFrame()
-    cw_load = load_crosswalk('sector_length')
-    for i in range(3, sector_level_key[target_sector_level]):
-        # create df of i length
-        df_subset = df.loc[df[activity_field].apply(lambda x: len(x) == i)]
-
-        # import cw and subset to current sector length and
-        # target sector length
-
-        nlength = list(sector_level_key.keys())[
-            list(sector_level_key.values()).index(i)]
-        cw = cw_load[[nlength, target_sector_level]].drop_duplicates()
-        # add column with counts
-        cw['sector_count'] = cw.groupby(nlength)[nlength].transform('count')
-
-        # merge df & replace sector produced columns
-        df_x = pd.merge(df_subset, cw, how='left',
-                        left_on=[activity_field], right_on=[nlength])
-        df_x[activity_field] = df_x[target_sector_level]
-        df_x = df_x.drop(columns=[nlength, target_sector_level])
-
-        # calculate new flow amounts, based on sector count,
-        # allocating equally to the new sector length codes
-        df_x['FlowAmount'] = df_x['FlowAmount'] / df_x['sector_count']
-        df_x = df_x.drop(columns=['sector_count'])
-        # replace null values with empty cells
-        df_x = replace_NoneType_with_empty_cells(df_x)
-
-        # append to df
-        sector_list = df_subset[activity_field].drop_duplicates()
-        if len(df_x) != 0:
-            log.warning('Data found at %s digit NAICS to be allocated: '
-                        '{}'.format(' '.join(map(str, sector_list))), str(i))
-            rows_lost = rows_lost.append(df_x, ignore_index=True, sort=True)
-
-    if len(rows_lost) == 0:
-        log.info('No data loss from NAICS in dataframe')
-    else:
-        log.info('Allocating FlowAmounts equally to each %s',
-                 target_sector_level)
-
-    # add rows of missing data to the fbs sector subset
-    df_allocated = pd.concat([df, rows_lost], ignore_index=True, sort=True)
-    df_allocated = df_allocated.loc[
-        df_allocated[activity_field].apply(
-            lambda x: len(x) == sector_level_key[target_sector_level])]
-    df_allocated.reset_index(inplace=True)
-
-    # replace empty cells with NoneType (if dtype is object)
-    df_allocated = replace_strings_with_NoneType(df_allocated)
-
-    return df_allocated
 
 
 def add_stewi_metadata(inventory_dict):
