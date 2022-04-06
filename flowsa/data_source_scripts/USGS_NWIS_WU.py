@@ -680,7 +680,7 @@ def modify_sector_length(df_wsec):
 
         df2 = df2.drop(columns=["LengthToModify", 'TargetLength'])
 
-        df = pd.concat([df1, df2], sort=True)
+        df = pd.concat([df1, df2])
         return df
     else:
         return df1

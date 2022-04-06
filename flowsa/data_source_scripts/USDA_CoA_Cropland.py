@@ -458,8 +458,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year,
         # original fba_w_sector
         fba_w_sector = fba_w_sector[fba_w_sector[sector_column].apply(
             lambda x: x[0:3]) != '112'].reset_index(drop=True)
-        fba_w_sector = pd.concat([fba_w_sector, df],
-                                 sort=True).reset_index(drop=True)
+        fba_w_sector = pd.concat([fba_w_sector, df]).reset_index(drop=True)
 
         # fill empty cells with NoneType
         fba_w_sector = replace_strings_with_NoneType(fba_w_sector)
@@ -577,7 +576,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
         # tmp drop Nonetypes
         df_subset = replace_NoneType_with_empty_cells(df_subset)
         # add new rows of data to crop df
-        crop = pd.concat([crop, df_subset], sort=True).reset_index(drop=True)
+        crop = pd.concat([crop, df_subset]).reset_index(drop=True)
 
     # clean up df
     crop = crop.drop(columns=['Location_tmp'])
@@ -590,7 +589,7 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
         fba_w_sector.loc[fba_w_sector[sector_column].apply(
             lambda x: x[0:3]) == '112'].reset_index(drop=True)
     # concat crop and pasture
-    fba_w_sector = pd.concat([pasture, crop], sort=True).reset_index(drop=True)
+    fba_w_sector = pd.concat([pasture, crop]).reset_index(drop=True)
 
     # fill empty cells with NoneType
     fba_w_sector = replace_strings_with_NoneType(fba_w_sector)

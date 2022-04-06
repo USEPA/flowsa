@@ -143,7 +143,8 @@ def proportional_allocation(df, attr):
     # calculate ratio
     allocation_df.loc[:, 'FlowAmountRatio'] = \
         allocation_df['FlowAmount'] / allocation_df['Denominator']
-    allocation_df = allocation_df.drop(columns=['Denominator']).reset_index()
+    allocation_df = allocation_df.drop(columns=['Denominator']).reset_index(
+        drop=True)
 
     # add nonetypes
     allocation_df = replace_strings_with_NoneType(allocation_df)
