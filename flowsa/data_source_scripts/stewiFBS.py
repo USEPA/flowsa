@@ -22,7 +22,6 @@ from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.sectormapping import map_flows,\
     get_sector_list
 from flowsa.location import apply_county_FIPS, update_geoscale
-from flowsa.common import load_crosswalk, sector_level_key
 from flowsa.schema import flow_by_sector_fields
 from flowsa.settings import log, process_adjustmentpath
 from flowsa.validation import replace_naics_w_naics_from_another_year
@@ -295,7 +294,8 @@ def assign_naics_to_stewicombo(df, all_NAICS, facility_mapping):
                   on='FacilityID', suffixes=(None, "_y"))
     df['NAICS'].fillna(df['NAICS_y'], inplace=True)
     df.drop(columns=['NAICS_y'], inplace=True)
-
+    # Drop records where sector can not be assigned
+    df = df.loc[df['NAICS']!='None']
     return df
 
 
@@ -405,5 +405,5 @@ def add_stewi_metadata(inventory_dict):
 
 if __name__ == "__main__":
     import flowsa
-    #flowsa.flowbysector.main(method='CAP_HAP_stewi_2017')
-    flowsa.flowbysector.main(method='TRI_DMR_national_2017')
+    flowsa.flowbysector.main(method='CRHW_national_2017')
+    #flowsa.flowbysector.main(method='TRI_DMR_national_2017')
