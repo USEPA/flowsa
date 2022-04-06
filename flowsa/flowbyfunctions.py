@@ -92,7 +92,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     return fba_agg
 
 
-def aggregator(df, groupbycols):
+def aggregator(df, groupbycols, retain_zeros=False):
     """
     Aggregates flowbyactivity or flowbysector 'FlowAmount' column in df and
     generate weighted average values based on FlowAmount values for numeric
@@ -108,7 +108,8 @@ def aggregator(df, groupbycols):
     df = replace_NoneType_with_empty_cells(df)
 
     # drop columns with flowamount = 0
-    df = df[df['FlowAmount'] != 0]
+    if retain_zeros is False:
+        df = df[df['FlowAmount'] != 0]
 
     # list of column headers, that if exist in df, should be
     # aggregated using the weighted avg fxn
@@ -190,11 +191,14 @@ def sector_aggregation(df_load):
 
     # determine grouping columns - based on datatype
     group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
-    # determine if activities are sector-like,
-    # if aggregating a df with a 'SourceName'
+    # determine if activities are sector-like, if aggregating a df with a
+    # 'SourceName'
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
         s = pd.unique(df_load['SourceName'])[0]
+        sector_like_activities = check_activities_sector_like(s)
+    if 'MetaSources' in df_load.columns:
+        s = pd.unique(df_load['MetaSources'])[0]
         sector_like_activities = check_activities_sector_like(s)
 
     # if activities are sector like, drop columns while running ag then
