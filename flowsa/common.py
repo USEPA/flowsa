@@ -9,6 +9,7 @@ import os
 import yaml
 import pandas as pd
 import numpy as np
+import dpath.util
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
@@ -110,21 +111,21 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     :return: dictionary containing all information in yaml
     """
     if filename == 'source_catalog':
-        folder = datapath
+        yaml_path = datapath + filename + '.yaml'
     else:
         # first check if a filepath for the yaml is specified, as is the
         # case with FBS method files located outside FLOWSA
-        if filepath is not None:
-            log.info('Loading yaml from %s', filepath)
-            folder = filepath
+        if flowbytype == 'FBA':
+            yaml_path = sourceconfigpath + filename + '.yaml'
+        elif flowbytype == 'FBS':
+            yaml_path = flowbysectormethodpath + filename + '.yaml'
         else:
-            if flowbytype == 'FBA':
-                folder = sourceconfigpath
-            elif flowbytype == 'FBS':
-                folder = flowbysectormethodpath
-            else:
-                raise KeyError('Must specify either \'FBA\' or \'FBS\'')
-    yaml_path = folder + filename + '.yaml'
+            raise KeyError('Must specify either \'FBA\' or \'FBS\'')
+        if filepath is not None:
+            fpath = filepath + filename + '.yaml'
+            if os.path.exists(fpath):
+                yaml_path = fpath
+                log.info(f'Loading {filename} from {filepath}')
 
     try:
         with open(yaml_path, 'r') as f:
@@ -134,33 +135,23 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
 
     # Allow for .yaml files to recursively inherit other .yaml files. Keys in
     # children will overwrite the same key from a parent.
-    inherits = config.get('inherits_from')
-    while inherits:
-        yaml_path = folder + inherits + '.yaml'
-        if (folder == filepath) & (not os.path.exists(yaml_path)):
-            # check first for inherits.yaml in filepath, then check
-            # repo path
-            if flowbytype == 'FBA':
-                folder = sourceconfigpath
-            elif flowbytype == 'FBS':
-                folder = flowbysectormethodpath
-            yaml_path = folder + inherits + '.yaml'
-        try:
-            with open(yaml_path, 'r') as f:
-                parent = yaml.safe_load(f)
-        except FileNotFoundError:
-            log.error(f'{inherits}.yaml file not found')
+    # Identify inherits_from within methods and update config
+    replacements = tuple(dpath.util.search(config, '**/inherits_from', yielded=True))
+    parent_sources = list(set(dpath.util.values(config, '**/inherits_from')))
 
-        # Check for common keys and log a warning if any are found
-        common_keys = [k for k in config if k in parent]
-        if common_keys:
-            log.warning(f'Keys {common_keys} from parent file {yaml_path} '
-                        f'were overwritten by child file.')
+    source_dict = {}
+    for source in parent_sources:
+        source_dict[source] = load_yaml_dict(source, flowbytype, filepath)
 
-        # Update inheritance information before updating the parent dict
-        inherits = parent.get('inherits_from')
-        parent.update(config)
-        config = parent
+    for path_glob, source in replacements:
+        if path_glob == 'inherits_from':
+            # top-level inheritance
+            config.update(source_dict[source])
+        elif path_glob.endswith('/inherits_from'):
+            # update with the method with node from target source
+            path_glob = path_glob[:-len('/inherits_from')]
+            dpath.util.set(config, path_glob,
+                           dpath.util.get(source_dict[source], path_glob))
 
     return config
 
