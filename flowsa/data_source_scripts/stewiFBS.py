@@ -15,6 +15,7 @@ import sys
 import os
 import pandas as pd
 from esupy.dqi import get_weighted_average
+from flowsa.allocation import equally_allocate_parent_to_child_naics
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.sectormapping import map_flows
@@ -25,7 +26,7 @@ from flowsa.settings import log, process_adjustmentpath
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
-def stewicombo_to_sector(yaml_load, fbsconfigpath=None):
+def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
     """
     Returns emissions from stewicombo in fbs format, requires stewi >= 0.9.5
     :param yaml_load: which may contain the following elements:
@@ -42,6 +43,7 @@ def stewicombo_to_sector(yaml_load, fbsconfigpath=None):
         compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
         functions: list of functions (str) to call for additional processing
+    :param method: dictionary, FBS method
     :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
     :return: df, FBS format
     """
@@ -101,8 +103,7 @@ def stewicombo_to_sector(yaml_load, fbsconfigpath=None):
 
     df['MetaSources'] = df['Source']
 
-    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'],
-                            yaml_load['NAICS_level'], yaml_load['geo_scale'])
+    fbs = prepare_stewi_fbs(df, yaml_load, method)
 
     for function in functions:
         fbs = getattr(sys.modules[__name__], function)(fbs)
@@ -110,7 +111,7 @@ def stewicombo_to_sector(yaml_load, fbsconfigpath=None):
     return fbs
 
 
-def stewi_to_sector(yaml_load, *_):
+def stewi_to_sector(yaml_load, method, *_):
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
     :param yaml_load: which may contain the following elements:
@@ -123,6 +124,7 @@ def stewi_to_sector(yaml_load, *_):
         compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
         functions: list of functions (str) to call for additional processing
+    :param method: dictionary, FBS method
     :return: df, FBS format
     """
     import stewi
@@ -155,8 +157,7 @@ def stewi_to_sector(yaml_load, *_):
     # add levelized NAICS code prior to aggregation
     df['NAICS_lvl'] = df['NAICS'].str[0:NAICS_level_value]
 
-    fbs = prepare_stewi_fbs(df, yaml_load['inventory_dict'],
-                            yaml_load['NAICS_level'], yaml_load['geo_scale'])
+    fbs = prepare_stewi_fbs(df, yaml_load, method)
 
     for function in functions:
         fbs = getattr(sys.modules[__name__], function)(fbs)
@@ -316,19 +317,18 @@ def assign_naics_to_stewicombo(df, all_NAICS, facility_mapping):
     return df
 
 
-def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
+def prepare_stewi_fbs(df, yaml_load, method):
     """
     Function to prepare an emissions df from stewi or stewicombo for use as FBS
     :param df: a dataframe of emissions and mapped faciliites from stewi
                 or stewicombo
-    :param inventory_dict: a dictionary of inventory types and years (e.g.,
-                {'NEI':'2017', 'TRI':'2017'})
-    :param NAICS_level: desired NAICS aggregation level, using
-        sector_level_key, should match target_sector_level
-    :param geo_scale: desired geographic aggregation level
-        ('national', 'state', 'county'), should match target_geoscale
+    :param yaml_load: dictionary, FBS method data source configuration
+    :param method: dictonary, FBS method
     :return: df
     """
+    inventory_dict = yaml_load.get('inventory_dict')
+    geo_scale = yaml_load.get('geo_scale')
+
     # update location to appropriate geoscale prior to aggregating
     df.dropna(subset=['Location'], inplace=True)
     df['Location'] = df['Location'].astype(str)
@@ -387,7 +387,8 @@ def prepare_stewi_fbs(df, inventory_dict, NAICS_level, geo_scale):
     # add missing flow by sector fields
     fbs_mapped = add_missing_flow_by_fields(fbs_mapped, flow_by_sector_fields)
 
-    fbs_mapped = check_for_missing_sector_data(fbs_mapped, NAICS_level)
+    fbs_mapped = equally_allocate_parent_to_child_naics(fbs_mapped, method)
+    # fbs_mapped = check_for_missing_sector_data(fbs_mapped, NAICS_level)
 
     # sort dataframe and reset index
     fbs_mapped = fbs_mapped.sort_values(
@@ -546,5 +547,5 @@ def add_stewi_metadata(inventory_dict):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowbysector.main(method='CAP_HAP_national_2017')
+    flowsa.flowbysector.main(method='CRHW_national_2017')
     #flowsa.flowbysector.main(method='TRI_DMR_national_2017')
