@@ -12,7 +12,7 @@ import numpy as np
 from flowsa.location import abbrev_us_state, US_FIPS
 from flowsa.common import fba_activity_fields, capitalize_first_letter
 from flowsa.settings import vLogDetailed
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.validation import compare_df_units, \
     calculate_flowamount_diff_between_dfs
 
@@ -572,7 +572,7 @@ def check_golf_and_crop_irrigation_totals(df_load):
     df_m2 = pd.merge(df_m,
                      df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy',
                            'ActivityConsumedBy', 'Compartment',
-                           'Location', 'Year']],
+                           'Location', 'Year', 'Description']],
                      how='outer',
                      right_on=['FlowName', 'Compartment', 'Location', 'Year'],
                      left_on=['FlowName', 'Compartment', 'Location', 'Year'])
@@ -581,13 +581,15 @@ def check_golf_and_crop_irrigation_totals(df_load):
                                   "ActivityConsumedBy_x": "ActivityConsumedBy",
                                   "FlowAmount_y": "Crop_Amount",
                                   "ActivityProducedBy_y": "Crop_APB",
-                                  "ActivityConsumedBy_y": "Crop_ACB"})
+                                  "ActivityConsumedBy_y": "Crop_ACB",
+                                  "Description_x": 'Description',
+                                  "Description_y": "Crop_Description"})
     # fill na and sum crop and golf
     # df_m2 = df_m2.fillna(0)
     df_m2['subset_sum'] = df_m2['Crop_Amount'] + df_m2['Golf_Amount']
     df_m2['Diff'] = df_m2['FlowAmount'] - df_m2['subset_sum']
 
-    df_m3 = df_m2[df_m2['Diff'] >= 0.000001].reset_index(drop=True)
+    df_m3 = df_m2[df_m2['Diff'] >= 0].reset_index(drop=True)
 
     # rename irrigation to irrgation crop and append rows to df
     df_m3.loc[df_m3['ActivityProducedBy'] ==
@@ -596,11 +598,17 @@ def check_golf_and_crop_irrigation_totals(df_load):
               'Irrigation', 'ActivityConsumedBy'] = 'Irrigation Crop'
     df_m3 = df_m3.drop(columns=['Golf_Amount', 'Golf_APB', 'Golf_ACB',
                                 'Crop_Amount', 'Crop_APB',
-                                'Crop_ACB', 'subset_sum', 'Diff'])
+                                'Crop_ACB', 'subset_sum', 'FlowAmount',
+                                'Description'])
+    df_m3 = df_m3.rename(columns={'Diff': 'FlowAmount',
+                                  'Crop_Description': 'Description'})
 
     if len(df_m3) != 0:
-        df_w_missing_crop = pd.concat([df_load, df_m3], sort=True,
-                                      ignore_index=True)
+        df_w_missing_crop = pd.concat([df_load, df_m3], ignore_index=True)
+
+        group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
+        df_w_missing_crop = aggregator(df_w_missing_crop, group_cols,
+                                       retain_zeros=True)
         return df_w_missing_crop
     else:
         return df_load
