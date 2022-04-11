@@ -1,4 +1,4 @@
-from typing import IO
+from typing import IO, Any
 import yaml
 import flowsa.settings
 from os import path
@@ -52,7 +52,7 @@ def include(loader: yaml.Loader, suffix: str, node: yaml.Node) -> dict:
     return branch
 
 
-def load(stream, external_config_path: str = None):
+def load(stream: IO, external_config_path: str = None) -> dict:
     loader = FlowsaLoader(stream, external_config_path)
     try:
         return loader.get_single_data()
