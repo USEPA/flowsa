@@ -35,13 +35,19 @@ def include(loader: yaml.Loader, suffix: str, node: yaml.Node) -> dict:
     while keys:
         branch = branch[keys.pop(0)]
 
-    if isinstance(node, yaml.MappingNode) and isinstance(branch, dict):
-        context = loader.construct_mapping(node)
-        branch.update(context)
+    if isinstance(node, yaml.MappingNode):
+        if isinstance(branch, dict):
+            context = loader.construct_mapping(node)
+            branch.update(context)
+        else:
+            raise TypeError(f'{suffix} is not a mapping/dict')
 
-    elif isinstance(node, yaml.SequenceNode) and isinstance(branch, list):
-        context = loader.construct_sequence(node)
-        branch.extend(context)
+    elif isinstance(node, yaml.SequenceNode):
+        if isinstance(branch, list):
+            context = loader.construct_sequence(node)
+            branch.extend(context)
+        else:
+            raise TypeError(f'{suffix} is not a sequence/list')
 
     return branch
 
