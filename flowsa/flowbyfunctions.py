@@ -257,7 +257,8 @@ def sector_aggregation(df_load):
             drop=True)
     # if activities are source-like, set col values as
     # copies of the sector columns
-    if sector_like_activities & ('FlowAmount' in df.columns):
+    if sector_like_activities & ('FlowAmount' in df.columns) & \
+            ('ActivityProducedBy' in df_load.columns):
         df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
         df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
 
@@ -288,7 +289,8 @@ def sector_disaggregation(df_load):
     # if activities are sector like, drop columns while running disag then
     # add back in
     if sector_like_activities:
-        df = df.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
+        df = df.drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'],
+                     errors='ignore')
         df = df.reset_index(drop=True)
 
     # load naics 2 to naics 6 crosswalk
