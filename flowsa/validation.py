@@ -642,11 +642,10 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
     from flowsa.flowbyfunctions import return_primary_sector_column, \
         assign_sector_match_column
 
-    sector_column = return_primary_sector_column(df_load)
     merge_cols = [e for e in df_load.columns if e in [
         'Class', 'SourceName', 'MetaSources', 'FlowName', 'Unit',
         'FlowType', 'Flowable', 'ActivityProducedBy', 'ActivityConsumedBy',
-        'Compartment', 'Context', 'Location', 'Year']]
+        'Compartment', 'Context', 'Location', 'Year', 'Description']]
     # determine if activities are sector-like
     if 'SourceName' in df_load.columns:
         s = pd.unique(df_load['SourceName'])[0]
@@ -658,58 +657,51 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
         merge_cols = [e for e in merge_cols if e not in (
             'ActivityProducedBy', 'ActivityConsumedBy')]
 
-    agg_cols = merge_cols + ['sector_group']
+    agg_cols = merge_cols + ['SectorProducedMatch', 'SectorConsumedMatch']
     dfagg = pd.DataFrame()
     for i in range(3, 7):
         df = subset_df_by_sector_lengths(df_load, [i])
-        df = assign_sector_match_column(df, sector_column, i, i-1)
+        for s in ['Produced', 'Consumed']:
+            df = assign_sector_match_column(df, f'Sector{s}By', i, i-1).rename(
+                columns={'sector_group': f'Sector{s}Match'})
+            df = df.fillna('')
         df2 = df.groupby(agg_cols).agg(
             {'FlowAmount': 'sum'}).rename(columns={
             'FlowAmount': f'ChildNAICSSum'}).reset_index()
         dfagg = pd.concat([dfagg, df2], ignore_index=True)
-    # also subset to naics 6 and concat
-    df3 = subset_df_by_sector_lengths(df_load, [6]).rename(columns={
-        sector_column: 'sector_group', 'FlowAmount': 'ChildNAICSSum'})
-    df3 = df3[merge_cols+['sector_group', 'ChildNAICSSum']]
-    dfagg = pd.concat([dfagg, df3])
 
     # merge new df with summed child naics to original df
     drop_cols = [e for e in df_load.columns if e in
                  ['MeasureofSpread', 'Spread', 'DistributionType', 'Min',
                   'Max', 'DataReliability', 'DataCollection', 'Description',
-                  'sector_group']]
+                  'SectorProducedMatch', 'SectorConsumedMatch']]
     dfm = df_load.merge(dfagg, how='left', left_on=merge_cols + [
-        sector_column], right_on=merge_cols+['sector_group']).drop(
+        'SectorProducedBy', 'SectorConsumedBy'], right_on=agg_cols).drop(
         columns=drop_cols)
     dfm = dfm.assign(FlowDiff=dfm['ChildNAICSSum'] - dfm['FlowAmount'])
+    dfm['PercentDiff'] = (dfm['FlowDiff'] / dfm['FlowAmount']) * 100
+
+    cols_subset = [e for e in dfm.columns if e in [
+        'Class', 'SourceName', 'MetaSources', 'Flowable', 'Unit', 'FlowType',
+        'ActivityProducedBy', 'ActivityConsumedBy', 'Context', 'Location',
+        'Year', 'SectorProducedBy', 'SectorConsumedBy', 'FlowAmount',
+        'ChildNAICSSum', 'PercentDiff']]
+    dfm = dfm[cols_subset]
 
     # subset df where child sectors sum to be greater than parent sectors
-    tolerance = 0.001
-    dfm2 = dfm[dfm['FlowDiff'] > tolerance]
+    tolerance = 1
+    dfm2 = dfm[(dfm['PercentDiff'] > tolerance) |
+               (dfm['PercentDiff'] < - tolerance)].reset_index(drop=True)
 
     if len(dfm2) > 0:
         log.info('See validation log for cases where child sectors sum to be '
-                 'greater than parent sectors.')
+                 'different than parent sectors by at least %s%%.', tolerance)
         vLogDetailed.info('There are cases where child sectors sum to be '
-                          'greater than parent sectors: '
-                          '\n {}'.format(dfm2.to_string()))
+                          'different than parent sectors by at least %s%%: '
+                          '\n {}'.format(dfm2.to_string()), tolerance)
     else:
-        vLogDetailed.info('No child sectors sum to be greater than parent '
-                          'sectors.')
-
-    # subset df where child sectors sum to be greater than parent sectors
-    tolerance = - 0.001
-    dfm3 = dfm[dfm['FlowDiff'] < tolerance]
-
-    if len(dfm3) > 0:
-        log.info('See validation log for cases where child sectors sum to be '
-                 'less than parent sectors.')
-        vLogDetailed.info('There are cases where child sectors sum to be '
-                          'greater than parent sectors: '
-                          '\n {}'.format(dfm3.to_string()))
-    else:
-        vLogDetailed.info('No child sectors sum to be less than parent '
-                          'sectors.')
+        vLogDetailed.info('No child sectors sum to be different than parent '
+                          'sectors by at least %s%%.', tolerance)
 
 
 def check_for_nonetypes_in_sector_col(df):
