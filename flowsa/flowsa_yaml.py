@@ -15,7 +15,7 @@ class FlowsaLoader(yaml.SafeLoader):
         self.external_config_path = str(external_config_path)
 
 
-def include(loader: yaml.Loader, suffix: str, node: yaml.Node) -> dict:
+def include(loader: FlowsaLoader, suffix: str, node: yaml.Node) -> dict:
     file, *keys = suffix.split(':')
 
     for folder in [
@@ -30,7 +30,7 @@ def include(loader: yaml.Loader, suffix: str, node: yaml.Node) -> dict:
         raise FileNotFoundError
 
     with open(file) as f:
-        branch = yaml.load(f, FlowsaLoader)
+        branch = load(f, loader.external_config_path)
 
     while keys:
         branch = branch[keys.pop(0)]
