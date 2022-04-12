@@ -3,7 +3,7 @@
 # coding=utf-8
 """
 Inventory of US EPA GHG
-https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2018
+https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 """
 
 import io

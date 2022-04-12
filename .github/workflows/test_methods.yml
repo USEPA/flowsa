@@ -1,6 +1,7 @@
-# This workflow generates FlowBySector files and compares to the latest public version
+# This workflow provides testing for FlowByActivity configurations and
+# generates FlowBySector files and compares to the latest public version
 
-name: Validate FlowBySectors
+name: Testing for FlowByActivity and FlowBySector Methods
 
 on:
   # push: # removed to run only on pull request
@@ -31,11 +32,19 @@ jobs:
       run: |
         pip install .
 
+    - name: Test FBA config
+      run: |
+        python flowsa/test_FBA_urls.py
+
     - name: Compare FBS with remote
+      id: FBS
+      if: always() # Proceed even if Test FBA fails
       run: |
         python flowsa/test_FBS_against_remote.py
 
     - name: Upload csv files
+      # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
+      if: always()
       uses: actions/upload-artifact@v2.3.0
       with:
         # Artifact name
