@@ -21,7 +21,7 @@ from flowsa.common import fba_default_grouping_fields
 from flowsa.schema import flow_by_activity_wsec_fields, \
     flow_by_activity_mapped_wsec_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    aggregator
+    aggregator, equally_allocate_suppressed_parent_to_child_naics
 from flowsa.dataclean import add_missing_flow_by_fields, \
     replace_strings_with_NoneType
 
@@ -259,9 +259,12 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     df_w_sec = df_w_sec.reset_index(drop=True)
     df2 = add_missing_flow_by_fields(
         df_w_sec, flow_by_activity_wsec_fields).reset_index(drop=True)
-    df3 = replace_strings_with_NoneType(df2)
+    groupcols = list(df_w_sec.select_dtypes(include=['object', 'int']).columns)
+    df3 = equally_allocate_suppressed_parent_to_child_naics(
+        df_w_sec, kwargs['method'], 'SectorProducedBy', groupcols)
+    df4 = replace_strings_with_NoneType(df3)
 
-    return df3
+    return df4
 
 
 def bls_clean_allocation_fba_w_sec_sat_table(df_w_sec, **kwargs):
