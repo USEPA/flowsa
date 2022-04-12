@@ -11,45 +11,45 @@ class FlowsaLoader(yaml.SafeLoader):
     '''
     def __init__(self, stream: IO, external_config_path: str = None) -> None:
         super().__init__(stream)
-        self.add_multi_constructor('!include:', include)
+        self.add_multi_constructor('!include:', self.include)
         self.external_config_path = str(external_config_path)
 
+    @staticmethod
+    def include(loader: 'FlowsaLoader', suffix: str, node: yaml.Node) -> dict:
+        file, *keys = suffix.split(':')
 
-def include(loader: FlowsaLoader, suffix: str, node: yaml.Node) -> dict:
-    file, *keys = suffix.split(':')
-
-    for folder in [
-        loader.external_config_path,
-        flowsa.settings.sourceconfigpath,
-        flowsa.settings.flowbysectormethodpath
-    ]:
-        if path.exists(path.join(folder, file)):
-            file = path.join(folder, file)
-            break
-    else:
-        raise FileNotFoundError
-
-    with open(file) as f:
-        branch = load(f, loader.external_config_path)
-
-    while keys:
-        branch = branch[keys.pop(0)]
-
-    if isinstance(node, yaml.MappingNode):
-        if isinstance(branch, dict):
-            context = loader.construct_mapping(node)
-            branch.update(context)
+        for folder in [
+            loader.external_config_path,
+            flowsa.settings.sourceconfigpath,
+            flowsa.settings.flowbysectormethodpath
+        ]:
+            if path.exists(path.join(folder, file)):
+                file = path.join(folder, file)
+                break
         else:
-            raise TypeError(f'{suffix} is not a mapping/dict')
+            raise FileNotFoundError
 
-    elif isinstance(node, yaml.SequenceNode):
-        if isinstance(branch, list):
-            context = loader.construct_sequence(node)
-            branch.extend(context)
-        else:
-            raise TypeError(f'{suffix} is not a sequence/list')
+        with open(file) as f:
+            branch = load(f, loader.external_config_path)
 
-    return branch
+        while keys:
+            branch = branch[keys.pop(0)]
+
+        if isinstance(node, yaml.MappingNode):
+            if isinstance(branch, dict):
+                context = loader.construct_mapping(node)
+                branch.update(context)
+            else:
+                raise TypeError(f'{suffix} is not a mapping/dict')
+
+        elif isinstance(node, yaml.SequenceNode):
+            if isinstance(branch, list):
+                context = loader.construct_sequence(node)
+                branch.extend(context)
+            else:
+                raise TypeError(f'{suffix} is not a sequence/list')
+
+        return branch
 
 
 def load(stream: IO, external_config_path: str = None) -> dict:
