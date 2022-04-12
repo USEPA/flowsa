@@ -299,9 +299,6 @@ def main(**kwargs):
                         flows_mapped_wsec, attr, names, method, k, v, aset,
                         aset_names, download_FBA_if_missing, fbsconfigpath)
 
-                # compare child sectors to parent sectors flow amounts
-                compare_child_to_parent_sectors_flowamounts(fbs)
-
                 # drop rows where flowamount = 0
                 # (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
@@ -346,6 +343,9 @@ def main(**kwargs):
                           'dataframe')
                 fbs_agg_2 = equally_allocate_parent_to_child_naics(
                     fbs_agg, method)
+
+                # compare child sectors to parent sectors flow amounts
+                compare_child_to_parent_sectors_flowamounts(fbs)
 
                 # compare flowbysector with flowbyactivity
                 compare_activity_to_sector_flowamounts(
