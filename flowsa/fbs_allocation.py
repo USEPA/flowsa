@@ -246,11 +246,23 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     log.info("Cleaning up new flow by sector")
     fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y',
                             'FlowAmountRatio_y', 'FlowAmountRatio',
-                            'FBA_Activity_x', 'FBA_Activity_y'])
+                            'FBA_Activity_x', 'FBA_Activity_y',
+                            'disaggregate_flag', 'Description'],
+                   errors='ignore')
+
+    # if activities are source like, reset activity columns
+    sector_like_activities = check_activities_sector_like(
+        fbs['MetaSources'][0])
+    if sector_like_activities:
+        fbs = fbs.assign(ActivityProducedBy = fbs['SectorProducedBy'],
+                         ActivityConsumedBy = fbs['SectorConsumedBy'])
+
     group_cols = list(fbs.select_dtypes(include=['object', 'int']).columns)
     fbs2 = aggregator(fbs, group_cols)
 
-    return fbs2
+    fbs3 = sector_aggregation(fbs2)
+
+    return fbs3
 
 
 def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
