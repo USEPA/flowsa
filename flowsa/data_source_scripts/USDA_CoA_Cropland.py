@@ -512,11 +512,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
     # estimate suppressed data by equally allocating parent to child naics
     naics = equally_allocate_suppressed_parent_to_child_naics(
         naics, method, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
-    # add missing fbs fields
-    naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
 
     # aggregate sectors to create any missing naics levels
-    group_cols = fbs_default_grouping_fields
     naics2 = sector_aggregation(naics)
     # add missing naics5/6 when only one naics5/6 associated with a naics4
     naics3 = sector_disaggregation(naics2)
