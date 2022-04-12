@@ -9,19 +9,20 @@ Functions used to import and parse USDA Census of Ag Cropland data
 import json
 import numpy as np
 import pandas as pd
+from flowsa.allocation import allocate_by_sector, \
+    equally_allocate_parent_to_child_naics
+from flowsa.common import WITHDRAWN_KEYWORD, fbs_default_grouping_fields, \
+    fbs_fill_na_dict, fba_wsec_default_grouping_fields
+from flowsa.dataclean import replace_NoneType_with_empty_cells, clean_df, \
+    replace_strings_with_NoneType
+from flowsa.flowbyfunctions import assign_fips_location_system, \
+    sector_aggregation, sector_disaggregation, sector_ratios, \
+    collapse_activity_fields, load_fba_w_standardized_units, \
+    equally_allocate_suppressed_parent_to_child_naics
 from flowsa.location import US_FIPS, abbrev_us_state
-from flowsa.common import WITHDRAWN_KEYWORD, \
-    fbs_default_grouping_fields, fbs_fill_na_dict, \
-    fba_wsec_default_grouping_fields
 from flowsa.schema import flow_by_sector_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, \
-    sector_disaggregation, sector_ratios, \
-    load_fba_w_standardized_units, equally_allocate_suppressed_parent_to_child_naics
-from flowsa.allocation import allocate_by_sector, equally_allocate_parent_to_child_naics
-from flowsa.dataclean import replace_NoneType_with_empty_cells, \
-    replace_strings_with_NoneType, clean_df
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
-from flowsa.validation import compare_df_units
+from flowsa.validation import compare_df_units, check_allocation_ratios
 
 
 def CoA_Cropland_URL_helper(*, build_url, config, **_):
@@ -422,8 +423,12 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year,
         df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
         if 'parameter_drop' in kwargs:
             # drop aquaculture because pastureland not used for aquaculture
-            df_f = df_f[~df_f['ActivityConsumedBy'].isin(
-                kwargs['parameter_drop'])]
+            # drop any activities at a more aggregated sector level because
+            # will need to be reaggregated after dropping a parameter to
+            # accurately calculate the allocation ratios
+            drop_list = [sub[ : -1] for sub in  kwargs['parameter_drop']]
+            drop_list = drop_list + kwargs['parameter_drop']
+            df_f = df_f[~df_f['ActivityConsumedBy'].isin(drop_list)]
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(
             df_f, sectorsourcename=method['target_sector_source'])
