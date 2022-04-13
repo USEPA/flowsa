@@ -73,10 +73,6 @@ def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
         columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'], inplace=True)
 
     inventory_list = list(yaml_load['inventory_dict'].keys())
-
-    if 'drop_GHGs' in functions:
-        df = drop_GHGs(df)
-        functions.remove('drop_GHGs')
     facility_mapping = extract_facility_data(yaml_load['inventory_dict'])
 
     # merge dataframes to assign facility information based on facility IDs
@@ -95,6 +91,10 @@ def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
             fbsconfigpath)
 
     df['MetaSources'] = df['Source']
+
+    if 'drop_GHGs' in functions:
+        df = drop_GHGs(df)
+        functions.remove('drop_GHGs')
 
     fbs = prepare_stewi_fbs(df, yaml_load, method)
 
