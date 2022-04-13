@@ -24,6 +24,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     aggregator
 from flowsa.dataclean import add_missing_flow_by_fields, \
     replace_strings_with_NoneType
+from flowsa.settings import log
 
 
 def BLS_QCEW_URL_helper(*, build_url, year, **_):
@@ -289,12 +290,13 @@ def bls_clean_allocation_fba_w_sec_state(df_w_sec, **kwargs):
    dictionary of FBA method yaml parameters
    :return: df, BLS QCEW FBA with estimated suppressed data
    """
+    from flowsa.allocation import equally_allocate_parent_to_child_naics
     # first adjust using national level methods
     df = bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs)
 
     # estimate the suppressed data by equally allocating parent naics to child
     log.info('Estimating suppressed data by equally allocating '
              'parent NAICS to child NAICS')
-    df = equally_allocate_parent_to_child_naics(df, 'SectorProducedBy', 2, kwargs['sourcename'])
+    df = equally_allocate_parent_to_child_naics(df, kwargs['method'])
 
     return df
