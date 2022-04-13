@@ -92,7 +92,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     return fba_agg
 
 
-def aggregator(df, groupbycols, retain_zeros=False):
+def aggregator(df, groupbycols):
     """
     Aggregates flowbyactivity or flowbysector 'FlowAmount' column in df and
     generate weighted average values based on FlowAmount values for numeric
@@ -106,10 +106,6 @@ def aggregator(df, groupbycols, retain_zeros=False):
     df = df.reset_index(drop=True)
     # tmp replace null values with empty cells
     df = replace_NoneType_with_empty_cells(df)
-
-    # drop columns with flowamount = 0
-    if retain_zeros is False:
-        df = df[df['FlowAmount'] != 0]
 
     # list of column headers, that if exist in df, should be
     # aggregated using the weighted avg fxn
