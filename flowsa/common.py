@@ -130,10 +130,10 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
 
     try:
         with open(yaml_path, 'r') as f:
-            config = flowsa_yaml.load(f)
+            config = flowsa_yaml.load(f, filepath)
     except IOError:
         log.error(f'{flowbytype} method file not found')
-
+        raise
     return config
 
 

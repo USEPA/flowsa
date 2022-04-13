@@ -28,7 +28,7 @@ class FlowsaLoader(yaml.SafeLoader):
                 file = path.join(folder, file)
                 break
         else:
-            raise FileNotFoundError
+            raise FileNotFoundError(f'{file} not found')
 
         with open(file) as f:
             branch = load(f)
@@ -66,8 +66,10 @@ class FlowsaLoader(yaml.SafeLoader):
             raise TypeError('Cannot tag a mapping node with !external_config')
 
 
-def load(stream: IO) -> dict:
+def load(stream: IO, external_path: str = None) -> dict:
     loader = FlowsaLoader(stream)
+    if external_path:
+        loader.external_config_paths.append(external_path)
     try:
         return loader.get_single_data()
     finally:
