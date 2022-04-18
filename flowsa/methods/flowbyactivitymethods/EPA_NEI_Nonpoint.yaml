@@ -1,4 +1,4 @@
-inherits_from: EPA_NEI_Common
+!include:EPA_NEI_Common.yaml
 bib_id: EPA_NEI_Nonpoint
 url: # no replacement needed in url because only single zip file
   base_url: ftp://newftp.epa.gov/air/nei/__year__/data_summaries/__version___nonpoint.zip
