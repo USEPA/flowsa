@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
+import flowsa.flowsa_yaml as flowsa_yaml
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
@@ -116,7 +117,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
         # first check if a filepath for the yaml is specified, as is the
         # case with FBS method files located outside FLOWSA
         if filepath is not None:
-            log.info('Loading yaml from %s', filepath)
+            log.info(f'Loading {filename} from {filepath}')
             folder = filepath
         else:
             if flowbytype == 'FBA':
@@ -129,29 +130,10 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
 
     try:
         with open(yaml_path, 'r') as f:
-            config = yaml.safe_load(f)
+            config = flowsa_yaml.load(f, filepath)
     except IOError:
-        log.error('%s method file not found', flowbytype)
-
-    # Allow for .yaml files to recursively inherit other .yaml files. Keys in
-    # children will overwrite the same key from a parent.
-    inherits = config.get('inherits_from')
-    while inherits:
-        yaml_path = folder + inherits + '.yaml'
-        with open(yaml_path, 'r') as f:
-            parent = yaml.safe_load(f)
-
-        # Check for common keys and log a warning if any are found
-        common_keys = [k for k in config if k in parent]
-        if common_keys:
-            log.warning(f'Keys {common_keys} from parent file {yaml_path} '
-                        f'were overwritten by child file.')
-
-        # Update inheritance information before updating the parent dict
-        inherits = parent.get('inherits_from')
-        parent.update(config)
-        config = parent
-
+        log.error(f'{flowbytype} method file not found')
+        raise
     return config
 
 
