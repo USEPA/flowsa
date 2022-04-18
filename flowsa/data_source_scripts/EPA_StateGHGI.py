@@ -54,7 +54,7 @@ def epa_state_ghgi_parse(*, source, year, config, **_):
     return df
 
 
-def remove_select_states(fba, source_dict):
+def remove_select_states(fba, source_dict, **_):
     """
     clean_fba_df_fxn to remove selected states so they can be added
     from alternate sources. State abbreviations must be passed as list
