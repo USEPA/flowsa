@@ -31,7 +31,7 @@ class FlowsaLoader(yaml.SafeLoader):
             raise FileNotFoundError(f'{file} not found')
 
         with open(file) as f:
-            branch = load(f)
+            branch = load(f, loader.external_config_paths)
 
         while keys:
             branch = branch[keys.pop(0)]
@@ -66,10 +66,10 @@ class FlowsaLoader(yaml.SafeLoader):
             raise TypeError('Cannot tag a mapping node with !external_config')
 
 
-def load(stream: IO, external_path: str = None) -> dict:
+def load(stream: IO, external_path: list = None) -> dict:
     loader = FlowsaLoader(stream)
     if external_path:
-        loader.external_config_paths.append(external_path)
+        loader.external_config_paths.extend(external_path)
     try:
         return loader.get_single_data()
     finally:
