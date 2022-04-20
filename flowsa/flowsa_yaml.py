@@ -13,14 +13,15 @@ class FlowsaLoader(yaml.SafeLoader):
         super().__init__(stream)
         self.add_multi_constructor('!include:', self.include)
         self.add_constructor('!external_config', self.external_config)
-        self.external_config_paths = []
+        self.external_paths_to_search = []
+        self.external_path_to_pass = None
 
     @staticmethod
     def include(loader: 'FlowsaLoader', suffix: str, node: yaml.Node) -> dict:
         file, *keys = suffix.split(':')
 
         for folder in [
-            *loader.external_config_paths,
+            *loader.external_paths_to_search,
             flowsa.settings.sourceconfigpath,
             flowsa.settings.flowbysectormethodpath
         ]:
@@ -31,7 +32,7 @@ class FlowsaLoader(yaml.SafeLoader):
             raise FileNotFoundError(f'{file} not found')
 
         with open(file) as f:
-            branch = load(f)
+            branch = load(f, loader.external_path_to_pass)
 
         while keys:
             branch = branch[keys.pop(0)]
@@ -56,11 +57,11 @@ class FlowsaLoader(yaml.SafeLoader):
     def external_config(loader: 'FlowsaLoader', node: yaml.Node) -> str:
         if isinstance(node, yaml.SequenceNode):
             paths = loader.construct_sequence(node)
-            loader.external_config_paths.extend(paths)
+            loader.external_paths_to_search.extend(paths)
             return paths
         elif isinstance(node, yaml.ScalarNode):
             path = loader.construct_scalar(node)
-            loader.external_config_paths.append(path)
+            loader.external_paths_to_search.append(path)
             return path
         else:
             raise TypeError('Cannot tag a mapping node with !external_config')
@@ -69,7 +70,8 @@ class FlowsaLoader(yaml.SafeLoader):
 def load(stream: IO, external_path: str = None) -> dict:
     loader = FlowsaLoader(stream)
     if external_path:
-        loader.external_config_paths.append(external_path)
+        loader.external_paths_to_search.append(external_path)
+        loader.external_path_to_pass = external_path
     try:
         return loader.get_single_data()
     finally:
