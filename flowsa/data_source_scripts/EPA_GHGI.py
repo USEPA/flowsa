@@ -422,9 +422,9 @@ def ghg_parse(*, df_list, year, config, **_):
         source_No_activity = ["3-22", "3-22b"]
         # Handle tables with 1 parent level category
         source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-14", "3-15",
-                             "5-18", "5-19", "A-76", "A-77",  "A-103"]
+                             "5-18", "5-19", "A-76", "A-77"]
         # Tables with sub categories
-        source_activity_2 =  ["3-38", "3-63"]
+        source_activity_2 =  ["3-38", "3-63", "A-103"]
 
         if table_name in multi_chem_names:
             bool_apb = False
@@ -521,7 +521,9 @@ def ghg_parse(*, df_list, year, config, **_):
             flow_name_list = ["Explorationb", "Production", "Processing",
                               "Transmission and Storage", "Distribution",
                               "Crude Oil Transportation", "Refining",
-                              "Exploration"]
+                              "Exploration", "Mobile AC",
+                              "Refrigerated Transport",
+                              "Comfort Cooling for Trains and Buses"]
             for index, row in df.iterrows():
                 apb_value = row["ActivityProducedBy"]
                 start_activity = row["FlowName"]
@@ -547,7 +549,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         df.loc[index, 'ActivityProducedBy'
                                ] = f"{apb_txt} {apbe_value}"
                 if "Total" == apb_value or "Total " == apb_value:
-                  df = df.drop(index)
+                    df = df.drop(index)
 
         elif table_name == "A-79":
             fuel_name = ""
@@ -594,7 +596,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         text_split = apb_value.split("(")
                         df.loc[index, 'ActivityProducedBy'] = text_split[0]
 
-            elif table_name in ["A-101", "A-103"]:
+            elif table_name in ["A-101"]:
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
                     df.loc[index, 'ActivityProducedBy'] = apb_value
