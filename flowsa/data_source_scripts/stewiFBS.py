@@ -63,7 +63,7 @@ def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
         log.info('generating inventory in stewicombo')
         df = stewicombo.combineFullInventories(
             yaml_load['inventory_dict'], filter_for_LCI=True,
-            remove_overlap=True, compartments=yaml_load['compartments'])
+            remove_overlap=True, compartments=yaml_load.get('compartments'))
 
     if df is None:
         # Inventories not found for stewicombo, return empty FBS
@@ -132,8 +132,10 @@ def stewi_to_sector(yaml_load, method, *_):
         inv['Year'] = year
         inv['MetaSources'] = database
         df = df.append(inv)
-    if yaml_load['compartments'] is not None:
-        df = df[df['Compartment'].isin(yaml_load['compartments'])]
+    if yaml_load.get('compartments'):
+        # Subset based on primary compartment
+        df = df[df['Compartment'].str.split('/', expand=True)
+                [0].isin(yaml_load.get('compartments'))]
     facility_mapping = extract_facility_data(yaml_load['inventory_dict'])
     # Convert NAICS to string (first to int to avoid decimals)
     facility_mapping['NAICS'] = \
