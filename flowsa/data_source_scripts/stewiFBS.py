@@ -17,10 +17,9 @@ import pandas as pd
 from esupy.dqi import get_weighted_average
 from flowsa.allocation import equally_allocate_parent_to_child_naics
 from flowsa.flowbyfunctions import assign_fips_location_system,\
-    subset_df_by_sector_list, sector_disaggregation, sector_aggregation
+    aggregate_and_subset_for_target_sectors
 from flowsa.dataclean import add_missing_flow_by_fields
-from flowsa.sectormapping import map_flows,\
-    get_sector_list
+from flowsa.sectormapping import map_flows
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.schema import flow_by_sector_fields
 from flowsa.settings import log, process_adjustmentpath
@@ -318,15 +317,7 @@ def prepare_stewi_fbs(df_load, yaml_load, method):
     df = replace_naics_w_naics_from_another_year(df, 'NAICS_2012_Code')
     df = equally_allocate_parent_to_child_naics(df, method)
 
-    # return sector level specified in method yaml
-    # load the crosswalk linking sector lengths
-    secondary_sector_level = method.get('target_subset_sector_level')
-    sector_list = get_sector_list(method['target_sector_level'],
-        secondary_sector_level_dict=secondary_sector_level)
-
-    # subset df to get NAICS at the target level
-    df_agg = sector_aggregation(df)
-    df_subset = subset_df_by_sector_list(df_agg, sector_list)
+    df_subset = aggregate_and_subset_for_target_sectors(df, method)
 
     # assign grouping variables based on desired geographic aggregation level
     grouping_vars = ['FlowName', 'Compartment', 'Location',

@@ -890,3 +890,22 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
     dfm = replace_NoneType_with_empty_cells(dfm)
 
     return dfm
+
+
+def aggregate_and_subset_for_target_sectors(df, method):
+    """Helper function to create data at aggregated NAICS prior to
+    subsetting based on the target_sector_list. Designed for use when
+    FBS are the source data.
+    """
+    from flowsa.sectormapping import get_sector_list
+    # return sector level specified in method yaml
+    # load the crosswalk linking sector lengths
+    secondary_sector_level = method.get('target_subset_sector_level')
+    sector_list = get_sector_list(method['target_sector_level'],
+        secondary_sector_level_dict=secondary_sector_level)
+
+    # subset df to get NAICS at the target level
+    df_agg = sector_aggregation(df)
+    df_subset = subset_df_by_sector_list(df_agg, sector_list)
+
+    return df_subset
