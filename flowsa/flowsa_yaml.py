@@ -74,10 +74,11 @@ class FlowsaLoader(yaml.SafeLoader):
     @staticmethod
     def from_index(
         loader: 'FlowsaLoader',
-        suffix: str,
-        node: yaml.Node
+        file: str,
+        node: yaml.ScalarNode
     ) -> list:
-        file, *keys = suffix.split(':')
+        if not isinstance(node, yaml.ScalarNode):
+            raise TypeError('Can only tag a scalar node with !from_index:')
 
         for folder in [
             *loader.external_paths_to_search,
@@ -89,19 +90,14 @@ class FlowsaLoader(yaml.SafeLoader):
         else:
             raise FileNotFoundError(f'{file} not found')
 
+        activity_set = loader.construct_scalar(node)
+
         with open(file) as f:
             index = csv.DictReader(f)
-            name_list = [
-                row['name'] for row in index if row['activity_set'] in keys
+            return [
+                row['name'] for row in index
+                if row['activity_set'] == activity_set
             ]
-
-        if isinstance(node, yaml.SequenceNode):
-            context = loader.construct_sequence(node)
-            name_list.extend(context)
-        elif isinstance(node, yaml.MappingNode):
-            raise TypeError('Cannot tag a mapping node with !from_index:')
-
-        return name_list
 
 
 def load(stream: IO, external_path: str = None) -> dict:
