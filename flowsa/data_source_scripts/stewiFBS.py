@@ -17,7 +17,7 @@ import pandas as pd
 from esupy.dqi import get_weighted_average
 from flowsa.allocation import equally_allocate_parent_to_child_naics
 from flowsa.flowbyfunctions import assign_fips_location_system,\
-    subset_df_by_sector_list, sector_disaggregation
+    subset_df_by_sector_list, sector_disaggregation, sector_aggregation
 from flowsa.dataclean import add_missing_flow_by_fields
 from flowsa.sectormapping import map_flows,\
     get_sector_list
@@ -37,8 +37,6 @@ def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
                 'CAP_HAP_national_2017')
         inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
-        geo_scale: desired geographic aggregation level ('national', 'state',
-                'county'), should match target_geoscale
         compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
         functions: list of functions (str) to call for additional processing
@@ -110,8 +108,6 @@ def stewi_to_sector(yaml_load, method, *_):
     :param yaml_load: which may contain the following elements:
         inventory_dict: a dictionary of inventory types and years (e.g.,
                 {'NEI':'2017', 'TRI':'2017'})
-        geo_scale: desired geographic aggregation level ('national', 'state',
-                'county'), should match target_geoscale
         compartments: list of compartments to include (e.g., 'water', 'air',
                 'soil'), use None to include all compartments
         functions: list of functions (str) to call for additional processing
@@ -309,7 +305,7 @@ def prepare_stewi_fbs(df, yaml_load, method):
     :return: df
     """
     inventory_dict = yaml_load.get('inventory_dict')
-    geo_scale = yaml_load.get('geo_scale')
+    geo_scale = method.get('target_geoscale')
 
     # update location to appropriate geoscale prior to aggregating
     df.dropna(subset=['Location'], inplace=True)
@@ -387,9 +383,10 @@ def prepare_stewi_fbs(df, yaml_load, method):
         secondary_sector_level_dict=secondary_sector_level)
 
     # subset df to get NAICS at the target level
-    fbs_mapped = subset_df_by_sector_list(fbs_mapped, sector_list)
+    fbs_agg = sector_aggregation(fbs_mapped)
+    fbs_subset = subset_df_by_sector_list(fbs_agg, sector_list)
 
-    return fbs_mapped
+    return fbs_subset
 
 
 def add_stewi_metadata(inventory_dict):
