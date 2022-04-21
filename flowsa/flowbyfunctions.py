@@ -121,11 +121,20 @@ def aggregator(df, groupbycols):
     column_headers = [e for e in possible_column_headers
                       if e in df.columns.values.tolist()]
 
+    groupbycols = [c for c in groupbycols if c not in column_headers]
+
     df_dfg = df.groupby(groupbycols).agg({'FlowAmount': ['sum']})
+
+    def is_identical(s):
+        a = s.to_numpy()
+        return (a[0] == a).all()
 
     # run through other columns creating weighted average
     for e in column_headers:
-        df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
+        if is_identical(df[e]):
+            df_dfg.loc[:, e] = df[e].iloc[0]
+        else:
+            df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
 
     df_dfg = df_dfg.reset_index()
     df_dfg.columns = df_dfg.columns.droplevel(level=1)
