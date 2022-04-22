@@ -38,13 +38,15 @@ source_names:
     activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
-    activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
+    # activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
     activity_sets:
       activity_set_1: #Direct
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_1
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
       activity_set_2: #Crops
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_2
         allocation_source: "USDA_CoA_Cropland"
         allocation_method: proportional
         allocation_source_class: "Land"
@@ -91,6 +93,7 @@ source_names:
         allocation_flow:
           - "Residual Fuel Oil"
       activity_set_4: #Livestock losing NAICS 11211
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_4
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
         allocation_source_class: "Other"
@@ -103,6 +106,7 @@ source_names:
           - "NOT SPECIFIED"
         allocation_from_scale: state
       activity_set_5: &use_allocation # mobile sources and fuel storage
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_5
         allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
         activity_to_sector_mapping: "BEA_2012_Detail"
         allocation_method: proportional
@@ -125,8 +129,10 @@ source_names:
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_6: # fertilizers
         <<: *use_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_6
         clean_parameter: {"325310": 'ActivityProducedBy'}
       activity_set_7: # Gross Output
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_7
         allocation_source: "BEA_GDP_GrossOutput"
         activity_to_sector_mapping: "BEA_2012_Detail"
         allocation_method: proportional
@@ -147,6 +153,7 @@ source_names:
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_8: # pesticides
         <<: *use_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_8
         clean_parameter: {"325320": 'ActivityProducedBy'}
   "EPA_NEI_Nonroad":
     data_format: 'FBA'
