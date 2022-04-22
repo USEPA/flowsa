@@ -131,7 +131,7 @@ def aggregator(df, groupbycols):
 
     # run through other columns creating weighted average
     for e in column_headers:
-        if is_identical(df[e]):
+        if len(df) > 0 and is_identical(df[e]):
             df_dfg.loc[:, e] = df[e].iloc[0]
         else:
             df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
