@@ -1,6 +1,34 @@
 target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
+
+_allocation_types:
+  _mecs_allocation: &mecs_allocation
+    allocation_source: "EIA_MECS_Energy"
+    allocation_method: proportional
+    allocation_source_class: "Energy"
+    allocation_source_year: 2014
+    # allocation_flow:  # This is to be overridden
+    #   - "Coal"
+    #   - "Coke and Breeze"
+    #   - "Distillate Fuel Oil"
+    #   - "Hydrocarbon Gas Liquids, excluding natural gasoline"
+    #   - "Natural Gas"
+    #   - "Other"
+    #   - "Residual Fuel Oil"
+    allocation_compartment: None
+    allocation_from_scale: national
+    clean_allocation_fba: mecs_energy_fba_cleanup
+    clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
+    helper_source: "BLS_QCEW"
+    helper_method: proportional-flagged
+    helper_source_class: "Employment"
+    helper_source_year: 2014
+    helper_flow: None
+    helper_from_scale: national
+    clean_helper_fba: clean_bls_qcew_fba
+    clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+
 source_names:
   "EPA_NEI_Nonpoint":
     data_format: 'FBA'
@@ -27,31 +55,41 @@ source_names:
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-      activity_set_3: #Fuel Combustion - Industry #only allocating to 3digits
-        allocation_source: "EIA_MECS_Energy"
-        allocation_method: proportional
-        allocation_source_class: "Energy"
-        allocation_source_year: 2014
+      activity_set_3a: #Fuel Combustion - Industry #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_3a
         allocation_flow:
           - "Coal"
+      activity_set_3b: #Fuel Combustion - Industry #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_3b
+        allocation_flow:
           - "Coke and Breeze"
+      activity_set_3c: #Fuel Combustion - Industry #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_3c
+        allocation_flow:
           - "Distillate Fuel Oil"
+      activity_set_3d: #Fuel Combustion - Industry #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_3d
+        allocation_flow:  # Are we sure the next line is supposed to say "natural gasoline"?
           - "Hydrocarbon Gas Liquids, excluding natural gasoline"
+      activity_set_3e: #Fuel Combustion - Industry #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_3e
+        allocation_flow:
           - "Natural Gas"
+      activity_set_3f: #Fuel Combustion - Industry #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_3f
+        allocation_flow:
           - "Other"
+      activity_set_3g: #Fuel Combustion - Industry #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv activity_set_3g
+        allocation_flow:
           - "Residual Fuel Oil"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: mecs_energy_fba_cleanup
-        clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
-        helper_source: "BLS_QCEW"
-        helper_method: proportional-flagged
-        helper_source_class: "Employment"
-        helper_source_year: 2014
-        helper_flow: None
-        helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_4: #Livestock losing NAICS 11211
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
@@ -156,4 +194,3 @@ source_names:
      - 'drop_GHGs'
     reassign_process_to_sectors:
      - 'airplane_emissions'
-

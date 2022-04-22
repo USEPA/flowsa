@@ -53,19 +53,19 @@ activity_set_2,2801500263,Agriculture - Field Burning,,
 activity_set_2,2801500264,Agriculture - Field Burning,,
 activity_set_2,2801500300,Agriculture - Field Burning,,
 activity_set_2,2801500360,Agriculture - Field Burning,,
-activity_set_3,2102001000,Fuel Combustion - Industry,Coal,FlowName
-activity_set_3,2102002000,Fuel Combustion - Industry,Coal,FlowName
-activity_set_3,2102004000,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
-activity_set_3,2102004001,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
-activity_set_3,2102004002,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
-activity_set_3,2102005000,Fuel Combustion - Industry,Residual Fuel Oil,FlowName
-activity_set_3,2102006000,Fuel Combustion - Industry,Natural Gas,FlowName
-activity_set_3,2102007000,Fuel Combustion - Industry,"Hydrocarbon Gas Liquids, excluding natural gasoline",FlowName
-activity_set_3,2102008000,Fuel Combustion - Industry,Other,FlowName
-activity_set_3,2102009000,Fuel Combustion - Industry,Coke and Breeze,FlowName
-activity_set_3,2102010000,Fuel Combustion - Industry,Natural Gas,FlowName
-activity_set_3,2102011000,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
-activity_set_3,2102012000,Fuel Combustion - Industry,Other,FlowName
+activity_set_3a,2102001000,Fuel Combustion - Industry,Coal,FlowName
+activity_set_3a,2102002000,Fuel Combustion - Industry,Coal,FlowName
+activity_set_3c,2102004000,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
+activity_set_3c,2102004001,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
+activity_set_3c,2102004002,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
+activity_set_3g,2102005000,Fuel Combustion - Industry,Residual Fuel Oil,FlowName
+activity_set_3e,2102006000,Fuel Combustion - Industry,Natural Gas,FlowName
+activity_set_3d,2102007000,Fuel Combustion - Industry,"Hydrocarbon Gas Liquids, excluding natural gasoline",FlowName
+activity_set_3f,2102008000,Fuel Combustion - Industry,Other,FlowName
+activity_set_3b,2102009000,Fuel Combustion - Industry,Coke and Breeze,FlowName
+activity_set_3e,2102010000,Fuel Combustion - Industry,Natural Gas,FlowName
+activity_set_3c,2102011000,Fuel Combustion - Industry,Distillate Fuel Oil,FlowName
+activity_set_3f,2102012000,Fuel Combustion - Industry,Other,FlowName
 activity_set_1,2104001000,Fuel Combustion - Residential,,
 activity_set_1,2104002000,Fuel Combustion - Residential,,
 activity_set_1,2104004000,Fuel Combustion - Residential,,
