@@ -684,10 +684,15 @@ def equally_allocate_suppressed_parent_to_child_naics(
     new_naics[sector_column] = new_naics['NAICS_6'].copy()
     new_naics = new_naics.drop(columns=['NAICS_6', 'NAICS_Match'])
 
+    # if a parent and child naics are both suppressed, can get situations
+    # where a naics6 code is duplicated because both the parent and child
+    # will match with the naics6. Therefore, drop duplicates
+    new_naics2 = new_naics.drop_duplicates()
+
     # merge the new naics with the existing df, if data already
     # existed for a NAICS6, keep the original
     dfm = pd.merge(
-        new_naics[groupcols], df, how='left', on=groupcols,
+        new_naics2[groupcols], df, how='left', on=groupcols,
         indicator=True).query('_merge=="left_only"').drop('_merge', axis=1)
     dfm = replace_NoneType_with_empty_cells(dfm)
     dfm = dfm.fillna(0)
@@ -773,12 +778,29 @@ def equally_allocate_suppressed_parent_to_child_naics(
         # calc the remaining flow that can be allocated
         df_sup3['FlowRemainder'] = df_sup3['SectorMatchFlow'] - \
                                    df_sup3['sector_allocated']
-        df_sup3 = df_sup3.drop(columns=['SectorMatchFlow', 'sector_allocated'])
+        # Due to rounding, there can be slight differences in data at sector
+        # levels, which can result in some minor negative values. If the
+        # percent of FlowRemainder is less than the assigned tolerance for
+        # negative numbers, reset the number to 0. If it is greater, issue a
+        # warning.
+        tolerance = 1
+        df_sup3 = df_sup3.assign(PercentOfAllocated=
+                                 (abs(df_sup3['FlowRemainder']) / df_sup3[
+                                     'SectorMatchFlow']) * 100)
+        df_sup3['FlowRemainder'] = np.where(
+            (df_sup3["FlowRemainder"] < 0) &
+            (df_sup3['PercentOfAllocated'] < tolerance), 0,
+            df_sup3['FlowRemainder'])
         # check for negative values
         negv = df_sup3[df_sup3['FlowRemainder'] < 0]
         if len(negv) > 0:
+            # first check what the percent is of flow remainder over sector
+            # allocated.
             log.warning('There are negative values when allocating suppressed '
-                        'parent data to child NAICS')
+                        'parent data to child sector. The values are more '
+                        'than %s %% of the total parent sector', '1')
+        df_sup3 = df_sup3.drop(columns=['SectorMatchFlow', 'sector_allocated',
+                                        'PercentOfAllocated'])
         # add count column used to divide the unallocated flows
         sector_column_match = sector_column.replace('By', 'Match')
         df_sup3 = df_sup3.assign(secCount=df_sup3.groupby(mergecols)[
