@@ -36,6 +36,7 @@ years:
 - 1990
 
 sheet_dict:
+
     'CO2FFC':
         nrows: 32
         unit: MMTCO2e
@@ -48,6 +49,7 @@ sheet_dict:
             - Electric Utilities
             - International Bunker Fuels
             - TOTAL
+
     'IndirectCO2':
         nrows: 45
         unit: MMTCO2e
@@ -58,6 +60,20 @@ sheet_dict:
             - Industrial
             - Transportation
             - TOTAL
+        subsubheaders:
+            - Conventional Boiler Use
+            - CHP and/or Cogeneration Process
+            - Process Heating
+            - Process Cooling and Refrigeration
+            - Machine Drive
+            - Electro-Chemical Processes
+            - Other Process use
+            - Facility HVAC
+            - Facility Lighting
+            - Other Facility Support
+            - Onsite Transportation
+            - Other Nonprocess Use
+
     'Stationary':
         nrows: 15
         unit: MMTCO2e
@@ -67,6 +83,8 @@ sheet_dict:
             - Industrial
             - Electric Utilities
             - TOTAL
+        skiprowstart: 13
+        skiprowend: 15
         subgroup: flow
 
     'Mobile Combustion CH4':
@@ -113,12 +131,14 @@ sheet_dict:
             - Natural Gas
             - Oil
 
-#    'Natural Gas Flaring':
-#        sheetname: 'Gas and Oil'
-#        header: 24
-#        nrows: 1
-#        unit: MMT
-#        flow: CO2
+    'Natural Gas Flaring':
+        sheetname: 'Gas and Oil'
+        header: 24
+        nrows: 1
+        unit: MMT
+        flow: CO2
+        headers:
+            - Natural Gas Flaring
 
     'IP':
         nrows: 20
@@ -141,8 +161,9 @@ sheet_dict:
             - Nitrous Oxide
         subgroup: 'activitybyflow'
 
-    'Agriculture N2O':
+    'Agricultural Soil Management':
         sheetname: Agriculture
+        tablename: Agricultural Soil Management
         header: 41
         nrows: 13
         unit: MT
@@ -151,9 +172,41 @@ sheet_dict:
             - Direct
             - Indirect
             - TOTAL
+        subsubheaders:
+            - Fertilizer Runoff/Leached
+            - Manure Runoff/Leached
+
+    'Land-Use Change and Forest Emissions and Sequestration':
+        sheetname: Forest Management
+        header: 8
+        nrows: 19
+        unit: MMTCO2E
+        flow: CO2E
+        headers:
+            - Forest Carbon Flux
+            - Urban Trees
+            - Landfilled Yard Trimmings and Food Scraps
+            - Forest Fires
+            - N2O from Settlement Soils
+            - Agricultural Soil Carbon Flux
+
+    'Emissions from Landfills':
+        sheetname: Waste
+        tablename: Emissions from Landfills
+        header: 13
+        nrows: 9
+        unit: MTCO2E
+        flow: CH4
+        headers:
+            - Potential CH4
+            - CH4 Avoided
+            - Oxidation at MSW Landfills
+            - Oxidation at Industrial Landfills
+            - Total CH4 Emissions
 
     'Waste Combustion':
         sheetname: Waste
+        tablename: Emissions from Waste Combustion
         header: 25
         nrows: 7
         unit: MTCO2e
