@@ -340,27 +340,35 @@ def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
     sector_col = 'SectorConsumedBy'
 
     # drop rows without assigned sectors
-    fba_w_sector = fba_w_sector[~fba_w_sector[sector_col].isna()].reset_index(drop=True)
+    fba_w_sector2 = fba_w_sector[~fba_w_sector[sector_col].isna()].reset_index(
+        drop=True)
+
+    # then estimate any suppressed data by equally allocating parent to
+    # child naics
+    groupcols = list(fba_w_sector2.select_dtypes(include=['object', 'int']).columns)
+    fba_w_sector3 = equally_allocate_suppressed_parent_to_child_naics(
+        fba_w_sector2, method, 'SectorConsumedBy', groupcols,
+        equally_allocate_parent_to_child=False)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = modify_orchard_flowamounts(
-        fba_w_sector, activity_column=activity_col)
+    fba_w_sector4 = modify_orchard_flowamounts(
+        fba_w_sector3, activity_column=activity_col)
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
-    fba_w_sector = disaggregate_pastureland(
-        fba_w_sector, attr, method, year=attr['allocation_source_year'],
+    fba_w_sector5 = disaggregate_pastureland(
+        fba_w_sector4, attr, method, year=attr['allocation_source_year'],
         sector_column=sector_col, download_FBA_if_missing=kwargs[
             'download_FBA_if_missing'], parameter_drop=['1125'])
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit
     # naics
-    fba_w_sector = disaggregate_cropland(
-        fba_w_sector, attr, method, year=attr['allocation_source_year'],
+    fba_w_sector6 = disaggregate_cropland(
+        fba_w_sector5, attr, method, year=attr['allocation_source_year'],
         sector_column=sector_col, download_FBA_if_missing=kwargs[
             'download_FBA_if_missing'])
 
-    return fba_w_sector
+    return fba_w_sector6
 
 
 def modify_orchard_flowamounts(fba, activity_column):
@@ -522,8 +530,6 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
     naics2 = sector_aggregation(naics)
     # add missing naics5/6 when only one naics5/6 associated with a naics4
     naics3 = sector_disaggregation(naics2)
-    # drop rows where FlowAmount 0
-    naics3 = naics3.loc[naics3['FlowAmount'] != 0]
     # create ratios
     naics4 = sector_ratios(naics3, sector_column)
     # create temporary sector column to match the two dfs on
