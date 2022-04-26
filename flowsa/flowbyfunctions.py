@@ -613,7 +613,8 @@ def dataframe_difference(df1, df2, which=None):
 
 
 def equally_allocate_suppressed_parent_to_child_naics(
-        df_load, method, sector_column, groupcols):
+        df_load, method, sector_column, groupcols,
+        equally_allocate_parent_to_child=True):
     """
     Estimate data suppression, by equally allocating parent NAICS
     values to child NAICS
@@ -621,6 +622,9 @@ def equally_allocate_suppressed_parent_to_child_naics(
     :param method: dictionary, FBS method yaml
     :param sector_column: str, column to estimate suppressed data for
     :param groupcols: list, columns to group df by
+    :param equally_allocate_parent_to_child: default True, if True will
+    first equally allocate parent to child sectors if the child sector is
+    missing
     :return: df, with estimated suppressed data
     """
     from flowsa.allocation import equally_allocate_parent_to_child_naics
@@ -634,9 +638,10 @@ def equally_allocate_suppressed_parent_to_child_naics(
 
     # equally allocate parent to child naics where child naics are not
     # included in the dataset
-    vLogDetailed.info('Before estimating suppressed data, equally allocate '
-                      'parent sectors to child sectors.')
-    df = equally_allocate_parent_to_child_naics(df, method)
+    if equally_allocate_parent_to_child:
+        vLogDetailed.info('Before estimating suppressed data, equally allocate '
+                          'parent sectors to child sectors.')
+        df = equally_allocate_parent_to_child_naics(df, method)
 
     df = replace_NoneType_with_empty_cells(df)
     df = df[df[sector_column] != '']
