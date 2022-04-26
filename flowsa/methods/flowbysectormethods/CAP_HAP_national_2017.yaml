@@ -75,39 +75,39 @@ source_names:
         allocation_from_scale: state
         clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-      industry_combustion_a: #only allocating to 3digits
+      industry_combustion_coal: #only allocating to 3digits
         <<: *mecs_allocation
-        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_a
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coal
         allocation_flow:
           - "Coal"
-      industry_combustion_b: #only allocating to 3digits
+      industry_combustion_coke: #only allocating to 3digits
         <<: *mecs_allocation
-        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_b
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coke
         allocation_flow:
           - "Coke and Breeze"
-      industry_combustion_c: #only allocating to 3digits
+      industry_combustion_distillate: #only allocating to 3digits
         <<: *mecs_allocation
-        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_c
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_distillate
         allocation_flow:
           - "Distillate Fuel Oil"
-      industry_combustion_d: #only allocating to 3digits
+      industry_combustion_hgl: #only allocating to 3digits
         <<: *mecs_allocation
-        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_d
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_hgl
         allocation_flow:  # Are we sure the next line is supposed to say "natural gasoline"?
           - "Hydrocarbon Gas Liquids, excluding natural gasoline"
-      industry_combustion_e: #only allocating to 3digits
+      industry_combustion_nat_gas: #only allocating to 3digits
         <<: *mecs_allocation
-        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_e
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_nat_gas
         allocation_flow:
           - "Natural Gas"
-      industry_combustion_f: #only allocating to 3digits
+      industry_combustion_other: #only allocating to 3digits
         <<: *mecs_allocation
-        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_f
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_other
         allocation_flow:
           - "Other"
-      industry_combustion_g: #only allocating to 3digits
+      industry_combustion_residual: #only allocating to 3digits
         <<: *mecs_allocation
-        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_g
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_residual
         allocation_flow:
           - "Residual Fuel Oil"
       livestock: #Livestock losing NAICS 11211
