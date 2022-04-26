@@ -175,9 +175,6 @@ def clean_bls_qcew_fba(fba_df, **kwargs):
     fba_df = fba_df.reset_index(drop=True)
     # aggregate data to NAICS 2 digits, if 2 digit value is missing
     fba_df = replace_missing_2_digit_sector_values(fba_df)
-    # drop rows of data where sectors are provided in ranges
-    fba_df = remove_2_digit_sector_ranges(fba_df)
-
     return fba_df
 
 
@@ -241,19 +238,19 @@ def replace_missing_2_digit_sector_values(df):
         return df
 
 
-def remove_2_digit_sector_ranges(fba_df):
-    """
-    BLS publishes activity ranges of '31-33', 44-45', '48-49...
-    drop these ranges.
-    The individual 2 digit naics are summed later.
-    :param fba_df: df, BLS QCEW in FBA format
-    :return: df, no sector ranges
-    """
-
-    df = fba_df[
-        ~fba_df['ActivityProducedBy'].str.contains('-')].reset_index(drop=True)
-
-    return df
+# def remove_2_digit_sector_ranges(fba_df):
+#     """
+#     BLS publishes activity ranges of '31-33', 44-45', '48-49...
+#     drop these ranges.
+#     The individual 2 digit naics are summed later.
+#     :param fba_df: df, BLS QCEW in FBA format
+#     :return: df, no sector ranges
+#     """
+#
+#     df = fba_df[
+#         ~fba_df['ActivityProducedBy'].str.contains('-')].reset_index(drop=True)
+#
+#     return df
 
 
 def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
@@ -264,15 +261,19 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     dictionary of FBA method yaml parameters
     :return: df, BLS QCEW FBA with estimated suppressed data
     """
-    df_w_sec = df_w_sec.reset_index(drop=True)
-    df2 = add_missing_flow_by_fields(
-        df_w_sec, flow_by_activity_wsec_fields).reset_index(drop=True)
     groupcols = list(df_w_sec.select_dtypes(include=['object', 'int']).columns)
-    df3 = equally_allocate_suppressed_parent_to_child_naics(
+    # estimate supressed data
+    df = equally_allocate_suppressed_parent_to_child_naics(
         df_w_sec, kwargs['method'], 'SectorProducedBy', groupcols)
-    df4 = replace_strings_with_NoneType(df3)
 
-    return df4
+    # for purposes of allocation, we do not need to differentiate between
+    # federal government, state government, local government, or private
+    # sectors. So after estimating the suppressed data (above), modify the
+    # flow names and aggregate data
+    df['FlowName'] = df['FlowName'].str.split(',').str[0]
+    df2 = aggregator(df, groupcols)
+
+    return df2
 
 
 def bls_clean_allocation_fba_w_sec_sat_table(df_w_sec, **kwargs):
