@@ -6,9 +6,7 @@ source_names:
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: stewicombo_to_sector
     inventory_dict: {"TRI":"2017", "DMR":"2017"}
-    NAICS_level: 'NAICS_6'
     geo_scale: 'national'
     local_inventory_name: 'TRI_DMR_2017'
     compartments:
       - 'water'
-   

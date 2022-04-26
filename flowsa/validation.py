@@ -937,8 +937,8 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
                     df2[merge_cols + ['FlowAmount_fbs2']],
                     how='outer')
-    df_m = df_m.assign(
-        FlowAmount_diff=df_m['FlowAmount_fbs2'] - df_m['FlowAmount_fbs1'])
+    df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2']
+                       .fillna(0) - df_m['FlowAmount_fbs1'].fillna(0))
     df_m = df_m.assign(
         Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fbs1']) * 100)
     df_m = df_m[df_m['FlowAmount_diff'].apply(
