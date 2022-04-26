@@ -1062,7 +1062,7 @@ def assign_columns_of_sector_levels(df_load):
     # for multiple sector lengths
     duplicate_cols = [e for e in dfc.columns if e not in [
         'SectorProducedByLength', 'SectorConsumedByLength']]
-    duplicate_df = dfc[dfc.duplicated(duplicate_cols)]
+    duplicate_df = dfc[dfc.duplicated(subset=duplicate_cols, keep=False)]
     if len(duplicate_df) > 0:
         log.warning('There are duplicate rows caused by ambiguous sectors.')
 
