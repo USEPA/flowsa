@@ -617,7 +617,7 @@ def compare_summation_at_sector_lengths_between_two_dfs(df1, df2):
     dfm3 = dfm2[dfm2['flowIncrease_df1_to_df2_perc'] < 0]
 
     if len(dfm3) > 0:
-        log.info('See validation log fro cases where the second dataframe '
+        log.info('See validation log for cases where the second dataframe '
                  'has flow amounts greater than the first dataframe at the '
                  'same location/sector lengths.')
         vLogDetailed.info('The second dataframe has flow amounts greater than '
@@ -678,10 +678,10 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
     dfm['PercentDiff'] = (dfm['FlowDiff'] / dfm['FlowAmount']) * 100
 
     cols_subset = [e for e in dfm.columns if e in [
-        'Class', 'SourceName', 'MetaSources', 'Flowable', 'Unit', 'FlowType',
-        'ActivityProducedBy', 'ActivityConsumedBy', 'Context', 'Location',
-        'Year', 'SectorProducedBy', 'SectorConsumedBy', 'FlowAmount',
-        'ChildNAICSSum', 'PercentDiff']]
+        'Class', 'SourceName', 'MetaSources', 'Flowable', 'FlowName',
+        'Unit', 'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
+        'Context', 'Location', 'Year', 'SectorProducedBy',
+        'SectorConsumedBy', 'FlowAmount', 'ChildNAICSSum', 'PercentDiff']]
     dfm = dfm[cols_subset]
 
     # subset df where child sectors sum to be greater than parent sectors
