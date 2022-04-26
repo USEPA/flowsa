@@ -93,16 +93,19 @@ def bls_qcew_parse(*, df_list, year, **_):
     df.loc[df['area_fips'] == 'US000', 'area_fips'] = US_FIPS
     # set datatypes
     float_cols = [col for col in df.columns if col not in
-                  ['area_fips', 'industry_code', 'year']]
+                  ['area_fips', 'own_code', 'industry_code', 'year']]
     for col in float_cols:
         df[col] = df[col].astype('float')
     # Keep owner_code = 1, 2, 3, 5
-    df = df[df.own_code.isin([1, 2, 3, 5])]
-    # Aggregate annual_avg_estabs and annual_avg_emplvl by area_fips,
-    # industry_code, year, flag
-    df = df.groupby(['area_fips', 'industry_code', 'year'])[[
-        'annual_avg_estabs', 'annual_avg_emplvl',
-        'total_annual_wages']].sum().reset_index()
+    df = df[df.own_code.isin(['1', '2', '3', '5'])]
+    # replace ownership code with text defined by bls
+    # https://www.bls.gov/cew/classifications/ownerships/ownership-titles.htm
+    replace_dict = {'1': 'Federal Government',
+                    '2': 'State Government',
+                    '3': 'Local Government',
+                    '5': 'Private'}
+    for key in replace_dict.keys():
+        df['own_code'] = df['own_code'].replace(key, replace_dict[key])
     # Rename fields
     df = df.rename(columns={'area_fips': 'Location',
                             'industry_code': 'ActivityProducedBy',
@@ -113,26 +116,30 @@ def bls_qcew_parse(*, df_list, year, **_):
     # Reformat FIPs to 5-digit
     df['Location'] = df['Location'].apply('{:0>5}'.format)
     # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["Location", "ActivityProducedBy", "Year"],
-                 var_name="FlowName",
-                 value_name="FlowAmount")
+    df2 = df.melt(id_vars=["Location", "ActivityProducedBy", "Year",
+                          'own_code'],
+                  var_name="FlowName",
+                  value_name="FlowAmount")
     # specify unit based on flowname
-    df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
+    df2['Unit'] = np.where(df2["FlowName"] == 'Annual payroll', "USD", "p")
     # specify class
-    df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
-    df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
-    df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
+    df2.loc[df2['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
+    df2.loc[df2['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
+    df2.loc[df2['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
+    # update flow name
+    df2['FlowName'] = df2['FlowName'] + ', ' + df2['own_code']
+    df2 = df2.drop(columns='own_code')
     # add location system based on year of data
-    df = assign_fips_location_system(df, year)
+    df2 = assign_fips_location_system(df2, year)
     # add hard code data
-    df['SourceName'] = 'BLS_QCEW'
+    df2['SourceName'] = 'BLS_QCEW'
     # Add tmp DQ scores
-    df['DataReliability'] = 5
-    df['DataCollection'] = 5
-    df['Compartment'] = None
-    df['FlowType'] = "ELEMENTARY_FLOW"
+    df2['DataReliability'] = 5
+    df2['DataCollection'] = 5
+    df2['Compartment'] = None
+    df2['FlowType'] = "ELEMENTARY_FLOW"
 
-    return df
+    return df2
 
 
 def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
