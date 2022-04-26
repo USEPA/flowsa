@@ -4,11 +4,12 @@ target_geoscale: national
 
 _allocation_types:
   _mecs_allocation: &mecs_allocation
+    # names: # override this
     allocation_source: "EIA_MECS_Energy"
     allocation_method: proportional
     allocation_source_class: "Energy"
     allocation_source_year: 2014
-    # allocation_flow:  # This is to be overridden
+    # allocation_flow:  # override this
     #   - "Coal"
     allocation_compartment: None
     allocation_from_scale: national
@@ -22,7 +23,9 @@ _allocation_types:
     helper_from_scale: national
     clean_helper_fba: clean_bls_qcew_fba
     clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+
   _use_allocation: &use_allocation
+    # names: # override this
     allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
     activity_to_sector_mapping: "BEA_2012_Detail"
     allocation_method: proportional
