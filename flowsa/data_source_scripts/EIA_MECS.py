@@ -284,21 +284,27 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
             grab_rows_rse[0] - 1:grab_rows_rse[1] - 1]).reindex()
 
         # assign column names
-        df_data_region.columns = table_dict[year][table]['col_names']
-        df_rse_region.columns = table_dict[year][table]['col_names']
+        # if table name ends in 1, the column names are pulled from the table dict unchanged
+        if table[-1] == '1':
+            df_data_region.columns = table_dict[year][table]['col_names']
+            df_rse_region.columns = table_dict[year][table]['col_names']
+        # if table name ends in 2, the units must be stripped from the column names listed in the table dict
+        if table[-1] == '2':
+            df_data_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
+            df_rse_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
 
         # "unpivot" dataframe from wide format to long format
         # ('NAICS code' and 'Subsector and Industry' are identifier variables)
         # (all other columns are value variables)
         df_data_region = pd.melt(
             df_data_region,
-            id_vars=table_dict[year][table]['col_names'][0:2],
-            value_vars=table_dict[year][table]['col_names'][2:],
+            id_vars=df_data_region.columns[0:2],
+            value_vars=df_data_region.columns[2:],
             var_name='FlowName', value_name='FlowAmount')
         df_rse_region = pd.melt(
             df_rse_region,
-            id_vars=table_dict[year][table]['col_names'][0:2],
-            value_vars=table_dict[year][table]['col_names'][2:],
+            id_vars=df_rse_region.columns[0:2],
+            value_vars=df_rse_region.columns[2:],
             var_name='FlowName', value_name='Spread')
 
         # add census region
