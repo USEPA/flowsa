@@ -30,7 +30,6 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
   "EIA_MECS_Land": # manufacturing land use
     data_format: 'FBA'
@@ -54,7 +53,6 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
   "BLM_PLS": # used for mining data
     data_format: 'FBA'
@@ -84,7 +82,6 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
   "USDA_ERS_MLU":
     data_format: 'FBA'

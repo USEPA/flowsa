@@ -16,7 +16,6 @@ import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
 from flowsa.settings import externaldatapath
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.sectormapping import get_fba_allocation_subset, \
     add_sectors_to_flowbyactivity
 
@@ -131,8 +130,6 @@ def apply_tons_per_employee_per_year_to_states(fbs):
                                         flowclass='Employment',
                                         geographic_level='state')
     bls = bls[bls['FlowName'] == 'Number of employees']
-    # clean df
-    bls = clean_bls_qcew_fba(bls)
     bls = add_sectors_to_flowbyactivity(bls)
 
     # Subset BLS dataset

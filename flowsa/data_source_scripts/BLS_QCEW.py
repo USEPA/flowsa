@@ -17,14 +17,8 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
-from flowsa.common import fba_default_grouping_fields
-from flowsa.schema import flow_by_activity_wsec_fields, \
-    flow_by_activity_mapped_wsec_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     aggregator, equally_allocate_suppressed_parent_to_child_naics
-from flowsa.dataclean import add_missing_flow_by_fields, \
-    replace_strings_with_NoneType
-from flowsa.settings import log
 
 
 def BLS_QCEW_URL_helper(*, build_url, year, **_):
@@ -152,105 +146,11 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
         in the FBA method yaml
     :return: df, flowbyactivity, with modified flow names
     """
-
-    fba_df = clean_bls_qcew_fba(fba_df, **kwargs)
-
     # rename flowname value
     for c in ['FlowName', 'Flowable']:
         fba_df[c] = fba_df[c].replace({'Number of employees': 'Jobs'})
 
     return fba_df
-
-
-def clean_bls_qcew_fba(fba_df, **kwargs):
-    """
-    Function to clean BLS QCEW data when FBA is not used for employment
-    satellite table
-    :param fba_df: df, FBA format
-    :param kwargs: dictionary, can include attr, a dictionary of parameters
-        in the FBA method yaml
-    :return: df, modified BLS QCEW data
-    """
-
-    fba_df = fba_df.reset_index(drop=True)
-    # aggregate data to NAICS 2 digits, if 2 digit value is missing
-    fba_df = replace_missing_2_digit_sector_values(fba_df)
-    return fba_df
-
-
-def replace_missing_2_digit_sector_values(df):
-    """
-    In the 2015 (and possibly other dfs, there are instances of values
-    at the 3 digit NAICS level, while the 2 digit NAICS is reported as 0.
-    The 0 values are replaced with summed 3 digit NAICS
-    :param df: df, BLS QCEW data in FBA format
-    :return: df, BLS QCEW data with 2-digit NAICS sector FlowAmounts
-    """
-
-    # check for 2 digit 0 values
-    df_missing = df[(df['ActivityProducedBy'].apply(
-        lambda x: len(x) == 2)) & (df['FlowAmount'] == 0)]
-    # create list of location/activityproduced by combos
-    missing_sectors = df_missing[[
-        'Location', 'ActivityProducedBy']].drop_duplicates().values.tolist()
-
-    # subset the df to 3 naics where flow amount is not 0 and
-    # that would sum to the missing 2 digit naics
-    df_subset = df[df['ActivityProducedBy'].apply(
-        lambda x: len(x) == 3) & (df['FlowAmount'] != 0)]
-    new_sectors_list = []
-    for q, r in missing_sectors:
-        c1 = df_subset['Location'] == q
-        c2 = df_subset['ActivityProducedBy'].apply(lambda x: x[0:2] == r)
-        # subset data
-        new_sectors_list.append(df_subset[c1 & c2])
-    if len(new_sectors_list) != 0:
-        new_sectors = pd.concat(
-            new_sectors_list, sort=False, ignore_index=True)
-
-        # drop last digit of naics and aggregate
-        new_sectors.loc[:, 'ActivityProducedBy'] = \
-            new_sectors['ActivityProducedBy'].apply(lambda x: x[0:2])
-        new_sectors = aggregator(new_sectors, fba_default_grouping_fields)
-
-        # drop the old location/activity columns in the bls df and
-        # add new sector values
-        new_sectors_list = \
-            new_sectors[['Location', 'ActivityProducedBy'
-                         ]].drop_duplicates().values.tolist()
-
-        # rows to drop
-        rows_list = []
-        for q, r in new_sectors_list:
-            c1 = df['Location'] == q
-            c2 = df['ActivityProducedBy'].apply(lambda x: x == r)
-            # subset data
-            rows_list.append(df[(c1 & c2)])
-        rows_to_drop = pd.concat(rows_list, ignore_index=True)
-        # drop rows from df
-        modified_df = pd.merge(df, rows_to_drop, indicator=True,
-                               how='outer').query('_merge=="left_only"'
-                                                  ).drop('_merge', axis=1)
-        # add new rows
-        modified_df = modified_df.append(new_sectors, sort=False)
-        return modified_df
-    else:
-        return df
-
-
-# def remove_2_digit_sector_ranges(fba_df):
-#     """
-#     BLS publishes activity ranges of '31-33', 44-45', '48-49...
-#     drop these ranges.
-#     The individual 2 digit naics are summed later.
-#     :param fba_df: df, BLS QCEW in FBA format
-#     :return: df, no sector ranges
-#     """
-#
-#     df = fba_df[
-#         ~fba_df['ActivityProducedBy'].str.contains('-')].reset_index(drop=True)
-#
-#     return df
 
 
 def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
@@ -274,40 +174,3 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     df2 = aggregator(df, groupcols)
 
     return df2
-
-
-def bls_clean_allocation_fba_w_sec_sat_table(df_w_sec, **kwargs):
-    """
-    clean up bls df with sectors by estimating suppresed data
-    :param df_w_sec: df, FBA format BLS QCEW data
-    :param kwargs: additional arguments can include 'attr', a
-    dictionary of FBA method yaml parameters
-    :return: df, BLS QCEW FBA with estimated suppressed data
-    """
-    df_w_sec = df_w_sec.reset_index(drop=True)
-    df2 = add_missing_flow_by_fields(df_w_sec,
-                                     flow_by_activity_mapped_wsec_fields
-                                     ).reset_index(drop=True)
-    df3 = replace_strings_with_NoneType(df2)
-
-    return df3
-
-
-def bls_clean_allocation_fba_w_sec_state(df_w_sec, **kwargs):
-    """
-   clean up bls df with sectors by estimating suppressed data
-   :param df_w_sec: df, FBA format BLS QCEW data
-   :param kwargs: additional arguments can include 'attr', a
-   dictionary of FBA method yaml parameters
-   :return: df, BLS QCEW FBA with estimated suppressed data
-   """
-    from flowsa.allocation import equally_allocate_parent_to_child_naics
-    # first adjust using national level methods
-    df = bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs)
-
-    # estimate the suppressed data by equally allocating parent naics to child
-    log.info('Estimating suppressed data by equally allocating '
-             'parent NAICS to child NAICS')
-    df = equally_allocate_parent_to_child_naics(df, kwargs['method'])
-
-    return df

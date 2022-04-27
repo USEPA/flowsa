@@ -50,7 +50,6 @@ source_names:
         helper_source_year: 2014
         helper_flow: None
         helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_4: #Livestock losing NAICS 11211
         allocation_method: proportional
@@ -83,7 +82,6 @@ source_names:
         helper_flow:
           - "Number of employees"
         helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_6: # fertilizers
         <<: *use_allocation
@@ -105,7 +103,6 @@ source_names:
         helper_flow:
           - "Number of employees"
         helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
       activity_set_8: # pesticides
         <<: *use_allocation

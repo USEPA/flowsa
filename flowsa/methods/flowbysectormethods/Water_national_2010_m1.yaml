@@ -40,7 +40,6 @@ source_names:
           - "Number of employees"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
         clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
       activity_set_3:
         names:
