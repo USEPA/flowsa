@@ -722,7 +722,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     dfs = subset_df_by_sector_lengths(df_sup, [6])
 
     counter = 1
-    while dfs.isnull().values.any() and 6-counter > 2:
+    while dfs.isnull().values.any() and 6-counter > 1:
         # subset the crosswalk by i and i-1
         cw = cw_load[[f'NAICS_6',
                       f'NAICS_{6-counter}']].drop_duplicates()
@@ -759,63 +759,64 @@ def equally_allocate_suppressed_parent_to_child_naics(
     mergecols = mergecols + ['SectorProducedMatch', 'SectorConsumedMatch']
     meltcols = mergecols + ['sector_allocated']
 
-    for ii in range(5, 1, -1):
-        # subset the df by length i
-        dfs = df_sup2[df_sup2['SectorLength'] == ii]
+    if len(df_sup2) > 0:
+        for ii in range(5, 1, -1):
+            # subset the df by length i
+            dfs = df_sup2[df_sup2['SectorLength'] == ii]
 
-        dfns_sub = dfns[dfns['SectorLength'] == 6].reset_index(drop=True)
-        for s in ['Produced', 'Consumed']:
-            dfns_sub = assign_sector_match_column(dfns_sub, f'Sector{s}By', 6,
-                                             ii).rename(
-                columns={'sector_group': f'Sector{s}Match'})
-            dfns_sub = dfns_sub.fillna('')
-        dfsum = dfns_sub.groupby(mergecols, as_index=False).agg(
-            {"FlowAmount": sum}).rename(columns={
-            "FlowAmount": 'sector_allocated'})
+            dfns_sub = dfns[dfns['SectorLength'] == 6].reset_index(drop=True)
+            for s in ['Produced', 'Consumed']:
+                dfns_sub = assign_sector_match_column(dfns_sub, f'Sector{s}By', 6,
+                                                 ii).rename(
+                    columns={'sector_group': f'Sector{s}Match'})
+                dfns_sub = dfns_sub.fillna('')
+            dfsum = dfns_sub.groupby(mergecols, as_index=False).agg(
+                {"FlowAmount": sum}).rename(columns={
+                "FlowAmount": 'sector_allocated'})
 
-        df_sup3 = dfs.merge(dfsum[meltcols], on=mergecols, how='left')
-        df_sup3['sector_allocated'] = df_sup3['sector_allocated'].fillna(0)
-        # calc the remaining flow that can be allocated
-        df_sup3['FlowRemainder'] = df_sup3['SectorMatchFlow'] - \
-                                   df_sup3['sector_allocated']
-        # Due to rounding, there can be slight differences in data at sector
-        # levels, which can result in some minor negative values. If the
-        # percent of FlowRemainder is less than the assigned tolerance for
-        # negative numbers, reset the number to 0. If it is greater, issue a
-        # warning.
-        tolerance = 1
-        df_sup3 = df_sup3.assign(PercentOfAllocated=
-                                 (abs(df_sup3['FlowRemainder']) / df_sup3[
-                                     'SectorMatchFlow']) * 100)
-        df_sup3['FlowRemainder'] = np.where(
-            (df_sup3["FlowRemainder"] < 0) &
-            (df_sup3['PercentOfAllocated'] < tolerance), 0,
-            df_sup3['FlowRemainder'])
-        # check for negative values
-        negv = df_sup3[df_sup3['FlowRemainder'] < 0]
-        if len(negv) > 0:
-            # first check what the percent is of flow remainder over sector
-            # allocated.
-            log.warning('There are negative values when allocating suppressed '
-                        'parent data to child sector. The values are more '
-                        'than %s %% of the total parent sector', '1')
-        df_sup3 = df_sup3.drop(columns=['SectorMatchFlow', 'sector_allocated',
-                                        'PercentOfAllocated'])
-        # add count column used to divide the unallocated flows
-        sector_column_match = sector_column.replace('By', 'Match')
-        df_sup3 = df_sup3.assign(secCount=df_sup3.groupby(mergecols)[
-            sector_column_match].transform('count'))
-        df_sup3 = df_sup3.assign(newFlow=df_sup3['FlowRemainder'] /
-                                         df_sup3['secCount'])
-        # reassign values and drop columns
-        df_sup3 = df_sup3.assign(FlowAmount=df_sup3['newFlow'])
-        df_sup3 = df_sup3.drop(columns=['SectorProducedMatch',
-                                        'SectorConsumedMatch', 'FlowRemainder',
-                                        'secCount', 'newFlow'])
-        # reset SectorLength
-        df_sup3['SectorLength'] = 6
-        # add to the df with no suppressed data
-        dfns = pd.concat([dfns, df_sup3], ignore_index=True)
+            df_sup3 = dfs.merge(dfsum[meltcols], on=mergecols, how='left')
+            df_sup3['sector_allocated'] = df_sup3['sector_allocated'].fillna(0)
+            # calc the remaining flow that can be allocated
+            df_sup3['FlowRemainder'] = df_sup3['SectorMatchFlow'] - \
+                                       df_sup3['sector_allocated']
+            # Due to rounding, there can be slight differences in data at sector
+            # levels, which can result in some minor negative values. If the
+            # percent of FlowRemainder is less than the assigned tolerance for
+            # negative numbers, reset the number to 0. If it is greater, issue a
+            # warning.
+            tolerance = 1
+            df_sup3 = df_sup3.assign(PercentOfAllocated=
+                                     (abs(df_sup3['FlowRemainder']) / df_sup3[
+                                         'SectorMatchFlow']) * 100)
+            df_sup3['FlowRemainder'] = np.where(
+                (df_sup3["FlowRemainder"] < 0) &
+                (df_sup3['PercentOfAllocated'] < tolerance), 0,
+                df_sup3['FlowRemainder'])
+            # check for negative values
+            negv = df_sup3[df_sup3['FlowRemainder'] < 0]
+            if len(negv) > 0:
+                # first check what the percent is of flow remainder over sector
+                # allocated.
+                log.warning('There are negative values when allocating suppressed '
+                            'parent data to child sector. The values are more '
+                            'than %s %% of the total parent sector', '1')
+            df_sup3 = df_sup3.drop(columns=['SectorMatchFlow', 'sector_allocated',
+                                            'PercentOfAllocated'])
+            # add count column used to divide the unallocated flows
+            sector_column_match = sector_column.replace('By', 'Match')
+            df_sup3 = df_sup3.assign(secCount=df_sup3.groupby(mergecols)[
+                sector_column_match].transform('count'))
+            df_sup3 = df_sup3.assign(newFlow=df_sup3['FlowRemainder'] /
+                                             df_sup3['secCount'])
+            # reassign values and drop columns
+            df_sup3 = df_sup3.assign(FlowAmount=df_sup3['newFlow'])
+            df_sup3 = df_sup3.drop(columns=['SectorProducedMatch',
+                                            'SectorConsumedMatch', 'FlowRemainder',
+                                            'secCount', 'newFlow'])
+            # reset SectorLength
+            df_sup3['SectorLength'] = 6
+            # add to the df with no suppressed data
+            dfns = pd.concat([dfns, df_sup3], ignore_index=True)
 
     dfns = dfns.drop(columns=['SectorLength'])
     dff = sector_aggregation(dfns)
