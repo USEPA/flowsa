@@ -170,7 +170,9 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     # federal government, state government, local government, or private
     # sectors. So after estimating the suppressed data (above), modify the
     # flow names and aggregate data
-    df['FlowName'] = df['FlowName'].str.split(',').str[0]
+    col_list = [e for e in df_w_sec.columns if e in ['FlowName', 'Flowable']]
+    for c in col_list:
+        df[c] = df[c].str.split(',').str[0]
     df2 = aggregator(df, groupcols)
 
     return df2
