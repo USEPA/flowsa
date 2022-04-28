@@ -54,6 +54,10 @@ def parse_statior(*, source, year, config, **_):
     fba = pd.concat(use_dict, ignore_index=True)
     fba.dropna(subset=['FlowAmount'], inplace=True)
 
+    # Gross Output
+    if 'GO' in source and 'ActivityConsumedBy' in fba.columns:
+        fba = fba.drop(columns=['ActivityConsumedBy'])
+
     # Assign location
     fba['County'] = ''
     fba = apply_county_FIPS(fba)
@@ -82,6 +86,6 @@ def subset_stateio_table(df, attr, **_):
 
 if __name__ == "__main__":
     import flowsa
-    source = 'stateio_Make_Summary'
+    source = 'stateio_Industry_GO'
     flowsa.flowbyactivity.main(year=2017, source=source)
     fba = flowsa.getFlowByActivity(source, 2017)

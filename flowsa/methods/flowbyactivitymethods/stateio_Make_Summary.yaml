@@ -1,18 +1,4 @@
-author: Li et al.
+!include:stateio_Common.yaml
 source_name: stateio_Make_Summary
-source_url: https://github.com/USEPA/stateior
-original_data_download_date:
 bib_id:
-api_name: None
-api_key_required: False
-format: rds  # R data format
-url: None # Uses esupy data retrieval
-parse_response_fxn: parse_statior
-years:
-- 2012
-- 2013
-- 2014
-- 2015
-- 2016
-- 2017
 datatype: 'State_Summary_Make'
