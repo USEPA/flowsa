@@ -84,7 +84,8 @@ def load_source_dataframe(method, sourcename, source_dict,
     :param source_dict: dictionary, The datasource parameters
     :param download_FBA_if_missing: Bool, if True will download FBAs from
        Data Commons. Default is False.
-    :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
+    :param fbsconfigpath, str, optional path to an FBS method outside flowsa
+        repo
     :return: df of identified parquet
     """
     if source_dict['data_format'] == 'FBA':
@@ -115,33 +116,6 @@ def load_source_dataframe(method, sourcename, source_dict,
                    "file for datasource %s", sourcename)
 
     return flows_df
-
-
-def return_activity_set_names(v, fbsconfigpath):
-    """
-    Return activity set names, if there is a file. If the fbsconfigpath is not
-    None, meaning the method yaml is loaded from outside the flowsa repo,
-    first check for an activity set file in the fbsconfigpath.
-    :param v:
-    :param fbsconfigpath: str, optional path to an FBS method outside flowsa repo
-    :return:
-    """
-    # if activity_sets are specified in a file, call them here
-    if 'activity_set_file' in v:
-        aspath = flowbysectoractivitysetspath
-        # first check if the activity set file exists in the fbsconfigpath
-        if os.path.isfile(f"{fbsconfigpath}flowbysectoractivitysets/"
-                          f"{v['activity_set_file']}"):
-            # if the file exists, reset the activitysetpath
-            aspath = f"{fbsconfigpath}flowbysectoractivitysets/"
-            log.info('Loading activity set file from %s', aspath)
-        # load activity set
-        aset_names = pd.read_csv(f"{aspath}{v['activity_set_file']}",
-                                 dtype=str)
-    else:
-        aset_names = None
-
-    return aset_names
 
 
 def main(**kwargs):
@@ -199,9 +173,6 @@ def main(**kwargs):
                 flows_mapped = dynamically_import_fxn(
                     k, v["clean_fba_df_fxn"])(flows_mapped)
 
-            # if activity_sets are specified in a file, call them here
-            aset_names = return_activity_set_names(v, fbsconfigpath)
-
             # master list of activity names read in from data source
             ml_act = []
             # create dictionary of allocation datasets for different activities
@@ -209,11 +180,7 @@ def main(**kwargs):
             # subset activity data and allocate to sector
             for aset, attr in activities.items():
                 # subset by named activities
-                if 'activity_set_file' in v:
-                    names = \
-                        aset_names[aset_names['activity_set'] == aset]['name']
-                else:
-                    names = attr['names']
+                names = attr['names']
 
                 # to avoid double counting data from the same source, in
                 # the event there are values in both the APB and ACB
@@ -303,7 +270,7 @@ def main(**kwargs):
                 else:
                     fbs = dataset_allocation_method(
                         flows_mapped_wsec, attr, names, method, k, v, aset,
-                        aset_names, download_FBA_if_missing, fbsconfigpath)
+                        download_FBA_if_missing, fbsconfigpath)
 
                 # drop rows where flowamount = 0
                 # (although this includes dropping suppressed data)
