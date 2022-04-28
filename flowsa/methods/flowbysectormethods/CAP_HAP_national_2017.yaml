@@ -148,7 +148,6 @@ source_names:
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: stewicombo_to_sector
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
-    geo_scale: 'national'
     local_inventory_name: 'NEI_TRI_air_2017'
     compartments:
      - 'air'

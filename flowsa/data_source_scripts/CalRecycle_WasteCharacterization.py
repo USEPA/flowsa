@@ -14,11 +14,13 @@ import os
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    load_fba_w_standardized_units
+    load_fba_w_standardized_units, \
+    aggregate_and_subset_for_target_sectors
 from flowsa.settings import externaldatapath
 from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.sectormapping import get_fba_allocation_subset, \
     add_sectors_to_flowbyactivity
+from flowsa.dataclean import replace_strings_with_NoneType
 
 
 def produced_by(entry):
@@ -119,10 +121,11 @@ def keep_generated_quantity(fba, **_):
     return fba
 
 
-def apply_tons_per_employee_per_year_to_states(fbs):
+def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
     """
     Calculates tons per employee per year based on BLS_QCEW employees
     by sector and applies that quantity to employees in all states
+    clean_fbs_df_fxn
     """
     bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
                                         year=fbs['Year'].unique()[0],
@@ -152,4 +155,7 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     national_waste['FlowAmount'] = \
         national_waste['Employees'] * national_waste['TPEPY']
 
-    return national_waste
+    df = aggregate_and_subset_for_target_sectors(national_waste, method)
+    df = replace_strings_with_NoneType(df)
+
+    return df
