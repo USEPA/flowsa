@@ -2,6 +2,7 @@ from typing import IO, Any
 import yaml
 import flowsa.settings
 from os import path
+import csv
 
 
 class FlowsaLoader(yaml.SafeLoader):
@@ -12,6 +13,7 @@ class FlowsaLoader(yaml.SafeLoader):
     def __init__(self, stream: IO) -> None:
         super().__init__(stream)
         self.add_multi_constructor('!include:', self.include)
+        self.add_multi_constructor('!from_index:', self.from_index)
         self.add_constructor('!external_config', self.external_config)
         self.external_paths_to_search = []
         self.external_path_to_pass = None
@@ -54,7 +56,10 @@ class FlowsaLoader(yaml.SafeLoader):
         return branch
 
     @staticmethod
-    def external_config(loader: 'FlowsaLoader', node: yaml.Node) -> str:
+    def external_config(
+        loader: 'FlowsaLoader',
+        node: yaml.Node
+    ) -> str or list:
         if isinstance(node, yaml.SequenceNode):
             paths = loader.construct_sequence(node)
             loader.external_paths_to_search.extend(paths)
@@ -65,6 +70,34 @@ class FlowsaLoader(yaml.SafeLoader):
             return path
         else:
             raise TypeError('Cannot tag a mapping node with !external_config')
+
+    @staticmethod
+    def from_index(
+        loader: 'FlowsaLoader',
+        file: str,
+        node: yaml.ScalarNode
+    ) -> list:
+        if not isinstance(node, yaml.ScalarNode):
+            raise TypeError('Can only tag a scalar node with !from_index:')
+
+        for folder in [
+            *loader.external_paths_to_search,
+            flowsa.settings.flowbysectoractivitysetspath
+        ]:
+            if path.exists(path.join(folder, file)):
+                file = path.join(folder, file)
+                break
+        else:
+            raise FileNotFoundError(f'{file} not found')
+
+        activity_set = loader.construct_scalar(node)
+
+        with open(file, 'r', newline='') as f:
+            index = csv.DictReader(f)
+            return [
+                row['name'] for row in index
+                if row['activity_set'] == activity_set
+            ]
 
 
 def load(stream: IO, external_path: str = None) -> dict:
