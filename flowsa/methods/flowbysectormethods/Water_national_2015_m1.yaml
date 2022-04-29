@@ -59,7 +59,6 @@ source_names:
           - 'AREA GROWN, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
         helper_source: "USDA_IWMS"
         helper_method: multiplication
