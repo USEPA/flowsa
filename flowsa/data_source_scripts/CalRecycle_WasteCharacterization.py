@@ -129,7 +129,10 @@ def apply_tons_per_employee_per_year_to_states(fbs):
                                         year=fbs['Year'].unique()[0],
                                         flowclass='Employment',
                                         geographic_level='state')
-    bls = bls[bls['FlowName'] == 'Number of employees']
+    bls = bls[bls['FlowName'].isin(["Number of employees, Federal Government",
+                                    "Number of employees, State Government",
+                                    "Number of employees, Local Government",
+                                    "Number of employees, Private"])]
     bls = add_sectors_to_flowbyactivity(bls)
 
     # Subset BLS dataset
