@@ -637,10 +637,11 @@ def equally_allocate_suppressed_parent_to_child_naics(
     df = sector_disaggregation(df_load)
 
     # equally allocate parent to child naics where child naics are not
-    # included in the dataset
+    # included in the dataset. This step is necessary to accurately
+    # calculate the flow that has already been allocated.
     if equally_allocate_parent_to_child:
-        vLogDetailed.info('Before estimating suppressed data, equally allocate '
-                          'parent sectors to child sectors.')
+        vLogDetailed.info('Before estimating suppressed data, equally '
+                          'allocate parent sectors to child sectors.')
         df = equally_allocate_parent_to_child_naics(df, method)
 
     df = replace_NoneType_with_empty_cells(df)
@@ -648,10 +649,11 @@ def equally_allocate_suppressed_parent_to_child_naics(
 
     # determine if activities are sector-like,
     # if aggregating a df with a 'SourceName'
-    sector_like_activities = False
-    if 'SourceName' in df_load.columns:
-        s = pd.unique(df_load['SourceName'])[0]
-        sector_like_activities = check_activities_sector_like(s)
+    s = pd.unique(df_load['SourceName'])[0]
+    sector_like_activities = check_activities_sector_like(s)
+    if sector_like_activities is False:
+        log.error('Function is not written to estimate suppressed data when '
+                  'activities are not NAICS-like.')
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
@@ -668,9 +670,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # load naics 2 to naics 6 crosswalk
     cw_load = load_crosswalk('sector_length')
     # only keep official naics
-    cw = cw_load.drop(columns=['NAICS_7'])
-    cw = cw.drop_duplicates()
-    cw_melt = cw.melt(
+    cw = cw_load.drop(columns=['NAICS_7']).drop_duplicates()
+    cw_melt = pd.melt(cw,
         id_vars=["NAICS_6"], var_name="NAICS_Length",
         value_name="NAICS_Match").drop(
         columns=['NAICS_Length']).drop_duplicates()
@@ -766,8 +767,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
 
             dfns_sub = dfns[dfns['SectorLength'] == 6].reset_index(drop=True)
             for s in ['Produced', 'Consumed']:
-                dfns_sub = assign_sector_match_column(dfns_sub, f'Sector{s}By', 6,
-                                                 ii).rename(
+                dfns_sub = assign_sector_match_column(
+                    dfns_sub, f'Sector{s}By', 6, ii).rename(
                     columns={'sector_group': f'Sector{s}Match'})
                 dfns_sub = dfns_sub.fillna('')
             dfsum = dfns_sub.groupby(mergecols, as_index=False).agg(
@@ -833,6 +834,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
                       'child sectors. ')
     compare_summation_at_sector_lengths_between_two_dfs(df_load, dff)
     compare_child_to_parent_sectors_flowamounts(dff)
+    # todo: add third check comparing smallest child naics (6) to largest (2)
 
     # replace null values
     dff = replace_strings_with_NoneType(dff).reset_index(drop=True)
@@ -1057,7 +1059,8 @@ def assign_columns_of_sector_levels(df_load):
 
     # concat dfs
     dfc = pd.concat([df1, df2e], ignore_index=True)
-    dfc = dfc.sort_values(['SectorProducedByLength', 'SectorConsumedByLength'])
+    dfc = dfc.sort_values(['SectorProducedByLength',
+                           'SectorConsumedByLength']).reset_index(drop=True)
 
     # check for duplicates. Rows might be duplicated if a sector is the same
     # for multiple sector lengths
