@@ -189,6 +189,13 @@ def coa_cropland_parse(*, df_list, year, **_):
         ", ALL PRODUCTION PRACTICES", "", regex=True)
     df.loc[:, 'FlowName'] = df['FlowName'].str.replace(
         ", IN THE OPEN", "", regex=True)
+    # want to included "harvested" in the flowname when "harvested" is
+    # included in the class_desc
+    df['FlowName'] = np.where(df['class_desc'].str.contains(', HARVESTED'),
+                              df['FlowName'] + " HARVESTED", df['FlowName'])
+    # reorder
+    df['FlowName'] = np.where(df['FlowName'] == 'AREA, IRRIGATED HARVESTED',
+                              'AREA HARVESTED, IRRIGATED', df['FlowName'])
     # combine column information to create activity
     # information, and create two new columns for activities
     df['Activity'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + \
