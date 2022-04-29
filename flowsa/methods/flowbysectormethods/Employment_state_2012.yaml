@@ -9,7 +9,7 @@ source_names:
     source_fba_load_scale: state
     year: 2012
     clean_fba_df_fxn: clean_bls_qcew_fba_for_employment_sat_table
-    clean_fba_w_sec_df_fxn: bls_clean_allocation_fba_w_sec_state
+    clean_fba_w_sec_df_fxn: bls_clean_allocation_fba_w_sec
     activity_set_file: 'BLS_QCEW_asets.csv'
     activity_sets:
       activity_set_1:
