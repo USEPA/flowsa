@@ -350,12 +350,14 @@ def equal_allocation(fba_load):
                  'for ambiguous sectors. Keeping sector length assignments '
                  'to most specific sectors.')
         dfc = dfc[dfc.duplicated(duplicate_cols, keep='first')]
-    sec_lengths = list(dfc[['SectorProducedByLength',
-                            'SectorConsumedByLength']].values.reshape(-1))
-    sec_lengths = list(set(sec_lengths))
-    if 0 in sec_lengths:
-        sec_lengths.remove(0)
-    if len(sec_lengths) > 1:
+
+    # Before equally allocating, check that each activity is being allocated
+    # to sectors of the same length
+    dfsub = dfc[['ActivityProducedBy', 'ActivityConsumedBy',
+                 'SectorProducedByLength',
+                 'SectorConsumedByLength']].drop_duplicates()
+    df_dup = dfsub[dfsub.duplicated(['ActivityProducedBy', 'ActivityConsumedBy'])]
+    if len(df_dup) > 1:
         log.error('Cannot equally allocate because sector lengths vary. All '
                   'sectors must be the same sector level.')
 
