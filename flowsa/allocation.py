@@ -251,6 +251,8 @@ def equally_allocate_parent_to_child_naics(df_load, method):
     if 'SourceName' in df_load.columns:
         s = pd.unique(df_load['SourceName'])[0]
         sector_like_activities = check_activities_sector_like(s)
+    else:
+        s = pd.unique(df_load['MetaSources'])[0]
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
@@ -284,11 +286,11 @@ def equally_allocate_parent_to_child_naics(df_load, method):
         # merge df & conditionally replace sector produced/consumed columns
         # merge dfs assigning sector length
         sectype_list = ['Produced', 'Consumed']
-        for s in sectype_list:
-            rl = rl.merge(cw, how='left', left_on=[f'Sector{s}By'],
+        for sec in sectype_list:
+            rl = rl.merge(cw, how='left', left_on=[f'Sector{sec}By'],
                           right_on=nlength).rename(
-                columns={'sector_count': f'{s}Count'})
-            rl[f'Sector{s}By'] = rl[sector_level]
+                columns={'sector_count': f'{sec}Count'})
+            rl[f'Sector{sec}By'] = rl[sector_level]
             rl = rl.drop(columns=[sector_level, nlength])
 
         # create one sector count column, using max value
@@ -302,10 +304,10 @@ def equally_allocate_parent_to_child_naics(df_load, method):
 
         # append to df
         if len(rl) != 0:
-            vLogDetailed.warning('Data found at %s digit NAICS not '
-                                 'represented in current data subset: '
+            vLogDetailed.warning('Data found at %s digit sectors not '
+                                 'represented in current data subset of %s: '
                                  '{}'.format(' '.join(map(str, rl_list))),
-                                 str(i))
+                                 str(i), s)
             rows_lost = pd.concat([rows_lost, rl], ignore_index=True)
 
     if len(rows_lost) != 0:
