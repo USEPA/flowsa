@@ -332,16 +332,24 @@ def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
     fba_w_sector = fba_w_sector_load[~fba_w_sector_load[sector_col].isna()]\
         .reset_index(drop=True)
 
+    # modify the flowamounts related to the 6 naics 'orchards' are mapped to
+    fba_w_sector = equal_allocation(fba_w_sector)
+
+    # todo: add back in once suppression fxn modified to accept non-naics
+    #  like activities and mixed level final naics (naics6 and naics7)
     # then estimate any suppressed data by equally allocating parent to
     # child naics
-    groupcols = list(fba_w_sector2.select_dtypes(include=['object', 'int']).columns)
-    fba_w_sector3 = equally_allocate_suppressed_parent_to_child_naics(
-        fba_w_sector2, method, 'SectorConsumedBy', groupcols,
-        equally_allocate_parent_to_child=False)
+    # groupcols = list(fba_w_sector3.select_dtypes(
+    #     include=['object', 'int']).columns)
+    # fba_w_sector = equally_allocate_suppressed_parent_to_child_naics(
+    #     fba_w_sector, method, 'SectorConsumedBy', groupcols)
 
-    # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector4 = modify_orchard_flowamounts(
-        fba_w_sector3, activity_column=activity_col)
+    # When using irrigated cropland, aggregate sectors to cropland and total
+    # ag land. Doing this because published values for irrigated harvested
+    # cropland do not include the water use for vegetables, woody crops,
+    # berries.
+    fba_w_sector = fba_w_sector[~fba_w_sector['ActivityConsumedBy'].isin(
+        ['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])].reset_index(drop=True)
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
