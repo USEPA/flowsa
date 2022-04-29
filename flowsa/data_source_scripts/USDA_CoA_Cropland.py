@@ -284,8 +284,7 @@ def disaggregate_coa_cropland_to_6_digit_naics(
         ~fba_w_sector[sector_col].isna()].reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = modify_orchard_flowamounts(
-        fba_w_sector, activity_column=activity_col)
+    fba_w_sector = equal_allocation(fba_w_sector)
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
@@ -353,37 +352,19 @@ def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
-    fba_w_sector5 = disaggregate_pastureland(
-        fba_w_sector4, attr, method, year=attr['allocation_source_year'],
+    fba_w_sector = disaggregate_pastureland(
+        fba_w_sector, attr, method, year=attr['allocation_source_year'],
         sector_column=sector_col, download_FBA_if_missing=kwargs[
             'download_FBA_if_missing'], parameter_drop=['1125'])
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit
     # naics
-    fba_w_sector6 = disaggregate_cropland(
-        fba_w_sector5, attr, method, year=attr['allocation_source_year'],
+    fba_w_sector = disaggregate_cropland(
+        fba_w_sector, attr, method, year=attr['allocation_source_year'],
         sector_column=sector_col, download_FBA_if_missing=kwargs[
             'download_FBA_if_missing'])
 
-    return fba_w_sector6
-
-
-def modify_orchard_flowamounts(fba, activity_column):
-    """
-    In the CoA cropland crosswalk, the activity 'orchards' is mapped
-    to eight 6-digit naics. Therefore, after mapping,
-    divide the orchard flow amount by 8.
-    :param fba: A FlowByActiivty df mapped to sectors
-    :param activity_column: The activity column to base FlowAmount
-        modifications on (ActivityProducedBy or ActivityConsumedBy)
-    :return: df, CoA cropland data with modified FlowAmounts
-    """
-
-    # divide the Orchards data allocated to NAICS by 6 to avoid double counting
-    fba.loc[fba[activity_column] == 'ORCHARDS',
-            'FlowAmount'] = fba['FlowAmount'] / 8
-
-    return fba
+    return fba_w_sector
 
 
 def disaggregate_pastureland(fba_w_sector, attr, method, year,
