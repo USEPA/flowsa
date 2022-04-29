@@ -542,6 +542,50 @@ def check_golf_and_crop_irrigation_totals(df_load):
     # drop national data
     df = df_load[df_load['Location'] != '00000']
 
+    df_m2 = subset_and_merge_irrigation_types(df)
+
+    df_m3 = df_m2[df_m2['Diff'] > 0].reset_index(drop=True)
+
+    # rename irrigation to irrigation crop and append rows to df
+    df_m3.loc[df_m3['ActivityProducedBy'] ==
+              'Irrigation', 'ActivityProducedBy'] = 'Irrigation Crop'
+    df_m3.loc[df_m3['ActivityConsumedBy'] ==
+              'Irrigation', 'ActivityConsumedBy'] = 'Irrigation Crop'
+    df_m3['Description'] = df_m3['Description'].str.replace(
+        'Irrigation, Total', 'Irrigation, Crop').str.replace(
+        'withdrawals', 'withdrawals for crops').str.replace(
+        'use', 'use for crops')
+    df_m3 = df_m3.drop(columns=['Golf_Amount', 'Golf_APB', 'Golf_ACB',
+                                'Crop_Amount', 'Crop_APB',
+                                'Crop_ACB', 'subset_sum', 'FlowAmount',
+                                'Crop_Description'])
+    df_m3 = df_m3.rename(columns={'Diff': 'FlowAmount'})
+
+    if len(df_m3) != 0:
+        df_w_missing_crop = pd.concat([df_load, df_m3], ignore_index=True)
+
+        group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
+        df_w_missing_crop = aggregator(df_w_missing_crop, group_cols,
+                                       retain_zeros=True)
+
+        # validate results - the differences should all be 0
+        df_check = subset_and_merge_irrigation_types(df_w_missing_crop)
+        df_check = df_check[df_check['Location'] != US_FIPS].reset_index(
+            drop=True)
+        df_check['Diff'] = df_check['Diff'].apply(lambda x: round(x, 2))
+        df_check2 = df_check[df_check['Diff'] != 0]
+        if len(df_check2) > 0:
+            vLogDetailed.info('The golf and crop irrigation do not add up to '
+                              'total irrigation.')
+        else:
+            vLogDetailed.info('The golf and crop irrigation add up to total '
+                              'irrigation.')
+        return df_w_missing_crop
+    else:
+        return df_load
+
+
+def subset_and_merge_irrigation_types(df):
     # subset into golf, crop, and total irrigation (and non irrigation)
     df_i = df[(df[fba_activity_fields[0]] == 'Irrigation') |
               (df[fba_activity_fields[1]] == 'Irrigation')]
@@ -585,33 +629,13 @@ def check_golf_and_crop_irrigation_totals(df_load):
                                   "Description_x": 'Description',
                                   "Description_y": "Crop_Description"})
     # fill na and sum crop and golf
-    # df_m2 = df_m2.fillna(0)
+    for col in df_m2:
+        if df_m2[col].dtype in ("int", "float"):
+            df_m2[col] = df_m2[col].fillna(0)
     df_m2['subset_sum'] = df_m2['Crop_Amount'] + df_m2['Golf_Amount']
     df_m2['Diff'] = df_m2['FlowAmount'] - df_m2['subset_sum']
 
-    df_m3 = df_m2[df_m2['Diff'] >= 0].reset_index(drop=True)
-
-    # rename irrigation to irrgation crop and append rows to df
-    df_m3.loc[df_m3['ActivityProducedBy'] ==
-              'Irrigation', 'ActivityProducedBy'] = 'Irrigation Crop'
-    df_m3.loc[df_m3['ActivityConsumedBy'] ==
-              'Irrigation', 'ActivityConsumedBy'] = 'Irrigation Crop'
-    df_m3 = df_m3.drop(columns=['Golf_Amount', 'Golf_APB', 'Golf_ACB',
-                                'Crop_Amount', 'Crop_APB',
-                                'Crop_ACB', 'subset_sum', 'FlowAmount',
-                                'Description'])
-    df_m3 = df_m3.rename(columns={'Diff': 'FlowAmount',
-                                  'Crop_Description': 'Description'})
-
-    if len(df_m3) != 0:
-        df_w_missing_crop = pd.concat([df_load, df_m3], ignore_index=True)
-
-        group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
-        df_w_missing_crop = aggregator(df_w_missing_crop, group_cols,
-                                       retain_zeros=True)
-        return df_w_missing_crop
-    else:
-        return df_load
+    return df_m2
 
 
 def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
