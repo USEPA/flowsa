@@ -31,14 +31,11 @@ Description of parameters in flowbysectormethods yamls. All values are strings u
 11. _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not supplied will use
    the source_names
 12. _mfl_mapping_: (optional, should not be used if fedefl_mapping is used) name of mapping file for Material Flow List.
-13. _activity_set_file_: (optional) name of mapping file within flowbysectormethods folder
-   which contains list of names for one or more activity_sets. If not supplied
-   _names_ should be listed below within each activity set
 
 ### Activity set specifications
 1. _activity_sets_: A subset of the FBA dataset and the method and allocation datasets used to create a FBS
 2. _names_: (list) specify the subset of the FBA to allocate based on values in the
-   Activity Produced/Consumed By fields. Required if not provided in activity_set_file.
+   Activity Produced/Consumed By fields. To use an external activity set .csv file, use the tag `!from_index:file_name.csv`, then give the name (e.g. `activity_set_1`) of the activity set as found in the csv file.
 3. _source_flows_: (list, optional) specify the 'FlowName'(s) from the FBA to use.
     If not provided, all flows are used.
 4. _allocation_method_: currently written for 'direct', 'allocation_function',
