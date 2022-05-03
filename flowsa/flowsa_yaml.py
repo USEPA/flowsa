@@ -1,8 +1,9 @@
-from typing import IO, Any
+from typing import IO, Callable
 import yaml
 import flowsa.settings
 from os import path
 import csv
+import importlib
 
 
 class FlowsaLoader(yaml.SafeLoader):
@@ -14,6 +15,7 @@ class FlowsaLoader(yaml.SafeLoader):
         super().__init__(stream)
         self.add_multi_constructor('!include:', self.include)
         self.add_multi_constructor('!from_index:', self.from_index)
+        self.add_multi_constructor('!script_function:', self.script_function)
         self.add_constructor('!external_config', self.external_config)
         self.external_paths_to_search = []
         self.external_path_to_pass = None
@@ -98,6 +100,22 @@ class FlowsaLoader(yaml.SafeLoader):
                 row['name'] for row in index
                 if row['activity_set'] == activity_set
             ]
+
+    @staticmethod
+    def script_function(
+        loader: 'FlowsaLoader',
+        module_name: str,
+        node: yaml.ScalarNode
+    ) -> Callable:
+        if not isinstance(node, yaml.ScalarNode):
+            raise TypeError('Can only tag scalar node with !script_function:')
+
+        # For security, this constructor does NOT search external config paths.
+        # If someone who understands security concerns better than I do feels
+        # it is safe to change this behavior, then go ahead.
+        module = importlib.import_module(f'flowsa.data_source_scripts'
+                                         f'.{module_name}')
+        return getattr(module, loader.construct_scalar(node))
 
 
 def load(stream: IO, external_path: str = None) -> dict:
