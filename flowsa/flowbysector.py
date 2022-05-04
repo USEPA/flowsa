@@ -48,7 +48,7 @@ from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, check_for_negative_flowamounts, \
     compare_child_to_parent_sectors_flowamounts, \
-    calculate_flowamount_diff_between_dfs
+    check_if_data_exists_at_geoscale, calculate_flowamount_diff_between_dfs
 
 
 def parse_args():
@@ -261,6 +261,9 @@ def main(**kwargs):
                 flows_subset_geo = subset_df_by_geoscale(
                     flows_subset2, v['geoscale_to_use'],
                     attr['allocation_from_scale'])
+                # check for activities at locations
+                check_if_data_exists_at_geoscale(flows_subset_geo,
+                                                 attr['allocation_from_scale'])
                 # if loading data subnational geoscale, check for data loss
                 if attr['allocation_from_scale'] != 'national':
                     compare_geographic_totals(
