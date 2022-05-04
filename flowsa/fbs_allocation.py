@@ -483,6 +483,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                    'clean_allocation_fba_w_sec'
     :return: df, fba format
     """
+    from flowsa.sectormapping import get_activitytosector_mapping
     # dictionary to load/standardize fba
     kwargs_dict = {}
     if 'download_FBA_if_missing' in kwargs:
@@ -500,15 +501,6 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                                         **kwargs_dict
                                         )
 
-    # check if allocation data exists at specified geoscale to use
-    log.info("Checking if allocation data exists at the %s level",
-             geoscale_from)
-    check_if_data_exists_at_geoscale(fba, geoscale_from)
-
-    # aggregate geographically to the scale of the flowbyactivty source,
-    # if necessary
-    fba = subset_df_by_geoscale(fba, geoscale_from, geoscale_to)
-
     # subset based on yaml settings
     if 'flowname_subset' in kwargs:
         if kwargs['flowname_subset'] != 'None':
@@ -518,14 +510,35 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
             fba = \
                 fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
 
+    # load relevant activities if activities are not naics-like
+    try:
+        sm = get_activitytosector_mapping(
+            fba_sourcename, fbsconfigpath=fbsconfigpath)
+        sm_list = sm['Activity'].drop_duplicates().values.tolist()
+        # subset fba data by activities listed in the sector crosswalk
+        fba = fba[(fba[fba_activity_fields[0]].isin(sm_list)) |
+                  (fba[fba_activity_fields[1]].isin(sm_list)
+                   )].reset_index(drop=True)
+    except FileNotFoundError:
+        pass
+
+    # check if allocation data exists at specified geoscale to use
+    log.info("Checking if allocation data exists at the %s level",
+             geoscale_from)
+    check_if_data_exists_at_geoscale(fba, geoscale_from)
+
+    # aggregate geographically to the scale of the flowbyactivity source,
+    # if necessary
+    fba2 = subset_df_by_geoscale(fba, geoscale_from, geoscale_to)
+
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning %s", fba_sourcename)
-        fba = dynamically_import_fxn(fba_sourcename, kwargs["clean_fba"])(
-            fba, attr=attr,
+        fba2 = dynamically_import_fxn(fba_sourcename, kwargs["clean_fba"])(
+            fba2, attr=attr,
             download_FBA_if_missing=kwargs['download_FBA_if_missing'])
     # reset index
-    fba = fba.reset_index(drop=True)
+    fba2 = fba2.reset_index(drop=True)
 
     # assign sector to allocation dataset
     activity_to_sector_mapping = attr.get('activity_to_sector_mapping')
@@ -537,7 +550,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         overwrite_sectorlevel = 'aggregated'
     else:
         overwrite_sectorlevel = None
-    fba_wsec = add_sectors_to_flowbyactivity(fba, sectorsourcename=method[
+    fba_wsec = add_sectors_to_flowbyactivity(fba2, sectorsourcename=method[
         'target_sector_source'],
         activity_to_sector_mapping=activity_to_sector_mapping,
         fbsconfigpath=fbsconfigpath, overwrite_sectorlevel=overwrite_sectorlevel)
