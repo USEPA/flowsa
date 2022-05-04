@@ -59,47 +59,58 @@ def check_if_activities_match_sectors(fba):
         return activities_missing_sectors
 
 
-def check_if_data_exists_at_geoscale(df, geoscale, activitynames='All'):
+def check_if_data_exists_at_geoscale(df_load, geoscale):
     """
     Check if an activity or a sector exists at the specified geoscale
-    :param df: flowbyactivity dataframe
-    :param activitynames: Either an activity name (ex. 'Domestic')
-        or a sector (ex. '1124')
+    :param df_load: df with activity columns
     :param geoscale: national, state, or county
-    :return: str, 'yes' or 'no'
     """
 
-    # if any activity name is specified, check if activity data
-    # exists at the specified geoscale
-    activity_list = []
-    if activitynames != 'All':
-        if isinstance(activitynames, str):
-            activity_list.append(activitynames)
-        else:
-            activity_list = activitynames
-        # check for specified activity name
-        df = df[(df[fba_activity_fields[0]].isin(activity_list)) |
-                (df[fba_activity_fields[1]].isin(activity_list)
-                 )].reset_index(drop=True)
-    else:
-        activity_list.append('activities')
-
     # filter by geoscale depends on Location System
-    fips = create_geoscale_list(df, geoscale)
+    fips_list = create_geoscale_list(df_load, geoscale)
+    fips = pd.DataFrame(fips_list, columns=['FIPS'])
 
-    df = df[df['Location'].isin(fips)]
+    activities = df_load[['ActivityProducedBy', 'ActivityConsumedBy']]\
+        .drop_duplicates().reset_index(drop=True)
+    # add tmp column and merge
+    fips['tmp'] = 1
+    activities['tmp'] = 1
+    activities = activities.merge(fips, on='tmp').drop(columns='tmp')
 
-    if len(df) == 0:
+    # merge activities with df and determine which FIPS are missing for each
+    # activity
+    df = df_load[df_load['Location'].isin(fips_list)]
+    # if activities are defined, subset df
+    # df = df[df['']]
+
+    dfm = df.merge(activities,
+                   left_on=['ActivityProducedBy', 'ActivityConsumedBy',
+                            'Location'],
+                   right_on=['ActivityProducedBy', 'ActivityConsumedBy',
+                             'FIPS'],
+                   how='outer')
+    # subset into df where values for state and where states do not have data
+    df1 = dfm[~dfm['FlowAmount'].isna()]
+    df2 = dfm[dfm['FlowAmount'].isna()]
+    df2 = df2[['ActivityProducedBy', 'ActivityConsumedBy',
+               'FIPS']].reset_index(drop=True)
+
+    # define source name and year
+    sn = df_load['SourceName'][0]
+    y = df_load['Year'][0]
+
+    if len(df1) == 0:
         vLog.info(
-            "No flows found for %s at the %s scale",
-            ', '.join(activity_list), geoscale)
-        exists = "No"
-    else:
-        vLog.info("Flows found for %s at the %s scale",
-                  ', '.join(activity_list), geoscale)
-        exists = "Yes"
-
-    return exists
+            "No flows found for activities in %s %s at the %s scale",
+            sn, y, geoscale)
+    if len(df2) > 0:
+        # if len(df2) > 1:
+        df2 = df2.groupby(
+            ['ActivityProducedBy', 'ActivityConsumedBy'], dropna=False).agg(
+            lambda col: ','.join(col)).reset_index()
+        vLogDetailed.info("There are %s, activity combos that do not have "
+                          "data in %s %s: \n {}".format(df2.to_string()),
+                          geoscale, sn, y)
 
 
 def check_if_data_exists_at_less_aggregated_geoscale(
