@@ -16,6 +16,7 @@ from flowsa.common import sector_level_key, \
     fba_default_grouping_fields, check_activities_sector_like
 from flowsa.location import US_FIPS, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
+from flowsa.schema import dq_fields
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -984,3 +985,75 @@ def compare_df_units(df1_load, df2_load):
     # if list is not empty, print warning that units are different
     if list_comp:
         log.info('Merging df with %s and df with %s units', df1, df2)
+
+
+def calculate_state_coefficients(fbs_load, year, impacts=False):
+    """
+    Generates sector coefficients (flow/$) for all sectors for all states.
+
+    :param fbs_load: flow by sector state method
+    :param year: year for state industry output dataset
+    :param impacts: bool, True to apply and aggregate on impacts
+        False to compare flow/contexts
+    """
+    import flowsa
+    from flowsa.sectormapping import get_activitytosector_mapping
+    bea = flowsa.getFlowByActivity('stateio_Industry_GO', year)
+    bea = (
+        bea.drop(columns=bea.columns.difference(
+            ['FlowAmount','ActivityProducedBy','Location']))
+        .rename(columns={'FlowAmount':'Output',
+                         'ActivityProducedBy': 'SectorProducedBy'}))
+
+    mapping = (
+        get_activitytosector_mapping('BEA_2012_Summary')
+        .rename(columns={'Sector': 'SectorProducedBy',
+                         'Activity': 'BEA'}))
+
+    ## NEED TO HANDLE ONE TO MANY SECTOR MAPPINGS
+    fbs = (fbs_load.merge(mapping[['SectorProducedBy','BEA']],
+                          how = 'left',
+                          on = 'SectorProducedBy')
+           .drop(columns=dq_fields +
+                     ['SectorProducedBy', 'SectorConsumedBy', 'SectorSourceName'],
+                     errors='ignore')
+           .rename(columns={'BEA':'SectorProducedBy'}))
+
+    inventory = not(impacts)
+    if impacts:
+        try:
+            import lciafmt
+            fbs_summary = (lciafmt.apply_lcia_method(fbs, 'TRACI2.1')
+                           .rename(columns={'FlowAmount': 'InvAmount',
+                                            'Impact': 'FlowAmount'}))
+            groupby_cols = ['Location', 'SectorProducedBy',
+                            'Indicator', 'Indicator unit']
+            sort_by_cols = ['Indicator', 'SectorProducedBy', 'Location']
+        except ImportError:
+            log.warning('lciafmt not installed')
+            inventory = True
+        except AttributeError:
+            log.warning('check lciafmt branch')
+            inventory = True
+
+    if inventory:
+        fbs_summary = fbs.copy()
+        groupby_cols = ['Location', 'SectorProducedBy',
+                        'Flowable', 'Context', 'Unit']
+        sort_by_cols = ['Context', 'Flowable',
+                        'SectorProducedBy', 'Location']
+
+    fbs_summary = (fbs_summary.groupby(groupby_cols)
+                   .agg({'FlowAmount': 'sum'}).
+                   reset_index())
+
+    # Add sector output
+    fbs_summary = fbs_summary.merge(bea, how = 'left',
+                                    on=['SectorProducedBy','Location'])
+
+    fbs_summary['Coefficient'] = (fbs_summary['FlowAmount'] /
+                                      fbs_summary['Output'])
+
+    fbs_summary = fbs_summary.sort_values(by=sort_by_cols)
+
+    return fbs_summary
