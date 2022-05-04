@@ -351,7 +351,8 @@ def main(**kwargs):
         else:
             if 'clean_fbs_df_fxn' in v:
                 flows = dynamically_import_fxn(v["clean_fbs_df_fxn_source"],
-                                               v["clean_fbs_df_fxn"])(flows)
+                                               v["clean_fbs_df_fxn"])(flows,
+                                                                      method)
             flows = update_geoscale(flows, method['target_geoscale'])
             # if the loaded flow dt is already in FBS format,
             # append directly to list of FBS
