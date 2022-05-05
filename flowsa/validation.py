@@ -998,26 +998,52 @@ def calculate_state_coefficients(fbs_load, year, impacts=False):
     """
     import flowsa
     from flowsa.sectormapping import get_activitytosector_mapping
+
+    # Get output by BEA sector
     bea = flowsa.getFlowByActivity('stateio_Industry_GO', year)
     bea = (
         bea.drop(columns=bea.columns.difference(
             ['FlowAmount','ActivityProducedBy','Location']))
         .rename(columns={'FlowAmount':'Output',
-                         'ActivityProducedBy': 'SectorProducedBy'}))
+                         'ActivityProducedBy': 'BEA'}))
 
+    # Prepare NAICS:BEA mapping file
     mapping = (
         get_activitytosector_mapping('BEA_2012_Summary')
         .rename(columns={'Sector': 'SectorProducedBy',
                          'Activity': 'BEA'}))
+    mapping = mapping.drop(
+        columns=mapping.columns.difference(['SectorProducedBy','BEA']))
 
-    ## NEED TO HANDLE ONE TO MANY SECTOR MAPPINGS
-    fbs = (fbs_load.merge(mapping[['SectorProducedBy','BEA']],
-                          how = 'left',
-                          on = 'SectorProducedBy')
-           .drop(columns=dq_fields +
-                     ['SectorProducedBy', 'SectorConsumedBy', 'SectorSourceName'],
-                     errors='ignore')
+    # Create allocation ratios where one to many NAICS:BEA
+    dup = mapping[mapping['SectorProducedBy'].duplicated(keep=False)]
+    dup = dup.merge(bea, how='left', on='BEA')
+    dup['Allocation'] = dup['Output']/dup.groupby(
+        ['SectorProducedBy','Location']).Output.transform('sum')
+
+    # Update and allocate to sectors
+    fbs = (fbs_load.merge(
+        mapping.drop_duplicates(subset='SectorProducedBy',
+                                keep=False),
+        how='left',
+        on='SectorProducedBy'))
+    fbs = fbs.merge(dup.drop(columns='Output'),
+                    how='left', on=['SectorProducedBy', 'Location'],
+                    suffixes=(None, '_y'))
+    fbs['Allocation'] = fbs['Allocation'].fillna(1)
+    fbs['BEA'] = fbs['BEA'].fillna(fbs['BEA_y'])
+    fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['Allocation']
+
+    fbs = (fbs.drop(columns=dq_fields +
+                    ['SectorProducedBy', 'SectorConsumedBy', 'SectorSourceName',
+                     'BEA_y', 'Allocation'],
+                    errors='ignore')
            .rename(columns={'BEA':'SectorProducedBy'}))
+
+    if (abs(1-(sum(fbs['FlowAmount']) /
+               sum(fbs_load['FlowAmount'])))) > 0.005:
+        log.warning('Data loss upon BEA mapping')
+
 
     inventory = not(impacts)
     if impacts:
@@ -1047,9 +1073,10 @@ def calculate_state_coefficients(fbs_load, year, impacts=False):
                    .agg({'FlowAmount': 'sum'}).
                    reset_index())
 
-    # Add sector output
-    fbs_summary = fbs_summary.merge(bea, how = 'left',
-                                    on=['SectorProducedBy','Location'])
+    # Add sector output and assign coefficients
+    fbs_summary = fbs_summary.merge(bea.rename(
+        columns={'BEA': 'SectorProducedBy'}), how = 'left',
+        on=['SectorProducedBy','Location'])
 
     fbs_summary['Coefficient'] = (fbs_summary['FlowAmount'] /
                                       fbs_summary['Output'])
@@ -1057,3 +1084,8 @@ def calculate_state_coefficients(fbs_load, year, impacts=False):
     fbs_summary = fbs_summary.sort_values(by=sort_by_cols)
 
     return fbs_summary
+
+if __name__ == "__main__":
+    import flowsa
+    calculate_state_coefficients(
+        flowsa.getFlowBySector('GRDREL_state_2017'), 2017)
