@@ -7,6 +7,7 @@ Functions to check data is loaded and transformed correctly
 
 import pandas as pd
 import numpy as np
+import flowsa
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
     subset_df_by_geoscale, sector_aggregation
 from flowsa.dataclean import replace_strings_with_NoneType, \
@@ -16,7 +17,6 @@ from flowsa.common import sector_level_key, \
     fba_default_grouping_fields, check_activities_sector_like
 from flowsa.location import US_FIPS, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
-from flowsa.schema import dq_fields
 
 
 def check_flow_by_fields(flowby_df, flowbyfields):
@@ -987,63 +987,22 @@ def compare_df_units(df1_load, df2_load):
         log.info('Merging df with %s and df with %s units', df1, df2)
 
 
-def calculate_state_coefficients(fbs_load, year, impacts=False):
+def calculate_industry_coefficients(fbs_load, year,region,
+                                    io_level, impacts=False):
     """
-    Generates sector coefficients (flow/$) for all sectors for all states.
+    Generates sector coefficients (flow/$) for all sectors for all locations.
 
-    :param fbs_load: flow by sector state method
-    :param year: year for state industry output dataset
+    :param fbs_load: flow by sector method
+    :param year: year for industry output dataset
+    :param region: str, 'state' or 'national'
+    :param io_level: str, 'summary' or 'detail'
     :param impacts: bool, True to apply and aggregate on impacts
         False to compare flow/contexts
     """
-    import flowsa
-    from flowsa.sectormapping import get_activitytosector_mapping
+    from flowsa.sectormapping import map_to_BEA_sectors,\
+        get_BEA_industry_output
 
-    # Get output by BEA sector
-    bea = flowsa.getFlowByActivity('stateio_Industry_GO', year)
-    bea = (
-        bea.drop(columns=bea.columns.difference(
-            ['FlowAmount','ActivityProducedBy','Location']))
-        .rename(columns={'FlowAmount':'Output',
-                         'ActivityProducedBy': 'BEA'}))
-
-    # Prepare NAICS:BEA mapping file
-    mapping = (
-        get_activitytosector_mapping('BEA_2012_Summary')
-        .rename(columns={'Sector': 'SectorProducedBy',
-                         'Activity': 'BEA'}))
-    mapping = mapping.drop(
-        columns=mapping.columns.difference(['SectorProducedBy','BEA']))
-
-    # Create allocation ratios where one to many NAICS:BEA
-    dup = mapping[mapping['SectorProducedBy'].duplicated(keep=False)]
-    dup = dup.merge(bea, how='left', on='BEA')
-    dup['Allocation'] = dup['Output']/dup.groupby(
-        ['SectorProducedBy','Location']).Output.transform('sum')
-
-    # Update and allocate to sectors
-    fbs = (fbs_load.merge(
-        mapping.drop_duplicates(subset='SectorProducedBy',
-                                keep=False),
-        how='left',
-        on='SectorProducedBy'))
-    fbs = fbs.merge(dup.drop(columns='Output'),
-                    how='left', on=['SectorProducedBy', 'Location'],
-                    suffixes=(None, '_y'))
-    fbs['Allocation'] = fbs['Allocation'].fillna(1)
-    fbs['BEA'] = fbs['BEA'].fillna(fbs['BEA_y'])
-    fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['Allocation']
-
-    fbs = (fbs.drop(columns=dq_fields +
-                    ['SectorProducedBy', 'SectorConsumedBy', 'SectorSourceName',
-                     'BEA_y', 'Allocation'],
-                    errors='ignore')
-           .rename(columns={'BEA':'SectorProducedBy'}))
-
-    if (abs(1-(sum(fbs['FlowAmount']) /
-               sum(fbs_load['FlowAmount'])))) > 0.005:
-        log.warning('Data loss upon BEA mapping')
-
+    fbs = map_to_BEA_sectors(fbs_load, region, io_level, year)
 
     inventory = not(impacts)
     if impacts:
@@ -1069,23 +1028,43 @@ def calculate_state_coefficients(fbs_load, year, impacts=False):
         sort_by_cols = ['Context', 'Flowable',
                         'SectorProducedBy', 'Location']
 
+    # Update location if needed prior to aggregation
+    if region == 'national':
+        fbs_summary["Location"] = US_FIPS
+
     fbs_summary = (fbs_summary.groupby(groupby_cols)
                    .agg({'FlowAmount': 'sum'}).
                    reset_index())
+
+    bea = get_BEA_industry_output(region, io_level, year)
 
     # Add sector output and assign coefficients
     fbs_summary = fbs_summary.merge(bea.rename(
         columns={'BEA': 'SectorProducedBy'}), how = 'left',
         on=['SectorProducedBy','Location'])
-
     fbs_summary['Coefficient'] = (fbs_summary['FlowAmount'] /
                                       fbs_summary['Output'])
-
     fbs_summary = fbs_summary.sort_values(by=sort_by_cols)
 
     return fbs_summary
 
+
 if __name__ == "__main__":
-    import flowsa
-    calculate_state_coefficients(
-        flowsa.getFlowBySector('GRDREL_state_2017'), 2017)
+    df1 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
+            "state", "summary", True)
+    df2 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('GRDREL_national_2017'), 2017,
+            "national", "summary", True)
+    df3 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('GRDREL_national_2017'), 2017,
+            "national", "detail", True)
+    df4 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
+            "national", "detail", True)
+    try:
+        df5 = calculate_industry_coefficients(
+                flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
+                "state", "detail", True)
+    except TypeError:
+        df5 = None
