@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import flowsa
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
-    subset_df_by_geoscale, sector_aggregation
+    subset_df_by_geoscale, sector_aggregation, collapse_fbs_sectors
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import sector_level_key, \
@@ -1002,7 +1002,9 @@ def calculate_industry_coefficients(fbs_load, year,region,
     from flowsa.sectormapping import map_to_BEA_sectors,\
         get_BEA_industry_output
 
-    fbs = map_to_BEA_sectors(fbs_load, region, io_level, year)
+    fbs = collapse_fbs_sectors(fbs_load)
+
+    fbs = map_to_BEA_sectors(fbs, region, io_level, year)
 
     inventory = not(impacts)
     if impacts:
@@ -1011,9 +1013,9 @@ def calculate_industry_coefficients(fbs_load, year,region,
             fbs_summary = (lciafmt.apply_lcia_method(fbs, 'TRACI2.1')
                            .rename(columns={'FlowAmount': 'InvAmount',
                                             'Impact': 'FlowAmount'}))
-            groupby_cols = ['Location', 'SectorProducedBy',
+            groupby_cols = ['Location', 'Sector',
                             'Indicator', 'Indicator unit']
-            sort_by_cols = ['Indicator', 'SectorProducedBy', 'Location']
+            sort_by_cols = ['Indicator', 'Sector', 'Location']
         except ImportError:
             log.warning('lciafmt not installed')
             inventory = True
@@ -1023,10 +1025,10 @@ def calculate_industry_coefficients(fbs_load, year,region,
 
     if inventory:
         fbs_summary = fbs.copy()
-        groupby_cols = ['Location', 'SectorProducedBy',
+        groupby_cols = ['Location', 'Sector',
                         'Flowable', 'Context', 'Unit']
         sort_by_cols = ['Context', 'Flowable',
-                        'SectorProducedBy', 'Location']
+                        'Sector', 'Location']
 
     # Update location if needed prior to aggregation
     if region == 'national':
@@ -1040,8 +1042,8 @@ def calculate_industry_coefficients(fbs_load, year,region,
 
     # Add sector output and assign coefficients
     fbs_summary = fbs_summary.merge(bea.rename(
-        columns={'BEA': 'SectorProducedBy'}), how = 'left',
-        on=['SectorProducedBy','Location'])
+        columns={'BEA': 'Sector'}), how = 'left',
+        on=['Sector','Location'])
     fbs_summary['Coefficient'] = (fbs_summary['FlowAmount'] /
                                       fbs_summary['Output'])
     fbs_summary = fbs_summary.sort_values(by=sort_by_cols)
@@ -1051,8 +1053,8 @@ def calculate_industry_coefficients(fbs_load, year,region,
 
 if __name__ == "__main__":
     df1 = calculate_industry_coefficients(
-            flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
-            "state", "summary", True)
+            flowsa.getFlowBySector('Water_national_2015_m1'), 2015,
+            "national", "summary", False)
     df2 = calculate_industry_coefficients(
             flowsa.getFlowBySector('GRDREL_national_2017'), 2017,
             "national", "summary", True)

@@ -446,7 +446,7 @@ def map_to_BEA_sectors(fbs_load, region, io_level, year):
     """
     Map FBS sectors from NAICS to BEA, allocating by gross industry output.
 
-    :param fbs_load: df completed FlowBySector
+    :param fbs_load: df completed FlowBySector collapsed to single 'Sector'
     :param region: str, 'state' or 'national'
     :param io_level: str, 'summary' or 'detail'
     :param year: year for industry output
@@ -463,35 +463,32 @@ def map_to_BEA_sectors(fbs_load, region, io_level, year):
     # Prepare NAICS:BEA mapping file
     mapping = (
         get_activitytosector_mapping(mapping_file)
-        .rename(columns={'Sector': 'SectorProducedBy',
-                         'Activity': 'BEA'}))
+        .rename(columns={'Activity': 'BEA'}))
     mapping = mapping.drop(
-        columns=mapping.columns.difference(['SectorProducedBy','BEA']))
+        columns=mapping.columns.difference(['Sector','BEA']))
 
     # Create allocation ratios where one to many NAICS:BEA
-    dup = mapping[mapping['SectorProducedBy'].duplicated(keep=False)]
+    dup = mapping[mapping['Sector'].duplicated(keep=False)]
     dup = dup.merge(bea, how='left', on='BEA')
     dup['Allocation'] = dup['Output']/dup.groupby(
-        ['SectorProducedBy','Location']).Output.transform('sum')
+        ['Sector','Location']).Output.transform('sum')
 
     # Update and allocate to sectors
     fbs = (fbs_load.merge(
-        mapping.drop_duplicates(subset='SectorProducedBy',
-                                keep=False),
+        mapping.drop_duplicates(subset='Sector', keep=False),
         how='left',
-        on='SectorProducedBy'))
+        on='Sector'))
     fbs = fbs.merge(dup.drop(columns='Output'),
-                    how='left', on=['SectorProducedBy', 'Location'],
+                    how='left', on=['Sector', 'Location'],
                     suffixes=(None, '_y'))
     fbs['Allocation'] = fbs['Allocation'].fillna(1)
     fbs['BEA'] = fbs['BEA'].fillna(fbs['BEA_y'])
     fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['Allocation']
 
     fbs = (fbs.drop(columns=dq_fields +
-                    ['SectorProducedBy', 'SectorConsumedBy', 'SectorSourceName',
-                     'BEA_y', 'Allocation'],
-                    errors='ignore')
-           .rename(columns={'BEA':'SectorProducedBy'}))
+                    ['Sector', 'SectorSourceName',
+                     'BEA_y', 'Allocation'], errors='ignore')
+           .rename(columns={'BEA':'Sector'}))
 
     if (abs(1-(sum(fbs['FlowAmount']) /
                sum(fbs_load['FlowAmount'])))) > 0.005:
