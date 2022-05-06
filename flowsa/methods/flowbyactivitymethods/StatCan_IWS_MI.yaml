@@ -7,8 +7,8 @@ api_key_required: false
 format: csv  # comma delineated data
 url:
   base_url: https://www150.statcan.gc.ca/n1/tbl/csv/38100037-eng.zip
-call_response_fxn: sc_call
-parse_response_fxn: sc_parse
+call_response_fxn: !script_function:StatCan_IWS_MI sc_call
+parse_response_fxn: !script_function:StatCan_IWS_MI sc_parse
 years:
 - 2005
 - 2007

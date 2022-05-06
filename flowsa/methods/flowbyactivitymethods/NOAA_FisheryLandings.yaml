@@ -7,7 +7,7 @@ api_name: None
 api_key_required: false
 format: csv  # comma delineated data
 url: None
-parse_response_fxn: noaa_parse
+parse_response_fxn: !script_function:NOAA_FisheryLandings noaa_parse
 years:
 - 2012
 - 2013
