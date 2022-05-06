@@ -148,7 +148,7 @@ def clean_bls_qcew_fba_for_employment_sat_table(fba_df, **kwargs):
     """
     # rename flowname value
     for c in ['FlowName', 'Flowable']:
-        fba_df[c] = fba_df[c].replace({'Number of employees': 'Jobs'})
+        fba_df[c] = fba_df[c].str.replace('Number of employees', 'Jobs')
 
     return fba_df
 
