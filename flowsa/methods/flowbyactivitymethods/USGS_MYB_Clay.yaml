@@ -7,9 +7,9 @@ years_available: 2015-2016
 format: xls
 url:
   base_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2016-clays.xls
-url_replace_fxn: usgs_clay_url_helper
-call_response_fxn: usgs_clay_call
-parse_response_fxn: usgs_clay_parse
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_clay_call
+parse_response_fxn: !script_function:USGS_MYB usgs_clay_parse
 years:
 - 2015
 - 2016
