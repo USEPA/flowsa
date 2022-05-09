@@ -1,6 +1,53 @@
 target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
+
+_allocation_types:
+  _mecs_allocation: &mecs_allocation
+    # names: # override this
+    allocation_source: "EIA_MECS_Energy"
+    allocation_method: proportional
+    allocation_source_class: "Energy"
+    allocation_source_year: 2014
+    # allocation_flow:  # override this
+    #   - "Coal"
+    allocation_compartment: None
+    allocation_from_scale: national
+    clean_allocation_fba: mecs_energy_fba_cleanup
+    clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
+    helper_source: "BLS_QCEW"
+    helper_method: proportional-flagged
+    helper_source_class: "Employment"
+    helper_source_year: 2014
+    helper_flow: None
+    helper_from_scale: national
+    clean_helper_fba: clean_bls_qcew_fba
+    clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+
+  _use_allocation: &use_allocation
+    # names: # override this
+    allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+    activity_to_sector_mapping: "BEA_2012_Detail"
+    allocation_method: proportional
+    allocation_source_class: "Money"
+    allocation_source_year: 2012
+    allocation_flow:
+      - "USD2012"
+    allocation_compartment: None
+    allocation_from_scale: national
+    clean_allocation_fba: subset_BEA_table
+    # clean_parameter: {"324110": 'ActivityProducedBy'}  # override this
+    helper_source: "BLS_QCEW"
+    helper_method: proportional
+    helper_source_class: "Employment"
+    helper_source_year: 2012
+    helper_flow:
+      - "Number of employees"
+    helper_from_scale: national
+    clean_helper_fba: clean_bls_qcew_fba
+    clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+
+
 source_names:
   "EPA_NEI_Nonpoint":
     data_format: 'FBA'
@@ -10,13 +57,14 @@ source_names:
     activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
-    activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
     activity_sets:
-      activity_set_1: #Direct
+      direct_allocation:
+        names: !from_index:NEI_Nonpoint_2017_asets.csv direct_allocation
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2: #Crops
+      cropland:
+        names: !from_index:NEI_Nonpoint_2017_asets.csv cropland
         allocation_source: "USDA_CoA_Cropland"
         allocation_method: proportional
         allocation_source_class: "Land"
@@ -26,31 +74,43 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
-      activity_set_3: #Fuel Combustion - Industry #only allocating to 3digits
-        allocation_source: "EIA_MECS_Energy"
-        allocation_method: proportional
-        allocation_source_class: "Energy"
-        allocation_source_year: 2014
+      industry_combustion_coal: #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coal
         allocation_flow:
           - "Coal"
+      industry_combustion_coke: #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coke
+        allocation_flow:
           - "Coke and Breeze"
+      industry_combustion_distillate: #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_distillate
+        allocation_flow:
           - "Distillate Fuel Oil"
+      industry_combustion_hgl: #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_hgl
+        allocation_flow:  # Are we sure the next line is supposed to say "natural gasoline"?
           - "Hydrocarbon Gas Liquids, excluding natural gasoline"
+      industry_combustion_nat_gas: #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_nat_gas
+        allocation_flow:
           - "Natural Gas"
+      industry_combustion_other: #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_other
+        allocation_flow:
           - "Other"
+      industry_combustion_residual: #only allocating to 3digits
+        <<: *mecs_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_residual
+        allocation_flow:
           - "Residual Fuel Oil"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: mecs_energy_fba_cleanup
-        clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
-        helper_source: "BLS_QCEW"
-        helper_method: proportional-flagged
-        helper_source_class: "Employment"
-        helper_source_year: 2014
-        helper_flow: None
-        helper_from_scale: national
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-      activity_set_4: #Livestock losing NAICS 11211
+      livestock: #Livestock losing NAICS 11211
+        names: !from_index:NEI_Nonpoint_2017_asets.csv livestock
         allocation_method: proportional
         allocation_source: "USDA_CoA_Livestock"
         allocation_source_class: "Other"
@@ -62,33 +122,16 @@ source_names:
         allocation_compartment:
           - "NOT SPECIFIED"
         allocation_from_scale: state
-      activity_set_5: &use_allocation # mobile sources and fuel storage
-        allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-        activity_to_sector_mapping: "BEA_2012_Detail"
-        allocation_method: proportional
-        allocation_source_class: "Money"
-        allocation_source_year: 2012
-        allocation_flow:
-          - "USD2012"
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_table
-        clean_parameter: {"324110": 'ActivityProducedBy'}
-        helper_source: "BLS_QCEW"
-        helper_method: proportional
-        helper_source_class: "Employment"
-        helper_source_year: 2012
-        helper_flow:
-          - "Number of employees, Federal Government"
-          - "Number of employees, State Government"
-          - "Number of employees, Local Government"
-          - "Number of employees, Private"
-        helper_from_scale: national
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-      activity_set_6: # fertilizers
+      mobile_and_fuel_storage:
         <<: *use_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv mobile_and_fuel_storage
+        clean_parameter: {"324110": 'ActivityProducedBy'}
+      fertilizers:
+        <<: *use_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv fertilizers
         clean_parameter: {"325310": 'ActivityProducedBy'}
-      activity_set_7: # Gross Output
+      output_allocation: # Gross Output
+        names: !from_index:NEI_Nonpoint_2017_asets.csv output_allocation
         allocation_source: "BEA_GDP_GrossOutput"
         activity_to_sector_mapping: "BEA_2012_Detail"
         allocation_method: proportional
@@ -109,8 +152,9 @@ source_names:
           - "Number of employees, Private"
         helper_from_scale: national
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-      activity_set_8: # pesticides
+      pesticides: # pesticides
         <<: *use_allocation
+        names: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
         clean_parameter: {"325320": 'ActivityProducedBy'}
   "EPA_NEI_Nonroad":
     data_format: 'FBA'
@@ -120,14 +164,15 @@ source_names:
     activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba
     fedefl_mapping: 'NEI'
-    activity_set_file: 'NEI_Nonroad_2017_asets.csv'
     activity_sets:
-      activity_set_1: #Direct
+      direct_allocation:
+        names: !from_index:NEI_Nonroad_2017_asets.csv direct_allocation
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2: # off-highway vehicles and equipment
+      offroad_vehicles_equipment:
         <<: *use_allocation
+        names: !from_index:NEI_Nonroad_2017_asets.csv offroad_vehicles_equipment
         clean_parameter: {"324110": 'ActivityProducedBy'}
   "EPA_NEI_Onroad":
     data_format: 'FBA'
@@ -137,14 +182,15 @@ source_names:
     activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: clean_NEI_fba
     fedefl_mapping: 'NEI'
-    activity_set_file: 'NEI_Onroad_2017_asets.csv'
     activity_sets:
-      activity_set_1: #Direct
+      direct_allocation:
+        names: !from_index:NEI_Onroad_2017_asets.csv direct_allocation
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2: # highway vehicles and gas stations
+      onroad_vehicles_gas_stations:
         <<: *use_allocation
+        names: !from_index:NEI_Onroad_2017_asets.csv onroad_vehicles_gas_stations
         clean_parameter: {"324110": 'ActivityProducedBy'}
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'
@@ -158,4 +204,3 @@ source_names:
      - 'drop_GHGs'
     reassign_process_to_sectors:
      - 'airplane_emissions'
-
