@@ -7,8 +7,8 @@ source_names:
     class: Water
     geoscale_to_use: state
     year: 2015
-    clean_fba_df_fxn: usgs_fba_data_cleanup
-    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
+    clean_fba_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names:
@@ -36,8 +36,8 @@ source_names:
           - "Number of employees"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        clean_allocation_fba: !script_function:USGS_NWIS_WU clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: !script_function:USGS_NWIS_WU bls_clean_allocation_fba_w_sec
       activity_set_3:
         names:
         - "Irrigation Crop"
@@ -53,8 +53,8 @@ source_names:
           - 'AREA GROWN, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
+        clean_allocation_fba: !script_function:USGS_NWIS_WU coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:USGS_NWIS_WU disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"

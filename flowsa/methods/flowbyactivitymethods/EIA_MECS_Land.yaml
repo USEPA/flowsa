@@ -7,13 +7,12 @@ api_key_required: false
 format: xlsx
 url:
   base_url: https://www.eia.gov/consumption/manufacturing/data/__year__/xls/__table__.xlsx
-url_replace_fxn: eia_mecs_URL_helper
-call_response_fxn: eia_mecs_land_call
-parse_response_fxn: eia_mecs_land_parse
+url_replace_fxn: !script_function:EIA_MECS eia_mecs_URL_helper
+call_response_fxn: !script_function:EIA_MECS eia_mecs_land_call
+parse_response_fxn: !script_function:EIA_MECS eia_mecs_land_parse
 years:
 - 2010
 - 2014
 - 2018
 tables:
 - table9_1
-

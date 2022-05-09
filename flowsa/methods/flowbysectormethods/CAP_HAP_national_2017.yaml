@@ -8,7 +8,7 @@ source_names:
     geoscale_to_use: state
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba_no_pesticides
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
     activity_sets:
@@ -25,8 +25,8 @@ source_names:
           - "AREA HARVESTED"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba: !script_function:EPA_NEI coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:EPA_NEI disaggregate_coa_cropland_to_6_digit_naics
       activity_set_3: #Fuel Combustion - Industry #only allocating to 3digits
         allocation_source: "EIA_MECS_Energy"
         allocation_method: proportional
@@ -42,8 +42,8 @@ source_names:
           - "Residual Fuel Oil"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: mecs_energy_fba_cleanup
-        clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
+        clean_allocation_fba: !script_function:EPA_NEI mecs_energy_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:EPA_NEI eia_mecs_energy_clean_allocation_fba_w_sec
         helper_source: "BLS_QCEW"
         helper_method: proportional-flagged
         helper_source_class: "Employment"
@@ -74,7 +74,7 @@ source_names:
           - "USD2012"
         allocation_compartment: None
         allocation_from_scale: national
-        clean_allocation_fba: subset_BEA_table
+        clean_allocation_fba: !script_function:EPA_NEI subset_BEA_table
         clean_parameter: {"324110": 'ActivityProducedBy'}
         helper_source: "BLS_QCEW"
         helper_method: proportional
@@ -116,7 +116,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
     activity_sets:
@@ -133,7 +133,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Onroad_2017_asets.csv'
     activity_sets:
@@ -156,4 +156,3 @@ source_names:
      - 'drop_GHGs'
     reassign_process_to_sectors:
      - 'airplane_emissions'
-
