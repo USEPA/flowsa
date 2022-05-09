@@ -1,5 +1,6 @@
 """
 Test FBA config and urls during github action
+Test FBS method files for correct loading
 """
 import pytest
 from flowsa import seeAvailableFlowByModels
@@ -37,5 +38,12 @@ def test_FBA_urls():
     if error_list:
         pytest.fail(f"Error retrieving: {', '.join([x for x in [*error_list]])}")
 
+
+def test_FBS_methods():
+    for m in seeAvailableFlowByModels("FBS", print_method=False):
+        print(f"Testing method: {m}")
+        load_yaml_dict(m, flowbytype='FBS')
+
 if __name__ == "__main__":
     test_FBA_urls()
+    # test_FBS_methods()
