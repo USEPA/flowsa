@@ -521,7 +521,11 @@ def compare_fba_geo_subset_and_fbs_output_totals(
             df_merge['FBA_amount'] - df_merge['FBS_amount']
         df_merge['Percent_difference'] = \
             (df_merge['FlowAmount_difference']/df_merge['FBA_amount']) * 100
-
+        # cases where flow amount diff is 0 but because fba amount is 0,
+        # percent diff is null. Fill those cases with 0s
+        df_merge['Percent_difference'] = np.where(
+            (df_merge['FlowAmount_difference'] == 0) &
+            (df_merge['FBA_amount'] == 0), 0, df_merge['Percent_difference'])
         # reorder
         df_merge = df_merge[['Class', 'Context', 'Location', 'LocationSystem',
                              'FBA_amount', 'FBA_unit', 'FBS_amount',
