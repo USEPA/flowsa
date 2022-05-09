@@ -11,8 +11,8 @@ source_names:
     class: Water
     geoscale_to_use: state
     year: 2010
-    clean_fba_df_fxn: usgs_fba_data_cleanup
-    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
+    clean_fba_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names:

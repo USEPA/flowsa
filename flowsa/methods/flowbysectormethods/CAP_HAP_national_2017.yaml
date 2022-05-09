@@ -8,7 +8,7 @@ source_names:
     geoscale_to_use: state
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba_no_pesticides
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonpoint_2017_asets.csv'
     activity_sets:
@@ -116,7 +116,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Nonroad_2017_asets.csv'
     activity_sets:
@@ -133,7 +133,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_set_file: 'NEI_Onroad_2017_asets.csv'
     activity_sets:
@@ -156,4 +156,3 @@ source_names:
      - 'drop_GHGs'
     reassign_process_to_sectors:
      - 'airplane_emissions'
-

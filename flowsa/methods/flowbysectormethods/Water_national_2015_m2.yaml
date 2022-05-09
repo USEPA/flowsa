@@ -11,8 +11,8 @@ source_names:
     class: Water
     geoscale_to_use: state
     year: 2015
-    clean_fba_df_fxn: usgs_fba_data_cleanup
-    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
+    clean_fba_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names:
@@ -71,7 +71,7 @@ source_names:
         helper_from_scale: national
         clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-        scale_helper_results: scale_blackhurst_results_to_usgs_values
+        scale_helper_results: !script_function:Blackhurst_IO scale_blackhurst_results_to_usgs_values
       activity_set_4:
         names:
           - "Irrigation Crop"

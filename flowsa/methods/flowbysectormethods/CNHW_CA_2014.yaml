@@ -7,7 +7,7 @@ source_names:
     class: Other
     geoscale_to_use: state
     year: 2014
-    clean_fba_df_fxn: keep_generated_quantity
+    clean_fba_df_fxn: !script_function:CalRecycle_WasteCharacterization keep_generated_quantity
     mfl_mapping: 'CalRecycle'
     activity_sets:
       activity_set_1:
@@ -44,4 +44,3 @@ source_names:
           - "Multifamily"
         allocation_method: direct
         allocation_from_scale: state
-
