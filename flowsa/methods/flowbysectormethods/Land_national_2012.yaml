@@ -25,8 +25,8 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        clean_allocation_fba: !script_function:EIA_CBECS_Land clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: !script_function:EIA_CBECS_Land bls_clean_allocation_fba_w_sec
   "EIA_MECS_Land": # manufacturing land use
     data_format: 'FBA'
     class: Land
@@ -46,8 +46,8 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        clean_allocation_fba: !script_function:EIA_MECS clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: !script_function:EIA_MECS bls_clean_allocation_fba_w_sec
   "BLM_PLS": # used for mining data
     data_format: 'FBA'
     class: Land
@@ -73,8 +73,8 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        clean_allocation_fba: !script_function:BLM_PLS clean_bls_qcew_fba
+        clean_allocation_fba_w_sec: !script_function:BLM_PLS bls_clean_allocation_fba_w_sec
   "USDA_ERS_MLU":
     data_format: 'FBA'
     class: Land
@@ -96,8 +96,8 @@ source_names:
           - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba: !script_function:USDA_ERS_MLU coa_nonirrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:USDA_ERS_MLU disaggregate_coa_cropland_to_6_digit_naics
       activity_set_2:
         names:
           - 'Cropland idled'
@@ -113,8 +113,8 @@ source_names:
           - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba: !script_function:USDA_ERS_MLU coa_nonirrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:USDA_ERS_MLU disaggregate_coa_cropland_to_6_digit_naics
       activity_set_3:
         names:
           - 'Cropland used for pasture'
@@ -128,7 +128,7 @@ source_names:
           - "FARM OPERATIONS"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba_w_sec: coa_cropland_naics_fba_wsec_cleanup
+        clean_allocation_fba_w_sec: !script_function:USDA_ERS_MLU coa_cropland_naics_fba_wsec_cleanup
       activity_set_4:
         names:
           - 'Forest-use land not grazed'
