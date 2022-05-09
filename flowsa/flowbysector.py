@@ -228,9 +228,6 @@ def main(**kwargs):
                 flows_subset_geo = subset_df_by_geoscale(
                     flows_subset2, v['geoscale_to_use'],
                     attr['allocation_from_scale'])
-                # check for activities at locations
-                check_if_data_exists_at_geoscale(flows_subset_geo,
-                                                 attr['allocation_from_scale'])
                 # if loading data subnational geoscale, check for data loss
                 if attr['allocation_from_scale'] != 'national':
                     compare_geographic_totals(
@@ -251,6 +248,10 @@ def main(**kwargs):
                         k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
                                                         attr=attr,
                                                         method=method)
+                # check for activities at geoscale - return any missing
+                # locations for an activity
+                check_if_data_exists_at_geoscale(flows_subset_geo,
+                                                 attr['allocation_from_scale'])
 
                 # rename SourceName to MetaSources and drop columns
                 flows_mapped_wsec = flows_subset_wsec.\
