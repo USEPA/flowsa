@@ -17,8 +17,7 @@ from flowsa.common import log, load_api_key, sourceconfigpath, \
     load_yaml_dict, rename_log_file, get_flowsa_base_name
 from flowsa.settings import paths
 from flowsa.metadata import set_fb_meta, write_metadata
-from flowsa.flowbyfunctions import fba_fill_na_dict, \
-    dynamically_import_fxn
+from flowsa.flowbyfunctions import fba_fill_na_dict
 from flowsa.schema import flow_by_activity_fields
 from flowsa.dataclean import clean_df
 
@@ -77,11 +76,8 @@ def assemble_urls_for_query(*, source, year, config):
 
     if "url_replace_fxn" in config:
         # dynamically import and call on function
-        urls = dynamically_import_fxn(
-            source, config["url_replace_fxn"])(build_url=build_url,
-                                               source=source,
-                                               year=year,
-                                               config=config)
+        urls = config["url_replace_fxn"](build_url=build_url, source=source,
+                                         year=year, config=config)
         return urls
     else:
         return [build_url]
@@ -114,12 +110,9 @@ def call_urls(*, url_list, source, year, config):
                                     confirm_gdrive=confirm_gdrive)
             if "call_response_fxn" in config:
                 # dynamically import and call on function
-                df = dynamically_import_fxn(
-                    source, config["call_response_fxn"])(resp=resp,
-                                                         source=source,
-                                                         year=year,
-                                                         config=config,
-                                                         url=url)
+                df = config["call_response_fxn"](resp=resp, source=source,
+                                                 year=year, config=config,
+                                                 url=url)
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):
@@ -140,11 +133,8 @@ def parse_data(*, df_list, source, year, config):
     """
     if "parse_response_fxn" in config:
         # dynamically import and call on function
-        df = dynamically_import_fxn(
-            source, config["parse_response_fxn"])(df_list=df_list,
-                                                  source=source,
-                                                  year=year,
-                                                  config=config)
+        df = config["parse_response_fxn"](df_list=df_list, source=source,
+                                          year=year, config=config)
     return df
 
 

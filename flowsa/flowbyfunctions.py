@@ -736,25 +736,6 @@ def collapse_activity_fields(df):
     return df
 
 
-def dynamically_import_fxn(data_source_scripts_file, function_name):
-    """
-    Dynamically import a function and call on that function
-    :param data_source_scripts_file: str, file name where function is found
-    :param function_name: str, name of function to import and call on
-    :return: a function
-    """
-    # if a file does not exist modify file name, dropping
-    # extension after last underscore
-    data_source_scripts_file = get_flowsa_base_name(datasourcescriptspath,
-                                                    data_source_scripts_file,
-                                                    'py')
-
-    df = getattr(__import__(
-        f"flowsa.data_source_scripts.{data_source_scripts_file}",
-        fromlist=function_name), function_name)
-    return df
-
-
 def load_fba_w_standardized_units(datasource, year, **kwargs):
     """
     Standardize how a FBA is loaded for allocation purposes when
