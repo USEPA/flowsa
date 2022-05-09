@@ -94,7 +94,7 @@ class FlowsaLoader(yaml.SafeLoader):
 
         activity_set = loader.construct_scalar(node)
 
-        with open(file) as f:
+        with open(file, 'r', newline='') as f:
             index = csv.DictReader(f)
             return [
                 row['name'] for row in index
