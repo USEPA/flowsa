@@ -230,7 +230,7 @@ def equally_allocate_parent_to_child_naics(df_load, method):
     :return: df, with all child NAICS at target sector level
     """
     # determine which sector level to use, use the least aggregated level
-    sector_level = method.get('target_sector_level')
+    sector_level = 'NAICS_6'
     # if secondary sector levels are identified, set the sector level to the
     # least aggregated
     sector_level_list = [sector_level]
