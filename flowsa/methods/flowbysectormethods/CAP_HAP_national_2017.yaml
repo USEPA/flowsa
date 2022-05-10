@@ -21,7 +21,6 @@ _allocation_types:
     helper_source_year: 2014
     helper_flow: None
     helper_from_scale: national
-    clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
     clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _use_allocation: &use_allocation
@@ -44,7 +43,6 @@ _allocation_types:
     helper_flow:
       - "Number of employees"
     helper_from_scale: national
-    clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
     clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
 
