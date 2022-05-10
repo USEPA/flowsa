@@ -13,16 +13,16 @@ _allocation_types:
     #   - "Coal"
     allocation_compartment: None
     allocation_from_scale: national
-    clean_allocation_fba: mecs_energy_fba_cleanup
-    clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
+    clean_allocation_fba: !script_function:EIA_MECS mecs_energy_fba_cleanup
+    clean_allocation_fba_w_sec: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
     helper_source: "BLS_QCEW"
     helper_method: proportional-flagged
     helper_source_class: "Employment"
     helper_source_year: 2014
     helper_flow: None
     helper_from_scale: national
-    clean_helper_fba: clean_bls_qcew_fba
-    clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+    clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
+    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _use_allocation: &use_allocation
     # names: # override this
@@ -35,7 +35,7 @@ _allocation_types:
       - "USD2012"
     allocation_compartment: None
     allocation_from_scale: national
-    clean_allocation_fba: subset_BEA_table
+    clean_allocation_fba: !script_function:BEA subset_BEA_table
     # clean_parameter: {"324110": 'ActivityProducedBy'}  # override this
     helper_source: "BLS_QCEW"
     helper_method: proportional
@@ -44,8 +44,8 @@ _allocation_types:
     helper_flow:
       - "Number of employees"
     helper_from_scale: national
-    clean_helper_fba: clean_bls_qcew_fba
-    clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+    clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
+    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
 
 source_names:
@@ -55,7 +55,7 @@ source_names:
     geoscale_to_use: state
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba_no_pesticides
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
     activity_sets:
       direct_allocation:
@@ -73,8 +73,8 @@ source_names:
           - "AREA HARVESTED"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba: !script_function:USDA_CoA_Cropland coa_irrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
       industry_combustion_coal: #only allocating to 3digits
         <<: *mecs_allocation
         names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coal
@@ -149,8 +149,8 @@ source_names:
         helper_flow:
           - "Number of employees"
         helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
+        clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
       pesticides: # pesticides
         <<: *use_allocation
         names: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
@@ -161,7 +161,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_sets:
       direct_allocation:
@@ -179,7 +179,7 @@ source_names:
     geoscale_to_use: national
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_sets:
       direct_allocation:

@@ -7,7 +7,7 @@ api_key_required: false
 format: csv, excel
 url:
   base_url: https://pasteur.epa.gov/uploads/10.23719/1503167/CDD_2014_US_Disposition_Estimates_Using_CDDPath_v2.xlsx
-call_response_fxn: combine_cdd_path
-parse_response_fxn: epa_cddpath_parse
+call_response_fxn: !script_function:EPA_CDDPath combine_cdd_path
+parse_response_fxn: !script_function:EPA_CDDPath epa_cddpath_parse
 years:
 - 2014

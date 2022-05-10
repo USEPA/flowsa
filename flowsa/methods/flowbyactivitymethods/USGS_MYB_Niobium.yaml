@@ -7,9 +7,9 @@ years_available: 2014-2018
 format: xls
 url:
   base_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-niobium.xlsx
-url_replace_fxn: usgs_niobium_url_helper
-call_response_fxn: usgs_niobium_call
-parse_response_fxn: usgs_niobium_parse
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_niobium_call
+parse_response_fxn: !script_function:USGS_MYB usgs_niobium_parse
 years:
 - 2014
 - 2015
