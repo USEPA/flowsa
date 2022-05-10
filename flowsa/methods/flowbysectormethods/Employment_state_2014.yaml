@@ -8,11 +8,12 @@ source_names:
     geoscale_to_use: state
     source_fba_load_scale: state
     year: 2014
-    clean_fba_df_fxn: clean_bls_qcew_fba_for_employment_sat_table
-    clean_fba_w_sec_df_fxn: bls_clean_allocation_fba_w_sec
+    clean_fba_df_fxn: !script_function:BLS_QCEW clean_bls_qcew_fba_for_employment_sat_table
+    clean_fba_w_sec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
     activity_set_file: 'BLS_QCEW_asets.csv'
     activity_sets:
-      activity_set_1:
+      qcew:
+        names: !from_index:BLS_QCEW_asets.csv qcew
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -20,4 +21,3 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: state
-        allocation_helper: 'no'
