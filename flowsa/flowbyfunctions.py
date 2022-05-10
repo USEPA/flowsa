@@ -125,11 +125,20 @@ def aggregator(df, groupbycols, retain_zeros=True):
     column_headers = [e for e in possible_column_headers
                       if e in df.columns.values.tolist()]
 
+    groupbycols = [c for c in groupbycols if c not in column_headers]
+
     df_dfg = df.groupby(groupbycols).agg({'FlowAmount': ['sum']})
+
+    def is_identical(s):
+        a = s.to_numpy()
+        return (a[0] == a).all()
 
     # run through other columns creating weighted average
     for e in column_headers:
-        df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
+        if len(df) > 0 and is_identical(df[e]):
+            df_dfg.loc[:, e] = df[e].iloc[0]
+        else:
+            df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
 
     df_dfg = df_dfg.reset_index()
     df_dfg.columns = df_dfg.columns.droplevel(level=1)
@@ -879,25 +888,6 @@ def collapse_activity_fields(df):
     return df
 
 
-def dynamically_import_fxn(data_source_scripts_file, function_name):
-    """
-    Dynamically import a function and call on that function
-    :param data_source_scripts_file: str, file name where function is found
-    :param function_name: str, name of function to import and call on
-    :return: a function
-    """
-    # if a file does not exist modify file name, dropping
-    # extension after last underscore
-    data_source_scripts_file = get_flowsa_base_name(datasourcescriptspath,
-                                                    data_source_scripts_file,
-                                                    'py')
-
-    df = getattr(__import__(
-        f"flowsa.data_source_scripts.{data_source_scripts_file}",
-        fromlist=function_name), function_name)
-    return df
-
-
 def load_fba_w_standardized_units(datasource, year, **kwargs):
     """
     Standardize how a FBA is loaded for allocation purposes when
@@ -1091,3 +1081,23 @@ def assign_sector_match_column(df_load, sectorcolumn, sectorlength,
                                 ).drop(columns=sector)
 
     return df
+
+
+def aggregate_and_subset_for_target_sectors(df, method):
+    """Helper function to create data at aggregated NAICS prior to
+    subsetting based on the target_sector_list. Designed for use when
+    FBS are the source data.
+    """
+    from flowsa.sectormapping import get_sector_list
+    # return sector level specified in method yaml
+    # load the crosswalk linking sector lengths
+    secondary_sector_level = method.get('target_subset_sector_level')
+    sector_list = get_sector_list(
+        method['target_sector_level'],
+        secondary_sector_level_dict=secondary_sector_level)
+
+    # subset df to get NAICS at the target level
+    df_agg = sector_aggregation(df)
+    df_subset = subset_df_by_sector_list(df_agg, sector_list)
+
+    return df_subset

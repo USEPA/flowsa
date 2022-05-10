@@ -36,7 +36,7 @@ from flowsa.fbs_allocation import direct_allocation_method, \
     function_allocation_method, dataset_allocation_method
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, \
-    dynamically_import_fxn, update_geoscale, subset_df_by_sector_list
+    update_geoscale, subset_df_by_sector_list
 from flowsa.location import fips_number_key, merge_urb_cnty_pct
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
@@ -107,9 +107,9 @@ def load_source_dataframe(method, sourcename, source_dict,
         flows_df = flowsa.getFlowBySector(sourcename)
     elif source_dict['data_format'] == 'FBS_outside_flowsa':
         vLog.info("Retrieving flowbysector for datasource %s", sourcename)
-        flows_df = dynamically_import_fxn(
-            sourcename, source_dict["FBS_datapull_fxn"])(source_dict, method,
-                                                         fbsconfigpath)
+        flows_df = source_dict["FBS_datapull_fxn"](source_dict,
+                                                   method,
+                                                   fbsconfigpath)
     else:
         vLog.error("Data format not specified in method "
                    "file for datasource %s", sourcename)
@@ -159,8 +159,7 @@ def main(**kwargs):
             # clean up fba before mapping, if specified in yaml
             if "clean_fba_before_mapping_df_fxn" in v:
                 vLog.info("Cleaning up %s FlowByActivity", k)
-                flows = dynamically_import_fxn(
-                    k, v["clean_fba_before_mapping_df_fxn"])(flows)
+                flows = v["clean_fba_before_mapping_df_fxn"](flows)
 
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \
@@ -169,8 +168,7 @@ def main(**kwargs):
             # clean up fba, if specified in yaml
             if "clean_fba_df_fxn" in v:
                 vLog.info("Cleaning up %s FlowByActivity", k)
-                flows_mapped = dynamically_import_fxn(
-                    k, v["clean_fba_df_fxn"])(flows_mapped)
+                flows_mapped = v["clean_fba_df_fxn"](flows_mapped)
 
             # master list of activity names read in from data source
             ml_act = []
@@ -244,10 +242,11 @@ def main(**kwargs):
                 # clean up fba with sectors, if specified in yaml
                 if "clean_fba_w_sec_df_fxn" in v:
                     vLog.info("Cleaning up %s FlowByActivity with sectors", k)
-                    flows_subset_wsec = dynamically_import_fxn(
-                        k, v["clean_fba_w_sec_df_fxn"])(flows_subset_wsec,
-                                                        attr=attr,
-                                                        method=method)
+                    flows_subset_wsec = v["clean_fba_w_sec_df_fxn"](
+                        flows_subset_wsec,
+                        attr=attr,
+                        method=method
+                    )
                 # check for activities at geoscale - return any missing
                 # locations for an activity
                 check_if_data_exists_at_geoscale(flows_subset_geo,
@@ -354,8 +353,7 @@ def main(**kwargs):
                 fbs_list.append(fbs_sector_subset)
         else:
             if 'clean_fbs_df_fxn' in v:
-                flows = dynamically_import_fxn(v["clean_fbs_df_fxn_source"],
-                                               v["clean_fbs_df_fxn"])(flows)
+                flows = v["clean_fbs_df_fxn"](flows, method)
             flows = update_geoscale(flows, method['target_geoscale'])
             # if the loaded flow dt is already in FBS format,
             # append directly to list of FBS

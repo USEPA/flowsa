@@ -15,7 +15,7 @@ from flowsa.schema import activity_fields
 from flowsa.settings import log
 from flowsa.validation import check_allocation_ratios, \
     check_if_location_systems_match
-from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
+from flowsa.flowbyfunctions import collapse_activity_fields, \
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
     load_fba_w_standardized_units, aggregator
 from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
@@ -75,8 +75,7 @@ def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
     """
     log.info('Calling on function specified in method yaml to allocate '
              '%s to sectors', ', '.join(map(str, names)))
-    fbs = dynamically_import_fxn(
-        k, attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
+    fbs = attr['allocation_source'](flow_subset_mapped, attr, fbs_list)
     return fbs
 
 
@@ -456,11 +455,11 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
     # option to scale up fba values
     if 'scaled' in attr['helper_method']:
         log.info("Scaling %s to FBA values", attr['helper_source'])
-        modified_fba_allocation = \
-            dynamically_import_fxn(
-                attr['allocation_source'], attr["scale_helper_results"])(
-                modified_fba_allocation, attr,
-                download_FBA_if_missing=download_FBA_if_missing)
+        modified_fba_allocation = attr["scale_helper_results"](
+                modified_fba_allocation,
+                attr,
+                download_FBA_if_missing=download_FBA_if_missing
+            )
     return modified_fba_allocation
 
 
@@ -532,9 +531,11 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning %s", fba_sourcename)
-        fba2 = dynamically_import_fxn(fba_sourcename, kwargs["clean_fba"])(
-            fba2, attr=attr,
-            download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+        fba2 = kwargs["clean_fba"](
+            fba2,
+            attr=attr,
+            download_FBA_if_missing=kwargs['download_FBA_if_missing']
+        )
     # reset index
     fba2 = fba2.reset_index(drop=True)
 
@@ -557,9 +558,12 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # allocation data, if exists
     if 'clean_fba_w_sec' in kwargs:
         log.info("Further disaggregating sectors in %s", fba_sourcename)
-        fba_wsec = dynamically_import_fxn(
-            fba_sourcename, kwargs['clean_fba_w_sec'])(
-            fba_wsec, attr=attr, method=method, sourcename=fba_sourcename,
-            download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+        fba_wsec = kwargs['clean_fba_w_sec'](
+            fba_wsec,
+            attr=attr,
+            method=method,
+            sourcename=fba_sourcename,
+            download_FBA_if_missing=kwargs['download_FBA_if_missing']
+        )
 
     return fba_wsec

@@ -7,6 +7,6 @@ api_name: None
 api_key_required: false
 format: csv  # comma delineated data
 url: None
-parse_response_fxn: calR_parse
+parse_response_fxn: !script_function:CalRecycle_WasteCharacterization calR_parse
 years:
 - 2014

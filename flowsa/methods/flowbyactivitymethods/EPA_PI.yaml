@@ -5,9 +5,9 @@ bib_id: EPA_PI
 format: excel
 url:
   base_url: https://pasteur.epa.gov/uploads/10.23719/1504278/Master_Inventory_Final_v2.xlsx
-url_replace_fxn: pi_url_helper
-call_response_fxn: pi_call
-parse_response_fxn: pi_parse
+url_replace_fxn: !script_function:EPA_PI pi_url_helper
+call_response_fxn: !script_function:EPA_PI pi_call
+parse_response_fxn: !script_function:EPA_PI pi_parse
 years:
 - 2002
 - 2007
