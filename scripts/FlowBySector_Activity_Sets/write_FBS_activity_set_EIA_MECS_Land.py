@@ -2,37 +2,32 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Write the csv called on in flowbysectormethods yaml files for land use related to EIA MECS
+Write the csv called on in flowbysectormethods yaml files for land use
+related to EIA MECS
 """
 
 import flowsa
 from flowsa.settings import flowbysectoractivitysetspath
 
-# as_year = '2010'
-as_year = '2014'
+datasource = 'EIA_MECS_Land'
+# year = '2010'
+year = '2014'
 
 if __name__ == '__main__':
+    df_import = flowsa.getFlowByActivity(datasource, year)
 
-    # define fba parameters
-    datasource = 'EIA_MECS_Land'
-
-    # Read BLM PLS crosswalk
-    df_import = flowsa.getFlowByActivity(datasource, as_year)
-
-    # drop unused columns
-    df = df_import[['ActivityConsumedBy']].drop_duplicates()
-    df = df[~df['ActivityConsumedBy'].str.contains('-')]
-
-    # rename columns
-    df = df.rename(columns={"ActivityConsumedBy": "name"})
-
-    # assign column values
-    df = df.assign(activity_set='activity_set_1')
-    df = df.assign(note='')
+    df = (df_import[['ActivityConsumedBy']]
+          .drop_duplicates()
+          .query('ActivityConsumedBy.str.contains("-").values')
+          .reset_index(drop=True)
+          .rename(columns={"ActivityConsumedBy": "name"})
+          .assign(activity_set='mecs_land',
+                  note=''))
 
     # reorder dataframe
-    df = df[['activity_set', 'name', 'note']]
-    df = df.sort_values(['activity_set', 'name']).reset_index(drop=True)
+    df = (df[['activity_set', 'name', 'note']]
+          .sort_values(['activity_set', 'name'])
+          .reset_index(drop=True))
 
-    # save df
-    df.to_csv(flowbysectoractivitysetspath + datasource + '_' + as_year + "_asets.csv", index=False)
+    df.to_csv(f'{flowbysectoractivitysetspath}{datasource}_{year}_asets.csv',
+              index=False)

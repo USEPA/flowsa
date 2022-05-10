@@ -19,9 +19,9 @@ url:
     #state_alpha: "__stateAlpha__" # dynamically substitute the 50 state acronyms. This parameter doesn't exist for national level
     year: __year__   # __year__ is used to trigger a replace function to substitute in year
   key_param: key
-url_replace_fxn: iwms_url_helper
-call_response_fxn: iwms_call
-parse_response_fxn: iwms_parse
+url_replace_fxn: !script_function:USDA_IWMS iwms_url_helper
+call_response_fxn: !script_function:USDA_IWMS iwms_call
+parse_response_fxn: !script_function:USDA_IWMS iwms_parse
 years:
 - 2013
 - 2018

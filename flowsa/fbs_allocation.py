@@ -15,7 +15,7 @@ from flowsa.schema import activity_fields
 from flowsa.settings import log
 from flowsa.validation import check_allocation_ratios, \
     check_if_location_systems_match
-from flowsa.flowbyfunctions import collapse_activity_fields, dynamically_import_fxn, \
+from flowsa.flowbyfunctions import collapse_activity_fields, \
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
     load_fba_w_standardized_units
 from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
@@ -75,14 +75,13 @@ def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
     """
     log.info('Calling on function specified in method yaml to allocate '
              '%s to sectors', ', '.join(map(str, names)))
-    fbs = dynamically_import_fxn(
-        k, attr['allocation_source'])(flow_subset_mapped, attr, fbs_list)
+    fbs = attr['allocation_source'](flow_subset_mapped, attr, fbs_list)
     return fbs
 
 
 def dataset_allocation_method(flow_subset_mapped, attr, names, method,
-                              k, v, aset, aset_names,
-                              download_FBA_if_missing, fbsconfigpath):
+                              k, v, aset, download_FBA_if_missing,
+                              fbsconfigpath):
     """
     Method of allocation using a specified data source
     :param flow_subset_mapped: FBA subset mapped using federal
@@ -93,7 +92,6 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     :param k: str, the datasource name
     :param v: dictionary, the datasource parameters
     :param aset: dictionary items for FBS method yaml
-    :param aset_names: list, activity set names
     :param download_FBA_if_missing: bool, indicate if missing FBAs
        should be downloaded from Data Commons
     :return: df, allocated activity names
@@ -166,7 +164,6 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
                                       [n], sourceconfig=v,
                                       flowSubsetMapped=flow_subset_mapped,
                                       allocMethod=attr['allocation_method'],
-                                      activity_set_names=aset_names,
                                       fbsconfigpath=fbsconfigpath)
         if len(fba_allocation_subset_2) == 0:
             log.info("No data found to allocate %s", n)
@@ -443,11 +440,11 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
     # option to scale up fba values
     if 'scaled' in attr['helper_method']:
         log.info("Scaling %s to FBA values", attr['helper_source'])
-        modified_fba_allocation = \
-            dynamically_import_fxn(
-                attr['allocation_source'], attr["scale_helper_results"])(
-                modified_fba_allocation, attr,
-                download_FBA_if_missing=download_FBA_if_missing)
+        modified_fba_allocation = attr["scale_helper_results"](
+                modified_fba_allocation,
+                attr,
+                download_FBA_if_missing=download_FBA_if_missing
+            )
     return modified_fba_allocation
 
 
@@ -506,9 +503,11 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning %s", fba_sourcename)
-        fba = dynamically_import_fxn(fba_sourcename, kwargs["clean_fba"])(
-            fba, attr=attr,
-            download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+        fba = kwargs["clean_fba"](
+            fba,
+            attr=attr,
+            download_FBA_if_missing=kwargs['download_FBA_if_missing']
+        )
     # reset index
     fba = fba.reset_index(drop=True)
 
@@ -531,9 +530,12 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # allocation data, if exists
     if 'clean_fba_w_sec' in kwargs:
         log.info("Further disaggregating sectors in %s", fba_sourcename)
-        fba_wsec = dynamically_import_fxn(
-            fba_sourcename, kwargs['clean_fba_w_sec'])(
-            fba_wsec, attr=attr, method=method, sourcename=fba_sourcename,
-            download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+        fba_wsec = kwargs['clean_fba_w_sec'](
+            fba_wsec,
+            attr=attr,
+            method=method,
+            sourcename=fba_sourcename,
+            download_FBA_if_missing=kwargs['download_FBA_if_missing']
+        )
 
     return fba_wsec
