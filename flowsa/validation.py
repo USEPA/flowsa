@@ -483,15 +483,12 @@ def compare_fba_geo_subset_and_fbs_output_totals(
     if check_activities_sector_like(source_name):
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
-        fba = fba[['Class', 'FlowAmount', 'Unit', 'Context',
+        fba = fba[['Class', 'SourceName', 'FlowAmount', 'Unit', 'Context',
                    'ActivityProducedBy', 'ActivityConsumedBy', 'Location',
                    'LocationSystem']]
         # rename the activity cols to sector cols for purposes of aggregation
         fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
                                   'ActivityConsumedBy': 'SectorConsumedBy'})
-        group_cols_agg = ['Class', 'Context', 'Unit', 'Location',
-                          'LocationSystem', 'SectorProducedBy',
-                          'SectorConsumedBy']
         fba = sector_aggregation(fba)
         # subset fba to only include NAICS2
         fba = replace_NoneType_with_empty_cells(fba)
