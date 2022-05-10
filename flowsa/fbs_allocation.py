@@ -507,6 +507,10 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
             fba = \
                 fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
 
+    if len(fba) == 0:
+        raise Exception('Allocation dataset is length 0; check flow or '
+                        'compartment subset for errors')
+
     # load relevant activities if activities are not naics-like
     try:
         sm = get_activitytosector_mapping(
