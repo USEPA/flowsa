@@ -34,7 +34,7 @@ jobs:
 
     - name: Test FBA config
       run: |
-        python flowsa/test_FBA_urls.py
+        python flowsa/test_methods.py
 
     - name: Compare FBS with remote
       id: FBS
