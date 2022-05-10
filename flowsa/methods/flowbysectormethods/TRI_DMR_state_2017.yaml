@@ -1,6 +1,6 @@
 target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
-target_geoscale: national
+target_geoscale: state
 source_names:
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'

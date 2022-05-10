@@ -347,7 +347,7 @@ def main(**kwargs):
                 fbs_list.append(fbs_sector_subset)
         else:
             if 'clean_fbs_df_fxn' in v:
-                flows = v["clean_fbs_df_fxn"](flows)
+                flows = v["clean_fbs_df_fxn"](flows, method)
             flows = update_geoscale(flows, method['target_geoscale'])
             # if the loaded flow dt is already in FBS format,
             # append directly to list of FBS
