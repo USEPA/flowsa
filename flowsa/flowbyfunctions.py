@@ -638,11 +638,13 @@ def equally_allocate_suppressed_parent_to_child_naics(
 
     # equally allocate parent to child naics where child naics are not
     # included in the dataset. This step is necessary to accurately
-    # calculate the flow that has already been allocated.
+    # calculate the flow that has already been allocated. Must allocate to
+    # NAICS_6 for suppressed data function to work correctly.
     if equally_allocate_parent_to_child:
         vLogDetailed.info('Before estimating suppressed data, equally '
                           'allocate parent sectors to child sectors.')
-        df = equally_allocate_parent_to_child_naics(df, method)
+        df = equally_allocate_parent_to_child_naics(
+            df, method, overwritetargetsectorlevel='NAICS_6')
 
     df = replace_NoneType_with_empty_cells(df)
     df = df[df[sector_column] != '']

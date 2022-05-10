@@ -220,17 +220,21 @@ def proportional_allocation_by_location_and_activity(df_load, sectorcolumn):
     return allocation_df
 
 
-def equally_allocate_parent_to_child_naics(df_load, method):
+def equally_allocate_parent_to_child_naics(
+        df_load, method, overwritetargetsectorlevel=None):
     """
     Determine rows of data that will be lost if subset data at
     target sector level.
     Equally allocate parent NAICS to child NAICS where child NAICS missing
     :param df_load: df, FBS format
-    :param target_sector_level: str, target NAICS level for FBS output
+    :param overwritetargetsectorlevel: str, optional, specify what sector
+    level to allocate to
     :return: df, with all child NAICS at target sector level
     """
     # determine which sector level to use, use the least aggregated level
-    sector_level = 'NAICS_6'
+    sector_level = method.get('target_sector_level')
+    if overwritetargetsectorlevel is not None:
+        sector_level = overwritetargetsectorlevel
     # if secondary sector levels are identified, set the sector level to the
     # least aggregated
     sector_level_list = [sector_level]
