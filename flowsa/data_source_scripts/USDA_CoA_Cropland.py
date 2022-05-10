@@ -260,6 +260,14 @@ def coa_nonirrigated_cropland_fba_cleanup(fba, **kwargs):
     fba = fba[~((fba['FlowName'] == 'AREA IN PRODUCTION') &
                 (fba['ActivityConsumedBy'] == 'VEGETABLE TOTALS'))]
 
+    # When using a mix of flow names, drop activities for ag land (naics 11)
+    # and ag land, cropland, harvested (naics 111),because published values
+    # for harvested cropland do not include data for vegetables, woody crops,
+    # berries. Values for sectors 11 and 111 will be aggregated from the
+    # dataframe later
+    fba = fba[~fba['ActivityConsumedBy'].isin(
+        ['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])].reset_index(drop=True)
+
     return fba
 
 
@@ -292,13 +300,6 @@ def disaggregate_coa_cropland_to_6_digit_naics(
         fba_w_sector, attr, method, year=attr['allocation_source_year'],
         sector_column=sector_col,
         download_FBA_if_missing=kwargs['download_FBA_if_missing'])
-
-    # When using irrigated cropland, aggregate sectors to cropland and total
-    # ag land. Doing this because published values for irrigated harvested
-    # cropland do not include the water use for vegetables, woody crops,
-    # berries.
-    fba_w_sector = fba_w_sector[~fba_w_sector['ActivityConsumedBy'].isin(
-        ['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])].reset_index(drop=True)
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit
     # naics
