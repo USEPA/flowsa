@@ -214,7 +214,7 @@ def seeAvailableFlowByModels(flowbytype, print_method=True):
 
 
 def generateFBSplot(method_dict, plottype, sector_length_display=None,
-                   sectors_to_include=None, plot_title=None):
+                    sectors_to_include=None, plot_title=None):
     """
     Plot the results of FBS models. Graphic can either be a faceted
     scatterplot or a method comparison
