@@ -1,4 +1,4 @@
-from typing import Callable, List, Literal, TypeVar
+from typing import Callable, List, Union, Literal, TypeVar
 import pandas as pd
 import numpy as np
 from functools import partial
@@ -22,6 +22,7 @@ class _FlowBy(pd.DataFrame):
         *args,
         fields: dict = None,
         column_order: List[str] = None,
+        string_null: Union[None, pd.NA] = pd.NA,
         **kwargs
     ) -> None:
         if isinstance(data, pd.DataFrame) and fields is not None:
@@ -30,8 +31,9 @@ class _FlowBy(pd.DataFrame):
                 for field, dtype in fields.items()
             }
             na_string_dict = {
-                field: {null: pd.NA
-                        for null in ['nan', 'None', '', np.nan, pd.NA, None]}
+                field: {null: string_null
+                        for null in ['nan', '<NA>', 'None', '',
+                                     np.nan, pd.NA, None]}
                 for field, dtype in fields.items() if dtype == 'string'
             }
             data = (data
