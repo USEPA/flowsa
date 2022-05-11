@@ -1,0 +1,145 @@
+%YAML 1.1
+
+---
+# m2 for the GHG national replicates the method used in the National GHG Industry Attribution Model
+#(https://doi.org/10.23719/1517571), except that sector attribution is to 6-digit NAICS,
+# rather than the BEA 2012 IO schema
+
+!include:BEA_summary_target.yaml
+target_geoscale: national
+
+_ghgi_parameters: &ghgi_parameters
+  data_format: 'FBA'
+  class: Chemicals
+  geoscale_to_use: national
+  year: 2017
+  fedefl_mapping: 'GHGI'
+
+_allocation_types:
+  _direct_allocation: &direct_allocation
+    allocation_method: direct
+    allocation_source: None
+    allocation_from_scale: national
+  _use_allocation: &use_allocation
+    # names:
+    # - "Liming"  # Need to specify an activity name
+    allocation_method: proportional
+    allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
+    activity_to_sector_mapping: "BEA_2012_Detail"
+    allocation_source_class: "Money"
+    allocation_source_year: 2012
+    allocation_flow:
+      - "USD2012"
+    allocation_compartment: None
+    allocation_from_scale: national
+    clean_allocation_fba: !script_function:BEA subset_BEA_table
+    # clean_parameter: {"327400": 'ActivityProducedBy'}  # Need to specify
+    helper_source: "BLS_QCEW"
+    helper_method: proportional
+    helper_source_class: "Employment"
+    helper_source_year: 2012
+    helper_flow:
+      - "Number of employees"
+    helper_from_scale: national
+    clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
+    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+  _pasture_allocation: &pasture_allocation # allocated based on USDA Animal operation land (acres)
+    allocation_method: proportional
+    allocation_source: "USDA_CoA_Cropland_NAICS"
+    allocation_source_class: "Land"
+    allocation_source_year: 2017
+    allocation_flow:
+      - "FARM OPERATIONS"
+    allocation_compartment: None
+    allocation_from_scale: national
+  _cropland_allocation: &cropland_allocation  # allocated based on USDA land area harvested
+    allocation_source: "USDA_CoA_Cropland"
+    allocation_method: proportional
+    allocation_source_class: "Land"
+    allocation_source_year: 2017
+    allocation_flow:
+      - "AREA HARVESTED"
+      - "AREA BEARING & NON-BEARING" # Orchards
+      - "AREA GROWN" # Berry totals
+      - "AREA IN PRODUCTION" # Vegetable totals
+    allocation_compartment: None
+    allocation_from_scale: national
+    clean_allocation_fba: !script_function:USDA_CoA_Cropland coa_irrigated_cropland_fba_cleanup
+    clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
+
+source_names:
+  stewiFBS:
+    data_format: FBS_outside_flowsa
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
+    inventory_dict: {'NEI': '2017', 'TRI': '2017'}
+    local_inventory_name: NEI_TRI_air_2017
+    compartments:
+     - air
+    functions:
+     - drop_GHGs
+    reassign_process_to_sectors:
+     - airplane_emissions
+
+## Agriculture
+  # "EPA_GHGI_T_5_29": #CH4, N2O, CO and NOx from field burning of residues
+  #     <<: *ghgi_parameters
+  #     activity_sets:
+  #       activity_set_1:
+  #         <<: *direct_allocation
+  #         names:
+  #           - "Chickpeas"
+  #           - "Cotton"
+  #           - "Maize"
+  #           - "Rice"
+  #           - "Soybeans"
+  #           - "Wheat"
+  # "EPA_GHGI_T_5_3":  &animals #CH4 from Enteric Fermentation
+  #   <<: *ghgi_parameters
+  #   activity_sets:
+  #     activity_set_1:
+  #       <<: *direct_allocation
+  #       names:
+  #         - "American Bison"
+  #         - "Beef Cattle"
+  #         - "Dairy Cattle"
+  #         - "Goats"
+  #         - "Horses"
+  #         - "Mules and Asses"
+  #         - "Sheep"
+  #         - "Swine"
+  #         - "Poultry"
+  # "EPA_GHGI_T_5_7": *animals #CH4 and N2O from manure, mimics enteric fermentation
+
+  # "EPA_GHGI_T_5_18": #Direct N2O emissions from agricultural soils
+  #   <<: *ghgi_parameters
+  #   activity_sets:
+  #     activity_set_1:  # allocated based on fertilizer use
+  #       <<: *use_allocation
+  #       names:
+  #           - "Organic Amendment Cropland"
+  #           - "Residue N Cropland"
+  #           - "Synthetic Fertilizer Cropland"
+  #       clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
+  #     activity_set_2:
+  #       <<: *cropland_allocation
+  #       names:
+  #           - "Mineralization and Asymbiotic Fixation Cropland"
+  #           - "Drained Organic Soils Cropland"
+  #     activity_set_3:
+  #       <<: *pasture_allocation
+  #       names:
+  #         - "All activities Grassland"
+
+  # "EPA_GHGI_T_5_19": #Indirect N2O emissions from agricultural soils
+  #   <<: *ghgi_parameters
+  #   activity_sets:
+  #     activity_set_1:  # allocated based on fertilizer use
+  #       <<: *use_allocation
+  #       names:
+  #           - "Volatilization & Atm. Deposition Cropland"
+  #           - "Surface Leaching & Run-Off Cropland"
+  #       clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
+  #     activity_set_2:
+  #       <<: *pasture_allocation
+  #       names:
+  #         - "All activities Grassland"
