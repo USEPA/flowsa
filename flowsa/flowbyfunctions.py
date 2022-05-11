@@ -797,19 +797,32 @@ def equally_allocate_suppressed_parent_to_child_naics(
             df_sup3['FlowRemainder'] = np.where(
                 df_sup3["FlowRemainder"].between(flowtolerance, 0), 0,
                 df_sup3['FlowRemainder'])
+
             # check for negative values
             negv = df_sup3[df_sup3['FlowRemainder'] < 0]
             if len(negv) > 0:
-                # first check what the percent is of flow remainder over sector
-                # allocated.
-                log.warning('There are negative values when allocating '
-                            'suppressed parent data to child sector. The '
-                            'values are more than %s%% of the total parent '
-                            'sector with a negative flow amount being '
-                            'allocated more than %s.', str(percenttolerance),
-                            str(flowtolerance))
-            df_sup3 = df_sup3.drop(columns=['SectorMatchFlow', 'sector_allocated',
-                                            'PercentOfAllocated'])
+                col_subset = [e for e in negv.columns if e in
+                              ['Class', 'SourceName', 'FlowName',
+                               'Flowable', 'FlowAmount', 'Unit',
+                               'Compartment', 'Context', 'Location', 'Year',
+                               'SectorProducedBy', 'SectorConsumedBy',
+                               'SectorMatchFlow', 'SectorProducedMatch',
+                               'SectorConsumedMatch', 'sector_allocated',
+                               'FlowRemainder']]
+                negv = negv[col_subset].reset_index(drop=True)
+                vLog.info(
+                    'There are negative values when allocating suppressed '
+                    'parent data to child sector. The values are more than '
+                    '%s%% of the total parent sector with a negative flow '
+                    'amount being allocated more than %s. Resetting flow '
+                    'values to be allocated to 0. See validation log for '
+                    'details.', str(percenttolerance), str(flowtolerance))
+                vLogDetailed.info('Values where flow remainders are negative: '
+                                  '\n {}'.format(negv.to_string()))
+            df_sup3['FlowRemainder'] = np.where(df_sup3["FlowRemainder"] < 0,
+                                                0, df_sup3['FlowRemainder'])
+            df_sup3 = df_sup3.drop(columns=[
+                'SectorMatchFlow', 'sector_allocated', 'PercentOfAllocated'])
             # add count column used to divide the unallocated flows
             sector_column_match = sector_column.replace('By', 'Match')
             df_sup3 = df_sup3.assign(secCount=df_sup3.groupby(mergecols)[
