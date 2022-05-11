@@ -378,14 +378,16 @@ def equal_allocation(fba_load, sector_level):
                  ['SectorProducedBy', 'SectorConsumedBy', 'Description']]
     # create counts of rows
     df_count = fba_load.groupby(
-        groupcols, as_index=False, dropna=False).size().astype(str)
+        groupcols, as_index=False, dropna=False).size()
+    df_count[['MeasureofSpread', 'DistributionType']] = \
+        df_count[['MeasureofSpread', 'DistributionType']].astype(str)
     df_count = replace_strings_with_NoneType(df_count)
 
     # merge dfs
     fba_load = replace_strings_with_NoneType(fba_load)
     dfm = fba_load.merge(df_count, how='left')
     # calc new flowamounts
-    dfm['FlowAmount'] = dfm['FlowAmount'] / dfm['size'].astype(int)
+    dfm['FlowAmount'] = dfm['FlowAmount'] / dfm['size']
     dfm = dfm.drop(columns='size')
 
     return dfm
