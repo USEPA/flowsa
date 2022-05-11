@@ -22,7 +22,6 @@ class _FlowBy(pd.DataFrame):
         *args,
         fields: dict = None,
         column_order: List[str] = None,
-        string_null: str or pd.NA = None,
         **kwargs
     ) -> None:
         if isinstance(data, pd.DataFrame) and fields is not None:
@@ -30,12 +29,8 @@ class _FlowBy(pd.DataFrame):
                 field: 0 if dtype in ['int', 'float'] else pd.NA
                 for field, dtype in fields.items()
             }
-            if string_null is not None:
-                self.string_null = string_null
-            if not hasattr(self, 'string_null'):
-                self.string_null = getattr(data, 'string_null', pd.NA)
             na_string_dict = {
-                field: {null: self.string_null
+                field: {null: pd.NA
                         for null in ['nan', 'None', '', np.nan, pd.NA, None]}
                 for field, dtype in fields.items() if dtype == 'string'
             }
@@ -50,7 +45,7 @@ class _FlowBy(pd.DataFrame):
                         + [c for c in data.columns if c not in column_order]]
         super().__init__(data, *args, **kwargs)
 
-    _metadata = ['string_null']
+    _metadata = []
 
     @property
     def _constructor(self) -> '_FlowBy':
@@ -160,18 +155,18 @@ class FlowByActivity(_FlowBy):
         **kwargs
     ) -> None:
         if isinstance(data, pd.DataFrame):
-            self.mapped = mapped or any(
+            mapped = mapped or any(
                 [c in data.columns for c in flowby_config['_mapped_fields']]
             )
-            self.w_sector = w_sector or any(
+            w_sector = w_sector or any(
                 [c in data.columns for c in flowby_config['_sector_fields']]
             )
 
-            if self.mapped and self.w_sector:
+            if mapped and w_sector:
                 fields = flowby_config['flow_by_activity_mapped_wsec_fields']
-            elif self.mapped:
+            elif mapped:
                 fields = flowby_config['flow_by_activity_mapped_fields']
-            elif self.w_sector:
+            elif w_sector:
                 fields = flowby_config['flow_by_activity_wsec_fields']
             else:
                 fields = flowby_config['flow_by_activity_fields']
@@ -186,7 +181,7 @@ class FlowByActivity(_FlowBy):
                          column_order=column_order,
                          *args, **kwargs)
 
-    _metadata = [*_FlowBy()._metadata, 'mapped', 'w_sector']
+    _metadata = [*_FlowBy()._metadata]
 
     @property
     def _constructor(self) -> 'FlowByActivity':
@@ -242,16 +237,16 @@ class FlowBySector(_FlowBy):
         **kwargs
     ) -> None:
         if isinstance(data, pd.DataFrame):
-            self.collapsed = collapsed or any(
+            collapsed = collapsed or any(
                 [c in data.columns for c in flowby_config['_collapsed_fields']]
             )
-            self.w_activity = w_activity or any(
+            w_activity = w_activity or any(
                 [c in data.columns for c in flowby_config['_activity_fields']]
             )
 
-            if self.collapsed:
+            if collapsed:
                 fields = flowby_config['flow_by_sector_collapsed_fields']
-            elif self.w_activity:
+            elif w_activity:
                 fields = flowby_config['flow_by_sector_fields_w_activity']
             else:
                 fields = flowby_config['flow_by_sector_fields']
@@ -266,7 +261,7 @@ class FlowBySector(_FlowBy):
                          column_order=column_order,
                          *args, **kwargs)
 
-    _metadata = [*_FlowBy()._metadata, 'collapsed', 'w_activity']
+    _metadata = [*_FlowBy()._metadata]
 
     @property
     def _constructor(self) -> 'FlowBySector':
