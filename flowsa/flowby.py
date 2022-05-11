@@ -1,4 +1,4 @@
-from typing import Callable, List, Union, Literal, TypeVar
+from typing import Callable, List, Optional, Union, Literal, TypeVar
 import pandas as pd
 import numpy as np
 from functools import partial
@@ -22,7 +22,7 @@ class _FlowBy(pd.DataFrame):
         *args,
         fields: dict = None,
         column_order: List[str] = None,
-        string_null: Union[None, pd.NA] = pd.NA,
+        string_null: 'np.nan' or None = np.nan,
         **kwargs
     ) -> None:
         if isinstance(data, pd.DataFrame) and fields is not None:
@@ -34,7 +34,7 @@ class _FlowBy(pd.DataFrame):
                 field: {null: string_null
                         for null in ['nan', '<NA>', 'None', '',
                                      np.nan, pd.NA, None]}
-                for field, dtype in fields.items() if dtype == 'string'
+                for field, dtype in fields.items() if dtype == 'object'
             }
             data = (data
                     .assign(**{field: None
@@ -42,6 +42,7 @@ class _FlowBy(pd.DataFrame):
                     .fillna(fill_na_dict)
                     .replace(na_string_dict)
                     .astype(fields))
+            data = self._standardize_units(data)
         if isinstance(data, pd.DataFrame) and column_order is not None:
             data = data[[c for c in column_order if c in data.columns]
                         + [c for c in data.columns if c not in column_order]]
@@ -104,6 +105,91 @@ class _FlowBy(pd.DataFrame):
         fb = cls(df)
         return fb
 
+    @staticmethod
+    def _standardize_units(fb: pd.DataFrame) -> pd.DataFrame:
+        days_in_year = 365
+        ft2_to_m2 = 0.092903
+        # rounded to match USGS_NWIS_WU mapping file on FEDEFL
+        gallon_water_to_kg = 3.79
+        ac_ft_water_to_kg = 1233481.84
+        acre_to_m2 = 4046.8564224
+        mj_in_btu = .0010550559
+        m3_to_gal = 264.172
+        ton_to_kg = 907.185
+        lb_to_kg = 0.45359
+        exchange_rate = float(
+            literature_values
+            .get_Canadian_to_USD_exchange_rate(str(fb.Year.unique()[0]))
+        )
+
+        fb = fb.assign(Unit=fb.Unit.str.strip())
+
+        standardized = (
+            fb
+            .assign(
+                FlowAmount=(
+                    fb.FlowAmount
+                    .mask(fb.Unit.isin(['ACRES', 'Acres']),
+                          fb.FlowAmount * acre_to_m2)
+                    .mask(fb.Unit.isin(['million sq ft',
+                                        'million square feet']),
+                          fb.FlowAmount * 10**6 * ft2_to_m2)
+                    .mask(fb.Unit.isin(['square feet']),
+                          fb.FlowAmount * ft2_to_m2)
+                    .mask(fb.Unit.isin(['Canadian Dollar']),
+                          fb.FlowAmount / exchange_rate)
+                    .mask(fb.Unit.isin(['gallons/animal/day']),
+                          fb.FlowAmount * gallon_water_to_kg * days_in_year)
+                    .mask(fb.Unit.isin(['ACRE FEET / ACRE']),
+                          fb.FlowAmount / acre_to_m2 * ac_ft_water_to_kg)
+                    .mask(fb.Unit.isin(['Mgal']),
+                          fb.FlowAmount * 10**6 * gallon_water_to_kg)
+                    .mask(fb.Unit.isin(['gal', 'gal/USD']),
+                          fb.FlowAmount * gallon_water_to_kg)
+                    .mask(fb.Unit.isin(['Bgal/d']),
+                          fb.FlowAmount
+                          * 10**9 * gallon_water_to_kg * days_in_year)
+                    .mask(fb.Unit.isin(['Mgal/d']),
+                          fb.FlowAmount
+                          * 10**6 * gallon_water_to_kg * days_in_year)
+                    .mask(fb.Unit.isin(['Quadrillion Btu']),
+                          fb.FlowAmount * 10**15 * mj_in_btu)
+                    .mask(fb.Unit.isin(['Trillion Btu', 'TBtu']),
+                          fb.FlowAmount * 10**12 * mj_in_btu)
+                    .mask(fb.Unit.isin(['million Cubic metres/year']),
+                          fb.FlowAmount
+                          * 10**6 * m3_to_gal * gallon_water_to_kg)
+                    .mask(fb.Unit.isin(['TON']),
+                          fb.FlowAmount * ton_to_kg)
+                    .mask(fb.Unit.isin(['LB']),
+                          fb.FlowAmount * lb_to_kg)
+                ),
+                Unit=(
+                    fb.Unit
+                    .mask(fb.Unit.isin(['ACRES', 'Acres', 'million sq ft',
+                                        'million square feet',
+                                        'square feet']),
+                          'm2')
+                    .mask(fb.Unit.isin(['Canadian Dollar']),
+                          'USD')
+                    .mask(fb.Unit.isin(['gallons/animal/day', 'Mgal', 'gal',
+                                        'Bgal/d', 'Mgal/d',
+                                        'million Cubic metres/year',
+                                        'TON', 'LB']),
+                          'kg')
+                    .mask(fb.Unit.isin(['ACRE FEET / ACRE']),
+                          'kg/m2')
+                    .mask(fb.Unit.isin(['gal/USD']),
+                          'kg/USD')
+                    .mask(fb.Unit.isin(['Quadrillion Btu',
+                                        'Trillion Btu', 'TBtu']),
+                          'MJ')
+                )
+            )
+        )
+
+        return standardized
+
     def conditional_pipe(
         self: FB,
         condition: bool,
@@ -143,6 +229,34 @@ class _FlowBy(pd.DataFrame):
         '''
         if condition:
             return getattr(self, method)(*args, **kwargs)
+        else:
+            return self
+
+    def standardize_units(self: FB) -> FB:
+        """
+        Standardizes units. Timeframe is annual.
+        :return: FlowBy dataframe, with standarized units
+        """
+        return self._standardize_units(self)
+
+    def update_fips_to_geoscale(
+        self: FB,
+        to_geoscale: str,
+    ) -> FB:
+        """
+        Sets FIPS codes to 5 digits by zero-padding FIPS codes at the specified
+        geoscale on the right (county geocodes are unmodified, state codes are
+        generally padded with 3 zeros, and the "national" FIPS code is set to
+        00000, the value in flowsa.location.US_FIPS)
+        :param to_geoscale: str, target geoscale
+        :return: FlowBy dataset with 5 digit fips
+        """
+        if to_geoscale == 'national':
+            return self.assign(Location=location.US_FIPS)
+        elif to_geoscale == 'state':
+            return (self
+                    .assign(Location=self.Location.apply(
+                        lambda x: str(x)[:2].ljust(5, '0'))))
         else:
             return self
 
@@ -311,6 +425,56 @@ class FlowBySector(_FlowBy):
         )
         fbs = cls(fb)
         return fbs
+
+    @classmethod
+    def generateFlowBySector(
+        cls,
+        method: str,
+        external_config_path: str = None,
+        download_sources_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
+    ) -> 'FlowBySector':
+        '''
+        Generates a FlowBySector dataset.
+        :param method: str, name of FlowBySector method .yaml file to use.
+        :param external_config_path: str, optional. If given, tells flowsa
+            where to look for the method yaml specified above.
+        :param download_fba_ok: bool, optional. Whether to attempt to download
+            source data FlowByActivity files from EPA server rather than
+            generating them.
+        '''
+        log.info('Beginning FlowBySector generation for %s', method)
+        method_config = common.load_yaml_dict(method, 'FBS',
+                                              external_config_path)
+        sources = method_config['source_names']
+
+        component_fbs_list = []
+        for source_name, source_config in sources.items():
+            if source_config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
+                if source_config['data_format'] == 'FBS_outside_flowsa':
+                    source_data = FlowBySector(
+                        source_config['FBS_datapull_fxn'](source_config,
+                                                          method_config,
+                                                          external_config_path)
+                    )
+
+                else:  # TODO: Test this section.
+                    source_data = FlowBySector.getFlowBySector(
+                        source=source_name,
+                        external_config_path=external_config_path,
+                        download_sources_ok=download_sources_ok,
+                        download_fbs_ok=download_sources_ok
+                    )
+
+                fbs = (source_data
+                       .conditional_pipe(
+                           'clean_fbs_df_fxn' in source_config,
+                           source_config.get('clean_fbs_df_fxn'))
+                       .update_fips_to_geoscale(
+                           method_config['target_geoscale']))
+                log.info('Appending %s to FBS list', source_name)
+                component_fbs_list.append(fbs)
+
+        return component_fbs_list
 
 
 # The three classes extending pd.Series, together with the _constructor...

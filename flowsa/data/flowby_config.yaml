@@ -1,36 +1,36 @@
 fba_fields: &fba_fields
-  ActivityConsumedBy: string
-  ActivityProducedBy: string
-  Class: string
-  Compartment: string
+  ActivityConsumedBy: object
+  ActivityProducedBy: object
+  Class: object
+  Compartment: object
   DataCollection: float
   DataReliability: float
-  Description: string
-  DistributionType: string
+  Description: object
+  DistributionType: object
   FlowAmount: float
-  FlowName: string
-  FlowType: string
-  Location: string
-  LocationSystem: string
+  FlowName: object
+  FlowType: object
+  Location: object
+  LocationSystem: object
   Max: float
-  MeasureofSpread: string
+  MeasureofSpread: object
   Min: float
-  SourceName: string
+  SourceName: object
   Spread: float
-  Unit: string
+  Unit: object
   Year: int
 
 _mapped_fields: &mapped_fields
-  Context: string
-  FlowUUID: string
-  Flowable: string
+  Context: object
+  FlowUUID: object
+  Flowable: object
 
 _sector_fields: &sector_fields
-  ConsumedBySectorType: string
-  ProducedBySectorType: string
-  SectorConsumedBy: string
-  SectorProducedBy: string
-  SectorSourceName: string
+  ConsumedBySectorType: object
+  ProducedBySectorType: object
+  SectorConsumedBy: object
+  SectorProducedBy: object
+  SectorSourceName: object
 
 fba_mapped_fields:
   <<: [*fba_fields, *mapped_fields]
@@ -72,40 +72,40 @@ fba_column_order:
   - ConsumedBySectorType
 
 _fbs_base_fields: &fbs_base_fields
-  Class: string
-  Context: string
+  Class: object
+  Context: object
   DataCollection: float
   DataReliability: float
-  DistributionType: string
+  DistributionType: object
   FlowAmount: float
-  FlowType: string
-  FlowUUID: string
-  Flowable: string
+  FlowType: object
+  FlowUUID: object
+  Flowable: object
   GeographicalCorrelation: float
-  Location: string
-  LocationSystem: string
+  Location: object
+  LocationSystem: object
   Max: float
-  MeasureofSpread: string
-  MetaSources: string
+  MeasureofSpread: object
+  MetaSources: object
   Min: float
-  SectorSourceName: string
+  SectorSourceName: object
   Spread: float
   TechnologicalCorrelation: float
   TemporalCorrelation: float
-  Unit: string
+  Unit: object
   Year: int
 
 _collapsed_fields: &collapsed_fields
-  Sector: string
+  Sector: object
 
 _activity_fields: &activity_fields
-  ActivityConsumedBy: string
-  ActivityProducedBy: string
+  ActivityConsumedBy: object
+  ActivityProducedBy: object
 
 fbs_fields: &fbs_fields
   <<: *fbs_base_fields
-  SectorConsumedBy: string
-  SectorProducedBy: string
+  SectorConsumedBy: object
+  SectorProducedBy: object
 
 fbs_w_activity_fields:
   <<: [*fbs_fields, *activity_fields]
