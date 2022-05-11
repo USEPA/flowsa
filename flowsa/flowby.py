@@ -163,13 +163,13 @@ class FlowByActivity(_FlowBy):
             )
 
             if mapped and w_sector:
-                fields = flowby_config['flow_by_activity_mapped_wsec_fields']
+                fields = flowby_config['fba_mapped_w_sector_fields']
             elif mapped:
-                fields = flowby_config['flow_by_activity_mapped_fields']
+                fields = flowby_config['fba_mapped_fields']
             elif w_sector:
-                fields = flowby_config['flow_by_activity_wsec_fields']
+                fields = flowby_config['fba_w_sector_fields']
             else:
-                fields = flowby_config['flow_by_activity_fields']
+                fields = flowby_config['fba_fields']
 
             column_order = flowby_config['fba_column_order']
         else:
@@ -245,11 +245,11 @@ class FlowBySector(_FlowBy):
             )
 
             if collapsed:
-                fields = flowby_config['flow_by_sector_collapsed_fields']
+                fields = flowby_config['fbs_collapsed_fields']
             elif w_activity:
-                fields = flowby_config['flow_by_sector_fields_w_activity']
+                fields = flowby_config['fbs_w_activity_fields']
             else:
-                fields = flowby_config['flow_by_sector_fields']
+                fields = flowby_config['fbs_fields']
 
             column_order = flowby_config['fbs_column_order']
         else:

@@ -1,4 +1,4 @@
-flow_by_activity_fields: &fba_fields
+fba_fields: &fba_fields
   ActivityConsumedBy: string
   ActivityProducedBy: string
   Class: string
@@ -32,13 +32,13 @@ _sector_fields: &sector_fields
   SectorProducedBy: string
   SectorSourceName: string
 
-flow_by_activity_mapped_fields:
+fba_mapped_fields:
   <<: [*fba_fields, *mapped_fields]
 
-flow_by_activity_mapped_wsec_fields:
+fba_mapped_w_sector_fields:
   <<: [*fba_fields, *mapped_fields, *sector_fields]
 
-flow_by_activity_wsec_fields:
+fba_w_sector_fields:
   <<: [*fba_fields, *sector_fields]
 
 fba_column_order:
@@ -71,7 +71,7 @@ fba_column_order:
   - ProducedBySectorType
   - ConsumedBySectorType
 
-_flow_by_sector_base_fields: &fbs_base_fields
+_fbs_base_fields: &fbs_base_fields
   Class: string
   Context: string
   DataCollection: float
@@ -102,15 +102,15 @@ _activity_fields: &activity_fields
   ActivityConsumedBy: string
   ActivityProducedBy: string
 
-flow_by_sector_fields: &fbs_fields
+fbs_fields: &fbs_fields
   <<: *fbs_base_fields
   SectorConsumedBy: string
   SectorProducedBy: string
 
-flow_by_sector_fields_w_activity:
+fbs_w_activity_fields:
   <<: [*fbs_fields, *activity_fields]
 
-flow_by_sector_collapsed_fields:
+fbs_collapsed_fields:
   <<: [*fbs_base_fields, *collapsed_fields]
 
 fbs_column_order:
