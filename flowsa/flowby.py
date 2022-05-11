@@ -456,7 +456,6 @@ class FlowBySector(_FlowBy):
                                                           method_config,
                                                           external_config_path)
                     )
-
                 else:  # TODO: Test this section.
                     source_data = FlowBySector.getFlowBySector(
                         source=source_name,
@@ -465,12 +464,15 @@ class FlowBySector(_FlowBy):
                         download_fbs_ok=download_sources_ok
                     )
 
-                fbs = (source_data
-                       .conditional_pipe(
-                           'clean_fbs_df_fxn' in source_config,
-                           source_config.get('clean_fbs_df_fxn'))
-                       .update_fips_to_geoscale(
-                           method_config['target_geoscale']))
+                fbs = (
+                    source_data
+                    .conditional_pipe('clean_fbs_df_fxn' in source_config,
+                                      source_config.get('clean_fbs_df_fxn'))
+                    .update_fips_to_geoscale(method_config['target_geoscale'])
+                    .conditional_method(
+                        source_config.get('source_flows'), 'query',
+                        f'Flowable in {source_config.get("source_flows")}')
+                )
                 log.info('Appending %s to FBS list', source_name)
                 component_fbs_list.append(fbs)
 
