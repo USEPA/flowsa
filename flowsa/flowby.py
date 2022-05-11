@@ -107,48 +107,6 @@ class _FlowBy(pd.DataFrame):
         fb = cls(df)
         return fb
 
-    # TODO: Should this, or some variation thereof, be run during __init__()?
-    def clean_fb(
-        self: FB,
-        fields: dict,
-        column_order: list = None,
-        keep_description: bool = False
-    ) -> FB:
-        '''
-        Ensures that the given columns are all present and their datatypes
-        are correct. Also ensure that columns are in the given order, with
-        any columns whose order is not specified coming at the end.
-        :param fields: dict, indicates columns that should be present and their
-            datatypes. Generally an entry from flowby_config.yaml
-        :param column_order: list, gives the order columns should appear in
-        :param keep_description: bool, default = False. Whether the Description
-            column should be retained if present
-        '''
-        fill_na_dict = {field: 0 if field_config['dtype'] in ['int', 'float']
-                        else None
-                        for field, field_config in fields.items()}
-
-        fb = (self
-              .assign(**{field: None
-                         for field in fields if field not in self.columns})
-              .astype({field: field_config['dtype']
-                       for field, field_config in fields.items()})
-              .fillna(fill_na_dict)
-              .replace(
-                  {field: {null: None for null in ['nan', 'None', np.nan, '']}
-                   for field, field_config in fields.items()
-                   if field_config['dtype'] == 'str'})
-              .reset_index(drop=True))
-
-        if not keep_description:
-            fb = fb.drop(columns='Description', errors='ignore')
-
-        if column_order is not None:
-            fb = fb[[c for c in column_order if c in fb.columns]
-                    + [c for c in fb.columns if c not in column_order]]
-
-        return fb
-
     def conditional_pipe(
         self: FB,
         condition: bool,
@@ -273,20 +231,6 @@ class FlowByActivity(_FlowBy):
         fba = cls(fb)
         return fba
 
-    # def clean_fb(
-    #     self: FB,
-    #     fields: Literal[
-    #         'flow_by_activity_fields',
-    #         'flow_by_activity_mapped_fields',
-    #         'flow_by_activity_wsec_fields',
-    #         'flow_by_activity_mapped_wsec_fields'
-    #     ] = 'flow_by_activity_fields',
-    #     keep_description: bool = False
-    # ) -> 'FlowByActivity':
-    #     return super().clean_fb(flowby_config[fields],
-    #                             flowby_config['fba_column_order'],
-    #                             keep_description)
-
 
 class FlowBySector(_FlowBy):
     def __init__(
@@ -371,25 +315,12 @@ class FlowBySector(_FlowBy):
         fbs = cls(fb)
         return fbs
 
-    # def clean_fb(
-    #     self,
-    #     fields: Literal[
-    #         'flow_by_sector_fields',
-    #         'flow_by_sector_fields_w_activity',
-    #         'flow_by_sector_collapsed_fields'
-    #     ] = 'flow_by_sector_fields',
-    #     keep_description: bool = False
-    # ) -> '_FlowBy':
-    #     return super().clean_fb(flowby_config[fields],
-    #                             flowby_config['fbs_column_order'],
-    #                             keep_description)
 
 # The three classes extending pd.Series, together with the _constructor...
 # methods of each class, are required for allowing pandas methods called on
 # objects of these classes to return objects of these classes, as desired.
 # For more information, see
 # https://pandas.pydata.org/docs/development/extending.html
-
 
 class _FlowBySeries(pd.Series):
     _metadata = [*_FlowBy()._metadata]
