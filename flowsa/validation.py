@@ -342,7 +342,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
 
 
 def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
-                                           activity_set, source_name, config):
+                                           activity_set, config):
     """
     Function to compare the loaded flowbyactivity with the final flowbysector
     by activityname (if exists) to target sector level
@@ -350,12 +350,11 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     :param fba_load: df, FBA loaded and mapped using FEDEFL
     :param fbs_load: df, final FBS df
     :param activity_set: str, activity set
-    :param source_name: str, source name
     :param config: dictionary, method yaml
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
-    if check_activities_sector_like(source_name):
+    if check_activities_sector_like(fba_load):
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector '
                    'ratios for a dataset with sector-like activities because '
                    'if there are modifications to flowamounts for a sector, '
@@ -480,7 +479,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(
     # extract relevant geoscale data or aggregate existing data
     fba = subset_df_by_geoscale(fba_load, from_scale,
                                 method['target_geoscale'])
-    if check_activities_sector_like(source_name):
+    if check_activities_sector_like(fba_load):
         # if activities are sector-like, run sector aggregation and then
         # subset df to only keep NAICS2
         fba = fba[['Class', 'SourceName', 'FlowAmount', 'Unit', 'Context',
@@ -655,11 +654,7 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
         'FlowType', 'Flowable', 'ActivityProducedBy', 'ActivityConsumedBy',
         'Compartment', 'Context', 'Location', 'Year', 'Description']]
     # determine if activities are sector-like
-    if 'SourceName' in df_load.columns:
-        s = pd.unique(df_load['SourceName'])[0]
-    else:
-        s = pd.unique(df_load['MetaSources'])[0]
-    sector_like_activities = check_activities_sector_like(s)
+    sector_like_activities = check_activities_sector_like(df_load)
     # if activities are sector like, drop columns from merge group
     if sector_like_activities:
         merge_cols = [e for e in merge_cols if e not in (

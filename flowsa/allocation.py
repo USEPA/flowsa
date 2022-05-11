@@ -251,16 +251,7 @@ def equally_allocate_parent_to_child_naics(
 
     # determine if activities are sector-like, if aggregating a df with a
     # 'SourceName'
-    sector_like_activities = False
-    try:
-        if 'SourceName' in df_load.columns:
-            s = pd.unique(df_load['SourceName'])[0]
-            sector_like_activities = check_activities_sector_like(s)
-        if 'MetaSources' in df_load.columns:
-            s = pd.unique(df_load['MetaSources'])[0]
-            sector_like_activities = check_activities_sector_like(s)
-    except UnboundLocalError:
-        sector_like_activities = False
+    sector_like_activities = check_activities_sector_like(df_load)
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
@@ -313,9 +304,9 @@ def equally_allocate_parent_to_child_naics(
         # append to df
         if len(rl) != 0:
             vLogDetailed.warning('Data found at %s digit sectors not '
-                                 'represented in current data subset of %s: '
+                                 'represented in current data subset: '
                                  '{}'.format(' '.join(map(str, rl_list))),
-                                 str(i), s)
+                                 str(i))
             rows_lost = pd.concat([rows_lost, rl], ignore_index=True)
 
     if len(rows_lost) != 0:

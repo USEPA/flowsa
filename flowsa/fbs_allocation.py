@@ -37,7 +37,7 @@ def direct_allocation_method(fbs, k, names, method):
     log.info('Directly assigning activities to sectors')
     # for each activity, if activities are not sector like,
     # check that there is no data loss
-    if check_activities_sector_like(k) is False:
+    if check_activities_sector_like(fbs) is False:
         activity_list = []
         n_allocated = []
         for n in names:
@@ -247,8 +247,7 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
                    errors='ignore')
 
     # if activities are source like, reset activity columns
-    sector_like_activities = check_activities_sector_like(
-        fbs['MetaSources'][0])
+    sector_like_activities = check_activities_sector_like(flow_subset_mapped)
     if sector_like_activities:
         fbs = fbs.assign(ActivityProducedBy = fbs['SectorProducedBy'],
                          ActivityConsumedBy = fbs['SectorConsumedBy'])

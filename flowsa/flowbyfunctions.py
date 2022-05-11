@@ -204,16 +204,7 @@ def sector_aggregation(df_load):
     group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
     # determine if activities are sector-like, if aggregating a df with a
     # 'SourceName'
-    sector_like_activities = False
-    try:
-        if 'SourceName' in df_load.columns:
-            s = pd.unique(df_load['SourceName'])[0]
-            sector_like_activities = check_activities_sector_like(s)
-        if 'MetaSources' in df_load.columns:
-            s = pd.unique(df_load['MetaSources'])[0]
-            sector_like_activities = check_activities_sector_like(s)
-    except UnboundLocalError:
-        sector_like_activities = False
+    sector_like_activities = check_activities_sector_like(df_load)
 
     # if activities are sector like, drop columns while running ag then
     # add back in
@@ -295,13 +286,7 @@ def sector_disaggregation(df_load):
 
     # determine if activities are sector-like, if aggregating
     # a df with a 'SourceName'
-    sector_like_activities = False
-    if 'SourceName' in df_load.columns:
-        s = pd.unique(df_load['SourceName'])[0]
-        sector_like_activities = check_activities_sector_like(s)
-    elif 'MetaSources' in df_load.columns:
-        s = pd.unique(df_load['MetaSources'])[0]
-        sector_like_activities = check_activities_sector_like(s)
+    sector_like_activities = check_activities_sector_like(df_load)
 
     # if activities are sector like, drop columns while running disag then
     # add back in
@@ -665,8 +650,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
 
     # determine if activities are sector-like,
     # if aggregating a df with a 'SourceName'
-    s = pd.unique(df_load['SourceName'])[0]
-    sector_like_activities = check_activities_sector_like(s)
+    sector_like_activities = check_activities_sector_like(df_load)
     if sector_like_activities is False:
         log.error('Function is not written to estimate suppressed data when '
                   'activities are not NAICS-like.')

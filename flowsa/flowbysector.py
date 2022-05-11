@@ -208,7 +208,7 @@ def main(**kwargs):
                     log.warning(f"all flow data for {aset} is 0")
                     continue
                 # if activities are sector-like, check sectors are valid
-                if check_activities_sector_like(k):
+                if check_activities_sector_like(flows_subset):
                     flows_subset2 = replace_naics_w_naics_from_another_year(
                         flows_subset, method['target_sector_source'])
 
@@ -280,7 +280,7 @@ def main(**kwargs):
 
                 # define grouping columns dependent on sectors
                 # being activity-like or not
-                if check_activities_sector_like(k) is False:
+                if check_activities_sector_like(fbs) is False:
                     groupingcols = fbs_grouping_fields_w_activities
                     groupingdict = flow_by_sector_fields_w_activity
                 else:
@@ -324,7 +324,7 @@ def main(**kwargs):
 
                 # compare flowbysector with flowbyactivity
                 compare_activity_to_sector_flowamounts(
-                    flows_mapped_wsec, fbs_agg_2, aset, k, method)
+                    flows_mapped_wsec, fbs_agg_2, aset, method)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths
