@@ -192,7 +192,7 @@ source_names:
         clean_parameter: {"324110": 'ActivityProducedBy'}
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'
-    FBS_datapull_fxn: stewicombo_to_sector
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
     local_inventory_name: 'NEI_TRI_air_2017'
     compartments:
