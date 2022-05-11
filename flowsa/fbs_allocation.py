@@ -505,6 +505,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         if kwargs['compartment_subset'] != 'None':
             fba = \
                 fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
+    fba = fba.reset_index(drop=True)
 
     if len(fba) == 0:
         raise Exception('Allocation dataset is length 0; check flow or '
