@@ -252,12 +252,15 @@ def equally_allocate_parent_to_child_naics(
     # determine if activities are sector-like, if aggregating a df with a
     # 'SourceName'
     sector_like_activities = False
-    if 'SourceName' in df_load.columns:
-        s = pd.unique(df_load['SourceName'])[0]
-        sector_like_activities = check_activities_sector_like(s)
-    elif 'MetaSources' in df_load.columns:
-        s = pd.unique(df_load['MetaSources'])[0]
-        sector_like_activities = check_activities_sector_like(s)
+    try:
+        if 'SourceName' in df_load.columns:
+            s = pd.unique(df_load['SourceName'])[0]
+            sector_like_activities = check_activities_sector_like(s)
+        if 'MetaSources' in df_load.columns:
+            s = pd.unique(df_load['MetaSources'])[0]
+            sector_like_activities = check_activities_sector_like(s)
+    except UnboundLocalError:
+        sector_like_activities = False
 
     # if activities are source like, drop from df,
     # add back in as copies of sector columns columns to keep
