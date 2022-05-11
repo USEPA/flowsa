@@ -204,15 +204,13 @@ def sector_aggregation(df_load):
     group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
     # determine if activities are sector-like, if aggregating a df with a
     # 'SourceName'
-    try:
-        if 'SourceName' in df_load.columns:
-            s = pd.unique(df_load['SourceName'])[0]
-            sector_like_activities = check_activities_sector_like(s)
-        if 'MetaSources' in df_load.columns:
-            s = pd.unique(df_load['MetaSources'])[0]
-            sector_like_activities = check_activities_sector_like(s)
-    except UnboundLocalError:
-        sector_like_activities = False
+    sector_like_activities = False
+    if 'SourceName' in df_load.columns:
+        s = pd.unique(df_load['SourceName'])[0]
+        sector_like_activities = check_activities_sector_like(s)
+    elif 'MetaSources' in df_load.columns:
+        s = pd.unique(df_load['MetaSources'])[0]
+        sector_like_activities = check_activities_sector_like(s)
 
     # if activities are sector like, drop columns while running ag then
     # add back in
@@ -297,6 +295,9 @@ def sector_disaggregation(df_load):
     sector_like_activities = False
     if 'SourceName' in df_load.columns:
         s = pd.unique(df_load['SourceName'])[0]
+        sector_like_activities = check_activities_sector_like(s)
+    elif 'MetaSources' in df_load.columns:
+        s = pd.unique(df_load['MetaSources'])[0]
         sector_like_activities = check_activities_sector_like(s)
 
     # if activities are sector like, drop columns while running disag then
