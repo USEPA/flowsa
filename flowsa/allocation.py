@@ -346,7 +346,8 @@ def equal_allocation(fba_load):
     from flowsa.flowbyfunctions import assign_columns_of_sector_levels
 
     # first check that all sector lengths are the same
-    dfc = assign_columns_of_sector_levels(fba_load)
+    dfc = assign_columns_of_sector_levels(
+        fba_load, ambiguous_sector_assignment=sector_level)
     # if duplicated rows, keep assignment to most specific sectors
     duplicate_cols = [e for e in dfc.columns if e not in [
         'SectorProducedByLength', 'SectorConsumedByLength']]

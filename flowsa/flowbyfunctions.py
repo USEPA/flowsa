@@ -9,20 +9,19 @@ import pandas as pd
 import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
-from flowsa.common import fbs_activity_fields, \
-    load_crosswalk, fbs_fill_na_dict, \
+from flowsa.common import fbs_activity_fields, sector_level_key, \
+    load_crosswalk, fbs_fill_na_dict, check_activities_sector_like, \
     fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
     fba_activity_fields, fba_default_grouping_fields, \
     load_sector_length_cw_melt, fba_fill_na_dict, \
-    get_flowsa_base_name, fba_mapped_default_grouping_fields, \
-    check_activities_sector_like
+    fba_mapped_default_grouping_fields
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells, standardize_units
 from flowsa.location import US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, fips_number_key
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
-from flowsa.settings import datasourcescriptspath, log, vLogDetailed
+from flowsa.settings import log, vLogDetailed, vLog
 
 
 def create_geoscale_list(df, geoscale, year='2015'):
@@ -717,7 +716,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     drop_col = 'SectorConsumedByLength'
     if sector_column == 'SectorConsumedBy':
         drop_col = 'SectorProducedByLength'
-    df = assign_columns_of_sector_levels(df).rename(
+    df = assign_columns_of_sector_levels(df, 'NAICS_6').rename(
         columns={f'{sector_column}Length': 'SectorLength'}).drop(columns=[
         drop_col])
     # df with non-suppressed data only
@@ -1027,11 +1026,13 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
     return dfm
 
 
-def assign_columns_of_sector_levels(df_load):
+def assign_columns_of_sector_levels(df_load, ambiguous_sector_assignment=None):
     """
     Add additional column capturing the sector level in the two columns
-    :param df: df with at least on sector column
-    :param sectorcolumn: string, 'SectorProducedBy' or 'SectorConsumedBy'
+    :param df_load: df with at least on sector column
+    :param ambiguous_sector_assignment: if there are sectors that can be
+    assigned to multiple sector lengths (e.g., for government or household
+    sectors), option to specify which sector assignment to keep.
     :return: df with new column for sector length
     """
     df = replace_NoneType_with_empty_cells(df_load)
@@ -1040,7 +1041,7 @@ def assign_columns_of_sector_levels(df_load):
     # merge df assigning sector lengths
     for s in ['Produced', 'Consumed']:
         df = df.merge(cw, how='left', left_on=f'Sector{s}By',
-                           right_on='Sector').drop(columns=['Sector']).rename(
+                      right_on='Sector').drop(columns=['Sector']).rename(
             columns={'SectorLength': f'Sector{s}ByLength'})
         df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].fillna(0)
 
@@ -1061,17 +1062,55 @@ def assign_columns_of_sector_levels(df_load):
 
     # concat dfs
     dfc = pd.concat([df1, df2e], ignore_index=True)
-    dfc = dfc.sort_values(['SectorProducedByLength',
-                           'SectorConsumedByLength']).reset_index(drop=True)
 
     # check for duplicates. Rows might be duplicated if a sector is the same
     # for multiple sector lengths
     duplicate_cols = [e for e in dfc.columns if e not in [
         'SectorProducedByLength', 'SectorConsumedByLength']]
-    duplicate_df = dfc[dfc.duplicated(subset=duplicate_cols, keep=False)]
-    if len(duplicate_df) > 0:
-        log.warning('There are duplicate rows caused by ambiguous sectors.')
+    duplicate_df = dfc[dfc.duplicated(subset=duplicate_cols,
+                                      keep=False)].reset_index(drop=True)
 
+    if len(duplicate_df) > 0:
+        log.info('There are duplicate rows caused by ambiguous sectors.')
+        if ambiguous_sector_assignment is not None:
+            log.info('Retaining data for %s and dropping remaining '
+                     'rows. See validation log for data dropped',
+                     ambiguous_sector_assignment)
+            # first drop all data in the duplicate_df from dfc
+            dfs1 = pd.concat([dfc, duplicate_df]).drop_duplicates(keep=False)
+            # then in the duplicate df, only keep the rows that match the
+            # parameter indicated in the function call
+            dfs2 = duplicate_df[
+                (duplicate_df['SectorProducedByLength'] ==
+                 sector_level_key[ambiguous_sector_assignment]) &
+                (duplicate_df['SectorConsumedByLength'] == 0
+                 ) | (
+                (duplicate_df['SectorProducedByLength'] == 0) &
+                duplicate_df['SectorConsumedByLength'] ==
+                sector_level_key[ambiguous_sector_assignment]
+                ) | (
+                (duplicate_df['SectorProducedByLength'] ==
+                 sector_level_key[ambiguous_sector_assignment]) &
+                duplicate_df['SectorConsumedByLength'] ==
+                sector_level_key[ambiguous_sector_assignment])].reset_index(
+                drop=True)
+            # merge the two dfs
+            dfc = pd.concat([dfs1, dfs2])
+            # print out what data was dropped
+            df_dropped = pd.merge(duplicate_df, dfs2, how='left',
+                                  indicator=True).query(
+                '_merge=="left_only"').drop('_merge', axis=1)
+            df_dropped = df_dropped[['SectorProducedBy', 'SectorConsumedBy',
+                                     'SectorProducedByLength',
+                                     'SectorConsumedByLength'
+                                     ]].drop_duplicates()
+            vLogDetailed.info('After assigning a column of sector lengths, '
+                              'dropped data with the following sector '
+                              'assignments due to ambiguous sector lengths '
+                              '%s: \n {}'.format(df_dropped.to_string()))
+
+    dfc = dfc.sort_values(['SectorProducedByLength',
+                           'SectorConsumedByLength']).reset_index(drop=True)
     return dfc
 
 
