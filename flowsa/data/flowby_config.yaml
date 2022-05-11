@@ -1,0 +1,151 @@
+flow_by_activity_fields: &fba_fields
+  ActivityConsumedBy: string
+  ActivityProducedBy: string
+  Class: string
+  Compartment: string
+  DataCollection: float
+  DataReliability: float
+  Description: string
+  DistributionType: string
+  FlowAmount: float
+  FlowName: string
+  FlowType: string
+  Location: string
+  LocationSystem: string
+  Max: float
+  MeasureofSpread: string
+  Min: float
+  SourceName: string
+  Spread: float
+  Unit: string
+  Year: int
+
+_mapped_fields: &mapped_fields
+  Context: string
+  FlowUUID: string
+  Flowable: string
+
+_sector_fields: &sector_fields
+  ConsumedBySectorType: string
+  ProducedBySectorType: string
+  SectorConsumedBy: string
+  SectorProducedBy: string
+  SectorSourceName: string
+
+flow_by_activity_mapped_fields:
+  <<: [*fba_fields, *mapped_fields]
+
+flow_by_activity_mapped_wsec_fields:
+  <<: [*fba_fields, *mapped_fields, *sector_fields]
+
+flow_by_activity_wsec_fields:
+  <<: [*fba_fields, *sector_fields]
+
+fba_column_order:
+  - Class
+  - SourceName
+  - FlowName
+  - Flowable
+  - FlowAmount
+  - Unit
+  - FlowType
+  - ActivityProducedBy
+  - ActivityConsumedBy
+  - Compartment
+  - Context
+  - Location
+  - LocationSystem
+  - Year
+  - MeasureofSpread
+  - Spread
+  - DistributionType
+  - Min
+  - Max
+  - DataReliability
+  - DataCollection
+  - Description
+  - FlowUUID
+  - SectorProducedBy
+  - SectorConsumedBy
+  - SectorSourceName
+  - ProducedBySectorType
+  - ConsumedBySectorType
+
+_flow_by_sector_base_fields: &fbs_base_fields
+  Class: string
+  Context: string
+  DataCollection: float
+  DataReliability: float
+  DistributionType: string
+  FlowAmount: float
+  FlowType: string
+  FlowUUID: string
+  Flowable: string
+  GeographicalCorrelation: float
+  Location: string
+  LocationSystem: string
+  Max: float
+  MeasureofSpread: string
+  MetaSources: string
+  Min: float
+  SectorSourceName: string
+  Spread: float
+  TechnologicalCorrelation: float
+  TemporalCorrelation: float
+  Unit: string
+  Year: int
+
+_collapsed_fields: &collapsed_fields
+  Sector: string
+
+_activity_fields: &activity_fields
+  ActivityConsumedBy: string
+  ActivityProducedBy: string
+
+flow_by_sector_fields: &fbs_fields
+  <<: *fbs_base_fields
+  SectorConsumedBy: string
+  SectorProducedBy: string
+
+flow_by_sector_fields_w_activity:
+  <<: [*fbs_fields, *activity_fields]
+
+flow_by_sector_collapsed_fields:
+  <<: [*fbs_base_fields, *collapsed_fields]
+
+fbs_column_order:
+  - Flowable
+  - Class
+  - Sector
+  - SectorProducedBy
+  - SectorConsumedBy
+  - SectorSourceName
+  - Context
+  - Location
+  - LocationSystem
+  - flowAmount
+  - Unit
+  - FlowType
+  - Year
+  - MeasureofSpread
+  - Spread
+  - DistributionType
+  - Min
+  - Max
+  - DataReliability
+  - TemporalCorrelation
+  - GeographicalCorrelation
+  - TechnologicalCorrelation
+  - DataCollection
+  - MetaSources
+  - FlowUUID
+  - ActivityProducedBy
+  - ActivityConsumedBy
+
+activity_fields:
+  ProducedBy:
+    flowbyactivity: ActivityProducedBy
+    flowbysector: SectorProducedBy
+  ConsumedBy:
+    flowbyactivity: ActivityConsumedBy
+    flowbysector: SectorConsumedBy
