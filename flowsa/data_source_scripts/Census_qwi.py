@@ -50,8 +50,6 @@ def census_qwi_url_helper(*, build_url, year, config, **_):
         fips_year = str(2010)
     county_fips_df = get_county_FIPS(fips_year)
     county_fips = county_fips_df.FIPS
- #   url = "https://api.census.gov/data/timeseries/qwi/se?get=industry,EmpTotal,ownercode&for=county:198&in=state:02&year=2002&quarter=1&key=8690959118863c43f40a6b1b3ccb1fe3f67578de"
- #   urls.append(url)
     for q in quarters:
         for d in county_fips:
             url = build_url
@@ -64,6 +62,7 @@ def census_qwi_url_helper(*, build_url, year, config, **_):
             url = url.replace("__county__", county_digit)
             url = url.replace("__quarter__", str(q))
             urls.append(url)
+
     return urls
 
 
@@ -74,9 +73,16 @@ def census_qwi_call(*, resp, **_):
     :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    json_load = json.loads(resp.text)
-    # convert response to dataframe
-    df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])
+    try:
+        json_load = json.loads(resp.text)
+        # convert response to dataframe
+        df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])
+    except:
+        print(resp)
+        df = pd.DataFrame()
+
+
+
     return df
 
 
