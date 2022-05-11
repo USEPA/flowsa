@@ -335,12 +335,15 @@ def equally_allocate_parent_to_child_naics(
     return df_w_lost_data
 
 
-def equal_allocation(fba_load):
+def equal_allocation(fba_load, sector_level):
     """
     Allocate an Activity in a FBA equally to all mapped sectors.
     Function only works if all mapped sectors are the same length
 
     :param fba_load: df, FBA with activity columns mapped to sectors
+    :param sector_level: string ('NAICS_X') used when assigning columns of
+    sector levels if there are ambiguous sectors (e.g., household and
+    government sectors)
     :return: df, with FlowAmount equally allocated to all mapped sectors
     """
     from flowsa.flowbyfunctions import assign_columns_of_sector_levels
