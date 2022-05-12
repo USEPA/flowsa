@@ -208,7 +208,7 @@ def remove_duplicate_NEI_flows(df):
     return df
 
 
-def drop_GHGs(df):
+def drop_GHGs(df, *_):
     """
     GHGs are included in some NEI datasets. If these data are not
     compiled together with GHGRP, need to remove them as they will be
@@ -216,18 +216,13 @@ def drop_GHGs(df):
     :param df: df, FBA format
     :return: df
     """""
-    # Flow names reflect source data prior to FEDEFL mapping, using 'FlowName'
-    # instead of 'Flowable'
     flowlist = [
         'Carbon Dioxide',
         'Methane',
         'Nitrous Oxide',
         'Sulfur Hexafluoride',
     ]
-
-    df = df.loc[~df['FlowName'].isin(flowlist)]
-
-    return df
+    return df.query('Flowable not in @flowlist')
 
 
 def drop_pesticides(df):
