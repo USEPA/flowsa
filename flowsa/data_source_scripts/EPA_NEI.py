@@ -208,6 +208,8 @@ def remove_duplicate_NEI_flows(df):
     return df
 
 
+# TODO: This is only used with stewi data. Modify it to serve as a
+# clean_fbs_df_fxn, and remove the current corresponding code from stewFBS.py
 def drop_GHGs(df):
     """
     GHGs are included in some NEI datasets. If these data are not
