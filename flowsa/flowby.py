@@ -469,15 +469,15 @@ class FlowBySector(_FlowBy):
                     .conditional_pipe('clean_fbs_df_fxn' in source_config,
                                       source_config.get('clean_fbs_df_fxn'))
                     .update_fips_to_geoscale(method_config['target_geoscale'])
-                    .conditional_method(
-                        source_config.get('source_flows'), 'query',
-                        f'Flowable in '
-                        f'{list(source_config.get("source_flows", []))}')
-                    .conditional_method(
-                        isinstance(source_config.get('source_flows'), dict),
-                        'replace',
-                        {'Flowable': source_config.get('source_flows')})
                 )
+
+                if source_config.get('source_flows'):
+                    source_flows = source_config['source_flows']
+                    fbs = (fbs
+                           .query('Flowable in @source_flows')
+                           .conditional_method(isinstance(source_flows, dict),
+                                               'replace',
+                                               {'Flowable': source_flows}))
                 log.info('Appending %s to FBS list', source_name)
                 component_fbs_list.append(fbs)
 
