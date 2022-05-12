@@ -222,7 +222,8 @@ def drop_GHGs(df, *_):
         'Nitrous Oxide',
         'Sulfur Hexafluoride',
     ]
-    return df.query('Flowable not in @flowlist')
+    flow_var = 'Flowable' if 'Flowable' in df.columns else 'FlowName'
+    return df.query(f'{flow_var} not in @flowlist')
 
 
 def drop_pesticides(df):
