@@ -513,6 +513,7 @@ def compare_fba_geo_subset_and_fbs_output_totals(
     try:
         # merge FBA and FBS totals
         df_merge = fba_agg.merge(fbs_agg, how='left')
+        df_merge['FBS_amount'] = df_merge['FBS_amount'].fillna(0)
         df_merge['FlowAmount_difference'] = \
             df_merge['FBA_amount'] - df_merge['FBS_amount']
         df_merge['Percent_difference'] = \
