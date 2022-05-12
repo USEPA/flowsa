@@ -208,9 +208,7 @@ def remove_duplicate_NEI_flows(df):
     return df
 
 
-# TODO: This is only used with stewi data. Modify it to serve as a
-# clean_fbs_df_fxn, and remove the current corresponding code from stewFBS.py
-def drop_GHGs(df):
+def drop_GHGs(df, *_):
     """
     GHGs are included in some NEI datasets. If these data are not
     compiled together with GHGRP, need to remove them as they will be
@@ -218,18 +216,14 @@ def drop_GHGs(df):
     :param df: df, FBA format
     :return: df
     """""
-    # Flow names reflect source data prior to FEDEFL mapping, using 'FlowName'
-    # instead of 'Flowable'
     flowlist = [
         'Carbon Dioxide',
         'Methane',
         'Nitrous Oxide',
         'Sulfur Hexafluoride',
     ]
-
-    df = df.loc[~df['FlowName'].isin(flowlist)]
-
-    return df
+    flow_var = 'Flowable' if 'Flowable' in df.columns else 'FlowName'
+    return df.query(f'{flow_var} not in @flowlist')
 
 
 def drop_pesticides(df):
