@@ -471,7 +471,12 @@ class FlowBySector(_FlowBy):
                     .update_fips_to_geoscale(method_config['target_geoscale'])
                     .conditional_method(
                         source_config.get('source_flows'), 'query',
-                        f'Flowable in {source_config.get("source_flows")}')
+                        f'Flowable in '
+                        f'{list(source_config.get("source_flows", []))}')
+                    .conditional_method(
+                        isinstance(source_config.get('source_flows'), dict),
+                        'replace',
+                        {'Flowable': source_config.get('source_flows')})
                 )
                 log.info('Appending %s to FBS list', source_name)
                 component_fbs_list.append(fbs)

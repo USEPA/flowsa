@@ -74,7 +74,7 @@ source_names:
     inventory_dict: {'NEI': '2017'}
     local_inventory_name: NEI_TRI_air_2017
     source_flows:  # Remember GHGs should not be drawn from NEI
-      - Particulate matter, ≤ 2.5μm
+      Particulate matter, ≤ 2.5μm: PM 2.5
     compartments:
      - air
     functions:
