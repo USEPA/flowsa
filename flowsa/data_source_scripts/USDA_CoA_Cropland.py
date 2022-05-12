@@ -292,7 +292,7 @@ def disaggregate_coa_cropland_to_6_digit_naics(
         ~fba_w_sector[sector_col].isna()].reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = equal_allocation(fba_w_sector, 'NAICS_6')
+    fba_w_sector = equal_allocation(fba_w_sector)
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
@@ -333,7 +333,7 @@ def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
         .reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = equal_allocation(fba_w_sector, 'NAICS_6')
+    fba_w_sector = equal_allocation(fba_w_sector)
 
     # todo: add back in once suppression fxn modified to accept non-naics
     #  like activities and mixed level final naics (naics6 and naics7)

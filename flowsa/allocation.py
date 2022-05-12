@@ -330,7 +330,7 @@ def equally_allocate_parent_to_child_naics(
     return df_w_lost_data
 
 
-def equal_allocation(fba_load, sector_level):
+def equal_allocation(fba_load):
     """
     Allocate an Activity in a FBA equally to all mapped sectors.
     Function only works if all mapped sectors are the same length
@@ -344,9 +344,11 @@ def equal_allocation(fba_load, sector_level):
     from flowsa.flowbyfunctions import assign_columns_of_sector_levels
 
     # first check that all sector lengths are the same
-    dfc = assign_columns_of_sector_levels(
-        fba_load, ambiguous_sector_assignment=sector_level)
-    # if duplicated rows, keep assignment to most specific sectors
+    dfc = assign_columns_of_sector_levels(fba_load)
+    # if duplicated rows, keep assignment to most specific sectors because
+    # data should already be at final assignment lengths if equally
+    # allocating and because not manipulating the loaded dataset, but rather
+    # just checking that all sector lengths match for an activity
     duplicate_cols = [e for e in dfc.columns if e not in [
         'SectorProducedByLength', 'SectorConsumedByLength']]
     duplicate_df = dfc[dfc.duplicated(duplicate_cols)]

@@ -704,7 +704,7 @@ def equally_allocate_suppressed_parent_to_child_naics(
     drop_col = 'SectorConsumedByLength'
     if sector_column == 'SectorConsumedBy':
         drop_col = 'SectorProducedByLength'
-    df = assign_columns_of_sector_levels(df, 'NAICS_6').rename(
+    df = assign_columns_of_sector_levels(df).rename(
         columns={f'{sector_column}Length': 'SectorLength'}).drop(columns=[
         drop_col])
     # df with non-suppressed data only
@@ -817,7 +817,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
                     'amount being allocated more than %s. Resetting flow '
                     'values to be allocated to 0. See validation log for '
                     'details.', str(percenttolerance), str(flowtolerance))
-                vLogDetailed.info('Values where flow remainders are negative: '
+                vLogDetailed.info('Values where flow remainders are '
+                                  'negative, resetting to 0: '
                                   '\n {}'.format(negv.to_string()))
             df_sup3['FlowRemainder'] = np.where(df_sup3["FlowRemainder"] < 0,
                                                 0, df_sup3['FlowRemainder'])
@@ -1027,7 +1028,7 @@ def subset_and_merge_df_by_sector_lengths(df, length1, length2):
     return dfm
 
 
-def assign_columns_of_sector_levels(df_load, ambiguous_sector_assignment=None):
+def assign_columns_of_sector_levels(df_load):
     """
     Add additional column capturing the sector level in the two columns
     :param df_load: df with at least on sector column
@@ -1072,44 +1073,71 @@ def assign_columns_of_sector_levels(df_load, ambiguous_sector_assignment=None):
                                       keep=False)].reset_index(drop=True)
 
     if len(duplicate_df) > 0:
-        log.info('There are duplicate rows caused by ambiguous sectors.')
-        if ambiguous_sector_assignment is not None:
-            log.info('Retaining data for %s and dropping remaining '
-                     'rows. See validation log for data dropped',
-                     ambiguous_sector_assignment)
-            # first drop all data in the duplicate_df from dfc
-            dfs1 = pd.concat([dfc, duplicate_df]).drop_duplicates(keep=False)
-            # then in the duplicate df, only keep the rows that match the
-            # parameter indicated in the function call
-            dfs2 = duplicate_df[
-                (duplicate_df['SectorProducedByLength'] ==
-                 sector_level_key[ambiguous_sector_assignment]) &
-                (duplicate_df['SectorConsumedByLength'] == 0
-                 ) | (
-                (duplicate_df['SectorProducedByLength'] == 0) &
-                duplicate_df['SectorConsumedByLength'] ==
-                sector_level_key[ambiguous_sector_assignment]
-                ) | (
-                (duplicate_df['SectorProducedByLength'] ==
-                 sector_level_key[ambiguous_sector_assignment]) &
-                duplicate_df['SectorConsumedByLength'] ==
-                sector_level_key[ambiguous_sector_assignment])].reset_index(
-                drop=True)
-            # merge the two dfs
-            dfc = pd.concat([dfs1, dfs2])
-            # print out what data was dropped
-            df_dropped = pd.merge(duplicate_df, dfs2, how='left',
-                                  indicator=True).query(
-                '_merge=="left_only"').drop('_merge', axis=1)
-            df_dropped = df_dropped[['SectorProducedBy', 'SectorConsumedBy',
-                                     'SectorProducedByLength',
-                                     'SectorConsumedByLength'
-                                     ]].drop_duplicates()
-            vLogDetailed.info('After assigning a column of sector lengths, '
-                              'dropped data with the following sector '
-                              'assignments due to ambiguous sector lengths '
-                              '%s: \n {}'.format(df_dropped.to_string()))
+        log.warning('There are duplicate rows caused by ambiguous sectors.')
 
+    dfc = dfc.sort_values(['SectorProducedByLength',
+                           'SectorConsumedByLength']).reset_index(drop=True)
+    return dfc
+
+
+def assign_columns_of_sector_levels_without_ambiguous_sectors(
+        df_load, ambiguous_sector_assignment=None):
+
+    dfc = assign_columns_of_sector_levels(df_load)
+
+    # check for duplicates. Rows might be duplicated if a sector is the same
+    # for multiple sector lengths
+    duplicate_cols = [e for e in dfc.columns if e not in [
+        'SectorProducedByLength', 'SectorConsumedByLength']]
+    duplicate_df = dfc[dfc.duplicated(subset=duplicate_cols,
+                                      keep=False)].reset_index(drop=True)
+
+    if (len(duplicate_df) > 0) % (ambiguous_sector_assignment is not None):
+        log.info('Retaining data for %s and dropping remaining '
+                 'rows. See validation log for data dropped',
+                 ambiguous_sector_assignment)
+        # first drop all data in the duplicate_df from dfc
+        dfs1 = pd.concat([dfc, duplicate_df]).drop_duplicates(keep=False)
+        # drop sector length cols, drop duplicates, aggregate df to ensure
+        # keep the intended data, and then reassign column sectors,
+        # formatted this way because would like to avoid sector aggreggation
+        # on large dfs
+        dfs2 = duplicate_df.drop(
+            columns=['SectorProducedByLength',
+                     'SectorConsumedByLength']).drop_duplicates()
+        dfs2 = sector_aggregation(dfs2)
+        dfs2 = assign_columns_of_sector_levels(dfs2)
+        # then in the duplicate df, only keep the rows that match the
+        # parameter indicated in the function call
+        sectorlength = sector_level_key[ambiguous_sector_assignment]
+        dfs2 = dfs2[
+            ((dfs2['SectorProducedByLength'] == sectorlength) &
+             (dfs2['SectorConsumedByLength'] == 0))
+            |
+            ((dfs2['SectorProducedByLength'] == 0) &
+             (dfs2['SectorConsumedByLength'] == sectorlength))
+            |
+            ((dfs2['SectorProducedByLength'] == sectorlength) &
+             (dfs2['SectorConsumedByLength'] == sectorlength))
+        ].reset_index(drop=True)
+        if len(dfs2) == 0:
+            log.warning('Data is lost from dataframe because none of the '
+                        'ambiguous sectors match %s',
+                        ambiguous_sector_assignment)
+        # merge the two dfs
+        dfc = pd.concat([dfs1, dfs2])
+        # print out what data was dropped
+        df_dropped = pd.merge(
+            duplicate_df, dfs2, how='left', indicator=True).query(
+            '_merge=="left_only"').drop('_merge', axis=1)
+        df_dropped = df_dropped[
+            ['SectorProducedBy', 'SectorConsumedBy',
+             'SectorProducedByLength', 'SectorConsumedByLength'
+             ]].drop_duplicates().reset_index(drop=True)
+        vLogDetailed.info('After assigning a column of sector lengths, '
+                          'dropped data with the following sector '
+                          'assignments due to ambiguous sector lengths '
+                          '%s: \n {}'.format(df_dropped.to_string()))
     dfc = dfc.sort_values(['SectorProducedByLength',
                            'SectorConsumedByLength']).reset_index(drop=True)
     return dfc
