@@ -1,7 +1,6 @@
 *.parquet
 .idea
 venv
-flowby-old.py
 .venv
 *.env
 *__pycache__
