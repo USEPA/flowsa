@@ -187,7 +187,7 @@ def main(**kwargs):
     # filename if run into error
     try:
         config = load_yaml_dict(source, flowbytype='FBA')
-    except UnboundLocalError:
+    except (UnboundLocalError, FileNotFoundError):
         log.info(f'Could not find Flow-By-Activity config file for {source}')
         source = get_flowsa_base_name(sourceconfigpath, source, "yaml")
         log.info(f'Generating FBA for {source}')
