@@ -123,7 +123,7 @@ fbs_column_order:
   - Context
   - Location
   - LocationSystem
-  - flowAmount
+  - FlowAmount
   - Unit
   - FlowType
   - Year
