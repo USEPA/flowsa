@@ -77,8 +77,6 @@ source_names:
       Particulate matter, ≤ 2.5μm: PM 2.5
     compartments:
      - air
-    functions:
-     - drop_GHGs
     reassign_process_to_sectors:
      - airplane_emissions
 
