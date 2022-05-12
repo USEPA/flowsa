@@ -464,12 +464,12 @@ class FlowBySector(_FlowBy):
                         download_fbs_ok=download_sources_ok
                     )
 
-                fbs = (
-                    source_data
-                    .conditional_pipe('clean_fbs_df_fxn' in source_config,
-                                      source_config.get('clean_fbs_df_fxn'))
-                    .update_fips_to_geoscale(method_config['target_geoscale'])
-                )
+                fbs = (source_data
+                       .conditional_pipe(
+                           'clean_fbs_df_fxn' in source_config,
+                           source_config.get('clean_fbs_df_fxn'))
+                       .update_fips_to_geoscale(
+                           method_config['target_geoscale']))
 
                 if source_config.get('source_flows'):
                     source_flows = source_config['source_flows']
