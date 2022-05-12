@@ -73,7 +73,7 @@ source_names:
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     inventory_dict: {'NEI': '2017'}
     local_inventory_name: NEI_TRI_air_2017
-    source_flows:
+    source_flows:  # Remember GHGs should not be drawn from NEI
       - Particulate matter, ≤ 2.5μm
     compartments:
      - air
