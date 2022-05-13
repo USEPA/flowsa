@@ -27,7 +27,7 @@ class _FlowBy(pd.DataFrame):
     ) -> None:
         if isinstance(data, pd.DataFrame) and fields is not None:
             fill_na_dict = {
-                field: 0 if dtype in ['int', 'float'] else pd.NA
+                field: 0 if dtype in ['int', 'float'] else string_null
                 for field, dtype in fields.items()
             }
             na_string_dict = {
