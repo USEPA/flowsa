@@ -80,10 +80,8 @@ def census_qwi_call(*, resp, **_):
     except:
         print(resp)
         df = pd.DataFrame()
-
-
-
-    return df
+    finally:
+        return df
 
 
 def census_qwi_parse(*, df_list, year, **_):
