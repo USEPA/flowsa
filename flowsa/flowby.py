@@ -188,6 +188,16 @@ class _FlowBy(pd.DataFrame):
             )
         )
 
+        standardized_units = ['m2', 'USD', 'kg', 'kg/m2', 'kg/USD', 'MJ']
+
+        if any(~standardized.Unit.isin(standardized_units)):
+            log.warning('The following units may not have been standardized '
+                        'on import: %s. This may not be a problem, if they '
+                        'will be standardized later, e.g. by mapping to the '
+                        'federal elementary flow list',
+                        [unit for unit in standardized.Unit.unique()
+                         if unit not in standardized_units])
+
         return standardized
 
     def conditional_pipe(
