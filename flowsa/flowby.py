@@ -8,6 +8,7 @@ from . import (common, settings, location, dataclean, metadata, sectormapping,
 from .flowsa_log import log, vlog
 import esupy.processed_data_mgmt
 import esupy.dqi
+import fedelemflowlist
 
 FB = TypeVar('FB', bound='_FlowBy')
 
@@ -191,10 +192,9 @@ class _FlowBy(pd.DataFrame):
         standardized_units = ['m2', 'USD', 'kg', 'kg/m2', 'kg/USD', 'MJ']
 
         if any(~standardized.Unit.isin(standardized_units)):
-            log.warning('The following units may not have been standardized '
-                        'on import: %s. This may not be a problem, if they '
-                        'will be standardized later, e.g. by mapping to the '
-                        'federal elementary flow list',
+            log.warning('Some units not standardized on import: %s. May not '
+                        'be a problem, if they will be standardized later, '
+                        'e.g. by mapping to the federal elementary flow list',
                         [unit for unit in standardized.Unit.unique()
                          if unit not in standardized_units])
 
@@ -343,14 +343,116 @@ class FlowByActivity(_FlowBy):
             source=source,
             year=year
         )
-        fb = super()._getFlowBy(
+        return super()._getFlowBy(
             file_metadata=file_metadata,
             download_ok=download_ok,
             flowby_generator=flowby_generator,
             output_path=settings.fbaoutputpath
         )
-        fba = cls(fb)
-        return fba
+
+    # TODO: probably only slight modification is needed to allow for material
+    # flow list mapping using this function as well.
+    def map_to_fedefl_list(
+        self,
+        source_name: str,
+        source_config: dict,
+        drop_fba_columns: bool = False,
+        drop_unmapped_rows: bool = False
+    ) -> 'FlowByActivity':
+        log.info('Mapping flows in %s to federal elementary flow list',
+                 source_name)
+
+        fba_merge_keys = [
+            'SourceName',
+            'Flowable',
+            'Unit',
+            'Context'
+        ]
+        mapping_subset = source_config.get('fedefl_mapping', source_name)
+        mapping_fields = [
+            'SourceListName',
+            'SourceFlowName',
+            'SourceFlowContext',
+            'SourceUnit',
+            'ConversionFactor',
+            'TargetFlowName',
+            'TargetFlowContext',
+            'TargetUnit',
+            'TargetFlowUUID'
+        ]
+        mapping_merge_keys = [
+            'SourceListName',
+            'SourceFlowName',
+            'SourceUnit',
+            'SourceFlowContext'
+        ]
+        merge_type = 'inner' if drop_unmapped_rows else 'left'
+        if 'fedefl_mapping' in source_config:
+            fba_merge_keys.remove('SourceName')
+            mapping_merge_keys.remove('SourceListName')
+
+        fba = (self
+               .assign(Flowable=self.FlowName,
+                       Context=self.Compartment,
+                       FlowAmount=self.FlowAmount.mask(
+                           self.Unit.str.contains('/d'),
+                           self.FlowAmount * 365),
+                       Unit=self.Unit.str.replace('/d', ''))
+               .conditional_method(drop_fba_columns, 'drop',
+                                   columns=['FlowName', 'Compartment'])
+               .fillna({field: '' for field in fba_merge_keys}))
+
+        if any(self.Unit.str.contains('/d')):
+            log.info('Converting daily flows %s to annual',
+                     [unit for unit in self.Unit.unique() if '/d' in unit])
+
+        mapping = (fedelemflowlist
+                   .get_flowmapping(mapping_subset)[mapping_fields])
+
+        if mapping.empty:
+            log.warning('Elementary flow list entries for %s not found',
+                        mapping_subset)
+            return FlowByActivity(self, mapped=True)
+
+        mapping = (mapping
+                   .assign(ConversionFactor=mapping.ConversionFactor.fillna(1))
+                   .fillna({field: '' for field in mapping_merge_keys}))
+
+        mapped_fba = fba.merge(mapping,
+                               how=merge_type,
+                               left_on=fba_merge_keys,
+                               right_on=mapping_merge_keys,
+                               indicator='mapped')
+
+        mapped_fba = (mapped_fba
+                      .assign(
+                          Flowable=mapped_fba.Flowable.mask(
+                              mapped_fba.TargetFlowName.notnull(),
+                              mapped_fba.TargetFlowName),
+                          Context=mapped_fba.Context.mask(
+                              mapped_fba.TargetFlowName.notnull(),
+                              mapped_fba.TargetFlowContext),
+                          Unit=mapped_fba.Unit.mask(
+                              mapped_fba.TargetFlowName.notnull(),
+                              mapped_fba.TargetUnit),
+                          FlowAmount=mapped_fba.FlowAmount.mask(
+                              mapped_fba.TargetFlowName.notnull(),
+                              mapped_fba.FlowAmount
+                              * mapped_fba.ConversionFactor),
+                          FlowUUID=mapped_fba.TargetFlowUUID
+                      )
+                      .drop(columns=mapping_fields))
+
+        if any(mapped_fba.mapped == 'both'):
+            log.info('Units standardized to %s by mapping to federal '
+                     'elementary flow list', list(mapping.TargetUnit.unique()))
+        if any(mapped_fba.mapped == 'left_only'):
+            log.warning('Some units not standardized by mapping to federal '
+                        'elementary flows list: %s',
+                        list(mapped_fba
+                             .query('mapped == "left_only"').Unit.unique()))
+
+        return mapped_fba.drop(columns='mapped')
 
 
 class FlowBySector(_FlowBy):
@@ -427,14 +529,12 @@ class FlowBySector(_FlowBy):
             fbsconfigpath=external_config_path,
             download_FBAs_if_missing=download_sources_ok
         )
-        fb = super()._getFlowBy(
+        return super()._getFlowBy(
             file_metadata=file_metadata,
             download_ok=download_fbs_ok,
             flowby_generator=flowby_generator,
             output_path=settings.fbsoutputpath
         )
-        fbs = cls(fb)
-        return fbs
 
     @classmethod
     def generateFlowBySector(
@@ -481,7 +581,7 @@ class FlowBySector(_FlowBy):
                        .update_fips_to_geoscale(
                            method_config['target_geoscale']))
 
-                if source_config.get('source_flows'):
+                if 'source_flows' in source_config:
                     source_flows = source_config['source_flows']
                     fbs = (fbs
                            .query('Flowable in @source_flows')
@@ -490,6 +590,30 @@ class FlowBySector(_FlowBy):
                                                {'Flowable': source_flows}))
                 log.info('Appending %s to FBS list', source_name)
                 component_fbs_list.append(fbs)
+
+            if source_config['data_format'] == 'FBA':
+                source_data = FlowByActivity.getFlowByActivity(
+                    source=source_name,
+                    year=source_config['year'],
+                    download_ok=download_sources_ok
+                )
+
+                fba = (source_data
+                       .query(f'Class == \'{source_config["class"]}\'')
+                       # TODO: source_config keys not currently handled:
+                       # TODO: 'source_fba_load_scale', 'apply_urban_rural',
+                       .conditional_pipe(
+                           'clean_fba_before_mapping_df_fxn' in source_config,
+                           source_config.get('clean_fba_before_mapping_df_fxn')
+                           )
+                       .map_to_fedefl_list(source_name, source_config)
+                       .conditional_pipe(
+                           'clean_fba_df_fxn' in source_config,
+                           source_config.get('clean_fba_df_fxn'))
+                       )
+
+                log.info('Appending %s to FBS list', source_name)
+                component_fbs_list.append(fba)
 
         return component_fbs_list
 
