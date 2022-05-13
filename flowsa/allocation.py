@@ -375,15 +375,15 @@ def equal_allocation(fba_load):
     # create counts of rows
     df_count = fba_load.groupby(
         groupcols, as_index=False, dropna=False).size()
-    df_count[['MeasureofSpread', 'DistributionType']] = \
-        df_count[['MeasureofSpread', 'DistributionType']].astype(str)
-    df_count = replace_strings_with_NoneType(df_count)
+    df_count = replace_NoneType_with_empty_cells(df_count)
 
-    # merge dfs
-    fba_load = replace_strings_with_NoneType(fba_load)
-    dfm = fba_load.merge(df_count, how='left')
+    # merge dfs, replace cells with empty strings to ensure merge occurs
+    # correctly
+    fba = replace_NoneType_with_empty_cells(fba_load)
+    dfm = fba.merge(df_count, how='outer', on=groupcols)
     # calc new flowamounts
     dfm['FlowAmount'] = dfm['FlowAmount'] / dfm['size']
     dfm = dfm.drop(columns='size')
+    dfm = replace_strings_with_NoneType(dfm)
 
     return dfm
