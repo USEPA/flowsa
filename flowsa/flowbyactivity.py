@@ -13,9 +13,9 @@ import pandas as pd
 from urllib import parse
 from esupy.processed_data_mgmt import write_df_to_file
 from esupy.remote import make_url_request
-from flowsa.common import log, load_api_key, sourceconfigpath, \
+from flowsa.common import load_api_key, sourceconfigpath, \
     load_yaml_dict, rename_log_file, get_flowsa_base_name
-from flowsa.settings import paths
+from flowsa.settings import paths, log
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import fba_fill_na_dict
 from flowsa.schema import flow_by_activity_fields

@@ -1,4 +1,4 @@
-# update_NAICS_crosswalk.py (scripts)
+# writeNAICScrosswalk.py
 # !/usr/bin/env python3
 # coding=utf-8
 

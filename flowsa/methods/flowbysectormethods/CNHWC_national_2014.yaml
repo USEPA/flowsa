@@ -29,7 +29,9 @@ source_names:
         helper_source_class: "Employment"
         helper_source_year: 2014
         helper_flow:
-          - "Number of employees"
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
         helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
