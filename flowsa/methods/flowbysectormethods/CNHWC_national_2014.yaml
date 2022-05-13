@@ -7,7 +7,7 @@ source_names:
     class: Other
     geoscale_to_use: national
     year: 2014
-    clean_fba_df_fxn: 'assign_wood_to_engineering'
+    clean_fba_df_fxn: !script_function:EPA_CDDPath 'assign_wood_to_engineering'
     mfl_mapping: 'EPA_CDDPath'
     activity_sets:
       activity_set_1:
@@ -16,11 +16,11 @@ source_names:
         - "Other"
         - "Other - Wood"
         - "Roads and Bridges"
-        allocation_source: "Census_VIP"        
+        allocation_source: "Census_VIP"
         allocation_method: proportional
         allocation_source_class: 'Money'
         allocation_source_year: 2014
-        allocation_flow: 
+        allocation_flow:
         - "Construction spending"
         allocation_compartment: None
         allocation_from_scale: national
@@ -29,8 +29,9 @@ source_names:
         helper_source_class: "Employment"
         helper_source_year: 2014
         helper_flow:
-          - "Number of employees"
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
         helper_from_scale: national
-        clean_helper_fba: clean_bls_qcew_fba
         clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
-

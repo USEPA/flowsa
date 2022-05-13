@@ -6,9 +6,9 @@ bib_id: EPA_NI
 format: xls
 url:
   base_url: https://pasteur.epa.gov/uploads/10.23719/1418976/National_Nitrogen_Inventory.xlsx
-url_replace_fxn: ni_url_helper
-call_response_fxn: ni_call
-parse_response_fxn: ni_parse
+url_replace_fxn: !script_function:EPA_NI ni_url_helper
+call_response_fxn: !script_function:EPA_NI ni_call
+parse_response_fxn: !script_function:EPA_NI ni_parse
 years:
 - 2002
 - 2007

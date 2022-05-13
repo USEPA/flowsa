@@ -3,7 +3,7 @@
 # coding=utf-8
 """
 Inventory of US EPA GHG
-https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2018
+https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 """
 
 import io
@@ -11,10 +11,11 @@ import zipfile
 import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    load_fba_w_standardized_units, dynamically_import_fxn
+    load_fba_w_standardized_units
 from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
+from flowsa.data_source_scripts import EIA_MECS
 
 SECTOR_DICT = {'Res.': 'Residential',
                'Comm.': 'Commercial',
@@ -143,6 +144,7 @@ def annex_yearly_tables(data, table=None):
         newcols.append(f"{column_name} - {fuel_type}")
     df.columns = newcols  # assign column names
     df = df.iloc[1:, :]  # exclude first row
+    df.dropna(how='all', inplace=True)
     df = df.reset_index(drop=True)
     return df
 
@@ -638,8 +640,7 @@ def get_manufacturing_energy_ratios(year):
                                          flowclass='Energy')
     mecs = mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
                     (mecs['Location'] == '00000')].reset_index(drop=True)
-    mecs = dynamically_import_fxn('EIA_MECS_Energy',
-                                  'mecs_energy_fba_cleanup')(mecs, None)
+    mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
 
     # TODO dynamically change the table imported here based on year
     ghgi = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_14',

@@ -8,9 +8,9 @@ format: xlsx
 url:
   base_url: https://www.eia.gov/consumption/commercial/data/2012/bc/xls/__xlsx__
   api_path: ''
-url_replace_fxn: eia_cbecs_land_URL_helper
-call_response_fxn: eia_cbecs_land_call
-parse_response_fxn: eia_cbecs_land_parse
+url_replace_fxn: !script_function:EIA_CBECS_Land eia_cbecs_land_URL_helper
+call_response_fxn: !script_function:EIA_CBECS_Land eia_cbecs_land_call
+parse_response_fxn: !script_function:EIA_CBECS_Land eia_cbecs_land_parse
 years:
 - 2012
 xlsx:
