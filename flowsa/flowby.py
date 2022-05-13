@@ -556,9 +556,15 @@ class FlowBySector(_FlowBy):
         method_config = common.load_yaml_dict(method, 'FBS',
                                               external_config_path)
         sources = method_config['source_names']
+        source_catalog = common.load_yaml_dict('source_catalog')
 
         component_fbs_list = []
         for source_name, source_config in sources.items():
+            source_config.update(
+                {k: v for k, v in source_catalog.get(
+                     common.return_true_source_catalog_name(source_name))
+                 .items() if k not in source_config})
+
             if source_config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
                 if source_config['data_format'] == 'FBS_outside_flowsa':
                     source_data = FlowBySector(
@@ -609,8 +615,7 @@ class FlowBySector(_FlowBy):
                        .map_to_fedefl_list(source_name, source_config)
                        .conditional_pipe(
                            'clean_fba_df_fxn' in source_config,
-                           source_config.get('clean_fba_df_fxn'))
-                       )
+                           source_config.get('clean_fba_df_fxn')))
 
                 log.info('Appending %s to FBS list', source_name)
                 component_fbs_list.append(fba)
