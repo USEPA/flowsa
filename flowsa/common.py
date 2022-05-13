@@ -324,23 +324,6 @@ def return_true_source_catalog_name(sourcename):
     return sourcename
 
 
-def get_catalog_info(source_name: str) -> dict:
-    """
-    Drop any extensions on source name until find the name in source catalog,
-    then load info from source catalog and return resulting dictionary
-    """
-    catalog = load_yaml_dict('source_catalog')
-    source_base_name = source_name
-    while source_base_name not in catalog:
-        if '_' in source_base_name:
-            source_base_name, _ = source_base_name.rsplit('_', 1)
-        else:
-            log.error('%s or %s not found in %ssource_catalog.yaml',
-                      source_name, source_base_name, datapath)
-
-    return catalog[source_base_name]
-
-
 def check_activities_sector_like(sourcename_load):
     """
     Check if the activities in a df are sector-like,
