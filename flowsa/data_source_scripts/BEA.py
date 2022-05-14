@@ -172,9 +172,16 @@ def subset_and_allocate_BEA_table(df, attr, **_):
     """
     Temporary function to mimic use of 2nd helper allocation dataset
     """
+
     df = subset_BEA_table(df, attr)
     v = {'geoscale_to_use': 'national'}
     method2 = {'target_sector_source': 'NAICS_2012_Code'}
+
+    import importlib
+    fxn = getattr(importlib.import_module(
+        'flowsa.data_source_scripts.BLS_QCEW'),
+        "bls_clean_allocation_fba_w_sec")
+
     attr2 = {"helper_source": "BLS_QCEW",
              "helper_method": "proportional",
              "helper_source_class": "Employment",
@@ -185,7 +192,7 @@ def subset_and_allocate_BEA_table(df, attr, **_):
                              "Number of employees, Private"],
              "helper_from_scale": "national",
              "allocation_from_scale": "national",
-             "clean_helper_fba_wsec": "bls_clean_allocation_fba_w_sec"}
+             "clean_helper_fba_wsec": fxn}
     df2 = allocation_helper(df, attr2, method2, v, False)
     # Drop remaining rows with no sectors e.g. T001 and other final demands
     df2 = df2.dropna(subset=['SectorConsumedBy']).reset_index(drop=True)
