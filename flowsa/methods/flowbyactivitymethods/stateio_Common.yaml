@@ -7,7 +7,7 @@ api_name: None
 api_key_required: False
 format: rds  # R data format
 url: None # Uses esupy data retrieval
-parse_response_fxn: parse_statior
+parse_response_fxn: !script_function:stateio parse_statior
 years:
 - 2012
 - 2013

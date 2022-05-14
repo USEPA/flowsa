@@ -4,7 +4,7 @@ source_url: ' '
 bib_id: EPA_SIT
 format: xlsm  # macro-enabled spreadsheet
 url: None
-parse_response_fxn: epa_sit_parse
+parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
 years:
 - 2017
 - 2016

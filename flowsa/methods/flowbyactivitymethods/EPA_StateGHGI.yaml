@@ -4,7 +4,7 @@ source_url: ''
 bib_id: ''
 format: json
 url: None
-parse_response_fxn: epa_state_ghgi_parse
+parse_response_fxn: !script_function:EPA_StateGHGI epa_state_ghgi_parse
 file: "W_INV_FACTS_ACTIVE_GHG_CO2E.json"
 years:
 - 2019
