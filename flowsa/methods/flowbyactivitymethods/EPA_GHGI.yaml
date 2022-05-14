@@ -8,9 +8,9 @@ format: csv
 url:
   base_url: https://www.epa.gov/sites/default/files/2021-05/chapter.zip
   annex_url: https://www.epa.gov/sites/default/files/2021-05/annex.zip
-url_replace_fxn: ghg_url_helper
-call_response_fxn: ghg_call
-parse_response_fxn: ghg_parse
+url_replace_fxn: !script_function:EPA_GHGI ghg_url_helper
+call_response_fxn: !script_function:EPA_GHGI ghg_call
+parse_response_fxn: !script_function:EPA_GHGI ghg_parse
 years:
 - 2010
 - 2011
@@ -401,4 +401,3 @@ Annex:
         "compartment": "air"
         "flow": "HFCs"
         "desc": "HFC Emissions from Transportation Sources (MMT CO2 Eq.)"
-

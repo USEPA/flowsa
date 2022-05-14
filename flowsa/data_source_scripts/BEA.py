@@ -179,10 +179,12 @@ def subset_and_allocate_BEA_table(df, attr, **_):
              "helper_method": "proportional",
              "helper_source_class": "Employment",
              "helper_source_year": 2012,
-             "helper_flow": ["Number of employees"],
+             "helper_flow": ["Number of employees, Federal Government",
+                             "Number of employees, State Government",
+                             "Number of employees, Local Government",
+                             "Number of employees, Private"],
              "helper_from_scale": "national",
              "allocation_from_scale": "national",
-             "clean_helper_fba": "clean_bls_qcew_fba",
              "clean_helper_fba_wsec": "bls_clean_allocation_fba_w_sec"}
     df2 = allocation_helper(df, attr2, method2, v, False)
     # Drop remaining rows with no sectors e.g. T001 and other final demands

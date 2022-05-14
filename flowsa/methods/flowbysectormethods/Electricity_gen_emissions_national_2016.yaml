@@ -4,6 +4,4 @@ target_geoscale: national
 source_names:
   "elciFBS":
     data_format: 'FBS_outside_flowsa'
-    FBS_datapull_fxn: get_elci_emissions
-
-
+    FBS_datapull_fxn: !script_function:elciFBS get_elci_emissions

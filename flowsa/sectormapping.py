@@ -231,7 +231,7 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
         if am == 'proportional-flagged':
             subset_by_sector_cols = True
 
-    if check_activities_sector_like(source) is False:
+    if check_activities_sector_like(fba_allocation, sourcename=source) is False:
         # read in source crosswalk
         df = get_activitytosector_mapping(
             sourceconfig.get('activity_to_sector_mapping', source),

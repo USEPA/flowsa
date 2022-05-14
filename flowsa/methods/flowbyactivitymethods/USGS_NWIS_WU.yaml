@@ -15,9 +15,9 @@ url:
     wu_county: ALL     # only for the county level
     wu_category: ALL
   key_param: None
-url_replace_fxn: usgs_URL_helper
-call_response_fxn: usgs_call
-parse_response_fxn: usgs_parse
+url_replace_fxn: !script_function:USGS_NWIS_WU usgs_URL_helper
+call_response_fxn: !script_function:USGS_NWIS_WU usgs_call
+parse_response_fxn: !script_function:USGS_NWIS_WU usgs_parse
 years:
 - 2010
 - 2015
