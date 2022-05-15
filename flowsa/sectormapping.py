@@ -456,16 +456,19 @@ def map_to_BEA_sectors(fbs_load, region, io_level, year):
     bea = get_BEA_industry_output(region, io_level, year)
 
     if io_level == 'summary':
-        mapping_file = 'BEA_2012_Summary'
+        mapping_col = 'BEA_2012_Summary_Code'
     elif io_level == 'detail':
-        mapping_file = 'BEA_2012_Detail'
+        mapping_col = 'BEA_2012_Detail_Code'
 
     # Prepare NAICS:BEA mapping file
-    mapping = (
-        get_activitytosector_mapping(mapping_file)
-        .rename(columns={'Activity': 'BEA'}))
-    mapping = mapping.drop(
+    mapping = (load_crosswalk('BEA')
+               .rename(columns={mapping_col: 'BEA',
+                                'NAICS_2012_Code': 'Sector'}))
+    mapping = (mapping.drop(
         columns=mapping.columns.difference(['Sector','BEA']))
+        .drop_duplicates(ignore_index=True)
+        .dropna(subset=['Sector']))
+    mapping['Sector'] = mapping['Sector'].astype(str)
 
     # Create allocation ratios where one to many NAICS:BEA
     dup = mapping[mapping['Sector'].duplicated(keep=False)]
