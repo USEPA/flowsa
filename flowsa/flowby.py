@@ -617,8 +617,44 @@ class FlowBySector(_FlowBy):
                            'clean_fba_df_fxn' in source_config,
                            source_config.get('clean_fba_df_fxn')))
 
-                log.info('Appending %s to FBS list', source_name)
-                component_fbs_list.append(fba)
+                activities = source_config['activity_sets']
+                completed_names = []
+
+                for activity_set, activity_config in activities.items():
+                    log.info('Preparing to process %s in %s',
+                             activity_set, source_name)
+
+                    names = activity_config['names']
+
+                    fba_subset = (
+                        fba
+                        .query('ActivityProducedBy not in @completed_names'
+                               '& ActivityConsumedBy not in @completed_names')
+                        .query('ActivityProducedBy in @names'
+                               '| ActivityConsumedBy in @names')
+                        .conditional_method(
+                            'source_flows' in activity_config,
+                            'query',
+                            f'FlowName in '
+                            f'{activity_config.get("source_flows")}')
+                        .reset_index(drop=True)
+                    )
+
+                    if fba_subset.empty:
+                        log.error('No data for flows in %s', activity_set)
+                        continue
+                    if (fba_subset.FlowAmount == 0).all():
+                        log.warning('All flows for %s are 0', activity_set)
+                        continue
+
+                    # TODO: source_catalog key not currently handled:
+                    # TODO: 'sector-like_activities'
+
+                    completed_names.extend(names)
+
+                    log.info('Appending %s from %s to FBS list',
+                             activity_set, source_name)
+                    component_fbs_list.append(fba_subset)
 
         return component_fbs_list
 
