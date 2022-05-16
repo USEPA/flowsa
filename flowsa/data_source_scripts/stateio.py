@@ -77,13 +77,6 @@ def parse_statior(*, source, year, config, **_):
     return fba
 
 
-def subset_stateio_table(df, attr, **_):
-    """Subset the stateio make or use table using BEA function"""
-    from flowsa.data_source_scripts.BEA import subset_BEA_table
-    df = subset_BEA_table(df, attr)
-    return df
-
-
 if __name__ == "__main__":
     import flowsa
     source = 'stateio_Industry_GO'

@@ -43,7 +43,7 @@ _allocation_types:
       - "USD2017"
     allocation_compartment: None
     allocation_from_scale: state
-    clean_allocation_fba: subset_stateio_table
+    clean_allocation_fba: !script_function:BEA subset_BEA_table
     # clean_parameter: {"324110": 'ActivityProducedBy'}  # override this
     helper_source: "BLS_QCEW"
     helper_method: proportional
