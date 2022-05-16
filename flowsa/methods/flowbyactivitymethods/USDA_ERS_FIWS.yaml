@@ -7,8 +7,8 @@ bib_id: USDA_ERS_FIWS
 format: csv
 url:
   base_url: https://www.ers.usda.gov/media/10473/farmincome_wealthstatisticsdata_february2020.zip
-call_response_fxn: fiws_call
-parse_response_fxn: fiws_parse
+call_response_fxn: !script_function:USDA_ERS_FIWS fiws_call
+parse_response_fxn: !script_function:USDA_ERS_FIWS fiws_parse
 years:
 - 2010
 - 2011

@@ -13,9 +13,9 @@ url:
     for: __aggLevel__:*&DATE_CODE=__DateCode__    # county, state, or national level
     key: __apiKey__   # make the __apiKey__ part of the url and substitute in individual api key
   key_param: key
-url_replace_fxn: Census_pop_URL_helper
-call_response_fxn: census_pop_call
-parse_response_fxn: census_pop_parse
+url_replace_fxn: !script_function:Census_PEP_Population Census_pop_URL_helper
+call_response_fxn: !script_function:Census_PEP_Population census_pop_call
+parse_response_fxn: !script_function:Census_PEP_Population census_pop_parse
 agg_levels:
 - county
 - state

@@ -7,9 +7,9 @@ api_key_required: false
 format: xlsx
 url:
   base_url: https://www.eia.gov/consumption/manufacturing/data/__year__/xls/__table__.xlsx
-url_replace_fxn: eia_mecs_URL_helper
-call_response_fxn: eia_mecs_energy_call
-parse_response_fxn: eia_mecs_energy_parse
+url_replace_fxn: !script_function:EIA_MECS eia_mecs_URL_helper
+call_response_fxn: !script_function:EIA_MECS eia_mecs_energy_call
+parse_response_fxn: !script_function:EIA_MECS eia_mecs_energy_parse
 years:
 - 2010
 - 2014
@@ -35,17 +35,17 @@ table_dict:
           - Coke and Breeze | million short tons
           - Other | trillion Btu
         regions:
-          Total United States : [14,97]
-          Northeast Region : [100,181]
-          Midwest Region : [184,265]
-          South Region : [268,349]
-          West Region : [352,433]
+          Total United States : [14,98]
+          Northeast Region : [101,183]
+          Midwest Region : [186,268]
+          South Region : [271,353]
+          West Region : [356,438]
         rse_regions:
-          Total United States : [12,95]
-          Northeast Region : [98,179]
-          Midwest Region : [182,263]
-          South Region : [266,347]
-          West Region : [350,431]
+          Total United States : [12,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
         data_type: 'nonfuel consumption'
       Table 2.2:
         col_names:
@@ -60,17 +60,17 @@ table_dict:
           - Coke and Breeze
           - Other
         regions:
-          Total United States : [14,97]
-          Northeast Region : [100,181]
-          Midwest Region : [184,265]
-          South Region : [268,349]
-          West Region : [352,433]
+          Total United States : [14,98]
+          Northeast Region : [101,183]
+          Midwest Region : [186,268]
+          South Region : [271,353]
+          West Region : [356,438]
         rse_regions:
-          Total United States : [12,95]
-          Northeast Region : [98,179]
-          Midwest Region : [182,263]
-          South Region : [266,347]
-          West Region : [350,431]
+          Total United States : [12,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
         data_type: 'nonfuel consumption'
       Table 3.1:
         col_names:
@@ -86,17 +86,17 @@ table_dict:
           - Coke and Breeze | million short tons
           - Other | trillion Btu
         regions:
-          Total United States : [14,95]
-          Northeast Region : [98,179]
-          Midwest Region : [182,263]
-          South Region : [266,347]
-          West Region : [350,431]
+          Total United States : [14,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
         rse_regions:
-          Total United States : [12,93]
-          Northeast Region : [96,177]
-          Midwest Region : [180,261]
-          South Region : [264,345]
-          West Region : [348,429]
+          Total United States : [12,94]
+          Northeast Region : [97,179]
+          Midwest Region : [182,264]
+          South Region : [267,349]
+          West Region : [352,434]
         data_type: 'fuel consumption'
       Table 3.2:
         col_names:
@@ -112,17 +112,17 @@ table_dict:
           - Coke and Breeze
           - Other
         regions:
-          Total United States : [14,95]
-          Northeast Region : [98,179]
-          Midwest Region : [182,263]
-          South Region : [266,347]
-          West Region : [350,431]
+          Total United States : [14,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
         rse_regions:
-          Total United States : [12,93]
-          Northeast Region : [96,177]
-          Midwest Region : [180,261]
-          South Region : [264,345]
-          West Region : [348,429]
+          Total United States : [12,94]
+          Northeast Region : [97,179]
+          Midwest Region : [182,264]
+          South Region : [267,349]
+          West Region : [352,434]
         data_type: 'fuel consumption'
 
     '2014':

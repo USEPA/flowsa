@@ -7,9 +7,9 @@ years_available: 2014-2018
 format: xls
 url:
   base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-vermi-adv.xlsx
-url_replace_fxn: usgs_vermiculite_url_helper
-call_response_fxn: usgs_vermiculite_call
-parse_response_fxn: usgs_vermiculite_parse
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_vermiculite_call
+parse_response_fxn: !script_function:USGS_MYB usgs_vermiculite_parse
 years:
 - 2014
 - 2015

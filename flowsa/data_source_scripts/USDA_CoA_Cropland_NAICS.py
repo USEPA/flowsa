@@ -164,6 +164,8 @@ def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
     :return: df, flowbyactivity with modified values
     """
 
+    method = kwargs.get('method')
     df = equally_allocate_suppressed_parent_to_child_naics(
-        fba_w_sector, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
+        fba_w_sector, method, 'SectorConsumedBy',
+        fba_wsec_default_grouping_fields)
     return df
