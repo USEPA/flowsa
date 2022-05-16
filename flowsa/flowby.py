@@ -389,13 +389,11 @@ class FlowByActivity(_FlowBy):
     # flow list mapping using this function as well.
     def map_to_fedefl_list(
         self,
-        source_name: str,
-        source_config: dict,
         drop_fba_columns: bool = False,
         drop_unmapped_rows: bool = False
     ) -> 'FlowByActivity':
         log.info('Mapping flows in %s to federal elementary flow list',
-                 source_name)
+                 self.source_name)
 
         fba_merge_keys = [
             'SourceName',
@@ -403,7 +401,8 @@ class FlowByActivity(_FlowBy):
             'Unit',
             'Context'
         ]
-        mapping_subset = source_config.get('fedefl_mapping', source_name)
+        mapping_subset = self.source_config.get('fedefl_mapping',
+                                                self.source_name)
         mapping_fields = [
             'SourceListName',
             'SourceFlowName',
@@ -422,7 +421,7 @@ class FlowByActivity(_FlowBy):
             'SourceFlowContext'
         ]
         merge_type = 'inner' if drop_unmapped_rows else 'left'
-        if 'fedefl_mapping' in source_config:
+        if 'fedefl_mapping' in self.source_config:
             fba_merge_keys.remove('SourceName')
             mapping_merge_keys.remove('SourceListName')
 
@@ -656,7 +655,7 @@ class FlowBySector(_FlowBy):
                            'clean_fba_before_mapping_df_fxn' in source_config,
                            source_config.get('clean_fba_before_mapping_df_fxn')
                            )
-                       .map_to_fedefl_list(source_name, source_config)
+                       .map_to_fedefl_list()
                        .conditional_pipe(
                            'clean_fba_df_fxn' in source_config,
                            source_config.get('clean_fba_df_fxn')))
