@@ -35,7 +35,8 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
             external_mappingpath, mapfn, 'csv')
         if os.path.isfile(f"{external_mappingpath}"
                           f"{activity_mapping_source_name}.csv"):
-            log.info(f"Loading {activity_mapping_source_name}.csv from {external_mappingpath}")
+            log.info(f"Loading {activity_mapping_source_name}.csv "
+                     f"from {external_mappingpath}")
             crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
@@ -55,10 +56,14 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
         return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df,
-        activity_to_sector_mapping=None, sectorsourcename=SECTOR_SOURCE_NAME,
-        allocationmethod=None, overwrite_sectorlevel=None,
-        fbsconfigpath=None):
+def add_sectors_to_flowbyactivity(
+    flowbyactivity_df,
+    activity_to_sector_mapping=None,
+    sectorsourcename=SECTOR_SOURCE_NAME,
+    allocationmethod=None,
+    overwrite_sectorlevel=None,
+    fbsconfigpath=None
+):
     """
     Add Sectors from the Activity fields and mapped them to Sector
     from the crosswalk. No allocation is performed.
@@ -66,7 +71,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df,
     :param activity_to_sector_mapping: str, name for activity_to_sector mapping
     :param sectorsourcename: A sector source name, using package default
     :param allocationmethod: str, modifies function behavoir if = 'direct'
-    :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
+    :param fbsconfigpath, str, opt ional path to an FBS method outside flowsa
+        repo
     :return: a df with activity fields mapped to 'sectors'
     """
     # First check if source activities are NAICS like -
@@ -204,8 +210,7 @@ def expand_naics_list(df, sectorsourcename):
 
 def get_fba_allocation_subset(fba_allocation, source, activitynames,
                               sourceconfig=False, flowSubsetMapped=None,
-                              allocMethod=None, activity_set_names=None,
-                              fbsconfigpath=None):
+                              allocMethod=None, fbsconfigpath=None):
     """
     Subset the fba allocation data based on NAICS associated with activity
     :param fba_allocation: df, FBA format
@@ -218,19 +223,14 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
     # typical method of subset an example of a special case is when the
     # allocation method is 'proportional-flagged'
     subset_by_sector_cols = False
-    subset_by_column_value = False
     if flowSubsetMapped is not None:
         fsm = flowSubsetMapped
     if allocMethod is not None:
         am = allocMethod
         if am == 'proportional-flagged':
             subset_by_sector_cols = True
-    if activity_set_names is not None:
-        asn = activity_set_names
-        if 'allocation_subset_col' in asn:
-            subset_by_column_value = True
 
-    if check_activities_sector_like(source) is False:
+    if check_activities_sector_like(fba_allocation, sourcename=source) is False:
         # read in source crosswalk
         df = get_activitytosector_mapping(
             sourceconfig.get('activity_to_sector_mapping', source),
@@ -281,34 +281,13 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
                     modified_activitynames)) |
                 (fba_allocation[fbs_activity_fields[1]].isin(
                     modified_activitynames)
-                )].reset_index(drop=True)
+                 )].reset_index(drop=True)
 
         else:
             fba_allocation_subset = fba_allocation.loc[
                 (fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
                 (fba_allocation[fbs_activity_fields[1]].isin(activitynames)
                  )].reset_index(drop=True)
-
-    # if activity set names included in function call and activity set names
-    # is not null, then subset data based on value and column specified
-    if subset_by_column_value:
-        # create subset of activity names and allocation subset metrics
-        asn_subset = \
-            asn[asn['name'].isin(activitynames)].reset_index(drop=True)
-        if asn_subset['allocation_subset'].isna().all():
-            pass
-        elif asn_subset['allocation_subset'].isna().any():
-            log.error('Define column and value to subset on in the activity '
-                      'set csv for all rows')
-        else:
-            col_to_subset = asn_subset['allocation_subset_col'][0]
-            val_to_subset = asn_subset['allocation_subset'][0]
-            # subset fba_allocation_subset further
-            log.debug('Subset the allocation dataset where %s = %s',
-                      str(col_to_subset), str(val_to_subset))
-            fba_allocation_subset = fba_allocation_subset[
-                fba_allocation_subset[col_to_subset] ==
-                val_to_subset].reset_index(drop=True)
 
     return fba_allocation_subset
 

@@ -7,6 +7,6 @@ api_name: None
 api_key_required: false
 format: csv  # comma delineated data
 url: None
-parse_response_fxn: bea_make_ar_parse
+parse_response_fxn: !script_function:BEA bea_make_ar_parse
 years:
 - 2002
