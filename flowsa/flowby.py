@@ -26,12 +26,20 @@ class _FlowBy(pd.DataFrame):
         string_null: 'np.nan' or None = np.nan,
         **kwargs
     ) -> None:
+        for attribute in self._metadata:
+            if not hasattr(self, attribute):
+                if hasattr(data, attribute):
+                    print(getattr(data, attribute))
+                    super().__setattr__(attribute, getattr(data, attribute))
+                else:
+                    self.source_name = ''
+                    self.source_config = {}
         if isinstance(data, pd.DataFrame) and fields is not None:
             fill_na_dict = {
                 field: 0 if dtype in ['int', 'float'] else string_null
                 for field, dtype in fields.items()
             }
-            na_string_dict = {
+            null_string_dict = {
                 field: {null: string_null
                         for null in ['nan', '<NA>', 'None', '',
                                      np.nan, pd.NA, None]}
@@ -41,7 +49,7 @@ class _FlowBy(pd.DataFrame):
                     .assign(**{field: None
                             for field in fields if field not in data.columns})
                     .fillna(fill_na_dict)
-                    .replace(na_string_dict)
+                    .replace(null_string_dict)
                     .astype(fields))
             data = self._standardize_units(data)
         if isinstance(data, pd.DataFrame) and column_order is not None:
@@ -49,7 +57,7 @@ class _FlowBy(pd.DataFrame):
                         + [c for c in data.columns if c not in column_order]]
         super().__init__(data, *args, **kwargs)
 
-    _metadata = []
+    _metadata = ['source_name', 'source_config']
 
     @property
     def _constructor(self) -> '_FlowBy':
@@ -58,6 +66,23 @@ class _FlowBy(pd.DataFrame):
     @property
     def _constructor_sliced(self) -> '_FlowBySeries':
         return _FlowBySeries
+
+    def __finalize__(self, other, method=None, **kwargs):
+        '''
+        Determines how metadata is propagated when using DataFrame methods.
+        super().__finalize__() takes care of methods involving only one FlowBy
+        object. Additional code below specifies how to propagate metadata under
+        other circumstances, such as merging.
+
+        merge: use metadata of left dataframe
+        '''
+        self = super().__finalize__(other, method=method, **kwargs)
+
+        # merge operation: using metadata of the left object
+        if method == "merge":
+            for name in self._metadata:
+                object.__setattr__(self, name, getattr(other.left, name, None))
+        return self
 
     @classmethod
     def _getFlowBy(
@@ -562,7 +587,7 @@ class FlowBySector(_FlowBy):
         for source_name, source_config in sources.items():
             source_config.update(
                 {k: v for k, v in source_catalog.get(
-                     common.return_true_source_catalog_name(source_name))
+                     common.return_true_source_catalog_name(source_name), {})
                  .items() if k not in source_config})
 
             if source_config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
@@ -579,6 +604,9 @@ class FlowBySector(_FlowBy):
                         download_sources_ok=download_sources_ok,
                         download_fbs_ok=download_sources_ok
                     )
+
+                source_data.source_name = source_name
+                source_data.source_config = source_config
 
                 fbs = (source_data
                        .conditional_pipe(
@@ -603,6 +631,9 @@ class FlowBySector(_FlowBy):
                     year=source_config['year'],
                     download_ok=download_sources_ok
                 )
+
+                source_data.source_name = source_name
+                source_data.source_config = source_config
 
                 fba = (source_data
                        .query(f'Class == \'{source_config["class"]}\'')
