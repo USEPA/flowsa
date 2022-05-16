@@ -21,16 +21,15 @@ _allocation_types:
     #   - "Coal"
     allocation_compartment: None
     allocation_from_scale: national
-    clean_allocation_fba: mecs_energy_fba_cleanup
-    clean_allocation_fba_w_sec: eia_mecs_energy_clean_allocation_fba_w_sec
+    clean_allocation_fba: !script_function:EIA_MECS mecs_energy_fba_cleanup
+    clean_allocation_fba_w_sec: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
     helper_source: "BLS_QCEW"
     helper_method: proportional-flagged
     helper_source_class: "Employment"
     helper_source_year: 2014
     helper_flow: None
     helper_from_scale: national
-    clean_helper_fba: clean_bls_qcew_fba
-    clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _use_allocation: &use_allocation
     # names: # override this
@@ -50,10 +49,12 @@ _allocation_types:
     helper_source_class: "Employment"
     helper_source_year: 2017
     helper_flow:
-      - "Number of employees"
+        - "Number of employees, Federal Government"
+        - "Number of employees, State Government"
+        - "Number of employees, Local Government"
+        - "Number of employees, Private"
     helper_from_scale: state
-    clean_helper_fba: clean_bls_qcew_fba
-    clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
 
 source_names:
@@ -63,7 +64,7 @@ source_names:
     geoscale_to_use: state
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba_no_pesticides
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
     fedefl_mapping: 'NEI'
     activity_sets:
       direct_allocation:
@@ -81,8 +82,7 @@ source_names:
           - "AREA HARVESTED"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
       livestock:
         names: !from_index:NEI_Nonpoint_2017_asets.csv livestock
         allocation_method: proportional
@@ -162,10 +162,13 @@ source_names:
         helper_source_class: "Employment"
         helper_source_year: 2017
         helper_flow:
-          - "Number of employees"
-        helper_from_scale: national
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
+        helper_from_scale: state
         clean_helper_fba: clean_bls_qcew_fba
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   "EPA_NEI_Nonroad":
     data_format: 'FBA'
@@ -173,7 +176,7 @@ source_names:
     geoscale_to_use: state
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_sets:
       direct_allocation:
@@ -192,7 +195,7 @@ source_names:
     geoscale_to_use: state
     year: 2017
     activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: clean_NEI_fba
+    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: 'NEI'
     activity_sets:
       direct_allocation:
@@ -207,7 +210,7 @@ source_names:
 
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'
-    FBS_datapull_fxn: stewicombo_to_sector
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
     local_inventory_name: 'NEI_TRI_air_2017'
     compartments:
