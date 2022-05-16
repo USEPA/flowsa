@@ -37,7 +37,7 @@ from .flowby import FlowByActivity, FlowBySector
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
                       download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     fba = FlowByActivity.getFlowByActivity(
-        source=datasource,
+        source_name=datasource,
         year=int(year),
         download_ok=download_FBA_if_missing
     )

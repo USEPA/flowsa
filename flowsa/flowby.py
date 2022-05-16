@@ -21,6 +21,8 @@ class _FlowBy(pd.DataFrame):
         self,
         data: pd.DataFrame or '_FlowBy' = None,
         *args,
+        source_name: str = None,
+        source_config: dict = None,
         fields: dict = None,
         column_order: List[str] = None,
         string_null: 'np.nan' or None = np.nan,
@@ -32,8 +34,8 @@ class _FlowBy(pd.DataFrame):
                     print(getattr(data, attribute))
                     super().__setattr__(attribute, getattr(data, attribute))
                 else:
-                    self.source_name = ''
-                    self.source_config = {}
+                    self.source_name = source_name or ''
+                    self.source_config = source_config or {}
         if isinstance(data, pd.DataFrame) and fields is not None:
             fill_na_dict = {
                 field: 0 if dtype in ['int', 'float'] else string_null
@@ -90,7 +92,10 @@ class _FlowBy(pd.DataFrame):
         file_metadata: esupy.processed_data_mgmt.FileMeta,
         download_ok: bool,
         flowby_generator: partial,
-        output_path: str
+        output_path: str,
+        *,
+        source_name: str = None,
+        source_config: dict = None,
     ) -> '_FlowBy':
         for attempt in ['import local', 'download', 'generate']:
             log.info(
@@ -128,7 +133,7 @@ class _FlowBy(pd.DataFrame):
                 '%s %s could not be found locally, downloaded, or generated',
                 file_metadata.name_data, file_metadata.category
             )
-        fb = cls(df)
+        fb = cls(df, source_name=source_name, source_config=source_config)
         return fb
 
     @staticmethod
@@ -345,9 +350,10 @@ class FlowByActivity(_FlowBy):
     @classmethod
     def getFlowByActivity(
         cls,
-        source: str,
+        source_name: str,
         year: int = None,
-        download_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING
+        download_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
+        **kwargs
     ) -> 'FlowByActivity':
         """
         Loads stored data in the FlowByActivity format. If it is not
@@ -357,22 +363,26 @@ class FlowByActivity(_FlowBy):
         :param year: int, a year, e.g. 2012
         :param download_ok: bool, if True will attempt to load from
             EPA remote server prior to generating
+        :kwargs: keyword arguments to pass to _getFlowBy(). Possible kwargs
+            include source_config.
         :return: a FlowByActivity dataframe
         """
         file_metadata = metadata.set_fb_meta(
-            source if year is None else f'{source}_{year}',
+            source_name if year is None else f'{source_name}_{year}',
             'FlowByActivity'
         )
         flowby_generator = partial(
             flowbyactivity.main,
-            source=source,
+            source=source_name,
             year=year
         )
         return super()._getFlowBy(
             file_metadata=file_metadata,
             download_ok=download_ok,
             flowby_generator=flowby_generator,
-            output_path=settings.fbaoutputpath
+            output_path=settings.fbaoutputpath,
+            source_name=source_name,
+            **kwargs
         )
 
     # TODO: probably only slight modification is needed to allow for material
@@ -530,7 +540,8 @@ class FlowBySector(_FlowBy):
         method: str,
         external_config_path: str = None,
         download_sources_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
-        download_fbs_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING
+        download_fbs_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
+        **kwargs
     ) -> 'FlowBySector':
         """
         Loads stored FlowBySector output. If it is not
@@ -545,6 +556,8 @@ class FlowBySector(_FlowBy):
         :param download_FBS_if_missing: bool, if True will attempt to load the
             the FBS from EPA's remote server rather than generating it
             (if not found locally)
+        :kwargs: keyword arguments to pass to _getFlowBy(). Possible kwargs
+            include source_name and source_config.
         :return: FlowBySector dataframe
         """
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
@@ -558,7 +571,8 @@ class FlowBySector(_FlowBy):
             file_metadata=file_metadata,
             download_ok=download_fbs_ok,
             flowby_generator=flowby_generator,
-            output_path=settings.fbsoutputpath
+            output_path=settings.fbsoutputpath,
+            **kwargs
         )
 
     @classmethod
@@ -593,20 +607,21 @@ class FlowBySector(_FlowBy):
             if source_config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
                 if source_config['data_format'] == 'FBS_outside_flowsa':
                     source_data = FlowBySector(
-                        source_config['FBS_datapull_fxn'](source_config,
-                                                          method_config,
-                                                          external_config_path)
+                        source_config['FBS_datapull_fxn'](
+                            source_config, method_config, external_config_path
+                        ),
+                        source_name=source_name,
+                        source_config=source_config
                     )
                 else:  # TODO: Test this section.
                     source_data = FlowBySector.getFlowBySector(
-                        source=source_name,
+                        method=source_name,
                         external_config_path=external_config_path,
                         download_sources_ok=download_sources_ok,
-                        download_fbs_ok=download_sources_ok
+                        download_fbs_ok=download_sources_ok,
+                        source_name=source_name,
+                        source_config=source_config
                     )
-
-                source_data.source_name = source_name
-                source_data.source_config = source_config
 
                 fbs = (source_data
                        .conditional_pipe(
@@ -627,13 +642,11 @@ class FlowBySector(_FlowBy):
 
             if source_config['data_format'] == 'FBA':
                 source_data = FlowByActivity.getFlowByActivity(
-                    source=source_name,
+                    source_name=source_name,
                     year=source_config['year'],
-                    download_ok=download_sources_ok
+                    download_ok=download_sources_ok,
+                    source_config=source_config
                 )
-
-                source_data.source_name = source_name
-                source_data.source_config = source_config
 
                 fba = (source_data
                        .query(f'Class == \'{source_config["class"]}\'')
