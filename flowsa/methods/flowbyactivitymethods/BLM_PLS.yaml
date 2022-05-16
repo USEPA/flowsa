@@ -7,9 +7,9 @@ format: pfd
 url:
   base_url: https://www.blm.gov/sites/blm.gov/files/
   base_url_2015: https://blm-prod.opengov.ibmcloud.com/sites/blm.gov/files/documents/files/
-url_replace_fxn: blm_pls_URL_helper
-call_response_fxn: blm_pls_call
-parse_response_fxn: blm_pls_parse
+url_replace_fxn: !script_function:BLM_PLS blm_pls_URL_helper
+call_response_fxn: !script_function:BLM_PLS blm_pls_call
+parse_response_fxn: !script_function:BLM_PLS blm_pls_parse
 years:
 - 2007
 #- 2010

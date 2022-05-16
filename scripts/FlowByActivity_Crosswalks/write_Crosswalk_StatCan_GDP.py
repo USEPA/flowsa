@@ -8,7 +8,7 @@ Create a crosswalk linking Statistics Canada to NAICS
 """
 import pandas as pd
 from flowsa.settings import datapath
-from scripts.common_scripts import unique_activity_names, order_crosswalk
+from scripts.FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
 
 if __name__ == '__main__':
     # select years to pull unique activity names

@@ -8,7 +8,8 @@ Pulls EIA CBECS water use data for large buildings from 2012
 
 import io
 import pandas as pd
-from flowsa.common import US_FIPS, WITHDRAWN_KEYWORD
+from flowsa.location import US_FIPS
+from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 

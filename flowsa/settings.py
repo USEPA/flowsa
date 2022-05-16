@@ -15,6 +15,7 @@ except NameError:
 datapath = MODULEPATH + 'data/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 externaldatapath = datapath + 'external_data/'
+process_adjustmentpath = datapath + 'process_adjustments/'
 
 methodpath = MODULEPATH + 'methods/'
 sourceconfigpath = methodpath + 'flowbyactivitymethods/'
@@ -99,8 +100,11 @@ def return_pkg_version():
 
     # return version with git describe
     try:
+        # set path to flowsa repository, necessary if running method files
+        # outside the flowsa repo
         tags = subprocess.check_output(
-            ["git", "describe", "--tags", "--always"]).decode().strip()
+            ["git", "describe", "--tags", "--always"],
+            cwd=MODULEPATH).decode().strip()
         version = tags.split("-", 1)[0].replace('v', "")
     except subprocess.CalledProcessError:
         log.info('Unable to return version with git describe')

@@ -10,7 +10,8 @@ in NAICS format
 import json
 import numpy as np
 import pandas as pd
-from flowsa.common import WITHDRAWN_KEYWORD, US_FIPS, abbrev_us_state, \
+from flowsa.location import US_FIPS, abbrev_us_state
+from flowsa.common import WITHDRAWN_KEYWORD, \
     fba_wsec_default_grouping_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     equally_allocate_suppressed_parent_to_child_naics
@@ -163,6 +164,8 @@ def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
     :return: df, flowbyactivity with modified values
     """
 
+    method = kwargs.get('method')
     df = equally_allocate_suppressed_parent_to_child_naics(
-        fba_w_sector, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
+        fba_w_sector, method, 'SectorConsumedBy',
+        fba_wsec_default_grouping_fields)
     return df

@@ -9,9 +9,9 @@ import os
 import yaml
 import pandas as pd
 import numpy as np
-import pycountry
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
+import flowsa.flowsa_yaml as flowsa_yaml
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
@@ -23,12 +23,6 @@ from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
 # Sets default Sector Source Name
 SECTOR_SOURCE_NAME = 'NAICS_2012_Code'
 flow_types = ['ELEMENTARY_FLOW', 'TECHNOSPHERE_FLOW', 'WASTE_FLOW']
-
-US_FIPS = "00000"
-
-fips_number_key = {"national": 0,
-                   "state": 2,
-                   "county": 5}
 
 sector_level_key = {"NAICS_2": 2,
                     "NAICS_3": 3,
@@ -82,6 +76,20 @@ def load_crosswalk(crosswalk_name):
     return cw
 
 
+def load_sector_length_cw_melt():
+    cw_load = load_crosswalk('sector_length')
+    cw_melt = cw_load.melt(var_name="SectorLength", value_name='Sector'
+                           ).drop_duplicates().reset_index(drop=True)
+    cw_melt = cw_melt.dropna().reset_index(drop=True)
+    cw_melt['SectorLength'] = cw_melt['SectorLength'].str.replace(
+        'NAICS_', "")
+    cw_melt['SectorLength'] = pd.to_numeric(cw_melt['SectorLength'])
+
+    cw_melt = cw_melt[['Sector', 'SectorLength']]
+
+    return cw_melt
+
+
 def return_bea_codes_used_as_naics():
     """
 
@@ -97,7 +105,7 @@ def return_bea_codes_used_as_naics():
     return code_list
 
 
-def load_yaml_dict(filename, flowbytype=None):
+def load_yaml_dict(filename, flowbytype=None, filepath=None):
     """
     Load the information in a yaml file, from source_catalog, or FBA,
     or FBS files
@@ -106,39 +114,26 @@ def load_yaml_dict(filename, flowbytype=None):
     if filename == 'source_catalog':
         folder = datapath
     else:
-        if flowbytype == 'FBA':
-            folder = sourceconfigpath
-        elif flowbytype == 'FBS':
-            folder = flowbysectormethodpath
+        # first check if a filepath for the yaml is specified, as is the
+        # case with FBS method files located outside FLOWSA
+        if filepath is not None:
+            log.info(f'Loading {filename} from {filepath}')
+            folder = filepath
         else:
-            raise KeyError('Must specify either \'FBA\' or \'FBS\'')
+            if flowbytype == 'FBA':
+                folder = sourceconfigpath
+            elif flowbytype == 'FBS':
+                folder = flowbysectormethodpath
+            else:
+                raise KeyError('Must specify either \'FBA\' or \'FBS\'')
     yaml_path = folder + filename + '.yaml'
 
     try:
         with open(yaml_path, 'r') as f:
-            config = yaml.safe_load(f)
+            config = flowsa_yaml.load(f, filepath)
     except IOError:
-        log.error('%s method file not found', flowbytype)
-
-    # Allow for .yaml files to recursively inherit other .yaml files. Keys in
-    # children will overwrite the same key from a parent.
-    inherits = config.get('inherits_from')
-    while inherits:
-        yaml_path = folder + inherits + '.yaml'
-        with open(yaml_path, 'r') as f:
-            parent = yaml.safe_load(f)
-
-        # Check for common keys and log a warning if any are found
-        common_keys = [k for k in config if k in parent]
-        if common_keys:
-            log.warning(f'Keys {common_keys} from parent file {yaml_path} '
-                        f'were overwritten by child file.')
-
-        # Update inheritance information before updating the parent dict
-        inherits = parent.get('inherits_from')
-        parent.update(config)
-        config = parent
-
+        log.error(f'{flowbytype} method file not found')
+        raise
     return config
 
 
@@ -231,122 +226,12 @@ fba_mapped_wsec_default_grouping_fields = get_flow_by_groupby_cols(
 fbs_default_grouping_fields = get_flow_by_groupby_cols(
     flow_by_sector_fields)
 fbs_grouping_fields_w_activities = (
-    fbs_default_grouping_fields + (['ActivityProducedBy',
-                                    'ActivityConsumedBy']))
+        fbs_default_grouping_fields + (['ActivityProducedBy',
+                                        'ActivityConsumedBy']))
 fbs_collapsed_default_grouping_fields = get_flow_by_groupby_cols(
     flow_by_sector_collapsed_fields)
 fba_wsec_default_grouping_fields = get_flow_by_groupby_cols(
     flow_by_activity_wsec_fields)
-
-
-def read_stored_FIPS(year='2015'):
-    """
-    Read fips based on year specified, year defaults to 2015
-    :param year: str, '2010', '2013', or '2015', default year is 2015
-        because most recent year of FIPS available
-    :return: df, FIPS for specified year
-    """
-
-    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
-    # subset columns by specified year
-    df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
-    # rename columns to drop data year
-    df.columns = ['State', 'FIPS', 'County']
-    # sort df
-    df = df.sort_values(['FIPS']).reset_index(drop=True)
-
-    return df
-
-
-def getFIPS(state=None, county=None, year='2015'):
-    """
-    Pass a state or state and county name to get the FIPS.
-
-    :param state: str. A US State Name or Puerto Rico, any case accepted
-    :param county: str. A US county
-    :param year: str. '2010', '2013', '2015', default year is 2015
-    :return: str. A five digit FIPS code
-    """
-    FIPS_df = read_stored_FIPS(year)
-
-    # default code
-    code = None
-
-    if county is None:
-        if state is not None:
-            state = clean_str_and_capitalize(state)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"].isna()), "FIPS"]
-        else:
-            log.error("To get state FIPS, state name must be passed in "
-                      "'state' param")
-    else:
-        if state is None:
-            log.error("To get county FIPS, state name must be passed in "
-                      "'state' param")
-        else:
-            state = clean_str_and_capitalize(state)
-            county = clean_str_and_capitalize(county)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"] == county), "FIPS"]
-    if code.empty:
-        log.error("No FIPS code found")
-    else:
-        code = code.values[0]
-
-    return code
-
-
-def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
-    """
-    Applies FIPS codes by county to dataframe containing columns with State
-    and County
-    :param df: dataframe must contain columns with 'State' and 'County', but
-        not 'Location'
-    :param year: str, FIPS year, defaults to 2015
-    :param source_state_abbrev: True or False, the state column uses
-        abbreviations
-    :return dataframe with new column 'FIPS', blanks not removed
-    """
-    # If using 2 letter abbrevations, map to state names
-    if source_state_abbrev:
-        df['State'] = df['State'].map(abbrev_us_state)
-    df['State'] = df.apply(lambda x: clean_str_and_capitalize(x.State),
-                           axis=1)
-    df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County),
-                            axis=1)
-
-    # Pull and merge FIPS on state and county
-    mapping_FIPS = get_county_FIPS(year)
-    df = df.merge(mapping_FIPS, how='left')
-
-    # Where no county match occurs, assign state FIPS instead
-    mapping_FIPS = get_state_FIPS()
-    mapping_FIPS.drop(columns=['County'], inplace=True)
-    df = df.merge(mapping_FIPS, left_on='State', right_on='State', how='left')
-    df['Location'] = df['FIPS_x'].where(df['FIPS_x'].notnull(), df['FIPS_y'])
-    df.drop(columns=['FIPS_x', 'FIPS_y'], inplace=True)
-
-    return df
-
-
-def update_geoscale(df, to_scale):
-    """
-    Updates df['Location'] based on specified to_scale
-    :param df: df, requires Location column
-    :param to_scale: str, target geoscale
-    :return: df, with 5 digit fips
-    """
-    # code for when the "Location" is a FIPS based system
-    if to_scale == 'state':
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
-        # pad zeros
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x:
-                                                     x.ljust(3 + len(x), '0')
-                                                     if len(x) < 5 else x)
-    elif to_scale == 'national':
-        df.loc[:, 'Location'] = US_FIPS
-    return df
 
 
 def clean_str_and_capitalize(s):
@@ -373,157 +258,6 @@ def capitalize_first_letter(string):
     for s in split_array:
         return_string = return_string + " " + s.capitalize()
     return return_string.strip()
-
-
-def get_state_FIPS(year='2015'):
-    """
-    Filters FIPS df for state codes only
-    :param year: str, year of FIPS, defaults to 2015
-    :return: FIPS df with only state level records
-    """
-
-    fips = read_stored_FIPS(year)
-    fips = fips.drop_duplicates(subset='State')
-    fips = fips[fips['State'].notnull()]
-    return fips
-
-
-def get_county_FIPS(year='2015'):
-    """
-    Filters FIPS df for county codes only
-    :param year: str, year of FIPS, defaults to 2015
-    :return: FIPS df with only county level records
-    """
-    fips = read_stored_FIPS(year)
-    fips = fips.drop_duplicates(subset='FIPS')
-    fips = fips[fips['County'].notnull()]
-    return fips
-
-
-def get_all_state_FIPS_2(year='2015'):
-    """
-    Gets a subset of all FIPS 2 digit codes for states
-    :param year: str, year of FIPS, defaults to 2015
-    :return: df with 'State' and 'FIPS_2' cols
-    """
-
-    state_fips = get_state_FIPS(year)
-    state_fips.loc[:, 'FIPS_2'] = state_fips['FIPS'].apply(lambda x: x[0:2])
-    state_fips = state_fips[['State', 'FIPS_2']]
-    return state_fips
-
-
-# From https://gist.github.com/rogerallen/1583593
-# removed non US states, PR, MP, VI
-us_state_abbrev = {
-    'Alabama': 'AL',
-    'Alaska': 'AK',
-    'Arizona': 'AZ',
-    'Arkansas': 'AR',
-    'California': 'CA',
-    'Colorado': 'CO',
-    'Connecticut': 'CT',
-    'Delaware': 'DE',
-    'District of Columbia': 'DC',
-    'Florida': 'FL',
-    'Georgia': 'GA',
-    'Hawaii': 'HI',
-    'Idaho': 'ID',
-    'Illinois': 'IL',
-    'Indiana': 'IN',
-    'Iowa': 'IA',
-    'Kansas': 'KS',
-    'Kentucky': 'KY',
-    'Louisiana': 'LA',
-    'Maine': 'ME',
-    'Maryland': 'MD',
-    'Massachusetts': 'MA',
-    'Michigan': 'MI',
-    'Minnesota': 'MN',
-    'Mississippi': 'MS',
-    'Missouri': 'MO',
-    'Montana': 'MT',
-    'Nebraska': 'NE',
-    'Nevada': 'NV',
-    'New Hampshire': 'NH',
-    'New Jersey': 'NJ',
-    'New Mexico': 'NM',
-    'New York': 'NY',
-    'North Carolina': 'NC',
-    'North Dakota': 'ND',
-    'Ohio': 'OH',
-    'Oklahoma': 'OK',
-    'Oregon': 'OR',
-    'Pennsylvania': 'PA',
-    'Rhode Island': 'RI',
-    'South Carolina': 'SC',
-    'South Dakota': 'SD',
-    'Tennessee': 'TN',
-    'Texas': 'TX',
-    'Utah': 'UT',
-    'Vermont': 'VT',
-    'Virginia': 'VA',
-    'Washington': 'WA',
-    'West Virginia': 'WV',
-    'Wisconsin': 'WI',
-    'Wyoming': 'WY',
-}
-
-# thank you to @kinghelix and @trevormarburger for this idea
-abbrev_us_state = {abbr: state for state, abbr in us_state_abbrev.items()}
-
-
-def get_region_and_division_codes():
-    """
-    Load the Census Regions csv
-    :return: pandas df of census regions
-    """
-    df = pd.read_csv(f"{datapath}Census_Regions_and_Divisions.csv",
-                     dtype="str")
-    return df
-
-
-def assign_census_regions(df_load):
-    """
-    Assign census regions as a LocationSystem
-    :param df_load: fba or fbs
-    :return: df with census regions as LocationSystem
-    """
-    # load census codes
-    census_codes_load = get_region_and_division_codes()
-    census_codes = census_codes_load[
-        census_codes_load['LocationSystem'] == 'Census_Region']
-
-    # merge df with census codes
-    df = df_load.merge(census_codes[['Name', 'Region']],
-                       left_on=['Location'], right_on=['Name'], how='left')
-    # replace Location value
-    df['Location'] = np.where(~df['Region'].isnull(),
-                              df['Region'], df['Location'])
-
-    # modify LocationSystem
-    # merge df with census codes
-    df = df.merge(census_codes[['Region', 'LocationSystem']],
-                  left_on=['Region'], right_on=['Region'], how='left')
-    # replace Location value
-    df['LocationSystem_x'] = np.where(~df['LocationSystem_y'].isnull(),
-                                      df['LocationSystem_y'],
-                                      df['LocationSystem_x'])
-
-    # drop census columns
-    df = df.drop(columns=['Name', 'Region', 'LocationSystem_y'])
-    df = df.rename(columns={'LocationSystem_x': 'LocationSystem'})
-
-    return df
-
-
-def call_country_code(country):
-    """
-    use pycountry to call on 3 digit iso country code
-    :param country: str, name of country
-    :return: str, ISO code
-    """
-    return pycountry.countries.get(name=country).numeric
 
 
 def get_flowsa_base_name(filedirectory, filename, extension):
@@ -584,24 +318,38 @@ def return_true_source_catalog_name(sourcename):
     """
     Drop any extensions on source name until find the name in source catalog
     """
-    while (load_yaml_dict('source_catalog').get(sourcename) is None) & ('_' in sourcename):
+    while (load_yaml_dict('source_catalog').get(sourcename) is None) & (
+            '_' in sourcename):
         sourcename = sourcename.rsplit("_", 1)[0]
     return sourcename
 
 
-def check_activities_sector_like(sourcename_load):
+def check_activities_sector_like(df_load, sourcename=None):
     """
     Check if the activities in a df are sector-like,
     if cannot find the sourcename in the source catalog, drop extensions on the
     source name
+    :param df_load: df, df to determine if activities are sector-like
+    :param source: str, optionial, can identify sourcename to use
     """
-    sourcename = return_true_source_catalog_name(sourcename_load)
+    # identify sourcename
+    if sourcename is not None:
+        s = sourcename
+    else:
+        if 'SourceName' in df_load.columns:
+            s = pd.unique(df_load['SourceName'])[0]
+        elif 'MetaSources' in df_load.columns:
+            s = pd.unique(df_load['MetaSources'])[0]
+
+    sourcename = return_true_source_catalog_name(s)
 
     try:
-        sectorLike = load_yaml_dict('source_catalog')[sourcename]['sector-like_activities']
+        sectorLike = load_yaml_dict('source_catalog')[sourcename][
+            'sector-like_activities']
     except KeyError:
-        log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
-                  sourcename_load, sourcename)
+        log.info(f'%s not found in {datapath}source_catalog.yaml, assuming '
+                 f'activities are not sector-like', sourcename)
+        sectorLike = False
 
     return sectorLike
 

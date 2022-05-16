@@ -9,16 +9,16 @@ Functions used to import and parse USDA Census of Ag Cropland data
 import json
 import numpy as np
 import pandas as pd
-from flowsa.common import US_FIPS, abbrev_us_state, WITHDRAWN_KEYWORD, \
-    fbs_default_grouping_fields, fbs_fill_na_dict, \
-    fba_wsec_default_grouping_fields
-from flowsa.schema import flow_by_sector_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation, \
-    sector_disaggregation, sector_ratios, \
-    load_fba_w_standardized_units, equally_allocate_suppressed_parent_to_child_naics
-from flowsa.allocation import allocate_by_sector, equally_allocate_parent_to_child_naics
+from flowsa.allocation import allocate_by_sector, \
+    equally_allocate_parent_to_child_naics, equal_allocation
+from flowsa.common import WITHDRAWN_KEYWORD, fba_wsec_default_grouping_fields
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
-    replace_strings_with_NoneType, clean_df
+    replace_strings_with_NoneType
+from flowsa.flowbyfunctions import assign_fips_location_system, \
+    sector_aggregation, sector_disaggregation, sector_ratios, \
+    load_fba_w_standardized_units, \
+    equally_allocate_suppressed_parent_to_child_naics
+from flowsa.location import US_FIPS, abbrev_us_state
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
 from flowsa.validation import compare_df_units
 
@@ -187,6 +187,13 @@ def coa_cropland_parse(*, df_list, year, **_):
         ", ALL PRODUCTION PRACTICES", "", regex=True)
     df.loc[:, 'FlowName'] = df['FlowName'].str.replace(
         ", IN THE OPEN", "", regex=True)
+    # want to included "harvested" in the flowname when "harvested" is
+    # included in the class_desc
+    df['FlowName'] = np.where(df['class_desc'].str.contains(', HARVESTED'),
+                              df['FlowName'] + " HARVESTED", df['FlowName'])
+    # reorder
+    df['FlowName'] = np.where(df['FlowName'] == 'AREA, IRRIGATED HARVESTED',
+                              'AREA HARVESTED, IRRIGATED', df['FlowName'])
     # combine column information to create activity
     # information, and create two new columns for activities
     df['Activity'] = df['commodity_desc'] + ', ' + df['class_desc'] + ', ' + \
@@ -240,41 +247,26 @@ def coa_cropland_parse(*, df_list, year, **_):
     return df
 
 
-def coa_irrigated_cropland_fba_cleanup(fba, **kwargs):
-    """
-    When using irrigated cropland, aggregate sectors to cropland and total
-    ag land. Doing this because published values for irrigated harvested
-    cropland do not include the water use for vegetables, woody crops, berries.
-    :param fba: df, COA FBA format
-    :return: df, COA with dropped rows based on ActivityConsumedBy column
-    """
-
-    fba =\
-        fba[~fba['ActivityConsumedBy'].isin(['AG LAND',
-                                             'AG LAND, CROPLAND, HARVESTED']
-                                            )].reset_index(drop=True)
-
-    return fba
-
-
 def coa_nonirrigated_cropland_fba_cleanup(fba, **kwargs):
     """
-    When using irrigated cropland, aggregate sectors to cropland and total
-    ag land. Doing this because published values for irrigated harvested
-    cropland do not include the water use for vegetables, woody crops, berries.
+    Cleanup coa cropland data for nonirrigated crops
     :param fba: df, COA when using non-irrigated data
     :return: df, COA nonirrigated data, modified
     """
-
-    # drop rows of data that contain certain strings
-    fba = fba[~fba['ActivityConsumedBy'].isin(
-        ['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])]
 
     # when include 'area harvested' and 'area in production' in
     # single dataframe, which is necessary to include woody crops,
     # 'vegetable totals' are double counted
     fba = fba[~((fba['FlowName'] == 'AREA IN PRODUCTION') &
                 (fba['ActivityConsumedBy'] == 'VEGETABLE TOTALS'))]
+
+    # When using a mix of flow names, drop activities for ag land (naics 11)
+    # and ag land, cropland, harvested (naics 111),because published values
+    # for harvested cropland do not include data for vegetables, woody crops,
+    # berries. Values for sectors 11 and 111 will be aggregated from the
+    # dataframe later
+    fba = fba[~fba['ActivityConsumedBy'].isin(
+        ['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])].reset_index(drop=True)
 
     return fba
 
@@ -293,7 +285,6 @@ def disaggregate_coa_cropland_to_6_digit_naics(
 
     # define the activity and sector columns to base modifications on
     # these definitions will vary dependent on class type
-    activity_col = 'ActivityConsumedBy'
     sector_col = 'SectorConsumedBy'
 
     # drop rows without assigned sectors
@@ -301,8 +292,7 @@ def disaggregate_coa_cropland_to_6_digit_naics(
         ~fba_w_sector[sector_col].isna()].reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = modify_orchard_flowamounts(
-        fba_w_sector, activity_column=activity_col)
+    fba_w_sector = equal_allocation(fba_w_sector)
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
@@ -311,70 +301,71 @@ def disaggregate_coa_cropland_to_6_digit_naics(
         sector_column=sector_col,
         download_FBA_if_missing=kwargs['download_FBA_if_missing'])
 
-    # use ratios of usda 'harvested cropland' to determine missing 6 digit naics
-    fba_w_sector = disaggregate_cropland(fba_w_sector, attr,
-                                         method, year=attr['allocation_source_year'],
-                                         sector_column=sector_col,
-                                         download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+    # use ratios of usda 'harvested cropland' to determine missing 6 digit
+    # naics
+    fba_w_sector = disaggregate_cropland(
+        fba_w_sector, attr, method, year=attr['allocation_source_year'],
+        sector_column=sector_col, download_FBA_if_missing=kwargs[
+            'download_FBA_if_missing'])
 
     return fba_w_sector
 
 
 def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
-        fba_w_sector, attr, method, **kwargs):
+        fba_w_sector_load, attr, method, **kwargs):
     """
     Disaggregate usda coa cropland to naics 6
-    :param fba_w_sector: df, CoA cropland data, FBA format with sector columns
+    :param fba_w_sector_load: df, CoA cropland data, FBA format with sector
+    columns
     :param attr: dictionary, attribute data from method yaml for activity set
     :param method: dictionary, FBS method yaml
-    :param kwargs: dictionary, arguments that might be required for other functions.
-           Currently includes data source name.
+    :param kwargs: dictionary, arguments that might be required for other
+           functions. Currently includes data source name.
     :return: df, CoA cropland with disaggregated NAICS sectors
     """
 
     # define the activity and sector columns to base modifications on
     # these definitions will vary dependent on class type
-    activity_col = 'ActivityConsumedBy'
     sector_col = 'SectorConsumedBy'
 
     # drop rows without assigned sectors
-    fba_w_sector = fba_w_sector[~fba_w_sector[sector_col].isna()].reset_index(drop=True)
+    fba_w_sector = fba_w_sector_load[~fba_w_sector_load[sector_col].isna()]\
+        .reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = modify_orchard_flowamounts(fba_w_sector, activity_column=activity_col)
+    fba_w_sector = equal_allocation(fba_w_sector)
 
-    # use ratios of usda 'land in farms' to determine animal use of pasturelands at 6 digit naics
-    fba_w_sector = disaggregate_pastureland(fba_w_sector, attr, method, year=attr['allocation_source_year'],
-                                            sector_column=sector_col,
-                                            download_FBA_if_missing=kwargs[
-                                                'download_FBA_if_missing'],
-                                            parameter_drop=['1125'])
+    # todo: add back in once suppression fxn modified to accept non-naics
+    #  like activities and mixed level final naics (naics6 and naics7)
+    # then estimate any suppressed data by equally allocating parent to
+    # child naics
+    # groupcols = list(fba_w_sector3.select_dtypes(
+    #     include=['object', 'int']).columns)
+    # fba_w_sector = equally_allocate_suppressed_parent_to_child_naics(
+    #     fba_w_sector, method, 'SectorConsumedBy', groupcols)
 
-    # use ratios of usda 'harvested cropland' to determine missing 6 digit naics
-    fba_w_sector = disaggregate_cropland(fba_w_sector, attr,
-                                         method, year=attr['allocation_source_year'],
-                                         sector_column=sector_col,
-                                         download_FBA_if_missing=kwargs['download_FBA_if_missing'])
+    # When using irrigated cropland, aggregate sectors to cropland and total
+    # ag land. Doing this because published values for irrigated harvested
+    # cropland do not include the water use for vegetables, woody crops,
+    # berries.
+    fba_w_sector = fba_w_sector[~fba_w_sector['ActivityConsumedBy'].isin(
+        ['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])].reset_index(drop=True)
+
+    # use ratios of usda 'land in farms' to determine animal use of
+    # pasturelands at 6 digit naics
+    fba_w_sector = disaggregate_pastureland(
+        fba_w_sector, attr, method, year=attr['allocation_source_year'],
+        sector_column=sector_col, download_FBA_if_missing=kwargs[
+            'download_FBA_if_missing'], parameter_drop=['1125'])
+
+    # use ratios of usda 'harvested cropland' to determine missing 6 digit
+    # naics
+    fba_w_sector = disaggregate_cropland(
+        fba_w_sector, attr, method, year=attr['allocation_source_year'],
+        sector_column=sector_col, download_FBA_if_missing=kwargs[
+            'download_FBA_if_missing'])
 
     return fba_w_sector
-
-
-def modify_orchard_flowamounts(fba, activity_column):
-    """
-    In the CoA cropland crosswalk, the activity 'orchards' is mapped
-    to eight 6-digit naics. Therefore, after mapping,
-    divide the orchard flow amount by 8.
-    :param fba: A FlowByActiivty df mapped to sectors
-    :param activity_column: The activity column to base FlowAmount
-        modifications on (ActivityProducedBy or ActivityConsumedBy)
-    :return: df, CoA cropland data with modified FlowAmounts
-    """
-
-    # divide the Orchards data allocated to NAICS by 6 to avoid double counting
-    fba.loc[fba[activity_column] == 'ORCHARDS',
-            'FlowAmount'] = fba['FlowAmount'] / 8
-
-    return fba
 
 
 def disaggregate_pastureland(fba_w_sector, attr, method, year,
@@ -419,13 +410,18 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year,
         df_f = df_f[~df_f['ActivityConsumedBy'].str.contains('&')]
         if 'parameter_drop' in kwargs:
             # drop aquaculture because pastureland not used for aquaculture
-            df_f = df_f[~df_f['ActivityConsumedBy'].isin(kwargs['parameter_drop'])]
+            # drop any activities at a more aggregated sector level because
+            # will need to be reaggregated after dropping a parameter to
+            # accurately calculate the allocation ratios
+            drop_list = [sub[ : -1] for sub in  kwargs['parameter_drop']]
+            drop_list = drop_list + kwargs['parameter_drop']
+            df_f = df_f[~df_f['ActivityConsumedBy'].isin(drop_list)]
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(
             df_f, sectorsourcename=method['target_sector_source'])
         # estimate suppressed data by equal allocation
         df_f = equally_allocate_suppressed_parent_to_child_naics(
-            df_f, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
+            df_f, method, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
         # create proportional ratios
         group_cols = [e for e in fba_wsec_default_grouping_fields if
                       e not in ('ActivityProducedBy', 'ActivityConsumedBy')]
@@ -454,8 +450,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year,
         # original fba_w_sector
         fba_w_sector = fba_w_sector[fba_w_sector[sector_column].apply(
             lambda x: x[0:3]) != '112'].reset_index(drop=True)
-        fba_w_sector = pd.concat([fba_w_sector, df],
-                                 sort=True).reset_index(drop=True)
+        fba_w_sector = pd.concat([fba_w_sector, df]).reset_index(drop=True)
 
         # fill empty cells with NoneType
         fba_w_sector = replace_strings_with_NoneType(fba_w_sector)
@@ -508,17 +503,12 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
         naics, sectorsourcename=method['target_sector_source'])
     # estimate suppressed data by equally allocating parent to child naics
     naics = equally_allocate_suppressed_parent_to_child_naics(
-        naics, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
-    # add missing fbs fields
-    naics = clean_df(naics, flow_by_sector_fields, fbs_fill_na_dict)
+        naics, method, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
 
     # aggregate sectors to create any missing naics levels
-    group_cols = fbs_default_grouping_fields
-    naics2 = sector_aggregation(naics, group_cols)
+    naics2 = sector_aggregation(naics)
     # add missing naics5/6 when only one naics5/6 associated with a naics4
     naics3 = sector_disaggregation(naics2)
-    # drop rows where FlowAmount 0
-    naics3 = naics3.loc[naics3['FlowAmount'] != 0]
     # create ratios
     naics4 = sector_ratios(naics3, sector_column)
     # create temporary sector column to match the two dfs on
@@ -573,20 +563,20 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
         # tmp drop Nonetypes
         df_subset = replace_NoneType_with_empty_cells(df_subset)
         # add new rows of data to crop df
-        crop = pd.concat([crop, df_subset], sort=True).reset_index(drop=True)
+        crop = pd.concat([crop, df_subset]).reset_index(drop=True)
 
     # clean up df
     crop = crop.drop(columns=['Location_tmp'])
 
     # equally allocate any further missing naics
-    crop = equally_allocate_parent_to_child_naics(crop, 'NAICS_6')
+    crop = equally_allocate_parent_to_child_naics(crop, method)
 
     # pasture data
     pasture = \
         fba_w_sector.loc[fba_w_sector[sector_column].apply(
             lambda x: x[0:3]) == '112'].reset_index(drop=True)
     # concat crop and pasture
-    fba_w_sector = pd.concat([pasture, crop], sort=True).reset_index(drop=True)
+    fba_w_sector = pd.concat([pasture, crop]).reset_index(drop=True)
 
     # fill empty cells with NoneType
     fba_w_sector = replace_strings_with_NoneType(fba_w_sector)

@@ -1,5 +1,7 @@
 %YAML 1.2
-# 'EIA_CBECS_Land' and 'EIA_MECS_Land' must be listed prior to 'USDA_ERS_MLU' for FBS creation
+# 'EIA_CBECS_Land' and 'EIA_MECS_Land' must be listed prior to
+# 'USDA_ERS_MLU' for FBS creation because the results of the two allocated
+# datasets are used within USDA_ERS_MLU sector attribution
 ---
 
 target_sector_level: NAICS_6
@@ -12,50 +14,54 @@ source_names:
     geoscale_to_use: national
     source_fba_load_scale: national
     year: 2012
-    clean_fba_df_fxn: cbecs_land_fba_cleanup
-    activity_set_file: 'EIA_CBECS_Land_2012_asets.csv'
+    clean_fba_df_fxn: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
     activity_sets:
-      activity_set_1: # all activities in eia cbecs land crosswalk
+      cbecs_land: # all activities in eia cbecs land crosswalk
+        names: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2012
         allocation_flow:
-          - "Number of employees"
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
   "EIA_MECS_Land": # manufacturing land use
     data_format: 'FBA'
     class: Land
     geoscale_to_use: national
     year: 2014
-    clean_fba_df_fxn: mecs_land_fba_cleanup_for_land_2012_fbs
-    clean_fba_w_sec_df_fxn: mecs_land_clean_allocation_mapped_fba_w_sec
-    activity_set_file: 'EIA_MECS_Land_2014_asets.csv'
+    clean_fba_df_fxn: !script_function:EIA_MECS mecs_land_fba_cleanup_for_land_2012_fbs
+    clean_fba_w_sec_df_fxn: !script_function:EIA_MECS mecs_land_clean_allocation_mapped_fba_w_sec
     activity_sets:
-      activity_set_1: # all activities in eia mecs land crosswalk
+      mecs_land: # all activities in eia mecs land crosswalk
+        names: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
         allocation_method: proportional-flagged
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2014
         allocation_flow:
-          - "Number of employees"
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
-  "BLM_PLS": # used for mining data
+        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+  "BLM_PLS":
     data_format: 'FBA'
     class: Land
     geoscale_to_use: national
     year: 2012
-    activity_set_file: 'BLM_PLS_2012_asets.csv'
     activity_sets:
-      activity_set_1: # all blm pls activities other than hardrock
+      general_mining: # all blm pls activities other than hardrock
+        names: !from_index:BLM_PLS_2012_asets.csv general_mining
         allocation_method: direct
         allocation_source: None
         allocation_source_class: None
@@ -63,18 +69,21 @@ source_names:
         allocation_flow: None
         allocation_compartment: None
         allocation_from_scale: national
-      activity_set_2: # hardrock leases
+      hardrock_mining:
+        names: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2012
         allocation_flow:
-          - "Number of employees"
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
         allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
   "USDA_ERS_MLU":
     data_format: 'FBA'
     class: Land
@@ -96,8 +105,8 @@ source_names:
           - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba: !script_function:USDA_CoA_Cropland coa_nonirrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
       activity_set_2:
         names:
           - 'Cropland idled'
@@ -113,8 +122,8 @@ source_names:
           - 'AREA GROWN'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_nonirrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics
+        clean_allocation_fba: !script_function:USDA_CoA_Cropland coa_nonirrigated_cropland_fba_cleanup
+        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
       activity_set_3:
         names:
           - 'Cropland used for pasture'
@@ -128,7 +137,7 @@ source_names:
           - "FARM OPERATIONS"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba_w_sec: coa_cropland_naics_fba_wsec_cleanup
+        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland_NAICS coa_cropland_naics_fba_wsec_cleanup
       activity_set_4:
         names:
           - 'Forest-use land not grazed'
@@ -145,10 +154,11 @@ source_names:
         names:
           - 'Land in rural transportation facilities'
         allocation_method: allocation_function
-        allocation_source: allocate_usda_ers_mlu_land_in_rural_transportation_areas
-        literature_sources: {"urban_land_use_for_airports": "2020",
-                             "urban_land_use_for_railroads": "2020",
-                             "transportation_sectors_based_on_FHA_fees": "1997"}
+        allocation_source: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_rural_transportation_areas
+        literature_sources: {
+          "urban_land_use_for_airports": "2020",
+          "urban_land_use_for_railroads": "2020",
+          "transportation_sectors_based_on_FHA_fees": "1997"}
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None
@@ -158,12 +168,13 @@ source_names:
         names:
           - 'Land in urban areas'
         allocation_method: allocation_function
-        allocation_source: allocate_usda_ers_mlu_land_in_urban_areas
-        literature_sources: {"area_of_urban_land_occupied_by_houses_2013": "2017",
-                             "transportation_sectors_based_on_FHA_fees": "1997",
-                             "urban_land_use_for_airports": "2020",
-                             "urban_land_use_for_railroads": "2020",
-                             "open_space_fraction_of_urban_area": "2020"}
+        allocation_source: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_urban_areas
+        literature_sources: {
+          "area_of_urban_land_occupied_by_houses_2013": "2017",
+          "transportation_sectors_based_on_FHA_fees": "1997",
+          "urban_land_use_for_airports": "2020",
+          "urban_land_use_for_railroads": "2020",
+          "open_space_fraction_of_urban_area": "2020"}
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None
@@ -173,8 +184,9 @@ source_names:
         names:
           - 'Other land'
         allocation_method: allocation_function
-        allocation_source: allocate_usda_ers_mlu_other_land
-        literature_sources: {"area_of_rural_land_occupied_by_houses_2013": "2017" }
+        allocation_source: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_other_land
+        literature_sources: {
+          "area_of_rural_land_occupied_by_houses_2013": "2017" }
         allocation_source_class: None
         allocation_source_year: None
         allocation_flow: None

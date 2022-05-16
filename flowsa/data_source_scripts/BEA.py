@@ -9,7 +9,8 @@ Generation of BEA Gross Output data as FBA, csv files for BEA data
 originate from USEEIOR and were originally generated on 2020-07-14.
 """
 import pandas as pd
-from flowsa.common import US_FIPS, fbs_activity_fields
+from flowsa.location import US_FIPS
+from flowsa.common import fbs_activity_fields
 from flowsa.schema import activity_fields
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
@@ -193,10 +194,12 @@ def subset_and_allocate_BEA_table(df, attr, **_):
              "helper_method": "proportional",
              "helper_source_class": "Employment",
              "helper_source_year": 2012,
-             "helper_flow": ["Number of employees"],
+             "helper_flow": ["Number of employees, Federal Government",
+                             "Number of employees, State Government",
+                             "Number of employees, Local Government",
+                             "Number of employees, Private"],
              "helper_from_scale": "national",
              "allocation_from_scale": "national",
-             "clean_helper_fba": "clean_bls_qcew_fba",
              "clean_helper_fba_wsec": "bls_clean_allocation_fba_w_sec"}
     df2 = allocation_helper(df, attr2, method2, v, False)
     # Drop remaining rows with no sectors e.g. T001 and other final demands

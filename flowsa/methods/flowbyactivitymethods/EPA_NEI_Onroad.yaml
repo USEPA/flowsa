@@ -1,5 +1,5 @@
-inherits_from: EPA_NEI_Common
+!include:EPA_NEI_Common.yaml
 bib_id: EPA_NEI_Onroad
 url: # no replacement needed in url because only single zip file
   base_url: ftp://newftp.epa.gov/air/nei/__year__/data_summaries/__version___onroad_byregions.zip
-parse_response_fxn: epa_nei_onroad_parse
+parse_response_fxn: !script_function:EPA_NEI epa_nei_onroad_parse
