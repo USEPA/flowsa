@@ -9,8 +9,7 @@ Created on Thu May  5 14:43:34 2022
 
 import requests
 import pandas as pd
-import os
-from flowsa.settings import paths
+from flowsa.settings import externaldatapath
 
 def getAEOseriesIDs():
     """
@@ -91,7 +90,4 @@ def getAEOseriesIDs():
     df = df.reindex(columns=['table_name', 'series_name', 'units', 'series_id'])
     
     # save to csv
-    datapath = (os.path.realpath(paths.local_path + '\AEOseriesIDs'))
-    if not os.path.exists(datapath):
-        os.makedirs(datapath)
-    df.to_csv(datapath + '/AEOseriesIDs.csv', index=False)
+    df.to_csv(externaldatapath + 'AEOseriesIDs.csv', index=False)
