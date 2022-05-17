@@ -6,9 +6,11 @@ Functions to plot Flow-By-Sector results
 """
 
 import pandas as pd
+import matplotlib.pyplot as plt
 import seaborn as sns
 import flowsa
 from flowsa.common import load_crosswalk
+from flowsa.flowbyfunctions import subset_df_by_sector_lengths
 
 
 def addSectorNames(df):
@@ -22,9 +24,7 @@ def addSectorNames(df):
     cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
         'NAICS_2012_Name'] + ')'
     cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})
-
     df = df.merge(cw[['Sector', 'SectorName']], how='left')
-
     df = df.reset_index(drop=True)
 
     return df
@@ -97,3 +97,60 @@ def plotFBSresults(method_dict, plottype, sector_length_display=None,
         g._legend.set_title('Flow-By-Sector Method')
         g.set_axis_labels(f"Flow Amount ({df3['Unit'][0]})", "")
         g.tight_layout()
+
+
+def stackedBarChart(methodname):
+
+    # test
+    methodname = 'Water_national_2015_m1'
+
+    df = flowsa.collapse_FlowBySector(methodname)
+    df['Sector'] = df['Sector'].apply(lambda x: x[0:2])
+    df2 = df.groupby(['Location', 'Sector', 'Unit', 'DataSources'],
+                     as_index=False).agg({"FlowAmount": sum})
+    df3 = pd.pivot_table(df2, values="FlowAmount",
+                         index=["Location", "Sector", "Unit"],
+                         columns="DataSources", fill_value=0).reset_index()
+
+    # plot the dataframe with 1 line
+    ax = df3.plot.barh(x='Sector', stacked=True, figsize=(8, 6))
+
+    # .patches is everything inside of the chart
+    for rect in ax.patches:
+        # Find where everything is located
+        height = rect.get_height()
+        width = rect.get_width()
+        x = rect.get_x()
+        y = rect.get_y()
+
+        # The height of the bar is the data value and can be used as the label
+        label_text = f'{width:.2f}%'  # f'{width:.2f}' to format decimal values
+
+        # ax.text(x, y, text)
+        label_x = x + width / 2
+        label_y = y + height / 2
+
+        # only plot labels greater than given width
+        if width > 0:
+            ax.text(label_x, label_y, label_text, ha='center', va='center',
+                    fontsize=8)
+
+    # move the legend
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+
+    # add labels
+    # ax.set_ylabel("People", fontsize=18)
+    # ax.set_xlabel("Percent", fontsize=18)
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
