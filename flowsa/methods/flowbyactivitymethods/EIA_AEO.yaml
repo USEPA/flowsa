@@ -1,7 +1,7 @@
 author: US Energy Information Administration
 source_name: Annual Energy Outlook
 source_url: https://www.eia.gov/outlooks/aeo/
-api_name: EIA_AEO
+api_name: EIA
 api_key_required: true
 format: json
 url:
