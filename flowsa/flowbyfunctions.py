@@ -527,7 +527,7 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
         cols_to_keep = flow_by_activity_fields
 
     # method of subset dependent on LocationSystem
-    if df['LocationSystem'].str.contains('FIPS').any():
+    if df['LocationSystem'].str.contains('FIPS').all():
         df = df[df['LocationSystem'].str.contains(
             'FIPS')].reset_index(drop=True)
         # determine 'activity_from_scale' for use in df
@@ -576,6 +576,8 @@ def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
 
     # right now, the only other location system is for Statistics Canada data
     else:
+        df = df[~df['LocationSystem'].str.contains('FIPS')].reset_index(drop=True)
+
         return df
 
 
