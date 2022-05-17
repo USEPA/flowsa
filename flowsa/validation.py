@@ -935,9 +935,8 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
         columns={'FlowAmount': 'FlowAmount_fbs2'})
     df2 = replace_strings_with_NoneType(df2)
     # compare df
-    merge_cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
-                  'SectorSourceName', 'Context', 'Location', 'LocationSystem',
-                  'Unit', 'FlowType', 'Year', 'MetaSources']
+    merge_cols = list(df2.select_dtypes(include=[
+        'object', 'int']).columns)
     if ignore_metasources:
         merge_cols.remove('MetaSources')
     # check units
