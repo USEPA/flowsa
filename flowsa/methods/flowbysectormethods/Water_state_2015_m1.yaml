@@ -1,5 +1,4 @@
-target_sector_level: NAICS_4
-target_sector_source: NAICS_2012_Code
+!include:BEA_summary_target.yaml
 target_geoscale: state
 source_names:
   "USGS_NWIS_WU":
@@ -7,8 +6,8 @@ source_names:
     class: Water
     geoscale_to_use: state
     year: 2015
-    clean_fba_df_fxn: usgs_fba_data_cleanup
-    clean_fba_w_sec_df_fxn: usgs_fba_w_sectors_data_cleanup
+    clean_fba_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    clean_fba_w_sec_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
     activity_sets:
       activity_set_1:
         names:
@@ -33,11 +32,13 @@ source_names:
         allocation_source_class: "Employment"
         allocation_source_year: 2015
         allocation_flow:
-          - "Number of employees"
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: clean_bls_qcew_fba
-        clean_allocation_fba_w_sec: bls_clean_allocation_fba_w_sec
+        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
       activity_set_3:
         names:
         - "Irrigation Crop"
@@ -53,15 +54,14 @@ source_names:
           - 'AREA GROWN, IRRIGATED'
         allocation_compartment: None
         allocation_from_scale: state
-        clean_allocation_fba: coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
+        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
         helper_source: "USDA_IWMS"
         helper_method: multiplication
         helper_source_class: "Water"
         helper_source_year: 2018
         helper_flow: None
         helper_from_scale: state
-        clean_helper_fba_wsec: iwms_aggregation
+        clean_helper_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
       activity_set_4:
         names:
         - "Livestock"

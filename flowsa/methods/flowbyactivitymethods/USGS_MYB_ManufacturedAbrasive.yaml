@@ -7,9 +7,9 @@ years_available: 2017-2018
 format: xlsx
 url:
   base_url: https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/atoms/files/myb1-2017-abras.xls
-url_replace_fxn: usgs_ma_url_helper
-call_response_fxn: usgs_ma_call
-parse_response_fxn: usgs_ma_parse
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_ma_call
+parse_response_fxn: !script_function:USGS_MYB usgs_ma_parse
 years:
 - 2017
 - 2018
