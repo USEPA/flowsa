@@ -16,15 +16,14 @@ years:
 - 2018
 tables:
 - table1_2
+- table1_5
 - table2_1
 - table2_2
 - table3_1
 - table3_2
 - table7_2
-
-
+- table7_10
 table_dict:
-
     '2010':
       Table 2.1: 
         col_names: &col_names_2010_21
@@ -162,7 +161,7 @@ table_dict:
           - Energy Source
           - Total First Use
         regions: &regions_2010_15
-          Total United States: [ 9,49 ]
+          Total United States: [ 16,49 ]
         rse_regions: &rse_regions_2010_15
           Total United States: [ 10,51 ]
         data_type: 'fuel consumption'
@@ -328,6 +327,41 @@ table_dict:
         rse_regions:
           *rse_regions_2014_21
         data_type: 'fuel consumption'
+      Table 1.5:
+        col_names: &col_names_2014_15
+          - Energy Source
+          - Total First Use
+        regions: &regions_2014_15
+          Total United States: [ 13,54 ]
+        rse_regions: &rse_regions_2014_15
+          Total United States: [ 10,51 ]
+        data_type: 'fuel consumption'
+      Table 7.10:
+        col_names: &col_names_2014_710
+          - NAICS Code
+          - Subsector and Industry
+          - Electricity Total
+          - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
+          - Natural Gas Total
+          - Natural Gas from Local Utility
+          - Natural Gas from Sources Other than Local Utility
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
+        regions: &regions_2014_710
+          Total United States: [ 16,101 ]
+          Northeast Region: [ 102,187 ]
+          Midwest Region: [ 188,273 ]
+          South Region: [ 274,359 ]
+          West Region: [ 360,444 ]
+        rse_regions: &rse_regions_2014_710
+          Total United States: [ 13,98 ]
+          Northeast Region: [ 99,184 ]
+          Midwest Region: [ 185,270 ]
+          South Region: [ 271,356 ]
+          West Region: [ 357,441 ]
+        data_type: 'fuel consumption'
     '2018':
       Table 2.1: 
         col_names: *col_names_2014_21
@@ -439,3 +473,38 @@ table_dict:
               rse_regions:
                 *rse_regions_2018_21
               data_type: 'fuel consumption'
+      Table 1.5:
+          col_names: &col_names_2018_15
+            - Energy Source
+            - Total First Use
+          regions: &regions_2018_15
+            Total United States: [ 14,52 ]
+          rse_regions: &rse_regions_2018_15
+            Total United States: [ 10,49 ]
+          data_type: 'fuel consumption'
+      Table 7.10:
+            col_names: &col_names_2018_710
+              - NAICS Code
+              - Subsector and Industry
+              - Electricity Total
+              - Electricity from Local Utility
+              - Electricity from Sources Other than Local Utility
+              - Natural Gas Total
+              - Natural Gas from Local Utility
+              - Natural Gas from Sources Other than Local Utility
+              - Steam Total
+              - Steam from Local Utility
+              - Steam from Sources Other than Local Utility
+            regions: &regions_2018_710
+              Total United States: [ 16,101 ]
+              Northeast Region: [ 102,185 ]
+              Midwest Region: [ 186,270 ]
+              South Region: [ 271,355 ]
+              West Region: [ 356,439 ]
+            rse_regions: &rse_regions_2018_710
+              Total United States: [ 13,97 ]
+              Northeast Region: [ 98,182 ]
+              Midwest Region: [ 183,267 ]
+              South Region: [ 268,352 ]
+              West Region: [ 353,436 ]
+            data_type: 'fuel consumption'
