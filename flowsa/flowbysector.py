@@ -111,8 +111,9 @@ def load_source_dataframe(method, sourcename, source_dict,
                                                    method,
                                                    fbsconfigpath)
     else:
-        vLog.error("Data format not specified in method "
-                   "file for datasource %s", sourcename)
+        raise flowsa.exceptions.MethodConstructionError(
+            message="Data format not specified in method "
+            f"file for {sourcename}")
 
     return flows_df
 
