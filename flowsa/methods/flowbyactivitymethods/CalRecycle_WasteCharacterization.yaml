@@ -1,12 +1,12 @@
 author: California Commercial
 source_name: CalRecycle_WasteCharacterization
-source_url: ' '
+source_url: 'https://www2.calrecycle.ca.gov/WasteCharacterization/PubExtracts/2014/GenSummary.pdf'
 original_data_download_date: ' '
 bib_id: CalRec_WasteChar
 api_name: None
 api_key_required: false
 format: csv  # comma delineated data
 url: None
-parse_response_fxn: calR_parse
+parse_response_fxn: !script_function:CalRecycle_WasteCharacterization calR_parse
 years:
 - 2014

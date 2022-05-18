@@ -7,9 +7,9 @@ years_available: 2014-2018
 format: xls
 url:
   base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-rheni-adv.xlsx
-url_replace_fxn: usgs_rhenium_url_helper
-call_response_fxn: usgs_rhenium_call
-parse_response_fxn: usgs_rhenium_parse
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_rhenium_call
+parse_response_fxn: !script_function:USGS_MYB usgs_rhenium_parse
 years:
 - 2014
 - 2015

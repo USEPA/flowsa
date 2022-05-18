@@ -7,7 +7,7 @@ api_key_required: false
 format: xlsx  # excel workbook, two sheets
 url: # no replacement needed in url because only single workbook
   base_url: https://www.eia.gov/consumption/commercial/reports/2012/water/xls/water%20consumption_w1.xlsx
-call_response_fxn: eia_cbecs_water_call
-parse_response_fxn: eia_cbecs_water_parse
+call_response_fxn: !script_function:EIA_CBECS_Water eia_cbecs_water_call
+parse_response_fxn: !script_function:EIA_CBECS_Water eia_cbecs_water_parse
 years:
 - 2012
