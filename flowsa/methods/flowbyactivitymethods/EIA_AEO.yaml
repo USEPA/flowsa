@@ -6,7 +6,7 @@ api_key_required: true
 format: json
 url:
   base_url: https://api.eia.gov/series/?series_id=__SERIES_ID__&api_key=__API_KEY__&out=json
-url_replace_fxn: eia_aeo_url_helper
-call_response_fxn: eia_aeo_call
+url_replace_fxn: !script_function:EIA_AEO eia_aeo_url_helper
+call_response_fxn: !script_function:EIA_AEO eia_aeo_call
 years:
 - 2022
