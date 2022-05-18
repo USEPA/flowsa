@@ -155,7 +155,7 @@ def epa_nei_nonpoint_parse(*, df_list, source, year, config, **_):
     return df
 
 
-def clean_NEI_fba(fba):
+def clean_NEI_fba(fba, **_):
     """
     Clean up the NEI FBA for use in FBS creation
     :param fba: df, FBA format
@@ -181,14 +181,14 @@ def clean_NEI_fba(fba):
     return fba
 
 
-def clean_NEI_fba_no_pesticides(fba):
+def clean_NEI_fba_no_pesticides(fba, **_):
     """
     Clean up the NEI FBA with no pesicides for use in FBS creation
     :param fba: df, FBA format
     :return: df, modified FBA
     """
     fba = drop_pesticides(fba)
-    fba = clean_NEI_fba(fba)
+    fba = clean_NEI_fba(fba=fba)
     return fba
 
 

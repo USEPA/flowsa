@@ -158,7 +158,8 @@ def main(**kwargs):
             # clean up fba before mapping, if specified in yaml
             if "clean_fba_before_mapping_df_fxn" in v:
                 vLog.info("Cleaning up %s FlowByActivity", k)
-                flows = v["clean_fba_before_mapping_df_fxn"](flows)
+                flows = v["clean_fba_before_mapping_df_fxn"](fba=flows,
+                                                             source_dict=v)
 
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \
@@ -167,7 +168,8 @@ def main(**kwargs):
             # clean up fba, if specified in yaml
             if "clean_fba_df_fxn" in v:
                 vLog.info("Cleaning up %s FlowByActivity", k)
-                flows_mapped = v["clean_fba_df_fxn"](flows_mapped)
+                flows_mapped = v["clean_fba_df_fxn"](fba=flows_mapped,
+                                                     source_dict=v)
 
             # master list of activity names read in from data source
             ml_act = []

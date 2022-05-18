@@ -354,10 +354,10 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     return flowbyactivity_df
 
 
-def usgs_fba_data_cleanup(df):
+def usgs_fba_data_cleanup(fba, **_):
     """
     Clean up the dataframe to prepare for flowbysector. Used in flowbysector.py
-    :param df: df, FBA format
+    :param fba: df, FBA format
     :return: df, modified FBA
     """
 
@@ -368,9 +368,9 @@ def usgs_fba_data_cleanup(df):
     vLogDetailed.info('Removing all rows for Commercial Data because does not '
                       'exist for all states and causes issues as information '
                       'on Public Supply deliveries.')
-    dfa = df[~df['Description'].str.lower().str.contains(
+    dfa = fba[~fba['Description'].str.lower().str.contains(
         'commercial|closed-loop cooling|once-through')]
-    calculate_flowamount_diff_between_dfs(df, dfa)
+    calculate_flowamount_diff_between_dfs(fba, dfa)
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
     vLogDetailed.info('Modify the public supply values to generate '
                       'NET public supply by subtracting out deliveries '
