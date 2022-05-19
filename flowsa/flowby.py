@@ -280,7 +280,8 @@ class _FlowBy(pd.DataFrame):
         return self._standardize_units(self)
 
     def update_fips_to_geoscale(
-        self: FB,
+        self: Literal['national', 'state', 'county',
+                      geo.scale.NATIONAL, geo.scale.STATE, geo.scale.COUNTY],
         to_geoscale: str,
     ) -> FB:
         """
@@ -291,14 +292,72 @@ class _FlowBy(pd.DataFrame):
         :param to_geoscale: str, target geoscale
         :return: FlowBy dataset with 5 digit fips
         """
-        if to_geoscale == 'national':
-            return self.assign(Location=location.US_FIPS)
-        elif to_geoscale == 'state':
+        if to_geoscale == 'national' or to_geoscale == geo.scale.NATIONAL:
+            return (self
+                    .assign(Location=geo.filtered_fips_list('national')[0]))
+        elif to_geoscale == 'state' or to_geoscale == geo.scale.STATE:
             return (self
                     .assign(Location=self.Location.apply(
                         lambda x: str(x)[:2].ljust(5, '0'))))
-        else:
+        elif to_geoscale == 'county' or to_geoscale == geo.scale.COUNTY:
             return self
+        else:
+            log.error('No FIPS level corresponds to the given geoscale: %s',
+                      to_geoscale)
+
+    # TODO: Make it so column names are retained (or added back in) after
+    # aggregation
+    def aggregate_flowby(
+        self: FB,
+        columns_to_group_by: List[str] = None,
+        columns_to_average: List[str] = None
+    ) -> FB:
+        """
+        Aggregates FlowBy 'FlowAmount' column based on group_by_columns and
+        generates weighted average values based on FlowAmount values
+        for certain other columns
+        :return: FlowBy, with aggregated columns
+        """
+        if columns_to_group_by is None:
+            columns_to_group_by = [
+                x for x in self.columns
+                if self[x].dtype != 'float' and x != 'Description'
+            ]
+        if columns_to_average is None:
+            columns_to_average = [
+                x for x in self.columns
+                if self[x].dtype == 'float' and x != 'FlowAmount'
+            ]
+        fb = self.query('FlowAmount != 0')
+        aggregated = (
+            fb
+            .assign(
+                **{f'_{c}_weighted': fb[c] * fb.FlowAmount
+                   for c in columns_to_average},
+                **{f'_{c}_weights': fb.FlowAmount * fb[c].notnull()
+                   for c in columns_to_average}
+            )
+            .groupby(columns_to_group_by, dropna=False)
+            .agg({c: 'sum' for c in (
+                ['FlowAmount']
+                + columns_to_average
+                + [f'_{c}_weighted' for c in columns_to_average]
+                + [f'_{c}_weights' for c in columns_to_average])})
+            .reset_index()
+        )
+        aggregated = (
+            aggregated
+            .assign(
+                **{c: (aggregated[f'_{c}_weighted']
+                       / aggregated[f'_{c}_weights'])
+                   for c in columns_to_average}
+            )
+            .drop(
+                columns=([f'_{c}_weighted' for c in columns_to_average]
+                         + [f'_{c}_weights' for c in columns_to_average])
+            )
+        )
+        return aggregated
 
 
 class FlowByActivity(_FlowBy):
