@@ -86,7 +86,7 @@ def Census_CBP_URL_helper(*, build_url, year, **_):
             url = build_url
             url = url.replace("__stateFIPS__", c)
             # specified NAICS code year depends on year of data
-            if year in ['2017']:
+            if year in ['2017', '2018', '2019', '2020']:
                 url = url.replace("__NAICS__", "NAICS2017")
                 url = url.replace("__countyFIPS__", "*")
             if year in ['2012', '2013', '2014', '2015', '2016']:
