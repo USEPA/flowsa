@@ -14,11 +14,8 @@ url:
     source_desc: SURVEY
     sector_desc: ENVIRONMENTAL
     unit_desc: LB
-    # __domainLevel__ triggers a replace function
-    domain_desc: __domainLevel__
+    domain_desc: FERTILIZER
     agg_level_desc: STATE
-    # dynamically substitute the 50 state acronyms.
-    state_alpha: __stateAlpha__
     # __year__ is used to trigger a replace function to substitute in year
     year: __year__
   key_param: key
@@ -31,5 +28,3 @@ years:
 - 2017
 - 2018
 - 2020
-domain_levels:
-- FERTILIZER
