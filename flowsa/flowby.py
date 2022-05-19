@@ -4,7 +4,7 @@ import numpy as np
 from functools import partial
 from . import (common, settings, location, dataclean, metadata, sectormapping,
                literature_values, flowbyactivity, flowbysector, flowsa_yaml,
-               validation)
+               validation, geo)
 from .flowsa_log import log, vlog
 import esupy.processed_data_mgmt
 import esupy.dqi
