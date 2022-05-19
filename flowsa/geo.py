@@ -7,6 +7,9 @@ from . import settings
 from .flowsa_log import log
 
 
+# TODO: Evaluate whether an UNKNOWN entry should be included, with np.nan
+# TODO: as the aggregation_level. Doing so will also require implementing
+# TODO: __gt__(), __le__(), and __ge__() to return the proper comparisons.
 @total_ordering
 class scale(enum.Enum):
     '''
@@ -67,8 +70,9 @@ def get_all_fips(year: Literal[2010, 2013, 2015] = 2015) -> pd.DataFrame:
             .reset_index(drop=True))
 
 
-def get_fips_list(
-    geoscale: Literal['national', 'state', 'county'] or scale,
+def filtered_fips_list(
+    geoscale: Literal['national', 'state', 'county',
+                      scale.NATIONAL, scale.STATE, scale.COUNTY],
     year: Literal[2010, 2013, 2015] = 2015
 ) -> pd.DataFrame:
     if geoscale == 'national' or geoscale == scale.NATIONAL:
