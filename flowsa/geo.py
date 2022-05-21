@@ -39,6 +39,13 @@ class scale(enum.Enum):
         geoscale: Literal['national', 'census_region', 'census_division',
                           'state', 'county']
     ) -> 'scale':
+        '''
+        Return the appropriate geo.scale constant given a (non-case-sensitive)
+        string
+        :param geoscale: str
+        :return: geo.scale constant
+        '''
+        geoscale = geoscale.lower()
         if geoscale == 'national':
             return cls.NATIONAL
         elif geoscale == 'census_region':
