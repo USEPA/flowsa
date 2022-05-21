@@ -294,7 +294,8 @@ class _FlowBy(pd.DataFrame):
         """
         if to_geoscale == 'national' or to_geoscale == geo.scale.NATIONAL:
             return (self
-                    .assign(Location=geo.filtered_fips_list('national')[0]))
+                    .assign(Location=(geo.filtered_fips('national')
+                                      .FIPS.values[0])))
         elif to_geoscale == 'state' or to_geoscale == geo.scale.STATE:
             return (self
                     .assign(Location=self.Location.apply(
@@ -305,8 +306,6 @@ class _FlowBy(pd.DataFrame):
             log.error('No FIPS level corresponds to the given geoscale: %s',
                       to_geoscale)
 
-    # TODO: Make it so column names are retained (or added back in) after
-    # aggregation
     def aggregate_flowby(
         self: FB,
         columns_to_group_by: List[str] = None,
@@ -340,7 +339,6 @@ class _FlowBy(pd.DataFrame):
             .groupby(columns_to_group_by, dropna=False)
             .agg({c: 'sum' for c in (
                 ['FlowAmount']
-                + columns_to_average
                 + [f'_{c}_weighted' for c in columns_to_average]
                 + [f'_{c}_weights' for c in columns_to_average])})
             .reset_index()
