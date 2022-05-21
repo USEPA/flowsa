@@ -61,12 +61,14 @@ class scale(enum.Enum):
 
 
 def get_all_fips(year: Literal[2010, 2013, 2015] = 2015) -> pd.DataFrame:
-    """
+    '''
     Read fips based on year specified, year defaults to 2015
     :param year: int, one of 2010, 2013, or 2015, default year is 2015
         because most recent year of FIPS available
-    :return: df, FIPS for specified year
-    """
+    :return: df, with columns=['State', 'FIPS', 'County'] for specified year.
+        'State' is NaN for national level FIPS ('00000'), and 'County'
+        is Nan for national and each state level FIPS.
+    '''
     return (pd
             .read_csv(settings.datapath + 'FIPS_Crosswalk.csv',
                       header=0, dtype=object)
