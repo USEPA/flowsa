@@ -70,18 +70,17 @@ def get_all_fips(year: Literal[2010, 2013, 2015] = 2015) -> pd.DataFrame:
             .reset_index(drop=True))
 
 
-def filtered_fips_list(
+def filtered_fips(
     geoscale: Literal['national', 'state', 'county',
                       scale.NATIONAL, scale.STATE, scale.COUNTY],
     year: Literal[2010, 2013, 2015] = 2015
 ) -> pd.DataFrame:
     if geoscale == 'national' or geoscale == scale.NATIONAL:
-        return (list(get_all_fips(year).query('State.isnull()').FIPS))
+        return (get_all_fips(year).query('State.isnull()'))
     elif geoscale == 'state' or geoscale == scale.STATE:
-        return (list(get_all_fips(year)
-                     .query('State.notnull() & County.isnull()').FIPS))
+        return (get_all_fips(year).query('State.notnull() & County.isnull()'))
     elif geoscale == 'county' or geoscale == scale.COUNTY:
-        return (list(get_all_fips(year).query('County.notnull()').FIPS))
+        return (get_all_fips(year).query('County.notnull()'))
     else:
         log.error('No FIPS list exists for the given geoscale: %s', geoscale)
         raise ValueError(geoscale)
