@@ -7,9 +7,6 @@ from . import settings
 from .flowsa_log import log
 
 
-# TODO: Evaluate whether an UNKNOWN entry should be included, with np.nan
-# TODO: as the aggregation_level. Doing so will also require implementing
-# TODO: __gt__(), __le__(), and __ge__() to return the proper comparisons.
 @total_ordering
 class scale(enum.Enum):
     '''
@@ -30,6 +27,11 @@ class scale(enum.Enum):
     def __lt__(self, other):
         if other.__class__ is self.__class__:
             return self.aggregation_level < other.aggregation_level
+        elif other in [float('inf'), float('-inf')]:
+            # ^^^ Add np.nan to list if such comparison is needed.
+            return self.aggregation_level < other
+            # ^^^ Enables pandas max and min functions to work even if
+            # there are missing values (with dropna=True)
         else:
             return NotImplemented
 
