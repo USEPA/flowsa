@@ -1,7 +1,7 @@
 from typing import Callable, List, Optional, Union, Literal, TypeVar
 import pandas as pd
 import numpy as np
-from functools import partial
+from functools import partial, reduce
 from . import (common, settings, location, dataclean, metadata, sectormapping,
                literature_values, flowbyactivity, flowbysector, flowsa_yaml,
                validation, geo)
@@ -445,7 +445,7 @@ class FlowByActivity(_FlowBy):
     # TODO: probably only slight modification is needed to allow for material
     # flow list mapping using this function as well.
     def map_to_fedefl_list(
-        self,
+        self: 'FlowByActivity',
         drop_fba_columns: bool = False,
         drop_unmapped_rows: bool = False
     ) -> 'FlowByActivity':
@@ -544,6 +544,105 @@ class FlowByActivity(_FlowBy):
                              .query('mapped == "left_only"').Unit.unique()))
 
         return mapped_fba.drop(columns='mapped')
+
+    def convert_to_geoscale(
+        self: 'FlowByActivity',
+        target_geoscale: Literal['national', 'state', 'county',
+                                 geo.scale.NATIONAL, geo.scale.STATE,
+                                 geo.scale.COUNTY]
+    ) -> 'FlowByActivity':
+        '''
+        Converts, by subsetting/selecting or aggregating (or both), the
+        given dataset to the target geoscale.
+
+        Rows from the calling FlowBy that correspond to a higher level (more
+        aggregated) geoscale than the target are dropped. Then, for each
+        combination of 'ActivityProducedBy' and 'ActivityConsumedBy', and for
+        each level at or below (less aggregated than) the target geoscale,
+        determine the highest level at which data is reported for each unit at
+        that scale (so if the level is 'state', find the highest level at which
+        data is reported for each state, for each activity combination).
+        Finally, use this information to identify the correct source scale
+        for each activity combination and regional unit (details below), then
+        aggregate or filter (or both) to convert the dataset so all rows are
+        at the target geoscale.
+
+        For any region and activity combination, the correct source geoscale
+        is the highest (most aggregated) geoscale at or below the target
+        geoscale, for which data covering that region and activity combination
+        is reported. For example, if the target geoscale is 'national',
+        national level data should be used if available. If not, state level
+        data should be aggregated up if available. However, if some states
+        report county level data AND NOT state level data, then for those
+        states (and only those states) county level data should be aggregated
+        up. County level data from states that also report state level data
+        should, in this example, be ignored.
+        '''
+        if type(target_geoscale) == str:
+            target_geoscale = geo.scale.from_string(target_geoscale)
+
+        geoscale_by_fips = pd.concat([
+            (geo.filtered_fips(scale)
+             .assign(geoscale=scale, National='USA')
+             # ^^^ Need to have a column for each relevant scale
+             # (only FIPS for now)
+             .rename(columns={'FIPS': 'Location'}))
+            for scale in [s for s in geo.scale if s.has_fips_level]
+        ])
+
+        geoscale_name_columns = [s.name.title() for s in geo.scale
+                                 if s.has_fips_level]
+
+        highest_reporting_level_by_geoscale = [
+            (self
+             .merge(geoscale_by_fips, how='inner')
+             .query('geoscale <= @scale')
+             .groupby(['ActivityProducedBy', 'ActivityConsumedBy']
+                      + [s.name.title() for s in geo.scale
+                         if s.has_fips_level and s >= scale],
+                      dropna=False)
+             .agg({'geoscale': 'max'})
+             .reset_index()
+             .rename(columns={
+                 'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
+                 }))
+            for scale in geo.scale
+            if scale.has_fips_level and scale <= target_geoscale
+        ]
+
+        fba_with_reporting_levels = reduce(
+            lambda x, y: x.merge(y, how='left'),
+            [self, geoscale_by_fips, *highest_reporting_level_by_geoscale]
+        )
+
+        reporting_level_columns = [
+            f'highest_reporting_level_by_{s.name.title()}'
+            for s in geo.scale if s.has_fips_level and s <= target_geoscale
+        ]
+
+        fba_at_source_geoscale = (
+            fba_with_reporting_levels
+            .assign(source_geoscale=(
+                fba_with_reporting_levels[reporting_level_columns]
+                .max(axis='columns')))
+            .query('geoscale == source_geoscale')
+            .drop(columns=(['geoscale',
+                            *geoscale_name_columns,
+                            *reporting_level_columns]))
+        )
+
+        if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
+            log.warning('FlowBy dataset has multiple source geoscales: " %s',
+                        list(fba_at_source_geoscale.source_geoscale.unique()))
+
+        fba_at_target_geoscale = (
+            fba_at_source_geoscale
+            .drop(columns='source_geoscale')
+            .update_fips_to_geoscale(target_geoscale)
+            .aggregate_flowby()
+        )
+
+        return fba_at_target_geoscale
 
 
 class FlowBySector(_FlowBy):
