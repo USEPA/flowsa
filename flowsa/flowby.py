@@ -600,6 +600,8 @@ class FlowByActivity(_FlowBy):
         if type(target_geoscale) == str:
             target_geoscale = geo.scale.from_string(target_geoscale)
 
+        log.info('Converting FBA to %s geoscale', target_geoscale.name.lower())
+
         geoscale_by_fips = pd.concat([
             (geo.filtered_fips(scale)
              .assign(geoscale=scale, National='USA')
@@ -651,8 +653,14 @@ class FlowByActivity(_FlowBy):
         )
 
         if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
-            log.warning('FlowBy dataset has multiple source geoscales: " %s',
-                        list(fba_at_source_geoscale.source_geoscale.unique()))
+            log.warning('FBA has multiple source geoscales: %s',
+                        ', '.join([s.name.lower() for s in
+                                   fba_at_source_geoscale
+                                   .source_geoscale.unique()]))
+        else:
+            log.info('FBA source geoscale is %s',
+                     fba_at_source_geoscale
+                     .source_geoscale.unique()[0].name.lower())
 
         fba_at_target_geoscale = (
             fba_at_source_geoscale
