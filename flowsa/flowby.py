@@ -856,7 +856,7 @@ class FlowBySector(_FlowBy):
 
                     names = activity_config['names']
 
-                    fba_subset = (
+                    activity_set_fba = (
                         fba
                         .query('ActivityProducedBy not in @completed_names'
                                '& ActivityConsumedBy not in @completed_names')
@@ -870,18 +870,18 @@ class FlowBySector(_FlowBy):
                         .reset_index(drop=True)
                     )
 
-                    if fba_subset.empty:
+                    if activity_set_fba.empty:
                         log.error('No data for flows in %s', activity_set)
                         continue
-                    if (fba_subset.FlowAmount == 0).all():
+                    if (activity_set_fba.FlowAmount == 0).all():
                         log.warning('All flows for %s are 0', activity_set)
                         continue
 
                     # TODO: source_catalog key not currently handled:
                     # TODO: 'sector-like_activities'
 
-                    fba_subset = (
-                        fba_subset
+                    activity_set_fba = (
+                        activity_set_fba
                         .convert_to_geoscale(
                             max(geo.scale.from_string(
                                     source_config['geoscale_to_use']),
@@ -891,7 +891,7 @@ class FlowBySector(_FlowBy):
 
                     if activity_config['allocation_from_scale'] != 'national':
                         validation.compare_geographic_totals(
-                            fba_subset,
+                            activity_set_fba,
                             fba.query(
                                 'ActivityProducedBy not in @completed_names'
                                 '& ActivityConsumedBy not in @completed_names'
@@ -909,7 +909,7 @@ class FlowBySector(_FlowBy):
 
                     log.info('Appending %s from %s to FBS list',
                              activity_set, source_name)
-                    component_fbs_list.append(fba_subset)
+                    component_fbs_list.append(activity_set_fba)
 
         return component_fbs_list
 
