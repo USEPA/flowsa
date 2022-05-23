@@ -338,7 +338,14 @@ class _FlowBy(pd.DataFrame):
                 if self[x].dtype == 'float' and x != 'FlowAmount'
             ]
 
-        fb = self.query('FlowAmount != 0')
+        fb = (
+            self
+            .query('FlowAmount != 0')
+            .drop(columns=[c for c in self.columns
+                           if c not in ['FlowAmount',
+                                        *columns_to_average,
+                                        *columns_to_group_by]])
+        )
 
         aggregated = (
             fb
@@ -349,10 +356,7 @@ class _FlowBy(pd.DataFrame):
                    for c in columns_to_average}
             )
             .groupby(columns_to_group_by, dropna=False)
-            .agg({c: 'sum' for c in (
-                ['FlowAmount']
-                + [f'_{c}_weighted' for c in columns_to_average]
-                + [f'_{c}_weights' for c in columns_to_average])})
+            .agg(sum)
             .reset_index()
         )
         aggregated = (
@@ -363,8 +367,8 @@ class _FlowBy(pd.DataFrame):
                    for c in columns_to_average}
             )
             .drop(
-                columns=([f'_{c}_weighted' for c in columns_to_average]
-                         + [f'_{c}_weights' for c in columns_to_average])
+                columns=([*[f'_{c}_weighted' for c in columns_to_average],
+                          *[f'_{c}_weights' for c in columns_to_average]])
             )
         )
         return aggregated
