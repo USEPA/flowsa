@@ -729,7 +729,7 @@ class FlowBySector(_FlowBy):
         download_fbs_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
         **kwargs
     ) -> 'FlowBySector':
-        """
+        '''
         Loads stored FlowBySector output. If it is not
         available, tries to download it from EPA's remote server (if
         download_ok is True), or generate it.
@@ -745,7 +745,7 @@ class FlowBySector(_FlowBy):
         :kwargs: keyword arguments to pass to _getFlowBy(). Possible kwargs
             include source_name and source_config.
         :return: FlowBySector dataframe
-        """
+        '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
         flowby_generator = partial(
             flowbysector.main,
@@ -879,6 +879,31 @@ class FlowBySector(_FlowBy):
 
                     # TODO: source_catalog key not currently handled:
                     # TODO: 'sector-like_activities'
+
+                    fba_subset = (
+                        fba_subset
+                        .convert_to_geoscale(
+                            max(geo.scale.from_string(
+                                    source_config['geoscale_to_use']),
+                                geo.scale.from_string(
+                                    activity_config['allocation_from_scale'])))
+                    )
+
+                    if activity_config['allocation_from_scale'] != 'national':
+                        validation.compare_geographic_totals(
+                            fba_subset,
+                            fba.query(
+                                'ActivityProducedBy not in @completed_names'
+                                '& ActivityConsumedBy not in @completed_names'
+                            ),
+                            # ^^^ Not sure if this is really the spot this
+                            #     data set for comparison needs to come from,
+                            #     but it matches what's used in flowbysector.py
+                            source_name,
+                            activity_config,
+                            activity_set,
+                            names
+                        )
 
                     completed_names.extend(names)
 
