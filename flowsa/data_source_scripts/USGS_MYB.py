@@ -1819,7 +1819,7 @@ def usgs_iron_ore_call(*, resp, year, **_):
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
-                                         sheet_name='T1 ')
+                                         sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -1972,15 +1972,14 @@ def usgs_lead_url_helper(*, year, **_):
         format
     """
     if int(year) < 2013:
-        build_url = ('https://prd-wret.s3.us-west-2.amazonaws.com/assets/'
+        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
                      'palladium/production/atoms/files/myb1-2016-lead.xls')
     elif int(year) < 2014:
-        build_url = ('https://prd-wret.s3.us-west-2.amazonaws.com/assets/'
+        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
                      'palladium/production/atoms/files/myb1-2017-lead.xls')
     else:
-        build_url = ('https://s3-us-west-2.amazonaws.com/prd-wret/assets/'
-                     'palladium/production/atoms/files/myb1-2018-lead-adv'
-                     '.xlsx')
+        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
+                     'palladium/production/s3fs-public/media/files/myb1-2018-lead-advrel.xlsx')
     url = build_url
     return [url]
 
