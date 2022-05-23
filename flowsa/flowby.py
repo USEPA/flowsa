@@ -280,9 +280,10 @@ class _FlowBy(pd.DataFrame):
         return self._standardize_units(self)
 
     def update_fips_to_geoscale(
-        self: Literal['national', 'state', 'county',
-                      geo.scale.NATIONAL, geo.scale.STATE, geo.scale.COUNTY],
-        to_geoscale: str,
+        self: FB,
+        to_geoscale: Literal['national', 'state', 'county',
+                             geo.scale.NATIONAL, geo.scale.STATE,
+                             geo.scale.COUNTY],
     ) -> FB:
         """
         Sets FIPS codes to 5 digits by zero-padding FIPS codes at the specified
@@ -292,15 +293,18 @@ class _FlowBy(pd.DataFrame):
         :param to_geoscale: str, target geoscale
         :return: FlowBy dataset with 5 digit fips
         """
-        if to_geoscale == 'national' or to_geoscale == geo.scale.NATIONAL:
+        if type(to_geoscale) == str:
+            to_geoscale = geo.scale.from_string(to_geoscale)
+
+        if to_geoscale == geo.scale.NATIONAL:
             return (self
                     .assign(Location=(geo.filtered_fips('national')
                                       .FIPS.values[0])))
-        elif to_geoscale == 'state' or to_geoscale == geo.scale.STATE:
+        elif to_geoscale == geo.scale.STATE:
             return (self
                     .assign(Location=self.Location.apply(
                         lambda x: str(x)[:2].ljust(5, '0'))))
-        elif to_geoscale == 'county' or to_geoscale == geo.scale.COUNTY:
+        elif to_geoscale == geo.scale.COUNTY:
             return self
         else:
             log.error('No FIPS level corresponds to the given geoscale: %s',
@@ -312,9 +316,15 @@ class _FlowBy(pd.DataFrame):
         columns_to_average: List[str] = None
     ) -> FB:
         """
-        Aggregates FlowBy 'FlowAmount' column based on group_by_columns and
-        generates weighted average values based on FlowAmount values
-        for certain other columns
+        Aggregates (sums) FlowBy 'FlowAmount' column based on group_by_columns
+        and generates weighted average values based on FlowAmount values
+        for other columns
+        :param columns_to_group_by: list, names of columns to group by. If not
+            provided, all columns not of 'float' data type will be used, except
+            'Description'.
+        :param columns_to_average: list, names of columns for which an average,
+            weighted by 'FlowAmount', should be calculated. If not provided,
+            all columns of 'float' data type will be used, except 'FlowAmount'.
         :return: FlowBy, with aggregated columns
         """
         if columns_to_group_by is None:
@@ -327,7 +337,9 @@ class _FlowBy(pd.DataFrame):
                 x for x in self.columns
                 if self[x].dtype == 'float' and x != 'FlowAmount'
             ]
+
         fb = self.query('FlowAmount != 0')
+
         aggregated = (
             fb
             .assign(
@@ -552,8 +564,8 @@ class FlowByActivity(_FlowBy):
                                  geo.scale.COUNTY]
     ) -> 'FlowByActivity':
         '''
-        Converts, by subsetting/selecting or aggregating (or both), the
-        given dataset to the target geoscale.
+        Converts, by filtering or aggregating (or both), the given dataset to
+        the target geoscale.
 
         Rows from the calling FlowBy that correspond to a higher level (more
         aggregated) geoscale than the target are dropped. Then, for each
@@ -564,7 +576,7 @@ class FlowByActivity(_FlowBy):
         data is reported for each state, for each activity combination).
         Finally, use this information to identify the correct source scale
         for each activity combination and regional unit (details below), then
-        aggregate or filter (or both) to convert the dataset so all rows are
+        filter or aggregate (or both) to convert the dataset so all rows are
         at the target geoscale.
 
         For any region and activity combination, the correct source geoscale
@@ -577,6 +589,13 @@ class FlowByActivity(_FlowBy):
         states (and only those states) county level data should be aggregated
         up. County level data from states that also report state level data
         should, in this example, be ignored.
+
+        :param target_geoscale: str or geo.scale constant, the geoscale to
+            convert the calling FlowBy data set to. Currently, this needs to be
+            one which corresponds to a FIPS level (that is, one of national,
+            state, or county)
+        :return: FlowBy data set, with rows filtered or aggregated to the
+            target geoscale.
         '''
         if type(target_geoscale) == str:
             target_geoscale = geo.scale.from_string(target_geoscale)
