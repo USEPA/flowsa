@@ -11,7 +11,7 @@ import plotly.graph_objects as go
 import seaborn as sns
 import flowsa
 from flowsa.common import load_crosswalk
-from flowsa.validation import calculate_industry_coefficients
+from flowsa.settings import log
 
 
 def addSectorNames(df):
@@ -101,13 +101,13 @@ def plotFBSresults(method_dict, plottype, sector_length_display=None,
 
 
 
-def stackedBarChart(methodname, impacts=False):
+def stackedBarChart(methodname, impact_cat=None):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
     :param methodname: str, ex. "Water_national_m1_2015"
-    :param impacts: bool, True to apply and aggregate on impacts
-        False to compare flow/contexts
+    :param impacts: str, name of impact category to apply and aggregate on
+        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
     :return: stacked, group bar plot
     """
 
@@ -115,11 +115,30 @@ def stackedBarChart(methodname, impacts=False):
     df_unit = df['Unit'][0]
 
     index_cols = ["Location", "Sector", "Unit"]
-    # if data should be graphed by impact, combine the flowable and context
-    # columns for graphing
-    if impacts is False:
-        df['Impact'] = df['Flowable'] + ', ' + df['Context']
-        index_cols = index_cols + ['Impact']
+    if impact_cat:
+        try:
+            import lciafmt
+            df = (lciafmt.apply_lcia_method(df, 'TRACI2.1')
+                  .rename(columns={'FlowAmount': 'InvAmount',
+                                   'Impact': 'FlowAmount'}))
+            var = 'Indicator'
+            df = df[df['Indicator'] == impact_cat]
+            if len(df) == 0:
+                log.exception(f'Impact category: {impact_cat} not found')
+                return
+            df_unit = df['Indicator unit'][0]
+        except ImportError:
+            log.exception('lciafmt not installed')
+            return
+        except AttributeError:
+            log.exception('check lciafmt branch')
+            return
+    else:
+        # combine the flowable and context columns for graphing
+        df['Flow'] = df['Flowable'] + ', ' + df['Context']
+        var = 'Flow'
+        df_unit = df['Unit'][0]
+    index_cols = index_cols + [var]
 
     # If 'Allocationsources' value is null, replace with 'Direct
     df['AllocationSources'] = df['AllocationSources'].fillna('Direct')
@@ -143,9 +162,7 @@ def stackedBarChart(methodname, impacts=False):
 
     for r, c in zip(df2['AllocationSources'].unique(), colors):
         plot_df = df2[df2['AllocationSources'] == r]
-        y_axis_col = plot_df['Sector']
-        if impacts is False:
-            y_axis_col = [plot_df['Sector'], plot_df['Impact']]
+        y_axis_col = [plot_df['Sector'], plot_df[var]]
         fig.add_trace(
             go.Bar(x=plot_df['FlowAmount'],
                    y=y_axis_col, name=r,
@@ -155,5 +172,9 @@ def stackedBarChart(methodname, impacts=False):
 
     fig.update_yaxes(autorange="reversed")
     fig.update_layout(title=methodname)
+
+    # Render in browser
+    # import plotly.io as pio
+    # pio.renderers.default='browser'
 
     fig.show()
