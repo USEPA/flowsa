@@ -112,6 +112,7 @@ def stackedBarChart(methodname, impacts=False):
     """
 
     df = flowsa.collapse_FlowBySector(methodname)
+    df_unit = df['Unit'][0]
 
     index_cols = ["Location", "Sector", "Unit"]
     # if data should be graphed by impact, combine the flowable and context
@@ -131,7 +132,7 @@ def stackedBarChart(methodname, impacts=False):
 
     fig.update_layout(
         template="simple_white",
-        xaxis=dict(title_text="FlowAmount"),
+        xaxis=dict(title_text=f"FlowAmount ({df_unit})"),
         yaxis=dict(title_text="Sector"),
         barmode="stack",
     )
@@ -153,5 +154,6 @@ def stackedBarChart(methodname, impacts=False):
                    ))
 
     fig.update_yaxes(autorange="reversed")
+    fig.update_layout(title=methodname)
 
     fig.show()
