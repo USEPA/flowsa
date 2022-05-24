@@ -105,9 +105,10 @@ def stackedBarChart(methodname, impact=True):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
-    :param methodname:
-    :param impact:
-    :return:
+    :param methodname: str, ex. "Water_national_m1_2015"
+    :param impact: default True, if False, will drop the combined
+    flowable/context distinction
+    :return: stacked, group bar plot
     """
 
     df = flowsa.collapse_FlowBySector(methodname)
