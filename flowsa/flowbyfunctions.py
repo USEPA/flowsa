@@ -1181,7 +1181,7 @@ def aggregate_and_subset_for_target_sectors(df, method):
     return df_subset
 
 
-def add_column_of_data_sources(df, attr):
+def add_column_of_allocation_sources(df, attr):
     """
 
     :param df_load:
@@ -1189,9 +1189,9 @@ def add_column_of_data_sources(df, attr):
     :return:
     """
     # first assign a data source as the source name
-    df = df.assign(DataSources=df['SourceName'])
+    df = df.assign(AllocationSources=None)
 
-    # if allocation method is not direct, add additional data sources
+    # if allocation method is not direct, add data sources
     if attr['allocation_method'] != 'direct':
         sources = []
         key_list = ['allocation_source', 'helper_source']
@@ -1204,6 +1204,5 @@ def add_column_of_data_sources(df, attr):
         # concat sources into single string
         allocation_sources = ', '.join(sources)
         # update data sources column with additional sources
-        df['DataSources'] = df['DataSources'].apply(
-            lambda x: f"{x}, {allocation_sources}")
+        df = df.assign(AllocationSources=allocation_sources)
     return df

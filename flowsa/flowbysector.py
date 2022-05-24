@@ -35,7 +35,7 @@ from flowsa.fbs_allocation import direct_allocation_method, \
     function_allocation_method, dataset_allocation_method
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, \
-    update_geoscale, subset_df_by_sector_list, add_column_of_data_sources
+    update_geoscale, subset_df_by_sector_list, add_column_of_allocation_sources
 from flowsa.location import fips_number_key, merge_urb_cnty_pct
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
@@ -253,7 +253,7 @@ def main(**kwargs):
                 check_if_data_exists_at_geoscale(flows_subset_geo,
                                                  attr['allocation_from_scale'])
                 # add column of data sources
-                flows_subset_wsec = add_column_of_data_sources(
+                flows_subset_wsec = add_column_of_allocation_sources(
                     flows_subset_wsec, attr)
 
                 # rename SourceName to MetaSources and drop columns
