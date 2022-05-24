@@ -23,6 +23,8 @@ class _FlowBy(pd.DataFrame):
         *args,
         source_name: str = None,
         source_config: dict = None,
+        activity_set: str = None,
+        activity_config: dict = None,
         fields: dict = None,
         column_order: List[str] = None,
         string_null: 'np.nan' or None = np.nan,
@@ -31,11 +33,12 @@ class _FlowBy(pd.DataFrame):
         for attribute in self._metadata:
             if not hasattr(self, attribute):
                 if hasattr(data, attribute):
-                    print(getattr(data, attribute))
                     super().__setattr__(attribute, getattr(data, attribute))
                 else:
                     self.source_name = source_name or ''
                     self.source_config = source_config or {}
+                    self.activity_set = activity_set or ''
+                    self.activity_config = activity_config or {}
         if isinstance(data, pd.DataFrame) and fields is not None:
             fill_na_dict = {
                 field: 0 if dtype in ['int', 'float'] else string_null
@@ -59,7 +62,8 @@ class _FlowBy(pd.DataFrame):
                         + [c for c in data.columns if c not in column_order]]
         super().__init__(data, *args, **kwargs)
 
-    _metadata = ['source_name', 'source_config']
+    _metadata = ['source_name', 'source_config',
+                 'activity_set', 'activity_config']
 
     @property
     def _constructor(self) -> '_FlowBy':
@@ -673,7 +677,107 @@ class FlowByActivity(_FlowBy):
             .aggregate_flowby()
         )
 
-        return fba_at_target_geoscale
+        return (
+            fba_at_target_geoscale
+            .astype({c: t for c, t
+                     in flowby_config['fba_mapped_w_sector_fields'].items()
+                     if c in fba_at_target_geoscale.columns})
+            # ^^^ Need to convert back to correct dtypes after aggregating;
+            #     otherwise, columns of NaN will become float dtype.
+        )
+
+    def map_to_sectors(
+        self: 'FlowByActivity',
+        sector_level: Literal['aggregated', 'disaggregated'] = None,
+        sector_source_name: str = common.SECTOR_SOURCE_NAME,
+        activity_to_sector_mapping: str = None,
+        external_config_path: str = None
+    ) -> 'FlowByActivity':
+        '''
+        Maps the activities in the calling dataframe to sectors, but does
+        not yet perform any attribution. This method relies on the
+        source_config and activity_config attributes (dictionaries) of the
+        calling FBA.
+
+        :param sector_level: str, one of 'aggregated' or 'disaggregated'.
+            If not provided, will be inferred from the calling FBA.
+        :param sector_source_name: str, which NAICS list to use.
+        :param activity_to_sector_mapping: str, which crosswalk from activities
+            to NAICS codes to use.
+        :param external_config_path: str, an external path to search for a
+            crosswalk.
+        '''
+        sector_level = (
+            sector_level
+            or ('disaggregated'
+                if self.activity_config.get('allocationmethod') == 'direct'
+                else False)
+            or self.source_config['sector_aggregation_level']
+        )
+        if self.source_config['sector-like_activities']:
+            crosswalk = (
+                pd.read_csv(
+                    f'{settings.datapath}NAICS_Crosswalk_TimeSeries.csv',
+                    dtype='object')
+                [[common.SECTOR_SOURCE_NAME]]
+                # ^^^ TODO: Figure out how this interacts with the replace_
+                #     naics_w_naics_...() function below. There may be a better
+                #     way to do this.
+                .drop_duplicates()
+                .rename(columns={common.SECTOR_SOURCE_NAME: 'Sector'})
+                .assign(Activity=lambda x: x.Sector,
+                        ActivitySourceName=self.source_name,
+                        SectorType=np.nan)
+                .reset_index(drop=True))
+        else:
+            crosswalk = (
+                sectormapping.get_activitytosector_mapping(
+                    # ^^^ TODO: Replace or streamline get_...() function
+                    (activity_to_sector_mapping
+                     or self.source_config.get('activity_to_sector_mapping')
+                     or self.source_name),
+                    fbsconfigpath=external_config_path)
+                .query('SectorSourceName == @sector_source_name')
+                .drop(columns='SectorSourceName')
+                .reset_index(drop=True)
+            )
+
+        if sector_level == 'aggregated':
+            crosswalk = sectormapping.expand_naics_list(crosswalk,
+                                                        sector_source_name)
+            # ^^^ TODO: Replace or streamline expand_...(). I believe it does
+            #     nothing when applied to the crosswalk resulting from
+            #     'sector-like_activities', above, except possibly when
+            #     sector_source_name != common.SECTOR_SOURCE_NAME.
+
+        for direction in ['ProducedBy', 'ConsumedBy']:
+            temp_crosswalk = (
+                crosswalk
+                .rename(columns={
+                    'Activity': f'Activity{direction}',
+                    'Sector': f'Sector{direction}',
+                    'SectorType': f'{direction}SectorType'
+                })
+                .drop(columns='ActivitySourceName', errors='ignore')
+                .astype('object')
+            )
+            self = self.merge(temp_crosswalk,
+                              how='left', on=f'Activity{direction}')
+            # ^^^ Critical this is a left merge
+        fba_w_sector = (
+            self
+            .assign(SectorSourceName=sector_source_name)
+            # ^^^ TODO: 99% sure this could be assigned if
+            #     sector-like_activities and not dropped else, above.
+            .conditional_pipe(
+                self.source_config['sector-like_activities'],
+                validation.replace_naics_w_naics_from_another_year,
+                # ^^^ TODO: Replace or streamline with other validation fxns
+                sector_source_name
+            )
+        )
+
+        return fba_w_sector
 
 
 class FlowBySector(_FlowBy):
@@ -870,6 +974,10 @@ class FlowBySector(_FlowBy):
                         .reset_index(drop=True)
                     )
 
+                    assert isinstance(activity_set_fba, FlowByActivity)
+                    activity_set_fba.activity_set = activity_set
+                    activity_set_fba.activity_config = activity_config
+
                     if activity_set_fba.empty:
                         log.error('No data for flows in %s', activity_set)
                         continue
@@ -903,13 +1011,31 @@ class FlowBySector(_FlowBy):
                             activity_config,
                             activity_set,
                             names
+                            # ^^^ TODO: Rewrite validation to use fb metadata
                         )
+
+                    activity_set_fba_w_sectors = (
+                        activity_set_fba
+                        .map_to_sectors(
+                            sector_source_name=method_config[
+                                'target_sector_source'],
+                            external_config_path=external_config_path
+                        )
+                        .conditional_pipe(
+                            'clean_fba_w_sec_df-fxn' in source_config,
+                            source_config.get('clean_fba_w_sec_df_fxn'),
+                            attr=activity_config,
+                            method=method_config
+                        )
+                        .rename(columns={'SourceName': 'MetaSources'})
+                        .drop(columns=['FlowName', 'Compartment'])
+                    )
 
                     completed_names.extend(names)
 
                     log.info('Appending %s from %s to FBS list',
                              activity_set, source_name)
-                    component_fbs_list.append(activity_set_fba)
+                    component_fbs_list.append(activity_set_fba_w_sectors)
 
         return component_fbs_list
 
