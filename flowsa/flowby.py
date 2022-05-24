@@ -29,29 +29,24 @@ class _FlowBy(pd.DataFrame):
         self,
         data: pd.DataFrame or '_FlowBy' = None,
         *args,
-        source_name: str = None,
-        source_config: dict = None,
-        activity_set: str = None,
-        activity_config: dict = None,
         fields: dict = None,
         column_order: List[str] = None,
         string_null: 'np.nan' or None = np.nan,
         **kwargs
     ) -> None:
+        # Assign values to metadata attributes, checking the following sources,
+        # in order: self, data, kwargs; then defaulting to an empty version of
+        # the type specified in the type hints, or None.
         for attribute in self._metadata:
             if not hasattr(self, attribute):
-                if hasattr(data, attribute):
-                    super().__setattr__(attribute, getattr(data, attribute))
-                else:
-                    super().__setattr__(
-                        attribute,
-                        locals().pop(attribute, False) or
-                        self.__annotations__[attribute]()
-                    )
-                    # self.source_name = source_name or ''
-                    # self.source_config = source_config or {}
-                    # self.activity_set = activity_set or ''
-                    # self.activity_config = activity_config or {}
+                super().__setattr__(
+                    attribute,
+                    getattr(data, attribute,
+                            kwargs.pop(attribute,
+                                       self.__annotations__.get(attribute,
+                                                                None)()))
+                )
+
         if isinstance(data, pd.DataFrame) and fields is not None:
             fill_na_dict = {
                 field: 0 if dtype in ['int', 'float'] else string_null
@@ -389,6 +384,8 @@ class _FlowBy(pd.DataFrame):
 
 
 class FlowByActivity(_FlowBy):
+    _metadata = [*_FlowBy()._metadata]
+
     def __init__(
         self,
         data: pd.DataFrame or '_FlowBy' = None,
@@ -423,8 +420,6 @@ class FlowByActivity(_FlowBy):
                          fields=fields,
                          column_order=column_order,
                          *args, **kwargs)
-
-    _metadata = [*_FlowBy()._metadata]
 
     @property
     def _constructor(self) -> 'FlowByActivity':
@@ -791,6 +786,8 @@ class FlowByActivity(_FlowBy):
 
 
 class FlowBySector(_FlowBy):
+    _metadata = [*_FlowBy()._metadata]
+
     def __init__(
         self,
         data: pd.DataFrame or '_FlowBy' = None,
@@ -823,8 +820,6 @@ class FlowBySector(_FlowBy):
                          fields=fields,
                          column_order=column_order,
                          *args, **kwargs)
-
-    _metadata = [*_FlowBy()._metadata]
 
     @property
     def _constructor(self) -> 'FlowBySector':
