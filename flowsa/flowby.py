@@ -957,7 +957,6 @@ class FlowBySector(_FlowBy):
                            source_config.get('clean_fba_df_fxn')))
 
                 activities = source_config['activity_sets']
-                completed_names = []
 
                 for activity_set, activity_config in activities.items():
                     log.info('Preparing to process %s in %s',
@@ -967,8 +966,6 @@ class FlowBySector(_FlowBy):
 
                     activity_set_fba = (
                         fba
-                        .query('ActivityProducedBy not in @completed_names'
-                               '& ActivityConsumedBy not in @completed_names')
                         .query('ActivityProducedBy in @names'
                                '| ActivityConsumedBy in @names')
                         .conditional_method(
@@ -979,7 +976,6 @@ class FlowBySector(_FlowBy):
                         .reset_index(drop=True)
                     )
 
-                    assert isinstance(activity_set_fba, FlowByActivity)
                     activity_set_fba.activity_set = activity_set
                     activity_set_fba.activity_config = activity_config
 
@@ -1004,18 +1000,8 @@ class FlowBySector(_FlowBy):
 
                     if activity_config['allocation_from_scale'] != 'national':
                         validation.compare_geographic_totals(
-                            activity_set_fba,
-                            fba.query(
-                                'ActivityProducedBy not in @completed_names'
-                                '& ActivityConsumedBy not in @completed_names'
-                            ),
-                            # ^^^ Not sure if this is really the spot this
-                            #     data set for comparison needs to come from,
-                            #     but it matches what's used in flowbysector.py
-                            source_name,
-                            activity_config,
-                            activity_set,
-                            names
+                            activity_set_fba, fba, source_name,
+                            activity_config, activity_set, names
                             # ^^^ TODO: Rewrite validation to use fb metadata
                         )
 
@@ -1036,7 +1022,8 @@ class FlowBySector(_FlowBy):
                         .drop(columns=['FlowName', 'Compartment'])
                     )
 
-                    completed_names.extend(names)
+                    fba = fba.query('ActivityProducedBy not in @names'
+                                    '& ActivityConsumedBy not in @names')
 
                     log.info('Appending %s from %s to FBS list',
                              activity_set, source_name)
