@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Union, Literal, TypeVar
+from typing import get_type_hints, Callable, List, Literal, TypeVar
 import pandas as pd
 import numpy as np
 from functools import partial, reduce
@@ -17,6 +17,14 @@ with open(settings.datapath + 'flowby_config.yaml') as f:
 
 
 class _FlowBy(pd.DataFrame):
+    _metadata = ['source_name', 'source_config',
+                 'activity_set', 'activity_config']
+
+    source_name: str
+    source_config: dict
+    activity_set: str
+    activity_config: dict
+
     def __init__(
         self,
         data: pd.DataFrame or '_FlowBy' = None,
@@ -35,10 +43,15 @@ class _FlowBy(pd.DataFrame):
                 if hasattr(data, attribute):
                     super().__setattr__(attribute, getattr(data, attribute))
                 else:
-                    self.source_name = source_name or ''
-                    self.source_config = source_config or {}
-                    self.activity_set = activity_set or ''
-                    self.activity_config = activity_config or {}
+                    super().__setattr__(
+                        attribute,
+                        locals().pop(attribute, False) or
+                        self.__annotations__[attribute]()
+                    )
+                    # self.source_name = source_name or ''
+                    # self.source_config = source_config or {}
+                    # self.activity_set = activity_set or ''
+                    # self.activity_config = activity_config or {}
         if isinstance(data, pd.DataFrame) and fields is not None:
             fill_na_dict = {
                 field: 0 if dtype in ['int', 'float'] else string_null
@@ -61,9 +74,6 @@ class _FlowBy(pd.DataFrame):
             data = data[[c for c in column_order if c in data.columns]
                         + [c for c in data.columns if c not in column_order]]
         super().__init__(data, *args, **kwargs)
-
-    _metadata = ['source_name', 'source_config',
-                 'activity_set', 'activity_config']
 
     @property
     def _constructor(self) -> '_FlowBy':
