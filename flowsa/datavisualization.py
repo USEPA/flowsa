@@ -6,11 +6,12 @@ Functions to plot Flow-By-Sector results
 """
 
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
 import seaborn as sns
 import flowsa
 from flowsa.common import load_crosswalk
-from flowsa.flowbyfunctions import subset_df_by_sector_lengths
+from flowsa.validation import calculate_industry_coefficients
 
 
 def addSectorNames(df):
@@ -99,58 +100,57 @@ def plotFBSresults(method_dict, plottype, sector_length_display=None,
         g.tight_layout()
 
 
-def stackedBarChart(methodname):
 
-    # test
-    methodname = 'Water_national_2015_m1'
+def stackedBarChart(methodname, impact=True):
+    """
+    Create a grouped, stacked barchart by sector code. If impact=True,
+    group data by context as well as sector
+    :param methodname:
+    :param impact:
+    :return:
+    """
 
     df = flowsa.collapse_FlowBySector(methodname)
-    df['Sector'] = df['Sector'].apply(lambda x: x[0:2])
-    df2 = df.groupby(['Location', 'Sector', 'Unit', 'DataSources'],
+
+    index_cols = ["Location", "Sector", "Unit"]
+    # if data should be graphed by impact, combine the flowable and context
+    # columns for graphing
+    if impact:
+        df['Impact'] = df['Flowable'] + ', ' + df['Context']
+        index_cols = index_cols + ['Impact']
+
+    # If 'Allocationsources' value is null, replace with 'Direct
+    df['AllocationSources'] = df['AllocationSources'].fillna('Direct')
+    # aggregate by location/sector/unit and optionally 'context'
+    df2 = df.groupby(index_cols + ['AllocationSources'],
                      as_index=False).agg({"FlowAmount": sum})
-    df3 = pd.pivot_table(df2, values="FlowAmount",
-                         index=["Location", "Sector", "Unit"],
-                         columns="DataSources", fill_value=0).reset_index()
+    df2 = df2.sort_values(['Sector', 'AllocationSources'])
 
-    # plot the dataframe with 1 line
-    ax = df3.plot.barh(x='Sector', stacked=True, figsize=(8, 6))
+    fig = go.Figure()
 
-    # .patches is everything inside of the chart
-    for rect in ax.patches:
-        # Find where everything is located
-        height = rect.get_height()
-        width = rect.get_width()
-        x = rect.get_x()
-        y = rect.get_y()
+    fig.update_layout(
+        template="simple_white",
+        xaxis=dict(title_text="FlowAmount"),
+        yaxis=dict(title_text="Sector"),
+        barmode="stack",
+    )
 
-        # The height of the bar is the data value and can be used as the label
-        label_text = f'{width:.2f}%'  # f'{width:.2f}' to format decimal values
+    # create list of n colors based on number of allocation sources
+    colors = px.colors.qualitative.Plotly[
+             0:len(df2['AllocationSources'].unique())]
 
-        # ax.text(x, y, text)
-        label_x = x + width / 2
-        label_y = y + height / 2
+    for r, c in zip(df2['AllocationSources'].unique(), colors):
+        plot_df = df2[df2['AllocationSources'] == r]
+        y_axis_col = plot_df['Sector']
+        if impact:
+            y_axis_col = [plot_df['Sector'], plot_df['Impact']]
+        fig.add_trace(
+            go.Bar(x=plot_df['FlowAmount'],
+                   y=y_axis_col, name=r,
+                   orientation='h',
+                   marker_color=c
+                   ))
 
-        # only plot labels greater than given width
-        if width > 0:
-            ax.text(label_x, label_y, label_text, ha='center', va='center',
-                    fontsize=8)
+    fig.update_yaxes(autorange="reversed")
 
-    # move the legend
-    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
-
-    # add labels
-    # ax.set_ylabel("People", fontsize=18)
-    # ax.set_xlabel("Percent", fontsize=18)
-    plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
+    fig.show()
