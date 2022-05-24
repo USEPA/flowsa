@@ -101,13 +101,13 @@ def plotFBSresults(method_dict, plottype, sector_length_display=None,
 
 
 
-def stackedBarChart(methodname, impact=True):
+def stackedBarChart(methodname, impacts=False):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
     :param methodname: str, ex. "Water_national_m1_2015"
-    :param impact: default True, if False, will drop the combined
-    flowable/context distinction
+    :param impacts: bool, True to apply and aggregate on impacts
+        False to compare flow/contexts
     :return: stacked, group bar plot
     """
 
@@ -116,7 +116,7 @@ def stackedBarChart(methodname, impact=True):
     index_cols = ["Location", "Sector", "Unit"]
     # if data should be graphed by impact, combine the flowable and context
     # columns for graphing
-    if impact:
+    if impacts is False:
         df['Impact'] = df['Flowable'] + ', ' + df['Context']
         index_cols = index_cols + ['Impact']
 
@@ -143,7 +143,7 @@ def stackedBarChart(methodname, impact=True):
     for r, c in zip(df2['AllocationSources'].unique(), colors):
         plot_df = df2[df2['AllocationSources'] == r]
         y_axis_col = plot_df['Sector']
-        if impact:
+        if impacts is False:
             y_axis_col = [plot_df['Sector'], plot_df['Impact']]
         fig.add_trace(
             go.Bar(x=plot_df['FlowAmount'],
