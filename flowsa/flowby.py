@@ -4,11 +4,12 @@ import numpy as np
 from functools import partial, reduce
 from . import (common, settings, location, dataclean, metadata, sectormapping,
                literature_values, flowbyactivity, flowbysector, flowsa_yaml,
-               validation, geo)
+               validation, geo, fbs_allocation)
 from .flowsa_log import log, vlog
 import esupy.processed_data_mgmt
 import esupy.dqi
 import fedelemflowlist
+import seea_scratch as scratch
 
 FB = TypeVar('FB', bound='_FlowBy')
 
@@ -693,7 +694,7 @@ class FlowByActivity(_FlowBy):
 
     def map_to_sectors(
         self: 'FlowByActivity',
-        sector_level: Literal['aggregated', 'disaggregated'] = None,
+        aggregation_status: Literal['aggregated', 'disaggregated'] = None,
         sector_source_name: str = common.SECTOR_SOURCE_NAME,
         activity_to_sector_mapping: str = None,
         external_config_path: str = None
@@ -712,13 +713,6 @@ class FlowByActivity(_FlowBy):
         :param external_config_path: str, an external path to search for a
             crosswalk.
         '''
-        sector_level = (
-            sector_level
-            or ('disaggregated'
-                if self.activity_config.get('allocationmethod') == 'direct'
-                else False)
-            or self.source_config['sector_aggregation_level']
-        )
         if self.source_config['sector-like_activities']:
             crosswalk = (
                 pd.read_csv(
@@ -747,7 +741,10 @@ class FlowByActivity(_FlowBy):
                 .reset_index(drop=True)
             )
 
-        if sector_level == 'aggregated':
+        if (aggregation_status == 'aggregated'
+            or (self.source_config['sector_aggregation_level'] == 'aggregated'
+                and self.activity_config.get(
+                    'allocation_method') != 'direct')):
             crosswalk = sectormapping.expand_naics_list(crosswalk,
                                                         sector_source_name)
             # ^^^ TODO: Replace or streamline expand_...(). I believe it does
@@ -892,7 +889,7 @@ class FlowBySector(_FlowBy):
         sources = method_config['source_names']
         source_catalog = common.load_yaml_dict('source_catalog')
 
-        component_fbs_list = []
+        source_fbs_list = []
         for source_name, source_config in sources.items():
             source_config.update(
                 {k: v for k, v in source_catalog.get(
@@ -933,7 +930,7 @@ class FlowBySector(_FlowBy):
                                                'replace',
                                                {'Flowable': source_flows}))
                 log.info('Appending %s to FBS list', source_name)
-                component_fbs_list.append(fbs)
+                source_fbs_list.append(fbs)
 
             if source_config['data_format'] == 'FBA':
                 source_data = FlowByActivity.getFlowByActivity(
@@ -962,12 +959,12 @@ class FlowBySector(_FlowBy):
                     log.info('Preparing to process %s in %s',
                              activity_set, source_name)
 
-                    names = activity_config['names']
+                    activity_names = activity_config['names']
 
                     activity_set_fba = (
                         fba
-                        .query('ActivityProducedBy in @names'
-                               '| ActivityConsumedBy in @names')
+                        .query('ActivityProducedBy in @activity_names'
+                               '| ActivityConsumedBy in @activity_names')
                         .conditional_method(
                             'source_flows' in activity_config,
                             'query',
@@ -1001,11 +998,11 @@ class FlowBySector(_FlowBy):
                     if activity_config['allocation_from_scale'] != 'national':
                         validation.compare_geographic_totals(
                             activity_set_fba, fba, source_name,
-                            activity_config, activity_set, names
+                            activity_config, activity_set, activity_names
                             # ^^^ TODO: Rewrite validation to use fb metadata
                         )
 
-                    activity_set_fba_w_sectors = (
+                    activity_set_fba = (
                         activity_set_fba
                         .map_to_sectors(
                             sector_source_name=method_config[
@@ -1022,14 +1019,44 @@ class FlowBySector(_FlowBy):
                         .drop(columns=['FlowName', 'Compartment'])
                     )
 
-                    fba = fba.query('ActivityProducedBy not in @names'
-                                    '& ActivityConsumedBy not in @names')
+                    assert isinstance(activity_set_fba, FlowByActivity)
+
+                    if activity_config['allocation_method'] == 'direct':
+                        log.info('Attributing flows in %s using direct '
+                                 'attribution method', activity_set)
+                        fbs = fbs_allocation.direct_allocation_method(
+                            activity_set_fba,
+                            source_name,
+                            activity_names,
+                            method_config
+                        )
+                    #     activity_fbs_list = []
+                    #     for name in activity_names:
+                    #         log.info('Attributing to %s', name)
+                    #         activity_fbs = (
+                    #             activity_set_fba
+                    #             .query('ActivityProducedBy == @name'
+                    #                    '| ActivityConsumedBy == @name')
+                    #             .reset_index(drop=True)
+                    #         )
+
+                    # elif (activity_config['allocation_method']
+                    #       == 'allocation_function'):
+                    #     pass
+                    # elif (activity_config['allocation_method']
+                    #       == 'proportional'):
+                    #     pass
+
+                    fba = fba.query(
+                        'ActivityProducedBy not in @activity_names'
+                        '& ActivityConsumedBy not in @activity_names'
+                    )
 
                     log.info('Appending %s from %s to FBS list',
                              activity_set, source_name)
-                    component_fbs_list.append(activity_set_fba_w_sectors)
+                    source_fbs_list.append(fbs)
 
-        return component_fbs_list
+        return source_fbs_list
 
 
 # The three classes extending pd.Series, together with the _constructor...
