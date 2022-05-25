@@ -146,6 +146,10 @@ def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
 
     # Calculate tons per employee per year per material and sector in CA
     bls_CA = bls[bls['Location'] == '06000']  # California
+    # aggregate all employment prior to generating tpepy
+    bls_CA = (bls_CA.groupby(['Location','Year','SectorProducedBy'])
+              .agg({'Employees':'sum'})
+              .reset_index())
     tpepy = fbs.merge(bls_CA, how='inner')
     tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'], tpepy['Employees'],
                                out=np.zeros_like(tpepy['Employees']),
