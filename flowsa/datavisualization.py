@@ -112,7 +112,6 @@ def stackedBarChart(methodname, impact_cat=None):
     """
 
     df = flowsa.collapse_FlowBySector(methodname)
-    df_unit = df['Unit'][0]
 
     index_cols = ["Location", "Sector", "Unit"]
     if impact_cat:
