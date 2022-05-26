@@ -1,9 +1,10 @@
 from typing import Literal
 import pandas as pd
-from .settings import datapath
+from . import settings
 
-naics_crosswalk = pd.read_csv(f'{datapath}NAICS_Crosswalk_TimeSeries.csv',
-                              dtype='object')
+naics_crosswalk = pd.read_csv(
+    f'{settings.datapath}NAICS_Crosswalk_TimeSeries.csv', dtype='object'
+)
 
 
 def naics_key_from_industry_spec(
