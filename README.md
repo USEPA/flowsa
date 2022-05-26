@@ -1,7 +1,8 @@
 # flowsa
-`flowsa` is a data processing library that attributes resource use, waste, 
-emissions, and loss to economic sectors. `flowsa` aggregates, combines, and 
-allocates data from a variety of sources. The sources can be found in the 
+`flowsa` is a data processing library attributing resources (environmental, 
+monetary, and human), wastes, emissions, and losses to sectors, typically 
+[NAICS codes](https://www.census.gov/naics/). `flowsa` aggregates, combines,
+and allocates data from a variety of sources. The sources can be found in the 
 [GitHub wiki](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-activity-datasets) 
 under "Flow-By-Activity Datasets".
 

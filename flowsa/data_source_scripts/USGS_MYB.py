@@ -1754,6 +1754,11 @@ def usgs_iodine_call(*, resp, year, **_):
         df_data.columns = ["Production", "space_1", "year_1", "space_2",
                            "year_2", "space_3", "year_3", "space_4",
                            "year_4", "space_5", "year_5"]
+    elif len(df_data. columns) == 13:
+        df_data.columns = ["Production", "unit", "space_1", "year_1", "space_2",
+                           "year_2", "space_3", "year_3", "space_4",
+                           "year_4", "space_5", "year_5", "space_6"]
+
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(YEARS_COVERED['iodine'], year))
@@ -1819,7 +1824,7 @@ def usgs_iron_ore_call(*, resp, year, **_):
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
-                                         sheet_name='T1 ')
+                                         sheet_name='T1')
     df_data = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
     df_data = df_data.reset_index()
     del df_data["index"]
@@ -1972,15 +1977,14 @@ def usgs_lead_url_helper(*, year, **_):
         format
     """
     if int(year) < 2013:
-        build_url = ('https://prd-wret.s3.us-west-2.amazonaws.com/assets/'
+        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
                      'palladium/production/atoms/files/myb1-2016-lead.xls')
     elif int(year) < 2014:
-        build_url = ('https://prd-wret.s3.us-west-2.amazonaws.com/assets/'
+        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
                      'palladium/production/atoms/files/myb1-2017-lead.xls')
     else:
-        build_url = ('https://s3-us-west-2.amazonaws.com/prd-wret/assets/'
-                     'palladium/production/atoms/files/myb1-2018-lead-adv'
-                     '.xlsx')
+        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
+                     'palladium/production/s3fs-public/media/files/myb1-2018-lead-advrel.xlsx')
     url = build_url
     return [url]
 
@@ -3109,7 +3113,15 @@ def usgs_platinum_call(*, resp, year, **_):
                              "year_1", "space_2", "year_2", "space_3",
                              "year_3", "space_4", "year_4", "space_5",
                              "year_5"]
-
+    elif len(df_data_1. columns) == 12:
+        df_data_1.columns = ["Production", "Units", "space_1",
+                             "year_1", "space_2", "year_2", "space_3",
+                             "year_3", "space_4", "year_4", "space_5",
+                             "year_5"]
+        df_data_2.columns = ["Production", "Units", "space_1",
+                             "year_1", "space_2", "year_2", "space_3",
+                             "year_3", "space_4", "year_4", "space_5",
+                             "year_5"]
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(YEARS_COVERED['platinum'], year))
     for col in df_data_1.columns:
@@ -3823,8 +3835,8 @@ def soda_call(*, resp, year, **_):
     """
 
     col_to_use = ["Production", "NAICS code", "End use", "year_5", "total"]
-
-    if str(year) in YEARS_COVERED['sodaash_T4']:
+    years_covered = YEARS_COVERED['sodaash_t4']
+    if str(year) in years_covered:
         df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                              sheet_name='T4')
         df_data_one = pd.DataFrame(df_raw_data.loc[7:25]).reindex()
@@ -3855,7 +3867,7 @@ def soda_call(*, resp, year, **_):
                                "year_2", "space_3", "year_3", "space_4",
                                "year_4", "space_5", "year_5"]
 
-    if str(year) in YEARS_COVERED['sodaash_T4']:
+    if str(year) in years_covered:
         for col in df_data_one.columns:
             if col not in col_to_use:
                 del df_data_one[col]
@@ -3864,7 +3876,7 @@ def soda_call(*, resp, year, **_):
         if col not in col_to_use:
             del df_data_two[col]
 
-    if str(year) in YEARS_COVERED['sodaash_T4']:
+    if str(year) in years_covered:
         frames = [df_data_one, df_data_two]
     else:
         frames = [df_data_two]
@@ -4467,6 +4479,10 @@ def usgs_vermiculite_call(*, resp, year, **_):
         df_data_one.columns = ["Production", "Unit", "space_2",  "year_1",
                                "space_3", "year_2", "space_4", "year_3",
                                "space_5", "year_4", "space_6", "year_5"]
+    elif len(df_data_one. columns) == 13:
+        df_data_one.columns = ["Production", "Unit", "space_2", "year_1",
+                               "space_3", "year_2", "space_4", "year_3",
+                               "space_5", "year_4", "space_6", "year_5", "space_7"]
 
     col_to_use = ["Production"]
     col_to_use.append(usgs_myb_year(YEARS_COVERED['vermiculite'], year))
