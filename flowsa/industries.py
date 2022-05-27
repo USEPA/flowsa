@@ -43,14 +43,16 @@ def naics_key_from_industry_spec(
                   [[f'NAICS_{year}_Code']]
                   .rename(columns={f'NAICS_{year}_Code': 'source_naics'}))
 
-    # Find target NAICS by truncating any source_naics longer than the target
-    # _naics_level unless industry_spec specifies a longer level for it, in
-    # which case send it (recursively) into this function to be truncated to
-    # the correct length.
     def _truncate(
         _naics_list: pd.DataFrame,
         _industry_spec: dict
     ) -> pd.DataFrame:
+        '''
+        Find target NAICS by truncating any source_naics longer than the target
+        _naics_level unless industry_spec specifies a longer level for it, in
+        which case send it (recursively) into this function to be truncated to
+        the correct length.
+        '''
         _naics_level = int(_industry_spec['default'][-1:])
         return pd.concat([
             (_naics_list
