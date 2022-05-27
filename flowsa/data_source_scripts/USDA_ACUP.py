@@ -33,13 +33,9 @@ def acup_url_helper(*, build_url, config, **_):
     state_abbrevs = abbrev_us_state
     state_abbrevs = {k: v for (k, v) in state_abbrevs.items() if k != "DC"}
 
-    for x in config['domain_levels']:
-        for y in state_abbrevs:
-            url = build_url
-            url = url.replace("__domainLevel__", x)
-            url = url.replace("__stateAlpha__", y)
-            url = url.replace(" ", "%20")
-            urls.append(url)
+    url = build_url
+    url = url.replace(" ", "%20")
+    urls.append(url)
 
     return urls
 
@@ -52,12 +48,7 @@ def acup_call(*, resp, **_):
     :return: pandas dataframe of original source data
     """
     response_json = json.loads(resp.text)
-    # not all states have data, so return empty df if does not exist
-    try:
-        df = pd.DataFrame(data=response_json["data"])
-    except KeyError:
-        log.info('No data exists for state')
-        df = []
+    df = pd.DataFrame(data=response_json["data"])
 
     return df
 

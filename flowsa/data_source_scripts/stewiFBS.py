@@ -15,6 +15,7 @@ import sys
 import os
 import pandas as pd
 from esupy.dqi import get_weighted_average
+from esupy.processed_data_mgmt import read_source_metadata
 from flowsa.allocation import equally_allocate_parent_to_child_naics
 from flowsa.flowbyfunctions import assign_fips_location_system,\
     aggregate_and_subset_for_target_sectors
@@ -24,6 +25,12 @@ from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.schema import flow_by_sector_fields
 from flowsa.settings import log, process_adjustmentpath
 from flowsa.validation import replace_naics_w_naics_from_another_year
+import stewicombo
+import stewi
+from stewicombo.overlaphandler import remove_default_flow_overlaps
+from stewicombo.globals import addChemicalMatches, compile_metadata,\
+    set_stewicombo_meta
+import facilitymatcher
 
 
 def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
@@ -44,7 +51,6 @@ def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
     :return: df, FBS format
     """
 
-    import stewicombo
     from flowsa.data_source_scripts.EPA_NEI import drop_GHGs
 
     # determine if fxns specified in FBS method yaml
@@ -113,8 +119,6 @@ def stewi_to_sector(yaml_load, method, *_):
     :param method: dictionary, FBS method
     :return: df, FBS format
     """
-    import stewi
-
     # determine if fxns specified in FBS method yaml
     functions = yaml_load.get('functions', [])
 
@@ -158,10 +162,6 @@ def reassign_process_to_sectors(df, year, file_list, fbsconfigpath):
     :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
     :return: df
     """
-    import stewi
-    from stewicombo.overlaphandler import remove_default_flow_overlaps
-    from stewicombo.globals import addChemicalMatches
-
     df_adj = pd.DataFrame()
     for file in file_list:
         fpath = f"{process_adjustmentpath}{file}.csv"
@@ -229,7 +229,6 @@ def extract_facility_data(inventory_dict):
                 {'NEI':'2017', 'TRI':'2017'})
     :return: df
     """
-    import stewi
     facilities_list = []
     # load facility data from stewi output directory, keeping only the
     # facility IDs, and geographic information
@@ -259,7 +258,6 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
     :param inventory_list: a list of inventories (e.g., ['NEI', 'TRI'])
     :return: df
     """
-    import facilitymatcher
     # Access NAICS From facility matcher and assign based on FRS_ID
     all_NAICS = \
         facilitymatcher.get_FRS_NAICSInfo_for_facility_list(
@@ -383,8 +381,13 @@ def add_stewi_metadata(inventory_dict):
                 {'NEI':'2017', 'TRI':'2017'})
     :return: combined dictionary of metadata from each inventory
     """
-    from stewicombo.globals import compile_metadata
     return compile_metadata(inventory_dict)
+
+
+def add_stewicombo_metadata(inventory_name):
+    """Access locally stored stewicombo metadata by filename"""
+    return read_source_metadata(stewicombo.globals.paths,
+                                set_stewicombo_meta(inventory_name))
 
 
 if __name__ == "__main__":
