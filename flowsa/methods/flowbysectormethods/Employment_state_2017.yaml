@@ -1,0 +1,23 @@
+target_sector_level: NAICS_6
+target_sector_source: NAICS_2012_Code
+target_geoscale: state
+source_names:
+  "BLS_QCEW":
+    data_format: 'FBA'
+    class: Employment
+    geoscale_to_use: state
+    source_fba_load_scale: state
+    year: 2017
+    clean_fba_df_fxn: !script_function:BLS_QCEW clean_bls_qcew_fba_for_employment_sat_table
+    clean_fba_w_sec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+    activity_set_file: 'BLS_QCEW_asets.csv'
+    activity_sets:
+      qcew:
+        names: !from_index:BLS_QCEW_asets.csv qcew
+        allocation_method: direct
+        allocation_source: None
+        allocation_source_class: None
+        allocation_source_year: None
+        allocation_flow: None
+        allocation_compartment: None
+        allocation_from_scale: state

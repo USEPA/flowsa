@@ -1,15 +1,15 @@
 # Downloads and parses CSV from USGS Graphite Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Graphite
-citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-graph.xls
+citable_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-graph.xls
 date_generated: '2021-03-19'
 years_available: 2013-2017
 format: xls
 url:
-  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-graph.xls
-url_replace_fxn: usgs_graphite_url_helper
-call_response_fxn: usgs_graphite_call
-parse_response_fxn: usgs_graphite_parse
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-graph.xls
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_graphite_call
+parse_response_fxn: !script_function:USGS_MYB usgs_graphite_parse
 years:
 - 2013
 - 2014

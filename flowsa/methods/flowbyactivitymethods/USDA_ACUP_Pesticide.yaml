@@ -14,25 +14,17 @@ url:
     source_desc: SURVEY
     sector_desc: ENVIRONMENTAL
     unit_desc: LB
-    # __domainLevel__ triggers a replace function
-    domain_desc: __domainLevel__
+    domain_desc: CHEMICAL,%20FUNGICIDE&CHEMICAL,%20HERBICIDE&CHEMICAL,%20INCECTICIDE&CHEMICAL,%20OTHER
     agg_level_desc: STATE
-    # dynamically substitute the 50 state acronyms.
-    state_alpha: __stateAlpha__
     # __year__ is used to trigger a replace function to substitute in year
     year: __year__
   key_param: key
-url_replace_fxn: acup_url_helper
-call_response_fxn: acup_call
-parse_response_fxn: acup_parse
+url_replace_fxn: !script_function:USDA_ACUP acup_url_helper
+call_response_fxn: !script_function:USDA_ACUP acup_call
+parse_response_fxn: !script_function:USDA_ACUP acup_parse
 years:
 - 2012
 - 2015
 - 2017
 - 2018
 - 2020
-domain_levels:
-- CHEMICAL, FUNGICIDE
-- CHEMICAL, HERBICIDE
-- CHEMICAL, INCECTICIDE
-- CHEMICAL, OTHER

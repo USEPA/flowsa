@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
+import flowsa.flowsa_yaml as flowsa_yaml
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
@@ -116,7 +117,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
         # first check if a filepath for the yaml is specified, as is the
         # case with FBS method files located outside FLOWSA
         if filepath is not None:
-            log.info('Loading yaml from %s', filepath)
+            log.info(f'Loading {filename} from {filepath}')
             folder = filepath
         else:
             if flowbytype == 'FBA':
@@ -129,29 +130,10 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
 
     try:
         with open(yaml_path, 'r') as f:
-            config = yaml.safe_load(f)
+            config = flowsa_yaml.load(f, filepath)
     except IOError:
-        log.error('%s method file not found', flowbytype)
-
-    # Allow for .yaml files to recursively inherit other .yaml files. Keys in
-    # children will overwrite the same key from a parent.
-    inherits = config.get('inherits_from')
-    while inherits:
-        yaml_path = folder + inherits + '.yaml'
-        with open(yaml_path, 'r') as f:
-            parent = yaml.safe_load(f)
-
-        # Check for common keys and log a warning if any are found
-        common_keys = [k for k in config if k in parent]
-        if common_keys:
-            log.warning(f'Keys {common_keys} from parent file {yaml_path} '
-                        f'were overwritten by child file.')
-
-        # Update inheritance information before updating the parent dict
-        inherits = parent.get('inherits_from')
-        parent.update(config)
-        config = parent
-
+        log.error(f'{flowbytype} method file not found')
+        raise
     return config
 
 
@@ -342,20 +324,32 @@ def return_true_source_catalog_name(sourcename):
     return sourcename
 
 
-def check_activities_sector_like(sourcename_load):
+def check_activities_sector_like(df_load, sourcename=None):
     """
     Check if the activities in a df are sector-like,
     if cannot find the sourcename in the source catalog, drop extensions on the
     source name
+    :param df_load: df, df to determine if activities are sector-like
+    :param source: str, optionial, can identify sourcename to use
     """
-    sourcename = return_true_source_catalog_name(sourcename_load)
+    # identify sourcename
+    if sourcename is not None:
+        s = sourcename
+    else:
+        if 'SourceName' in df_load.columns:
+            s = pd.unique(df_load['SourceName'])[0]
+        elif 'MetaSources' in df_load.columns:
+            s = pd.unique(df_load['MetaSources'])[0]
+
+    sourcename = return_true_source_catalog_name(s)
 
     try:
         sectorLike = load_yaml_dict('source_catalog')[sourcename][
             'sector-like_activities']
     except KeyError:
-        log.error(f'%s or %s not found in {datapath}source_catalog.yaml',
-                  sourcename_load, sourcename)
+        log.info(f'%s not found in {datapath}source_catalog.yaml, assuming '
+                 f'activities are not sector-like', sourcename)
+        sectorLike = False
 
     return sectorLike
 

@@ -1,15 +1,15 @@
 # Downloads and parses CSV from USGS Magnesium Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Magnesium
-citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-mgmet.xls
+citable_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-mgmet.xls
 date_generated: '2021-03-26'
 years_available: 2013-2017
 format: xls
 url:
-  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-mgmet.xls
-url_replace_fxn: usgs_magnesium_url_helper
-call_response_fxn: usgs_magnesium_call
-parse_response_fxn: usgs_magnesium_parse
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2017-mgmet.xls
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_magnesium_call
+parse_response_fxn: !script_function:USGS_MYB usgs_magnesium_parse
 years:
 - 2013
 - 2014

@@ -3,7 +3,7 @@
 # coding=utf-8
 """
 Inventory of US EPA GHG
-https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2018
+https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 """
 
 import io
@@ -11,10 +11,11 @@ import zipfile
 import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    load_fba_w_standardized_units, dynamically_import_fxn
+    load_fba_w_standardized_units
 from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
+from flowsa.data_source_scripts import EIA_MECS
 
 SECTOR_DICT = {'Res.': 'Residential',
                'Comm.': 'Commercial',
@@ -143,6 +144,7 @@ def annex_yearly_tables(data, table=None):
         newcols.append(f"{column_name} - {fuel_type}")
     df.columns = newcols  # assign column names
     df = df.iloc[1:, :]  # exclude first row
+    df.dropna(how='all', inplace=True)
     df = df.reset_index(drop=True)
     return df
 
@@ -419,9 +421,9 @@ def ghg_parse(*, df_list, year, config, **_):
         source_No_activity = ["3-22", "3-22b"]
         # Handle tables with 1 parent level category
         source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-14", "3-15",
-                             "5-18", "5-19", "A-76", "A-77",  "A-103"]
+                             "5-18", "5-19", "A-76", "A-77"]
         # Tables with sub categories
-        source_activity_2 =  ["3-38", "3-63"]
+        source_activity_2 =  ["3-38", "3-63", "A-103"]
 
         if table_name in multi_chem_names:
             bool_apb = False
@@ -518,7 +520,9 @@ def ghg_parse(*, df_list, year, config, **_):
             flow_name_list = ["Explorationb", "Production", "Processing",
                               "Transmission and Storage", "Distribution",
                               "Crude Oil Transportation", "Refining",
-                              "Exploration"]
+                              "Exploration", "Mobile AC",
+                              "Refrigerated Transport",
+                              "Comfort Cooling for Trains and Buses"]
             for index, row in df.iterrows():
                 apb_value = row["ActivityProducedBy"]
                 start_activity = row["FlowName"]
@@ -544,7 +548,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         df.loc[index, 'ActivityProducedBy'
                                ] = f"{apb_txt} {apbe_value}"
                 if "Total" == apb_value or "Total " == apb_value:
-                  df = df.drop(index)
+                    df = df.drop(index)
 
         elif table_name == "A-79":
             fuel_name = ""
@@ -591,7 +595,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         text_split = apb_value.split("(")
                         df.loc[index, 'ActivityProducedBy'] = text_split[0]
 
-            elif table_name in ["A-101", "A-103"]:
+            elif table_name in ["A-101"]:
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
                     df.loc[index, 'ActivityProducedBy'] = apb_value
@@ -638,8 +642,7 @@ def get_manufacturing_energy_ratios(year):
                                          flowclass='Energy')
     mecs = mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
                     (mecs['Location'] == '00000')].reset_index(drop=True)
-    mecs = dynamically_import_fxn('EIA_MECS_Energy',
-                                  'mecs_energy_fba_cleanup')(mecs, None)
+    mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
 
     # TODO dynamically change the table imported here based on year
     ghgi = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_14',

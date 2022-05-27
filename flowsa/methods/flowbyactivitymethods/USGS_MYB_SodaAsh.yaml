@@ -6,10 +6,10 @@ bib_id: USGS_MYB_SA
 # api_key_required: false
 format: xlsx
 url:
-  base_url: https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/__url_text__/myb1-__year__-sodaa.__format__
-url_replace_fxn: soda_url_helper
-call_response_fxn: soda_call
-parse_response_fxn: soda_parse
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/__url_text__/myb1-__year__-sodaa.__format__
+url_replace_fxn: !script_function:USGS_MYB soda_url_helper
+call_response_fxn: !script_function:USGS_MYB soda_call
+parse_response_fxn: !script_function:USGS_MYB soda_parse
 url_texts:
   '2010': mineral-pubs/soda-ash
   '2011': mineral-pubs/soda-ash
@@ -37,3 +37,4 @@ formats:
   '2015': xlsx
   '2016': xlsx
   '2017': xls
+
