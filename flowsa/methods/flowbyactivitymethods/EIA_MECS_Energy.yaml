@@ -91,7 +91,7 @@ table_dict:
           *rse_regions_2010_22
         data_type: 'fuel consumption'
       Table 1.2:
-        col_names: &col_names_2010_12
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - Total
@@ -110,7 +110,7 @@ table_dict:
           *rse_regions_2010_21
         data_type: 'fuel consumption'
       Table 7.2:
-        col_names: &col_names_2010_72
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - TOTAL
@@ -157,16 +157,16 @@ table_dict:
           *rse_regions_2010_21
         data_type: 'fuel consumption'
       Table 1.5:
-        col_names: &col_names_2010_15
+        col_names:
           - Energy Source
           - Total First Use
-        regions: &regions_2010_15
+        regions:
           Total United States: [ 16,49 ]
-        rse_regions: &rse_regions_2010_15
+        rse_regions:
           Total United States: [ 10,51 ]
         data_type: 'fuel consumption'
       Table 7.10:
-        col_names: &col_names_2010_710
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - Electricity Total
@@ -178,13 +178,13 @@ table_dict:
           - Steam Total
           - Steam from Local Utility
           - Steam from Sources Other than Local Utility
-        regions: &regions_2010_710
+        regions:
           Total United States: [ 16,102 ]
           Northeast Region: [ 104,190 ]
           Midwest Region: [ 192,278 ]
           South Region: [ 280,366 ]
           West Region: [ 368,454 ]
-        rse_regions: &rse_regions_2010_710
+        rse_regions:
           Total United States: [ 14,100 ]
           Northeast Region: [ 102,188 ]
           Midwest Region: [ 190,276 ]
@@ -258,7 +258,7 @@ table_dict:
           *rse_regions_2014_31
         data_type: 'fuel consumption'
       Table 1.2:
-        col_names: &col_names_2014_12
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - Total
@@ -277,7 +277,7 @@ table_dict:
           *rse_regions_2014_21
         data_type: 'fuel consumption'
       Table 7.2:
-        col_names: &col_names_2014_72
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - TOTAL
@@ -318,7 +318,7 @@ table_dict:
           - Wood Residues and Byproducts from Mill Processing
           - Wood-Related and Paper-Related Refues
           - All Other Engery Sources
-        regions: &regions_2014_72
+        regions:
           Total United States: [ 17,101 ]
           Northeast Region: [ 103,187 ]
           Midwest Region: [ 189,273 ]
@@ -328,16 +328,16 @@ table_dict:
           *rse_regions_2014_21
         data_type: 'fuel consumption'
       Table 1.5:
-        col_names: &col_names_2014_15
+        col_names:
           - Energy Source
           - Total First Use
-        regions: &regions_2014_15
+        regions:
           Total United States: [ 13,54 ]
-        rse_regions: &rse_regions_2014_15
+        rse_regions:
           Total United States: [ 10,51 ]
         data_type: 'fuel consumption'
       Table 7.10:
-        col_names: &col_names_2014_710
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - Electricity Total
@@ -349,13 +349,13 @@ table_dict:
           - Steam Total
           - Steam from Local Utility
           - Steam from Sources Other than Local Utility
-        regions: &regions_2014_710
+        regions:
           Total United States: [ 16,101 ]
           Northeast Region: [ 102,187 ]
           Midwest Region: [ 188,273 ]
           South Region: [ 274,359 ]
           West Region: [ 360,444 ]
-        rse_regions: &rse_regions_2014_710
+        rse_regions:
           Total United States: [ 13,98 ]
           Northeast Region: [ 99,184 ]
           Midwest Region: [ 185,270 ]
@@ -408,7 +408,7 @@ table_dict:
           *rse_regions_2018_31
         data_type: 'fuel consumption'
       Table 1.2:
-        col_names: &col_names_2018_12
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - Total
@@ -427,7 +427,7 @@ table_dict:
           *rse_regions_2010_21
         data_type: 'fuel consumption'
       Table 7.2:
-              col_names: &col_names_2018_72
+              col_names:
                 - NAICS Code
                 - Subsector and Industry
                 - TOTAL
@@ -474,16 +474,16 @@ table_dict:
                 *rse_regions_2018_21
               data_type: 'fuel consumption'
       Table 1.5:
-          col_names: &col_names_2018_15
+          col_names:
             - Energy Source
             - Total First Use
-          regions: &regions_2018_15
+          regions:
             Total United States: [ 14,52 ]
-          rse_regions: &rse_regions_2018_15
+          rse_regions:
             Total United States: [ 10,49 ]
           data_type: 'fuel consumption'
       Table 7.10:
-            col_names: &col_names_2018_710
+            col_names:
               - NAICS Code
               - Subsector and Industry
               - Electricity Total
@@ -495,13 +495,13 @@ table_dict:
               - Steam Total
               - Steam from Local Utility
               - Steam from Sources Other than Local Utility
-            regions: &regions_2018_710
+            regions:
               Total United States: [ 16,101 ]
               Northeast Region: [ 102,185 ]
               Midwest Region: [ 186,270 ]
               South Region: [ 271,355 ]
               West Region: [ 356,439 ]
-            rse_regions: &rse_regions_2018_710
+            rse_regions:
               Total United States: [ 13,97 ]
               Northeast Region: [ 98,182 ]
               Midwest Region: [ 183,267 ]
