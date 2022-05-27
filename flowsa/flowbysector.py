@@ -111,7 +111,7 @@ def load_source_dataframe(method, sourcename, source_dict,
                                                    method,
                                                    fbsconfigpath)
     else:
-        raise flowsa.exceptions.MethodConstructionError(
+        raise flowsa.exceptions.FBSMethodConstructionError(
             message="Data format not specified in method "
             f"file for {sourcename}")
 

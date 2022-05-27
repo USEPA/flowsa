@@ -63,7 +63,7 @@ def filter_by_geoscale(df, geoscale):
     df = df[df['Location'].isin(fips)].reset_index(drop=True)
 
     if len(df) == 0:
-        raise flowsa.exceptions.MethodConstructionError(
+        raise flowsa.exceptions.FBSMethodConstructionError(
             message="No flows found in the flow dataset at "
             f"the {geoscale} scale")
     else:

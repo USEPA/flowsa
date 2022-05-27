@@ -17,7 +17,7 @@ class FBANotAvailableError(Exception):
         super().__init__(self.message)
 
 
-class MethodNotFoundError(FileNotFoundError):
+class FlowsaMethodNotFoundError(FileNotFoundError):
     def __init__(self, method_type=None, method=None):
         message = (f"{method_type} method file not found")
         if method:
@@ -34,7 +34,7 @@ class APIError(Exception):
         super().__init__(self.message)
 
 
-class MethodConstructionError(Exception):
+class FBSMethodConstructionError(Exception):
     """Errors in FBS methods which result in incompatible models"""
     def __init__(self, message=None):
         if message is None:
