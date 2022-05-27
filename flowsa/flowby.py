@@ -769,7 +769,6 @@ class FlowByActivity(_FlowBy):
                             self.source_name)
 
             fba_w_source_naics = self
-            print(fba_w_source_naics.columns)
             for direction in ['ProducedBy', 'ConsumedBy']:
                 fba_w_source_naics = (
                     fba_w_source_naics
@@ -783,7 +782,6 @@ class FlowByActivity(_FlowBy):
                                    'Activity'],
                           errors='ignore')
                 )
-        print(fba_w_source_naics.columns)
         if source_year != target_year:
             source_naics_year_to_year_crosswalk = (
                 pd.read_csv(
@@ -806,7 +804,6 @@ class FlowByActivity(_FlowBy):
                     .drop(columns=['Sector', 'NewSector'])
                 )
 
-        print(fba_w_source_naics.columns)
         source_naics_to_target_naics_crosswalk = (
             industries.naics_key_from_industry_spec(industry_spec))
         fba_w_target_naics = fba_w_source_naics
