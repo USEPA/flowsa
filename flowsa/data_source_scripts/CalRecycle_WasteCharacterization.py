@@ -17,7 +17,6 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, \
     aggregate_and_subset_for_target_sectors
 from flowsa.settings import externaldatapath
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.sectormapping import get_fba_allocation_subset, \
     add_sectors_to_flowbyactivity
 from flowsa.dataclean import replace_strings_with_NoneType
@@ -133,9 +132,10 @@ def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
                                         year=fbs['Year'].unique()[0],
                                         flowclass='Employment',
                                         geographic_level='state')
-    bls = bls[bls['FlowName'] == 'Number of employees']
-    # clean df
-    bls = clean_bls_qcew_fba(bls)
+    bls = bls[bls['FlowName'].isin(["Number of employees, Federal Government",
+                                    "Number of employees, State Government",
+                                    "Number of employees, Local Government",
+                                    "Number of employees, Private"])]
     bls = add_sectors_to_flowbyactivity(bls)
 
     # Subset BLS dataset
@@ -146,6 +146,10 @@ def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
 
     # Calculate tons per employee per year per material and sector in CA
     bls_CA = bls[bls['Location'] == '06000']  # California
+    # aggregate all employment prior to generating tpepy
+    bls_CA = (bls_CA.groupby(['Location','Year','SectorProducedBy'])
+              .agg({'Employees':'sum'})
+              .reset_index())
     tpepy = fbs.merge(bls_CA, how='inner')
     tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'], tpepy['Employees'],
                                out=np.zeros_like(tpepy['Employees']),

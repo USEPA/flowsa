@@ -1,18 +1,18 @@
-# This workflow provides testing for FlowByActivity configurations and
-# generates FlowBySector files and compares to the latest public version
+# This workflow will generate all FlowBySector files and store as artifact
 
-name: Testing for FlowByActivity and FlowBySector Methods
+name: Generate FBS
 
 on:
-  # push: # removed to run only on pull request
   pull_request:
-    branches: [master, develop]
+    branches: [master]
     types: [opened, reopened, ready_for_review]   # excludes syncronize to avoid redundant trigger from commits on PRs
   workflow_dispatch:            # also allow manual trigger, for testing purposes
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v2
@@ -25,34 +25,26 @@ jobs:
       run: |
         python -VV
         python -m pip install --upgrade pip setuptools wheel
-        pip install pytest pytest-cov flake8
+        pip install pytest
 
     # install package & dependencies
     - name: Install package and dependencies
       run: |
         pip install .
 
-    - name: Test FBA config
+    - name: Generate FBS
       run: |
-        python flowsa/test_methods.py
+        pytest -m generate_fbs
 
-    - name: Compare FBS with remote
-      id: FBS
-      if: always() # Proceed even if Test FBA fails
-      run: |
-        python flowsa/test_FBS_against_remote.py
-
-    - name: Upload csv files
-      # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
+    - name: Upload files
       if: always()
-      uses: actions/upload-artifact@v2.3.0
+      uses: actions/upload-artifact@v3
       with:
         # Artifact name
-        name: FBS diff files
+        name: FlowBySector
         # A file, directory or wildcard patter that describes what to upload
-        path: |
-            ${{ env.LD_LIBRARY_PATH }}/python3.10/site-packages/flowsa/data/fbs_diff/*_diff.csv
-            ~/.local/share/flowsa/FlowBySector/*
-            ~/.local/share/flowsa/Log/*
+        path: | # uses local user data dir for ubuntu
+          ~/.local/share/flowsa/FlowBySector/*
+          ~/.local/share/stewi/Log/*
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
         # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.
