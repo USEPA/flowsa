@@ -36,8 +36,11 @@ class APIError(Exception):
 
 class FBSMethodConstructionError(Exception):
     """Errors in FBS methods which result in incompatible models"""
-    def __init__(self, message=None):
+    def __init__(self, message=None, error_type=None):
         if message is None:
             message = ("Error in method construction.")
+        if error_type == 'fxn_call':
+            message = ("Calling functions in method files must be preceded "
+                       "by '!script_function:<data_source_module>'")
         self.message = message
         super().__init__(self.message)
