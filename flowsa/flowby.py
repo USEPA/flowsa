@@ -12,6 +12,7 @@ import fedelemflowlist
 import seea_scratch as scratch
 
 FB = TypeVar('FB', bound='_FlowBy')
+S = TypeVar('S', bound='_FlowBySeries')
 
 with open(settings.datapath + 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
@@ -383,6 +384,42 @@ class _FlowBy(pd.DataFrame):
         )
         return aggregated
 
+    def add_single_sector_column(self: FB) -> FB:
+        '''
+        This function adds to the calling dataframe a single 'Sector' column
+        based on the 'SectorProducedBy' and 'SectorConsumedBy' columns, and
+        logic based on the type of flow. The original dataset is returned
+        unchanged if it lacks 'SectorProducedBy' or 'SectorConsumedBy'
+        columns, or if a 'Sector' column is already present.
+
+        :return: FlowBy dataset, with single 'Sector' column added if possible;
+            otherwise, the unmodified caling FlowBy dataset.
+        '''
+        if 'SectorProducedBy' not in self or 'SectorConsumedBy' not in self:
+            log.error('Cannot add Sector column, since SectorProducedBy '
+                      'and/or SectorConsumedBy columns are missing.')
+            return self
+        elif 'Sector' in self:
+            log.warning('Attempted to add single Sector columns, but Sector '
+                        'column is already present.')
+            return self
+        else:
+            log.info('Adding single Sector column from SectorProducedBy and '
+                     'SectorConsumedBy columns.')
+            return self.assign(
+                Sector=self.SectorProducedBy.mask(
+                    self.FlowType == 'TECHNOSPHERE_FLOW'
+                    or self.SectorProducedBy.isna()
+                    or (self.SectorProducedBy.isin(
+                            ['22', '221', '2213', '22131', '221310']
+                        )
+                        and self.SectorConsumedBy.isin(
+                            ['F010', 'F0100', 'F01000']
+                        )),
+                    self.SectorConsumedBy
+                )
+            )
+
 
 class FlowByActivity(_FlowBy):
     _metadata = [*_FlowBy()._metadata]
@@ -571,6 +608,7 @@ class FlowByActivity(_FlowBy):
 
         return mapped_fba.drop(columns='mapped')
 
+    # TODO: Can this be generalized to a _FlowBy method?
     def convert_to_geoscale(
         self: 'FlowByActivity',
         target_geoscale: Literal['national', 'state', 'county',
