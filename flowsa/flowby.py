@@ -9,7 +9,6 @@ from .flowsa_log import log, vlog
 import esupy.processed_data_mgmt
 import esupy.dqi
 import fedelemflowlist
-import seea_scratch as scratch
 
 FB = TypeVar('FB', bound='_FlowBy')
 S = TypeVar('S', bound='_FlowBySeries')
@@ -384,41 +383,60 @@ class _FlowBy(pd.DataFrame):
         )
         return aggregated
 
-    def add_single_sector_column(self: FB) -> FB:
+    def add_primary_secondary_sectors(self: FB) -> FB:
         '''
-        This function adds to the calling dataframe a single 'Sector' column
-        based on the 'SectorProducedBy' and 'SectorConsumedBy' columns, and
-        logic based on the type of flow. The original dataset is returned
-        unchanged if it lacks 'SectorProducedBy' or 'SectorConsumedBy'
-        columns, or if a 'Sector' column is already present.
+        This function adds to the calling dataframe 'PrimarySector' and
+        'SecondarySector' columns based on the 'SectorProducedBy' and
+        'SectorConsumedBy' columns, and logic based on the type of flow. The
+        original dataset is returned unchanged if it lacks 'SectorProducedBy'
+        or 'SectorConsumedBy' columns.
 
-        :return: FlowBy dataset, with single 'Sector' column added if possible;
-            otherwise, the unmodified caling FlowBy dataset.
+        If the flow type is TECHNOSPHERE_FLOW, the primary sector is
+        SectorConsumedBy. Otherwise, it is SectorProducedBy unless only
+        SectorConsumedBy is given, or if both are given and SectorProducedBy
+        is one of 22, 221, 2213, 22131, or 221310 AND SectorConsumedBy is one
+        of F010, F0100, or F01000.
+
+        In all cases, the secondary sector is the "other" sector if both are
+        given. In many cases, only one of SectorProducedBy or SectorConsumedBy
+        is given, and therefore SecondarySector is null.
+
+        :return: FlowBy dataset, with 'PrimarySector' and 'SecondarySector'
+            columns added, if possible; otherwise, the unmodified caling FlowBy
+            dataset.
         '''
         if 'SectorProducedBy' not in self or 'SectorConsumedBy' not in self:
-            log.error('Cannot add Sector column, since SectorProducedBy '
-                      'and/or SectorConsumedBy columns are missing.')
-            return self
-        elif 'Sector' in self:
-            log.warning('Attempted to add single Sector columns, but Sector '
-                        'column is already present.')
+            log.error('Cannot add PrimarySector or SecondarySector columns, '
+                      'since SectorProducedBy and/or SectorConsumedBy columns '
+                      'are missing.')
             return self
         else:
-            log.info('Adding single Sector column from SectorProducedBy and '
-                     'SectorConsumedBy columns.')
-            return self.assign(
-                Sector=self.SectorProducedBy.mask(
-                    self.FlowType == 'TECHNOSPHERE_FLOW'
-                    or self.SectorProducedBy.isna()
-                    or (self.SectorProducedBy.isin(
+            log.info('Adding PrimarySector and SecondarySector columns from'
+                     'SectorProducedBy and SectorConsumedBy columns.')
+            fb = self.assign(
+                PrimarySector=self.SectorProducedBy.mask(
+                    (self.FlowType == 'TECHNOSPHERE_FLOW')
+                    | (self.SectorProducedBy.isna())
+                    | (self.SectorProducedBy.isin(
                             ['22', '221', '2213', '22131', '221310']
                         )
-                        and self.SectorConsumedBy.isin(
+                        & self.SectorConsumedBy.isin(
                             ['F010', 'F0100', 'F01000']
                         )),
                     self.SectorConsumedBy
                 )
             )
+
+            def _identify_secondary_sector(row: _FlowBySeries) -> str:
+                sectors = [row.SectorProducedBy, row.SectorConsumedBy]
+                sectors.remove(row.PrimarySector)
+                return sectors[0]
+
+            fb = fb.assign(SecondarySector=fb.apply(
+                _identify_secondary_sector, axis='columns'))
+            #   ^^^ Applying with axis='columns' means applying TO each row.
+
+            return fb
 
 
 class FlowByActivity(_FlowBy):
