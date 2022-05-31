@@ -411,7 +411,7 @@ class _FlowBy(pd.DataFrame):
                       'are missing.')
             return self
         else:
-            log.info('Adding PrimarySector and SecondarySector columns from'
+            log.info('Adding PrimarySector and SecondarySector columns from '
                      'SectorProducedBy and SectorConsumedBy columns.')
             fb = self.assign(
                 PrimarySector=self.SectorProducedBy.mask(
@@ -878,6 +878,69 @@ class FlowByActivity(_FlowBy):
             .assign(SectorSourceName=f'NAICS_{target_year}_Code')
         )
 
+    def equal_attribution(self: 'FlowByActivity') -> 'FlowByActivity':
+        '''
+        This function takes a FlowByActivity dataset with SectorProducedBy and
+        SectorConsumedBy columns already added and attributes flows from any
+        activity which is mapped to multiple industries/sectors equally across
+        those industries/sectors, by NAICS level. In other words, if an
+        activity is mapped to multiple industries/sectors, the flow amount is
+        equally divided across the relevant 2-digit NAICS industries. Then,
+        within each 2-digit industry the flow amount for that industry is
+        equally divided across the relevant 3-digit NAICS industries; within
+        each of those, the flow amount is equally divided across relevant
+        4-digit NAICS industries, and so on.
+
+        For example:
+        Suppose that activity A has a flow amount of 12 and is mapped to
+        industries 111210, 111220, and 213110, a flow amount of 3 will be
+        attributed to 111210, a flow amount of 3 to 111220, and a flow amount
+        of 6 to 213110.
+
+        Attribution happens according to the primary sector first (see
+        documentation for
+        flowby.FlowByActivity.add_primary_secondary_sector_columns() for
+        details on how the primary sector is determined; in most cases, the
+        primary sector is the (only) non-null value out of SectorProducedBy or
+        SectorConsumedBy). If necessary, flow amounts are further (equally)
+        subdivided based on the secondary sector.
+        '''
+        fba = self.add_primary_secondary_sectors()
+        groupby_cols = [c for c in fba.columns if fba[c].dtype == 'object'
+                        and c not in ['SectorProducedBy', 'SectorConsumedBy',
+                                      'PrimarySector', 'SecondarySector',
+                                      'Description']]
+
+        for rank in ['Primary', 'Secondary']:
+            fba = (
+                fba
+                .assign(
+                    **{f'_naics_{n}': lambda x, i=n: x[f'{rank}Sector'].str[:i]
+                        for n in range(2, 8)},
+                    **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                            x
+                            .groupby(groupby_cols if i == 2
+                                     else [*groupby_cols, f'_naics_{i-1}'],
+                                     dropna=False)
+                            [[f'_naics_{i}']]
+                            .transform('nunique', dropna=False)
+                        )
+                        for n in range(2, 8)},
+                    FlowAmount=lambda x: reduce(
+                        lambda x, y: x / y,
+                        [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
+                                         for n in range(2, 8)]]
+                    )
+                )
+            )
+            groupby_cols.append('PrimarySector')
+
+        return fba.drop(
+            columns=['PrimarySector', 'SecondarySector',
+                     *[f'_naics_{n}' for n in range(2, 8)],
+                     *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
+        )
+
 
 class FlowBySector(_FlowBy):
     _metadata = [*_FlowBy()._metadata]
@@ -1122,22 +1185,7 @@ class FlowBySector(_FlowBy):
                     if activity_config['allocation_method'] == 'direct':
                         log.info('Attributing flows in %s using direct '
                                  'attribution method', activity_set)
-                        fbs = fbs_allocation.direct_allocation_method(
-                            activity_set_fba,
-                            source_name,
-                            activity_names,
-                            method_config
-                        )
-                    #     activity_fbs_list = []
-                    #     for name in activity_names:
-                    #         log.info('Attributing to %s', name)
-                    #         activity_fbs = (
-                    #             activity_set_fba
-                    #             .query('ActivityProducedBy == @name'
-                    #                    '| ActivityConsumedBy == @name')
-                    #             .reset_index(drop=True)
-                    #         )
-
+                        fbs = activity_set_fba.equal_attribution()
                     # elif (activity_config['allocation_method']
                     #       == 'allocation_function'):
                     #     pass
@@ -1152,7 +1200,7 @@ class FlowBySector(_FlowBy):
 
                     log.info('Appending %s from %s to FBS list',
                              activity_set, source_name)
-                    source_fbs_list.append(activity_set_fba)
+                    source_fbs_list.append(fbs)
 
         return source_fbs_list
 
