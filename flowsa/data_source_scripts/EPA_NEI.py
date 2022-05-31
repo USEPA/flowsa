@@ -217,10 +217,10 @@ def drop_GHGs(df, *_):
     :return: df
     """""
     flowlist = [
-        'Carbon Dioxide',
+        'Carbon Dioxide', 'Carbon dioxide',
         'Methane',
-        'Nitrous Oxide',
-        'Sulfur Hexafluoride',
+        'Nitrous Oxide', 'Nitrous oxide',
+        'Sulfur Hexafluoride', 'Sulfur hexafluoride',
     ]
     flow_var = 'Flowable' if 'Flowable' in df.columns else 'FlowName'
     return df.query(f'{flow_var} not in @flowlist')
