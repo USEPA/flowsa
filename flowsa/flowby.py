@@ -1183,13 +1183,14 @@ class FlowBySector(_FlowBy):
                     assert isinstance(activity_set_fba, FlowByActivity)
 
                     if activity_config['allocation_method'] == 'direct':
-                        log.info('Attributing flows in %s using direct '
-                                 'attribution method', activity_set)
+                        log.info('Attributing flows in %s to sectors using '
+                                 'direct attribution method', activity_set)
                         fbs = activity_set_fba.equal_attribution()
                     elif (activity_config['allocation_method']
                           == 'allocation_function'):
                         log.info(
-                            'Attributing flows in %s using function: %s.%s',
+                            'Attributing flows in %s to sectors using '
+                            'function: %s.%s',
                             activity_set,
                             activity_config['allocation_source'].__module__,
                             activity_config['allocation_source'].__name__
