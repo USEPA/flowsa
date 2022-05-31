@@ -1188,6 +1188,12 @@ class FlowBySector(_FlowBy):
                         fbs = activity_set_fba.equal_attribution()
                     elif (activity_config['allocation_method']
                           == 'allocation_function'):
+                        log.info(
+                            'Attributing flows in %s using function: %s.%s',
+                            activity_set,
+                            activity_config['allocation_source'].__module__,
+                            activity_config['allocation_source'].__name__
+                        )
                         fbs = activity_config['allocation_source'](
                             activity_set_fba,
                             activity_config,
