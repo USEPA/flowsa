@@ -1186,9 +1186,13 @@ class FlowBySector(_FlowBy):
                         log.info('Attributing flows in %s using direct '
                                  'attribution method', activity_set)
                         fbs = activity_set_fba.equal_attribution()
-                    # elif (activity_config['allocation_method']
-                    #       == 'allocation_function'):
-                    #     pass
+                    elif (activity_config['allocation_method']
+                          == 'allocation_function'):
+                        fbs = activity_config['allocation_source'](
+                            activity_set_fba,
+                            activity_config,
+                            source_fbs_list
+                        )
                     # elif (activity_config['allocation_method']
                     #       == 'proportional'):
                     #     pass
