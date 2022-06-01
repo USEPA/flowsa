@@ -43,6 +43,8 @@ def bea_gdp_parse(*, year, **_):
     df['FlowName'] = 'Gross Output'
     df["SourceName"] = "BEA_GDP_GrossOutput"
     df["Location"] = US_FIPS
+    # original unit in million USD
+    df['FlowAmount'] = df['FlowAmount'] * 1000000
     # state FIPS codes have not changed over last decade
     df['LocationSystem'] = "FIPS_2015"
     df["Unit"] = "USD"
