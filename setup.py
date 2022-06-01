@@ -32,14 +32,14 @@ setup(
         'matplotlib>=3.4.3'
     ],
     url='https://github.com/USEPA/FLOWSA',
-    license='CC0',
+    license='MIT',
     author='Catherine Birney, Ben Young, Wesley Ingwersen, Melissa Conner, Jacob Specht, Mo Li',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 1 - Alpha",
         "Environment :: IDE",
         "Intended Audience :: Science/Research",
-        "License :: CC0",
+        "License :: MIT",
         "Programming Language :: Python :: 3.x",
         "Topic :: Utilities",
     ],
