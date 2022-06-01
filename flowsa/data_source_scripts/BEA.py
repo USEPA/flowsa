@@ -5,8 +5,9 @@
 """
 Supporting functions for BEA data.
 
-Generation of BEA Gross Output data as FBA, csv files for BEA data
-originate from USEEIOR and were originally generated on 2020-07-14.
+Generation of BEA Gross Output data and industry transcation data as FBA,
+Source csv files for BEA data are documented
+in scripts/write_BEA_Use_from_useeior.py
 """
 import pandas as pd
 from flowsa.location import US_FIPS

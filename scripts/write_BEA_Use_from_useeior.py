@@ -13,14 +13,22 @@ A script to get Use table transactions from a useeior EEIOmodel.
 The BEA_2012_Detail_Use_PRO_BeforeRedef was pulled from
 USEEIOR's Detail_Use_2012_PRO_BeforeRedef.rda on 06/01/2022.
 
+The original file is found here:
+https://github.com/USEPA/useeior/blob/master/data/Detail_Use_2012_PRO_BeforeRedef.rda
+
 csv obtained by running the following code in Rstudio:
 bea <- get('Detail_Use_2012_PRO_BeforeRedef')
 write.csv(bea, file='BEA_2012_Detail_Use_PRO_BeforeRedef.csv')
 
 CSV manually added to flowsa
 
+
+
 The BEA_2012_Detail_Make_BeforeRedef was pulled from USEEIOR's
 Detail_Make_2012_BeforeRedef.rda on 06/01/2022.
+
+The original file is found here:
+https://github.com/USEPA/useeior/blob/master/data/Detail_Make_2012_BeforeRedef.rda
 
 csv obtained by running the following code in Rstudio:
 bea <- get('Detail_Make_2012_BeforeRedef')
@@ -35,6 +43,9 @@ https://github.com/USEPA/useeior/commit/7567695
 ---
 The BEA_Detail_GrossOutput was pulled from
 USEEIOR's Detail_GrossOutput_IO.rda on 06/01/2022.
+
+The original file is found here:
+https://github.com/USEPA/useeior/blob/master/data/Detail_GrossOutput_IO.rda
 
 csv obtained by running the following code in Rstudio:
 bea <- get('Detail_GrossOutput_IO')
