@@ -19,7 +19,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.settings import externaldatapath
 from flowsa.sectormapping import get_fba_allocation_subset, \
     add_sectors_to_flowbyactivity
-from flowsa.dataclean import replace_strings_with_NoneType
+from flowsa.dataclean import replace_strings_with_NoneType, standardize_units
 
 
 def produced_by(entry):
@@ -118,7 +118,10 @@ def keep_generated_quantity(fba, **kwargs):
         the FBA method yaml
     :return: df, modified CalRecycles FBA
     """
-    fba = fba[fba['Description'] == 'Generated']
+    fba = fba[fba['Description'] == 'Generated'].reset_index(drop=True)
+    # if no mapping performed, still update units
+    if 'tons' in fba['Unit'].values:
+        fba = standardize_units(fba)
     return fba
 
 
