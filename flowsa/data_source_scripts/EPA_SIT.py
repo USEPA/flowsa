@@ -5,18 +5,21 @@ Parses EPA SIT data to flowbyactivity format.
 """
 
 import pandas as pd
+import os
 from flowsa.settings import externaldatapath, log
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS
 
 def epa_sit_parse(*, source, year, config, **_):
 
-    state = 'ME' # two-letter state abbreviation
-    filename = 'Synthesis Tool.xlsm' # name of file containing SIT data
-    filepath = externaldatapath + 'SIT_data/' + state + '/' + filename # filepath with location of SIT data
+    state = config['state']
+    filepath = f"{externaldatapath}/SIT_data/{state}/{config['file']}"
     sheet_dict = config['sheet_dict'] # dictionary containing Excel sheet-specific information
     # initialize the dataframe
     df0 = pd.DataFrame()
+
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f'SIT file not found in {filepath}')
 
     # for each sheet in the Excel file containing data...
     for sheet, sheet_dict in config.get('sheet_dict').items():
@@ -76,7 +79,7 @@ def epa_sit_parse(*, source, year, config, **_):
             df['FlowName'] = sheet_dict.get('flow')
         df['Unit'] = sheet_dict.get('unit')
         df['Description'] = sheetname
-        
+
         # concatenate dataframe from each sheet with existing master dataframe
         df0 = pd.concat([df0, df])
 
