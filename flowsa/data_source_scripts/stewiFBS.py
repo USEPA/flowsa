@@ -50,11 +50,6 @@ def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
     :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
     :return: df, FBS format
     """
-
-    from flowsa.data_source_scripts.EPA_NEI import drop_GHGs
-
-    # determine if fxns specified in FBS method yaml
-    functions = yaml_load.get('functions', [])
     inventory_name = yaml_load.get('local_inventory_name')
 
     df = None
@@ -95,14 +90,7 @@ def stewicombo_to_sector(yaml_load, method, fbsconfigpath=None):
 
     df['MetaSources'] = df['Source']
 
-    if 'drop_GHGs' in functions:
-        df = drop_GHGs(df)
-        functions.remove('drop_GHGs')
-
     fbs = prepare_stewi_fbs(df, yaml_load, method)
-
-    for function in functions:
-        fbs = getattr(sys.modules[__name__], function)(fbs)
 
     return fbs
 
