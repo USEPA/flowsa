@@ -66,7 +66,7 @@ source_names:
         helper_source_year: 2013
         helper_flow: None
         helper_from_scale: state
-        clean_helper_fba_wsec: iwms_aggregation
+        clean_helper_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
       activity_set_4:
         names:
           - "Livestock"

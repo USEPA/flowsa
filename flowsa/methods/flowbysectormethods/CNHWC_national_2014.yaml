@@ -34,4 +34,4 @@ source_names:
           - "Number of employees, Local Government"
           - "Number of employees, Private"
         helper_from_scale: national
-        clean_helper_fba_wsec: bls_clean_allocation_fba_w_sec
+        clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec

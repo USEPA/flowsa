@@ -90,7 +90,8 @@ def return_fbs_method_data(source_name, config):
     :param config: dictionary, configuration/method file
     :return: meta object
     """
-    from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata
+    from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata,\
+        add_stewicombo_metadata
 
     # load the yaml that lists what additional fbas are
     # used in creating the fbs
@@ -108,8 +109,12 @@ def return_fbs_method_data(source_name, config):
     for k, v in fb.items():
         if k == 'stewiFBS':
             # get stewi metadata
-            meta['primary_source_meta'][k] = \
-                add_stewi_metadata(v['inventory_dict'])
+            if v.get('local_inventory_name'):
+                meta['primary_source_meta'][k] = add_stewicombo_metadata(
+                    v.get('local_inventory_name'))
+            else:
+                meta['primary_source_meta'][k] = add_stewi_metadata(
+                    v['inventory_dict'])
             continue
         if v['data_format'] in ('FBS', 'FBS_outside_flowsa'):
             meta['primary_source_meta'][k] = \
