@@ -138,7 +138,12 @@ def main(**kwargs):
     method = load_yaml_dict(method_name, flowbytype='FBS',
                             filepath=fbsconfigpath)
     # create dictionary of data and allocation datasets
-    fb = method['source_names']
+    try:
+        fb = method['source_names']
+    except KeyError:
+        log.error("parameter 'source_names' not found in method. "
+                  f"FBS for {method_name} can not be generated.")
+        return
     # Create empty list for storing fbs files
     fbs_list = []
     for k, v in fb.items():
