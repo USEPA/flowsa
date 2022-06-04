@@ -107,9 +107,12 @@ def load_source_dataframe(method, sourcename, source_dict,
         flows_df = flowsa.getFlowBySector(sourcename)
     elif source_dict['data_format'] == 'FBS_outside_flowsa':
         vLog.info("Retrieving flowbysector for datasource %s", sourcename)
-        flows_df = source_dict["FBS_datapull_fxn"](source_dict,
-                                                   method,
-                                                   fbsconfigpath)
+        fxn = source_dict.get("FBS_datapull_fxn")
+        if callable(fxn):
+            flows_df = fxn(source_dict, method, fbsconfigpath)
+        elif fxn:
+            raise flowsa.exceptions.FBSMethodConstructionError(
+                error_type='fxn_call')
     else:
         raise flowsa.exceptions.FBSMethodConstructionError(
             message="Data format not specified in method "
@@ -133,7 +136,7 @@ def main(**kwargs):
     fbsconfigpath = kwargs.get('fbsconfigpath')
     download_FBA_if_missing = kwargs.get('download_FBAs_if_missing')
     # assign arguments
-    vLog.info("Initiating flowbysector creation for %s", method_name)
+    vLog.info(f"Initiating flowbysector creation for {method_name}")
     # call on method
     method = load_yaml_dict(method_name, flowbytype='FBS',
                             filepath=fbsconfigpath)
@@ -163,18 +166,26 @@ def main(**kwargs):
                 flows = merge_urb_cnty_pct(flows)
 
             # clean up fba before mapping, if specified in yaml
-            if "clean_fba_before_mapping_df_fxn" in v:
-                vLog.info("Cleaning up %s FlowByActivity", k)
-                flows = v["clean_fba_before_mapping_df_fxn"](flows)
+            fxn = v.get("clean_fba_before_mapping_df_fxn")
+            if callable(fxn):
+                vLog.info(f"Cleaning up {k} FlowByActivity")
+                flows = fxn(flows)
+            elif fxn:
+                raise flowsa.exceptions.FBSMethodConstructionError(
+                    error_type='fxn_call')
 
             # map flows to federal flow list or material flow list
             flows_mapped, mapping_files = \
                 map_fbs_flows(flows, k, v, keep_fba_columns=True)
 
             # clean up fba, if specified in yaml
-            if "clean_fba_df_fxn" in v:
-                vLog.info("Cleaning up %s FlowByActivity", k)
-                flows_mapped = v["clean_fba_df_fxn"](flows_mapped)
+            fxn = v.get("clean_fba_df_fxn")
+            if callable(fxn):
+                vLog.info(f"Cleaning up {k} FlowByActivity")
+                flows = fxn(flows_mapped)
+            elif fxn:
+                raise flowsa.exceptions.FBSMethodConstructionError(
+                    error_type='fxn_call')
 
             # master list of activity names read in from data source
             ml_act = []
@@ -196,7 +207,7 @@ def main(**kwargs):
                       )].reset_index(drop=True)
                 ml_act.extend(names)
 
-                vLog.info("Preparing to handle %s in %s", aset, k)
+                vLog.info(f"Preparing to handle {aset} in {k}")
                 # subset fba data by activity
                 flows_subset = flows_mapped[
                     (flows_mapped[fba_activity_fields[0]].isin(names)) |
@@ -355,15 +366,19 @@ def main(**kwargs):
                     flows_subset_geo, fbs_sector_subset, aset, k, v, attr,
                     method)
 
-                log.info("Completed flowbysector for %s", aset)
+                log.info(f"Completed flowbysector for {aset}")
                 fbs_list.append(fbs_sector_subset)
         else:
-            if 'clean_fbs_df_fxn' in v:
-                flows = v["clean_fbs_df_fxn"](flows, method)
+            fxn = v.get("clean_fbs_df_fxn")
+            if callable(fxn):
+                flows = fxn(flows, method)
+            elif fxn:
+                raise flowsa.exceptions.FBSMethodConstructionError(
+                    error_type='fxn_call')
             flows = update_geoscale(flows, method['target_geoscale'])
             # if the loaded flow dt is already in FBS format,
             # append directly to list of FBS
-            log.info("Append %s to FBS list", k)
+            log.info(f"Append {k} to FBS list")
             # ensure correct field datatypes and add any missing fields
             flows = clean_df(flows, flow_by_sector_fields, fbs_fill_na_dict)
             fbs_list.append(flows)
@@ -397,7 +412,7 @@ def main(**kwargs):
     # rename the log file saved to local directory
     rename_log_file(method_name, meta)
     log.info('See the Validation log for detailed assessment of '
-             'model results in %s', logoutputpath)
+             f'model results in {logoutputpath}')
 
 
 if __name__ == '__main__':
