@@ -9,7 +9,6 @@ uuid=https://doi.org/10.23719/1503167
 Last updated: 2018-11-07
 """
 
-import io
 import pandas as pd
 from flowsa.location import US_FIPS
 from flowsa.settings import externaldatapath
@@ -29,18 +28,29 @@ def epa_cddpath_call(*, resp, **_):
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe
-    df = (pd.io.excel.read_excel(io.BytesIO(resp.content),
-                                 sheet_name='Final Results',
-                                 # exclude extraneous rows & cols
-                                 header=2, nrows=30, usecols="A, B, E",
-                                 # give columns tidy names
-                                 names=["FlowName", "landfilled", "processed"],
-                                 # specify data types
-                                 dtype={'a': str, 'b': float, 'e': float})
-          .dropna()  # drop NaN's produced by Excel cell merges
-          .melt(id_vars=["FlowName"],
-                var_name="Description",
-                value_name="FlowAmount"))
+    df1 = (pd.read_excel(resp.content,
+                         sheet_name='Final Results',
+                         # exclude extraneous rows & cols
+                         header=2, nrows=30, usecols="A, B",
+                         # give columns tidy names
+                         names=["FlowName", "Landfill"],
+                         # specify data types
+                         dtype={'a': str, 'b': float})
+           .dropna()  # drop NaN's produced by Excel cell merges
+           .melt(id_vars=["FlowName"],
+                 var_name="ActivityConsumedBy",
+                 value_name="FlowAmount"))
+
+    df2 = (pd.read_excel(resp.content,
+                         sheet_name='Final Results',
+                         # exclude extraneous rows & cols
+                         header=2, nrows=30, usecols="A, C, D",
+                         # give columns tidy names
+                         names=["FlowName", "ActivityConsumedBy", "FlowAmount"],
+                         # specify data types
+                         dtype={'a': str, 'c': str, 'd': float})
+           .fillna(method='ffill'))
+    df = pd.concat([df1, df2], ignore_index=True)
 
     return df
 
@@ -62,7 +72,6 @@ def epa_cddpath_parse(*, df_list, year, **_):
     df['SourceName'] = 'EPA_CDDPath'  # confirm this
     df['Unit'] = 'short tons'
     df['FlowType'] = 'WASTE_FLOW'
-    df.loc[df['ActivityProducedBy'].isna(), 'ActivityProducedBy'] = 'Buildings'
     # df['Compartment'] = 'waste'  # confirm this
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, year)
@@ -85,14 +94,20 @@ def write_cdd_path_from_csv():
 
 def combine_cdd_path(*, resp, **_):
     """Call function to generate combined dataframe from csv file and
-    excel dataset, bringing only those flows from the excel file that are
-    not in the csv file
+    excel dataset, applying the ActivityProducedBy across the flows.
     """
     df_csv = write_cdd_path_from_csv()
+    df_csv['pct'] = (df_csv['FlowAmount']/
+                     df_csv.groupby(['FlowName'])
+                     .FlowAmount.transform('sum'))
+    df_csv = df_csv.drop(columns=['FlowAmount'])
     df_excel = epa_cddpath_call(resp=resp)
-    df_excel = df_excel[~df_excel['FlowName'].isin(df_csv['FlowName'])]
 
-    df = pd.concat([df_csv, df_excel], ignore_index=True)
+    df = df_excel.merge(df_csv, how='left', on='FlowName')
+    df['pct'] = df['pct'].fillna(1)
+    df['FlowAmount'] = df['FlowAmount'] * df['pct']
+    df['ActivityProducedBy'] = df['ActivityProducedBy'].fillna('Buildings')
+    df = df.drop(columns=['pct'])
     return df
 
 
