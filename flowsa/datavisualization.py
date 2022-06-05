@@ -6,8 +6,6 @@ Functions to plot Flow-By-Sector results
 """
 
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 import seaborn as sns
 import flowsa
 from flowsa.common import load_crosswalk
@@ -111,6 +109,13 @@ def stackedBarChart(methodname, impact_cat=None):
     :return: stacked, group bar plot
     """
 
+    try:
+        import plotly.express as px
+        import plotly.graph_objects as go
+    except ImportError:
+        log.error("plotly required for 'stackedBarChart()'")
+        raise
+
     df = flowsa.collapse_FlowBySector(methodname)
 
     index_cols = ["Location", "Sector", "Unit"]
@@ -177,3 +182,7 @@ def stackedBarChart(methodname, impact_cat=None):
     # pio.renderers.default='browser'
 
     fig.show()
+
+
+if __name__ == "__main__":
+    stackedBarChart('GHG_national_2016_m3', impact_cat='Global warming')
