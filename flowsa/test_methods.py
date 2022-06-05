@@ -4,6 +4,7 @@ Test FBS method files for correct loading
 """
 import pytest
 from flowsa import seeAvailableFlowByModels
+import flowsa.exceptions
 from flowsa.flowbyactivity import load_yaml_dict, assemble_urls_for_query,\
     call_urls
 
@@ -18,7 +19,6 @@ def test_FBA_urls():
         year = max(config['years'])
 
         if ((config.get('url', 'None') == 'None') or
-            (config.get('api_key_required', False)) or
             (m == 'EPA_EQUATES')):
             continue
 
@@ -33,6 +33,9 @@ def test_FBA_urls():
                                            config=config)
             call_urls(url_list=urls, source=m, year=str(year),
                       config=config)
+        except flowsa.exceptions.APIError:
+            print('API Key required, skipping url')
+            continue
         except Exception:
             error_list.append(m)
     if error_list:
