@@ -6,7 +6,7 @@ Inventory of US GHGs from EPA disaggregated to States
 """
 import json
 import pandas as pd
-from flowsa.settings import externaldatapath, log
+from flowsa.settings import externaldatapath
 from flowsa.location import apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
@@ -17,7 +17,8 @@ def epa_state_ghgi_parse(*, source, year, config, **_):
         with open(externaldatapath + config.get('file')) as f:
             data = json.load(f)
     except FileNotFoundError:
-        raise FileNotFoundError('State GHGI data not yet available for external users')
+        raise FileNotFoundError('State GHGI data not yet available for '
+                                'external users')
 
     data_df = pd.DataFrame(data)
     activity_cols = ['SECTOR', 'SOURCE', 'SUBSOURCE', 'FUEL_TYPE',
@@ -41,11 +42,11 @@ def epa_state_ghgi_parse(*, source, year, config, **_):
                        'GHG_NAME': 'FlowName'},
               inplace=True)
 
-
-    df['ActivityProducedBy'] = df[activity_cols
-                                  ].apply(lambda row: ' - '.join(
-                                      row.values.astype(str)), axis=1)
-    df['ActivityProducedBy'] = df['ActivityProducedBy'].str.replace(' - None', '')
+    df['ActivityProducedBy'] = (df[activity_cols]
+                                .apply(lambda row: ' - '.join(
+                                      row.values.astype(str)), axis=1))
+    df['ActivityProducedBy'] = (df['ActivityProducedBy']
+                                .str.replace(' - None', ''))
     df.drop(columns=activity_cols, inplace=True)
     activities = df[['ActivityProducedBy']].drop_duplicates()
 
