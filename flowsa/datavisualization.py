@@ -6,23 +6,35 @@ Functions to plot Flow-By-Sector results
 """
 
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import flowsa
 from flowsa.common import load_crosswalk
 from flowsa.settings import log
 
 
-def addSectorNames(df):
+def addSectorNames(df, BEA=False):
     """
     Add column to an FBS df with the sector names
     :param df: FBS df with singular "Sector" column
     :return: FBS df with new column of combined Sector and SectorNames
     """
     # load crosswalk and add names
-    cw = load_crosswalk('sector_name')
-    cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
-        'NAICS_2012_Name'] + ')'
-    cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})
+    if BEA:
+        cw = pd.read_csv('https://raw.githubusercontent.com/USEPA/useeior/develop/inst/extdata/USEEIO_Commodity_Meta.csv',
+                         usecols=[0,1], names=['Sector', 'Name'], skiprows=1
+                         )
+        cw['SectorName'] = cw['Sector'] + ' (' + cw['Name'] + ')'
+        # Limit length to 50 characters
+        cw['SectorName'] = cw['SectorName'].str[:50]
+        cw['SectorName'] = np.where(cw['SectorName'].str.len() == 50,
+                                    cw['SectorName'] + '...)',
+                                    cw['SectorName'])
+    else:
+        cw = load_crosswalk('sector_name')
+        cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
+            'NAICS_2012_Name'] + ')'
+        cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})
     df = df.merge(cw[['Sector', 'SectorName']], how='left')
     df = df.reset_index(drop=True)
 
@@ -184,5 +196,27 @@ def stackedBarChart(methodname, impact_cat=None):
     fig.show()
 
 
-if __name__ == "__main__":
-    stackedBarChart('GHG_national_2016_m3', impact_cat='Global warming')
+def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
+    from flowsa.location import get_state_FIPS
+    df = fbs_coeff.merge(get_state_FIPS(abbrev=True), how = 'left',
+                         left_on='Location', right_on='FIPS')
+    if indicator is not None:
+        df = df[df['Indicator'] == indicator]
+    if sectors_to_include is not None:
+        df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
+    df = df.reset_index(drop=True)
+    sns.set_style("whitegrid")
+    if 'SectorName' in df:
+        axis_var = 'SectorName'
+    else:
+        axis_var = 'Sector'
+    g = (sns.relplot(data=df, x="Coefficient", y=axis_var,
+                hue="State", alpha=0.7, style="State",
+                palette="colorblind",
+                aspect=0.7, height = 12)
+         # .set(title="title")
+    )
+    g._legend.set_title('State')
+    g.set_axis_labels(f"{df['Indicator'][0]} ({df['Indicator unit'][0]} / $)", "")
+    g.tight_layout()
+    return g
