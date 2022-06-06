@@ -432,9 +432,12 @@ class _FlowBy(pd.DataFrame):
                 sectors.remove(row.PrimarySector)
                 return sectors[0]
 
-            fb = fb.assign(SecondarySector=fb.apply(
-                _identify_secondary_sector, axis='columns'))
-            #   ^^^ Applying with axis='columns' means applying TO each row.
+            fb = fb.assign(
+                SecondarySector=(
+                    fb.apply(_identify_secondary_sector, axis='columns')
+                    # ^^^ Applying with axis='columns' applies TO each row.
+                    .astype('object'))
+            )
 
             return fb
 
@@ -758,7 +761,7 @@ class FlowByActivity(_FlowBy):
         Maps the activities in the calling dataframe to industries/sectors, but
         does not perform any attribution. Columns for SectorProducedBy and
         SectorConsumedBy are added to the FBA. Each activity may be matched
-        with many industries/sectors, and each industry/sector may have several
+        with many industries/sectors, and each industry/sector may have many
         activities matched to it.
 
         The set of industries/sectors that activities are mapped to is
@@ -777,21 +780,40 @@ class FlowByActivity(_FlowBy):
             crosswalk.
         '''
         if self.source_config['sector-like_activities']:
+            log.info('Activities in %s are NAICS codes.',
+                     self.source_name)
             try:
                 source_year = int(self.source_config
                                   .get('activity_schema', '')[6:10])
             except ValueError:
                 source_year = 2012
+                log.warning('No NAICS year given for NAICS activities in %s. '
+                            '2012 used as default.', self.source_name)
+            else:
+                log.info('NAICS Activities in %s use NAICS year %s.',
+                         self.source_name, source_year)
 
-            fba_w_source_naics = (
-                self
-                .assign(SectorProducedBy=self.ActivityProducedBy,
-                        SectorConsumedBy=self.ActivityConsumedBy,
-                        ActivitySourceName=self.source_name,
-                        SectorType=np.nan)
+            log.info('Converting NAICS codes to desired industry/sector '
+                     'aggregation structure.')
+            fba_w_naics = self.assign(
+                ActivitySourceName=self.source_name,
+                SectorType=np.nan
             )
+            for direction in ['ProducedBy', 'ConsumedBy']:
+                fba_w_naics = (
+                    fba_w_naics
+                    .merge(
+                        industries.naics_key_from_industry_spec(industry_spec),
+                        how='left',
+                        left_on=f'Activity{direction}',
+                        right_on='source_naics')
+                    .rename(columns={'target_naics': f'Sector{direction}'})
+                    .drop(columns='source_naics')
+                )
 
         else:
+            log.info('Getting crosswalk between activities in %s and '
+                     'NAICS codes.', self.source_name)
             activity_to_source_naics_crosswalk = (
                 sectormapping.get_activitytosector_mapping(
                     # ^^^ TODO: Replace or streamline get_...() function
@@ -820,15 +842,28 @@ class FlowByActivity(_FlowBy):
                 )
             else:
                 log.warning('No NAICS year/sector source name (e.g. '
-                            '"NAICS_2012_Code") provided in crosswalk for %s.'
+                            '"NAICS_2012_Code") provided in crosswalk for %s. '
                             '2012 being used as default.',
                             self.source_name)
 
-            fba_w_source_naics = self
+            log.info('Converting NAICS codes in crosswalk to desired '
+                     'industry/sector aggregation structure.')
+            activity_to_target_naics_crosswalk = (
+                activity_to_source_naics_crosswalk
+                .merge(industries.naics_key_from_industry_spec(industry_spec),
+                       how='left', left_on='Sector', right_on='source_naics')
+                .assign(Sector=lambda x: x.source_naics)
+                .drop(columns=['source_naics', 'target_naics'])
+                .drop_duplicates()
+            )
+
+            log.info('Mapping activities in %s to NAICS codes using crosswalk',
+                     self.source_name)
+            fba_w_naics = self
             for direction in ['ProducedBy', 'ConsumedBy']:
-                fba_w_source_naics = (
-                    fba_w_source_naics
-                    .merge(activity_to_source_naics_crosswalk,
+                fba_w_naics = (
+                    fba_w_naics
+                    .merge(activity_to_target_naics_crosswalk,
                            how='left',
                            left_on=f'Activity{direction}', right_on='Activity')
                     .rename(columns={'Sector': f'Sector{direction}',
@@ -838,8 +873,12 @@ class FlowByActivity(_FlowBy):
                                    'Activity'],
                           errors='ignore')
                 )
+
         if source_year != target_year:
-            source_naics_year_to_year_crosswalk = (
+            log.info('Using NAICS time series/crosswalk to map NAICS codes '
+                     'from NAICS year %s to NAICS year %s.',
+                     source_year, target_year)
+            naics_year_to_year_crosswalk = (
                 pd.read_csv(
                     f'{settings.datapath}NAICS_Crosswalk_TimeSeries.csv',
                     dtype='object'
@@ -851,32 +890,16 @@ class FlowByActivity(_FlowBy):
                 .reset_index(drop=True)
             )
             for direction in ['ProducedBy', 'ConsumedBy']:
-                fba_w_source_naics = (
-                    fba_w_source_naics
-                    .merge(source_naics_year_to_year_crosswalk,
+                fba_w_naics = (
+                    fba_w_naics
+                    .merge(naics_year_to_year_crosswalk,
                            how='left',
                            left_on=f'Sector{direction}', right_on='Sector')
                     .assign(**{f'Sector{direction}': lambda x: x['NewSector']})
                     .drop(columns=['Sector', 'NewSector'])
                 )
 
-        source_naics_to_target_naics_crosswalk = (
-            industries.naics_key_from_industry_spec(industry_spec))
-        fba_w_target_naics = fba_w_source_naics
-        for direction in ['ProducedBy', 'ConsumedBy']:
-            fba_w_target_naics = (
-                fba_w_target_naics
-                .merge(source_naics_to_target_naics_crosswalk,
-                       how='left',
-                       left_on=f'Sector{direction}', right_on='source_naics')
-                .assign(**{f'Sector{direction}': lambda x: x['target_naics']})
-                .drop(columns=['source_naics', 'target_naics'])
-            )
-
-        return (
-            fba_w_target_naics
-            .assign(SectorSourceName=f'NAICS_{target_year}_Code')
-        )
+        return fba_w_naics.assign(SectorSourceName=f'NAICS_{target_year}_Code')
 
     def equal_attribution(self: 'FlowByActivity') -> 'FlowByActivity':
         '''
@@ -1161,6 +1184,8 @@ class FlowBySector(_FlowBy):
                             activity_config, activity_set, activity_names
                             # ^^^ TODO: Rewrite validation to use fb metadata
                         )
+
+                    assert isinstance(activity_set_fba, FlowByActivity)
 
                     activity_set_fba = (
                         activity_set_fba
