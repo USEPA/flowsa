@@ -566,32 +566,29 @@ class FlowByActivity(_FlowBy):
             fba_merge_keys.remove('SourceName')
             mapping_merge_keys.remove('SourceListName')
 
-        fba = (self
-               .assign(Flowable=self.FlowName,
-                       Context=self.Compartment,
-                       FlowAmount=self.FlowAmount.mask(
-                           self.Unit.str.contains('/d'),
-                           self.FlowAmount * 365),
-                       Unit=self.Unit.str.replace('/d', ''))
-               .conditional_method(drop_fba_columns, 'drop',
-                                   columns=['FlowName', 'Compartment'])
-               .fillna({field: '' for field in fba_merge_keys}))
-
         if any(self.Unit.str.contains('/d')):
             log.info('Converting daily flows %s to annual',
                      [unit for unit in self.Unit.unique() if '/d' in unit])
+        fba = (
+            self
+            .assign(Flowable=self.FlowName,
+                    Context=self.Compartment,
+                    FlowAmount=self.FlowAmount.mask(
+                        self.Unit.str.contains('/d'),
+                        self.FlowAmount * 365),
+                    Unit=self.Unit.str.replace('/d', ''))
+            .conditional_method(drop_fba_columns, 'drop',
+                                columns=['FlowName', 'Compartment'])
+        )
 
-        mapping = (fedelemflowlist
-                   .get_flowmapping(mapping_subset)[mapping_fields])
-
+        mapping = (
+            fedelemflowlist.get_flowmapping(mapping_subset)[mapping_fields]
+            .assign(ConversionFactor=lambda x: x.ConversionFactor.fillna(1))
+        )
         if mapping.empty:
             log.warning('Elementary flow list entries for %s not found',
                         mapping_subset)
             return FlowByActivity(self, mapped=True)
-
-        mapping = (mapping
-                   .assign(ConversionFactor=mapping.ConversionFactor.fillna(1))
-                   .fillna({field: '' for field in mapping_merge_keys}))
 
         mapped_fba = fba.merge(mapping,
                                how=merge_type,
