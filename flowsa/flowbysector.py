@@ -175,8 +175,9 @@ def main(**kwargs):
                     error_type='fxn_call')
 
             # map flows to federal flow list or material flow list
-            flows_mapped, mapping_files = \
-                map_fbs_flows(flows, k, v, keep_fba_columns=True)
+            flows_mapped, mapping_files = (map_fbs_flows(
+                flows, k, v, keep_fba_columns=True,
+                keep_unmapped_rows=v.get("keep_unmapped_rows", False)))
 
             # clean up fba, if specified in yaml
             fxn = v.get("clean_fba_df_fxn")
