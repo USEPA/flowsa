@@ -896,7 +896,11 @@ class FlowByActivity(_FlowBy):
                     .drop(columns=['Sector', 'NewSector'])
                 )
 
-        return fba_w_naics.assign(SectorSourceName=f'NAICS_{target_year}_Code')
+        return (
+            fba_w_naics
+            .assign(SectorSourceName=f'NAICS_{target_year}_Code')
+            .reset_index(drop=True)
+        )
 
     def equal_attribution(self: 'FlowByActivity') -> 'FlowByActivity':
         '''
@@ -1071,10 +1075,11 @@ class FlowBySector(_FlowBy):
 
         source_fbs_list = []
         for source_name, source_config in sources.items():
-            source_config.update(
-                {k: v for k, v in source_catalog.get(
-                     common.return_true_source_catalog_name(source_name), {})
-                 .items() if k not in source_config})
+            source_config = {
+                **source_catalog.get(
+                     common.return_true_source_catalog_name(source_name), {}),
+                **source_config
+            }
 
             if source_config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
                 if source_config['data_format'] == 'FBS_outside_flowsa':
@@ -1108,7 +1113,8 @@ class FlowBySector(_FlowBy):
                            .query('Flowable in @source_flows')
                            .conditional_method(isinstance(source_flows, dict),
                                                'replace',
-                                               {'Flowable': source_flows}))
+                                               {'Flowable': source_flows})
+                           .reset_index(drop=True))
                 log.info('Appending %s to FBS list', source_name)
                 source_fbs_list.append(fbs)
 
@@ -1145,16 +1151,22 @@ class FlowBySector(_FlowBy):
                         fba
                         .query('ActivityProducedBy in @activity_names'
                                '| ActivityConsumedBy in @activity_names')
-                        .conditional_method(
-                            'source_flows' in activity_config,
-                            'query',
-                            f'FlowName in '
-                            f'{activity_config.get("source_flows")}')
                         .reset_index(drop=True)
                     )
 
                     activity_set_fba.activity_set = activity_set
                     activity_set_fba.activity_config = activity_config
+
+                    if 'source_flows' in activity_config:
+                        source_flows = activity_config['source_flows']
+                        activity_set_fba = (
+                            activity_set_fba
+                            .query('FlowName in @source_flows')
+                            .conditional_method(isinstance(source_flows, dict),
+                                                'replace',
+                                                {'FlowName': source_flows})
+                            .reset_index(drop=True)
+                        )
 
                     if activity_set_fba.empty:
                         log.error('No data for flows in %s', activity_set)
@@ -1165,6 +1177,8 @@ class FlowBySector(_FlowBy):
 
                     # TODO: source_catalog key not currently handled:
                     # TODO: 'sector-like_activities'
+
+                    assert isinstance(activity_set_fba, FlowByActivity)
 
                     activity_set_fba = (
                         activity_set_fba
