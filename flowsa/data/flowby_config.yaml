@@ -46,6 +46,9 @@ fba_mapped_w_sector_fields:
 fba_w_sector_fields:
   <<: [*fba_fields, *fba_sector_fields]
 
+all_fba_fields:
+  <<: [*fba_base_fields, *unmapped_fields, *mapped_fields, *fba_sector_fields]
+
 fba_column_order:
   - Class
   - SourceName
@@ -119,6 +122,9 @@ fbs_w_activity_fields:
 
 fbs_collapsed_fields:
   <<: [*fbs_base_fields, *collapsed_fields]
+
+all_fbs_fields:
+  <<: [*fbs_base_fields, *fbs_sector_fields, *activity_fields, *collapsed_fields]
 
 fbs_column_order:
   - Flowable
