@@ -1175,10 +1175,10 @@ class FlowBySector(_FlowBy):
                         source_flows = activity_config['source_flows']
                         activity_set_fba = (
                             activity_set_fba
-                            .query('FlowName in @source_flows')
+                            .query('Flowable in @source_flows')
                             .conditional_method(isinstance(source_flows, dict),
                                                 'replace',
-                                                {'FlowName': source_flows})
+                                                {'Flowable': source_flows})
                             .reset_index(drop=True)
                         )
 
