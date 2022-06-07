@@ -96,6 +96,14 @@ class _FlowBy(pd.DataFrame):
                 object.__setattr__(self, name, getattr(other.left, name, None))
         return self
 
+    @property
+    def flow_col(self) -> str:
+        return 'Flowable' if 'Flowable' in self else 'FlowName'
+
+    @property
+    def groupby_cols(self) -> List[str]:
+        return [x for x in self if self[x].dtype in ['int', 'object']]
+
     @classmethod
     def _getFlowBy(
         cls,
@@ -1236,9 +1244,9 @@ class FlowBySector(_FlowBy):
                             activity_config,
                             source_fbs_list
                         )
-                    # elif (activity_config['allocation_method']
-                    #       == 'proportional'):
-                    #     pass
+                    elif (activity_config['allocation_method']
+                          == 'proportional'):
+                        pass
 
                     fba = fba.query(
                         'ActivityProducedBy not in @activity_names'
