@@ -1,14 +1,12 @@
-fba_fields: &fba_fields
+_fba_base_fields: &fba_base_fields
   ActivityConsumedBy: object
   ActivityProducedBy: object
   Class: object
-  Compartment: object
   DataCollection: float
   DataReliability: float
   Description: object
   DistributionType: object
   FlowAmount: float
-  FlowName: object
   FlowType: object
   Location: object
   LocationSystem: object
@@ -20,26 +18,33 @@ fba_fields: &fba_fields
   Unit: object
   Year: int
 
+_unmapped_fields: &unmapped_fields
+  FlowName: object
+  Compartment: object
+
 _mapped_fields: &mapped_fields
   Context: object
   FlowUUID: object
   Flowable: object
 
-_sector_fields: &sector_fields
+_sector_fields: &fba_sector_fields
   ConsumedBySectorType: object
   ProducedBySectorType: object
   SectorConsumedBy: object
   SectorProducedBy: object
   SectorSourceName: object
 
-fba_mapped_fields:
-  <<: [*fba_fields, *mapped_fields]
+fba_fields: &fba_fields
+  <<: [*fba_base_fields, *unmapped_fields]
+
+fba_mapped_fields: &fba_mapped_fields
+  <<: [*fba_base_fields, *mapped_fields]
 
 fba_mapped_w_sector_fields:
-  <<: [*fba_fields, *mapped_fields, *sector_fields]
+  <<: [*fba_mapped_fields, *fba_sector_fields]
 
 fba_w_sector_fields:
-  <<: [*fba_fields, *sector_fields]
+  <<: [*fba_fields, *fba_sector_fields]
 
 fba_column_order:
   - Class
@@ -95,6 +100,10 @@ _fbs_base_fields: &fbs_base_fields
   Unit: object
   Year: int
 
+_sector_fields: &fbs_sector_fields
+  SectorConsumedBy: object
+  SectorProducedBy: object
+
 _collapsed_fields: &collapsed_fields
   Sector: object
 
@@ -103,9 +112,7 @@ _activity_fields: &activity_fields
   ActivityProducedBy: object
 
 fbs_fields: &fbs_fields
-  <<: *fbs_base_fields
-  SectorConsumedBy: object
-  SectorProducedBy: object
+  <<: [*fbs_base_fields, *fbs_sector_fields]
 
 fbs_w_activity_fields:
   <<: [*fbs_fields, *activity_fields]
