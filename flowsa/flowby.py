@@ -857,7 +857,7 @@ class FlowByActivity(_FlowBy):
                 activity_to_source_naics_crosswalk
                 .merge(industries.naics_key_from_industry_spec(industry_spec),
                        how='left', left_on='Sector', right_on='source_naics')
-                .assign(Sector=lambda x: x.source_naics)
+                .assign(Sector=lambda x: x.target_naics)
                 .drop(columns=['source_naics', 'target_naics'])
                 .drop_duplicates()
             )
