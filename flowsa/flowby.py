@@ -1194,14 +1194,13 @@ class FlowBySector(_FlowBy):
 
                     assert isinstance(activity_set_fba, FlowByActivity)
 
-                    activity_set_fba = (
-                        activity_set_fba
-                        .convert_to_geoscale(
-                            max(geo.scale.from_string(
-                                    source_config['geoscale_to_use']),
-                                geo.scale.from_string(
-                                    activity_config['allocation_from_scale'])))
+                    target_geoscale = max(
+                        source_config['geoscale_to_use'],
+                        activity_config['allocation_from_scale'],
+                        key=geo.scale.from_string
                     )
+                    activity_set_fba = (activity_set_fba
+                                        .convert_to_geoscale(target_geoscale))
 
                     assert isinstance(activity_set_fba, FlowByActivity)
 
