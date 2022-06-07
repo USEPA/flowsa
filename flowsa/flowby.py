@@ -747,14 +747,16 @@ class FlowByActivity(_FlowBy):
             .aggregate_flowby()
         )
 
-        return (
+        fba_at_target_geoscale = (
             fba_at_target_geoscale
             .astype({c: t for c, t
-                     in flowby_config['fba_mapped_w_sector_fields'].items()
+                     in flowby_config['all_fba_fields'].items()
                      if c in fba_at_target_geoscale.columns})
             # ^^^ Need to convert back to correct dtypes after aggregating;
             #     otherwise, columns of NaN will become float dtype.
         )
+
+        return fba_at_target_geoscale
 
     def map_to_sectors(
         self: 'FlowByActivity',
@@ -787,6 +789,7 @@ class FlowByActivity(_FlowBy):
         if self.source_config['sector-like_activities']:
             log.info('Activities in %s are NAICS codes.',
                      self.source_name)
+
             try:
                 source_year = int(self.source_config
                                   .get('activity_schema', '')[6:10])
@@ -910,7 +913,7 @@ class FlowByActivity(_FlowBy):
             .reset_index(drop=True)
         )
 
-    def equal_attribution(self: 'FlowByActivity') -> 'FlowByActivity':
+    def equally_attribute(self: 'FlowByActivity') -> 'FlowByActivity':
         '''
         This function takes a FlowByActivity dataset with SectorProducedBy and
         SectorConsumedBy columns already added and attributes flows from any
@@ -1229,7 +1232,7 @@ class FlowBySector(_FlowBy):
                     if activity_config['allocation_method'] == 'direct':
                         log.info('Attributing flows in %s to sectors using '
                                  'direct attribution method', activity_set)
-                        fbs = activity_set_fba.equal_attribution()
+                        fbs = activity_set_fba.equally_attribute()
                     elif (activity_config['allocation_method']
                           == 'allocation_function'):
                         log.info(
