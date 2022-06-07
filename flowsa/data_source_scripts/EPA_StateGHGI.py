@@ -9,6 +9,7 @@ import pandas as pd
 from flowsa.settings import externaldatapath
 from flowsa.location import apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
+import flowsa.exceptions
 
 
 def epa_state_ghgi_parse(*, source, year, config, **_):
@@ -74,6 +75,22 @@ def remove_select_states(fba, source_dict, **_):
     state_df = apply_county_FIPS(state_df)
     df_subset = fba[~fba['Location'].isin(state_df['Location'])]
     return df_subset
+
+
+def tag_biogenic_activities(fba, source_dict, **_):
+    """
+    clean_fba_before_mapping_df_fxn to tag emissions from passed activities
+    as biogenic. Activities passed as list in paramter 'activity_list'.
+    """
+    a_list = source_dict.get('activity_list')
+    if a_list is None:
+        raise flowsa.exceptions.FBSMethodConstructionError(
+            message="Activities to tag must be passed in FBS parameter "
+            "'activity_list'")
+    fba.loc[fba['ActivityProducedBy'].isin(a_list),
+            'FlowName'] = fba['FlowName'] + ' - biogenic'
+
+    return fba
 
 
 if __name__ == '__main__':
