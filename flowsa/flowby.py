@@ -379,16 +379,20 @@ class _FlowBy(pd.DataFrame):
         )
         aggregated = (
             aggregated
-            .assign(
-                **{c: (aggregated[f'_{c}_weighted']
-                       / aggregated[f'_{c}_weights'])
-                   for c in columns_to_average}
-            )
-            .drop(
-                columns=([*[f'_{c}_weighted' for c in columns_to_average],
-                          *[f'_{c}_weights' for c in columns_to_average]])
-            )
+            .assign(**{c: (aggregated[f'_{c}_weighted']
+                           / aggregated[f'_{c}_weights'])
+                       for c in columns_to_average})
+            .drop(columns=([*[f'_{c}_weighted' for c in columns_to_average],
+                            *[f'_{c}_weights' for c in columns_to_average]]))
         )
+        aggregated = aggregated.astype(
+            {column: type for column, type
+             in set([*flowby_config['all_fba_fields'].items(),
+                     *flowby_config['all_fbs_fields'].items()])
+             if column in aggregated}
+        )
+        # ^^^ Need to convert back to correct dtypes after aggregating;
+        #     otherwise, columns of NaN will become float dtype.
         return aggregated
 
     def add_primary_secondary_sectors(self: FB) -> FB:
@@ -745,15 +749,6 @@ class FlowByActivity(_FlowBy):
             .drop(columns='source_geoscale')
             .update_fips_to_geoscale(target_geoscale)
             .aggregate_flowby()
-        )
-
-        fba_at_target_geoscale = (
-            fba_at_target_geoscale
-            .astype({c: t for c, t
-                     in flowby_config['all_fba_fields'].items()
-                     if c in fba_at_target_geoscale.columns})
-            # ^^^ Need to convert back to correct dtypes after aggregating;
-            #     otherwise, columns of NaN will become float dtype.
         )
 
         if target_geoscale != geo.scale.NATIONAL:
