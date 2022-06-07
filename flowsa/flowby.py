@@ -756,6 +756,14 @@ class FlowByActivity(_FlowBy):
             #     otherwise, columns of NaN will become float dtype.
         )
 
+        if target_geoscale != geo.scale.NATIONAL:
+            validation.compare_geographic_totals(
+                fba_at_target_geoscale, self,
+                self.source_name, self.activity_config,
+                self.activity_set, self.activity_config['names']
+                # ^^^ TODO: Rewrite validation to use fb metadata
+            )
+
         return fba_at_target_geoscale
 
     def map_to_sectors(
@@ -1199,13 +1207,6 @@ class FlowBySector(_FlowBy):
                                 geo.scale.from_string(
                                     activity_config['allocation_from_scale'])))
                     )
-
-                    if activity_config['allocation_from_scale'] != 'national':
-                        validation.compare_geographic_totals(
-                            activity_set_fba, fba, source_name,
-                            activity_config, activity_set, activity_names
-                            # ^^^ TODO: Rewrite validation to use fb metadata
-                        )
 
                     assert isinstance(activity_set_fba, FlowByActivity)
 
