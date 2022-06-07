@@ -102,7 +102,8 @@ class _FlowBy(pd.DataFrame):
 
     @property
     def groupby_cols(self) -> List[str]:
-        return [x for x in self if self[x].dtype in ['int', 'object']]
+        return [x for x in self
+                if self[x].dtype in ['int', 'object'] and x != 'Description']
 
     @classmethod
     def _getFlowBy(
@@ -346,10 +347,7 @@ class _FlowBy(pd.DataFrame):
         :return: FlowBy, with aggregated columns
         """
         if columns_to_group_by is None:
-            columns_to_group_by = [
-                x for x in self.columns
-                if self[x].dtype != 'float' and x != 'Description'
-            ]
+            columns_to_group_by = self.groupby_cols
         if columns_to_average is None:
             columns_to_average = [
                 x for x in self.columns
@@ -367,12 +365,10 @@ class _FlowBy(pd.DataFrame):
 
         aggregated = (
             fb
-            .assign(
-                **{f'_{c}_weighted': fb[c] * fb.FlowAmount
-                   for c in columns_to_average},
-                **{f'_{c}_weights': fb.FlowAmount * fb[c].notnull()
-                   for c in columns_to_average}
-            )
+            .assign(**{f'_{c}_weighted': fb[c] * fb.FlowAmount
+                    for c in columns_to_average},
+                    **{f'_{c}_weights': fb.FlowAmount * fb[c].notnull()
+                    for c in columns_to_average})
             .groupby(columns_to_group_by, dropna=False)
             .agg(sum)
             .reset_index()
