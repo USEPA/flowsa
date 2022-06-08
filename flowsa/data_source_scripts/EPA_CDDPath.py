@@ -96,21 +96,21 @@ def combine_cdd_path(*, resp, **_):
     return df
 
 
-def assign_wood_to_engineering(df):
+def assign_wood_to_engineering(fba, **_):
     """clean_fba_df_fxn that reclassifies Wood from 'Other' to
     'Other - Wood' so that its mapping can be adjusted to only use
     237990/Heavy engineering NAICS according to method in Meyer et al. 2020
-    :param df: df, FBA of CDDPath
+    :param fba: df, FBA of CDDPath
     :return: df, CDDPath FBA with wood reassigned
     """
 
     # Update wood to a new activity for improved mapping
-    df.loc[((df.FlowName == 'Wood') &
-           (df.ActivityProducedBy == 'Other')),
+    fba.loc[((fba.FlowName == 'Wood') &
+           (fba.ActivityProducedBy == 'Other')),
            'ActivityProducedBy'] = 'Other - Wood'
 
     # if no mapping performed, still update units
-    if 'short tons' in df['Unit'].values:
-        df = standardize_units(df)
+    if 'short tons' in fba['Unit'].values:
+        fba = standardize_units(fba)
 
-    return df
+    return fba
