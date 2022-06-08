@@ -1,7 +1,7 @@
 # Downloads and parses CSV from USGS Gallium Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Gallium
-citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-galli-adv.xlsx
+citable_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-gallium.xlsx
 date_generated: '2021-03-26'
 years_available: 2014-2018
 format: xls

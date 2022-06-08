@@ -23,10 +23,13 @@ def test_write_bibliography():
 def test_generate_fbs():
     """Generate all FBS from methods in repo."""
     for m in flowsa.seeAvailableFlowByModels("FBS", print_method=False):
-        print("--------------------------------\n"
-              f"Method: {m}\n"
-              "--------------------------------")
-        flowsa.flowbysector.main(method=m, download_FBAs_if_missing=True)
+        if m not in ['BEA_summary_target',
+                     'USEEIO_summary_target',
+                     'Electricity_gen_emissions_national_2016']:
+            print("--------------------------------\n"
+                  f"Method: {m}\n"
+                  "--------------------------------")
+            flowsa.flowbysector.main(method=m, download_FBAs_if_missing=True)
 
 if __name__ == "__main__":
     test_generate_fbs()

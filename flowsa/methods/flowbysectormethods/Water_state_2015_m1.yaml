@@ -1,4 +1,4 @@
-!include:BEA_summary_target.yaml
+!include:USEEIO_summary_target.yaml
 target_geoscale: state
 source_names:
   "USGS_NWIS_WU":
