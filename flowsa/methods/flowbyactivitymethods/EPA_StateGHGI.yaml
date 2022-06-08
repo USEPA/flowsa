@@ -1,6 +1,6 @@
 author: US Environmental Protection Agency
 source_name: 'State Greenhouse Gas Inventories'
-source_url: ''
+source_url: 'https://www.epa.gov/ghgemissions/state-ghg-emissions-and-removals'
 bib_id: ''
 format: json
 url: None
