@@ -14,6 +14,7 @@ import pandas as pd
 from flowsa.location import US_FIPS
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.dataclean import standardize_units
 
 
 # Read pdf into list of DataFrame
@@ -107,5 +108,9 @@ def assign_wood_to_engineering(fba, **_):
     fba.loc[((fba.FlowName == 'Wood') &
            (fba.ActivityProducedBy == 'Other')),
            'ActivityProducedBy'] = 'Other - Wood'
+
+    # if no mapping performed, still update units
+    if 'short tons' in fba['Unit'].values:
+        fba = standardize_units(fba)
 
     return fba

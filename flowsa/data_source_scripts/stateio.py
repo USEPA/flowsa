@@ -9,17 +9,15 @@ https://github.com/USEPA/stateior
 import os
 import pandas as pd
 
+from esupy.processed_data_mgmt import download_from_remote, Paths,\
+    load_preprocessed_output
 from flowsa.metadata import set_fb_meta
 from flowsa.location import us_state_abbrev, apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
-from esupy.processed_data_mgmt import download_from_remote, Paths,\
-    load_preprocessed_output
-
 
 def parse_statior(*, source, year, config, **_):
-    """parse_response_fxn for stateio make and use tables
-    """
+    """parse_response_fxn for stateio make and use tables"""
     # Prepare meta for downloading stateior datasets
     name = config.get('datatype')
     fname = f"{name}_{year}"
@@ -27,21 +25,20 @@ def parse_statior(*, source, year, config, **_):
     meta.tool = 'stateio'
     meta.ext = 'rds'
     stateio_paths = Paths()
-    stateio_paths.local_path = os.path.realpath(stateio_paths.local_path + "/stateio")
-
+    stateio_paths.local_path = os.path.realpath(stateio_paths.local_path +
+                                                "/stateio")
     # Download and load the latest version from remote
     download_from_remote(meta, stateio_paths)
     states = load_preprocessed_output(meta, stateio_paths)
 
-    use_dict = {}
+    data_dict = {}
 
     # uses rpy2
     # this .rds is stored as a list of named dataframes by state
     for state in us_state_abbrev.keys():
          df = states.rx2(state)
          df2 = df.melt(ignore_index=False, value_name = 'FlowAmount',
-                       var_name = 'ActivityConsumedBy',
-                       )
+                       var_name = 'ActivityConsumedBy')
          df2['ActivityProducedBy'] = df2.index
          if source == 'stateio_Make_Summary':
              # Adjust the index by removing the state: STATE.SECTOR
@@ -49,9 +46,9 @@ def parse_statior(*, source, year, config, **_):
                  'ActivityProducedBy'].str.split(".", expand=True)[1]
          df2.reset_index(drop=True, inplace=True)
          df2['State'] = state
-         use_dict[state] = df2
+         data_dict[state] = df2
 
-    fba = pd.concat(use_dict, ignore_index=True)
+    fba = pd.concat(data_dict, ignore_index=True)
     fba.dropna(subset=['FlowAmount'], inplace=True)
 
     # Gross Output
@@ -73,7 +70,6 @@ def parse_statior(*, source, year, config, **_):
     fba["FlowType"] = "TECHNOSPHERE_FLOW"
     fba['DataReliability'] = 5  # tmp
     fba['DataCollection'] = 5  # tmp
-
     return fba
 
 

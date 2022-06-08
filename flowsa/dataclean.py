@@ -210,13 +210,15 @@ def standardize_units(df):
         np.where(df['Unit'] == 'million Cubic metres/year', 'kg', df['Unit'])
 
     # Convert mass units (LB or TON) to kg
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'TON',
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['TON', 'tons',
+                                                        'short tons']),
                                        df['FlowAmount'] * ton_to_kg,
                                        df['FlowAmount'])
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
                                        df['FlowAmount'] * lb_to_kg,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['TON', 'LB']),
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['TON', 'tons',
+                                                  'short tons', 'LB']),
                                  'kg', df['Unit'])
 
     return df

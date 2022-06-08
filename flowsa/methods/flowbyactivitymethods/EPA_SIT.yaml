@@ -1,10 +1,12 @@
 author: US Environmental Protection Agency
 source_name: State Inventory Tool
-source_url: ' '
+source_url: 'https://www.epa.gov/statelocalenergy/state-inventory-and-projection-tool'
 bib_id: EPA_SIT
 format: xlsm  # macro-enabled spreadsheet
 url: None
 parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
+state: 'ME'
+file: 'Synthesis Tool.xlsm'
 years:
 - 2017
 - 2016
