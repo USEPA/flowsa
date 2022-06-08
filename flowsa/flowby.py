@@ -4,7 +4,7 @@ import numpy as np
 from functools import partial, reduce
 from . import (common, settings, location, dataclean, metadata, sectormapping,
                literature_values, flowbyactivity, flowbysector, flowsa_yaml,
-               validation, geo, industries, fbs_allocation)
+               validation, geo, naics, fbs_allocation)
 from .flowsa_log import log, vlog
 import esupy.processed_data_mgmt
 import esupy.dqi
@@ -832,7 +832,7 @@ class FlowByActivity(_FlowBy):
                 fba_w_naics = (
                     fba_w_naics
                     .merge(
-                        industries.naics_key_from_industry_spec(industry_spec),
+                        naics.industry_spec_key(industry_spec),
                         how='left',
                         left_on=f'Activity{direction}',
                         right_on='source_naics')
@@ -853,12 +853,10 @@ class FlowByActivity(_FlowBy):
                 [['Activity', 'Sector', 'SectorType', 'SectorSourceName']]
             )
 
-            source_years = list(
-                (activity_to_source_naics_crosswalk.SectorSourceName
-                 .str.removeprefix('NAICS_')
-                 .str.removesuffix('_Code')
-                 .dropna()
-                 .astype('int').unique())
+            source_years = set(
+                activity_to_source_naics_crosswalk.SectorSourceName
+                .str.removeprefix('NAICS_').str.removesuffix('_Code')
+                .dropna().astype('int')
             )
             source_year = (2012 if 2012 in source_years
                            else max(source_years) if source_years
@@ -879,7 +877,7 @@ class FlowByActivity(_FlowBy):
                      'industry/sector aggregation structure.')
             activity_to_target_naics_crosswalk = (
                 activity_to_source_naics_crosswalk
-                .merge(industries.naics_key_from_industry_spec(industry_spec),
+                .merge(naics.industry_spec_key(industry_spec),
                        how='left', left_on='Sector', right_on='source_naics')
                 .assign(Sector=lambda x: x.target_naics)
                 .drop(columns=['source_naics', 'target_naics'])
@@ -907,25 +905,15 @@ class FlowByActivity(_FlowBy):
             log.info('Using NAICS time series/crosswalk to map NAICS codes '
                      'from NAICS year %s to NAICS year %s.',
                      source_year, target_year)
-            naics_year_to_year_crosswalk = (
-                pd.read_csv(
-                    f'{settings.datapath}NAICS_Crosswalk_TimeSeries.csv',
-                    dtype='object'
-                )
-                .assign(Sector=lambda x: x[f'NAICS_{source_year}_Code'],
-                        NewSector=lambda x: x[f'NAICS_{target_year}_Code'])
-                [['Sector', 'NewSector']]
-                .drop_duplicates()
-                .reset_index(drop=True)
-            )
             for direction in ['ProducedBy', 'ConsumedBy']:
                 fba_w_naics = (
                     fba_w_naics
-                    .merge(naics_year_to_year_crosswalk,
+                    .merge(naics.naics_year_key(source_year, target_year),
                            how='left',
-                           left_on=f'Sector{direction}', right_on='Sector')
-                    .assign(**{f'Sector{direction}': lambda x: x['NewSector']})
-                    .drop(columns=['Sector', 'NewSector'])
+                           left_on=f'Sector{direction}',
+                           right_on='source_naics')
+                    .assign(**{f'Sector{direction}': lambda x: x.target_naics})
+                    .drop(columns=['source_naics', 'target_naics'])
                 )
 
         return (
