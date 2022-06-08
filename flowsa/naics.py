@@ -107,7 +107,7 @@ def industry_spec_key(
     return naics_key
 
 
-def naics_year_key(
+def year_crosswalk(
     source_year: Literal[2002, 2007, 2012, 2017],
     target_year: Literal[2002, 2007, 2012, 2017]
 ) -> pd.DataFrame:

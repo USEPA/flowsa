@@ -908,7 +908,7 @@ class FlowByActivity(_FlowBy):
             for direction in ['ProducedBy', 'ConsumedBy']:
                 fba_w_naics = (
                     fba_w_naics
-                    .merge(naics.naics_year_key(source_year, target_year),
+                    .merge(naics.year_crosswalk(source_year, target_year),
                            how='left',
                            left_on=f'Sector{direction}',
                            right_on='source_naics')
