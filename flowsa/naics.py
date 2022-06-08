@@ -7,7 +7,7 @@ naics_crosswalk = pd.read_csv(
 )
 
 
-def naics_key_from_industry_spec(
+def industry_spec_key(
     industry_spec: dict,
     year: Literal[2002, 2007, 2012, 2017] = 2012
 ) -> pd.DataFrame:
@@ -105,3 +105,26 @@ def naics_key_from_industry_spec(
     )
 
     return naics_key
+
+
+def naics_year_key(
+    source_year: Literal[2002, 2007, 2012, 2017],
+    target_year: Literal[2002, 2007, 2012, 2017]
+) -> pd.DataFrame:
+    '''
+    Provides a key for switching between years of the NAICS specification.
+
+    :param source_year: int, one of 2002, 2007, 2012, or 2017.
+    :param target_year: int, one of 2002, 2007, 2012, or 2017.
+    :return: pd.DataFrame with columns 'source_naics' and 'target_naics',
+        corresponding to NAICS codes for the source and target specifications.
+    '''
+    return (
+        pd.read_csv(f'{settings.datapath}NAICS_Crosswalk_TimeSeries.csv',
+                    dtype='object')
+        .assign(source_naics=lambda x: x[f'NAICS_{source_year}_Code'],
+                target_naics=lambda x: x[f'NAICS_{target_year}_Code'])
+        [['source_naics', 'target_naics']]
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
