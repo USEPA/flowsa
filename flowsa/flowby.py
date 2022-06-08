@@ -294,7 +294,7 @@ class _FlowBy(pd.DataFrame):
     def standardize_units(self: FB) -> FB:
         """
         Standardizes units. Timeframe is annual.
-        :return: FlowBy dataframe, with standarized units
+        :return: FlowBy dataframe, with standardized units
         """
         return self._standardize_units(self)
 
@@ -328,6 +328,28 @@ class _FlowBy(pd.DataFrame):
         else:
             log.error('No FIPS level corresponds to the given geoscale: %s',
                       to_geoscale)
+
+    def select_flows(self: FB, source_flows: list or dict) -> FB:
+        '''
+        Filters the FlowBy dataset to the flows named in source_flows. If
+        source_flows is a dict, selects flows according to the keys and
+        renames them to the associated values.
+
+        :param flows: list or dict. Either a list of flows to select, or a dict
+            whose keys are the flows to select and whose values are the new
+            names to assign to those flows.
+        :return: FlowBy dataset, filtered to the given flows, and with those
+            flows possibly renamed.
+        '''
+        selected_fb = (
+            self
+            .query(f'{self.flow_col} in @source_flows')
+            .conditional_method(isinstance(source_flows, dict),
+                                'replace',
+                                {self.flow_col: source_flows})
+            .reset_index(drop=True)
+        )
+        return selected_fb
 
     def aggregate_flowby(
         self: FB,
@@ -594,8 +616,8 @@ class FlowByActivity(_FlowBy):
             .assign(ConversionFactor=lambda x: x.ConversionFactor.fillna(1))
         )
         if mapping.empty:
-            log.warning('Elementary flow list entries for %s not found',
-                        mapping_subset)
+            log.error('Elementary flow list entries for %s not found',
+                      mapping_subset)
             return FlowByActivity(self, mapped=True)
 
         mapped_fba = fba.merge(mapping,
@@ -604,24 +626,23 @@ class FlowByActivity(_FlowBy):
                                right_on=mapping_merge_keys,
                                indicator='mapped')
 
-        mapped_fba = (mapped_fba
-                      .assign(
-                          Flowable=mapped_fba.Flowable.mask(
-                              mapped_fba.TargetFlowName.notnull(),
-                              mapped_fba.TargetFlowName),
-                          Context=mapped_fba.Context.mask(
-                              mapped_fba.TargetFlowName.notnull(),
-                              mapped_fba.TargetFlowContext),
-                          Unit=mapped_fba.Unit.mask(
-                              mapped_fba.TargetFlowName.notnull(),
-                              mapped_fba.TargetUnit),
-                          FlowAmount=mapped_fba.FlowAmount.mask(
-                              mapped_fba.TargetFlowName.notnull(),
-                              mapped_fba.FlowAmount
-                              * mapped_fba.ConversionFactor),
-                          FlowUUID=mapped_fba.TargetFlowUUID
-                      )
-                      .drop(columns=mapping_fields))
+        is_mappable = mapped_fba.TargetFlowName.notnull()
+        mapped_fba = (
+            mapped_fba
+            .assign(
+                Flowable=mapped_fba.Flowable.mask(
+                    is_mappable, mapped_fba.TargetFlowName),
+                Context=mapped_fba.Context.mask(
+                    is_mappable, mapped_fba.TargetFlowContext),
+                Unit=mapped_fba.Unit.mask(
+                    is_mappable, mapped_fba.TargetUnit),
+                FlowAmount=mapped_fba.FlowAmount.mask(
+                    is_mappable,
+                    mapped_fba.FlowAmount * mapped_fba.ConversionFactor),
+                FlowUUID=mapped_fba.TargetFlowUUID
+            )
+            .drop(columns=mapping_fields)
+        )
 
         if any(mapped_fba.mapped == 'both'):
             log.info('Units standardized to %s by mapping to federal '
@@ -724,6 +745,7 @@ class FlowByActivity(_FlowBy):
             .assign(source_geoscale=(
                 fba_with_reporting_levels[reporting_level_columns]
                 .max(axis='columns')))
+            #   ^^^ max() with axis='columns' takes max along rows
             .query('geoscale == source_geoscale')
             .drop(columns=(['geoscale',
                             *geoscale_name_columns,
@@ -1110,21 +1132,16 @@ class FlowBySector(_FlowBy):
                         source_config=source_config
                     )
 
-                fbs = (source_data
-                       .conditional_pipe(
-                           'clean_fbs_df_fxn' in source_config,
-                           source_config.get('clean_fbs_df_fxn'))
-                       .update_fips_to_geoscale(
-                           method_config['target_geoscale']))
+                fbs = (
+                    source_data
+                    .conditional_pipe('clean_fbs_df_fxn' in source_config,
+                                      source_config.get('clean_fbs_df_fxn'))
+                    .conditional_method('source_flows' in source_config,
+                                        'select_flows',
+                                        source_config.get('source_flows'))
+                    .update_fips_to_geoscale(method_config['target_geoscale'])
+                )
 
-                if 'source_flows' in source_config:
-                    source_flows = source_config['source_flows']
-                    fbs = (fbs
-                           .query('Flowable in @source_flows')
-                           .conditional_method(isinstance(source_flows, dict),
-                                               'replace',
-                                               {'Flowable': source_flows})
-                           .reset_index(drop=True))
                 log.info('Appending %s to FBS list', source_name)
                 source_fbs_list.append(fbs)
 
@@ -1168,14 +1185,9 @@ class FlowBySector(_FlowBy):
                     activity_set_fba.activity_config = activity_config
 
                     if 'source_flows' in activity_config:
-                        source_flows = activity_config['source_flows']
                         activity_set_fba = (
                             activity_set_fba
-                            .query('Flowable in @source_flows')
-                            .conditional_method(isinstance(source_flows, dict),
-                                                'replace',
-                                                {'Flowable': source_flows})
-                            .reset_index(drop=True)
+                            .select_flows(activity_config['source_flows'])
                         )
 
                     if activity_set_fba.empty:
