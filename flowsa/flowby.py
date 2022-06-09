@@ -18,13 +18,11 @@ with open(settings.datapath + 'flowby_config.yaml') as f:
 
 
 class _FlowBy(pd.DataFrame):
-    _metadata = ['source_name', 'source_config',
-                 'activity_set', 'activity_config']
+    _metadata = ['source_name', 'config', 'activity_set']
 
     source_name: str
-    source_config: dict
+    config: dict
     activity_set: str
-    activity_config: dict
 
     def __init__(
         self,
@@ -114,7 +112,7 @@ class _FlowBy(pd.DataFrame):
         output_path: str,
         *,
         source_name: str = None,
-        source_config: dict = None,
+        config: dict = None,
     ) -> '_FlowBy':
         for attempt in ['import local', 'download', 'generate']:
             log.info(
@@ -152,7 +150,7 @@ class _FlowBy(pd.DataFrame):
                 '%s %s could not be found locally, downloaded, or generated',
                 file_metadata.name_data, file_metadata.category
             )
-        fb = cls(df, source_name=source_name, source_config=source_config)
+        fb = cls(df, source_name=source_name, config=config)
         return fb
 
     @staticmethod
@@ -535,7 +533,7 @@ class FlowByActivity(_FlowBy):
         :param download_ok: bool, if True will attempt to load from
             EPA remote server prior to generating
         :kwargs: keyword arguments to pass to _getFlowBy(). Possible kwargs
-            include source_config.
+            include config.
         :return: a FlowByActivity dataframe
         """
         file_metadata = metadata.set_fb_meta(
@@ -572,8 +570,7 @@ class FlowByActivity(_FlowBy):
             'Unit',
             'Context'
         ]
-        mapping_subset = self.source_config.get('fedefl_mapping',
-                                                self.source_name)
+        mapping_subset = self.config.get('fedefl_mapping', self.source_name)
         mapping_fields = [
             'SourceListName',
             'SourceFlowName',
@@ -592,7 +589,7 @@ class FlowByActivity(_FlowBy):
             'SourceFlowContext'
         ]
         merge_type = 'inner' if drop_unmapped_rows else 'left'
-        if 'fedefl_mapping' in self.source_config:
+        if 'fedefl_mapping' in self.config:
             fba_merge_keys.remove('SourceName')
             mapping_merge_keys.remove('SourceListName')
 
@@ -772,8 +769,8 @@ class FlowByActivity(_FlowBy):
         if target_geoscale != geo.scale.NATIONAL:
             validation.compare_geographic_totals(
                 fba_at_target_geoscale, self,
-                self.source_name, self.activity_config,
-                self.activity_set, self.activity_config['names']
+                self.source_name, self.config,
+                self.activity_set, self.config['names']
                 # ^^^ TODO: Rewrite validation to use fb metadata
             )
 
@@ -807,12 +804,12 @@ class FlowByActivity(_FlowBy):
         :param external_config_path: str, an external path to search for a
             crosswalk.
         '''
-        if self.source_config['sector-like_activities']:
+        if self.config['sector-like_activities']:
             log.info('Activities in %s are NAICS codes.',
                      self.source_name)
 
             try:
-                source_year = int(self.source_config
+                source_year = int(self.config
                                   .get('activity_schema', '')[6:10])
             except ValueError:
                 source_year = 2012
@@ -846,7 +843,7 @@ class FlowByActivity(_FlowBy):
             activity_to_source_naics_crosswalk = (
                 sectormapping.get_activitytosector_mapping(
                     # ^^^ TODO: Replace or streamline get_...() function
-                    (self.source_config.get('activity_to_sector_mapping')
+                    (self.config.get('activity_to_sector_mapping')
                      or self.source_name),
                     fbsconfigpath=external_config_path)
                 .astype('object')
@@ -1053,7 +1050,7 @@ class FlowBySector(_FlowBy):
             the FBS from EPA's remote server rather than generating it
             (if not found locally)
         :kwargs: keyword arguments to pass to _getFlowBy(). Possible kwargs
-            include source_name and source_config.
+            include source_name and config.
         :return: FlowBySector dataframe
         '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
@@ -1108,7 +1105,7 @@ class FlowBySector(_FlowBy):
                             source_config, method_config, external_config_path
                         ),
                         source_name=source_name,
-                        source_config=source_config
+                        config=source_config
                     )
                 else:  # TODO: Test this section.
                     source_data = FlowBySector.getFlowBySector(
@@ -1117,7 +1114,7 @@ class FlowBySector(_FlowBy):
                         download_sources_ok=download_sources_ok,
                         download_fbs_ok=download_sources_ok,
                         source_name=source_name,
-                        source_config=source_config
+                        config=source_config
                     )
 
                 fbs = (
@@ -1138,7 +1135,7 @@ class FlowBySector(_FlowBy):
                     source_name=source_name,
                     year=source_config['year'],
                     download_ok=download_sources_ok,
-                    source_config=source_config
+                    config=source_config
                 )
 
                 fba = (source_data
@@ -1170,7 +1167,8 @@ class FlowBySector(_FlowBy):
                     )
 
                     activity_set_fba.activity_set = activity_set
-                    activity_set_fba.activity_config = activity_config
+                    activity_set_fba.config = {**source_config,
+                                               **activity_config}
 
                     if 'source_flows' in activity_config:
                         activity_set_fba = (
