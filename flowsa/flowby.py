@@ -1209,7 +1209,7 @@ class FlowBySector(_FlowBy):
                             external_config_path=external_config_path
                         )
                         .conditional_pipe(
-                            'clean_fba_w_sec_df-fxn' in source_config,
+                            'clean_fba_w_sec_df_fxn' in source_config,
                             source_config.get('clean_fba_w_sec_df_fxn'),
                             attr=activity_config,
                             method=method_config
