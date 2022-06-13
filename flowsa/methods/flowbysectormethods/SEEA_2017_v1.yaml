@@ -23,8 +23,6 @@ _ghgi_parameters: &ghgi_parameters
 _allocation_types:
   _direct_allocation: &direct_allocation
     allocation_method: direct
-    allocation_source: None
-    allocation_from_scale: national
   _use_allocation: &use_allocation
     # names:
     # - "Liming"  # Need to specify an activity name
@@ -78,8 +76,9 @@ source_names:
   #   FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
   #   inventory_dict: {'NEI': '2017'}
   #   local_inventory_name: NEI_TRI_air_2017
-  #   source_flows:  # Remember GHGs should not be drawn from NEI
-  #     Particulate matter, ≤ 2.5μm: PM 2.5
+  #   selection_fields:  # Remember GHGs should not be drawn from NEI
+  #     Flowable:
+  #       Particulate matter, ≤ 2.5μm: PM 2.5
   #   compartments:
   #    - air
   #   reassign_process_to_sectors:
@@ -87,17 +86,27 @@ source_names:
 
 ## Agriculture
   EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
-      <<: *ghgi_parameters
-      activity_sets:
-        activity_set_1:
-          <<: *direct_allocation
-          names:
-            - Chickpeas
-            - Cotton
-            - Maize
-            - Rice
-            - Soybeans
-            - Wheat
+      <<: [*ghgi_parameters, *direct_allocation]
+      selection_fields:
+        Activity:
+          - Chickpeas
+          - Cotton
+          - Maize
+          - Rice
+          - Soybeans
+          - Wheat
+  # EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
+  #     <<: *ghgi_parameters
+  #     activity_sets:
+  #       activity_set_1:
+  #         <<: *direct_allocation
+  #         names:
+  #           - Chickpeas
+  #           - Cotton
+  #           - Maize
+  #           - Rice
+  #           - Soybeans
+  #           - Wheat
   # "EPA_GHGI_T_5_3":  &animals #CH4 from Enteric Fermentation
   #   <<: *ghgi_parameters
   #   activity_sets:

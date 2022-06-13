@@ -4,25 +4,26 @@ target_geoscale: national
 
 _allocation_types:
   _mecs_allocation: &mecs_allocation
-    # names: # override this
-    allocation_source: "EIA_MECS_Energy"
     allocation_method: proportional
-    allocation_source_class: "Energy"
-    allocation_source_year: 2014
-    # allocation_flow:  # override this
-    #   - "Coal"
-    allocation_compartment: None
-    allocation_from_scale: national
-    clean_allocation_fba: !script_function:EIA_MECS mecs_energy_fba_cleanup
-    clean_allocation_fba_w_sec: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
-    helper_source: "BLS_QCEW"
-    helper_method: proportional-flagged
-    helper_source_class: "Employment"
-    helper_source_year: 2014
-    helper_flow: None
-    helper_from_scale: national
-    clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
-    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+    allocation_source:
+      EIA_MECS_Energy:
+        class: Energy
+        year: 2014
+        geoscale: national
+        # flows:
+          # - Coal  # override this. However, can't override inside nested as easily with my set up. Ponder on this.
+        allocation_compartment: None
+        clean_fba_df_fxn: !script_function:EIA_MECS mecs_energy_fba_cleanup
+        clean_fba_w_sec_df_fxn: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
+        allocation_method: proportional-flagged
+        allocation_source:
+          BLS_QCEW:
+            class: Employment
+            year: 2014
+            geoscale: national
+            flows: None  # Verify what this does
+            clean_fba_df_fxn: !script_function:BLS_QCEW clean_bls_qcew_fba
+            clean_fba_wsec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _use_allocation: &use_allocation
     # names: # override this
@@ -49,37 +50,42 @@ _allocation_types:
 
 
 source_names:
-  "EPA_NEI_Nonpoint":
-    data_format: 'FBA'
+  EPA_NEI_Nonpoint:
+    # data_format: 'FBA'
     class: Chemicals
-    geoscale_to_use: state
+    geoscale: state
     year: 2017
     activity_to_sector_mapping: 'SCC'
     clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
-    fedefl_mapping: 'NEI'
+    # fedefl_mapping: 'NEI'
     activity_sets:
       direct_allocation:
         names: !from_index:NEI_Nonpoint_2017_asets.csv direct_allocation
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
+        # ^^^ "names" defines how the partitioning occurs
+        attribution_method: direct
+        # allocation_source: None
+        # allocation_from_scale: national  # Not sure how to integrate this.
       cropland:
         names: !from_index:NEI_Nonpoint_2017_asets.csv cropland
-        allocation_source: "USDA_CoA_Cropland"
-        allocation_method: proportional
-        allocation_source_class: "Land"
-        allocation_source_year: 2017
-        allocation_flow:
-          - "AREA HARVESTED"
-        allocation_compartment: None
-        allocation_from_scale: state
-        clean_allocation_fba: !script_function:USDA_CoA_Cropland coa_irrigated_cropland_fba_cleanup
-        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            class: Land
+            year: 2017
+            flows:
+              - AREA HARVESTED
+            allocation_compartment: None
+            geoscale: state
+            clean_fba_df_fxn: !script_function:USDA_CoA_Cropland coa_irrigated_cropland_fba_cleanup
+            clean_fba_w_sec_df_fxn: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
+            # OR
+            attribution_method: function
+            attribution function: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics # wrapped in an appropriate aggregation
       industry_combustion_coal: #only allocating to 3digits
         <<: *mecs_allocation
         names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coal
         allocation_flow:
-          - "Coal"
+          - Coal
       industry_combustion_coke: #only allocating to 3digits
         <<: *mecs_allocation
         names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coke

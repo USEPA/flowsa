@@ -122,11 +122,13 @@ EPA_GHGI:
   activity_schema:
   sector_aggregation_level: "aggregated"
 EPA_NEI_Nonpoint:
+  data_format: FBA
   class:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
-  sector_aggregation_level: "aggregated"
+  fedefl_mapping: NEI
+  # sector_aggregation_level: "aggregated"
 EPA_NEI_Nonroad:
   class:
   - Chemicals
