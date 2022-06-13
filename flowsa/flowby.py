@@ -362,7 +362,7 @@ class _FlowBy(pd.DataFrame):
         else:
             return self
 
-    def select_by_fields(self: FB) -> FB:
+    def select_by_fields(self: FB, selection_fields: dict = None) -> FB:
         '''
         Filter the calling FlowBy dataset according to the 'selection_fields'
         dictionary from the calling datasets config dictionary. If such a
@@ -389,31 +389,33 @@ class _FlowBy(pd.DataFrame):
         'Activity' or 'Sector', rows which contain the given values in either
         the relevant ...ProducedBy or ...ConsumedBy columns will be selected.
         '''
-        if 'selection_fields' not in self.config:
+        selection_fields = (selection_fields
+                            or self.config.get('selection_fields'))
+        if 'selection_fields' is None:
             return self
 
-        selection_fields = {
-            k: v for k, v in self.config['selection_fields'].items()
-            if k not in ['Activity', 'Sector']
-        }
         activity_sector_fields = {
-            k: v for k, v in self.config['selection_fields'].items()
+            k: v for k, v in selection_fields.items()
             if k in ['Activity', 'Sector']
+        }
+        other_fields = {
+            k: v for k, v in selection_fields.items()
+            if k not in ['Activity', 'Sector']
         }
 
         filtered_fb = self
-        for field, values in selection_fields.items():
-            filtered_fb = filtered_fb.query(f'{field} in @values')
         for field, values in activity_sector_fields.items():
             filtered_fb = filtered_fb.query(f'{field}ProducedBy in @values '
                                             f'| {field}ConsumedBy in @values')
+        for field, values in other_fields.items():
+            filtered_fb = filtered_fb.query(f'{field} in @values')
 
         replace_dict = {
-            **{k: v for k, v in selection_fields.items()
-               if isinstance(v, dict)},
             **{f'{k}ProducedBy': v for k, v in activity_sector_fields.items()
                if isinstance(v, dict)},
             **{f'{k}ConsumedBy': v for k, v in activity_sector_fields.items()
+               if isinstance(v, dict)},
+            **{k: v for k, v in other_fields.items()
                if isinstance(v, dict)}
         }
 
@@ -742,7 +744,7 @@ class FlowByActivity(_FlowBy):
         self: 'FlowByActivity',
         target_geoscale: Literal['national', 'state', 'county',
                                  geo.scale.NATIONAL, geo.scale.STATE,
-                                 geo.scale.COUNTY]
+                                 geo.scale.COUNTY] = None
     ) -> 'FlowByActivity':
         '''
         Converts, by filtering or aggregating (or both), the given dataset to
@@ -778,6 +780,7 @@ class FlowByActivity(_FlowBy):
         :return: FlowBy data set, with rows filtered or aggregated to the
             target geoscale.
         '''
+        target_geoscale = target_geoscale or self.config.get('target_geoscale')
         if type(target_geoscale) == str:
             target_geoscale = geo.scale.from_string(target_geoscale)
 
@@ -1119,18 +1122,14 @@ class FlowByActivity(_FlowBy):
 
         return (
             self
-            .conditional_pipe(
-                'clean_fba_before_mapping_df_fxn' in self.config,
-                self.config.get('clean_fba_before_mapping_df_fxn'))
-            .filter_by_fields()
+            .function_socket('clean_fba_before_mapping_df_fxn')
+            .select_by_fields()
             .standardize_units_and_flows()
-            .conditional_pipe('clean_fba_df_fxn' in self.config,
-                              self.config.get('clean_fba_df_fxn'))
+            .function_socket('clean_fba_df_fxn')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
         )
 
-    @property
     def activity_sets(self) -> List['FlowByActivity']:
         '''
         This function breaks up an FBA datset into its activity sets, if its
@@ -1304,7 +1303,7 @@ class FlowBySector(_FlowBy):
             )
             .select_by_fields()
             .map_to_fedefl_list()
-            # .convert_to_geoscale(method_config['target_geoscale'])
+            .convert_to_geoscale()
             for source_name, config in sources.items()
             if config['data_format'] == 'FBA'
         ]
