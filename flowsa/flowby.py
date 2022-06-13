@@ -18,11 +18,10 @@ with open(settings.datapath + 'flowby_config.yaml') as f:
 
 
 class _FlowBy(pd.DataFrame):
-    _metadata = ['source_name', 'config', 'activity_set']
+    _metadata = ['full_name', 'config']
 
-    source_name: str
+    full_name: str
     config: dict
-    activity_set: str
 
     def __init__(
         self,
@@ -90,9 +89,14 @@ class _FlowBy(pd.DataFrame):
 
         # merge operation: using metadata of the left object
         if method == "merge":
-            for name in self._metadata:
-                object.__setattr__(self, name, getattr(other.left, name, None))
+            for attribute in self._metadata:
+                object.__setattr__(self, attribute,
+                                   getattr(other.left, attribute, None))
         return self
+
+    @property
+    def source_name(self) -> str:
+        return self.full_name.split('.', maxsplit=1)[0]
 
     @property
     def flow_col(self) -> str:
@@ -111,7 +115,7 @@ class _FlowBy(pd.DataFrame):
         flowby_generator: partial,
         output_path: str,
         *,
-        source_name: str = None,
+        full_name: str = None,
         config: dict = None,
     ) -> '_FlowBy':
         for attempt in ['import local', 'download', 'generate']:
@@ -150,7 +154,7 @@ class _FlowBy(pd.DataFrame):
                 '%s %s could not be found locally, downloaded, or generated',
                 file_metadata.name_data, file_metadata.category
             )
-        fb = cls(df, source_name=source_name, config=config)
+        fb = cls(df, full_name=full_name, config=config)
         return fb
 
     @staticmethod
@@ -289,6 +293,12 @@ class _FlowBy(pd.DataFrame):
         else:
             return self
 
+    def function_socket(self: FB, function_name: str, *args, **kwargs) -> FB:
+        if function_name in self.config:
+            return self.config[function_name](self, *args, **kwargs)
+        else:
+            return self
+
     def standardize_units(self: FB) -> FB:
         """
         Standardizes units. Timeframe is annual.
@@ -335,19 +345,80 @@ class _FlowBy(pd.DataFrame):
 
         :param flows: list or dict. Either a list of flows to select, or a dict
             whose keys are the flows to select and whose values are the new
-            names to assign to those flows.
+            names to assign to those flows. Or None, in which case no
+            filtering is performed.
         :return: FlowBy dataset, filtered to the given flows, and with those
             flows possibly renamed.
         '''
-        selected_fb = (
-            self
-            .query(f'{self.flow_col} in @source_flows')
-            .conditional_method(isinstance(source_flows, dict),
-                                'replace',
-                                {self.flow_col: source_flows})
-            .reset_index(drop=True)
-        )
-        return selected_fb
+        if source_flows is not None:
+            return (
+                self
+                .query(f'{self.flow_col} in @source_flows')
+                .conditional_method(isinstance(source_flows, dict),
+                                    'replace',
+                                    {self.flow_col: source_flows})
+                .reset_index(drop=True)
+            )
+        else:
+            return self
+
+    def select_by_fields(self: FB) -> FB:
+        '''
+        Filter the calling FlowBy dataset according to the 'selection_fields'
+        dictionary from the calling datasets config dictionary. If such a
+        dictionary is not given, the calling dataset is returned unchanged.
+
+        The selection_fields dictionary should associate FBA or FBS
+        fields/column names with lists of the values to be selected from
+        each column. For example:
+
+        selection_fields:
+          FlowName:
+            - CO2
+            - CH4
+
+        Alternatively, instead of a list of values, a dictionary may be
+        given which associates the values to select with a replacement value:
+
+        selection_fields:
+          FlowName:
+            CO2: Carbon Dioxide
+            CH4: Methane
+
+        Finally, if the selection_fields dictionary contains the keys
+        'Activity' or 'Sector', rows which contain the given values in either
+        the relevant ...ProducedBy or ...ConsumedBy columns will be selected.
+        '''
+        if 'selection_fields' not in self.config:
+            return self
+
+        selection_fields = {
+            k: v for k, v in self.config['selection_fields'].items()
+            if k not in ['Activity', 'Sector']
+        }
+        activity_sector_fields = {
+            k: v for k, v in self.config['selection_fields'].items()
+            if k in ['Activity', 'Sector']
+        }
+
+        filtered_fb = self
+        for field, values in selection_fields.items():
+            filtered_fb = filtered_fb.query(f'{field} in @values')
+        for field, values in activity_sector_fields.items():
+            filtered_fb = filtered_fb.query(f'{field}ProducedBy in @values '
+                                            f'| {field}ConsumedBy in @values')
+
+        replace_dict = {
+            **{k: v for k, v in selection_fields.items()
+               if isinstance(v, dict)},
+            **{f'{k}ProducedBy': v for k, v in activity_sector_fields.items()
+               if isinstance(v, dict)},
+            **{f'{k}ConsumedBy': v for k, v in activity_sector_fields.items()
+               if isinstance(v, dict)}
+        }
+
+        replaced_fb = filtered_fb.replace(replace_dict)
+        return replaced_fb
 
     def aggregate_flowby(
         self: FB,
@@ -411,60 +482,70 @@ class _FlowBy(pd.DataFrame):
         #     otherwise, columns of NaN will become float dtype.
         return aggregated
 
-    def add_primary_secondary_sectors(self: FB) -> FB:
+    def add_primary_secondary_columns(
+        self: FB,
+        col_type: Literal['Activity', 'Sector']
+    ) -> FB:
         '''
-        This function adds to the calling dataframe 'PrimarySector' and
-        'SecondarySector' columns based on the 'SectorProducedBy' and
-        'SectorConsumedBy' columns, and logic based on the type of flow. The
-        original dataset is returned unchanged if it lacks 'SectorProducedBy'
-        or 'SectorConsumedBy' columns.
+        This function adds to the calling dataframe 'Primary...' and
+        'Secondary...' columns (where ... is specified by col_type, as either
+        'Activity' or 'Sector') based on the '...ProducedBy' and
+        '...ConsumedBy' columns, and logic based on the type of flow. The
+        original dataset is returned unchanged if it lacks '...ProducedBy'
+        or '...ConsumedBy' columns.
 
-        If the flow type is TECHNOSPHERE_FLOW, the primary sector is
-        SectorConsumedBy. Otherwise, it is SectorProducedBy unless only
-        SectorConsumedBy is given, or if both are given and SectorProducedBy
-        is one of 22, 221, 2213, 22131, or 221310 AND SectorConsumedBy is one
+        If the flow type is TECHNOSPHERE_FLOW, the primary sector or activity
+        is ...ConsumedBy. Otherwise, it is ...ProducedBy unless only
+        ...ConsumedBy is given, or if both are given and ...ProducedBy
+        is one of 22, 221, 2213, 22131, or 221310 AND ...ConsumedBy is one
         of F010, F0100, or F01000.
 
-        In all cases, the secondary sector is the "other" sector if both are
-        given. In many cases, only one of SectorProducedBy or SectorConsumedBy
-        is given, and therefore SecondarySector is null.
+        In all cases, the secondary sector or activity is the other one if both
+        are given. In many cases, only one of ...ProducedBy or ...ConsumedBy
+        is given, and therefore Secondary... is null.
 
-        :return: FlowBy dataset, with 'PrimarySector' and 'SecondarySector'
+        :param col_type: str, one of 'Activity' or 'Sector', specifies whether
+            primary and secondary activities or primary and secondary sectors
+            should be added.
+        :return: FlowBy dataset, with 'Primary...' and 'Secondary...'
             columns added, if possible; otherwise, the unmodified caling FlowBy
             dataset.
         '''
-        if 'SectorProducedBy' not in self or 'SectorConsumedBy' not in self:
-            log.error('Cannot add PrimarySector or SecondarySector columns, '
-                      'since SectorProducedBy and/or SectorConsumedBy columns '
-                      'are missing.')
+        if (f'{col_type}ProducedBy' not in self
+                or f'{col_type}ConsumedBy' not in self):
+            log.error(f'Cannot add Primary{col_type} or Secondary{col_type} '
+                      f'columns, since {col_type}ProducedBy and/or '
+                      f'{col_type}ConsumedBy columns are missing.')
             return self
         else:
-            log.info('Adding PrimarySector and SecondarySector columns from '
-                     'SectorProducedBy and SectorConsumedBy columns.')
+            log.info(f'Adding Primary{col_type} and Secondary{col_type} '
+                     f'columns from {col_type}ProducedBy and '
+                     f'{col_type}ConsumedBy columns.')
             fb = self.assign(
-                PrimarySector=self.SectorProducedBy.mask(
+                **{f'Primary{col_type}': self[f'{col_type}ProducedBy'].mask(
                     (self.FlowType == 'TECHNOSPHERE_FLOW')
-                    | (self.SectorProducedBy.isna())
-                    | (self.SectorProducedBy.isin(
+                    | (self[f'{col_type}ProducedBy'].isna())
+                    | (self[f'{col_type}ProducedBy'].isin(
                             ['22', '221', '2213', '22131', '221310']
                         )
-                        & self.SectorConsumedBy.isin(
+                        & self[f'{col_type}ConsumedBy'].isin(
                             ['F010', 'F0100', 'F01000']
                         )),
-                    self.SectorConsumedBy
-                )
+                    self[f'{col_type}ConsumedBy']
+                )}
             )
 
-            def _identify_secondary_sector(row: _FlowBySeries) -> str:
-                sectors = [row.SectorProducedBy, row.SectorConsumedBy]
-                sectors.remove(row.PrimarySector)
+            def _identify_secondary(row: _FlowBySeries) -> str:
+                sectors = [row[f'{col_type}ProducedBy'],
+                           row[f'{col_type}ConsumedBy']]
+                sectors.remove(row[f'Primary{col_type}'])
                 return sectors[0]
 
             fb = fb.assign(
-                SecondarySector=(
-                    fb.apply(_identify_secondary_sector, axis='columns')
+                **{f'Secondary{col_type}': (
+                    fb.apply(_identify_secondary, axis='columns')
                     # ^^^ Applying with axis='columns' applies TO each row.
-                    .astype('object'))
+                    .astype('object'))}
             )
 
             return fb
@@ -519,8 +600,9 @@ class FlowByActivity(_FlowBy):
     @classmethod
     def getFlowByActivity(
         cls,
-        source_name: str,
+        full_name: str,
         year: int = None,
+        config: dict = None,
         download_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
         **kwargs
     ) -> 'FlowByActivity':
@@ -536,13 +618,16 @@ class FlowByActivity(_FlowBy):
             include config.
         :return: a FlowByActivity dataframe
         """
+        if year is None and isinstance(config, dict):
+            year = config.get('year')
+
         file_metadata = metadata.set_fb_meta(
-            source_name if year is None else f'{source_name}_{year}',
+            full_name if year is None else f'{full_name}_{year}',
             'FlowByActivity'
         )
         flowby_generator = partial(
             flowbyactivity.main,
-            source=source_name,
+            source=full_name,
             year=year
         )
         return super()._getFlowBy(
@@ -550,8 +635,8 @@ class FlowByActivity(_FlowBy):
             download_ok=download_ok,
             flowby_generator=flowby_generator,
             output_path=settings.fbaoutputpath,
-            source_name=source_name,
-            **kwargs
+            full_name=full_name,
+            config=config
         )
 
     # TODO: probably only slight modification is needed to allow for material
@@ -776,10 +861,49 @@ class FlowByActivity(_FlowBy):
 
         return fba_at_target_geoscale
 
-    def map_to_sectors(
+    def attribute_flows_to_sectors(
         self: 'FlowByActivity',
         industry_spec: dict,
-        target_year: Literal[2002, 2007, 2012, 2017] = None,
+        target_year: Literal[2002, 2007, 2012, 2017] = 2012,
+        external_config_path: str = None
+    ) -> 'FlowByActivity':
+        '''
+        The calling FBA has its activities mapped to sectors, then its flows
+        attributed to those sectors, by the methods specified in the calling
+        FBA's configuration dictionary.
+        '''
+        mapped_fba = (
+            self
+            .map_to_sectors(industry_spec, target_year, external_config_path)
+            .conditional_pipe('clean_fba_w_sec_df_fxn' in self.config,
+                              self.config.get('clean_fba_w_sec_df_fxn'),
+                              attr=self.config,
+                              method=self.config)
+            .rename(columns={'SourceName': 'MetaSources'})
+            .drop(columns=['FlowName', 'Compartment'])
+        )
+
+        allocation_method = mapped_fba.config.get('allocation_method')
+        if allocation_method == 'proportional':
+            attributed_fba = mapped_fba.proportionally_attribute(
+                FlowByActivity.getFlowByActivity(
+                    mapped_fba.config['allocation_source'])
+                .convert_to_fbs()
+            )
+        elif allocation_method == 'proportional-flagged':
+            attributed_fba = mapped_fba.flagged_proportionally_attribute()
+        else:
+            attributed_fba = mapped_fba.equally_attribute()
+
+        aggregated_fba = attributed_fba.aggregate_flowby()
+
+        # TODO: Insert validation here.
+
+        return aggregated_fba
+
+    def map_to_sectors(
+        self: 'FlowByActivity',
+        target_year: Literal[2002, 2007, 2012, 2017] = 2012,
         external_config_path: str = None
     ) -> 'FlowByActivity':
         '''
@@ -829,7 +953,7 @@ class FlowByActivity(_FlowBy):
                 fba_w_naics = (
                     fba_w_naics
                     .merge(
-                        naics.industry_spec_key(industry_spec),
+                        naics.industry_spec_key(self.config['industry_spec']),
                         how='left',
                         left_on=f'Activity{direction}',
                         right_on='source_naics')
@@ -874,7 +998,7 @@ class FlowByActivity(_FlowBy):
                      'industry/sector aggregation structure.')
             activity_to_target_naics_crosswalk = (
                 activity_to_source_naics_crosswalk
-                .merge(naics.industry_spec_key(industry_spec),
+                .merge(naics.industry_spec_key(self.config['industry_spec']),
                        how='left', left_on='Sector', right_on='source_naics')
                 .assign(Sector=lambda x: x.target_naics)
                 .drop(columns=['source_naics', 'target_naics'])
@@ -982,6 +1106,81 @@ class FlowByActivity(_FlowBy):
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
+    def proportionally_attribute(self: 'FlowByActivity'):
+        raise NotImplementedError
+
+    def flagged_proportionally_attribute(self: 'FlowByActivity'):
+        raise NotImplementedError
+
+    def convert_to_fbs(self: 'FlowByActivity') -> 'FlowBySector':
+        if 'activity_sets' in self.config:
+            return pd.concat([fba.convert_to_fbs()
+                              for fba in self.activity_sets])
+
+        return (
+            self
+            .conditional_pipe(
+                'clean_fba_before_mapping_df_fxn' in self.config,
+                self.config.get('clean_fba_before_mapping_df_fxn'))
+            .filter_by_fields()
+            .standardize_units_and_flows()
+            .conditional_pipe('clean_fba_df_fxn' in self.config,
+                              self.config.get('clean_fba_df_fxn'))
+            .convert_to_geoscale()
+            .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
+        )
+
+    @property
+    def activity_sets(self) -> List['FlowByActivity']:
+        '''
+        This function breaks up an FBA datset into its activity sets, if its
+        config dictionary specifies activity sets, and returns a list of the
+        resulting FBAs. Otherwise, it returns a list containing the calling
+        FBA.
+
+        First, the primary activity is determined (for the underlying logic,
+        see documentation for add_primary_secondary_columns()), then the
+        partitioning is done based on the primary activity. This ensures that
+        the order activity sets are listed in cannot change the partitioning.
+        An error is logged if any names are in multiple activity sets.
+        '''
+        if 'activity_sets' in self.config:
+            activities = self.config['activity_sets']
+            parent_config = {k: v for k, v in self.config.items()
+                             if k != 'activity_sets' and not k.startswith('_')}
+            parent_fba = self.add_primary_secondary_columns('Activity')
+
+            child_fba_list = []
+            assigned_names = set()
+            for activity_set, activity_config in activities.items():
+                activity_names = set(activity_config['names'])
+
+                if activity_names & assigned_names:
+                    log.error('Some names in multiple activity sets. This '
+                              'will lead to double-counting: %s',
+                              activity_names & assigned_names)
+
+                child_fba = (
+                    parent_fba
+                    .query('PrimaryActivity in @activity_names')
+                    .drop(columns=['PrimaryActivity', 'SecondaryActivity'])
+                    .reset_index(drop=True)
+                )
+                child_fba.name += f'.{activity_set}'
+                child_fba.config = {**parent_config, **activity_config}
+
+                child_fba_list.append(child_fba)
+                assigned_names.update(activity_names)
+
+            return child_fba_list
+        else:
+            return [self]
+
+    def standardize_units_and_flows(
+        self: 'FlowByActivity'
+    ) -> 'FlowByActivity':
+        raise NotImplementedError
+
 
 class FlowBySector(_FlowBy):
     _metadata = [*_FlowBy()._metadata]
@@ -1085,171 +1284,68 @@ class FlowBySector(_FlowBy):
             generating them.
         '''
         log.info('Beginning FlowBySector generation for %s', method)
+        source_catalog = common.load_yaml_dict('source_catalog')
         method_config = common.load_yaml_dict(method, 'FBS',
                                               external_config_path)
-        sources = method_config['source_names']
-        source_catalog = common.load_yaml_dict('source_catalog')
+        sources = method_config.pop('source_names')
 
-        source_fbs_list = []
-        for source_name, source_config in sources.items():
-            source_config = {
-                **source_catalog.get(
-                     common.return_true_source_catalog_name(source_name), {}),
-                **source_config
-            }
+        source_fba_list = [
+            FlowByActivity.getFlowByActivity(
+                full_name=source_name,
+                config={
+                    **method_config,
+                    'fbs_method_config_keys': method_config.keys(),
+                    **source_catalog.get(
+                        common.return_true_source_catalog_name(source_name),
+                        {}),
+                    **config
+                },
+                download_ok=download_sources_ok
+            )
+            .select_by_fields()
+            .map_to_fedefl_list()
+            # .convert_to_geoscale(method_config['target_geoscale'])
+            for source_name, config in sources.items()
+            if config['data_format'] == 'FBA'
+        ]
+        source_fbs_list = [
+            FlowBySector.getFlowBySector(
+                method=source_name,
+                name=source_name,
+                config={
+                    **method_config,
+                    'fbs_method_config_keys': method_config.keys(),
+                    **source_catalog.get(
+                        common.return_true_source_catalog_name(source_name),
+                        {}),
+                    **config
+                },
+                external_config_path=external_config_path,
+                download_sources_ok=download_sources_ok,
+                download_fbs_ok=download_sources_ok,
+            )
+            .function_socket('clean_fbs_df_fxn')
+            .select_flows(config.get('source_flows'))
+            .update_fips_to_geoscale(method_config['target_geoscale'])
+            for source_name, config in sources.items()
+            if config['data_format'] == 'FBS'
+        ]
+        source_external_fbs_list = [
+            FlowBySector(
+                config['FBS_datapull_fxn'](
+                    config, method_config, external_config_path
+                ),
+                full_name=source_name,
+                config=config
+            )
+            .function_socket('clean_fbs_df_fxn')
+            .select_by_fields()
+            .update_fips_to_geoscale(method_config['target_geoscale'])
+            for source_name, config in sources.items()
+            if config['data_format'] == 'FBS_outside_flowsa'
+        ]
 
-            if source_config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
-                if source_config['data_format'] == 'FBS_outside_flowsa':
-                    source_data = FlowBySector(
-                        source_config['FBS_datapull_fxn'](
-                            source_config, method_config, external_config_path
-                        ),
-                        source_name=source_name,
-                        config=source_config
-                    )
-                else:  # TODO: Test this section.
-                    source_data = FlowBySector.getFlowBySector(
-                        method=source_name,
-                        external_config_path=external_config_path,
-                        download_sources_ok=download_sources_ok,
-                        download_fbs_ok=download_sources_ok,
-                        source_name=source_name,
-                        config=source_config
-                    )
-
-                fbs = (
-                    source_data
-                    .conditional_pipe('clean_fbs_df_fxn' in source_config,
-                                      source_config.get('clean_fbs_df_fxn'))
-                    .conditional_method('source_flows' in source_config,
-                                        'select_flows',
-                                        source_config.get('source_flows'))
-                    .update_fips_to_geoscale(method_config['target_geoscale'])
-                )
-
-                log.info('Appending %s to FBS list', source_name)
-                source_fbs_list.append(fbs)
-
-            if source_config['data_format'] == 'FBA':
-                source_data = FlowByActivity.getFlowByActivity(
-                    source_name=source_name,
-                    year=source_config['year'],
-                    download_ok=download_sources_ok,
-                    config=source_config
-                )
-
-                fba = (source_data
-                       .query(f'Class == \'{source_config["class"]}\'')
-                       # TODO: source_config keys not currently handled:
-                       # TODO: 'source_fba_load_scale', 'apply_urban_rural',
-                       .conditional_pipe(
-                           'clean_fba_before_mapping_df_fxn' in source_config,
-                           source_config.get('clean_fba_before_mapping_df_fxn')
-                           )
-                       .map_to_fedefl_list()
-                       .conditional_pipe(
-                           'clean_fba_df_fxn' in source_config,
-                           source_config.get('clean_fba_df_fxn')))
-
-                activities = source_config['activity_sets']
-
-                for activity_set, activity_config in activities.items():
-                    log.info('Preparing to process %s in %s',
-                             activity_set, source_name)
-
-                    activity_names = activity_config['names']
-
-                    activity_set_fba = (
-                        fba
-                        .query('ActivityProducedBy in @activity_names'
-                               '| ActivityConsumedBy in @activity_names')
-                        .reset_index(drop=True)
-                    )
-
-                    activity_set_fba.activity_set = activity_set
-                    activity_set_fba.config = {**source_config,
-                                               **activity_config}
-
-                    if 'source_flows' in activity_config:
-                        activity_set_fba = (
-                            activity_set_fba
-                            .select_flows(activity_config['source_flows'])
-                        )
-
-                    if activity_set_fba.empty:
-                        log.error('No data for flows in %s', activity_set)
-                        continue
-                    if (activity_set_fba.FlowAmount == 0).all():
-                        log.warning('All flows for %s are 0', activity_set)
-                        continue
-
-                    # TODO: source_catalog key not currently handled:
-                    # TODO: 'sector-like_activities'
-
-                    assert isinstance(activity_set_fba, FlowByActivity)
-
-                    target_geoscale = max(
-                        source_config['geoscale_to_use'],
-                        activity_config['allocation_from_scale'],
-                        key=geo.scale.from_string
-                    )
-                    activity_set_fba = (activity_set_fba
-                                        .convert_to_geoscale(target_geoscale))
-
-                    assert isinstance(activity_set_fba, FlowByActivity)
-
-                    activity_set_fba = (
-                        activity_set_fba
-                        .map_to_sectors(
-                            industry_spec=method_config[
-                                'target_industry_spec'],
-                            target_year=method_config['target_naics_year'],
-                            external_config_path=external_config_path
-                        )
-                        .conditional_pipe(
-                            'clean_fba_w_sec_df_fxn' in source_config,
-                            source_config.get('clean_fba_w_sec_df_fxn'),
-                            attr=activity_config,
-                            method=method_config
-                        )
-                        .rename(columns={'SourceName': 'MetaSources'})
-                        .drop(columns=['FlowName', 'Compartment'])
-                    )
-
-                    assert isinstance(activity_set_fba, FlowByActivity)
-
-                    if activity_config['allocation_method'] == 'direct':
-                        log.info('Attributing flows in %s to sectors using '
-                                 'direct attribution method', activity_set)
-                        fbs = activity_set_fba.equally_attribute()
-                    elif (activity_config['allocation_method']
-                          == 'allocation_function'):
-                        log.info(
-                            'Attributing flows in %s to sectors using '
-                            'function: %s.%s',
-                            activity_set,
-                            activity_config['allocation_source'].__module__,
-                            activity_config['allocation_source'].__name__
-                        )
-                        fbs = activity_config['allocation_source'](
-                            activity_set_fba,
-                            activity_config,
-                            source_fbs_list
-                        )
-                    elif (activity_config['allocation_method']
-                          == 'proportional'):
-                        pass
-
-                    fba = fba.query(
-                        'ActivityProducedBy not in @activity_names'
-                        '& ActivityConsumedBy not in @activity_names'
-                    )
-
-                    log.info('Appending %s from %s to FBS list',
-                             activity_set, source_name)
-                    source_fbs_list.append(fbs)
-
-        return source_fbs_list
+        return source_fba_list[0]
 
 
 # The three classes extending pd.Series, together with the _constructor...
