@@ -391,7 +391,7 @@ class _FlowBy(pd.DataFrame):
         '''
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
-        if 'selection_fields' is None:
+        if selection_fields is None:
             return self
 
         activity_sector_fields = {
@@ -645,19 +645,16 @@ class FlowByActivity(_FlowBy):
     # flow list mapping using this function as well.
     def map_to_fedefl_list(
         self: 'FlowByActivity',
+        mapping_subset: str = None,
         drop_fba_columns: bool = False,
         drop_unmapped_rows: bool = False
     ) -> 'FlowByActivity':
-        log.info('Mapping flows in %s to federal elementary flow list',
-                 self.source_name)
-
         fba_merge_keys = [
             'SourceName',
             'Flowable',
             'Unit',
             'Context'
         ]
-        mapping_subset = self.config.get('fedefl_mapping', self.source_name)
         mapping_fields = [
             'SourceListName',
             'SourceFlowName',
@@ -676,9 +673,16 @@ class FlowByActivity(_FlowBy):
             'SourceFlowContext'
         ]
         merge_type = 'inner' if drop_unmapped_rows else 'left'
-        if 'fedefl_mapping' in self.config:
+
+        if mapping_subset is not None or 'fedefl_mapping' in self.config:
             fba_merge_keys.remove('SourceName')
             mapping_merge_keys.remove('SourceListName')
+        mapping_subset = (mapping_subset
+                          or self.config.get('fedefl_mapping')
+                          or self.source_names)
+
+        log.info('Mapping flows in %s to federal elementary flow list',
+                 self.source_name)
 
         if any(self.Unit.str.contains('/d')):
             log.info('Converting daily flows %s to annual',
