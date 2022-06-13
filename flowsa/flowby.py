@@ -156,10 +156,10 @@ class _FlowBy(pd.DataFrame):
         fb = cls(df, full_name=full_name, config=config)
         return fb
 
-    def standardize_units(fb: pd.DataFrame) -> pd.DataFrame:
+    def standardize_units(self: FB) -> FB:
         exchange_rate = float(
             literature_values
-            .get_Canadian_to_USD_exchange_rate(str(fb.Year.unique()[0]))
+            .get_Canadian_to_USD_exchange_rate(str(self.Year.unique()[0]))
         )
         conversion_table = pd.concat([
             pd.read_csv(f'{settings.datapath}unit_conversion.csv'),
@@ -168,9 +168,16 @@ class _FlowBy(pd.DataFrame):
                        'conversion_factor': 1 / exchange_rate}).to_frame().T
         ])
 
+        if any(self.Unit.str.contains('/d')):
+            log.info('Converting daily flows %s to annual',
+                     [unit for unit in self.Unit.unique() if '/d' in unit])
+
         standardized = (
-            fb
-            .assign(Unit=fb.Unit.str.strip())
+            self
+            .assign(Unit=self.Unit.str.strip())
+            .assign(FlowAmount=self.FlowAmount.mask(
+                        self.Unit.str.contains('/d'), self.FlowAmount * 365),
+                    Unit=self.Unit.str.replace('/d', ''))
             .merge(conversion_table, how='left',
                    left_on='Unit', right_on='old_unit')
             .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
@@ -194,6 +201,25 @@ class _FlowBy(pd.DataFrame):
     def function_socket(self: FB, function_name: str, *args, **kwargs) -> FB:
         if function_name in self.config:
             return self.config[function_name](self, *args, **kwargs)
+        else:
+            return self
+
+    def conditional_method(
+        self: FB,
+        condition: bool,
+        method: str,
+        *args, **kwargs
+    ) -> FB:
+        '''
+        Conditionally calls the specified method of the calling FlowBy.
+        Additional args and kwargs are passed to the method
+        :param condition: bool, condition under which the given method should
+            be called
+        :param function: str, name of FlowBy or DataFrame method
+        :return: self.method(*args, **kwargs) if condition is True, else self
+        '''
+        if condition:
+            return getattr(self, method)(*args, **kwargs)
         else:
             return self
 
@@ -511,7 +537,6 @@ class FlowByActivity(_FlowBy):
     # flow list mapping using this function as well.
     def map_to_fedefl_list(
         self: 'FlowByActivity',
-        mapping_subset: str = None,
         drop_fba_columns: bool = False,
         drop_unmapped_rows: bool = False
     ) -> 'FlowByActivity':
@@ -540,12 +565,12 @@ class FlowByActivity(_FlowBy):
         ]
         merge_type = 'inner' if drop_unmapped_rows else 'left'
 
-        if mapping_subset is not None or 'fedefl_mapping' in self.config:
+        if self.config.get('fedefl_mapping') is True:
+            mapping_subset = self.source_name
+        else:
+            mapping_subset = self.config.get('fedefl_mapping')
             fba_merge_keys.remove('SourceName')
             mapping_merge_keys.remove('SourceListName')
-        mapping_subset = (mapping_subset
-                          or self.config.get('fedefl_mapping')
-                          or self.source_names)
 
         log.info('Mapping flows in %s to federal elementary flow list',
                  self.source_name)
@@ -1070,7 +1095,11 @@ class FlowByActivity(_FlowBy):
     def standardize_units_and_flows(
         self: 'FlowByActivity'
     ) -> 'FlowByActivity':
-        raise NotImplementedError
+        standardized = self.standardize_units()
+        if self.config.get('fedefl_mapping'):
+            return standardized.map_to_fedefl_list()
+        else:
+            return standardized
 
 
 class FlowBySector(_FlowBy):
