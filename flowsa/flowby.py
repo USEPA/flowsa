@@ -1100,10 +1100,10 @@ class FlowByActivity(_FlowBy):
         subdivided based on the secondary sector.
         '''
         fba = self.add_primary_secondary_columns('Sector')
-        groupby_cols = [c for c in fba.columns if fba[c].dtype == 'object'
-                        and c not in ['SectorProducedBy', 'SectorConsumedBy',
-                                      'PrimarySector', 'SecondarySector',
-                                      'Description']]
+        groupby_cols = [c for c in fba.groupby_cols
+                        if c not in ['SectorProducedBy', 'SectorConsumedBy',
+                                     'PrimarySector', 'SecondarySector',
+                                     'Description']]
 
         for rank in ['Primary', 'Secondary']:
             fba = (
@@ -1144,7 +1144,7 @@ class FlowByActivity(_FlowBy):
     def convert_to_fbs(self: 'FlowByActivity') -> 'FlowBySector':
         if 'activity_sets' in self.config:
             return pd.concat([fba.convert_to_fbs()
-                              for fba in self.activity_sets])
+                              for fba in self.activity_sets()])
 
         return (
             self
@@ -1327,10 +1327,7 @@ class FlowBySector(_FlowBy):
                 },
                 download_ok=download_sources_ok
             )
-            .select_by_fields()
-            .map_to_fedefl_list()
-            .convert_to_geoscale()
-            .attribute_flows_to_sectors()
+            .convert_to_fbs()
             for source_name, config in sources.items()
             if config['data_format'] == 'FBA'
         ]
