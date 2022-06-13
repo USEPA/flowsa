@@ -280,13 +280,23 @@ class _FlowBy(pd.DataFrame):
         Finally, if the selection_fields dictionary contains the keys
         'Activity' or 'Sector', rows which contain the given values in either
         the relevant ...ProducedBy or ...ConsumedBy columns will be selected.
+        Alternatively, if the selection_fields dictionary contains the keys
+        'PrimaryActivity' or 'PrimarySector', the relevant column(s) will be
+        added using _FlowBy.add_primary_secondary_columns(), and the selection
+        made based on 'PrimaryActivity' or 'PrimarySector', as specified.
+        Selecting on secondary activities or sectors is not supported.
         '''
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
         if selection_fields is None:
             return self
 
-        activity_sector_fields = {
+        if 'PrimaryActivity' in selection_fields:
+            self = self.add_primary_secondary_columns('Activity')
+        if 'PrimarySector' in selection_fields:
+            self = self.add_primary_secondary_columns('Sector')
+
+        special_fields = {
             k: v for k, v in selection_fields.items()
             if k in ['Activity', 'Sector']
         }
@@ -296,16 +306,23 @@ class _FlowBy(pd.DataFrame):
         }
 
         filtered_fb = self
-        for field, values in activity_sector_fields.items():
+        for field, values in special_fields.items():
             filtered_fb = filtered_fb.query(f'{field}ProducedBy in @values '
                                             f'| {field}ConsumedBy in @values')
         for field, values in other_fields.items():
             filtered_fb = filtered_fb.query(f'{field} in @values')
 
+        for k in ['Activity', 'Sector']:
+            if isinstance(other_fields.get(f'Primary{k}'), dict):
+                if isinstance(special_fields.get(k), dict):
+                    special_fields[k].update(other_fields.pop(f'Primary{k}'))
+                else:
+                    special_fields[k] = other_fields.pop(f'Primary{k}')
+
         replace_dict = {
-            **{f'{k}ProducedBy': v for k, v in activity_sector_fields.items()
+            **{f'{k}ProducedBy': v for k, v in special_fields.items()
                if isinstance(v, dict)},
-            **{f'{k}ConsumedBy': v for k, v in activity_sector_fields.items()
+            **{f'{k}ConsumedBy': v for k, v in special_fields.items()
                if isinstance(v, dict)},
             **{k: v for k, v in other_fields.items()
                if isinstance(v, dict)}
