@@ -292,9 +292,13 @@ class _FlowBy(pd.DataFrame):
             return self
 
         if 'PrimaryActivity' in selection_fields:
-            self = self.add_primary_secondary_columns('Activity')
+            self = (self
+                    .add_primary_secondary_columns('Activity')
+                    .drop(columns='SecondaryActivity'))
         if 'PrimarySector' in selection_fields:
-            self = self.add_primary_secondary_columns('Sector')
+            self = (self
+                    .add_primary_secondary_columns('Sector')
+                    .drop(columns='SecondarySector'))
 
         special_fields = {
             k: v for k, v in selection_fields.items()
@@ -329,7 +333,8 @@ class _FlowBy(pd.DataFrame):
         }
 
         replaced_fb = filtered_fb.replace(replace_dict)
-        return replaced_fb
+        return replaced_fb.drop(columns=['PrimaryActivity', 'PrimarySector'],
+                                errors='ignore')
 
     def aggregate_flowby(
         self: FB,
@@ -1081,29 +1086,26 @@ class FlowByActivity(_FlowBy):
             activities = self.config['activity_sets']
             parent_config = {k: v for k, v in self.config.items()
                              if k != 'activity_sets' and not k.startswith('_')}
-            parent_fba = self.add_primary_secondary_columns('Activity')
+            parent_fba: 'FlowByActivity' = self.reset_index()
 
             child_fba_list = []
-            assigned_names = set()
+            assigned_rows = set()
             for activity_set, activity_config in activities.items():
-                activity_names = set(activity_config['names'])
-
-                if activity_names & assigned_names:
-                    log.error('Some names in multiple activity sets. This '
-                              'will lead to double-counting: %s',
-                              activity_names & assigned_names)
-
-                child_fba = (
-                    parent_fba
-                    .query('PrimaryActivity in @activity_names')
-                    .drop(columns=['PrimaryActivity', 'SecondaryActivity'])
-                    .reset_index(drop=True)
+                child_fba = parent_fba.select_by_fields(
+                    selection_fields=activity_config['selection_fields']
                 )
-                child_fba.name += f'.{activity_set}'
+                child_fba.full_name += f'.{activity_set}'
                 child_fba.config = {**parent_config, **activity_config}
 
+                if set(child_fba.index) & assigned_rows:
+                    log.error(
+                        'Some rows in multiple activity sets. This will lead '
+                        'to double-counting:\n%s',
+                        child_fba.iloc[list(set(child_fba.index)
+                                            & assigned_rows)])
+
                 child_fba_list.append(child_fba)
-                assigned_names.update(activity_names)
+                assigned_rows.update(child_fba.index)
 
             return child_fba_list
         else:
