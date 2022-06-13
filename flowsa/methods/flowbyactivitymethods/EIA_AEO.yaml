@@ -8,5 +8,6 @@ url:
   base_url: https://api.eia.gov/series/?series_id=__SERIES_ID__&api_key=__API_KEY__&out=json
 url_replace_fxn: !script_function:EIA_AEO eia_aeo_url_helper
 call_response_fxn: !script_function:EIA_AEO eia_aeo_call
+parse_response_fxn: !script_function:EIA_AEO eia_aeo_parse
 years:
 - 2022
