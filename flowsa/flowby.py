@@ -62,7 +62,6 @@ class _FlowBy(pd.DataFrame):
                     .fillna(fill_na_dict)
                     .replace(null_string_dict)
                     .astype(fields))
-            data = self._standardize_units(data)
         if isinstance(data, pd.DataFrame) and column_order is not None:
             data = data[[c for c in column_order if c in data.columns]
                         + [c for c in data.columns if c not in column_order]]
@@ -157,154 +156,46 @@ class _FlowBy(pd.DataFrame):
         fb = cls(df, full_name=full_name, config=config)
         return fb
 
-    @staticmethod
-    def _standardize_units(fb: pd.DataFrame) -> pd.DataFrame:
-        days_in_year = 365
-        ft2_to_m2 = 0.092903
-        # rounded to match USGS_NWIS_WU mapping file on FEDEFL
-        gallon_water_to_kg = 3.79
-        ac_ft_water_to_kg = 1233481.84
-        acre_to_m2 = 4046.8564224
-        mj_in_btu = .0010550559
-        m3_to_gal = 264.172
-        ton_to_kg = 907.185
-        lb_to_kg = 0.45359
+    def standardize_units(fb: pd.DataFrame) -> pd.DataFrame:
         exchange_rate = float(
             literature_values
             .get_Canadian_to_USD_exchange_rate(str(fb.Year.unique()[0]))
         )
-
-        fb = fb.assign(Unit=fb.Unit.str.strip())
+        conversion_table = pd.concat([
+            pd.read_csv(f'{settings.datapath}unit_conversion.csv'),
+            pd.Series({'old_unit': 'Canadian Dollar',
+                       'new_unit': 'USD',
+                       'conversion_factor': 1 / exchange_rate}).to_frame().T
+        ])
 
         standardized = (
             fb
-            .assign(
-                FlowAmount=(
-                    fb.FlowAmount
-                    .mask(fb.Unit.isin(['ACRES', 'Acres']),
-                          fb.FlowAmount * acre_to_m2)
-                    .mask(fb.Unit.isin(['million sq ft',
-                                        'million square feet']),
-                          fb.FlowAmount * 10**6 * ft2_to_m2)
-                    .mask(fb.Unit.isin(['square feet']),
-                          fb.FlowAmount * ft2_to_m2)
-                    .mask(fb.Unit.isin(['Canadian Dollar']),
-                          fb.FlowAmount / exchange_rate)
-                    .mask(fb.Unit.isin(['gallons/animal/day']),
-                          fb.FlowAmount * gallon_water_to_kg * days_in_year)
-                    .mask(fb.Unit.isin(['ACRE FEET / ACRE']),
-                          fb.FlowAmount / acre_to_m2 * ac_ft_water_to_kg)
-                    .mask(fb.Unit.isin(['Mgal']),
-                          fb.FlowAmount * 10**6 * gallon_water_to_kg)
-                    .mask(fb.Unit.isin(['gal', 'gal/USD']),
-                          fb.FlowAmount * gallon_water_to_kg)
-                    .mask(fb.Unit.isin(['Bgal/d']),
-                          fb.FlowAmount
-                          * 10**9 * gallon_water_to_kg * days_in_year)
-                    .mask(fb.Unit.isin(['Mgal/d']),
-                          fb.FlowAmount
-                          * 10**6 * gallon_water_to_kg * days_in_year)
-                    .mask(fb.Unit.isin(['Quadrillion Btu']),
-                          fb.FlowAmount * 10**15 * mj_in_btu)
-                    .mask(fb.Unit.isin(['Trillion Btu', 'TBtu']),
-                          fb.FlowAmount * 10**12 * mj_in_btu)
-                    .mask(fb.Unit.isin(['million Cubic metres/year']),
-                          fb.FlowAmount
-                          * 10**6 * m3_to_gal * gallon_water_to_kg)
-                    .mask(fb.Unit.isin(['TON']),
-                          fb.FlowAmount * ton_to_kg)
-                    .mask(fb.Unit.isin(['LB']),
-                          fb.FlowAmount * lb_to_kg)
-                ),
-                Unit=(
-                    fb.Unit
-                    .mask(fb.Unit.isin(['ACRES', 'Acres', 'million sq ft',
-                                        'million square feet',
-                                        'square feet']),
-                          'm2')
-                    .mask(fb.Unit.isin(['Canadian Dollar']),
-                          'USD')
-                    .mask(fb.Unit.isin(['gallons/animal/day', 'Mgal', 'gal',
-                                        'Bgal/d', 'Mgal/d',
-                                        'million Cubic metres/year',
-                                        'TON', 'LB']),
-                          'kg')
-                    .mask(fb.Unit.isin(['ACRE FEET / ACRE']),
-                          'kg/m2')
-                    .mask(fb.Unit.isin(['gal/USD']),
-                          'kg/USD')
-                    .mask(fb.Unit.isin(['Quadrillion Btu',
-                                        'Trillion Btu', 'TBtu']),
-                          'MJ')
-                )
-            )
+            .assign(Unit=fb.Unit.str.strip())
+            .merge(conversion_table, how='left',
+                   left_on='Unit', right_on='old_unit')
+            .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
+                    conversion_factor=lambda x: x.conversion_factor.fillna(1),
+                    FlowAmount=lambda x: x.FlowAmount * x.conversion_factor)
+            .drop(columns=['old_unit', 'new_unit', 'conversion_factor'])
         )
 
-        standardized_units = ['m2', 'USD', 'kg', 'kg/m2', 'kg/USD', 'MJ']
+        standardized_units = list(conversion_table.new_unit.unique())
 
         if any(~standardized.Unit.isin(standardized_units)):
-            log.warning('Some units not standardized on import: %s. May not '
-                        'be a problem, if they will be standardized later, '
-                        'e.g. by mapping to the federal elementary flow list',
+            log.warning('Some units not standardized by standardize_units(): '
+                        '%s. May not be a problem, if they will be '
+                        'standardized later, e.g. by mapping to the federal '
+                        'elementary flow list',
                         [unit for unit in standardized.Unit.unique()
                          if unit not in standardized_units])
 
         return standardized
-
-    def conditional_pipe(
-        self: FB,
-        condition: bool,
-        function: Callable,
-        *args, **kwargs
-    ) -> FB:
-        '''
-        Similar to pandas .pipe() method, but first checks if the given
-        condition is true. If it is not, then the object that called
-        conditional_pipe is returned unchanged. Additional args and kwargs
-        are passed to function
-        :param condition: bool, condition under which the given function should
-            be called
-        :param function: Callable, function that expects a DataFrame or _FlowBy
-            as the first argument
-        :return: function(self, *args, **kwargs) if condition is True,
-            else self
-        '''
-        if condition:
-            return function(self, *args, **kwargs)
-        else:
-            return self
-
-    def conditional_method(
-        self: FB,
-        condition: bool,
-        method: str,
-        *args, **kwargs
-    ) -> FB:
-        '''
-        Conditionally calls the specified method of the calling FlowBy.
-        Additional args and kwargs are passed to the method
-        :param condition: bool, condition under which the given method should
-            be called
-        :param function: str, name of FlowBy or DataFrame method
-        :return: self.method(*args, **kwargs) if condition is True, else self
-        '''
-        if condition:
-            return getattr(self, method)(*args, **kwargs)
-        else:
-            return self
 
     def function_socket(self: FB, function_name: str, *args, **kwargs) -> FB:
         if function_name in self.config:
             return self.config[function_name](self, *args, **kwargs)
         else:
             return self
-
-    def standardize_units(self: FB) -> FB:
-        """
-        Standardizes units. Timeframe is annual.
-        :return: FlowBy dataframe, with standardized units
-        """
-        return self._standardize_units(self)
 
     def update_fips_to_geoscale(
         self: FB,
@@ -316,7 +207,7 @@ class _FlowBy(pd.DataFrame):
         Sets FIPS codes to 5 digits by zero-padding FIPS codes at the specified
         geoscale on the right (county geocodes are unmodified, state codes are
         generally padded with 3 zeros, and the "national" FIPS code is set to
-        00000, the value in flowsa.location.US_FIPS)
+        00000)
         :param to_geoscale: str, target geoscale
         :return: FlowBy dataset with 5 digit fips
         """
@@ -336,31 +227,6 @@ class _FlowBy(pd.DataFrame):
         else:
             log.error('No FIPS level corresponds to the given geoscale: %s',
                       to_geoscale)
-
-    def select_flows(self: FB, source_flows: list or dict) -> FB:
-        '''
-        Filters the FlowBy dataset to the flows named in source_flows. If
-        source_flows is a dict, selects flows according to the keys and
-        renames them to the associated values.
-
-        :param flows: list or dict. Either a list of flows to select, or a dict
-            whose keys are the flows to select and whose values are the new
-            names to assign to those flows. Or None, in which case no
-            filtering is performed.
-        :return: FlowBy dataset, filtered to the given flows, and with those
-            flows possibly renamed.
-        '''
-        if source_flows is not None:
-            return (
-                self
-                .query(f'{self.flow_col} in @source_flows')
-                .conditional_method(isinstance(source_flows, dict),
-                                    'replace',
-                                    {self.flow_col: source_flows})
-                .reset_index(drop=True)
-            )
-        else:
-            return self
 
     def select_by_fields(self: FB, selection_fields: dict = None) -> FB:
         '''
