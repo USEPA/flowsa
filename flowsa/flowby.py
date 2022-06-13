@@ -870,8 +870,6 @@ class FlowByActivity(_FlowBy):
 
     def attribute_flows_to_sectors(
         self: 'FlowByActivity',
-        industry_spec: dict,
-        target_year: Literal[2002, 2007, 2012, 2017] = 2012,
         external_config_path: str = None
     ) -> 'FlowByActivity':
         '''
@@ -879,30 +877,54 @@ class FlowByActivity(_FlowBy):
         attributed to those sectors, by the methods specified in the calling
         FBA's configuration dictionary.
         '''
-        mapped_fba = (
+        fba: 'FlowByActivity' = (
             self
-            .map_to_sectors(industry_spec, target_year, external_config_path)
-            .conditional_pipe('clean_fba_w_sec_df_fxn' in self.config,
-                              self.config.get('clean_fba_w_sec_df_fxn'),
-                              attr=self.config,
-                              method=self.config)
+            .map_to_sectors(external_config_path=external_config_path)
+            .function_socket('clean_fba_w_sec_df_fxn',
+                             attr=self.config,
+                             method=self.config)
             .rename(columns={'SourceName': 'MetaSources'})
             .drop(columns=['FlowName', 'Compartment'])
         )
 
-        allocation_method = mapped_fba.config.get('allocation_method')
+        allocation_method = fba.config.get('allocation_method')
         if allocation_method == 'proportional':
-            attributed_fba = mapped_fba.proportionally_attribute(
-                FlowByActivity.getFlowByActivity(
-                    mapped_fba.config['allocation_source'])
-                .convert_to_fbs()
+            allocation_source = fba.config['allocation_source']
+            attributed_fba = (
+                fba
+                .proportionally_attribute(
+                    FlowByActivity.getFlowByActivity(
+                        allocation_source,
+                        config={
+                            **{k: v for k, v in fba.config.items()
+                               if k in fba.config['fbs_method_config_keys']},
+                            **fba.config['allocation_source']
+                        }
+                    )
+                    .convert_to_fbs()
+                )
             )
         elif allocation_method == 'proportional-flagged':
-            attributed_fba = mapped_fba.flagged_proportionally_attribute()
+            allocation_source = fba.config['allocation_source']
+            attributed_fba = (
+                fba
+                .flagged_proportionally_attribute(
+                    FlowByActivity.getFlowByActivity(
+                        allocation_source,
+                        config={
+                            **{k: v for k, v in fba.config.items()
+                               if k in fba.config['fbs_method_config_keys']},
+                            **fba.config['allocation_source']
+                        }
+                    )
+                    .convert_to_fbs()
+                )
+            )
         else:
-            attributed_fba = mapped_fba.equally_attribute()
+            attributed_fba = fba.equally_attribute()
 
         aggregated_fba = attributed_fba.aggregate_flowby()
+        # ^^^ TODO: move to convert_to_fbs(), after dropping Activity cols?
 
         # TODO: Insert validation here.
 
@@ -1077,7 +1099,7 @@ class FlowByActivity(_FlowBy):
         SectorConsumedBy). If necessary, flow amounts are further (equally)
         subdivided based on the secondary sector.
         '''
-        fba = self.add_primary_secondary_sectors()
+        fba = self.add_primary_secondary_columns('Sector')
         groupby_cols = [c for c in fba.columns if fba[c].dtype == 'object'
                         and c not in ['SectorProducedBy', 'SectorConsumedBy',
                                       'PrimarySector', 'SecondarySector',
@@ -1308,6 +1330,7 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             .map_to_fedefl_list()
             .convert_to_geoscale()
+            .attribute_flows_to_sectors()
             for source_name, config in sources.items()
             if config['data_format'] == 'FBA'
         ]
