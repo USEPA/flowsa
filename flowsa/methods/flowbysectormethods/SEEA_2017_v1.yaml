@@ -88,7 +88,7 @@ source_names:
   EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
       <<: [*ghgi_parameters, *direct_allocation]
       selection_fields:
-        Activity:
+        PrimaryActivity:
           - Chickpeas
           - Cotton
           - Maize

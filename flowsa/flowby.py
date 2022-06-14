@@ -332,9 +332,14 @@ class _FlowBy(pd.DataFrame):
                if isinstance(v, dict)}
         }
 
-        replaced_fb = filtered_fb.replace(replace_dict)
-        return replaced_fb.drop(columns=['PrimaryActivity', 'PrimarySector'],
-                                errors='ignore')
+        replaced_fb = (
+            filtered_fb
+            .replace(replace_dict)
+            .drop(columns=['PrimaryActivity', 'PrimarySector'],
+                  errors='ignore')
+            .reset_index(drop=True)
+        )
+        return replaced_fb
 
     def aggregate_flowby(
         self: FB,
@@ -918,23 +923,24 @@ class FlowByActivity(_FlowBy):
 
             source_years = set(
                 activity_to_source_naics_crosswalk.SectorSourceName
-                .str.removeprefix('NAICS_').str.removesuffix('_Code')
+                .str.removeprefix('NAICS_')
+                .str.removesuffix('_Code')
                 .dropna().astype('int')
             )
             source_year = (2012 if 2012 in source_years
                            else max(source_years) if source_years
                            else 2012)
-            if source_years:
-                activity_to_source_naics_crosswalk = (
-                    activity_to_source_naics_crosswalk
-                    .query(f'SectorSourceName == "NAICS_{source_year}_Code"')
-                    .reset_index(drop=True)
-                )
-            else:
+            if not source_years:
                 log.warning('No NAICS year/sector source name (e.g. '
                             '"NAICS_2012_Code") provided in crosswalk for %s. '
                             '2012 being used as default.',
                             self.source_name)
+
+            activity_to_source_naics_crosswalk = (
+                activity_to_source_naics_crosswalk
+                .query(f'SectorSourceName == "NAICS_{source_year}_Code"')
+                .reset_index(drop=True)
+            )
 
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
@@ -1015,8 +1021,7 @@ class FlowByActivity(_FlowBy):
         fba = self.add_primary_secondary_columns('Sector')
         groupby_cols = [c for c in fba.groupby_cols
                         if c not in ['SectorProducedBy', 'SectorConsumedBy',
-                                     'PrimarySector', 'SecondarySector',
-                                     'Description']]
+                                     'PrimarySector', 'SecondarySector']]
 
         for rank in ['Primary', 'Secondary']:
             fba = (
@@ -1048,7 +1053,10 @@ class FlowByActivity(_FlowBy):
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
-    def proportionally_attribute(self: 'FlowByActivity'):
+    def proportionally_attribute(
+        self: 'FlowByActivity',
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
         raise NotImplementedError
 
     def flagged_proportionally_attribute(self: 'FlowByActivity'):
@@ -1056,10 +1064,13 @@ class FlowByActivity(_FlowBy):
 
     def convert_to_fbs(self: 'FlowByActivity') -> 'FlowBySector':
         if 'activity_sets' in self.config:
-            return pd.concat([fba.convert_to_fbs()
-                              for fba in self.activity_sets()])
+            return (
+                pd.concat([fba.convert_to_fbs()
+                           for fba in self.activity_sets()])
+                .reset_index(drop=True)
+            )
 
-        return (
+        return FlowBySector(
             self
             .function_socket('clean_fba_before_mapping_df_fxn')
             .select_by_fields()
@@ -1076,36 +1087,37 @@ class FlowByActivity(_FlowBy):
         resulting FBAs. Otherwise, it returns a list containing the calling
         FBA.
 
-        First, the primary activity is determined (for the underlying logic,
-        see documentation for add_primary_secondary_columns()), then the
-        partitioning is done based on the primary activity. This ensures that
-        the order activity sets are listed in cannot change the partitioning.
-        An error is logged if any names are in multiple activity sets.
+        Activity sets are determined by the selection_field key under each
+        activity set name. An error will be logged if any rows from the calling
+        FBA are assigned to multiple activity sets.
         '''
+        log.info('Splitting %s into activity sets', self.full_name)
         if 'activity_sets' in self.config:
             activities = self.config['activity_sets']
             parent_config = {k: v for k, v in self.config.items()
                              if k != 'activity_sets' and not k.startswith('_')}
-            parent_fba: 'FlowByActivity' = self.reset_index()
+            parent_fba = self.reset_index().rename(columns={'index': 'row'})
 
             child_fba_list = []
             assigned_rows = set()
             for activity_set, activity_config in activities.items():
+                log.info('Creating FlowByActivity for %s', activity_set)
                 child_fba = parent_fba.select_by_fields(
                     selection_fields=activity_config['selection_fields']
                 )
                 child_fba.full_name += f'.{activity_set}'
                 child_fba.config = {**parent_config, **activity_config}
 
-                if set(child_fba.index) & assigned_rows:
+                if set(child_fba.row) & assigned_rows:
                     log.error(
                         'Some rows in multiple activity sets. This will lead '
                         'to double-counting:\n%s',
-                        child_fba.iloc[list(set(child_fba.index)
+                        child_fba.iloc[list(set(child_fba.row)
                                             & assigned_rows)])
+                    raise ValueError('Some rows in multiple activity sets')
 
-                child_fba_list.append(child_fba)
-                assigned_rows.update(child_fba.index)
+                assigned_rows.update(child_fba.row)
+                child_fba_list.append(child_fba.drop(columns='row'))
 
             return child_fba_list
         else:
@@ -1262,7 +1274,7 @@ class FlowBySector(_FlowBy):
                 download_fbs_ok=download_sources_ok,
             )
             .function_socket('clean_fbs_df_fxn')
-            .select_flows(config.get('source_flows'))
+            .select_by_fields()
             .update_fips_to_geoscale(method_config['target_geoscale'])
             for source_name, config in sources.items()
             if config['data_format'] == 'FBS'
@@ -1282,7 +1294,13 @@ class FlowBySector(_FlowBy):
             if config['data_format'] == 'FBS_outside_flowsa'
         ]
 
-        return source_fba_list[0]
+        fbs = pd.concat([
+            *source_fba_list,
+            *source_fbs_list,
+            *source_external_fbs_list
+        ])
+
+        return fbs
 
 
 # The three classes extending pd.Series, together with the _constructor...
