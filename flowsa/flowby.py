@@ -775,7 +775,7 @@ class FlowByActivity(_FlowBy):
         fba_at_target_geoscale = (
             fba_at_source_geoscale
             .drop(columns='source_geoscale')
-            .update_fips_to_geoscale(target_geoscale)
+            .convert_fips_to_geoscale(target_geoscale)
             .aggregate_flowby()
         )
 
