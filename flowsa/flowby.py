@@ -223,11 +223,12 @@ class _FlowBy(pd.DataFrame):
         else:
             return self
 
-    def update_fips_to_geoscale(
+    def convert_fips_to_geoscale(
         self: FB,
         to_geoscale: Literal['national', 'state', 'county',
                              geo.scale.NATIONAL, geo.scale.STATE,
                              geo.scale.COUNTY],
+        column: str = 'Location'
     ) -> FB:
         """
         Sets FIPS codes to 5 digits by zero-padding FIPS codes at the specified
@@ -235,19 +236,21 @@ class _FlowBy(pd.DataFrame):
         generally padded with 3 zeros, and the "national" FIPS code is set to
         00000)
         :param to_geoscale: str, target geoscale
+        :param column: str, column of FIPS codes to convert.
+            Default = 'Location'
         :return: FlowBy dataset with 5 digit fips
         """
         if type(to_geoscale) == str:
             to_geoscale = geo.scale.from_string(to_geoscale)
 
         if to_geoscale == geo.scale.NATIONAL:
-            return (self
-                    .assign(Location=(geo.filtered_fips('national')
-                                      .FIPS.values[0])))
+            return self.assign(
+                {column: geo.filtered_fips('national').FIPS.values[0]}
+            )
         elif to_geoscale == geo.scale.STATE:
-            return (self
-                    .assign(Location=self.Location.apply(
-                        lambda x: str(x)[:2].ljust(5, '0'))))
+            return self.assign(
+                {column: self[column].str.slice_replace(start=2, repl='000')}
+            )
         elif to_geoscale == geo.scale.COUNTY:
             return self
         else:
@@ -1275,7 +1278,7 @@ class FlowBySector(_FlowBy):
             )
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
-            .update_fips_to_geoscale(method_config['target_geoscale'])
+            .convert_fips_to_geoscale(method_config['target_geoscale'])
             for source_name, config in sources.items()
             if config['data_format'] == 'FBS'
         ]
@@ -1289,7 +1292,7 @@ class FlowBySector(_FlowBy):
             )
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
-            .update_fips_to_geoscale(method_config['target_geoscale'])
+            .convert_fips_to_geoscale(method_config['target_geoscale'])
             for source_name, config in sources.items()
             if config['data_format'] == 'FBS_outside_flowsa'
         ]
