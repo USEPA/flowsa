@@ -91,6 +91,30 @@ class _FlowBy(pd.DataFrame):
             for attribute in self._metadata:
                 object.__setattr__(self, attribute,
                                    getattr(other.left, attribute, None))
+
+        # When concatenating, use shared portion of full_name or config. For
+        # other attributes, use metadata from the first FlowBy
+        if method == 'concat':
+            _full_name = (
+                NAME_SEP_CHAR.join(
+                    n for n in (getattr(other.objs[0], 'full_name', '')
+                                .split(NAME_SEP_CHAR))
+                    if all(n in (getattr(x, 'full_name', '')
+                                 .split(NAME_SEP_CHAR))
+                           for x in other.objs[1:])
+                )
+            )
+            _config = {
+                k: v for k, v in getattr(other.objs[0], 'config', {}).items()
+                if all(v == getattr(x, 'config', {}).get(k)
+                       for x in other.objs[1:])
+            }
+            object.__setattr__(self, 'full_name', _full_name)
+            object.__setattr__(self, 'config', _config)
+            for attribute in [x for x in self._metadata
+                              if x not in ['full_name', 'config']]:
+                object.__setattr__(self, attribute,
+                                   getattr(other.objs[0], attribute, None))
         return self
 
     @property
