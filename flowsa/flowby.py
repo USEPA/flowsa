@@ -12,6 +12,8 @@ import fedelemflowlist
 
 FB = TypeVar('FB', bound='_FlowBy')
 S = TypeVar('S', bound='_FlowBySeries')
+NAME_SEP_CHAR = '.'
+# ^^^ Used to separate source/activity set names as part of 'full_name' attr
 
 with open(settings.datapath + 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
@@ -82,12 +84,12 @@ class _FlowBy(pd.DataFrame):
         object. Additional code below specifies how to propagate metadata under
         other circumstances, such as merging.
 
-        merge: use metadata of left dataframe
+        merge: use metadata of left FlowBy
         '''
         self = super().__finalize__(other, method=method, **kwargs)
 
-        # merge operation: using metadata of the left object
-        if method == "merge":
+        # When merging, use metadata from left FlowBy
+        if method == 'merge':
             for attribute in self._metadata:
                 object.__setattr__(self, attribute,
                                    getattr(other.left, attribute, None))
@@ -730,7 +732,7 @@ class FlowByActivity(_FlowBy):
         :return: FlowBy data set, with rows filtered or aggregated to the
             target geoscale.
         '''
-        target_geoscale = target_geoscale or self.config.get('target_geoscale')
+        target_geoscale = target_geoscale or self.config.get('geoscale')
         if type(target_geoscale) == str:
             target_geoscale = geo.scale.from_string(target_geoscale)
 
@@ -823,24 +825,28 @@ class FlowByActivity(_FlowBy):
         attributed to those sectors, by the methods specified in the calling
         FBA's configuration dictionary.
         '''
-        fba: 'FlowByActivity' = (
+        grouped: 'FlowByActivity' = (
             self
+            .reset_index(drop=True).reset_index()
+            .rename(columns={'index': 'group_id'})
+            .assign(group_total=self.FlowAmount)
+        )
+        fba: 'FlowByActivity' = (
+            grouped
             .map_to_sectors(external_config_path=external_config_path)
             .function_socket('clean_fba_w_sec_df_fxn',
                              attr=self.config,
                              method=self.config)
             .rename(columns={'SourceName': 'MetaSources'})
-            .drop(columns=['FlowName', 'Compartment'])
         )
 
         allocation_method = fba.config.get('allocation_method')
         if allocation_method == 'proportional':
-            allocation_source = fba.config['allocation_source']
             attributed_fba = (
                 fba
                 .proportionally_attribute(
                     FlowByActivity.getFlowByActivity(
-                        allocation_source,
+                        fba.config['allocation_source'],
                         config={
                             **{k: v for k, v in fba.config.items()
                                if k in fba.config['fbs_method_config_keys']},
@@ -851,12 +857,11 @@ class FlowByActivity(_FlowBy):
                 )
             )
         elif allocation_method == 'proportional-flagged':
-            allocation_source = fba.config['allocation_source']
             attributed_fba = (
                 fba
                 .flagged_proportionally_attribute(
                     FlowByActivity.getFlowByActivity(
-                        allocation_source,
+                        fba.config['allocation_source'],
                         config={
                             **{k: v for k, v in fba.config.items()
                                if k in fba.config['fbs_method_config_keys']},
@@ -869,7 +874,11 @@ class FlowByActivity(_FlowBy):
         else:
             attributed_fba = fba.equally_attribute()
 
-        aggregated_fba = attributed_fba.aggregate_flowby()
+        aggregated_fba = (
+            attributed_fba
+            .drop(columns=['group_id', 'group_total'])
+            .aggregate_flowby()
+        )
         # ^^^ TODO: move to convert_to_fbs(), after dropping Activity cols?
 
         # TODO: Insert validation here.
@@ -1085,7 +1094,103 @@ class FlowByActivity(_FlowBy):
         self: 'FlowByActivity',
         other: 'FlowBySector'
     ) -> 'FlowByActivity':
-        raise NotImplementedError
+        fba_geoscale = geo.scale.from_string(self.config['geoscale'])
+        other_geoscale = geo.scale.from_string(other.config['geoscale'])
+
+        if other_geoscale < fba_geoscale:
+            other = (
+                other
+                .convert_fips_to_geoscale(fba_geoscale)
+                .aggregate_flowby()
+            )
+        elif other_geoscale > fba_geoscale:
+            self = (
+                self
+                .assign(temp_location=self.Location)
+                .convert_fips_to_geoscale(other_geoscale,
+                                          column='temp_location')
+            )
+
+        fba = self.add_primary_secondary_columns('Sector')
+        other = (
+            other
+            .add_primary_secondary_columns('Sector')
+            [['PrimarySector', 'Location', 'FlowAmount']]
+        )
+
+        groupby_cols = ['group_id']
+        for rank in ['Primary', 'Secondary']:
+            counted = fba.assign(group_count=(fba.groupby(groupby_cols)
+                                              ['group_id']
+                                              .transform('count')))
+            directly_attributed = (
+                counted
+                .query('group_count == 1')
+                .drop(columns='group_count')
+            )
+            needs_attribution = (
+                counted
+                .query('group_count > 1')
+                .drop(columns='group_count')
+            )
+
+            merged = (
+                needs_attribution
+                .merge(other,
+                       how='left',
+                       left_on=[f'{rank}Sector',
+                                'temp_location'
+                                if 'temp_location' in needs_attribution
+                                else 'Location'],
+                       right_on=['PrimarySector', 'Location'],
+                       suffixes=[None, '_other'])
+                .fillna({'FlowAmount_other': 0})
+            )
+
+            denominator_flag = ~merged.duplicated(subset=[*groupby_cols,
+                                                  f'{rank}Sector'])
+            with_denominator = (
+                merged
+                .assign(denominator=(
+                    merged
+                    .assign(FlowAmount_other=(merged.FlowAmount_other
+                                              * denominator_flag))
+                    .groupby(groupby_cols)
+                    ['FlowAmount_other']
+                    .transform('sum')))
+            )
+
+            non_zero_denominator = with_denominator.query(f'denominator != 0 ')
+            unattributable = with_denominator.query(f'denominator == 0 ')
+
+            if not unattributable.empty:
+                log.error(
+                    'Could not attribute activities %s in %s due to lack of '
+                    'flows in attribution source %s for mapped %s sectors %s',
+                    set(zip(unattributable.ActivityProducedBy,
+                            unattributable.ActivityConsumedBy)),
+                    unattributable.full_name,
+                    other.full_name,
+                    rank,
+                    set(unattributable[f'{rank}Sector'])
+                )
+
+            proportionally_attributed = (
+                non_zero_denominator
+                .assign(FlowAmount=lambda x: (x.FlowAmount
+                                              * x.FlowAmount_other
+                                              / x.denominator))
+                .drop(columns=['PrimarySector_other', 'Location_other',
+                               'FlowAmount_other', 'denominator'],
+                      errors='ignore')
+            )
+            fba = pd.concat([directly_attributed, proportionally_attributed])
+            groupby_cols.append(f'{rank}Sector')
+
+        return fba.drop(
+            columns=['PrimarySector', 'SecondarySector', 'temp_location'],
+            errors='ignore'
+        )
 
     def flagged_proportionally_attribute(self: 'FlowByActivity'):
         raise NotImplementedError
@@ -1133,7 +1238,7 @@ class FlowByActivity(_FlowBy):
                 child_fba = parent_fba.select_by_fields(
                     selection_fields=activity_config['selection_fields']
                 )
-                child_fba.full_name += f'.{activity_set}'
+                child_fba.full_name += f'{NAME_SEP_CHAR}{activity_set}'
                 child_fba.config = {**parent_config, **activity_config}
 
                 if set(child_fba.row) & assigned_rows:
@@ -1303,7 +1408,7 @@ class FlowBySector(_FlowBy):
             )
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
-            .convert_fips_to_geoscale(method_config['target_geoscale'])
+            .convert_fips_to_geoscale(method_config['geoscale'])
             for source_name, config in sources.items()
             if config['data_format'] == 'FBS'
         ]
@@ -1317,7 +1422,7 @@ class FlowBySector(_FlowBy):
             )
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
-            .convert_fips_to_geoscale(method_config['target_geoscale'])
+            .convert_fips_to_geoscale(method_config['geoscale'])
             for source_name, config in sources.items()
             if config['data_format'] == 'FBS_outside_flowsa'
         ]
