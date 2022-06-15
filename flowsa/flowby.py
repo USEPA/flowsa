@@ -1116,6 +1116,9 @@ class FlowByActivity(_FlowBy):
             other
             .add_primary_secondary_columns('Sector')
             [['PrimarySector', 'Location', 'FlowAmount']]
+            .groupby(['PrimarySector', 'Location'])
+            .agg('sum')
+            .reset_index()
         )
 
         groupby_cols = ['group_id']
