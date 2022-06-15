@@ -95,15 +95,16 @@ class _FlowBy(pd.DataFrame):
         # When concatenating, use shared portion of full_name or config. For
         # other attributes, use metadata from the first FlowBy
         if method == 'concat':
-            _full_name = (
-                NAME_SEP_CHAR.join(
-                    n for n in (getattr(other.objs[0], 'full_name', '')
-                                .split(NAME_SEP_CHAR))
-                    if all(n in (getattr(x, 'full_name', '')
-                                 .split(NAME_SEP_CHAR))
-                           for x in other.objs[1:])
-                )
-            )
+            _name_list = []
+            for i, n in enumerate(getattr(other.objs[0], 'full_name', '')
+                                  .split(NAME_SEP_CHAR)):
+                if all(n == getattr(x, 'full_name', '').split(NAME_SEP_CHAR)[i]
+                       for x in other.objs[1:]):
+                    _name_list.append(n)
+                else:
+                    break
+            _full_name = NAME_SEP_CHAR.join(_name_list)
+
             _config = {
                 k: v for k, v in getattr(other.objs[0], 'config', {}).items()
                 if all(v == getattr(x, 'config', {}).get(k)
