@@ -91,7 +91,7 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     """
     # If using 2 letter abbrevations, map to state names
     if source_state_abbrev:
-        df['State'] = df['State'].map(abbrev_us_state)
+        df['State'] = df['State'].map(abbrev_us_state).fillna(df['State'])
     df['State'] = df.apply(lambda x: clean_str_and_capitalize(x.State),
                            axis=1)
     df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County),

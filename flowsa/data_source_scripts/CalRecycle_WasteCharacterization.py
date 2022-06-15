@@ -19,7 +19,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.settings import externaldatapath
 from flowsa.sectormapping import get_fba_allocation_subset, \
     add_sectors_to_flowbyactivity
-from flowsa.dataclean import replace_strings_with_NoneType
+from flowsa.dataclean import replace_strings_with_NoneType, standardize_units
 
 
 def produced_by(entry):
@@ -109,16 +109,17 @@ def calR_parse(*, year, **_):
     return output
 
 
-def keep_generated_quantity(fba, **kwargs):
+def keep_generated_quantity(fba, **_):
     """
     Function to clean CalRecycles FBA to remove quantities not
     assigned as Generated
     :param fba: df, FBA format
-    :param kwargs: dictionary, can include attr, a dictionary of parameters in
-        the FBA method yaml
     :return: df, modified CalRecycles FBA
     """
-    fba = fba[fba['Description'] == 'Generated']
+    fba = fba[fba['Description'] == 'Generated'].reset_index(drop=True)
+    # if no mapping performed, still update units
+    if 'tons' in fba['Unit'].values:
+        fba = standardize_units(fba)
     return fba
 
 
@@ -146,6 +147,10 @@ def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
 
     # Calculate tons per employee per year per material and sector in CA
     bls_CA = bls[bls['Location'] == '06000']  # California
+    # aggregate all employment prior to generating tpepy
+    bls_CA = (bls_CA.groupby(['Location','Year','SectorProducedBy'])
+              .agg({'Employees':'sum'})
+              .reset_index())
     tpepy = fbs.merge(bls_CA, how='inner')
     tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'], tpepy['Employees'],
                                out=np.zeros_like(tpepy['Employees']),

@@ -121,6 +121,18 @@ EPA_GHGI:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+EPA_StateGHGI:
+  class:
+    - Chemicals
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
+EPA_SIT:
+  class:
+    - Chemicals
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
 EPA_NEI_Nonpoint:
   class:
   - Chemicals
@@ -170,6 +182,12 @@ StatCan_LFS:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+stateio:
+  class:
+    - Money
+  sector-like_activities: False #update to true once alternate activity_schema in place
+  # activity_schema: BEA_2012_Summary_Code
+  sector_aggregation_level: "disaggregated"
 USDA_CoA_Cropland:
   class:
     - Land
