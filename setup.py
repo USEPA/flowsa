@@ -33,16 +33,18 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='MIT',
-    author='Catherine Birney, Ben Young, Wesley Ingwersen, Melissa Conner, Jacob Specht, Mo Li',
+    author='Catherine Birney, Ben Young, Melissa Conner, Jacob Specht, '
+           'Mo Li, and Wesley Ingwersen',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
-        "Development Status :: 1 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: IDE",
         "Intended Audience :: Science/Research",
         "License :: MIT",
         "Programming Language :: Python :: 3.x",
         "Topic :: Utilities",
     ],
-    description='Complies and provides a standardized list of elementary flows and '
-                'flow mappings for life cycle assessment data'
+    description='Attributes resources (environmental, monetary, and human), '
+                'emissions, wastes, and losses to US industrial and final '
+                'use sectors.'
 )
