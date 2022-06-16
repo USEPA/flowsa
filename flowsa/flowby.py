@@ -216,8 +216,8 @@ class _FlowBy(pd.DataFrame):
         standardized_units = list(conversion_table.new_unit.unique())
 
         if any(~standardized.Unit.isin(standardized_units)):
-            log.warning('Some units not standardized by standardize_units(): '
-                        '%s. May not be a problem, if they will be '
+            log.warning('Units not standardized by standardize_units(): '
+                        '%s. Not a problem if they will be '
                         'standardized later, e.g. by mapping to the federal '
                         'elementary flow list',
                         [unit for unit in standardized.Unit.unique()
@@ -840,38 +840,46 @@ class FlowByActivity(_FlowBy):
             .rename(columns={'SourceName': 'MetaSources'})
         )
 
-        allocation_method = fba.config.get('allocation_method')
-        if allocation_method == 'proportional':
+        attribution_method = fba.config.get('attribution_method')
+        if attribution_method == 'proportional':
             attributed_fba = (
                 fba
                 .proportionally_attribute(
                     FlowByActivity.getFlowByActivity(
-                        fba.config['allocation_source'],
+                        fba.config['attribution_source'],
                         config={
                             **{k: v for k, v in fba.config.items()
                                if k in fba.config['fbs_method_config_keys']},
-                            **fba.config['allocation_source']
+                            **fba.config['attribution_source']
                         }
                     )
                     .convert_to_fbs()
                 )
             )
-        elif allocation_method == 'proportional-flagged':
+        elif attribution_method == 'proportional-flagged':
             attributed_fba = (
                 fba
                 .flagged_proportionally_attribute(
                     FlowByActivity.getFlowByActivity(
-                        fba.config['allocation_source'],
+                        fba.config['attribution_source'],
                         config={
                             **{k: v for k, v in fba.config.items()
                                if k in fba.config['fbs_method_config_keys']},
-                            **fba.config['allocation_source']
+                            **fba.config['attribution_source']
                         }
                     )
                     .convert_to_fbs()
                 )
             )
         else:
+            if attribution_method != 'direct':
+                log.error('Attribution method for %s not recognized: %s',
+                          fba.full_name, attribution_method)
+                raise ValueError('Attribution method not recognized')
+            elif attribution_method is None:
+                log.warning('No attribution method specified for %s. '
+                            'Using equal attribution as default.',
+                            fba.full_name)
             attributed_fba = fba.equally_attribute()
 
         validation_fba = attributed_fba.assign(
@@ -1223,7 +1231,8 @@ class FlowByActivity(_FlowBy):
             .function_socket('clean_fba_df_fxn')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
-            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
+            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy',
+                           'FlowName', 'Compartment'])
             .aggregate_flowby()
         )
 
