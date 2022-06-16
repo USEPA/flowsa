@@ -1095,6 +1095,11 @@ class FlowByActivity(_FlowBy):
         self: 'FlowByActivity',
         other: 'FlowBySector'
     ) -> 'FlowByActivity':
+        '''
+        This method takes flows from the calling FBA which are mapped to
+        multiple sectors and attributes them to those sectors proportionally to
+        flows from other (an FBS).
+        '''
         fba_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
