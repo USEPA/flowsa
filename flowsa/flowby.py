@@ -842,37 +842,38 @@ class FlowByActivity(_FlowBy):
 
         attribution_method = fba.config.get('attribution_method')
         if attribution_method == 'proportional':
+            (source, config), = fba.config['attribution_source'].items()
             attributed_fba = (
                 fba
                 .proportionally_attribute(
                     FlowByActivity.getFlowByActivity(
-                        fba.config['attribution_source'],
-                        config={
-                            **{k: v for k, v in fba.config.items()
-                               if k in fba.config['fbs_method_config_keys']},
-                            **fba.config['attribution_source']
-                        }
+                        source,
+                        config={**{k: v for k, v in fba.config.items()
+                                   if k in fba.config['method_config_keys']
+                                   or k == 'method_config_keys'},
+                                **config}
                     )
                     .convert_to_fbs()
                 )
             )
         elif attribution_method == 'proportional-flagged':
+            (source, config), = fba.config['attribution_source'].items()
             attributed_fba = (
                 fba
                 .flagged_proportionally_attribute(
                     FlowByActivity.getFlowByActivity(
-                        fba.config['attribution_source'],
-                        config={
-                            **{k: v for k, v in fba.config.items()
-                               if k in fba.config['fbs_method_config_keys']},
-                            **fba.config['attribution_source']
-                        }
+                        source,
+                        config={**{k: v for k, v in fba.config.items()
+                                   if k in fba.config['method_config_keys']
+                                   or k == 'method_config_keys'},
+                                **config}
                     )
                     .convert_to_fbs()
                 )
             )
         else:
-            if attribution_method != 'direct':
+            if (attribution_method is not None
+                    and attribution_method != 'direct'):
                 log.error('Attribution method for %s not recognized: %s',
                           fba.full_name, attribution_method)
                 raise ValueError('Attribution method not recognized')
@@ -1401,7 +1402,7 @@ class FlowBySector(_FlowBy):
                 full_name=source_name,
                 config={
                     **method_config,
-                    'fbs_method_config_keys': method_config.keys(),
+                    'method_config_keys': method_config.keys(),
                     **source_catalog.get(
                         common.return_true_source_catalog_name(source_name),
                         {}),
@@ -1419,7 +1420,7 @@ class FlowBySector(_FlowBy):
                 name=source_name,
                 config={
                     **method_config,
-                    'fbs_method_config_keys': method_config.keys(),
+                    'method_config_keys': method_config.keys(),
                     **source_catalog.get(
                         common.return_true_source_catalog_name(source_name),
                         {}),
