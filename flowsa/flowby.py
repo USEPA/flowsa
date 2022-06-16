@@ -272,7 +272,7 @@ class _FlowBy(pd.DataFrame):
 
         if to_geoscale == geo.scale.NATIONAL:
             return self.assign(
-                {column: geo.filtered_fips('national').FIPS.values[0]}
+                **{column: geo.filtered_fips('national').FIPS.values[0]}
             )
         elif to_geoscale == geo.scale.STATE:
             return self.assign(
@@ -1196,9 +1196,12 @@ class FlowByActivity(_FlowBy):
             fba = pd.concat([directly_attributed, proportionally_attributed])
             groupby_cols.append(f'{rank}Sector')
 
-        return fba.drop(
-            columns=['PrimarySector', 'SecondarySector', 'temp_location'],
-            errors='ignore'
+        return (
+            fba
+            .drop(columns=['PrimarySector', 'SecondarySector',
+                           'temp_location'],
+                  errors='ignore')
+            .reset_index(drop=True)
         )
 
     def flagged_proportionally_attribute(self: 'FlowByActivity'):
@@ -1220,6 +1223,8 @@ class FlowByActivity(_FlowBy):
             .function_socket('clean_fba_df_fxn')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
+            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
+            .aggregate_flowby()
         )
 
     def activity_sets(self) -> List['FlowByActivity']:
