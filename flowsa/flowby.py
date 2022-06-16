@@ -874,16 +874,20 @@ class FlowByActivity(_FlowBy):
         else:
             attributed_fba = fba.equally_attribute()
 
-        aggregated_fba = (
-            attributed_fba
-            .drop(columns=['group_id', 'group_total'])
-            .aggregate_flowby()
+        validation_fba = attributed_fba.assign(
+            validation_total=(attributed_fba.groupby('group_id')
+                              ['FlowAmount'].transform('sum'))
         )
-        # ^^^ TODO: move to convert_to_fbs(), after dropping Activity cols?
+        if any(validation_fba.validation_total != validation_fba.group_total):
+            errors = (validation_fba
+                      .query('validation_total != group_total')
+                      [['ActivityProducedBy', 'ActivityConsumedBy',
+                        'SectorProducedBy', 'SectorConsumedBy',
+                        'FlowAmount', 'group_total']])
+            log.error('Errors in attributing flows from %s:\n%s',
+                      self.full_name, errors)
 
-        # TODO: Insert validation here.
-
-        return aggregated_fba
+        return attributed_fba.drop(columns=['group_id', 'group_total'])
 
     def map_to_sectors(
         self: 'FlowByActivity',
