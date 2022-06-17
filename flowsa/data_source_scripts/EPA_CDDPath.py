@@ -127,9 +127,10 @@ def assign_wood_to_engineering(fba, **_):
     return fba
 
 
-def cdd_processing(df):
-    material = 'Concrete'
-    inputs = df.loc[df['FlowName'] == material]
+def cdd_processing(fba, source_dict):
+    """clean_fba_df_fxn"""
+    material = source_dict.get('cdd_parameter')
+    inputs = fba.loc[fba['FlowName'] == material]
     inputs = inputs.reset_index(drop=True)
     ouptuts = inputs.copy()
     inputs['ActivityConsumedBy'] = f"{material} Processing"
@@ -148,7 +149,7 @@ def cdd_processing(df):
 
 if __name__ == "__main__":
     import flowsa
-    # flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2014)
+    flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2014)
     fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2014)
 
     flowsa.flowbysector.main(method='CDD_concrete_national_2014')
