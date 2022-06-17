@@ -124,9 +124,10 @@ def load_source_dataframe(method, sourcename, source_dict,
 def main(**kwargs):
     """
     Creates a flowbysector dataset
-    :param kwargs: dictionary of arguments, only argument is
-        "method_name", the name of method corresponding to flowbysector
-        method yaml name
+    :param kwargs: dictionary of arguments:
+        "method": the name of method corresponding to flowbysector
+        "fbsconfigpath":
+        "download_FBAs_if_missing":
     :return: parquet, FBS save to local folder
     """
     if len(kwargs) == 0:
