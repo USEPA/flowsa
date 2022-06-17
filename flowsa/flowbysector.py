@@ -170,20 +170,21 @@ def main(**kwargs):
             fxn = v.get("clean_fba_before_mapping_df_fxn")
             if callable(fxn):
                 vLog.info(f"Cleaning up {k} FlowByActivity")
-                flows = fxn(flows)
+                flows = fxn(fba=flows, source_dict=v)
             elif fxn:
                 raise flowsa.exceptions.FBSMethodConstructionError(
                     error_type='fxn_call')
 
             # map flows to federal flow list or material flow list
-            flows_mapped, mapping_files = \
-                map_fbs_flows(flows, k, v, keep_fba_columns=True)
+            flows_mapped, mapping_files = (map_fbs_flows(
+                flows, k, v, keep_fba_columns=True,
+                keep_unmapped_rows=v.get("keep_unmapped_rows", False)))
 
             # clean up fba, if specified in yaml
             fxn = v.get("clean_fba_df_fxn")
             if callable(fxn):
                 vLog.info(f"Cleaning up {k} FlowByActivity")
-                flows_mapped = fxn(flows_mapped)
+                flows_mapped = fxn(fba=flows_mapped, source_dict=v)
             elif fxn:
                 raise flowsa.exceptions.FBSMethodConstructionError(
                     error_type='fxn_call')

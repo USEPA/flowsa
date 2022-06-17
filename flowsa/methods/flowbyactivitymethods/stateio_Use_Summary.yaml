@@ -1,0 +1,4 @@
+!include:stateio_Common.yaml
+source_name: stateio_Use_Summary
+bib_id:
+datatype: 'State_Summary_Use'
