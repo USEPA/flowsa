@@ -69,6 +69,26 @@ source_names:
   #   reassign_process_to_sectors:
   #    - airplane_emissions
 
+## Stationary Combustion for Electric Power
+  EPA_GHGI_T_3_7: &stationary_electric # CO2 emissions from stationary combustion (electricity only)
+    <<: *ghgi_parameters
+    selection_fields:
+      PrimaryActivity:
+        - Coal Electric Power
+        - Natural Gas Electric Power
+        - Natural gas Electric Power # note lower case
+        - Fuel Oil Electric Power
+        - Geothermal Electric Power
+        - Wood Electric Power
+    activity_to_sector_mapping: EPA_GHGI_m2
+    attribution_method: direct
+
+  EPA_GHGI_T_3_8: # CH4 emissions from stationary combustion
+    <<: *stationary_electric
+
+  EPA_GHGI_T_3_9: # N2O emissions from stationary combustion
+    <<: *stationary_electric
+
 ## Agriculture
   EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
       <<: *ghgi_parameters
@@ -131,7 +151,7 @@ source_names:
           USDA_CoA_Cropland_NAICS:
             <<: *usda_pasture
 
-  "EPA_GHGI_T_5_19": #Indirect N2O emissions from agricultural soils
+  EPA_GHGI_T_5_19: #Indirect N2O emissions from agricultural soils
     <<: *ghgi_parameters
     activity_sets:
       fertilizer_use:  # allocated based on fertilizer use
