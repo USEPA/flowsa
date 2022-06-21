@@ -15,8 +15,16 @@ S = TypeVar('S', bound='_FlowBySeries')
 NAME_SEP_CHAR = '.'
 # ^^^ Used to separate source/activity set names as part of 'full_name' attr
 
+
 with open(settings.datapath + 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
+
+
+# TODO: Move this to common.py
+def get_catalog_info(source_name: str) -> dict:
+    source_catalog = common.load_yaml_dict('source_catalog')
+    source_name = common.return_true_source_catalog_name(source_name)
+    return source_catalog.get(source_name, {})
 
 
 class _FlowBy(pd.DataFrame):
@@ -834,42 +842,42 @@ class FlowByActivity(_FlowBy):
         fba: 'FlowByActivity' = (
             grouped
             .map_to_sectors(external_config_path=external_config_path)
-            .function_socket('clean_fba_w_sec_df_fxn',
+            .function_socket('clean_fba_w_sec',
                              attr=self.config,
                              method=self.config)
             .rename(columns={'SourceName': 'MetaSources'})
         )
 
+        if all(fba.groupby('group_id')['group_id'].agg('count') == 1):
+            log.info('No attribution needed for %s at the given industry '
+                     'aggregation level', fba.full_name)
+            return fba.drop(columns=['group_id', 'group_total'])
+
         attribution_method = fba.config.get('attribution_method')
+
         if attribution_method == 'proportional':
             (source, config), = fba.config['attribution_source'].items()
-            attributed_fba = (
-                fba
-                .proportionally_attribute(
-                    FlowByActivity.getFlowByActivity(
-                        source,
-                        config={**{k: v for k, v in fba.config.items()
-                                   if k in fba.config['method_config_keys']
-                                   or k == 'method_config_keys'},
-                                **config}
-                    )
-                    .convert_to_fbs()
-                )
+            attributed_fba = fba.proportionally_attribute(
+                FlowByActivity.getFlowByActivity(
+                    full_name=source,
+                    config={**{k: v for k, v in fba.config.items()
+                            if k in fba.config['method_config_keys']
+                            or k == 'method_config_keys'},
+                            **get_catalog_info(source),
+                            **config}
+                ).convert_to_fbs()
             )
         elif attribution_method == 'proportional-flagged':
             (source, config), = fba.config['attribution_source'].items()
-            attributed_fba = (
-                fba
-                .flagged_proportionally_attribute(
-                    FlowByActivity.getFlowByActivity(
-                        source,
-                        config={**{k: v for k, v in fba.config.items()
-                                   if k in fba.config['method_config_keys']
-                                   or k == 'method_config_keys'},
-                                **config}
-                    )
-                    .convert_to_fbs()
-                )
+            attributed_fba = fba.flagged_proportionally_attribute(
+                FlowByActivity.getFlowByActivity(
+                    full_name=source,
+                    config={**{k: v for k, v in fba.config.items()
+                            if k in fba.config['method_config_keys']
+                            or k == 'method_config_keys'},
+                            **get_catalog_info(source),
+                            **config}
+                ).convert_to_fbs()
             )
         else:
             if (attribution_method is not None
@@ -887,12 +895,13 @@ class FlowByActivity(_FlowBy):
             validation_total=(attributed_fba.groupby('group_id')
                               ['FlowAmount'].transform('sum'))
         )
-        if any(validation_fba.validation_total != validation_fba.group_total):
+        if not np.allclose(validation_fba.group_total,
+                           validation_fba.validation_total):
             errors = (validation_fba
                       .query('validation_total != group_total')
-                      [['ActivityProducedBy', 'ActivityConsumedBy',
+                      [['group_id', 'ActivityProducedBy', 'ActivityConsumedBy',
                         'SectorProducedBy', 'SectorConsumedBy',
-                        'FlowAmount', 'group_total']])
+                        'FlowAmount', 'group_total', 'validation_total']])
             log.error('Errors in attributing flows from %s:\n%s',
                       self.full_name, errors)
 
@@ -1226,10 +1235,10 @@ class FlowByActivity(_FlowBy):
 
         return FlowBySector(
             self
-            .function_socket('clean_fba_before_mapping_df_fxn')
+            .function_socket('clean_fba_before_mapping')
             .select_by_fields()
             .standardize_units_and_flows()
-            .function_socket('clean_fba_df_fxn')
+            .function_socket('clean_fba')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy',
@@ -1403,9 +1412,7 @@ class FlowBySector(_FlowBy):
                 config={
                     **method_config,
                     'method_config_keys': method_config.keys(),
-                    **source_catalog.get(
-                        common.return_true_source_catalog_name(source_name),
-                        {}),
+                    **get_catalog_info(source_name),
                     **config
                 },
                 download_ok=download_sources_ok
@@ -1421,9 +1428,7 @@ class FlowBySector(_FlowBy):
                 config={
                     **method_config,
                     'method_config_keys': method_config.keys(),
-                    **source_catalog.get(
-                        common.return_true_source_catalog_name(source_name),
-                        {}),
+                    **get_catalog_info(source_name),
                     **config
                 },
                 external_config_path=external_config_path,
