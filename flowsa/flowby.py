@@ -1401,7 +1401,6 @@ class FlowBySector(_FlowBy):
             generating them.
         '''
         log.info('Beginning FlowBySector generation for %s', method)
-        source_catalog = common.load_yaml_dict('source_catalog')
         method_config = common.load_yaml_dict(method, 'FBS',
                                               external_config_path)
         sources = method_config.pop('source_names')
