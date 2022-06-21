@@ -896,7 +896,7 @@ class FlowByActivity(_FlowBy):
                               ['FlowAmount'].transform('sum'))
         )
         if not np.allclose(validation_fba.group_total,
-                           validation_fba.validation_total):
+                           validation_fba.validation_total, equal_nan=True):
             errors = (validation_fba
                       .query('validation_total != group_total')
                       [['group_id', 'ActivityProducedBy', 'ActivityConsumedBy',
