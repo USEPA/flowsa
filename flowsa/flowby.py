@@ -602,7 +602,6 @@ class FlowByActivity(_FlowBy):
     # flow list mapping using this function as well.
     def map_to_fedefl_list(
         self: 'FlowByActivity',
-        drop_fba_columns: bool = False,
         drop_unmapped_rows: bool = False
     ) -> 'FlowByActivity':
         fba_merge_keys = [
@@ -651,8 +650,7 @@ class FlowByActivity(_FlowBy):
                         self.Unit.str.contains('/d'),
                         self.FlowAmount * 365),
                     Unit=self.Unit.str.replace('/d', ''))
-            .conditional_method(drop_fba_columns, 'drop',
-                                columns=['FlowName', 'Compartment'])
+            .drop(columns=['FlowName', 'Compartment'])
         )
 
         mapping = (
@@ -1241,8 +1239,7 @@ class FlowByActivity(_FlowBy):
             .function_socket('clean_fba')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
-            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy',
-                           'FlowName', 'Compartment'])
+            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
         )
 
@@ -1296,7 +1293,8 @@ class FlowByActivity(_FlowBy):
         if self.config.get('fedefl_mapping'):
             return standardized.map_to_fedefl_list()
         else:
-            return standardized
+            return standardized.rename(columns={'FlowName': 'Flowable',
+                                                'Compartment': 'Context'})
 
 
 class FlowBySector(_FlowBy):
