@@ -307,6 +307,12 @@ class _FlowBy(pd.DataFrame):
             - CO2
             - CH4
 
+        If only a single value is to be selected from a given column, it may
+        be given as a string scalar value instead of a single-element list:
+
+        selection_fields:
+          FlowName: CO2
+
         Alternatively, instead of a list of values, a dictionary may be
         given which associates the values to select with a replacement value:
 
@@ -328,6 +334,9 @@ class _FlowBy(pd.DataFrame):
                             or self.config.get('selection_fields'))
         if selection_fields is None:
             return self
+
+        selection_fields = {k: [v] if isinstance(v, str) else v
+                            for k, v in selection_fields.items()}
 
         if 'PrimaryActivity' in selection_fields:
             self = (self
