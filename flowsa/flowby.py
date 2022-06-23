@@ -363,6 +363,9 @@ class _FlowBy(pd.DataFrame):
         for field, values in other_fields.items():
             filtered_fb = filtered_fb.query(f'{field} in @values')
 
+        if filtered_fb.empty:
+            log.warning('%s FBA is empty', filtered_fb.full_name)
+
         for k in ['Activity', 'Sector']:
             if isinstance(other_fields.get(f'Primary{k}'), dict):
                 if isinstance(special_fields.get(k), dict):
@@ -486,9 +489,6 @@ class _FlowBy(pd.DataFrame):
                       f'{col_type}ConsumedBy columns are missing.')
             return self
         else:
-            log.info(f'Adding Primary{col_type} and Secondary{col_type} '
-                     f'columns from {col_type}ProducedBy and '
-                     f'{col_type}ConsumedBy columns.')
             fb = self.assign(
                 **{f'Primary{col_type}': self[f'{col_type}ProducedBy'].mask(
                     (self.FlowType == 'TECHNOSPHERE_FLOW')
@@ -646,7 +646,7 @@ class FlowByActivity(_FlowBy):
             mapping_merge_keys.remove('SourceListName')
 
         log.info('Mapping flows in %s to federal elementary flow list',
-                 self.source_name)
+                 self.full_name)
 
         if any(self.Unit.str.contains('/d')):
             log.info('Converting daily flows %s to annual',
@@ -751,8 +751,6 @@ class FlowByActivity(_FlowBy):
         if type(target_geoscale) == str:
             target_geoscale = geo.scale.from_string(target_geoscale)
 
-        log.info('Converting FBA to %s geoscale', target_geoscale.name.lower())
-
         geoscale_by_fips = pd.concat([
             (geo.filtered_fips(scale)
              .assign(geoscale=scale, National='USA')
@@ -764,6 +762,11 @@ class FlowByActivity(_FlowBy):
 
         geoscale_name_columns = [s.name.title() for s in geo.scale
                                  if s.has_fips_level]
+
+        log.info('Determining appropriate source geoscale for %s; '
+                 'target geoscale is %s',
+                 self.full_name,
+                 target_geoscale.name.lower())
 
         highest_reporting_level_by_geoscale = [
             (self
@@ -805,12 +808,14 @@ class FlowByActivity(_FlowBy):
         )
 
         if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
-            log.warning('FBA has multiple source geoscales: %s',
+            log.warning('%s has multiple source geoscales: %s',
+                        fba_at_source_geoscale.full_name,
                         ', '.join([s.name.lower() for s in
                                    fba_at_source_geoscale
                                    .source_geoscale.unique()]))
         else:
-            log.info('FBA source geoscale is %s',
+            log.info('%s source geoscale is %s',
+                     fba_at_source_geoscale.full_name,
                      fba_at_source_geoscale
                      .source_geoscale.unique()[0].name.lower())
 
@@ -943,7 +948,7 @@ class FlowByActivity(_FlowBy):
         '''
         if self.config['sector-like_activities']:
             log.info('Activities in %s are NAICS codes.',
-                     self.source_name)
+                     self.full_name)
 
             try:
                 source_year = int(self.config
@@ -951,10 +956,10 @@ class FlowByActivity(_FlowBy):
             except ValueError:
                 source_year = 2012
                 log.warning('No NAICS year given for NAICS activities in %s. '
-                            '2012 used as default.', self.source_name)
+                            '2012 used as default.', self.full_name)
             else:
                 log.info('NAICS Activities in %s use NAICS year %s.',
-                         self.source_name, source_year)
+                         self.full_name, source_year)
 
             log.info('Converting NAICS codes to desired industry/sector '
                      'aggregation structure.')
@@ -976,7 +981,7 @@ class FlowByActivity(_FlowBy):
 
         else:
             log.info('Getting crosswalk between activities in %s and '
-                     'NAICS codes.', self.source_name)
+                     'NAICS codes.', self.full_name)
             activity_to_source_naics_crosswalk = (
                 sectormapping.get_activitytosector_mapping(
                     # ^^^ TODO: Replace or streamline get_...() function
@@ -1000,7 +1005,7 @@ class FlowByActivity(_FlowBy):
                 log.warning('No NAICS year/sector source name (e.g. '
                             '"NAICS_2012_Code") provided in crosswalk for %s. '
                             '2012 being used as default.',
-                            self.source_name)
+                            self.full_name)
 
             activity_to_source_naics_crosswalk = (
                 activity_to_source_naics_crosswalk
@@ -1020,7 +1025,7 @@ class FlowByActivity(_FlowBy):
             )
 
             log.info('Mapping activities in %s to NAICS codes using crosswalk',
-                     self.source_name)
+                     self.full_name)
             fba_w_naics = self
             for direction in ['ProducedBy', 'ConsumedBy']:
                 fba_w_naics = (
@@ -1282,14 +1287,19 @@ class FlowByActivity(_FlowBy):
 
                 if set(child_fba.row) & assigned_rows:
                     log.error(
-                        'Some rows in multiple activity sets. This will lead '
-                        'to double-counting:\n%s',
+                        'Some rows from %s assigned to multiple activity '
+                        'sets. This will lead to double-counting:\n%s',
+                        parent_fba.full_name,
                         child_fba.iloc[list(set(child_fba.row)
                                             & assigned_rows)])
                     raise ValueError('Some rows in multiple activity sets')
 
                 assigned_rows.update(child_fba.row)
                 child_fba_list.append(child_fba.drop(columns='row'))
+
+            if set(parent_fba.row) - assigned_rows:
+                log.warning('Some rows from %s not assigned to an activity '
+                            'set. Is this intentional?', parent_fba.full_name)
 
             return child_fba_list
         else:
