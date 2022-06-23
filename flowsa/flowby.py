@@ -188,7 +188,7 @@ class _FlowBy(pd.DataFrame):
                 '%s %s could not be found locally, downloaded, or generated',
                 file_metadata.name_data, file_metadata.category
             )
-        fb = cls(df, full_name=full_name, config=config)
+        fb = cls(df, full_name=full_name, config=config or {})
         return fb
 
     def standardize_units(self: FB) -> FB:
@@ -604,7 +604,7 @@ class FlowByActivity(_FlowBy):
             flowby_generator=flowby_generator,
             output_path=settings.fbaoutputpath,
             full_name=full_name,
-            config=config
+            config=config or {}
         )
 
     # TODO: probably only slight modification is needed to allow for material
@@ -1268,42 +1268,46 @@ class FlowByActivity(_FlowBy):
         activity set name. An error will be logged if any rows from the calling
         FBA are assigned to multiple activity sets.
         '''
-        log.info('Splitting %s into activity sets', self.full_name)
-        if 'activity_sets' in self.config:
-            activities = self.config['activity_sets']
-            parent_config = {k: v for k, v in self.config.items()
-                             if k != 'activity_sets' and not k.startswith('_')}
-            parent_fba = self.reset_index().rename(columns={'index': 'row'})
-
-            child_fba_list = []
-            assigned_rows = set()
-            for activity_set, activity_config in activities.items():
-                log.info('Creating FlowByActivity for %s', activity_set)
-                child_fba = parent_fba.select_by_fields(
-                    selection_fields=activity_config['selection_fields']
-                )
-                child_fba.full_name += f'{NAME_SEP_CHAR}{activity_set}'
-                child_fba.config = {**parent_config, **activity_config}
-
-                if set(child_fba.row) & assigned_rows:
-                    log.error(
-                        'Some rows from %s assigned to multiple activity '
-                        'sets. This will lead to double-counting:\n%s',
-                        parent_fba.full_name,
-                        child_fba.iloc[list(set(child_fba.row)
-                                            & assigned_rows)])
-                    raise ValueError('Some rows in multiple activity sets')
-
-                assigned_rows.update(child_fba.row)
-                child_fba_list.append(child_fba.drop(columns='row'))
-
-            if set(parent_fba.row) - assigned_rows:
-                log.warning('Some rows from %s not assigned to an activity '
-                            'set. Is this intentional?', parent_fba.full_name)
-
-            return child_fba_list
-        else:
+        if 'activity_sets' not in self.config:
             return [self]
+
+        log.info('Splitting %s into activity sets', self.full_name)
+        activities = self.config['activity_sets']
+        parent_config = {k: v for k, v in self.config.items()
+                         if k != 'activity_sets' and not k.startswith('_')}
+        parent_fba = self.reset_index().rename(columns={'index': 'row'})
+
+        child_fba_list = []
+        assigned_rows = set()
+        for activity_set, activity_config in activities.items():
+            log.info('Creating FlowByActivity for %s', activity_set)
+            child_fba = parent_fba.select_by_fields(
+                selection_fields=activity_config['selection_fields']
+            )
+            child_fba.full_name += f'{NAME_SEP_CHAR}{activity_set}'
+            child_fba.config = {**parent_config, **activity_config}
+
+            if set(child_fba.row) & assigned_rows:
+                log.error(
+                    'Some rows from %s assigned to multiple activity '
+                    'sets. This will lead to double-counting:\n%s',
+                    parent_fba.full_name,
+                    child_fba.iloc[list(set(child_fba.row)
+                                        & assigned_rows)])
+                raise ValueError('Some rows in multiple activity sets')
+
+            assigned_rows.update(child_fba.row)
+            if not child_fba.empty:
+                child_fba_list.append(child_fba.drop(columns='row'))
+            else:
+                log.error('Activity set %s is empty. Check activity set '
+                          'definition!', child_fba.full_name)
+
+        if set(parent_fba.row) - assigned_rows:
+            log.warning('Some rows from %s not assigned to an activity '
+                        'set. Is this intentional?', parent_fba.full_name)
+
+        return child_fba_list
 
     def standardize_units_and_flows(
         self: 'FlowByActivity'
