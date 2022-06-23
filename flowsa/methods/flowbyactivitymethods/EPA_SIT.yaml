@@ -8,6 +8,8 @@ parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
 state: 'ME'
 file: 'Synthesis Tool.xlsm'
 years:
+- 2019
+- 2018
 - 2017
 - 2016
 - 2015
@@ -40,7 +42,7 @@ years:
 sheet_dict:
 
     'CO2FFC':
-        nrows: 32
+        nrows: 33
         unit: MMTCO2e
         flow: CO2
         headers:
@@ -51,6 +53,7 @@ sheet_dict:
             - Electric Utilities
             - International Bunker Fuels
             - TOTAL
+            - Additional CO2 Emissions
 
     'IndirectCO2':
         nrows: 45
@@ -62,6 +65,7 @@ sheet_dict:
             - Industrial
             - Transportation
             - TOTAL
+            - Additional CO2 Emissions
         subsubheaders:
             - Conventional Boiler Use
             - CHP and/or Cogeneration Process
@@ -69,7 +73,7 @@ sheet_dict:
             - Process Cooling and Refrigeration
             - Machine Drive
             - Electro-Chemical Processes
-            - Other Process use
+            - Other Process Use
             - Facility HVAC
             - Facility Lighting
             - Other Facility Support
@@ -77,13 +81,15 @@ sheet_dict:
             - Other Nonprocess Use
 
     'Stationary':
-        nrows: 15
+        nrows: 17
         unit: MMTCO2e
         headers:
             - Residential
             - Commercial
             - Industrial
             - Electric Utilities
+            - Additional N2O Emissions
+            - Additional CH4 Emissions
             - TOTAL
         skiprowstart: 13
         skiprowend: 15
@@ -92,7 +98,7 @@ sheet_dict:
     'Mobile Combustion CH4':
         sheetname: Mobile Combustion
         header: 55
-        nrows: 21
+        nrows: 22
         flow: CH4
         unit: MTCO2e
         headers:
@@ -100,12 +106,13 @@ sheet_dict:
             - Diesel Highway
             - Non-Highway
             - Alternative Fuel Vehicles
+            - Additional CH4 Emissions
             - Total
 
     'Mobile Combustion N2O':
         sheetname: Mobile Combustion
         header: 82
-        nrows: 21
+        nrows: 22
         flow: N2O
         unit: MTCO2e
         headers:
@@ -113,16 +120,18 @@ sheet_dict:
             - Diesel Highway
             - Non-Highway
             - Alternative Fuel Vehicles
+            - Additional N2O Emissions
             - Total
 
     'Coal':
         header: 3
-        nrows: 5
+        nrows: 6
         unit: MTCO2e
         flow: CH4
         headers:
             - Coal Mining
             - Abandoned Coal Mines
+            - Additional Emissions Source
 
     'Gas and Oil':
         header: 17
@@ -143,12 +152,15 @@ sheet_dict:
             - Natural Gas Flaring
 
     'IP':
-        nrows: 20
+        nrows: 23
         unit: MTCO2e
         headers:
             - Carbon Dioxide Emissions
             - Nitrous Oxide Emissions
             - HFC, PFC, SF6 and NF3 Emissions
+            - Additional Carbon Dioxide Emissions
+            - Additional Nitrous Oxide Emissions
+            - Additional HFC, PFC, SF6, and NF3 Emissions
             - Total Emissions
         subgroup: 'activitybyflow'
 
@@ -181,7 +193,7 @@ sheet_dict:
     'Land-Use Change and Forest Emissions and Sequestration':
         sheetname: Forest Management
         header: 8
-        nrows: 19
+        nrows: 37
         unit: MMTCO2E
         flow: CO2E
         headers:
@@ -191,6 +203,21 @@ sheet_dict:
             - Forest Fires
             - N2O from Settlement Soils
             - Agricultural Soil Carbon Flux
+            - Additional Carbon Dioxide Emissions
+            - Additional Methane Emissions
+            - Additional Nitrous Oxide Emissions
+            - Total
+        subsubheaders:
+            - Aboveground Biomass
+            - Belowground Biomass
+            - Deadwood
+            - Litter
+            - Soil (Mineral)
+            - Soil (Organic)
+            - Drained Organic Soil
+            - Total wood products and landfills
+        skiprowstart: 10
+        skiprowend: 18
 
     'Emissions from Landfills':
         sheetname: Waste
@@ -221,11 +248,13 @@ sheet_dict:
 
     'Wastewater':
         header: 3
-        nrows: 8
+        nrows: 10
         unit: MMTCO2e
         headers:
             - Municipal CH4
             - Municipal N2O
             - Industrial CH4
+            - Additional Nitrous Oxide Emissions
+            - Additional Methan Emissions
             - Total Emissions
         subgroup: 'activitybyflow'
