@@ -132,11 +132,12 @@ def cdd_processing(fba, source_dict):
     material = source_dict.get('cdd_parameter')
     inputs = fba.loc[fba['FlowName'] == material]
     inputs = inputs.reset_index(drop=True)
-    ouptuts = inputs.copy()
+    outputs = inputs.copy()
     inputs['ActivityConsumedBy'] = f"{material} Processing"
-    ouptuts['ActivityProducedBy'] = f"{material} Processing"
+    outputs['ActivityProducedBy'] = f"{material} Processing"
 
-    df1 = pd.concat([inputs, ouptuts], ignore_index=True)
+    outputs['FlowName'] = f"{material} Processed"
+    df1 = pd.concat([inputs, outputs], ignore_index=True)
     cols = flow_by_activity_mapped_fields.copy()
     cols.pop('FlowAmount')
     df1 = aggregator(df1, cols)
