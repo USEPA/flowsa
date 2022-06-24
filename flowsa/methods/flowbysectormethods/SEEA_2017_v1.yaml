@@ -291,11 +291,9 @@ source_names:
         selection_fields:
           PrimaryActivity:
             - Passenger Cars Gasoline On-Road
-            # - Light-Duty Trucks Gasoline On-Road
             - Rail Non-Road
             - Ships and Boats Non-Road
             - Aircraft Non-Road
-            # - Medium- and Heavy-Duty Trucks and Buses Diesel On-Road
         attribution_method: direct
 
       trucking:
@@ -303,48 +301,64 @@ source_names:
           PrimaryActivity:
             - Light-Duty Trucks Gasoline On-Road
             - Medium- and Heavy-Duty Trucks and Buses Diesel On-Road
+        activity_to_sector_mapping: EPA_GHGI_trucking
         attribution_method: proportional
         attribution_source:
-          BTS_TSA
+          BTS_TSA:
+            year: 2017
+            selection_fields:
+              Description:
+                - In-house truck transportation
+                - For-hire truck transportation
+            activity_to_sector_mapping: BTS_TSA
+            attribution_method: proportional
+            attribution_source:
+              BLS_QCEW:
+                selection_fields:
+                  Class: Employment
+                year: 2012
+                clean_fba: !script_function:temp_data_source_functions clean_qcew
 
-      # construction_and_mining:
-      #   selection_fields:
-      #     PrimaryActivity: Construction/Mining Equipment Non-Road
-      #   attribution_method: proportional
-      #   attribution_source:
-      #     BEA_Use_Detail_PRO_BeforeRedef:
-      #       <<: *bea_use
-      #       selection_fields:
-      #         ActivityProducedBy: '333120' # purchases of construction/mining equipment
+      construction_and_mining:
+        selection_fields:
+          PrimaryActivity: Construction/Mining Equipment Non-Road
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea_use
+            selection_fields:
+              ActivityProducedBy: '333120' # purchases of construction/mining equipment
 
-      # farm_non_road:
-      #   selection_fields:
-      #     PrimaryActivity: Agricultural Equipment Non-Road
-      #   attribution_method: proportional
-      #   attribution_source:
-      #     BEA_Use_Detail_PRO_BeforeRedef:
-      #       <<: *bea_use
-      #       selection_fields:
-      #         ActivityProducedBy: '333111' # purchases of farm machinery
+      farm_non_road:
+        selection_fields:
+          PrimaryActivity: Agricultural Equipment Non-Road
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea_use
+            selection_fields:
+              ActivityProducedBy: '333111' # purchases of farm machinery
 
-      # other_non_road: # attributed by purchases of petroleum refinery products
-      #   selection_fields:
-      #     PrimaryActivity: Other Non-Road
-      #   attribution_method: proportional
-      #   attribution_source:
-      #     BEA_Use_Detail_PRO_BeforeRedef:
-      #       <<: *bea_use
-      #       selection_fields:
-      #         ActivityProducedBy: '324110' # purchases of refinery products
+      other_non_road: # attributed by purchases of petroleum refinery products
+        selection_fields:
+          PrimaryActivity: Other Non-Road
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea_use
+            selection_fields:
+              ActivityProducedBy: '324110' # purchases of refinery products
 
-      # alt_fuel_on_road: # assumes natural gas is primary alternate fuel
-      #   selection_fields:
-      #     PrimaryActivity: Alternative Fuel On-Road
-      #   attribution_method: proportional
-      #   attribution_source:
-      #     BEA_Use_Detail_PRO_BeforeRedef:
-      #       <<: *bea_use
-      #       selection_fields:
-      #         ActivityProducedBy: '221200' # purchases of natural gas
+      alt_fuel_on_road: # assumes natural gas is primary alternate fuel
+        selection_fields:
+          PrimaryActivity:
+            - Alternative Fuel On-Road
+            - All activities Alternative Fuel On-Road
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea_use
+            selection_fields:
+              ActivityProducedBy: '221200' # purchases of natural gas
 
-  # "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
+  "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
