@@ -63,7 +63,7 @@ def tsa_parse(*, df_list, source, year, config, **_):
     df['FlowType'] = 'TECHNOSPHERE_FLOW'
     # df['ActivityConsumedBy'] = ''
     # df['Compartment'] = ''  # ???
-    # df['Location'] = ''
+    df['Location'] = '00000'
     # df['LocationSystem'] = ''
     # df['MeasureofSpread'] = ''
     df['DataReliability'] = 3  # temp
