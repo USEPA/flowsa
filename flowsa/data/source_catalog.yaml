@@ -48,6 +48,8 @@ BLS_QCEW:
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
+BTS_TSA:
+  sector-like_activities: False
 CalRecycle_WasteCharacterization:
   class:
     - Other
