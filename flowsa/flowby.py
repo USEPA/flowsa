@@ -491,14 +491,14 @@ class _FlowBy(pd.DataFrame):
         else:
             fb = self.assign(
                 **{f'Primary{col_type}': self[f'{col_type}ProducedBy'].mask(
-                    (self.FlowType == 'TECHNOSPHERE_FLOW')
-                    | (self[f'{col_type}ProducedBy'].isna())
-                    | (self[f'{col_type}ProducedBy'].isin(
-                            ['22', '221', '2213', '22131', '221310']
-                        )
-                        & self[f'{col_type}ConsumedBy'].isin(
-                            ['F010', 'F0100', 'F01000']
-                        )),
+                    ((self.FlowType == 'TECHNOSPHERE_FLOW')
+                     | (self[f'{col_type}ProducedBy'].isna())
+                     | (self[f'{col_type}ProducedBy'].isin(
+                             ['22', '221', '2213', '22131', '221310']
+                         )
+                         & self[f'{col_type}ConsumedBy'].isin(
+                             ['F010', 'F0100', 'F01000']
+                         ))) & self[f'{col_type}ConsumedBy'].notna(),
                     self[f'{col_type}ConsumedBy']
                 )}
             )
