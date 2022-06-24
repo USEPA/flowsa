@@ -136,7 +136,7 @@ def cdd_processing(fba, source_dict):
     inputs['ActivityConsumedBy'] = f"{material} Processing"
     outputs['ActivityProducedBy'] = f"{material} Processing"
 
-    outputs['FlowName'] = f"{material} Processed"
+    outputs['Flowable'] = f"{material} Processed"
     df1 = pd.concat([inputs, outputs], ignore_index=True)
     cols = flow_by_activity_mapped_fields.copy()
     cols.pop('FlowAmount')
@@ -150,8 +150,8 @@ def cdd_processing(fba, source_dict):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2014)
-    fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2014)
+    # flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2014)
+    # fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2014)
 
     flowsa.flowbysector.main(method='CDD_concrete_national_2014')
     fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')
