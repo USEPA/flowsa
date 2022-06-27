@@ -1294,6 +1294,7 @@ class FlowByActivity(_FlowBy):
             )
             child_fba.full_name += f'{NAME_SEP_CHAR}{activity_set}'
             child_fba.config = {**parent_config, **activity_config}
+            child_fba = child_fba.assign(SourceName=child_fba.full_name)
 
             if set(child_fba.row) & assigned_rows:
                 log.error(
