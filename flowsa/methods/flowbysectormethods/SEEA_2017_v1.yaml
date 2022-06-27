@@ -22,12 +22,30 @@ _ghgi_parameters: &ghgi_parameters
   fedefl_mapping: GHGI
 
 _attribution_sources:
-  BEA_Use_Detail_PRO_BeforeRedef: &bea_use
-    activity_to_sector_mapping: BEA_2012_Detail
+  BLS_QCEW: &bls_qcew
+    selection_fields:
+      Class: Employment
     year: 2012
-    # selection_fields:  # Need to provide
-    #   ActivityProducedBy:
-    #     - '327400'
+    clean_fba: !script_function:temp_data_source_functions clean_qcew
+  BEA_Use_Detail_PRO_BeforeRedef: &bea_use
+    year: 2012
+    activity_to_sector_mapping: BEA_2012_Detail
+    attribution_method: proportional
+    attribution_source:
+      BLS_QCEW:
+        <<: *bls_qcew
+  EPA_GHGI_T_A_79: &t_a_79
+    attribution_method: proportional
+    attribution_source:
+      BLS_QCEW:
+        <<: *bls_qcew
+  BTS_TSA: &tsa_trucking
+    year: 2017
+    selection_fields:
+      Description:
+        - In-house truck transportation
+        - For-hire truck transportation
+    activity_to_sector_mapping: BTS_TSA
     attribution_method: proportional
     attribution_source:
       BLS_QCEW:
@@ -35,6 +53,17 @@ _attribution_sources:
           Class: Employment
         year: 2012
         clean_fba: !script_function:temp_data_source_functions clean_qcew
+  EIA_MECS_Energy: &mecs_energy
+    year: 2014
+    selection_fields: &mecs_energy_default_selection
+      Class: Energy
+      Unit: Trillion Btu
+    clean_fba: !script_function:temp_data_source_functions clean_mecs_energy_fba_for_bea_summary
+    clean_fba_w_sec: !script_function:temp_data_source_functions clean_mapped_mecs_energy_fba_for_bea_summary
+    attribution_method: proportional # cleaning fxns remove need for proportional-flagged IF industry_spec is BEA summary
+    attribution_source:
+      BLS_QCEW:
+        <<: *bls_qcew
   USDA_CoA_Cropland_NAICS: &usda_pasture # allocated based on USDA Animal operation land (acres)
     selection_fields:
       Class:
@@ -283,82 +312,269 @@ source_names:
 #       pasture:
 #         <<: *pasture
 
-## Mobile Sources (N20 and CH4)
-  EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
-    <<: *ghgi_parameters
-    activity_sets:
-      direct_attribution: # Some of these need to be separated and attributed differently
-        selection_fields:
-          PrimaryActivity:
-            - Passenger Cars Gasoline On-Road
-            - Rail Non-Road
-            - Ships and Boats Non-Road
-            - Aircraft Non-Road
-        attribution_method: direct
+# ## Mobile Sources (N20 and CH4)
+  # EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
+  #   <<: *ghgi_parameters
+  #   activity_sets:
+  #     direct_attribution: # Some of these need to be separated and attributed differently
+  #       selection_fields:
+  #         PrimaryActivity:
+  #           - Passenger Cars Gasoline On-Road
+  #           - Rail Non-Road
+  #           - Ships and Boats Non-Road
+  #           - Aircraft Non-Road
+  #       attribution_method: direct
 
-      trucking:
-        selection_fields:
-          PrimaryActivity:
-            - Light-Duty Trucks Gasoline On-Road
-            - Medium- and Heavy-Duty Trucks and Buses Diesel On-Road
-        activity_to_sector_mapping: EPA_GHGI_trucking
-        attribution_method: proportional
-        attribution_source:
-          BTS_TSA:
-            year: 2017
-            selection_fields:
-              Description:
-                - In-house truck transportation
-                - For-hire truck transportation
-            activity_to_sector_mapping: BTS_TSA
-            attribution_method: proportional
-            attribution_source:
-              BLS_QCEW:
-                selection_fields:
-                  Class: Employment
-                year: 2012
-                clean_fba: !script_function:temp_data_source_functions clean_qcew
+  #     trucking:
+  #       selection_fields:
+  #         PrimaryActivity:
+  #           - Light-Duty Trucks Gasoline On-Road
+  #           - Medium- and Heavy-Duty Trucks and Buses Diesel On-Road
+  #       activity_to_sector_mapping: EPA_GHGI_trucking
+  #       attribution_method: proportional
+  #       attribution_source:
+          # BTS_TSA:
+          #   <<: *tsa_trucking
 
-      construction_and_mining:
-        selection_fields:
-          PrimaryActivity: Construction/Mining Equipment Non-Road
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea_use
-            selection_fields:
-              ActivityProducedBy: '333120' # purchases of construction/mining equipment
+  #     construction_and_mining:
+  #       selection_fields:
+  #         PrimaryActivity: Construction/Mining Equipment Non-Road
+  #       attribution_method: proportional
+  #       attribution_source:
+  #         BEA_Use_Detail_PRO_BeforeRedef:
+  #           <<: *bea_use
+  #           selection_fields:
+  #             ActivityProducedBy: '333120' # purchases of construction/mining equipment
 
-      farm_non_road:
-        selection_fields:
-          PrimaryActivity: Agricultural Equipment Non-Road
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea_use
-            selection_fields:
-              ActivityProducedBy: '333111' # purchases of farm machinery
+  #     farm_non_road:
+  #       selection_fields:
+  #         PrimaryActivity: Agricultural Equipment Non-Road
+  #       attribution_method: proportional
+  #       attribution_source:
+  #         BEA_Use_Detail_PRO_BeforeRedef:
+  #           <<: *bea_use
+  #           selection_fields:
+  #             ActivityProducedBy: '333111' # purchases of farm machinery
 
-      other_non_road: # attributed by purchases of petroleum refinery products
-        selection_fields:
-          PrimaryActivity: Other Non-Road
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea_use
-            selection_fields:
-              ActivityProducedBy: '324110' # purchases of refinery products
+  #     other_non_road: # attributed by purchases of petroleum refinery products
+  #       selection_fields:
+  #         PrimaryActivity: Other Non-Road
+  #       attribution_method: proportional
+  #       attribution_source:
+  #         BEA_Use_Detail_PRO_BeforeRedef:
+  #           <<: *bea_use
+  #           selection_fields:
+  #             ActivityProducedBy: '324110' # purchases of refinery products
 
-      alt_fuel_on_road: # assumes natural gas is primary alternate fuel
-        selection_fields:
-          PrimaryActivity:
-            - Alternative Fuel On-Road
-            - All activities Alternative Fuel On-Road
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea_use
-            selection_fields:
-              ActivityProducedBy: '221200' # purchases of natural gas
+  #     alt_fuel_on_road: # assumes natural gas is primary alternate fuel
+  #       selection_fields:
+  #         PrimaryActivity:
+  #           - Alternative Fuel On-Road
+        #     - All activities Alternative Fuel On-Road
+        # attribution_method: proportional
+        # attribution_source:
+        #   BEA_Use_Detail_PRO_BeforeRedef:
+        #     <<: *bea_use
+        #     selection_fields:
+        #       ActivityProducedBy: '221200' # purchases of natural gas
 
-  "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
+  # EPA_GHGI_T_3_15: *mobile #N2O from mobile combustion duplicates method for CH4
+
+## Major CO2 Sources
+  # EPA_GHGI_T_A_13:  # (2017 specific table) CO2 emissions from stationary combustion and transportation
+  #   <<: *ghgi_parameters
+  #   clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
+  #   activity_sets:
+  #     direct_attribution:
+  #       selection_fields:
+  #         PrimaryActivity: Total (All Fuels) Residential
+  #       attribution_method: direct
+  #     non-manufacturing_coal:
+  #       selection_fields:
+  #         PrimaryActivity:
+  #           - Commercial Coal Commercial
+  #           - Industrial Other Coal Industrial
+  #       attribution_method: proportional
+  #       attribution_source:
+      #     BEA_Use_Detail_PRO_BeforeRedef:
+      #       <<: *bea_use
+      #       selection_fields:
+      #         ActivityProducedBy: '212100' # purchases of coal
+      # non-manufacturing_natural_gas:
+      #   selection_fields:
+      #     PrimaryActivity:
+      #       - Natural Gas Commercial
+      #       - Natural Gas Industrial
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     BEA_Use_Detail_PRO_BeforeRedef:
+      #       <<: *bea_use
+      #       selection_fields:
+      #         ActivityProducedBy: '221200' # purchases of natural gas
+      # non-manufacturing_petroleum:
+      #   selection_fields:
+      #     PrimaryActivity:
+      #       - Total Petroleum Commercial
+      #       - Total Petroleum Industrial
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     BEA_Use_Detail_PRO_BeforeRedef:
+      #       <<: *bea_use
+      #       selection_fields:
+      #         ActivityProducedBy: '324110' # purchases of refinery products
+      # manufacturing_coal: # Industrial Coal for Manufacturing
+      #   selection_fields:
+      #     PrimaryActivity:
+      #       - Industrial Other Coal Industrial - Manufacturing
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EIA_MECS_Energy:
+      #       <<: *mecs_energy
+      #       selection_fields:
+      #         <<: *mecs_energy_default_selection
+      #         FlowName: Coal
+      # manufacturing_natural_gas: # Industrial Natural Gas for manufacturing
+      #   selection_fields:
+      #     PrimaryActivity:
+      #       - Natural Gas Industrial - Manufacturing
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EIA_MECS_Energy:
+      #       <<: *mecs_energy
+      #       selection_fields:
+      #         <<: *mecs_energy_default_selection
+      #         FlowName: Natural Gas
+
+    ### Transportation
+      # natural_gas_transportation:
+      #   selection_fields:
+      #     PrimaryActivity: Natural Gas Transportation
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EPA_GHGI_T_A_79:
+      #       <<: *t_a_79
+      #       selection_fields:
+      #         FlowName: Natural Gas
+
+      # aviation_gas_transportation:
+      #   selection_fields:
+      #     PrimaryActivity: Aviation Gasoline Transportation
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EPA_GHGI_T_A_79:
+      #       <<: *t_a_79
+      #       selection_fields:
+      #         FlowName: Aviation Gasoline
+
+      # jet_fuel_transportation:
+      #   selection_fields:
+      #     PrimaryActivity: Jet Fuel Transportation
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EPA_GHGI_T_A_79:
+      #       <<: *t_a_79
+      #       selection_fields:
+      #         FlowName: Jet Fuel
+
+      # propane_transportation:
+      #   selection_fields:
+      #     PrimaryActivity: LPG (Propane) Transportation
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EPA_GHGI_T_A_79:
+      #       <<: *t_a_79
+      #       selection_fields:
+      #         FlowName: LPG
+
+      # residual_fuel_transportation:
+      #   selection_fields:
+      #     PrimaryActivity: Residual Fuel Transportation
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EPA_GHGI_T_A_79:
+      #       <<: *t_a_79
+      #       selection_fields:
+      #         FlowName: Residual Fuel Oil
+
+      # distillate_fuel_transportation:
+      #   selection_fields:
+      #     PrimaryActivity:
+      #       - Distillate Fuel Oil Transportation
+      #   activity_to_sector_mapping: EPA_GHGI_trucking
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EPA_GHGI_T_A_79:
+      #       <<: *t_a_79
+      #       activity_to_sector_mapping: EPA_GHGI
+      #       activity_sets:
+      #         direct_attribution:
+      #           selection_fields:
+      #             FlowName: Distillate Fuel Oil (Diesel Fuel)
+      #             PrimaryActivity:
+      #               - Passenger Cars
+      #               - Rail
+      #               - Recreational Boats
+      #               - Ships and Non-Recreational Boats
+      #           attribution_method: direct
+      #         trucking:
+      #           selection_fields:
+      #             FlowName: Distillate Fuel Oil (Diesel Fuel)
+      #             PrimaryActivity:
+      #               - Light-Duty Trucks
+      #               - Medium- and Heavy-Duty Trucks
+      #           activity_to_sector_mapping: EPA_GHGI_trucking
+      #           attribution_method: proportional
+      #           attribution_source:
+      #             BTS_TSA:
+      #               <<: *tsa_trucking
+      #         buses:
+      #           selection_fields:
+      #             FlowName: Distillate Fuel Oil (Diesel Fuel)
+      #             PrimaryActivity: Buses
+      #           attribution_method: proportional
+      #           attribution_source:
+      #             BEA_Use_Detail_PRO_BeforeRedef:
+      #               <<: *bea_use
+      #               selection_fields:
+      #                 ActivityProducedBy: '324110' # use of petroleum products
+
+      # motor_gasoline_transportation:
+      #   selection_fields:
+      #     PrimaryActivity:
+      #       - Motor Gasoline Transportation
+      #   activity_to_sector_mapping: EPA_GHGI_trucking
+      #   attribution_method: proportional
+      #   attribution_source:
+      #     EPA_GHGI_T_A_79:
+      #       <<: *t_a_79
+      #       activity_to_sector_mapping: EPA_GHGI
+      #       activity_sets:
+      #         direct_attribution:
+      #           selection_fields:
+      #             FlowName: Motor Gasoline
+      #             PrimaryActivity:
+      #               - Passenger Cars
+      #               - Motorcycles
+      #               - Recreational Boats
+      #           attribution_method: direct
+      #         trucking:
+      #           selection_fields:
+      #             FlowName: Motor Gasoline
+      #             PrimaryActivity:
+      #               - Light-Duty Trucks
+      #               - Medium- and Heavy-Duty Trucks
+      #           activity_to_sector_mapping: EPA_GHGI_trucking
+      #           attribution_method: proportional
+      #           attribution_source:
+      #             BTS_TSA:
+      #               <<: *tsa_trucking
+      #         buses:
+      #           selection_fields:
+      #             FlowName: Motor Gasoline
+      #             PrimaryActivity: Buses
+      #           attribution_method: proportional
+      #           attribution_source:
+      #             BEA_Use_Detail_PRO_BeforeRedef:
+      #               <<: *bea_use
+      #               selection_fields:
+      #                 ActivityProducedBy: '324110' # use of petroleum products
