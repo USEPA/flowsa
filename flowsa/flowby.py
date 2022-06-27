@@ -1240,8 +1240,14 @@ class FlowByActivity(_FlowBy):
     def convert_to_fbs(self: 'FlowByActivity') -> 'FlowBySector':
         if 'activity_sets' in self.config:
             return (
-                pd.concat([fba.convert_to_fbs()
-                           for fba in self.activity_sets()])
+                pd.concat([
+                    fba.convert_to_fbs()
+                    for fba in (
+                        self
+                        .function_socket('clean_fba_before_activity_sets')
+                        .activity_sets()
+                    )
+                ])
                 .reset_index(drop=True)
             )
 
@@ -1274,7 +1280,9 @@ class FlowByActivity(_FlowBy):
         log.info('Splitting %s into activity sets', self.full_name)
         activities = self.config['activity_sets']
         parent_config = {k: v for k, v in self.config.items()
-                         if k != 'activity_sets' and not k.startswith('_')}
+                         if k not in ['activity_sets',
+                                      'clean_fba_before_activity_sets']
+                         and not k.startswith('_')}
         parent_fba = self.reset_index().rename(columns={'index': 'row'})
 
         child_fba_list = []
