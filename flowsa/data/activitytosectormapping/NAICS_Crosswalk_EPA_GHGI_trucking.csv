@@ -24,6 +24,31 @@ EPA_GHGI,Light-Duty Trucks Gasoline On-Road,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_1
 EPA_GHGI,Light-Duty Trucks Gasoline On-Road,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Light-Duty Trucks Gasoline On-Road,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Light-Duty Trucks Gasoline On-Road,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Medium- and Heavy-Duty Trucks and Buses Diesel On-Road,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Medium- and Heavy-Duty Trucks and Buses Diesel On-Road,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Medium- and Heavy-Duty Trucks and Buses Diesel On-Road,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
@@ -48,30 +73,55 @@ EPA_GHGI,Medium- and Heavy-Duty Trucks and Buses Diesel On-Road,NAICS_2012_Code,
 EPA_GHGI,Medium- and Heavy-Duty Trucks and Buses Diesel On-Road,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Medium- and Heavy-Duty Trucks and Buses Diesel On-Road,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Medium- and Heavy-Duty Trucks and Buses Diesel On-Road,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 ,,,,,,
 ,,,,,,
 ,,,,,,
