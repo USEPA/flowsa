@@ -49,6 +49,7 @@ BLS_QCEW:
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 BTS_TSA:
+  data_format: FBA
   sector-like_activities: False
 CalRecycle_WasteCharacterization:
   class:
@@ -116,6 +117,7 @@ EPA_CDDPath:
   activity_schema:
   sector_aggregation_level: "aggregated"
 EPA_GHGI:
+  data_format: FBA
   class:
     - Chemicals
     - Energy
