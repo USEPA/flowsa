@@ -36,7 +36,8 @@ def tsa_parse(*, df_list, source, year, config, **_):
            .drop(columns=df.columns.difference(
                list(config['parse']['rename_columns_use'].keys())
            ))
-           .rename(columns=config['parse']['rename_columns_use']))
+           .rename(columns=config['parse']['rename_columns_use'])
+           .assign(SourceName=f'{source}.use'))
     in_house = use[use.Description.str.startswith('In-house')]
 
     # Data on for-hire production of transportation services (which may
@@ -47,7 +48,8 @@ def tsa_parse(*, df_list, source, year, config, **_):
             .drop(columns=df.columns.difference(
                list(config['parse']['rename_columns_make'].keys())
             ))
-            .rename(columns=config['parse']['rename_columns_make']))
+            .rename(columns=config['parse']['rename_columns_make'])
+            .assign(SourceName=f'{source}.make'))
     for_hire = make[make.Description.str.startswith('For-hire')]
 
     df = pd.concat([in_house, for_hire])
@@ -57,7 +59,6 @@ def tsa_parse(*, df_list, source, year, config, **_):
 
     # Add other columns as needed for complete FBA
     df['Class'] = 'Money'
-    df['SourceName'] = source
     df['FlowName'] = 'Gross Output'
     df['Unit'] = 'USD'
     df['FlowType'] = 'TECHNOSPHERE_FLOW'
