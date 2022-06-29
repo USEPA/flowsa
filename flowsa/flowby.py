@@ -518,6 +518,11 @@ class _FlowBy(pd.DataFrame):
 
             return fb
 
+    def add_full_name(self: FB, full_name: str) -> FB:
+        fb = self.copy()
+        fb.full_name = full_name
+        return fb
+
 
 class FlowByActivity(_FlowBy):
     _metadata = [*_FlowBy()._metadata]
@@ -1289,10 +1294,15 @@ class FlowByActivity(_FlowBy):
         assigned_rows = set()
         for activity_set, activity_config in activities.items():
             log.info('Creating FlowByActivity for %s', activity_set)
-            child_fba = parent_fba.select_by_fields(
-                selection_fields=activity_config['selection_fields']
+
+            child_fba = (
+                parent_fba
+                .add_full_name(
+                    f'{parent_fba.full_name}{NAME_SEP_CHAR}{activity_set}')
+                .select_by_fields(
+                    selection_fields=activity_config['selection_fields'])
             )
-            child_fba.full_name += f'{NAME_SEP_CHAR}{activity_set}'
+
             child_fba.config = {**parent_config, **activity_config}
             child_fba = child_fba.assign(SourceName=child_fba.full_name)
 
