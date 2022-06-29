@@ -2,9 +2,11 @@ from flowsa import naics
 from flowsa.flowsa_log import log
 import pandas as pd
 from flowsa.data_source_scripts import EIA_MECS as mecs
+from flowsa.data_source_scripts import EPA_GHGI as ghgi
+from flowsa.flowby import FlowByActivity
 
 
-def clean_qcew(fba, **kwargs):
+def clean_qcew(fba: FlowByActivity, **kwargs):
     if fba.config.get('geoscale') == 'national':
         fba = fba.query('Location == "00000"')
 
@@ -39,7 +41,7 @@ def clean_qcew(fba, **kwargs):
     return filtered
 
 
-def clean_usda_cropland_naics(fba, **kwargs):
+def clean_usda_cropland_naics(fba: FlowByActivity, **kwargs):
     if fba.config['industry_spec']['default'] == 'NAICS_2':
         naics_2 = (
             fba
@@ -58,7 +60,7 @@ def clean_usda_cropland_naics(fba, **kwargs):
     return filtered
 
 
-def clean_mecs_energy_fba_for_bea_summary(fba, **kwargs):
+def clean_mecs_energy_fba_for_bea_summary(fba: FlowByActivity, **kwargs):
     naics_3 = fba.query('ActivityConsumedBy.str.len() == 3')
     naics_4 = fba.query('ActivityConsumedBy.str.len() == 4 '
                         '& ActivityConsumedBy.str.startswith("336")')
@@ -84,8 +86,39 @@ def clean_mecs_energy_fba_for_bea_summary(fba, **kwargs):
     return subtracted
 
 
-def clean_mapped_mecs_energy_fba_for_bea_summary(fba, **kwargs):
+def clean_mapped_mecs_energy_fba_for_bea_summary(
+    fba: FlowByActivity,
+    **kwargs
+):
     naics_4_list = fba.config['naics_4_list']
 
     return fba.query('~(SectorConsumedBy in @naics_4_list '
                      '& ActivityConsumedBy != SectorConsumedBy)')
+
+
+def clean_hfc_fba(fba: FlowByActivity, **kwargs):
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
+
+    df = ghgi.clean_HFC_fba(fba)
+
+    new_fba = FlowByActivity(df)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
+
+    return new_fba
+
+
+def split_hfcs_by_type(fba: FlowByActivity, **kwargs):
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
+
+    df = ghgi.split_HFCs_by_type(fba)
+
+    new_fba = FlowByActivity(df)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
+
+    return new_fba
