@@ -101,7 +101,12 @@ def clean_hfc_fba(fba: FlowByActivity, **kwargs):
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
     }
 
-    df = ghgi.clean_HFC_fba(fba)
+    df = (
+        fba
+        .pipe(ghgi.subtract_HFC_transport_emissions)
+        .pipe(ghgi.allocate_HFC_to_residential)
+        .pipe(ghgi.split_HFC_foams)
+    )
 
     new_fba = FlowByActivity(df)
     for attr in attributes_to_save:
