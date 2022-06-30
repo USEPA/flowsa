@@ -27,6 +27,42 @@ def get_catalog_info(source_name: str) -> dict:
     return source_catalog.get(source_name, {})
 
 
+# TODO: Should this be in the flowsa __init__.py?
+def get_flowby_from_config(
+    name: str,
+    config: dict,
+    external_config_path: str = None,
+    download_sources_ok: bool = True
+) -> FB:
+    if config['data_format'] == 'FBA':
+        return FlowByActivity.getFlowByActivity(
+            full_name=name,
+            config=config,
+            download_ok=download_sources_ok
+        )
+    elif config['data_format'] == 'FBS':
+        return FlowBySector.getFlowBySector(
+            method=name,
+            full_name=name,
+            config=config,
+            external_config_path=external_config_path,
+            download_sources_ok=download_sources_ok,
+            download_fbs_ok=download_sources_ok
+        )
+    elif config['data_format'] == 'FBS_outside_flowsa':
+        return FlowBySector(
+            config['FBS_datapull_fxn'](
+                config, config, external_config_path
+            ),
+            full_name=name,
+            config=config
+        )
+    else:
+        log.critical('Unrecognized data format %s for source %s',
+                     config['data_format'], name)
+        raise ValueError('Unrecognized data format')
+
+
 class _FlowBy(pd.DataFrame):
     _metadata = ['full_name', 'config']
 
@@ -188,7 +224,7 @@ class _FlowBy(pd.DataFrame):
                 '%s %s could not be found locally, downloaded, or generated',
                 file_metadata.name_data, file_metadata.category
             )
-        fb = cls(df, full_name=full_name, config=config or {})
+        fb = cls(df, full_name=full_name or '', config=config or {})
         return fb
 
     def standardize_units(self: FB) -> FB:
@@ -609,7 +645,7 @@ class FlowByActivity(_FlowBy):
             flowby_generator=flowby_generator,
             output_path=settings.fbaoutputpath,
             full_name=full_name,
-            config=config or {}
+            config=config
         )
 
     # TODO: probably only slight modification is needed to allow for material
@@ -882,7 +918,7 @@ class FlowByActivity(_FlowBy):
                             or k == 'method_config_keys'},
                             **get_catalog_info(source),
                             **config}
-                ).convert_to_fbs()
+                ).prepare_fbs()
             )
         # elif attribution_method == 'proportional-flagged':
         #     (source, config), = fba.config['attribution_source'].items()
@@ -1242,11 +1278,11 @@ class FlowByActivity(_FlowBy):
     # def flagged_proportionally_attribute(self: 'FlowByActivity'):
     #     raise NotImplementedError
 
-    def convert_to_fbs(self: 'FlowByActivity') -> 'FlowBySector':
+    def prepare_fbs(self: 'FlowByActivity') -> 'FlowBySector':
         if 'activity_sets' in self.config:
             return (
                 pd.concat([
-                    fba.convert_to_fbs()
+                    fba.prepare_fbs()
                     for fba in (
                         self
                         .function_socket('clean_fba_before_activity_sets')
@@ -1445,24 +1481,8 @@ class FlowBySector(_FlowBy):
                                               external_config_path)
         sources = method_config.pop('source_names')
 
-        source_fba_list = [
-            FlowByActivity.getFlowByActivity(
-                full_name=source_name,
-                config={
-                    **method_config,
-                    'method_config_keys': method_config.keys(),
-                    **get_catalog_info(source_name),
-                    **config
-                },
-                download_ok=download_sources_ok
-            )
-            .convert_to_fbs()
-            for source_name, config in sources.items()
-            if get_catalog_info(source_name)['data_format'] == 'FBA'
-        ]
-        source_fbs_list = [
-            FlowBySector.getFlowBySector(
-                method=source_name,
+        fbs = pd.concat([
+            get_flowby_from_config(
                 name=source_name,
                 config={
                     **method_config,
@@ -1471,38 +1491,20 @@ class FlowBySector(_FlowBy):
                     **config
                 },
                 external_config_path=external_config_path,
-                download_sources_ok=download_sources_ok,
-                download_fbs_ok=download_sources_ok,
-            )
-            .function_socket('clean_fbs_df_fxn')
-            .select_by_fields()
-            .convert_fips_to_geoscale(method_config['geoscale'])
+                download_sources_ok=download_sources_ok
+            ).prepare_fbs()
             for source_name, config in sources.items()
-            if get_catalog_info(source_name)['data_format'] == 'FBS'
-        ]
-        source_external_fbs_list = [
-            FlowBySector(
-                config['FBS_datapull_fxn'](
-                    config, method_config, external_config_path
-                ),
-                full_name=source_name,
-                config=config
-            )
-            .function_socket('clean_fbs_df_fxn')
-            .select_by_fields()
-            .convert_fips_to_geoscale(method_config['geoscale'])
-            for source_name, config in sources.items()
-            if get_catalog_info(source_name)['data_format']
-            == 'FBS_outside_flowsa'
-        ]
-
-        fbs = pd.concat([
-            *source_fba_list,
-            *source_fbs_list,
-            *source_external_fbs_list
         ])
 
         return fbs
+
+    def prepare_fbs(self: 'FlowBySector') -> 'FlowBySector':
+        return (
+            self
+            .function_socket('clean_fbs_df_fxn')
+            .select_by_fields()
+            .convert_fips_to_geoscale(self.config['geoscale'])
+        )
 
 
 # The three classes extending pd.Series, together with the _constructor...
