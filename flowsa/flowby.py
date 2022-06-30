@@ -909,16 +909,22 @@ class FlowByActivity(_FlowBy):
         attribution_method = fba.config.get('attribution_method')
 
         if attribution_method == 'proportional':
-            (source, config), = fba.config['attribution_source'].items()
-            attributed_fba = fba.proportionally_attribute(
-                FlowByActivity.getFlowByActivity(
-                    full_name=source,
+            if isinstance(fba.config['attribution_source'], str):
+                attribution_fbs = (fba.config['cache']
+                                   [fba.config['attribution_source']])
+            else:
+                (name, config), = fba.config['attribution_source'].items()
+                attribution_fbs = get_flowby_from_config(
+                    name=name,
                     config={**{k: v for k, v in fba.config.items()
                             if k in fba.config['method_config_keys']
                             or k == 'method_config_keys'},
-                            **get_catalog_info(source),
+                            **get_catalog_info(name),
                             **config}
                 ).prepare_fbs()
+
+            attributed_fba = fba.proportionally_attribute(
+                attribution_fbs
             )
         # elif attribution_method == 'proportional-flagged':
         #     (source, config), = fba.config['attribution_source'].items()
@@ -1479,6 +1485,27 @@ class FlowBySector(_FlowBy):
         log.info('Beginning FlowBySector generation for %s', method)
         method_config = common.load_yaml_dict(method, 'FBS',
                                               external_config_path)
+
+        to_cache = method_config.pop('sources_to_cache', {})
+        if 'cache' in method_config:
+            log.warning('Config key "cache" for %s about to be overwritten',
+                        method)
+
+        method_config['cache'] = {
+            source_name: get_flowby_from_config(
+                name=source_name,
+                config={
+                    **method_config,
+                    'method_config_keys': method_config.keys(),
+                    **get_catalog_info(source_name),
+                    **config
+                },
+                external_config_path=external_config_path,
+                download_sources_ok=download_sources_ok
+            ).prepare_fbs()
+            for source_name, config in to_cache.items()
+        }
+
         sources = method_config.pop('source_names')
 
         fbs = pd.concat([
