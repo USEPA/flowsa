@@ -1507,20 +1507,24 @@ class FlowBySector(_FlowBy):
             log.warning('Config key "cache" for %s about to be overwritten',
                         method)
 
-        method_config['cache'] = {
-            source_name: get_flowby_from_config(
-                name=source_name,
-                config={
-                    **method_config,
-                    'method_config_keys': method_config.keys(),
-                    **get_catalog_info(source_name),
-                    **config
-                },
-                external_config_path=external_config_path,
-                download_sources_ok=download_sources_ok
-            ).prepare_fbs()
-            for source_name, config in to_cache.items()
-        }
+        method_config['cache'] = {}
+        for source_name, config in to_cache.items():
+            method_config['cache'][source_name] = (
+                get_flowby_from_config(
+                    name=source_name,
+                    config={
+                        **method_config,
+                        'method_config_keys': method_config.keys(),
+                        **get_catalog_info(source_name),
+                        **config
+                    },
+                    external_config_path=external_config_path,
+                    download_sources_ok=download_sources_ok
+                ).prepare_fbs()
+            )
+            # ^^^ This is done with a for loop instead of a dict comprehension
+            #     so that later entries in method_config['sources_to_cache']
+            #     can make use of the cached copy of an earlier entry.
 
         sources = method_config.pop('source_names')
 
