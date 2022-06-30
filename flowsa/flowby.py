@@ -394,7 +394,7 @@ class _FlowBy(pd.DataFrame):
         if selection_fields is None:
             return self
 
-        selection_fields = {k: [v] if isinstance(v, str) else v
+        selection_fields = {k: [v] if not isinstance(v, (list, dict)) else v
                             for k, v in selection_fields.items()}
 
         if 'PrimaryActivity' in selection_fields:
@@ -1318,7 +1318,7 @@ class FlowByActivity(_FlowBy):
             self
             .function_socket('clean_fba_before_mapping')
             .select_by_fields()
-            .standardize_units_and_flows()
+            .convert_units_and_flows()
             .function_socket('clean_fba')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
@@ -1386,15 +1386,54 @@ class FlowByActivity(_FlowBy):
 
         return child_fba_list
 
-    def standardize_units_and_flows(
+    def convert_units_and_flows(
         self: 'FlowByActivity'
     ) -> 'FlowByActivity':
+        if 'emissions_factors' in self.config:
+            self = self.convert_activity_to_emissions()
+
         standardized = self.standardize_units()
         if self.config.get('fedefl_mapping'):
             return standardized.map_to_fedefl_list()
         else:
             return standardized.rename(columns={'FlowName': 'Flowable',
                                                 'Compartment': 'Context'})
+
+    def convert_activity_to_emissions(
+        self: 'FlowByActivity'
+    ) -> 'FlowByActivity':
+        '''
+        This method converts flows of an activity (most commonly a measure of
+        fuel burned) into flows of one or more pollutants. This is a first
+        draft, so it may need some refinement.
+
+        Emissions factors may be specified in a .csv file, with whatever
+        columns need to be matched on for accurate conversion from activity to
+        emissions.
+        '''
+        emissions_factors = (
+            pd.read_csv(
+                f'{settings.datapath}{self.config["emissions_factors"]}.csv')
+            .drop(columns='source')
+        )
+
+        emissions_fba = (
+            self
+            .merge(emissions_factors, how='left')
+            .assign(FlowName=lambda x: x.pollutant,
+                    FlowAmount=lambda x: x.FlowAmount * x.emissions_factor,
+                    Unit=lambda x: x.target_unit,
+                    Class='Chemicals',
+                    FlowType='ELEMENTARY_FLOW')
+            .drop(columns=['pollutant', 'target_unit', 'emissions_factor'])
+            .add_primary_secondary_columns('Activity')
+            .assign(ActivityProducedBy=lambda x: x.PrimaryActivity,
+                    ActivityConsumedBy=lambda x: x.SecondaryActivity)
+            # ^^^ TODO: This is a line I'm quite skeptical of. There's got to
+            #     be a better way to do this. Maybe specify in the config?
+            .drop(columns=['PrimaryActivity', 'SecondaryActivity'])
+        )
+        return emissions_fba
 
 
 class FlowBySector(_FlowBy):
