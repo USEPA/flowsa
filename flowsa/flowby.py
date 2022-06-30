@@ -1193,6 +1193,9 @@ class FlowByActivity(_FlowBy):
         fba_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
+        log.info('Attributing flows in %s using %s.',
+                 self.full_name, other.full_name)
+
         if other_geoscale < fba_geoscale:
             other = (
                 other
