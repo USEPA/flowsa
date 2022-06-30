@@ -269,9 +269,32 @@ class _FlowBy(pd.DataFrame):
 
         return standardized
 
-    def function_socket(self: FB, function_name: str, *args, **kwargs) -> FB:
-        if function_name in self.config:
-            return self.config[function_name](self, *args, **kwargs)
+    def function_socket(
+        self: FB,
+        socket_name: str,
+        *args, **kwargs
+    ) -> FB:
+        '''
+        Allows us to define positions ("sockets") in method chains where a user
+        defined function can be applied to the FlowBy. Such functions should
+        take as their first argument a FlowBy, and return a FlowBy. Most of the
+        existing functions in various source.py files that are used in this way
+        already work, since they take, and return, DataFrames. If passed a
+        FlowBy, they generally therefore return a FlowBy.
+
+        :param socket_name: str, the key in self.config where the function (or
+            list of functions) to be applied is found.
+        :param *args, **kwargs: passed indiscriminately to the function or
+            functions specified in self.config[socket_name].
+        :return: transformed FlowBy dataset
+        '''
+        if socket_name in self.config:
+            if isinstance(self.config[socket_name], list):
+                return reduce(lambda fb, func: fb.pipe(func, *args, **kwargs),
+                              self.config[socket_name],
+                              self)
+            else:
+                return self.config[socket_name](self, *args, **kwargs)
         else:
             return self
 
@@ -927,17 +950,7 @@ class FlowByActivity(_FlowBy):
                 attribution_fbs
             )
         # elif attribution_method == 'proportional-flagged':
-        #     (source, config), = fba.config['attribution_source'].items()
-        #     attributed_fba = fba.flagged_proportionally_attribute(
-        #         FlowByActivity.getFlowByActivity(
-        #             full_name=source,
-        #             config={**{k: v for k, v in fba.config.items()
-        #                     if k in fba.config['method_config_keys']
-        #                     or k == 'method_config_keys'},
-        #                     **get_catalog_info(source),
-        #                     **config}
-        #         ).convert_to_fbs()
-        #     )
+        #     attributed_fba = fba.flagged_proportionally_attribute90
         else:
             if (attribution_method is not None
                     and attribution_method != 'direct'):
