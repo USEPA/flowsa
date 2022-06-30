@@ -1,4 +1,4 @@
-# BEA.py (flowsa)
+# BTS_TSA.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -7,12 +7,6 @@ Pulls BTS Transportation Satellite Account (TSA) data
 '''
 from io import BytesIO
 import pandas as pd
-from flowsa.common import fbs_activity_fields
-from flowsa.location import US_FIPS
-from flowsa.schema import activity_fields
-from flowsa.settings import externaldatapath
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.fbs_allocation import allocation_helper
 
 
 def tsa_call(*, resp, year, **_):
@@ -63,9 +57,9 @@ def tsa_parse(*, df_list, source, year, config, **_):
     df['Unit'] = 'USD'
     df['FlowType'] = 'TECHNOSPHERE_FLOW'
     # df['ActivityConsumedBy'] = ''
-    # df['Compartment'] = ''  # ???
+    # df['Compartment'] = ''
     df['Location'] = '00000'
-    # df['LocationSystem'] = ''
+    df['LocationSystem'] = 'FIPS_2015'
     # df['MeasureofSpread'] = ''
     df['DataReliability'] = 3  # temp
     df['DataCollection'] = 5  # temp
