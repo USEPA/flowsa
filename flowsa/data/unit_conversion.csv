@@ -16,5 +16,5 @@ gal/USD,kg/USD,3.79
 Quadrillion Btu,MJ,1.05506E+12
 Trillion Btu,MJ,1055055900
 Tbtu,MJ,1055055900
-MT CO2e,MMT CO2e,0.000001
+MMT CO2e,MT CO2e,1000000
 p,employees,1
