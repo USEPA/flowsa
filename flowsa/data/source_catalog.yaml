@@ -53,6 +53,9 @@ BLS_QCEW:
 BTS_TSA:
   data_format: FBA
   sector-like_activities: False
+BTS_Airlines:
+  data_format: FBA
+  sector-like_activities: False
 CalRecycle_WasteCharacterization:
   class:
     - Other
@@ -94,6 +97,7 @@ EIA_CBECS_Water:
   activity_schema:
   sector_aggregation_level: "aggregated"
 EIA_MECS_Energy:
+  data_format: FBA
   class:
     - Energy
     - Other
@@ -179,6 +183,7 @@ StatCan_LFS:
   activity_schema:
   sector_aggregation_level: "aggregated"
 USDA_CoA_Cropland:
+  data_format: FBA
   class:
     - Land
     - Other
@@ -186,6 +191,7 @@ USDA_CoA_Cropland:
   activity_schema:
   sector_aggregation_level: "disaggregated"
 USDA_CoA_Cropland_NAICS:
+  data_format: FBA
   class:
     - Land
   sector-like_activities: True
