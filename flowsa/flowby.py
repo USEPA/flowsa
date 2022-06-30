@@ -884,18 +884,18 @@ class FlowByActivity(_FlowBy):
                             **config}
                 ).convert_to_fbs()
             )
-        elif attribution_method == 'proportional-flagged':
-            (source, config), = fba.config['attribution_source'].items()
-            attributed_fba = fba.flagged_proportionally_attribute(
-                FlowByActivity.getFlowByActivity(
-                    full_name=source,
-                    config={**{k: v for k, v in fba.config.items()
-                            if k in fba.config['method_config_keys']
-                            or k == 'method_config_keys'},
-                            **get_catalog_info(source),
-                            **config}
-                ).convert_to_fbs()
-            )
+        # elif attribution_method == 'proportional-flagged':
+        #     (source, config), = fba.config['attribution_source'].items()
+        #     attributed_fba = fba.flagged_proportionally_attribute(
+        #         FlowByActivity.getFlowByActivity(
+        #             full_name=source,
+        #             config={**{k: v for k, v in fba.config.items()
+        #                     if k in fba.config['method_config_keys']
+        #                     or k == 'method_config_keys'},
+        #                     **get_catalog_info(source),
+        #                     **config}
+        #         ).convert_to_fbs()
+        #     )
         else:
             if (attribution_method is not None
                     and attribution_method != 'direct'):
@@ -1239,8 +1239,8 @@ class FlowByActivity(_FlowBy):
             .reset_index(drop=True)
         )
 
-    def flagged_proportionally_attribute(self: 'FlowByActivity'):
-        raise NotImplementedError
+    # def flagged_proportionally_attribute(self: 'FlowByActivity'):
+    #     raise NotImplementedError
 
     def convert_to_fbs(self: 'FlowByActivity') -> 'FlowBySector':
         if 'activity_sets' in self.config:
@@ -1458,7 +1458,7 @@ class FlowBySector(_FlowBy):
             )
             .convert_to_fbs()
             for source_name, config in sources.items()
-            if config['data_format'] == 'FBA'
+            if get_catalog_info(source_name)['data_format'] == 'FBA'
         ]
         source_fbs_list = [
             FlowBySector.getFlowBySector(
@@ -1478,7 +1478,7 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             .convert_fips_to_geoscale(method_config['geoscale'])
             for source_name, config in sources.items()
-            if config['data_format'] == 'FBS'
+            if get_catalog_info(source_name)['data_format'] == 'FBS'
         ]
         source_external_fbs_list = [
             FlowBySector(
@@ -1492,7 +1492,8 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             .convert_fips_to_geoscale(method_config['geoscale'])
             for source_name, config in sources.items()
-            if config['data_format'] == 'FBS_outside_flowsa'
+            if get_catalog_info(source_name)['data_format']
+            == 'FBS_outside_flowsa'
         ]
 
         fbs = pd.concat([
