@@ -29,6 +29,7 @@ BEA_Use:
 #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_Use_Detail_PRO_BeforeRedef:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
@@ -41,6 +42,7 @@ BEA_Make_Detail_BeforeRedef:
 #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BLS_QCEW:
+  data_format: FBA
   class:
     - Employment
     - Money
