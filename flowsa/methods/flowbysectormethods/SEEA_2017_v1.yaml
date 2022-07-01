@@ -420,7 +420,6 @@ source_names:
       alt_fuel_on_road: # assumes natural gas is primary alternate fuel
         selection_fields:
           PrimaryActivity:
-            - Alternative Fuel On-Road
             - All activities Alternative Fuel On-Road
         attribution_method: proportional
         attribution_source:
@@ -739,7 +738,11 @@ source_names:
   EPA_GHGI_T_4_94: # HFCs and other emissions from electronics manufacture
     <<: *ghgi_parameters
     selection_fields:
-      PrimaryActivity: Electronics Production
+      FlowName:
+        - SF6
+        - Total F-GHGs
+        - NF3
+        - N2O[2]
     attribution_method: direct
 
   EPA_GHGI_T_4_101: # HFCs and PFCs from ODS Substitutes
@@ -811,7 +814,7 @@ source_names:
         selection_fields:
           PrimaryActivity:
             - School and Tour Buses
-            - Transit Buses
+            # - Transit Buses # crosswalk marks these as excluded; I'm not at all sure why
             - Rail
             - Ships and Boats
         attribution_method: proportional
