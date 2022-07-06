@@ -1510,10 +1510,10 @@ class FlowBySector(_FlowBy):
             used in generating the FBS from EPA's remote server rather than
             generating (if not found locally)
         :param download_FBS_if_missing: bool, if True will attempt to load the
-            the FBS from EPA's remote server rather than generating it
+            FBS from EPA's remote server rather than generating it
             (if not found locally)
         :kwargs: keyword arguments to pass to _getFlowBy(). Possible kwargs
-            include source_name and config.
+            include full_name and config.
         :return: FlowBySector dataframe
         '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
