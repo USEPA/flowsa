@@ -582,6 +582,12 @@ class _FlowBy(pd.DataFrame):
         fb.full_name = full_name
         return fb
 
+    def to_parquet(self: FB, *args, **kwargs) -> None:
+        pd.DataFrame(self).to_parquet(*args, **kwargs)
+        # ^^^ For some reason, the extra features of a FlowBy stop to_parquet
+        #     from working, and the data need to be cast back to a plain
+        #     DataFrame before writing to a parquet.
+
 
 class FlowByActivity(_FlowBy):
     _metadata = [*_FlowBy()._metadata]
@@ -1507,11 +1513,12 @@ class FlowBySector(_FlowBy):
         :return: FlowBySector dataframe
         '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
-        flowby_generator = (
-            lambda x=method, y=external_config_path, z=download_sources_ok:
-                cls.generateFlowBySector(x, y, z)
-                .to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
-            )
+        flowby_generator = partial(
+            flowbysector.main,
+            method=method,
+            fbsconfigpath=external_config_path,
+            download_FBAs_if_missing=download_sources_ok
+        )
         return super()._getFlowBy(
             file_metadata=file_metadata,
             download_ok=download_fbs_ok,
