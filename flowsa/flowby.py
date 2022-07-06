@@ -1397,6 +1397,10 @@ class FlowByActivity(_FlowBy):
     ) -> 'FlowByActivity':
         if 'emissions_factors' in self.config:
             self = self.convert_activity_to_emissions()
+        if 'adjustment_factor' in self.config:
+            # ^^^ TODO: There has to be a better way to do this.
+            self = self.assign(FlowAmount=self.FlowAmount
+                               * self.config['adjustment_factor'])
 
         standardized = self.standardize_units()
         if self.config.get('fedefl_mapping'):
