@@ -6,11 +6,12 @@ Scrapes data from 2018 Wasted Food Report.
 """
 
 import io
-import tabula
 import pandas as pd
-from flowsa.location import US_FIPS
-from flowsa.flowbyfunctions import assign_fips_location_system
 from string import ascii_uppercase
+import tabula
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
+from flowsa.location import US_FIPS
+from flowsa.schema import flow_by_activity_mapped_fields
 
 
 def epa_wfr_call(*, resp, **_):
@@ -33,14 +34,20 @@ def epa_wfr_call(*, resp, **_):
                              pages=x, stream=True)
         if len(df_l[0].columns) == 12:
             df = df_l[0].set_axis(
-                ['Management Pathway', 'Manufacturing/Processing', 'Residential', 'Retail', 'Wholesale', 'Hotels',
-                 'seven', 'eight', 'K-12 Schools',  'Food Banks', 'Intermediate Amount Managed',
-                 'Total Managed by Each Pathway'], axis=1, inplace=False)
+                ['Management Pathway', 'Manufacturing/Processing',
+                 'Residential', 'Retail', 'Wholesale', 'Hotels', 'seven',
+                 'eight', 'K-12 Schools',  'Food Banks',
+                 'Intermediate Amount Managed',
+                 'Total Managed by Each Pathway'],
+                axis=1, inplace=False)
         else:
             df = df_l[0].set_axis(
-                ['Management Pathway', 'Manufacturing/Processing', 'Residential', 'Retail', 'Wholesale', 'Hotels',
-                 'seven', 'K-12 Schools',  'Food Banks', 'Intermediate Amount Managed',
-                 'Total Managed by Each Pathway'], axis=1, inplace=False)
+                ['Management Pathway', 'Manufacturing/Processing',
+                 'Residential', 'Retail', 'Wholesale', 'Hotels',
+                 'seven', 'K-12 Schools',  'Food Banks',
+                 'Intermediate Amount Managed',
+                 'Total Managed by Each Pathway'],
+                axis=1, inplace=False)
         df = drop_rows(df)
         df_list.append(df)
     for d in df_list:
@@ -76,13 +83,16 @@ def epa_wfr_parse(*, df_list, year, **_):
     df['Description'] = 'Excess food and food waste managed by sector (Tons)'
     return df
 
+
 def drop_rows(df):
     """
-    This drops the column headers for the table which ended up being scraped as 4 rows.
-    We are also dropping all rows with null values under the MANUFACTURING/ PROCESSING
-    section. When the PDF was scraped additional rows were added due to how the MANUFACTURING/ PROCESSING
-    column was formatted. Since - was used instead of NaN in the PDF to indicate something did not exist
-    NaN values could be used to get rid of artificial rows as they were the only ones with NaN values in them.
+    This drops the column headers for the table which ended up being scraped as
+    4 rows. We are also dropping all rows with null values under the
+    MANUFACTURING/ PROCESSING section. When the PDF was scraped additional
+    rows were added due to how the MANUFACTURING/ PROCESSING column was
+    formatted. Since - was used instead of NaN in the PDF to indicate
+    something did not exist NaN values could be used to get rid of
+    artificial rows as they were the only ones with NaN values in them.
     :param df: dataframe
     :return: df
     """
@@ -90,35 +100,39 @@ def drop_rows(df):
     df = df.dropna(axis=0, subset=['Manufacturing/Processing'])
     return df
 
+
 def fix_row_names(df):
     """
-    The Scrape from the PDF caused some of the names to end up in more than 1 row. This also caused artificial
-    rows which have been dealt with in another method. The dataframe is in order so a new list is added to the
-    dataframe it is ActivityConsumedBy. We then reindex the dataframe and drop the last two columns. They are
-    total columns and are not wanted in the parquet file.
+    The Scrape from the PDF caused some of the names to end up in more than
+    1 row. This also caused artificial rows which have been dealt with in
+    another method. The dataframe is in order so a new list is added to the
+    dataframe it is ActivityConsumedBy. We then reindex the dataframe and
+    drop the last two columns. They are total columns and are not wanted in
+    the parquet file.
     :param df: dataframe
     :return: df
     """
-    acb = ['Food Donation', 'Animal Feed', 'Codigestion/Anaerobic Digestion', 'Composting/Aerobic Processes',
-                   'Bio-based Materials/Biochemical Processing', 'Land Application', 'Sewer/Wastewater Treatment',
-                   'Landfill', 'Controlled Combustion', 'Total Food Waste & Excess Food', 'Percent of Total']
+    acb = ['Food Donation', 'Animal Feed', 'Codigestion/Anaerobic Digestion',
+           'Composting/Aerobic Processes',
+           'Bio-based Materials/Biochemical Processing', 'Land Application',
+           'Sewer/Wastewater Treatment', 'Landfill',
+           'Controlled Combustion', 'Total Food Waste & Excess Food',
+           'Percent of Total']
     df['ActivityConsumedBy'] = acb
     df = df.reset_index()
     df = df.drop(columns=['index', 'Management Pathway'])
     df = df.drop(index=[9, 10])
     return df
 
+
 def split_problem_column(df):
     """
-     When the table was scraped from the PDF the 7th
-     and 8th columns were not correct. Depending on
-     the page the table was printed on the seventh
-     column either 7 or 8 data points in it.
-     This method takes the 7th and 8th column and
-     splits them into lists and then adds them to
-     the dataframe. Additionally the Scrape for the
-     PDF caused letters to be in some of the numbers
-     They are removed. Also at one point a number gets
+     When the table was scraped from the PDF the 7th and 8th columns were
+     not correct. Depending on the page the table was printed on the seventh
+     column either 7 or 8 data points in it. This method takes the 7th and
+     8th column and splits them into lists and then adds them to the
+     dataframe. Additionally the Scrape for the PDF caused letters to be in
+     some of the numbers. They are removed. Also at one point a number gets
      split into 2 columns that is also taken care of here.
     :param df: dataframe
     :return: df
@@ -179,6 +193,7 @@ def split_problem_column(df):
 
     return df
 
+
 def reorder_df(df):
     """
     Melts the pandas dataframe into flow by activity format.
@@ -188,10 +203,37 @@ def reorder_df(df):
     :param df: dataframe
     :return: df
     """
-    df = df.melt(id_vars="ActivityConsumedBy", var_name="ActivityProducedBy", value_name="FlowAmount")
+    df = df.melt(id_vars="ActivityConsumedBy",
+                 var_name="ActivityProducedBy",
+                 value_name="FlowAmount")
     indexResult = df[df['FlowAmount'] == '-'].index
     df = df.replace(',', '', regex=True)
     df.drop(indexResult, inplace=True)
     df = df.reset_index()
     df = df.drop(columns=['index'])
     return df
+
+
+def foodwaste_collection(fba, source_dict):
+    """clean_fba_df_fxn"""
+    collection = source_dict.get('activity_parameters')
+    inputs = fba.loc[fba['ActivityConsumedBy'].isin(collection)]
+    inputs = inputs.reset_index(drop=True)
+    outputs = inputs.copy()
+    inputs['ActivityConsumedBy'] = inputs['ActivityConsumedBy'].apply(
+        lambda x: f"{x} Collection")
+    outputs['ActivityProducedBy'] = outputs['ActivityConsumedBy'].apply(
+        lambda x: f"{x} Collection")
+
+    outputs['Flowable'] = outputs["Flowable"].apply(lambda x:
+                                                    f"{x} Collection")
+
+    # drop list of activities from original dataset and concat new activities
+    fba_rev = fba[~fba['ActivityConsumedBy'].isin(collection)]
+
+    df1 = pd.concat([fba_rev, inputs, outputs], ignore_index=True)
+    cols = flow_by_activity_mapped_fields.copy()
+    cols.pop('FlowAmount')
+    df1 = aggregator(df1, cols)
+
+    return df1
