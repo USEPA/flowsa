@@ -17,7 +17,7 @@ manually assigning to NAICS
 """
 import pandas as pd
 from flowsa.settings import crosswalkpath
-from scripts.common_scripts import unique_activity_names, order_crosswalk
+from scripts.FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
@@ -34,8 +34,7 @@ def assign_naics(df):
         pd.Series([['92214', '5612']]*df.shape[0])
     df.loc[df['Activity'] == 'Food Banks', 'Sector'] = '62421'
     df.loc[df['Activity'] == 'Hospitals', 'Sector'] = '622'
-    df.loc[df['Activity'] == 'Hotels', 'Sector'] = \
-        pd.Series([['7211', '71321']]*df.shape[0])
+    df.loc[df['Activity'] == 'Hotels', 'Sector'] = '7211'
     df.loc[df['Activity'] == 'Manufacturing/Processing', 'Sector'] = \
         pd.Series([['3112', '3113', '3114', '3115', '3116', '3117', '3118',
                     '3119', '312111', '31212', '31213', '31214']]*df.shape[0])
@@ -66,60 +65,71 @@ def assign_naics(df):
                     '928']]*df.shape[0])
     # Household code
     df.loc[df['Activity'] == 'Residential', 'Sector'] = 'F010'
-    # todo: assign to "promoters of performing arts, sports and similar
-    #  events with facilities" (71131)?
-    df.loc[df['Activity'] == 'Sports Venues', 'Sector'] = ''
+    # todo: reassess - currently assigned to food service contractors
+    df.loc[df['Activity'] == 'Sports Venues', 'Sector'] = '722310'
 
-    # Activities consuming the food waste
-    # Diverting material from the food supply chain (directly or after processing) to animals
-    # todo: assign animal feed to animal production sector (112)?
-    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = ''
+
+    # Activities consuming the food waste Diverting material from the food
+    # supply chain (directly or after processing) to animals
+    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '311'
+    df = df.append(pd.DataFrame(
+        [['EPA_WFR', 'Animal Feed Collection', '562219A']],
+        columns=['ActivitySourceName', 'Activity', 'Sector']))
     
-    # Converting material into industrial products. Ex. creating fibers for packaging material, 
-    # bioplastics , feathers (e.g., for pillows), and rendering fat, oil, or grease into a raw material to make products 
-    # such as soaps, biodiesel, or cosmetics. “Biochemical processing” does not refer to anaerobic 
-    # digestion or production of bioethanol through fermentation.
-    # todo: assign to biomass electric gen (221117)?
+    # Converting material into industrial products. Ex. creating fibers for
+    # packaging material, bioplastics , feathers (e.g., for pillows),
+    # and rendering fat, oil, or grease into a raw material to make products
+    # such as soaps, biodiesel, or cosmetics. “Biochemical processing” does
+    # not refer to anaerobic digestion or production of bioethanol through
+    # fermentation.
+    # todo: update assignment to be inclusive of 31-33?
     df.loc[df['Activity'] == 'Bio-based Materials/Biochemical Processing',
-           'Sector'] = ''
+           'Sector'] = '3131'
+    df = df.append(pd.DataFrame(
+        [['EPA_WFR', 'Bio-based Materials/Biochemical Processing '
+                     'Collection', '562219B']],
+        columns=['ActivitySourceName', 'Activity', 'Sector']))
     
-    # Breaking down material via bacteria in the absence of oxygen. Generates biogas 
-    # and nutrient-rich matter. This destination includes fermentation 
-    # (converting carbohydrates via microbes into alcohols in the absence of oxygen to create 
-    # products such as biofuels).
-    # todo: assign...
-    df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = ''
+    # Breaking down material via bacteria in the absence of oxygen.
+    # Generates biogas and nutrient-rich matter. This destination includes
+    # fermentation (converting carbohydrates via microbes into alcohols in
+    # the absence of oxygen to create products such as biofuels).
+    df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = \
+        '562219C'
     
-    # Composting refers to the production of organic material (via aerobic processes)
-    # that can be used as a soil amendment
-    # todo: assign to "Fertilizer (Mixing Only) Manufacturing" for "compost
-    #  manufacturing" (325314) or "Other Nonhazardous Waste Treatment and
-    #  Disposal" for the "compost dumps" component (562219)
-    df.loc[df['Activity'] == 'Composting/Aerobic Processes', 'Sector'] = ''
+    # Composting refers to the production of organic material (via aerobic
+    # processes) that can be used as a soil amendment
+    df.loc[df['Activity'] ==
+           'Composting/Aerobic Processes', 'Sector'] = '325314'
+    df = df.append(pd.DataFrame(
+        [['EPA_WFR', 'Composting/Aerobic Processes Collection', '562219D']],
+        columns=['ActivitySourceName', 'Activity', 'Sector']))
     
-    # Sending material to a facility that is specifically designed for combustion
-    # in a controlled manner, which may include some form of energy recovery
+    # Sending material to a facility that is specifically designed for
+    # combustion in a controlled manner, which may include some form of
+    # energy recovery
     df.loc[df['Activity'] == 'Controlled Combustion', 'Sector'] = '562213'
    
-    # collection and redistribution of unspoiled excess food to feed people through
-    # food pantries, food banks and other food rescue programs
-    # todo: assign...
-    df.loc[df['Activity'] == 'Food Donation', 'Sector'] = ''
+    # collection and redistribution of unspoiled excess food to feed people
+    # through food pantries, food banks and other food rescue programs
+    df.loc[df['Activity'] == 'Food Donation', 'Sector'] = '624210'
     
     # Spreading, spraying, injecting, or incorporating organic material onto or
     # below the surface of the land to enhance soil quality
-    # todo: assign land application to farming sector (111)?
-    df.loc[df['Activity'] == 'Land Application', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Land Application', 'Sector'] = '115112'
+    df = df.append(pd.DataFrame(
+        [['EPA_WFR', 'Land Application Collection', '562219E']],
+        columns=['ActivitySourceName', 'Activity', 'Sector']))
     
-    # Sending material to an area of land or an excavated site that is specifically
-    # designed and built to receive wastes
+    # Sending material to an area of land or an excavated site that is
+    # specifically designed and built to receive wastes
     df.loc[df['Activity'] == 'Landfill', 'Sector'] = '562212'
     
-    # Sending material down the sewer (with or without prior treatment), including that
-    # which may go to a facility designed to treat wastewater
+    # Sending material down the sewer (with or without prior treatment),
+    # including that which may go to a facility designed to treat wastewater
     df.loc[df['Activity'] == 'Sewer/Wastewater Treatment', 'Sector'] = '22132'
 
-    # break each sector into seperate line
+    # break each sector into separate line
     df = df.explode('Sector')
 
     return df
