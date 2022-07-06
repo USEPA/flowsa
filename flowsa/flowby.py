@@ -1517,12 +1517,11 @@ class FlowBySector(_FlowBy):
         :return: FlowBySector dataframe
         '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
-        flowby_generator = partial(
-            flowbysector.main,
-            method=method,
-            fbsconfigpath=external_config_path,
-            download_FBAs_if_missing=download_sources_ok
-        )
+        flowby_generator = (
+            lambda x=method, y=external_config_path, z=download_sources_ok:
+                cls.generateFlowBySector(x, y, z)
+                .to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
+            )
         return super()._getFlowBy(
             file_metadata=file_metadata,
             download_ok=download_fbs_ok,
@@ -1599,7 +1598,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
-            .convert_fips_to_geoscale(self.config['geoscale'])
+            .convert_fips_to_geoscale()
         )
 
 
