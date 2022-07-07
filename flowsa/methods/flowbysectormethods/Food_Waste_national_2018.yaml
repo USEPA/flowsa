@@ -1,6 +1,7 @@
 # Attribute EPA's Wasted Food Report to sectors
 
 target_sector_level: NAICS_6
+target_subset_sector_level: {NAICS_7: ['562219']}
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 source_names:
