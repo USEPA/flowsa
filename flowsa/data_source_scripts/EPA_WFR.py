@@ -226,7 +226,7 @@ def foodwaste_collection(fba, source_dict):
         lambda x: f"{x} Collection")
 
     outputs['Flowable'] = outputs["Flowable"].apply(lambda x:
-                                                    f"{x} Collection")
+                                                    f"{x} Collected")
 
     # drop list of activities from original dataset and concat new activities
     fba_rev = fba[~fba['ActivityConsumedBy'].isin(collection)]
