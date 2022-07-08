@@ -71,7 +71,7 @@ def assign_naics(df):
 
     # Activities consuming the food waste Diverting material from the food
     # supply chain (directly or after processing) to animals
-    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '311'
+    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '3111'
     df = df.append(pd.DataFrame(
         [['EPA_WFR', 'Animal Feed Collection', '562219A']],
         columns=['ActivitySourceName', 'Activity', 'Sector']))
