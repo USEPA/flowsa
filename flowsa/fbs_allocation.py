@@ -487,6 +487,8 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     if 'allocation_map_to_flow_list' in attr:
         kwargs_dict['allocation_map_to_flow_list'] = \
             attr['allocation_map_to_flow_list']
+    if 'allocation_fba_load_scale' in attr:
+        kwargs_dict['geographic_level'] = attr['allocation_fba_load_scale']
 
     log.info("Loading allocation flowbyactivity %s for year %s",
              fba_sourcename, str(df_year))
