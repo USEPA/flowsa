@@ -1,7 +1,7 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
 EPA_WFR,Land Application,NAICS_2012_Code,115112,I
 EPA_WFR,Sewer/Wastewater Treatment,NAICS_2012_Code,22132,I
-EPA_WFR,Animal Feed,NAICS_2012_Code,311,I
+EPA_WFR,Animal Feed,NAICS_2012_Code,3111,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3112,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3113,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3114,I
