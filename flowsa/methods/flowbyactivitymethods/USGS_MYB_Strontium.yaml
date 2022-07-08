@@ -1,15 +1,15 @@
 # Downloads and parses CSV from USGS Strontium Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Strontium
-citable_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-stron-adv.xlsx
+citable_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-stron.xls
 date_generated: '2021-03-26'
 years_available: 2014-2018
 format: xls
 url:
-  base_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-stron-adv.xlsx
-url_replace_fxn: usgs_strontium_url_helper
-call_response_fxn: usgs_strontium_call
-parse_response_fxn: usgs_strontium_parse
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-stron.xls
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_strontium_call
+parse_response_fxn: !script_function:USGS_MYB usgs_strontium_parse
 years:
 - 2014
 - 2015

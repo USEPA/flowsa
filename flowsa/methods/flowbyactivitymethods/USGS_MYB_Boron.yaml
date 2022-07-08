@@ -1,15 +1,15 @@
 # Downloads and parses CSV from USGS Boron Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Boron
-citable_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-boron-adv.xlsx
+citable_url: https://d9-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-boron-2.xls
 date_generated: '2021-03-26'
 years_available: 2014-2018
 format: xls
 url:
-  base_url: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-boron-adv.xlsx
-url_replace_fxn: usgs_boron_url_helper
-call_response_fxn: usgs_boron_call
-parse_response_fxn: usgs_boron_parse
+  base_url: https://d9-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-boron-2.xls
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_boron_call
+parse_response_fxn: !script_function:USGS_MYB usgs_boron_parse
 years:
 - 2014
 - 2015

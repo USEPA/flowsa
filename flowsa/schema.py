@@ -170,3 +170,7 @@ activity_fields = {'ProducedBy': [{'flowbyactivity': 'ActivityProducedBy'},
                    'ConsumedBy': [{'flowbyactivity': 'ActivityConsumedBy'},
                                   {'flowbysector': 'SectorConsumedBy'}]
                    }
+
+dq_fields = ['MeasureofSpread', 'Spread', 'DistributionType', 'Min',
+             'Max', 'DataReliability', 'DataCollection', 'TemporalCorrelation',
+             'GeographicalCorrelation', 'TechnologicalCorrelation']

@@ -7,7 +7,7 @@ api_name: None
 api_key_required: false
 format: csv  # comma delineated data
 url: None
-parse_response_fxn: bea_gdp_parse
+parse_response_fxn: !script_function:BEA bea_gdp_parse
 years:
 - 2007
 - 2008

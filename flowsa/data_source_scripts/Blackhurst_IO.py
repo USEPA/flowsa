@@ -17,7 +17,6 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.allocation import \
     proportional_allocation_by_location_and_activity
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.validation import compare_df_units
 
 
@@ -126,9 +125,6 @@ def convert_blackhurst_data_to_kg_per_employee(
         datasource='BLS_QCEW', year='2002',
         flowclass='Employment', geographic_level='national',
         download_FBA_if_missing=kwargs['download_FBA_if_missing'])
-
-    # clean df
-    bls = clean_bls_qcew_fba(bls, attr=attr)
 
     # assign naics to allocation dataset
     bls_wsec = add_sectors_to_flowbyactivity(

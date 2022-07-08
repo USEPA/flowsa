@@ -1,15 +1,15 @@
 # Downloads and parses CSV from USGS Chromium Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Chromium
-citable_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-chrom-adv.xlsx
+citable_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-chrom.xls
 date_generated: '2021-03-19'
 years_available: 2014-2018
 format: xls
 url:
-  base_url: https://prd-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-chrom-adv.xlsx
-url_replace_fxn: usgs_chromium_url_helper
-call_response_fxn: usgs_chromium_call
-parse_response_fxn: usgs_chromium_parse
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/myb1-2018-chrom.xls
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_chromium_call
+parse_response_fxn: !script_function:USGS_MYB usgs_chromium_parse
 years:
 - 2014
 - 2015

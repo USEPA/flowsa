@@ -8,10 +8,11 @@ import os.path
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
+import flowsa
 from flowsa.common import get_flowsa_base_name, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
-from flowsa.schema import activity_fields
+from flowsa.schema import activity_fields, dq_fields
 from flowsa.settings import log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
@@ -35,7 +36,8 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
             external_mappingpath, mapfn, 'csv')
         if os.path.isfile(f"{external_mappingpath}"
                           f"{activity_mapping_source_name}.csv"):
-            log.info(f"Loading {activity_mapping_source_name}.csv from {external_mappingpath}")
+            log.info(f"Loading {activity_mapping_source_name}.csv "
+                     f"from {external_mappingpath}")
             crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
@@ -55,10 +57,14 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
         return mapping
 
 
-def add_sectors_to_flowbyactivity(flowbyactivity_df,
-        activity_to_sector_mapping=None, sectorsourcename=SECTOR_SOURCE_NAME,
-        allocationmethod=None, overwrite_sectorlevel=None,
-        fbsconfigpath=None):
+def add_sectors_to_flowbyactivity(
+    flowbyactivity_df,
+    activity_to_sector_mapping=None,
+    sectorsourcename=SECTOR_SOURCE_NAME,
+    allocationmethod=None,
+    overwrite_sectorlevel=None,
+    fbsconfigpath=None
+):
     """
     Add Sectors from the Activity fields and mapped them to Sector
     from the crosswalk. No allocation is performed.
@@ -66,7 +72,8 @@ def add_sectors_to_flowbyactivity(flowbyactivity_df,
     :param activity_to_sector_mapping: str, name for activity_to_sector mapping
     :param sectorsourcename: A sector source name, using package default
     :param allocationmethod: str, modifies function behavoir if = 'direct'
-    :param fbsconfigpath, str, optional path to an FBS method outside flowsa repo
+    :param fbsconfigpath, str, opt ional path to an FBS method outside flowsa
+        repo
     :return: a df with activity fields mapped to 'sectors'
     """
     # First check if source activities are NAICS like -
@@ -204,8 +211,7 @@ def expand_naics_list(df, sectorsourcename):
 
 def get_fba_allocation_subset(fba_allocation, source, activitynames,
                               sourceconfig=False, flowSubsetMapped=None,
-                              allocMethod=None, activity_set_names=None,
-                              fbsconfigpath=None):
+                              allocMethod=None, fbsconfigpath=None):
     """
     Subset the fba allocation data based on NAICS associated with activity
     :param fba_allocation: df, FBA format
@@ -218,19 +224,14 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
     # typical method of subset an example of a special case is when the
     # allocation method is 'proportional-flagged'
     subset_by_sector_cols = False
-    subset_by_column_value = False
     if flowSubsetMapped is not None:
         fsm = flowSubsetMapped
     if allocMethod is not None:
         am = allocMethod
         if am == 'proportional-flagged':
             subset_by_sector_cols = True
-    if activity_set_names is not None:
-        asn = activity_set_names
-        if 'allocation_subset_col' in asn:
-            subset_by_column_value = True
 
-    if check_activities_sector_like(source) is False:
+    if check_activities_sector_like(fba_allocation, sourcename=source) is False:
         # read in source crosswalk
         df = get_activitytosector_mapping(
             sourceconfig.get('activity_to_sector_mapping', source),
@@ -281,34 +282,13 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
                     modified_activitynames)) |
                 (fba_allocation[fbs_activity_fields[1]].isin(
                     modified_activitynames)
-                )].reset_index(drop=True)
+                 )].reset_index(drop=True)
 
         else:
             fba_allocation_subset = fba_allocation.loc[
                 (fba_allocation[fbs_activity_fields[0]].isin(activitynames)) |
                 (fba_allocation[fbs_activity_fields[1]].isin(activitynames)
                  )].reset_index(drop=True)
-
-    # if activity set names included in function call and activity set names
-    # is not null, then subset data based on value and column specified
-    if subset_by_column_value:
-        # create subset of activity names and allocation subset metrics
-        asn_subset = \
-            asn[asn['name'].isin(activitynames)].reset_index(drop=True)
-        if asn_subset['allocation_subset'].isna().all():
-            pass
-        elif asn_subset['allocation_subset'].isna().any():
-            log.error('Define column and value to subset on in the activity '
-                      'set csv for all rows')
-        else:
-            col_to_subset = asn_subset['allocation_subset_col'][0]
-            val_to_subset = asn_subset['allocation_subset'][0]
-            # subset fba_allocation_subset further
-            log.debug('Subset the allocation dataset where %s = %s',
-                      str(col_to_subset), str(val_to_subset))
-            fba_allocation_subset = fba_allocation_subset[
-                fba_allocation_subset[col_to_subset] ==
-                val_to_subset].reset_index(drop=True)
 
     return fba_allocation_subset
 
@@ -460,3 +440,98 @@ def get_sector_list(sector_level, secondary_sector_level_dict=None):
     sector_list = sector_list + sector_add
 
     return sector_list
+
+
+def map_to_BEA_sectors(fbs_load, region, io_level, year):
+    """
+    Map FBS sectors from NAICS to BEA, allocating by gross industry output.
+
+    :param fbs_load: df completed FlowBySector collapsed to single 'Sector'
+    :param region: str, 'state' or 'national'
+    :param io_level: str, 'summary' or 'detail'
+    :param year: year for industry output
+    """
+    from flowsa.sectormapping import get_activitytosector_mapping
+
+    bea = get_BEA_industry_output(region, io_level, year)
+
+    if io_level == 'summary':
+        mapping_col = 'BEA_2012_Summary_Code'
+    elif io_level == 'detail':
+        mapping_col = 'BEA_2012_Detail_Code'
+
+    # Prepare NAICS:BEA mapping file
+    mapping = (load_crosswalk('BEA')
+               .rename(columns={mapping_col: 'BEA',
+                                'NAICS_2012_Code': 'Sector'}))
+    mapping = (mapping.drop(
+        columns=mapping.columns.difference(['Sector','BEA']))
+        .drop_duplicates(ignore_index=True)
+        .dropna(subset=['Sector']))
+    mapping['Sector'] = mapping['Sector'].astype(str)
+
+    # Create allocation ratios where one to many NAICS:BEA
+    dup = mapping[mapping['Sector'].duplicated(keep=False)]
+    dup = dup.merge(bea, how='left', on='BEA')
+    dup['Allocation'] = dup['Output']/dup.groupby(
+        ['Sector','Location']).Output.transform('sum')
+
+    # Update and allocate to sectors
+    fbs = (fbs_load.merge(
+        mapping.drop_duplicates(subset='Sector', keep=False),
+        how='left',
+        on='Sector'))
+    fbs = fbs.merge(dup.drop(columns='Output'),
+                    how='left', on=['Sector', 'Location'],
+                    suffixes=(None, '_y'))
+    fbs['Allocation'] = fbs['Allocation'].fillna(1)
+    fbs['BEA'] = fbs['BEA'].fillna(fbs['BEA_y'])
+    fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['Allocation']
+
+    fbs = (fbs.drop(columns=dq_fields +
+                    ['Sector', 'SectorSourceName',
+                     'BEA_y', 'Allocation'], errors='ignore')
+           .rename(columns={'BEA':'Sector'}))
+
+    if (abs(1-(sum(fbs['FlowAmount']) /
+               sum(fbs_load['FlowAmount'])))) > 0.005:
+        log.warning('Data loss upon BEA mapping')
+
+    return fbs
+
+
+def get_BEA_industry_output(region, io_level, year):
+    """
+    Get FlowByActivity for industry output from state or national datasets
+    :param region: str, 'state' or 'national'
+    :param io_level: str, 'summary' or 'detail'
+    :param year: year for industry output
+    """
+    if region == 'state':
+        fba = 'stateio_Industry_GO'
+        if io_level == 'detail':
+            raise TypeError ('detail models not available for states')
+    elif region == 'national':
+        fba = 'BEA_GDP_GrossOutput'
+
+    # Get output by BEA sector
+    bea = flowsa.getFlowByActivity(fba, year)
+    bea = (
+        bea.drop(columns=bea.columns.difference(
+            ['FlowAmount','ActivityProducedBy','Location']))
+        .rename(columns={'FlowAmount':'Output',
+                         'ActivityProducedBy': 'BEA'}))
+
+    # If needed, aggregate from detial to summary
+    if region == 'national' and io_level == 'summary':
+        bea_mapping = (load_crosswalk('BEA')
+                       [['BEA_2012_Detail_Code','BEA_2012_Summary_Code']]
+                       .drop_duplicates()
+                       .rename(columns={'BEA_2012_Detail_Code': 'BEA'}))
+        bea = (bea.merge(bea_mapping, how='left', on='BEA')
+               .drop(columns=['BEA'])
+               .rename(columns={'BEA_2012_Summary_Code': 'BEA'}))
+        bea = (bea.groupby(['BEA','Location']).agg({'Output': 'sum'})
+               .reset_index())
+
+    return bea

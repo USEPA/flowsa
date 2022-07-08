@@ -1,0 +1,11 @@
+target_sector_level: NAICS_6
+target_sector_source: NAICS_2012_Code
+target_geoscale: state
+source_names:
+  "stewiFBS":
+    data_format: 'FBS_outside_flowsa'
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
+    inventory_dict: {"TRI":"2017"}
+    local_inventory_name: 'TRI_GRDREL_2017'
+    compartments:
+      - 'soil'
