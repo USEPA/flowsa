@@ -1,15 +1,15 @@
 # Downloads and parses CSV from USGS Mica Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Mica
-citable_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-mica.xls
+citable_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-mica.xlsx
 date_generated: '2021-03-19'
 years_available: 2014-2018
 format: xls
 url:
-  base_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-mica.xls
-url_replace_fxn: usgs_mica_url_helper
-call_response_fxn: usgs_mica_call
-parse_response_fxn: usgs_mica_parse
+  base_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-mica.xlsx
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_mica_call
+parse_response_fxn: !script_function:USGS_MYB usgs_mica_parse
 years:
 - 2014
 - 2015

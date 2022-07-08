@@ -8,6 +8,6 @@ api_name: None
 api_key_required: false
 format: csv  # comma delineated data
 url: None
-parse_response_fxn: usgs_coef_parse
+parse_response_fxn: !script_function:USGS_WU_Coef usgs_coef_parse
 years:
 - 2005

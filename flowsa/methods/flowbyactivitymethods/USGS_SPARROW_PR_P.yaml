@@ -6,9 +6,9 @@ api_key_required: false
 format: txt
 url:
   base_url: https://www.sciencebase.gov/catalog/file/get/__txt__
-url_replace_fxn: sparrow_url_helper
-call_response_fxn: sparrow_call
-parse_response_fxn: sparrow_parse
+url_replace_fxn: !script_function:USGS_SPARROW sparrow_url_helper
+call_response_fxn: !script_function:USGS_SPARROW sparrow_call
+parse_response_fxn: !script_function:USGS_SPARROW sparrow_parse
 years:
 - 2012
 txt:

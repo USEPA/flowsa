@@ -12,7 +12,7 @@ from flowsa import log
 from flowsa.sectormapping import get_activitytosector_mapping
 
 
-def get_elci_emissions(yaml_load):
+def get_elci_emissions(yaml_load, *_):
     """Generate plant level emissions from eLCI package."""
     try:
         import electricitylci

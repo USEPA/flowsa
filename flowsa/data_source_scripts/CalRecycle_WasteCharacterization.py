@@ -14,11 +14,12 @@ import os
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    load_fba_w_standardized_units
+    load_fba_w_standardized_units, \
+    aggregate_and_subset_for_target_sectors
 from flowsa.settings import externaldatapath
-from flowsa.data_source_scripts.BLS_QCEW import clean_bls_qcew_fba
 from flowsa.sectormapping import get_fba_allocation_subset, \
     add_sectors_to_flowbyactivity
+from flowsa.dataclean import replace_strings_with_NoneType, standardize_units
 
 
 def produced_by(entry):
@@ -108,31 +109,34 @@ def calR_parse(*, year, **_):
     return output
 
 
-def keep_generated_quantity(fba, **kwargs):
+def keep_generated_quantity(fba, **_):
     """
     Function to clean CalRecycles FBA to remove quantities not
     assigned as Generated
     :param fba: df, FBA format
-    :param kwargs: dictionary, can include attr, a dictionary of parameters in
-        the FBA method yaml
     :return: df, modified CalRecycles FBA
     """
-    fba = fba[fba['Description'] == 'Generated']
+    fba = fba[fba['Description'] == 'Generated'].reset_index(drop=True)
+    # if no mapping performed, still update units
+    if 'tons' in fba['Unit'].values:
+        fba = standardize_units(fba)
     return fba
 
 
-def apply_tons_per_employee_per_year_to_states(fbs):
+def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
     """
     Calculates tons per employee per year based on BLS_QCEW employees
     by sector and applies that quantity to employees in all states
+    clean_fbs_df_fxn
     """
     bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
                                         year=fbs['Year'].unique()[0],
                                         flowclass='Employment',
                                         geographic_level='state')
-    bls = bls[bls['FlowName'] == 'Number of employees']
-    # clean df
-    bls = clean_bls_qcew_fba(bls)
+    bls = bls[bls['FlowName'].isin(["Number of employees, Federal Government",
+                                    "Number of employees, State Government",
+                                    "Number of employees, Local Government",
+                                    "Number of employees, Private"])]
     bls = add_sectors_to_flowbyactivity(bls)
 
     # Subset BLS dataset
@@ -143,6 +147,10 @@ def apply_tons_per_employee_per_year_to_states(fbs):
 
     # Calculate tons per employee per year per material and sector in CA
     bls_CA = bls[bls['Location'] == '06000']  # California
+    # aggregate all employment prior to generating tpepy
+    bls_CA = (bls_CA.groupby(['Location','Year','SectorProducedBy'])
+              .agg({'Employees':'sum'})
+              .reset_index())
     tpepy = fbs.merge(bls_CA, how='inner')
     tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'], tpepy['Employees'],
                                out=np.zeros_like(tpepy['Employees']),
@@ -154,4 +162,7 @@ def apply_tons_per_employee_per_year_to_states(fbs):
     national_waste['FlowAmount'] = \
         national_waste['Employees'] * national_waste['TPEPY']
 
-    return national_waste
+    df = aggregate_and_subset_for_target_sectors(national_waste, method)
+    df = replace_strings_with_NoneType(df)
+
+    return df

@@ -148,9 +148,9 @@ def generate_fbs_bibliography(methodname):
                                      f"{str(source[1])}",
                             'author': config['author'],
                             'year': str(source[1]),
-                            'url': config['source_url'],
+                            'url': config['tool_meta']['source_url'],
                             'urldate': bib_date,
-                            'ID': config['bib_id'] + '_' + str(source[1]),
+                            'ID': config['tool_meta']['bib_id'] + '_' + str(source[1]),
                             'ENTRYTYPE': 'misc'
                         }]
                         # append each entry to a list of BibDatabase entries

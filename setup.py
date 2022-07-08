@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='1.1',
+    version='1.2.2',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
@@ -32,17 +32,19 @@ setup(
         'matplotlib>=3.4.3'
     ],
     url='https://github.com/USEPA/FLOWSA',
-    license='CC0',
-    author='Catherine Birney, Ben Young, Wesley Ingwersen, Melissa Conner, Jacob Specht, Mo Li',
+    license='MIT',
+    author='Catherine Birney, Ben Young, Melissa Conner, Jacob Specht, '
+           'Mo Li, and Wesley Ingwersen',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
-        "Development Status :: 1 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: IDE",
         "Intended Audience :: Science/Research",
-        "License :: CC0",
+        "License :: MIT",
         "Programming Language :: Python :: 3.x",
         "Topic :: Utilities",
     ],
-    description='Complies and provides a standardized list of elementary flows and '
-                'flow mappings for life cycle assessment data'
+    description='Attributes resources (environmental, monetary, and human), '
+                'emissions, wastes, and losses to US industrial and final '
+                'use sectors.'
 )

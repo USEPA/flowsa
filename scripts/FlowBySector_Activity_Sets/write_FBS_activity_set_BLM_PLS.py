@@ -11,31 +11,25 @@ import numpy as np
 import flowsa
 from flowsa.settings import flowbysectoractivitysetspath
 
-as_year = '2012'
+datasource = 'BLM_PLS'
+year = '2012'
 
 if __name__ == '__main__':
+    df_import = flowsa.getFlowByActivity(datasource, year)
 
-    # define mecs land fba parameters
-    datasource = 'BLM_PLS'
+    df = (df_import[['ActivityConsumedBy']]
+          .drop_duplicates()
+          .reset_index(drop=True)
+          .rename(columns={"ActivityConsumedBy": "name"}))
 
-    # Read BLM PLS crosswalk
-    df_import = flowsa.getFlowByActivity(datasource, as_year)
-
-    # drop unused columns
-    df = df_import[['ActivityConsumedBy']].drop_duplicates().reset_index(drop=True)
-
-    # rename columns
-    df = df.rename(columns={"ActivityConsumedBy": "name"})
-
-    # assign column values
-    # hardrock is only value in activity set 2
-    df.loc[:, 'activity_set'] = np.where(df['name'].str.contains('Hardrock'),
-                                         'activity_set_2', 'activity_set_1')
-    df = df.assign(note='')
+    df = (df.assign(activity_set=np.where(df.name.str.contains('Hardrock'),
+                                          'hardrock_mining', 'general_mining'),
+                    note=''))
 
     # reorder dataframe
-    df = df[['activity_set', 'name', 'note']]
-    df = df.sort_values(['activity_set', 'name']).reset_index(drop=True)
+    df = (df[['activity_set', 'name', 'note']]
+          .sort_values(['activity_set', 'name'])
+          .reset_index(drop=True))
 
-    # save df
-    df.to_csv(flowbysectoractivitysetspath + datasource + '_' + as_year + "_asets.csv", index=False)
+    df.to_csv(f'{flowbysectoractivitysetspath}{datasource}_{year}_asets.csv',
+              index=False)

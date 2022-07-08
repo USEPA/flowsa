@@ -46,9 +46,9 @@ parse:
     SO2: Sulfur Dioxide
     PM10: Total PM10
     PM25_TOT: Total PM 2.5
-url_replace_fxn: equates_url_helper
-call_response_fxn: equates_call
-parse_response_fxn: equates_parse
+url_replace_fxn: !script_function:EPA_EQUATES equates_url_helper
+call_response_fxn: !script_function:EPA_EQUATES equates_call
+parse_response_fxn: !script_function:EPA_EQUATES equates_parse
 years:
 - 2002
 - 2003

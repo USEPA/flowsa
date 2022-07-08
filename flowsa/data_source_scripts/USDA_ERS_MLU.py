@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 from flowsa.location import get_all_state_FIPS_2, US_FIPS
 from flowsa.settings import vLogDetailed
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.common import load_crosswalk
 from flowsa.literature_values import \
     get_area_of_rural_land_occupied_by_houses_2013, \
@@ -195,7 +195,13 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
         [df_residential, df_openspace, df_airport, df_railroad, df_highway2],
         ignore_index=True, sort=False).reset_index(drop=True)
 
-    return allocated_urban_areas_df
+    # aggregate because multiple rows to household data due to residential
+    # land area and highway fee shares
+    groupcols = list(df.select_dtypes(include=['object', 'int']).columns)
+    allocated_urban_areas_df_2 = aggregator(allocated_urban_areas_df,
+                                            groupcols)
+
+    return allocated_urban_areas_df_2
 
 
 def allocate_usda_ers_mlu_land_in_rural_transportation_areas(

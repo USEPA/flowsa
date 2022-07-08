@@ -4,10 +4,8 @@ target_geoscale: national
 source_names:
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'
-    FBS_datapull_fxn: stewicombo_to_sector
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     inventory_dict: {"TRI":"2017"}
-    NAICS_level: 'NAICS_6'
-    geo_scale: 'national'
     local_inventory_name: 'TRI_GRDREL_2017'
     compartments:
       - 'soil'
