@@ -550,15 +550,13 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     if 'activity_to_sector_mapping' in kwargs:
         activity_to_sector_mapping = kwargs.get('activity_to_sector_mapping')
     log.info("Adding sectors to %s", fba_sourcename)
-    if 'NAICS_7' in method.get('target_subset_sector_level', []):
-        # Expand the crosswalk to reach NAICS_7
-        overwrite_sectorlevel = 'aggregated'
-    else:
-        overwrite_sectorlevel = None
-    fba_wsec = add_sectors_to_flowbyactivity(fba2, sectorsourcename=method[
-        'target_sector_source'],
+
+    fba_wsec = add_sectors_to_flowbyactivity(
+        fba2,
+        sectorsourcename=method['target_sector_source'],
         activity_to_sector_mapping=activity_to_sector_mapping,
-        fbsconfigpath=fbsconfigpath, overwrite_sectorlevel=overwrite_sectorlevel)
+        fbsconfigpath=fbsconfigpath
+    )
 
     # call on fxn to further clean up/disaggregate the fba
     # allocation data, if exists
