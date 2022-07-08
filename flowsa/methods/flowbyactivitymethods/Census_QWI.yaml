@@ -1,7 +1,7 @@
 author: US Census Bureau
 source_name: Quarterly Workforce Indicators
 source_url: https://www.census.gov/data/developers/data-sets/qwi.html#ownership
-bib_id: Census_qwi
+bib_id: Census_QWI
 api_name: Census
 api_key_required: false
 format: csv  # comma delineated data
