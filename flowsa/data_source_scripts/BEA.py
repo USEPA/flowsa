@@ -62,28 +62,8 @@ def bea_use_detail_br_parse(*, year, **_):
                f'_Detail_Use_PRO_BeforeRedef.csv'
     df_raw = pd.read_csv(csv_load)
 
-    # first column is the commodity being consumed
-    df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
-
-    # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["ActivityProducedBy"],
-                 var_name="ActivityConsumedBy",
-                 value_name="FlowAmount")
-
-    df['Year'] = str(year)
-    # hardcode data
-    df['FlowName'] = "USD" + str(year)
-    df["Class"] = "Money"
-    df["FlowType"] = "TECHNOSPHERE_FLOW"
-    df['Description'] = 'BEA_2012_Detail_Code'
+    df = bea_detail_parse(df_raw, year)
     df["SourceName"] = "BEA_Use_Detail_PRO_BeforeRedef"
-    df["Location"] = US_FIPS
-    df['LocationSystem'] = "FIPS_2015"
-    # original unit in million USD
-    df['FlowAmount'] = df['FlowAmount'] * 1000000
-    df["Unit"] = "USD"
-    df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  # tmp
 
     return df
 
@@ -96,10 +76,17 @@ def bea_make_detail_br_parse(*, year, **_):
         flowbyactivity specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "BEA_" + str(year) +
-                         "_Detail_Make_BeforeRedef.csv")
+    csv_load = f'{externaldatapath}BEA_{str(year)}' \
+               f'_Detail_Make_BeforeRedef.csv'
+    df_raw = pd.read_csv(csv_load)
 
-    # first column is the industry
+    df = bea_detail_parse(df_raw, year)
+    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
+
+    return df
+
+
+def bea_detail_parse(df_raw, year):
     df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
 
     # use "melt" fxn to convert colummns into rows
@@ -109,11 +96,10 @@ def bea_make_detail_br_parse(*, year, **_):
 
     df['Year'] = str(year)
     # hardcode data
-    df['FlowName'] = "USD" + str(year)
+    df['FlowName'] = f"USD{str(year)}"
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
     df['Description'] = 'BEA_2012_Detail_Code'
-    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
     df["Location"] = US_FIPS
     df['LocationSystem'] = "FIPS_2015"
     # original unit in million USD
@@ -121,7 +107,6 @@ def bea_make_detail_br_parse(*, year, **_):
     df["Unit"] = "USD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
-
     return df
 
 
@@ -187,18 +172,27 @@ def subset_and_allocate_BEA_table(df, attr, **_):
     """
     Temporary function to mimic use of 2nd helper allocation dataset
     """
+
     df = subset_BEA_table(df, attr)
     v = {'geoscale_to_use': 'national'}
     method2 = {'target_sector_source': 'NAICS_2012_Code'}
+
+    import importlib
+    fxn = getattr(importlib.import_module(
+        'flowsa.data_source_scripts.BLS_QCEW'),
+        "bls_clean_allocation_fba_w_sec")
+
     attr2 = {"helper_source": "BLS_QCEW",
              "helper_method": "proportional",
              "helper_source_class": "Employment",
              "helper_source_year": 2012,
-             "helper_flow": ["Number of employees"],
+             "helper_flow": ["Number of employees, Federal Government",
+                             "Number of employees, State Government",
+                             "Number of employees, Local Government",
+                             "Number of employees, Private"],
              "helper_from_scale": "national",
              "allocation_from_scale": "national",
-             "clean_helper_fba": "clean_bls_qcew_fba",
-             "clean_helper_fba_wsec": "bls_clean_allocation_fba_w_sec"}
+             "clean_helper_fba_wsec": fxn}
     df2 = allocation_helper(df, attr2, method2, v, False)
     # Drop remaining rows with no sectors e.g. T001 and other final demands
     df2 = df2.dropna(subset=['SectorConsumedBy']).reset_index(drop=True)

@@ -233,15 +233,15 @@ def standardize_eia_cbecs_land_activity_names(df, column_to_standardize):
     return df
 
 
-def cbecs_land_fba_cleanup(fba_load):
+def cbecs_land_fba_cleanup(fba, **_):
     """
     Clean up the land fba for use in allocation
-    :param fba_load: df, eia cbecs land flowbyactivity format
+    :param fba: df, eia cbecs land flowbyactivity format
     :return: df, flowbyactivity with modified values
     """
 
     # estimate floor space using number of floors
-    fba = calculate_floorspace_based_on_number_of_floors(fba_load)
+    fba = calculate_floorspace_based_on_number_of_floors(fba)
 
     # calculate the land area in addition to building footprint
     fba1 = calculate_total_facility_land_area(fba)

@@ -1,7 +1,6 @@
 # Data source configuration 
-Standard source configuration files provide information needed for pulling data sources
-
-They are stored in YAML format using a .yaml extension
+Standard source configuration files provide information needed for pulling 
+data sources. They are stored in YAML format using a .yaml extension
 
 ```
 #Source configuration format
@@ -20,19 +19,26 @@ url
     # A set of url parameters for query string, specific to data set
   year_param: name of year parameter
   key_param: name of key parameter 
-url_replace_fxn: name of the source specific function that replaces the dynamic values in the URL
-call_response_fxn: name of the source specific function that specifies how data should be loaded
-parse_response_fxn: name of the source specific function that parses and formats the dataframe
+url_replace_fxn: name of the source specific function that replaces the 
+dynamic values in the URL
+call_response_fxn: name of the source specific function that specifies how 
+data should be loaded
+parse_response_fxn: name of the source specific function that parses and 
+formats the dataframe
 years: 
     #years of data as separate lines like - 2015
 * can add additional yaml dictionary items specific to calling on a data set
 ```
 
 To declare a value that needs to be dynamically replaced, surround
-a variable name in double underscores like \__foo__ so that a string
+a variable name in double underscores like `__foo__` so that a string
 function will do a dynamic replacement
 
-Based on [YAML v1.1 schema](https://yaml.org/spec/1.1/)
+Specify the functions to use in the FBA creation using the tag 
+`!script_function:PythonFileName FunctionName`
+where _PythonFileName_ is the name of the Python file (e.g., 
+"Census_PEP_Population.py") and _FunctionName_ is the name of the function 
+(e.g., "Census_pop_URL_helper"). 
 
-Use [YAMLlint](http://www.yamllint.com/) to assure the file is valid YAML
-
+Based on [YAML v1.1 schema](https://yaml.org/spec/1.1/). Use 
+[YAMLlint](http://www.yamllint.com/) to assure the file is valid YAML.

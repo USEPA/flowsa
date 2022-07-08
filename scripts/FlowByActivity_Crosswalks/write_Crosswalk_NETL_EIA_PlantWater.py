@@ -15,7 +15,7 @@ on NAICS definitions from the Census.
 """
 
 from flowsa.common import datapath
-from scripts.common_scripts import unique_activity_names, order_crosswalk
+from scripts.FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):

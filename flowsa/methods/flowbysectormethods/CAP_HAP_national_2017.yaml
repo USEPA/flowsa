@@ -22,7 +22,6 @@ _allocation_types:
             year: 2014
             geoscale: national
             flows: None  # Verify what this does
-            clean_fba_df_fxn: !script_function:BLS_QCEW clean_bls_qcew_fba
             clean_fba_wsec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _use_allocation: &use_allocation
@@ -43,9 +42,11 @@ _allocation_types:
     helper_source_class: "Employment"
     helper_source_year: 2012
     helper_flow:
-      - "Number of employees"
+        - "Number of employees, Federal Government"
+        - "Number of employees, State Government"
+        - "Number of employees, Local Government"
+        - "Number of employees, Private"
     helper_from_scale: national
-    clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
     clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
 
@@ -76,11 +77,11 @@ source_names:
               - AREA HARVESTED
             allocation_compartment: None
             geoscale: state
-            clean_fba_df_fxn: !script_function:USDA_CoA_Cropland coa_irrigated_cropland_fba_cleanup
             clean_fba_w_sec_df_fxn: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
             # OR
             attribution_method: function
             attribution function: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics # wrapped in an appropriate aggregation
+
       industry_combustion_coal: #only allocating to 3digits
         <<: *mecs_allocation
         names: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coal
@@ -153,9 +154,11 @@ source_names:
         helper_source_class: "Employment"
         helper_source_year: 2012
         helper_flow:
-          - "Number of employees"
+          - "Number of employees, Federal Government"
+          - "Number of employees, State Government"
+          - "Number of employees, Local Government"
+          - "Number of employees, Private"
         helper_from_scale: national
-        clean_helper_fba: !script_function:BLS_QCEW clean_bls_qcew_fba
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
       pesticides: # pesticides
         <<: *use_allocation
@@ -199,7 +202,7 @@ source_names:
         clean_parameter: {"324110": 'ActivityProducedBy'}
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'
-    FBS_datapull_fxn: stewicombo_to_sector
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
     local_inventory_name: 'NEI_TRI_air_2017'
     clean_fbs_df_fxn: !script_function:EPA_NEI drop_GHGs
