@@ -584,9 +584,9 @@ class _FlowBy(pd.DataFrame):
 
     def to_parquet(self: FB, *args, **kwargs) -> None:
         pd.DataFrame(self).to_parquet(*args, **kwargs)
-        # ^^^ For some reason, the extra features of a FlowBy stop to_parquet
-        #     from working, and the data need to be cast back to a plain
-        #     DataFrame before writing to a parquet.
+        # ^^^ For some reason, the extra features of a FlowBy stop the
+        #     to_parquet method inherited from DatFrame from working, so this
+        #     casts the data back to plain DataFrame to write to a parquet.
 
 
 class FlowByActivity(_FlowBy):
@@ -952,21 +952,21 @@ class FlowByActivity(_FlowBy):
                             **config}
                 ).prepare_fbs()
 
-            attributed_fba = fba.proportionally_attribute(
-                attribution_fbs
-            )
+            attributed_fba = fba.proportionally_attribute(attribution_fbs)
+
         # elif attribution_method == 'proportional-flagged':
         #     attributed_fba = fba.flagged_proportionally_attribute90
+
         else:
-            if (attribution_method is not None
-                    and attribution_method != 'direct'):
-                log.error('Attribution method for %s not recognized: %s',
-                          fba.full_name, attribution_method)
-                raise ValueError('Attribution method not recognized')
-            elif attribution_method is None:
+            if attribution_method is None:
                 log.warning('No attribution method specified for %s. '
                             'Using equal attribution as default.',
                             fba.full_name)
+            elif attribution_method != 'direct':
+                log.error('Attribution method for %s not recognized: %s',
+                          fba.full_name, attribution_method)
+                raise ValueError('Attribution method not recognized')
+
             attributed_fba = fba.equally_attribute()
 
         validation_fba = attributed_fba.assign(
