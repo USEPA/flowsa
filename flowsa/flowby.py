@@ -319,9 +319,9 @@ class _FlowBy(pd.DataFrame):
 
     def convert_fips_to_geoscale(
         self: FB,
-        to_geoscale: Literal['national', 'state', 'county',
-                             geo.scale.NATIONAL, geo.scale.STATE,
-                             geo.scale.COUNTY],
+        target_geoscale: Literal['national', 'state', 'county',
+                                 geo.scale.NATIONAL, geo.scale.STATE,
+                                 geo.scale.COUNTY] = None,
         column: str = 'Location'
     ) -> FB:
         """
@@ -334,21 +334,22 @@ class _FlowBy(pd.DataFrame):
             Default = 'Location'
         :return: FlowBy dataset with 5 digit fips
         """
-        if type(to_geoscale) == str:
-            to_geoscale = geo.scale.from_string(to_geoscale)
+        target_geoscale = target_geoscale or self.config.get('geoscale')
+        if type(target_geoscale) == str:
+            target_geoscale = geo.scale.from_string(target_geoscale)
 
-        if to_geoscale == geo.scale.NATIONAL:
+        if target_geoscale == geo.scale.NATIONAL:
             return self.assign(
                 **{column: geo.filtered_fips('national').FIPS.values[0]}
             )
-        elif to_geoscale == geo.scale.STATE:
+        elif target_geoscale == geo.scale.STATE:
             return self.assign(
                 **{column: self[column].str.slice_replace(start=2, repl='000')}
             )
-        elif to_geoscale == geo.scale.COUNTY:
+        elif target_geoscale == geo.scale.COUNTY:
             return self
         else:
-            log.error(f'No FIPS level corresponds to {to_geoscale}')
+            log.error(f'No FIPS level corresponds to {target_geoscale}')
 
     def select_by_fields(self: FB, selection_fields: dict = None) -> FB:
         '''
@@ -1597,7 +1598,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
-            .convert_fips_to_geoscale(self.config['geoscale'])
+            .convert_fips_to_geoscale()
         )
 
 
