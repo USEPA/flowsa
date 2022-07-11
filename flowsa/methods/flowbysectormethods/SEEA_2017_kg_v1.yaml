@@ -15,6 +15,23 @@ industry_spec:
 target_naics_year: 2012
 geoscale: national
 
+display_tables:
+  NAICS 2:
+    industry_spec: {default: NAICS_2}
+    replace_dict:
+      Industry: {'31': '31-33', '32': '31-33', '33': '31-33',
+                  '44': '44-45', '45': '44-45',
+                  '48': '48-49', '49': '48-49'},
+      Pollutant: {C2F6: F-GHGs, C3F8: F-GHGs, CF4: F-GHGs,
+                  'HFC, PFC and SF6 F-HTFs': F-GHGs,
+                  HFC-134a: F-GHGs, HFC-23: F-GHGs,
+                  HFCs: F-GHGs, HFCs and PFCs: F-GHGs,
+                  Total F-GHGs: F-GHGs, c-C4F8: F-GHGs,
+                  CO2: Carbon dioxide, CH4: Methane,
+                  N2O: Nitrous oxide, 'N2O[2]': Nitrous oxide,
+                  SF6: Sulfur hexafluoride,
+                  NF3: Nitrogen trifluoride}
+
 _ghgi_parameters: &ghgi_parameters
   geoscale: national
   year: &year 2017
@@ -56,7 +73,6 @@ _attribution_sources:
         - AREA GROWN # Berry totals
         - AREA IN PRODUCTION # Vegetable totals
     year: 2017
-    clean_fba: !script_function:USDA_CoA_Cropland coa_irrigated_cropland_fba_cleanup
     clean_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
 
 sources_to_cache:

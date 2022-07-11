@@ -680,7 +680,7 @@ def get_manufacturing_energy_ratios(year):
     return pct_dict
 
 
-def allocate_industrial_combustion(fba, source_dict, **_):
+def allocate_industrial_combustion(fba, *_, **__):
     """
     Split industrial combustion emissions into two buckets to be further allocated.
 
@@ -688,7 +688,7 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
-    pct_dict = get_manufacturing_energy_ratios(source_dict.get('year'))
+    pct_dict = get_manufacturing_energy_ratios(fba.config.get('year'))
 
     # activities reflect flows in A_14 and 3_8 and 3_9
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',

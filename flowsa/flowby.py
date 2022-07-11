@@ -1,5 +1,6 @@
 from typing import List, Literal, TypeVar
 import pandas as pd
+from pandas import ExcelWriter
 import numpy as np
 from functools import partial, reduce
 from . import (common, settings, metadata, sectormapping,
@@ -1594,6 +1595,8 @@ class FlowBySector(_FlowBy):
             for source_name, config in sources.items()
         ])
 
+        fbs.full_name = method
+
         return fbs
 
     def prepare_fbs(self: 'FlowBySector') -> 'FlowBySector':
@@ -1601,8 +1604,73 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
+            # TODO: Add a method to convert to proper industry spec.
             .convert_fips_to_geoscale()
         )
+
+    def display_tables(
+        self: 'FlowBySector',
+        display_tables: dict = None
+    ) -> pd.DataFrame:
+        display_tables = display_tables or self.config.get('display_tables')
+        if display_tables is None:
+            log.error('Cannot generate display tables, since no configuration'
+                      'is specified for them')
+            return None
+
+        def convert_industry_spec(
+            fb_at_source_naics: 'FlowBySector',
+            industry_spec: dict = None
+        ) -> 'FlowBySector':
+            '''
+            This is here because it's only for display purposes. It can be
+            replaced once there's a proper method for converting an FBS to
+            a new industry_spec
+            '''
+            if industry_spec is None:
+                return fb_at_source_naics
+            fb_at_target_naics = (
+                fb_at_source_naics
+                .merge(naics.industry_spec_key(industry_spec),
+                       how='left',
+                       left_on='SectorProducedBy', right_on='source_naics')
+                .assign(
+                    SectorProducedBy=lambda x:
+                        x.SectorProducedBy.mask(x.SectorProducedBy.str.len()
+                                                >= x.target_naics.str.len(),
+                                                x.target_naics)
+                )
+                .drop(columns=['target_naics', 'source_naics'])
+                .aggregate_flowby()
+            )
+            return fb_at_target_naics
+
+        table_dict = {
+            table_name: (
+                self
+                .select_by_fields(table_config.get('selection_fields'))
+                .pipe(convert_industry_spec, table_config.get('industry_spec'))
+                [['Flowable', 'Unit', 'SectorProducedBy', 'FlowAmount']]
+                .rename(columns={'Flowable': 'Pollutant',
+                                 'SectorProducedBy': 'Industry',
+                                 'FlowAmount': 'Amount'})
+                .replace(table_config.get('replace_dict', {}))
+                .assign(Pollutant=lambda x: x.Pollutant + ' (' + x.Unit + ')')
+                .drop(columns='Unit')
+                .groupby(['Pollutant', 'Industry']).agg('sum')
+                .reset_index()
+                .pivot(index='Pollutant', columns='Industry', values='Amount')
+            )
+            for table_name, table_config in display_tables.items()
+        }
+
+        tables_path = (f'{settings.tableoutputpath}{self.full_name}'
+                       f'_Display_Tables.xlsx')
+        with ExcelWriter(tables_path) as writer:
+            for name, table in table_dict.items():
+                table.to_excel(writer, name)
+
+        return table_dict
 
 
 # The three classes extending pd.Series, together with the _constructor...
