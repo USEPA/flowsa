@@ -343,13 +343,12 @@ class _FlowBy(pd.DataFrame):
             )
         elif to_geoscale == geo.scale.STATE:
             return self.assign(
-                {column: self[column].str.slice_replace(start=2, repl='000')}
+                **{column: self[column].str.slice_replace(start=2, repl='000')}
             )
         elif to_geoscale == geo.scale.COUNTY:
             return self
         else:
-            log.error('No FIPS level corresponds to the given geoscale: %s',
-                      to_geoscale)
+            log.error(f'No FIPS level corresponds to {to_geoscale}')
 
     def select_by_fields(self: FB, selection_fields: dict = None) -> FB:
         '''
@@ -1598,7 +1597,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs_df_fxn')
             .select_by_fields()
-            .convert_fips_to_geoscale()
+            .convert_fips_to_geoscale(self.config['geoscale'])
         )
 
 
