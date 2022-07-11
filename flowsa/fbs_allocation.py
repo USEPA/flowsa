@@ -7,6 +7,7 @@ Functions to allocate data using additional data sources
 
 import numpy as np
 import pandas as pd
+import flowsa
 from flowsa.common import fba_activity_fields, fbs_activity_fields, \
     fba_mapped_wsec_default_grouping_fields, fba_wsec_default_grouping_fields, \
     check_activities_sector_like, return_bea_codes_used_as_naics
@@ -17,7 +18,7 @@ from flowsa.validation import check_allocation_ratios, \
     check_if_location_systems_match
 from flowsa.flowbyfunctions import collapse_activity_fields, \
     sector_aggregation, sector_disaggregation, subset_df_by_geoscale, \
-    load_fba_w_standardized_units
+    load_fba_w_standardized_units, aggregator
 from flowsa.allocation import allocate_by_sector, proportional_allocation_by_location_and_activity, \
     equally_allocate_parent_to_child_naics, equal_allocation
 from flowsa.sectormapping import get_fba_allocation_subset, add_sectors_to_flowbyactivity
@@ -37,7 +38,7 @@ def direct_allocation_method(fbs, k, names, method):
     log.info('Directly assigning activities to sectors')
     # for each activity, if activities are not sector like,
     # check that there is no data loss
-    if check_activities_sector_like(k) is False:
+    if check_activities_sector_like(fbs) is False:
         activity_list = []
         n_allocated = []
         for n in names:
@@ -50,14 +51,12 @@ def direct_allocation_method(fbs, k, names, method):
             fbs_subset = \
                 fbs[(fbs[fba_activity_fields[0]] == n) |
                     (fbs[fba_activity_fields[1]] == n)].reset_index(drop=True)
-            # check if an Activity maps to more than one sector,
-            # if so, equally allocate
-            fbs_subset = equal_allocation(fbs_subset)
-            fbs_subset = equally_allocate_parent_to_child_naics(
-                fbs_subset, method)
             activity_list.append(fbs_subset)
             n_allocated.append(n)
         fbs = pd.concat(activity_list, ignore_index=True)
+        # check if an Activity maps to more than one sector,
+        # if so, equally allocate
+        fbs = equal_allocation(fbs)
     return fbs
 
 
@@ -191,20 +190,20 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
 
     # subset fba allocation table to the values in the activity
     # list, based on overlapping sectors
-    flow_subset_mapped = flow_subset_mapped.loc[
+    flow_subset_mapped2 = flow_subset_mapped.loc[
         (flow_subset_mapped[fbs_activity_fields[0]].isin(sector_list)) |
         (flow_subset_mapped[fbs_activity_fields[1]].isin(sector_list))]
 
     # check if fba and allocation dfs have the same LocationSystem
     log.info("Checking if flowbyactivity and allocation "
              "dataframes use the same location systems")
-    check_if_location_systems_match(flow_subset_mapped, flow_allocation)
+    check_if_location_systems_match(flow_subset_mapped2, flow_allocation)
 
     # merge fba df w/flow allocation dataset
     log.info("Merge %s and subset of %s", k, attr['allocation_source'])
     for i, j in activity_fields.items():
         # check units
-        compare_df_units(flow_subset_mapped, flow_allocation)
+        compare_df_units(flow_subset_mapped2, flow_allocation)
         # create list of columns to merge on
         if 'allocation_merge_columns' in attr:
             fa_cols = \
@@ -219,21 +218,21 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
             fa_cols = ['Location', 'Sector', 'FlowAmountRatio', 'FBA_Activity']
             l_cols = ['Location', j[1]["flowbysector"], j[0]["flowbyactivity"]]
             r_cols = ['Location', 'Sector', 'FBA_Activity']
-        flow_subset_mapped = \
-            flow_subset_mapped.merge(flow_allocation[fa_cols], left_on=l_cols,
+        flow_subset_mapped2 = \
+            flow_subset_mapped2.merge(flow_allocation[fa_cols], left_on=l_cols,
                                      right_on=r_cols, how='left')
 
     # merge the flowamount columns
-    flow_subset_mapped.loc[:, 'FlowAmountRatio'] =\
-        flow_subset_mapped['FlowAmountRatio_x'].fillna(
-            flow_subset_mapped['FlowAmountRatio_y'])
+    flow_subset_mapped2.loc[:, 'FlowAmountRatio'] =\
+        flow_subset_mapped2['FlowAmountRatio_x'].fillna(
+            flow_subset_mapped2['FlowAmountRatio_y'])
     # fill null rows with 0 because no allocation info
-    flow_subset_mapped['FlowAmountRatio'] = \
-        flow_subset_mapped['FlowAmountRatio'].fillna(0)
+    flow_subset_mapped2['FlowAmountRatio'] = \
+        flow_subset_mapped2['FlowAmountRatio'].fillna(0)
 
     # drop rows where there is no allocation data
-    fbs = flow_subset_mapped.dropna(
-        subset=['Sector_x', 'Sector_y'], how='all').reset_index()
+    fbs = flow_subset_mapped2.dropna(
+        subset=['Sector_x', 'Sector_y'], how='all').reset_index(drop=True)
 
     # calculate flow amounts for each sector
     log.info("Calculating new flow amounts using flow ratios")
@@ -243,8 +242,22 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
     log.info("Cleaning up new flow by sector")
     fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y',
                             'FlowAmountRatio_y', 'FlowAmountRatio',
-                            'FBA_Activity_x', 'FBA_Activity_y'])
-    return fbs
+                            'FBA_Activity_x', 'FBA_Activity_y',
+                            'disaggregate_flag', 'Description'],
+                   errors='ignore')
+
+    # if activities are source like, reset activity columns
+    sector_like_activities = check_activities_sector_like(flow_subset_mapped)
+    if sector_like_activities:
+        fbs = fbs.assign(ActivityProducedBy = fbs['SectorProducedBy'],
+                         ActivityConsumedBy = fbs['SectorConsumedBy'])
+
+    group_cols = list(fbs.select_dtypes(include=['object', 'int']).columns)
+    fbs2 = aggregator(fbs, group_cols)
+
+    fbs3 = sector_aggregation(fbs2)
+
+    return fbs3
 
 
 def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
@@ -465,6 +478,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                    'clean_allocation_fba_w_sec'
     :return: df, fba format
     """
+    from flowsa.sectormapping import get_activitytosector_mapping
     # dictionary to load/standardize fba
     kwargs_dict = {}
     if 'download_FBA_if_missing' in kwargs:
@@ -482,15 +496,6 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
                                         **kwargs_dict
                                         )
 
-    # check if allocation data exists at specified geoscale to use
-    log.info("Checking if allocation data exists at the %s level",
-             geoscale_from)
-    check_if_data_exists_at_geoscale(fba, geoscale_from)
-
-    # aggregate geographically to the scale of the flowbyactivty source,
-    # if necessary
-    fba = subset_df_by_geoscale(fba, geoscale_from, geoscale_to)
-
     # subset based on yaml settings
     if 'flowname_subset' in kwargs:
         if kwargs['flowname_subset'] != 'None':
@@ -499,17 +504,44 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         if kwargs['compartment_subset'] != 'None':
             fba = \
                 fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
+    fba = fba.reset_index(drop=True)
+
+    if len(fba) == 0:
+        raise flowsa.exceptions.FBSMethodConstructionError(
+            message='Allocation dataset is length 0; check flow or '
+            'compartment subset for errors')
+
+    # load relevant activities if activities are not naics-like
+    try:
+        sm = get_activitytosector_mapping(
+            fba_sourcename, fbsconfigpath=fbsconfigpath)
+        sm_list = sm['Activity'].drop_duplicates().values.tolist()
+        # subset fba data by activities listed in the sector crosswalk
+        fba = fba[(fba[fba_activity_fields[0]].isin(sm_list)) |
+                  (fba[fba_activity_fields[1]].isin(sm_list)
+                   )].reset_index(drop=True)
+    except FileNotFoundError:
+        pass
+
+    # check if allocation data exists at specified geoscale to use
+    log.info("Checking if allocation data exists at the %s level",
+             geoscale_from)
+    check_if_data_exists_at_geoscale(fba, geoscale_from)
+
+    # aggregate geographically to the scale of the flowbyactivity source,
+    # if necessary
+    fba2 = subset_df_by_geoscale(fba, geoscale_from, geoscale_to)
 
     # cleanup the fba allocation df, if necessary
     if 'clean_fba' in kwargs:
         log.info("Cleaning %s", fba_sourcename)
-        fba = kwargs["clean_fba"](
-            fba,
+        fba2 = kwargs["clean_fba"](
+            fba2,
             attr=attr,
             download_FBA_if_missing=kwargs['download_FBA_if_missing']
         )
     # reset index
-    fba = fba.reset_index(drop=True)
+    fba2 = fba2.reset_index(drop=True)
 
     # assign sector to allocation dataset
     activity_to_sector_mapping = attr.get('activity_to_sector_mapping')
@@ -521,7 +553,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         overwrite_sectorlevel = 'aggregated'
     else:
         overwrite_sectorlevel = None
-    fba_wsec = add_sectors_to_flowbyactivity(fba, sectorsourcename=method[
+    fba_wsec = add_sectors_to_flowbyactivity(fba2, sectorsourcename=method[
         'target_sector_source'],
         activity_to_sector_mapping=activity_to_sector_mapping,
         fbsconfigpath=fbsconfigpath, overwrite_sectorlevel=overwrite_sectorlevel)

@@ -41,6 +41,10 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
         year=int(year),
         download_ok=download_FBA_if_missing
     )
+
+    if len(fba) ==0:
+        raise flowsa.exceptions.FBANotAvailableError(
+            message=f"Error generating {datasource} for {str(year)}")
     if flowclass is not None:
         fba = fba.query('Class == @flowclass')
     # if geographic level specified, only load rows in geo level

@@ -34,11 +34,7 @@ def Census_CBP_URL_helper(*, build_url, year, **_):
     # This is only for years 2010 and 2011. This is done because the State
     # query that gets all counties returns too many results and errors out.
     if year in ['2010', '2011']:
-        if year == '2011':
-            fips_year = '2010'
-        else:
-            fips_year = '2010'
-        county_fips_df = get_county_FIPS(fips_year)
+        county_fips_df = get_county_FIPS('2010')
         county_fips = county_fips_df.FIPS
         for d in county_fips:
             url = build_url
@@ -82,16 +78,15 @@ def Census_CBP_URL_helper(*, build_url, year, **_):
                     urls_census.append(url)
     else:
         FIPS_2 = get_all_state_FIPS_2()['FIPS_2']
-        for c in FIPS_2:
+        for state in FIPS_2:
             url = build_url
-            url = url.replace("__stateFIPS__", c)
+            url = url.replace("__stateFIPS__", state)
             # specified NAICS code year depends on year of data
-            if year in ['2017']:
+            if year in ['2017', '2018', '2019', '2020']:
                 url = url.replace("__NAICS__", "NAICS2017")
-                url = url.replace("__countyFIPS__", "*")
-            if year in ['2012', '2013', '2014', '2015', '2016']:
+            elif year in ['2012', '2013', '2014', '2015', '2016']:
                 url = url.replace("__NAICS__", "NAICS2012")
-                url = url.replace("__countyFIPS__", "*")
+            url = url.replace("__countyFIPS__", "*")
             urls_census.append(url)
 
     return urls_census
@@ -152,6 +147,10 @@ def census_cbp_parse(*, df_list, year, **_):
         value_name="FlowAmount")
     # specify unit based on flowname
     df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
+    # Payroll in units of thousand USD
+    df['FlowAmount'] = np.where(df["FlowName"] == 'Annual payroll',
+                                df['FlowAmount'] * 1000,
+                                df['FlowAmount'])
     # specify class
     df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'

@@ -11,11 +11,12 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 import pandas as pd
 from urllib import parse
+import flowsa
 from esupy.processed_data_mgmt import write_df_to_file
 from esupy.remote import make_url_request
-from flowsa.common import log, load_api_key, sourceconfigpath, \
+from flowsa.common import load_api_key, sourceconfigpath, \
     load_yaml_dict, rename_log_file, get_flowsa_base_name
-from flowsa.settings import paths
+from flowsa.settings import paths, log
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import fba_fill_na_dict
 from flowsa.schema import flow_by_activity_fields
@@ -74,11 +75,14 @@ def assemble_urls_for_query(*, source, year, config):
         userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
         build_url = build_url.replace("__apiKey__", userAPIKey)
 
-    if "url_replace_fxn" in config:
-        # dynamically import and call on function
-        urls = config["url_replace_fxn"](build_url=build_url, source=source,
-                                         year=year, config=config)
+    fxn = config.get("url_replace_fxn")
+    if callable(fxn):
+        urls = fxn(build_url=build_url, source=source,
+                   year=year, config=config)
         return urls
+    elif fxn:
+        raise flowsa.exceptions.FBSMethodConstructionError(
+            error_type='fxn_call')
     else:
         return [build_url]
 
@@ -108,11 +112,13 @@ def call_urls(*, url_list, source, year, config):
             resp = make_url_request(url,
                                     set_cookies=set_cookies,
                                     confirm_gdrive=confirm_gdrive)
-            if "call_response_fxn" in config:
-                # dynamically import and call on function
-                df = config["call_response_fxn"](resp=resp, source=source,
-                                                 year=year, config=config,
-                                                 url=url)
+            fxn = config.get("call_response_fxn")
+            if callable(fxn):
+                df = fxn(resp=resp, source=source, year=year,
+                        config=config, url=url)
+            elif fxn:
+                raise flowsa.exceptions.FBSMethodConstructionError(
+                    error_type='fxn_call')
             if isinstance(df, pd.DataFrame):
                 data_frames_list.append(df)
             elif isinstance(df, list):
@@ -131,10 +137,15 @@ def parse_data(*, df_list, source, year, config):
     :param config: dictionary, FBA yaml
     :return: df, single df formatted to FBA
     """
-    if "parse_response_fxn" in config:
-        # dynamically import and call on function
-        df = config["parse_response_fxn"](df_list=df_list, source=source,
-                                          year=year, config=config)
+
+    fxn = config.get("parse_response_fxn")
+    if callable(fxn):
+        df = fxn(df_list=df_list, source=source, year=year, config=config)
+    elif fxn:
+        raise flowsa.exceptions.FBSMethodConstructionError(
+            error_type='fxn_call')
+    # else:
+    #   Handle parse_response_fxn = None
     return df
 
 
@@ -187,7 +198,7 @@ def main(**kwargs):
     # filename if run into error
     try:
         config = load_yaml_dict(source, flowbytype='FBA')
-    except (UnboundLocalError, FileNotFoundError):
+    except FileNotFoundError:
         log.info(f'Could not find Flow-By-Activity config file for {source}')
         source = get_flowsa_base_name(sourceconfigpath, source, "yaml")
         log.info(f'Generating FBA for {source}')

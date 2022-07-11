@@ -15,7 +15,9 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
+from flowsa.common import load_yaml_dict
 from flowsa.data_source_scripts import EIA_MECS
+
 
 SECTOR_DICT = {'Res.': 'Residential',
                'Comm.': 'Commercial',
@@ -421,9 +423,9 @@ def ghg_parse(*, df_list, year, config, **_):
         source_No_activity = ["3-22", "3-22b"]
         # Handle tables with 1 parent level category
         source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-14", "3-15",
-                             "5-18", "5-19", "A-76", "A-77",  "A-103"]
+                             "5-18", "5-19", "A-76", "A-77"]
         # Tables with sub categories
-        source_activity_2 =  ["3-38", "3-63"]
+        source_activity_2 =  ["3-38", "3-63", "A-103"]
 
         if table_name in multi_chem_names:
             bool_apb = False
@@ -520,7 +522,9 @@ def ghg_parse(*, df_list, year, config, **_):
             flow_name_list = ["Explorationb", "Production", "Processing",
                               "Transmission and Storage", "Distribution",
                               "Crude Oil Transportation", "Refining",
-                              "Exploration"]
+                              "Exploration", "Mobile AC",
+                              "Refrigerated Transport",
+                              "Comfort Cooling for Trains and Buses"]
             for index, row in df.iterrows():
                 apb_value = row["ActivityProducedBy"]
                 start_activity = row["FlowName"]
@@ -546,7 +550,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         df.loc[index, 'ActivityProducedBy'
                                ] = f"{apb_txt} {apbe_value}"
                 if "Total" == apb_value or "Total " == apb_value:
-                  df = df.drop(index)
+                    df = df.drop(index)
 
         elif table_name == "A-79":
             fuel_name = ""
@@ -593,7 +597,7 @@ def ghg_parse(*, df_list, year, config, **_):
                         text_split = apb_value.split("(")
                         df.loc[index, 'ActivityProducedBy'] = text_split[0]
 
-            elif table_name in ["A-101", "A-103"]:
+            elif table_name in ["A-101"]:
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
                     df.loc[index, 'ActivityProducedBy'] = apb_value
@@ -633,18 +637,35 @@ def get_manufacturing_energy_ratios(year):
                  'Natural Gas': 'Natural Gas',
                  }
 
-    # TODO make this year dynamic
+    def closest_value(input_list, input_value):
+        difference = lambda input_list : abs(input_list - input_value)
+        return min(input_list, key=difference)
+
+    mecs_year = closest_value(load_yaml_dict('EIA_MECS_Energy',
+                                             flowbytype='FBA').get('years'),
+                              year)
+
     # Filter MECS for total national energy consumption for manufacturing sectors
     mecs = load_fba_w_standardized_units(datasource='EIA_MECS_Energy',
-                                         year=year,
+                                         year=mecs_year,
                                          flowclass='Energy')
     mecs = mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
                     (mecs['Location'] == '00000')].reset_index(drop=True)
     mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
 
-    # TODO dynamically change the table imported here based on year
-    ghgi = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_14',
-                                         year=2016,
+    # Identify the GHGI table that matches EIA_MECS
+    for t, v in (load_yaml_dict('EPA_GHGI', 'FBA')
+                 .get('Annex').get('Annex').items()):
+        if ((v.get('class') == 'Energy')
+        & ('Energy Consumption Data' in v.get('desc'))
+        & (v.get('year') == str(mecs_year))):
+                table = f"EPA_GHGI_T_{t.replace('-', '_')}"
+                break
+    else:
+        log.error('unable to identify corresponding GHGI table')
+
+    ghgi = load_fba_w_standardized_units(datasource=table,
+                                         year=mecs_year,
                                          flowclass='Energy')
     ghgi = ghgi[ghgi['ActivityConsumedBy']=='Industrial'].reset_index(drop=True)
 
@@ -659,7 +680,7 @@ def get_manufacturing_energy_ratios(year):
     return pct_dict
 
 
-def allocate_industrial_combustion(df):
+def allocate_industrial_combustion(fba, source_dict, **_):
     """
     Split industrial combustion emissions into two buckets to be further allocated.
 
@@ -667,9 +688,7 @@ def allocate_industrial_combustion(df):
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
-    # TODO make this year dynamic
-    year = 2014
-    pct_dict = get_manufacturing_energy_ratios(year)
+    pct_dict = get_manufacturing_energy_ratios(source_dict.get('year'))
 
     # activities reflect flows in A_14 and 3_8 and 3_9
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
@@ -678,29 +697,30 @@ def allocate_industrial_combustion(df):
                            'Natural gas industrial': 'Natural Gas'}
 
     for activity, fuel in activities_to_split.items():
-        df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
+        df_subset = fba.loc[fba['ActivityProducedBy'] == activity].reset_index(drop=True)
         if len(df_subset) == 0:
             continue
         df_subset['FlowAmount'] = df_subset['FlowAmount'] * pct_dict[fuel]
         df_subset['ActivityProducedBy'] = f"{activity} - Manufacturing"
-        df.loc[df['ActivityProducedBy'] == activity,
-               'FlowAmount'] = df['FlowAmount'] * (1-pct_dict[fuel])
-        df = pd.concat([df, df_subset], ignore_index=True)
+        fba.loc[fba['ActivityProducedBy'] == activity,
+               'FlowAmount'] = fba['FlowAmount'] * (1-pct_dict[fuel])
+        fba = pd.concat([fba, df_subset], ignore_index=True)
 
-    return df
+    return fba
 
 
-def split_HFCs_by_type(df):
-    """Speciates HFCs and PFCs for all activities based on T_4_99."""
+def split_HFCs_by_type(fba, **_):
+    """Speciates HFCs and PFCs for all activities based on T_4_99.
+    clean_fba_before_mapping_df_fxn"""
     splits = load_fba_w_standardized_units(datasource='EPA_GHGI_T_4_99',
-                                           year=df['Year'][0])
+                                           year=fba['Year'][0])
     splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
     splits = splits[['FlowName', 'pct']]
 
-    speciated_df = df.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
+    speciated_df = fba.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
                             axis=1, result_type='expand')
     speciated_df.columns = splits['FlowName']
-    speciated_df = pd.concat([df, speciated_df], axis=1)
+    speciated_df = pd.concat([fba, speciated_df], axis=1)
     speciated_df = speciated_df.melt(id_vars=flow_by_activity_fields.keys(),
                                      var_name='Flow')
     speciated_df['FlowName'] = speciated_df['Flow']
@@ -780,20 +800,20 @@ def split_HFC_foams(df):
     return df
 
 
-def clean_HFC_fba(df):
+def clean_HFC_fba(fba, **_):
     """Adjust HFC emissions for improved parsing.
     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_101."""
-    df = subtract_HFC_transport_emissions(df)
+    df = subtract_HFC_transport_emissions(fba)
     df = allocate_HFC_to_residential(df)
     df = split_HFC_foams(df)
     df = split_HFCs_by_type(df)
     return df
 
 
-def remove_HFC_kt(df):
+def remove_HFC_kt(fba, **_):
     """Remove records of emissions in kt, data are also provided in MMT CO2e.
     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_50."""
-    return df.loc[df['Unit'] != 'kt']
+    return fba.loc[fba['Unit'] != 'kt']
 
 
 def adjust_transport_activities(df, **_):
