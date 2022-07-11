@@ -129,6 +129,9 @@ class _FlowBy(pd.DataFrame):
         other circumstances, such as merging.
 
         merge: use metadata of left FlowBy
+        concat: for full_name or config, use the shared portion (possibly
+            '' or {}); for other _metadata (if any), use values from the
+            first FlowBy
         '''
         self = super().__finalize__(other, method=method, **kwargs)
 
@@ -825,8 +828,8 @@ class FlowByActivity(_FlowBy):
             (geo.filtered_fips(scale)
              .assign(geoscale=scale, National='USA')
              # ^^^ Need to have a column for each relevant scale
-             # (only FIPS for now)
              .rename(columns={'FIPS': 'Location'}))
+            # ^^^ (only FIPS for now)
             for scale in [s for s in geo.scale if s.has_fips_level]
         ])
 
