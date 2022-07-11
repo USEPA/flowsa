@@ -14,7 +14,7 @@ setup(
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
         'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
         'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
-        'pandas>=1.3.2',
+        'pandas>=1.4.0',
         'pip>=9',
         'setuptools>=41',
         'pyyaml>=5.3',
