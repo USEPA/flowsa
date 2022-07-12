@@ -264,12 +264,11 @@ class _FlowBy(pd.DataFrame):
         standardized_units = list(conversion_table.new_unit.unique())
 
         if any(~standardized.Unit.isin(standardized_units)):
-            log.warning('Units not standardized by standardize_units(): '
-                        '%s. Not a problem if they will be '
-                        'standardized later, e.g. by mapping to the federal '
-                        'elementary flow list',
-                        [unit for unit in standardized.Unit.unique()
-                         if unit not in standardized_units])
+            unstandardized_units = [unit for unit in standardized.Unit.unique()
+                                    if unit not in standardized_units]
+            log.warning(f'Some units in {standardized.full_name} not '
+                        f'standardized by standardize_units(): '
+                        f'{unstandardized_units}.')
 
         return standardized
 
