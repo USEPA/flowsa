@@ -1,5 +1,6 @@
 import logging
 import sys
+from io import StringIO
 from .settings import logoutputpath
 
 try:
@@ -9,6 +10,7 @@ except ModuleNotFoundError:
     console_formatter = logging.Formatter(
         '%(asctime)s %(levelname)-8s %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S')
+    issue_report_title = '\nWARNING and ERROR report:\n'
 else:
     init()
 
@@ -43,6 +45,9 @@ else:
 
     console_formatter = ColoredFormatter()
 
+    issue_report_title = (f'\n{Fore.YELLOW}WARNING{Fore.RESET} and '
+                          f'{Fore.RED}ERROR{Fore.RESET} report:\n')
+
 file_formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
                                    datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -62,12 +67,25 @@ console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setLevel(logging.INFO)
 console_handler.setFormatter(console_formatter)
 
+issue_report_stream = StringIO()
+issue_report_handler = logging.StreamHandler(issue_report_stream)
+issue_report_handler.setLevel(logging.WARNING)
+issue_report_handler.setFormatter(console_formatter)
+
 log = logging.getLogger('flowsa')
 log.setLevel(logging.DEBUG)
 log.addHandler(console_handler)
 log.addHandler(log_file_handler)
+log.addHandler(issue_report_handler)
 log.propagate = False
 
 vlog = logging.getLogger('flowsa.validation')
 vlog.setLevel(logging.DEBUG)
 vlog.addHandler(validation_file_handler)
+
+
+def print_issue_report():
+    print(issue_report_title)
+    print(issue_report_stream.getvalue())
+    issue_report_stream.seek(0)
+    issue_report_stream.truncate(0)
