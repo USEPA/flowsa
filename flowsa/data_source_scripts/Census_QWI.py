@@ -25,7 +25,6 @@ from flowsa.dataclean import add_missing_flow_by_fields, \
     replace_strings_with_NoneType
 
 
-
 def census_qwi_url_helper(*, build_url, year, config, **_):
     """
     This helper function uses the "build_url" input from flowbyactivity.py,
@@ -76,7 +75,8 @@ def census_qwi_call(*, resp, **_):
     try:
         json_load = json.loads(resp.text)
         # convert response to dataframe
-        df = pd.DataFrame(data=json_load[1:len(json_load)], columns=json_load[0])
+        df = pd.DataFrame(data=json_load[1:len(json_load)],
+                          columns=json_load[0])
     except:
         print(resp)
         df = pd.DataFrame()
@@ -94,24 +94,24 @@ def census_qwi_parse(*, df_list, year, **_):
         specifications
     """
     # Concat dataframes
-    df = pd.concat(df_list, sort=False)
+    df = pd.concat(df_list, ignore_index=True)
     # drop rows don't need
     # get rid of None values in EmpTotal
     df = df[df.EmpTotal.notnull()]
-    df.loc[df['ownercode'] == 'A00', 'Owner'] = 'State and local government plus private ownership'
+    df.loc[df['ownercode'] == 'A00', 'Owner'] = 'State and local government ' \
+                                                'plus private ownership'
     df.loc[df['ownercode'] == 'A01', 'Owner'] = 'Federal government'
     df.loc[df['ownercode'] == 'A05', 'Owner'] = 'All Private'
     df = df.reindex()
 
-    # What to do:
     # Combine the State and County into the location.
     df['Location'] = df['state'] + df['county']
 
-
     # industry needs to be renamed Activity Produced by.
     # add the Quarter and ownership codes to flowname.
-
-    df['FlowName'] = "Employment, owner code " + df['Owner'] + "Quarter " + df["quarter"]
+    df['FlowName'] = df.apply(
+        lambda x: f'Number of employees, {x["Owner"]}, Quarter {x["quarter"]}',
+        axis=1)
     df = df.rename(columns={'EmpTotal': 'FlowAmount',
                             'year': 'Year',
                             'industry': "ActivityProducedBy"})
@@ -124,5 +124,3 @@ def census_qwi_parse(*, df_list, year, **_):
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Class'] = "Employment"
     return df
-
-
