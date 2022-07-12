@@ -1524,7 +1524,6 @@ class FlowBySector(_FlowBy):
         flowby_generator = (
             lambda x=method, y=external_config_path, z=download_sources_ok:
                 cls.generateFlowBySector(x, y, z)
-                .to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
             )
         return super()._getFlowBy(
             file_metadata=file_metadata,
@@ -1596,6 +1595,9 @@ class FlowBySector(_FlowBy):
         ])
 
         fbs.full_name = method
+
+        fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
+        # TODO: Needs refinement + saving metadata
 
         return fbs
 
