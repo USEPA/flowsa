@@ -5,7 +5,7 @@ import numpy as np
 from functools import partial, reduce
 from . import (common, settings, metadata, sectormapping,
                literature_values, flowbyactivity, flowbysector, flowsa_yaml,
-               validation, geo, naics, flowsa_log)
+               validation, geo, naics)
 from .flowsa_log import log
 import esupy.processed_data_mgmt
 import esupy.dqi
@@ -264,13 +264,12 @@ class _FlowBy(pd.DataFrame):
         standardized_units = list(conversion_table.new_unit.unique())
 
         if any(~standardized.Unit.isin(standardized_units)):
-            unstandardized_units = [
-                unit for unit in standardized.Unit.unique()
-                if unit not in standardized_units
-            ]
-            log.warning(f'Some units in {standardized.full_name} not '
-                        f'standardized by standardize_units(): '
-                        f'{unstandardized_units}.')
+            log.warning('Units not standardized by standardize_units(): '
+                        '%s. Not a problem if they will be '
+                        'standardized later, e.g. by mapping to the federal '
+                        'elementary flow list',
+                        [unit for unit in standardized.Unit.unique()
+                         if unit not in standardized_units])
 
         return standardized
 
@@ -1594,8 +1593,6 @@ class FlowBySector(_FlowBy):
             ).prepare_fbs()
             for source_name, config in sources.items()
         ])
-
-        flowsa_log.print_issue_report()
 
         fbs.full_name = method
 
