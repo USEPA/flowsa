@@ -11,10 +11,12 @@ Last updated: 8 Sept. 2020
 import io
 import pandas as pd
 import numpy as np
-from flowsa.location import US_FIPS
+import flowsa
+from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
-from flowsa.settings import vLogDetailed
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.settings import vLogDetailed, log
+from flowsa.flowbyfunctions import assign_fips_location_system,\
+    load_fba_w_standardized_units, sector_aggregation
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.data_source_scripts.EIA_CBECS_Land import \
@@ -406,6 +408,61 @@ def mecs_energy_fba_cleanup(fba, attr, **kwargs):
     """
     # subset the df to only include values where the unit = MJ
     fba = fba.loc[fba['Unit'] == 'MJ'].reset_index(drop=True)
+
+    return fba
+
+
+def eia_mecs_energy_clean_allocation_fba_w_sec_to_state(
+        df_w_sec, attr, method, **kwargs):
+    """clean_fba_w_sec fxn that replicates
+    eia_mecs_energy_clean_allocation_fba_w_sec but also updates regions to
+    states for state models"""
+    df_w_sec = eia_mecs_energy_clean_allocation_fba_w_sec(
+        df_w_sec, attr, method, **kwargs)
+    df_w_sec = update_regions_to_states(df_w_sec, attr)
+
+    return df_w_sec
+
+
+def update_regions_to_states(fba_load, attr, **_):
+    """
+    Propogates regions to all states to enable for use in state methods.
+    Allocates sectors across states based on employment.
+    clean_allocation_fba_w_sec fxn
+    """
+    log.info('Updating census regions to states')
+    region_map = get_region_and_division_codes()
+    region_map = region_map[['Region','State_FIPS']].drop_duplicates()
+    region_map.loc[:, 'State_FIPS'] = (
+        region_map['State_FIPS'].apply(lambda x:
+                                       x.ljust(3 + len(x), '0')
+                                       if len(x) < 5 else x))
+
+    # Allocate MECS based on employment FBS
+    year = 2017 #TODO update when more FBS available
+    hlp = flowsa.getFlowBySector(methodname=f'Employment_state_{year}')
+
+    # To match the various sector resolution of MECS, generate employment
+    # dataset for all NAICS resolution by aggregating
+    hlp = sector_aggregation(hlp)
+
+    # For each region, generate ratios across states for a given sector
+    hlp = hlp.merge(region_map, how = 'left', left_on = 'Location',
+                    right_on = 'State_FIPS')
+    hlp['Allocation'] = hlp['FlowAmount']/hlp.groupby(
+        ['Region', 'SectorProducedBy']).FlowAmount.transform('sum')
+
+    fba = pd.merge(fba_load.rename(columns={'Location':'Region'}),
+                   (hlp[['Region','Location','SectorProducedBy','Allocation']]
+                    .rename(columns={'SectorProducedBy':'SectorConsumedBy'})),
+                   how='left', on=['Region','SectorConsumedBy'])
+    fba['FlowAmount'] = fba['FlowAmount'] * fba['Allocation']
+    fba = fba.drop(columns=['Allocation','Region'])
+
+    # Check for data loss
+    if (abs(1-(sum(fba['FlowAmount']) /
+               sum(fba_load['FlowAmount'])))) > 0.0005:
+        log.warning('Data loss upon census region mapping')
 
     return fba
 
