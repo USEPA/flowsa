@@ -41,7 +41,32 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
     df_seriesIDs = pd.read_csv(filepath)
     
     # add year into series IDs
-    df_seriesIDs['series_id'] = df_seriesIDs['series_id'].str.replace('__year__', year)
+
+
+    if year == '2012':
+        aeo_year = '2014'
+    elif year == '2013':
+        aeo_year = '2015'
+    elif year == '2014':
+        aeo_year = '2016'
+    elif year == '2015':
+        aeo_year = '2017'
+    elif year == '2016':
+        aeo_year = '2018'
+    elif year == '2017':
+        aeo_year = '2019'
+    elif year == '2018':
+        aeo_year = '2019'
+    elif year == '2019':
+        aeo_year = '2020'
+    elif year == '2020':
+        aeo_year = '2021'
+    elif year == '2021':
+        aeo_year = '2022'
+    else:
+        aeo_year = '2022'
+
+    df_seriesIDs['series_id'] = df_seriesIDs['series_id'].str.replace('__year__', aeo_year)
     list_seriesIDs = df_seriesIDs['series_id'].to_list()
     
     # reshape list of series IDs into 2D array, padded with ''
