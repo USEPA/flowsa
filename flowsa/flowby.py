@@ -5,7 +5,7 @@ import numpy as np
 from functools import partial, reduce
 from . import (common, settings, metadata, sectormapping,
                literature_values, flowbyactivity, flowbysector, flowsa_yaml,
-               validation, geo, naics)
+               validation, geo, naics, exceptions)
 from .flowsa_log import log
 import esupy.processed_data_mgmt
 import esupy.dqi
@@ -1520,6 +1520,12 @@ class FlowBySector(_FlowBy):
         :return: FlowBySector dataframe
         '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
+
+        try:
+            config = common.load_yaml_dict(method, 'FBS', external_config_path)
+        except exceptions.FlowsaMethodNotFoundError:
+            config = {}
+
         flowby_generator = (
             lambda x=method, y=external_config_path, z=download_sources_ok:
                 cls.generateFlowBySector(x, y, z)
@@ -1529,6 +1535,8 @@ class FlowBySector(_FlowBy):
             download_ok=download_fbs_ok,
             flowby_generator=flowby_generator,
             output_path=settings.fbsoutputpath,
+            full_name=method,
+            config=config,
             **kwargs
         )
 
@@ -1667,9 +1675,13 @@ class FlowBySector(_FlowBy):
 
         tables_path = (f'{settings.tableoutputpath}{self.full_name}'
                        f'_Display_Tables.xlsx')
-        with ExcelWriter(tables_path) as writer:
-            for name, table in table_dict.items():
-                table.to_excel(writer, name)
+        try:
+            with ExcelWriter(tables_path) as writer:
+                for name, table in table_dict.items():
+                    table.to_excel(writer, name)
+        except PermissionError:
+            log.warning(f'Permission to write display tables for '
+                        f'{self.full_name} to {tables_path} denied.')
 
         return table_dict
 
