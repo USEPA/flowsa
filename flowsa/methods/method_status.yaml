@@ -12,11 +12,6 @@ USGS_MYB_Phosphate:
     Status: Error in source data links
     Type: HTTPError
 
-USGS_MYB_Copper:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
 Blackhurst_IO:
     Active: True
     Status: Error in HTTP request during testing only
