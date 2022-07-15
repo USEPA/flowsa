@@ -11,7 +11,7 @@ on:
   workflow_dispatch:            # also allow manual trigger, for testing purposes
 
 jobs:
-  build:
+  FBA_testing:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,6 +35,27 @@ jobs:
     - name: Test FBA config
       run: |
         python flowsa/test_methods.py
+
+  FBS_testing:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+
+    - name: Update pip & install testing pkgs
+      run: |
+        python -VV
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pytest pytest-cov flake8
+
+    # install package & dependencies
+    - name: Install package and dependencies
+      run: |
+        pip install .
 
     - name: Compare FBS with remote
       id: FBS
