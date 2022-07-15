@@ -197,9 +197,10 @@ def stackedBarChart(methodname, impact_cat=None):
 
 
 def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
-    from flowsa.location import get_state_FIPS
+    from flowsa.location import get_state_FIPS, US_FIPS
     df = fbs_coeff.merge(get_state_FIPS(abbrev=True), how = 'left',
                          left_on='Location', right_on='FIPS')
+    df.loc[df['Location'] == US_FIPS, 'State'] = 'U.S.'
     if indicator is not None:
         df = df[df['Indicator'] == indicator]
     if sectors_to_include is not None:
