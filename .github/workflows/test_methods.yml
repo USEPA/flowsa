@@ -51,7 +51,7 @@ jobs:
         name: FBS diff files
         # A file, directory or wildcard patter that describes what to upload
         path: |
-            ${{ env.LD_LIBRARY_PATH }}/python3.10/site-packages/flowsa/data/fbs_diff/*_diff.csv
+            ~/.local/share/flowsa/FBSComparisons/*
             ~/.local/share/flowsa/FlowBySector/*
             ~/.local/share/flowsa/Log/*
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
