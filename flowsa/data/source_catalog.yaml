@@ -73,6 +73,12 @@ Census_PEP_Population:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: ""
+Census_QWI:
+  class:
+    - Employment
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
+  sector_aggregation_level: "disaggregated"
 Census_VIP:
   class: Money
   sector-like_activities: False

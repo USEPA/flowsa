@@ -1,0 +1,25 @@
+author: US Census Bureau
+source_name: Quarterly Workforce Indicators
+source_url: https://www.census.gov/data/developers/data-sets/qwi.html#ownership
+bib_id: Census_QWI
+api_name: Census
+api_key_required: True
+format: csv  # comma delineated data
+url:
+  base_url: https://api.census.gov/data/timeseries/qwi/se?get=industry,EmpTotal,ownercode&for=county:__county__&in=state:__state__&year=__year__&quarter=__quarter__&key=__apiKey__
+url_replace_fxn: !script_function:Census_QWI census_qwi_url_helper
+call_response_fxn: !script_function:Census_QWI census_qwi_call
+parse_response_fxn: !script_function:Census_QWI census_qwi_parse
+years:
+  - 2002
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
