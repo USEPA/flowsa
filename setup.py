@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='1.2.2',
+    version='1.2.3',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
@@ -14,7 +14,7 @@ setup(
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List#egg=fedelemflowlist',
         'esupy @ git+https://github.com/USEPA/esupy#egg=esupy',
         'StEWI @ git+https://github.com/USEPA/standardizedinventories#egg=StEWI',
-        'pandas>=1.3.2',
+        'pandas>=1.4.0',
         'pip>=9',
         'setuptools>=41',
         'pyyaml>=5.3',

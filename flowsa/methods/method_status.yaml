@@ -1,0 +1,22 @@
+## List of current inactive method files
+
+# FlowByActivity
+
+USGS_MYB_Potash:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Phosphate:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+Blackhurst_IO:
+    Active: True
+    Status: Error in HTTP request during testing only
+    Type: HTTPError
+
+
+# Flow By Sector
+

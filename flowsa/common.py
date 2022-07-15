@@ -18,7 +18,7 @@ from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
     activity_fields
 from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
-    sourceconfigpath, log, flowbysectormethodpath
+    sourceconfigpath, log, flowbysectormethodpath, methodpath
 
 
 # Sets default Sector Source Name
@@ -366,3 +366,11 @@ def str2bool(v):
         return True
     else:
         return False
+
+
+def check_method_status():
+    """Read the current method status"""
+    yaml_path = methodpath + 'method_status.yaml'
+    with open(yaml_path, 'r') as f:
+        method_status = yaml.safe_load(f)
+    return method_status
