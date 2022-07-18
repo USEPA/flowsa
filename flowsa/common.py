@@ -12,12 +12,13 @@ import numpy as np
 from dotenv import load_dotenv
 from esupy.processed_data_mgmt import create_paths_if_missing
 import flowsa.flowsa_yaml as flowsa_yaml
+import flowsa.exceptions
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
     activity_fields
 from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
-    sourceconfigpath, log, flowbysectormethodpath
+    sourceconfigpath, log, flowbysectormethodpath, methodpath
 
 
 # Sets default Sector Source Name
@@ -51,8 +52,7 @@ def load_api_key(api_source):
     load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
     key = os.getenv(api_source)
     if key is None:
-        log.error(f"Key file {api_source} not found. See github wiki for help "
-                  "https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys")
+        raise flowsa.exceptions.APIError(api_source=api_source)
     return key
 
 
@@ -131,9 +131,9 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     try:
         with open(yaml_path, 'r') as f:
             config = flowsa_yaml.load(f, filepath)
-    except IOError:
-        log.error(f'{flowbytype} method file not found')
-        raise
+    except FileNotFoundError:
+        raise flowsa.exceptions.FlowsaMethodNotFoundError(
+            method_type=flowbytype, method=filename)
     return config
 
 
@@ -366,3 +366,11 @@ def str2bool(v):
         return True
     else:
         return False
+
+
+def check_method_status():
+    """Read the current method status"""
+    yaml_path = methodpath + 'method_status.yaml'
+    with open(yaml_path, 'r') as f:
+        method_status = yaml.safe_load(f)
+    return method_status

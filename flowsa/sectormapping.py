@@ -8,10 +8,11 @@ import os.path
 import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
+import flowsa
 from flowsa.common import get_flowsa_base_name, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
-from flowsa.schema import activity_fields
+from flowsa.schema import activity_fields, dq_fields
 from flowsa.settings import log
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
@@ -439,3 +440,98 @@ def get_sector_list(sector_level, secondary_sector_level_dict=None):
     sector_list = sector_list + sector_add
 
     return sector_list
+
+
+def map_to_BEA_sectors(fbs_load, region, io_level, year):
+    """
+    Map FBS sectors from NAICS to BEA, allocating by gross industry output.
+
+    :param fbs_load: df completed FlowBySector collapsed to single 'Sector'
+    :param region: str, 'state' or 'national'
+    :param io_level: str, 'summary' or 'detail'
+    :param year: year for industry output
+    """
+    from flowsa.sectormapping import get_activitytosector_mapping
+
+    bea = get_BEA_industry_output(region, io_level, year)
+
+    if io_level == 'summary':
+        mapping_col = 'BEA_2012_Summary_Code'
+    elif io_level == 'detail':
+        mapping_col = 'BEA_2012_Detail_Code'
+
+    # Prepare NAICS:BEA mapping file
+    mapping = (load_crosswalk('BEA')
+               .rename(columns={mapping_col: 'BEA',
+                                'NAICS_2012_Code': 'Sector'}))
+    mapping = (mapping.drop(
+        columns=mapping.columns.difference(['Sector','BEA']))
+        .drop_duplicates(ignore_index=True)
+        .dropna(subset=['Sector']))
+    mapping['Sector'] = mapping['Sector'].astype(str)
+
+    # Create allocation ratios where one to many NAICS:BEA
+    dup = mapping[mapping['Sector'].duplicated(keep=False)]
+    dup = dup.merge(bea, how='left', on='BEA')
+    dup['Allocation'] = dup['Output']/dup.groupby(
+        ['Sector','Location']).Output.transform('sum')
+
+    # Update and allocate to sectors
+    fbs = (fbs_load.merge(
+        mapping.drop_duplicates(subset='Sector', keep=False),
+        how='left',
+        on='Sector'))
+    fbs = fbs.merge(dup.drop(columns='Output'),
+                    how='left', on=['Sector', 'Location'],
+                    suffixes=(None, '_y'))
+    fbs['Allocation'] = fbs['Allocation'].fillna(1)
+    fbs['BEA'] = fbs['BEA'].fillna(fbs['BEA_y'])
+    fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['Allocation']
+
+    fbs = (fbs.drop(columns=dq_fields +
+                    ['Sector', 'SectorSourceName',
+                     'BEA_y', 'Allocation'], errors='ignore')
+           .rename(columns={'BEA':'Sector'}))
+
+    if (abs(1-(sum(fbs['FlowAmount']) /
+               sum(fbs_load['FlowAmount'])))) > 0.005:
+        log.warning('Data loss upon BEA mapping')
+
+    return fbs
+
+
+def get_BEA_industry_output(region, io_level, year):
+    """
+    Get FlowByActivity for industry output from state or national datasets
+    :param region: str, 'state' or 'national'
+    :param io_level: str, 'summary' or 'detail'
+    :param year: year for industry output
+    """
+    if region == 'state':
+        fba = 'stateio_Industry_GO'
+        if io_level == 'detail':
+            raise TypeError ('detail models not available for states')
+    elif region == 'national':
+        fba = 'BEA_GDP_GrossOutput'
+
+    # Get output by BEA sector
+    bea = flowsa.getFlowByActivity(fba, year)
+    bea = (
+        bea.drop(columns=bea.columns.difference(
+            ['FlowAmount','ActivityProducedBy','Location']))
+        .rename(columns={'FlowAmount':'Output',
+                         'ActivityProducedBy': 'BEA'}))
+
+    # If needed, aggregate from detial to summary
+    if region == 'national' and io_level == 'summary':
+        bea_mapping = (load_crosswalk('BEA')
+                       [['BEA_2012_Detail_Code','BEA_2012_Summary_Code']]
+                       .drop_duplicates()
+                       .rename(columns={'BEA_2012_Detail_Code': 'BEA'}))
+        bea = (bea.merge(bea_mapping, how='left', on='BEA')
+               .drop(columns=['BEA'])
+               .rename(columns={'BEA_2012_Summary_Code': 'BEA'}))
+        bea = (bea.groupby(['BEA','Location']).agg({'Output': 'sum'})
+               .reset_index())
+
+    return bea

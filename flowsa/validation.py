@@ -7,8 +7,10 @@ Functions to check data is loaded and transformed correctly
 
 import pandas as pd
 import numpy as np
+import flowsa
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
-    subset_df_by_geoscale, sector_aggregation, subset_df_by_sector_lengths
+    subset_df_by_geoscale, sector_aggregation, collapse_fbs_sectors,\
+    subset_df_by_sector_lengths
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import sector_level_key, \
@@ -1069,3 +1071,88 @@ def compare_df_units(df1_load, df2_load):
     # if list is not empty, print warning that units are different
     if list_comp:
         log.info('Merging df with %s and df with %s units', df1, df2)
+
+
+def calculate_industry_coefficients(fbs_load, year,region,
+                                    io_level, impacts=False):
+    """
+    Generates sector coefficients (flow/$) for all sectors for all locations.
+
+    :param fbs_load: flow by sector method
+    :param year: year for industry output dataset
+    :param region: str, 'state' or 'national'
+    :param io_level: str, 'summary' or 'detail'
+    :param impacts: bool, True to apply and aggregate on impacts
+        False to compare flow/contexts
+    """
+    from flowsa.sectormapping import map_to_BEA_sectors,\
+        get_BEA_industry_output
+
+    fbs = collapse_fbs_sectors(fbs_load)
+
+    fbs = map_to_BEA_sectors(fbs, region, io_level, year)
+
+    inventory = not(impacts)
+    if impacts:
+        try:
+            import lciafmt
+            fbs_summary = (lciafmt.apply_lcia_method(fbs, 'TRACI2.1')
+                           .rename(columns={'FlowAmount': 'InvAmount',
+                                            'Impact': 'FlowAmount'}))
+            groupby_cols = ['Location', 'Sector',
+                            'Indicator', 'Indicator unit']
+            sort_by_cols = ['Indicator', 'Sector', 'Location']
+        except ImportError:
+            log.warning('lciafmt not installed')
+            inventory = True
+        except AttributeError:
+            log.warning('check lciafmt branch')
+            inventory = True
+
+    if inventory:
+        fbs_summary = fbs.copy()
+        groupby_cols = ['Location', 'Sector',
+                        'Flowable', 'Context', 'Unit']
+        sort_by_cols = ['Context', 'Flowable',
+                        'Sector', 'Location']
+
+    # Update location if needed prior to aggregation
+    if region == 'national':
+        fbs_summary["Location"] = US_FIPS
+
+    fbs_summary = (fbs_summary.groupby(groupby_cols)
+                   .agg({'FlowAmount': 'sum'}).
+                   reset_index())
+
+    bea = get_BEA_industry_output(region, io_level, year)
+
+    # Add sector output and assign coefficients
+    fbs_summary = fbs_summary.merge(bea.rename(
+        columns={'BEA': 'Sector'}), how = 'left',
+        on=['Sector','Location'])
+    fbs_summary['Coefficient'] = (fbs_summary['FlowAmount'] /
+                                      fbs_summary['Output'])
+    fbs_summary = fbs_summary.sort_values(by=sort_by_cols)
+
+    return fbs_summary
+
+
+if __name__ == "__main__":
+    df1 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('Water_national_2015_m1'), 2015,
+            "national", "summary", False)
+    df2 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('GRDREL_national_2017'), 2017,
+            "national", "summary", True)
+    df3 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('GRDREL_national_2017'), 2017,
+            "national", "detail", True)
+    df4 = calculate_industry_coefficients(
+            flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
+            "national", "detail", True)
+    try:
+        df5 = calculate_industry_coefficients(
+                flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
+                "state", "detail", True)
+    except TypeError:
+        df5 = None

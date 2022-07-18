@@ -4,8 +4,10 @@ Test FBS method files for correct loading
 """
 import pytest
 from flowsa import seeAvailableFlowByModels
+import flowsa.exceptions
 from flowsa.flowbyactivity import load_yaml_dict, assemble_urls_for_query,\
     call_urls
+from flowsa.common import check_method_status
 
 
 @pytest.mark.skip(reason="Perform targeted test for test_FBA_urls on PR")
@@ -13,12 +15,13 @@ def test_FBA_urls():
     """Test yaml_load and url access for each FBA at the latest year.
     FBA requiring API key are skipped."""
     error_list = []
+    method_status = check_method_status()
     for m in seeAvailableFlowByModels("FBA", print_method=False):
+        m_status = method_status.get(m)
         config = load_yaml_dict(m, flowbytype='FBA')
         year = max(config['years'])
 
         if ((config.get('url', 'None') == 'None') or
-            (config.get('api_key_required', False)) or
             (m == 'EPA_EQUATES')):
             continue
 
@@ -33,8 +36,14 @@ def test_FBA_urls():
                                            config=config)
             call_urls(url_list=urls, source=m, year=str(year),
                       config=config)
-        except Exception:
-            error_list.append(m)
+        except flowsa.exceptions.APIError:
+            print('API Key required, skipping url')
+            continue
+        except Exception as e:
+            if e.__class__.__name__ == m_status.get('Type'):
+                print(f'Known {m_status.get("Type")} in {m}')
+            else:
+                error_list.append(m)
     if error_list:
         pytest.fail(f"Error retrieving: {', '.join([x for x in [*error_list]])}")
 

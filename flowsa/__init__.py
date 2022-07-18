@@ -54,25 +54,30 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     fba = load_preprocessed_output(fba_meta, paths)
     # If that didn't work, try to download a remote version of FBA
     if fba is None and download_FBA_if_missing:
-        log.info('%s %s not found in %s, downloading from remote source',
-                 datasource, str(year), fbaoutputpath)
+        log.info(f'{datasource} {str(year)} not found in {fbaoutputpath}, '
+                 'downloading from remote source')
         download_from_remote(fba_meta, paths)
         fba = load_preprocessed_output(fba_meta, paths)
     # If that didn't work or wasn't allowed, try to construct the FBA
     if fba is None:
-        log.info('%s %s not found in %s, running functions to generate FBA',
-                 datasource, str(year), fbaoutputpath)
+        log.info(f'{datasource} {str(year)} not found in {fbaoutputpath}, '
+                 'running functions to generate FBA')
         # Generate the fba
         flowsa.flowbyactivity.main(year=year, source=datasource)
         # Now load the fba
         fba = load_preprocessed_output(fba_meta, paths)
     # If none of the above worked, log an error message
     if fba is None:
-        log.error('getFlowByActivity failed, FBA not found')
+        raise flowsa.exceptions.FBANotAvailableError(method=datasource,
+                                                     year=year)
     # Otherwise (that is, if one of the above methods successfuly loaded the
     # FBA), log it.
     else:
-        log.info('Loaded %s %s from %s', datasource, str(year), fbaoutputpath)
+        log.info(f'Loaded {datasource} {str(year)} from {fbaoutputpath}')
+
+    if len(fba) ==0:
+        raise flowsa.exceptions.FBANotAvailableError(
+            message=f"Error generating {datasource} for {str(year)}")
 
     # Address optional parameters
     if flowclass is not None:
