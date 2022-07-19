@@ -171,36 +171,4 @@ EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_14, EP
 EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,92212,,S00203,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,92214,,,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,92216,,,EPA_GHGI_T_A_79
+EPA_GHGI,Landfills,NAICS_2012_Code,ACC,,,"EPA_GHGI_T_2_1"
