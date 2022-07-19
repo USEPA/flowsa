@@ -30,6 +30,12 @@ def industry_spec_key(
     level, except that codes in 112 and 113 would be mapped to the 4-digit
     level, with codes in 1129 being mapped to the 6 digits level.
 
+    The top industry_spec dictionary may also include a key 'non_naics', where
+    the associated value is a non-NAICS "industry" or list of such "industries"
+    that should be included in the set of industries that can be mapped to.
+    In this case, the user will need to supply their own crosswalk which maps
+    activities to that industry.
+
     Some important points in formatting an industry specification:
     1.  Every dictionary in the spec must have a 'default' key, whose value is
         used for any relevant codes not specifically named in the dictionary.
@@ -67,13 +73,15 @@ def industry_spec_key(
                      .query('source_naics.str.startswith(@naics)')),
                     _industry_spec[naics]
                 )
-                for naics in _industry_spec if naics != 'default'
+                for naics in _industry_spec if naics not in ['default',
+                                                             'non_naics']
             ]
         ])
 
     truncated_naics_list = _truncate(naics_list, industry_spec)
 
     naics_list = naics_list.merge(truncated_naics_list, how='left')
+    _non_naics = industry_spec.get('non_naics', [])
 
     naics_key = pd.concat([
         naics_list.query('target_naics.notna()'),
@@ -94,7 +102,11 @@ def industry_spec_key(
              )
             for length in (naics_list.query('target_naics.isna()')
                            .source_naics.str.len().unique())
-        ]
+        ],
+        pd.DataFrame(
+            {'source_naics': _non_naics, 'target_naics': _non_naics},
+            index=[0] if isinstance(_non_naics, str) else None
+        )
     ])
 
     naics_key = (
