@@ -182,10 +182,6 @@ display_tables:
         SF6: Sulfur hexafluoride
         NF3: Nitrogen trifluoride
 
-_ghgi_parameters: &ghgi_parameters
-  geoscale: national
-  # year: &year 2017
-
 _attribution_sources:
   BEA_Use_Detail_PRO_BeforeRedef: &bea_use
     year: 2012
@@ -193,7 +189,6 @@ _attribution_sources:
     attribution_method: proportional
     attribution_source: BLS_QCEW
   EPA_GHGI_T_A_79: &t_a_79
-    <<: *ghgi_parameters
     attribution_method: proportional
     attribution_source: BLS_QCEW
   EIA_MECS_Energy: &mecs_energy
@@ -256,7 +251,6 @@ source_names:
   #    - airplane_emissions
 
   EPA_GHGI_T_2_1: #U.S. GHG emissions
-    <<: *ghgi_parameters
     activity_sets:
       direct_attribution:
         selection_fields:
@@ -360,7 +354,6 @@ source_names:
 
 ## Fossil Fuels
   EPA_GHGI_T_3_63: &natgas #CH4 from Natural Gas Systems
-    <<: *ghgi_parameters
     selection_fields:
       PrimaryActivity:
         - Distribution
@@ -373,7 +366,6 @@ source_names:
   EPA_GHGI_T_3_67: *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
 
   EPA_GHGI_T_3_38: &petroleum #CH4 from Petroleum Systems
-    <<: *ghgi_parameters
     selection_fields:
       PrimaryActivity:
         - Crude Oil Transportation
@@ -386,7 +378,6 @@ source_names:
 
 # ## Stationary Combustion (note that CO2 is electric power only)
   EPA_GHGI_T_3_8: &stationary_combustion # CH4 emissions from stationary combustion
-    <<: *ghgi_parameters
     clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
     activity_sets:
       direct_attribution:
@@ -462,11 +453,10 @@ source_names:
   EPA_GHGI_T_3_9: # N2O emissions from stationary combustion
     <<: *stationary_combustion
   EPA_GHGI_T_3_7: # CO2 emissions from stationary combustion (electricity only)
-    <<: [*ghgi_parameters, *stationary_electric]
+    <<: *stationary_electric
 
 # ## Agriculture
   EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
-      <<: *ghgi_parameters
       attribution_method: direct
       selection_fields:
         PrimaryActivity:
@@ -478,7 +468,6 @@ source_names:
           - Wheat
 
   EPA_GHGI_T_5_3: &animals #CH4 from Enteric Fermentation
-    <<: *ghgi_parameters
     attribution_method: direct
     selection_fields:
       PrimaryActivity:
@@ -494,7 +483,6 @@ source_names:
   EPA_GHGI_T_5_7: *animals #CH4 and N2O from manure, mimics enteric fermentation
 
   EPA_GHGI_T_5_18: #Direct N2O emissions from agricultural soils
-    <<: *ghgi_parameters
     activity_sets:
       fertilizer_use: &fertilizer  # allocated based on fertilizer use
         selection_fields:
@@ -527,7 +515,6 @@ source_names:
           USDA_CoA_Cropland_NAICS:
             <<: *usda_pasture
   EPA_GHGI_T_5_19: #Indirect N2O emissions from agricultural soils
-    <<: *ghgi_parameters
     activity_sets:
       fertilizer_use:  # allocated based on fertilizer use
         <<: *fertilizer
@@ -540,7 +527,6 @@ source_names:
 
 ## Mobile Sources (N20 and CH4)
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
-    <<: *ghgi_parameters
     activity_sets:
       direct_attribution: # Some of these need to be separated and attributed differently
         selection_fields:
@@ -605,7 +591,6 @@ source_names:
 
 # Major CO2 Sources
   EPA_GHGI_T_A_13:  # (2017 specific table) CO2 emissions from stationary combustion and transportation
-    <<: *ghgi_parameters
     clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
     activity_sets:
       direct_attribution:
@@ -802,7 +787,6 @@ source_names:
 
 ## Other sources
   EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
-    <<: *ghgi_parameters
     selection_fields:
       PrimaryActivity:
         - Acrylonitrile
@@ -814,7 +798,6 @@ source_names:
     attribution_method: direct
 
   EPA_GHGI_T_3_22b: #Fossil fuel for non-energy uses
-    <<: *ghgi_parameters
     activity_sets:
       coal:
         selection_fields:
@@ -905,14 +888,12 @@ source_names:
               ActivityProducedBy: '324110' # use of petroleum products
 
   EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
-    <<: *ghgi_parameters
     selection_fields:
       Unit: MMT CO2e
       PrimaryActivity: HCFC-22 Production
     attribution_method: direct
 
   EPA_GHGI_T_4_94: # HFCs and other emissions from electronics manufacture
-    <<: *ghgi_parameters
     selection_fields:
       FlowName:
         SF6: SF6
@@ -922,7 +903,6 @@ source_names:
     attribution_method: direct
 
   EPA_GHGI_T_4_101: # HFCs and PFCs from ODS Substitutes
-    <<: *ghgi_parameters
     clean_fba_before_activity_sets: !script_function:temp_data_source_functions clean_hfc_fba # removes HFCs from transportation
     activity_sets:
       household_refrigeration:
@@ -961,7 +941,6 @@ source_names:
               ActivityProducedBy: '326150' # Urethane and other foams.
 
   EPA_GHGI_T_A_103: # HFCs from Transportation
-    <<: *ghgi_parameters
     # clean_fba_before_activity_sets: !script_function:temp_data_source_functions split_hfcs_by_type
     activity_sets:
       passenger_cars:
@@ -1002,13 +981,11 @@ source_names:
               ActivityProducedBy: '333415' # purchases of refrigeration equipment
 
   EPA_GHGI_T_4_80: # PFCs from aluminum production
-    <<: *ghgi_parameters
     selection_fields:
       PrimaryActivity: Aluminum Production
     attribution_method: direct
 
   EPA_GHGI_T_4_84: # HFCs, SF6, CO2 from magnesium production
-    <<: *ghgi_parameters
     selection_fields:
       PrimaryActivity: Magnesium Production and Processing
     attribution_method: proportional
