@@ -32,33 +32,49 @@ def ff_call(*, resp, year, **_):
     # only pulling table 1 for now, written expecting to import additional
     # tables.
 
-    # create list of tables to import, dictionary of headers and table number
-    if year == 2018:
-        headers = {"Table 1. Materials Generated* in the Municipal Waste "
-                   "Stream, 1960 to 2018": [5]}
+    if year == '2018':
+        pages = [9]
+    pdf_pages = []
+    for page_number in pages:
+        pdf_page = tabula.read_pdf(io.BytesIO(resp.content),
+                                   pages=page_number,
+                                   stream=True,
+                                   guess=True)[0]
 
-    for h in headers:
-        pages = headers[h]
-        pdf_pages = []
-        for page_number in pages:
-            pdf_page = tabula.read_pdf(io.BytesIO(resp.content),
-                                       pages=page_number,
-                                       stream=True,
-                                       guess=True)[0]
-
-            if page_number == 5:
-                # skip the first few rows and drop nan rows
-                pg = pdf_page.loc[2:20]
-                #todo: hardcode metals back in
-                pg = pg.dropna()
-                # assign column headers
-                pg.columns = pdf_page.loc[1, ]
-                # split column
-                pg[['1990', '2000', '2005']] = \
-                    pg['1990 2000 2005'].str.split(' ', expand=True)
-                pg = pg.drop(columns=['1990 2000 2005'])
-
-            pdf_pages.append(pg)
+        if page_number == 9:
+            # skip the first few rows
+            pg = pdf_page.loc[2:19].reset_index(drop=True)
+            # assign column headers
+            pg.columns = pdf_page.loc[1, ]
+            pg.columns.values[0] = "ActivityProducedBy"
+            # split column
+            pg[['2000', '2005', '2010']] = \
+                pg['2000 2005 2010'].str.split(' ', expand=True)
+            pg = pg.drop(columns=['2000 2005 2010'])
+            # drop nas and harcode metals and inorganic wastes back in
+            pg['ActivityProducedBy'] = np.where(
+                pg['ActivityProducedBy'].str.contains(
+                    "Ferrous|Aluminum|Other Nonferrous"),
+                'Metals, ' + pg['ActivityProducedBy'],
+                pg['ActivityProducedBy'])
+            pg['ActivityProducedBy'] = np.where(
+                pg['ActivityProducedBy'] == 'Wastes',
+                'Miscellaneous Inorganic ' + pg['ActivityProducedBy'],
+                pg['ActivityProducedBy'])
+            pg = pg.dropna()
+            # melt df and rename cols to standardize before merging with
+            # additional tables
+            pg = pg.melt(id_vars="ActivityProducedBy", var_name="Year",
+                         value_name="FlowAmount")
+            pg['Unit'] = "Thousands of Tons"
+            pg["ActivityConsumedBy"] = "Landfill"
+            pg['FlowName'] = 'Materials Landfilled'
+            pg["Description"] = "Table 4. Materials Landfilled in the " \
+                                "Municipal Waste Stream"
+            # drop rows with totals to avoid duplication
+            pg = pg[~pg["ActivityProducedBy"].str.contains(
+                'Total')].reset_index(drop=True)
+        pdf_pages.append(pg)
 
     df = pd.concat(pdf_pages, ignore_index=True)
 
@@ -74,20 +90,18 @@ def ff_parse(*, df_list, year, **_):
     """
     # concat list of dataframes (info on each page)
     df = pd.concat(df_list, sort=False)
-    # df = df.rename(columns={"I-O code": "ActivityConsumedBy",
-    #                         "I-O description": "Description",
-    #                         "gal/$M": "FlowAmount",
-    #                         })
-    # hardcode
-    # original data in gal/million usd
-    # df.loc[:, 'FlowAmount'] = df['FlowAmount'] / 1000000
-    # df['Unit'] = 'gal/USD'
+    # subset by df
+    df = df[df["Year"] == year]
+    # remove non alphanumeric characters
+    df["ActivityProducedBy"] = df["ActivityProducedBy"].str.replace(
+        '[^a-zA-Z0-9, ]', '', regex=True)
     df['SourceName'] = 'EPA_FactsAndFigures'
     df['Class'] = 'Other'
-    # df['FlowName'] = 'Water Withdrawals IO Vector'
+    df['FlowType'] = "WASTE_FLOW"
     df['Location'] = US_FIPS
     df = assign_fips_location_system(df, year)
     df['Year'] = str(year)
+    df["FlowAmount"] = df["FlowAmount"].str.replace(',', '', regex=True)
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
 
