@@ -39,6 +39,7 @@ if __name__ == '__main__':
     df['Sector'] = df['Sector'] + df['MaterialCode']
 
     df['SectorSourceName'] = 'NAICS_2012_Code'
+    df['SectorType'] = ''
     df['ActivitySourceName'] = datasource
 
     # reorder
