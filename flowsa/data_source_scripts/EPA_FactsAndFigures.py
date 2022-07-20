@@ -33,7 +33,7 @@ def ff_call(*, resp, year, **_):
     # tables.
 
     if year == '2018':
-        pages = [5]
+        pages = [9]
     pdf_pages = []
     for page_number in pages:
         pdf_page = tabula.read_pdf(io.BytesIO(resp.content),
@@ -41,21 +41,25 @@ def ff_call(*, resp, year, **_):
                                    stream=True,
                                    guess=True)[0]
 
-        if page_number == 5:
+        if page_number == 9:
             # skip the first few rows
-            pg = pdf_page.loc[2:20].reset_index(drop=True)
+            pg = pdf_page.loc[2:19].reset_index(drop=True)
             # assign column headers
             pg.columns = pdf_page.loc[1, ]
             pg.columns.values[0] = "ActivityProducedBy"
             # split column
-            pg[['1990', '2000', '2005']] = \
-                pg['1990 2000 2005'].str.split(' ', expand=True)
-            pg = pg.drop(columns=['1990 2000 2005'])
-            # drop nas and harcode metals back in
+            pg[['2000', '2005', '2010']] = \
+                pg['2000 2005 2010'].str.split(' ', expand=True)
+            pg = pg.drop(columns=['2000 2005 2010'])
+            # drop nas and harcode metals and inorganic wastes back in
             pg['ActivityProducedBy'] = np.where(
                 pg['ActivityProducedBy'].str.contains(
                     "Ferrous|Aluminum|Other Nonferrous"),
                 'Metals, ' + pg['ActivityProducedBy'],
+                pg['ActivityProducedBy'])
+            pg['ActivityProducedBy'] = np.where(
+                pg['ActivityProducedBy'] == 'Wastes',
+                'Miscellaneous Inorganic ' + pg['ActivityProducedBy'],
                 pg['ActivityProducedBy'])
             pg = pg.dropna()
             # melt df and rename cols to standardize before merging with
@@ -63,8 +67,10 @@ def ff_call(*, resp, year, **_):
             pg = pg.melt(id_vars="ActivityProducedBy", var_name="Year",
                          value_name="FlowAmount")
             pg['Unit'] = "Thousands of Tons"
-            pg["ActivityConsumedBy"] = "Municipal Waste"
-            pg['FlowName'] = 'Materials Generated'
+            pg["ActivityConsumedBy"] = "Landfill"
+            pg['FlowName'] = 'Materials Landfilled'
+            pg["Description"] = "Table 4. Materials Landfilled in the " \
+                                "Municipal Waste Stream"
             # drop rows with totals to avoid duplication
             pg = pg[~pg["ActivityProducedBy"].str.contains(
                 'Total')].reset_index(drop=True)
@@ -88,7 +94,7 @@ def ff_parse(*, df_list, year, **_):
     df = df[df["Year"] == year]
     # remove non alphanumeric characters
     df["ActivityProducedBy"] = df["ActivityProducedBy"].str.replace(
-        '[^a-zA-Z0-9 ]', '', regex=True)
+        '[^a-zA-Z0-9, ]', '', regex=True)
     df['SourceName'] = 'EPA_FactsAndFigures'
     df['Class'] = 'Other'
     df['FlowType'] = "WASTE_FLOW"
