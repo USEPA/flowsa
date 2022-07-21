@@ -28,13 +28,17 @@ def stripcounty(s):
 
 
 def annual_fips(years):
-    """Fxn to pull the FIPS codes/names from the Census website. Columns are renamed amd subset."""
-    # list of years to include in FIPS crosswalk
+    """
+    Fxn to pull the FIPS codes/names from the Census website. Columns are
+    renamed amd subset.
+    :param years: list, years to include in FIPS crosswalk
+    :return:
+    """
 
     df_list = {}
     for year in years:
-        # only works for 2015 +....contacted Census on 5/1 to ask for county level
-        # fips for previous years
+        # only works for 2015 +....contacted Census on 5/1 to ask for county
+        # level fips for previous years
         if year == '2013':
             url = 'https://www2.census.gov/programs-surveys/popest/geographies/' + \
                   year + '/all-geocodes-v' + year + '.xls'
@@ -43,7 +47,8 @@ def annual_fips(years):
                   year + "/all-geocodes-v" + year + ".xlsx"
 
         r = make_url_request(url)
-        raw_df = pd.read_excel(io.BytesIO(r.content)).dropna().reset_index(drop=True)
+        raw_df = pd.read_excel(io.BytesIO(r.content)).dropna().reset_index(
+            drop=True)
 
         # skip the first few rows
         FIPS_df = pd.DataFrame(raw_df.loc[1:]).reindex()
@@ -62,14 +67,16 @@ def annual_fips(years):
 
         # split df by level to return a list of dfs
         # use a list comprehension to split it out
-        FIPS_bylevel = [pd.DataFrame(y) for x, y in FIPS_df.groupby("SummaryLevel", as_index=False)]
+        FIPS_bylevel = [pd.DataFrame(y) for x, y in FIPS_df.groupby(
+            "SummaryLevel", as_index=False)]
 
         # Assume df order in list is in geolevels keys order
 
         # country does not have its own field
-        state_and_county_fields = {"Country": ["StateCode(FIPS)"],
-                                   "State": ["StateCode(FIPS)"],
-                                   "County_" + year: ["StateCode(FIPS)", "CountyCode(FIPS)"]}
+        state_and_county_fields = {
+            "Country": ["StateCode(FIPS)"],
+            "State": ["StateCode(FIPS)"],
+            "County_" + year: ["StateCode(FIPS)", "CountyCode(FIPS)"]}
 
         name_field = "AreaName(includinglegal/statisticalareadescription)"
 
@@ -89,21 +96,22 @@ def annual_fips(years):
         # FIPS_df_new = FIPS_df
         for k, v in new_dfs.items():
             fields_to_merge = [str(x) for x in state_and_county_fields[k]]
-            # FIPS_df_new = pd.merge(FIPS_df_new,v,on=fields_to_merge,how="left")
             FIPS_df = pd.merge(FIPS_df, v, on=fields_to_merge, how="left")
 
         # combine state and county codes
         FIPS_df['FIPS_' + year] = \
-            FIPS_df[state_and_county_fields["County_" + year][0]].astype(str) + \
-            FIPS_df[state_and_county_fields["County_" + year][1]].astype(str)
+            FIPS_df[state_and_county_fields["County_" + year][0]].astype(
+                str) + FIPS_df[state_and_county_fields["County_" + year][
+                1]].astype(str)
 
         fields_to_keep = ["State", "County_" + year, "FIPS_" + year]
         FIPS_df = FIPS_df[fields_to_keep]
 
         # Clean the county field - remove the " County"
-        # FIPS_df["County"] = FIPS_df["County"].apply(lambda x:stripcounty(x))
-        FIPS_df["County_" + year] = FIPS_df["County_" + year].apply(stripcounty)
-        FIPS_df["County_" + year] = FIPS_df["County_" + year].apply(clean_str_and_capitalize)
+        FIPS_df["County_" + year] = FIPS_df["County_" + year].apply(
+            stripcounty)
+        FIPS_df["County_" + year] = FIPS_df["County_" + year].apply(
+            clean_str_and_capitalize)
         FIPS_df["State"] = FIPS_df["State"].apply(clean_str_and_capitalize)
 
         # add to data dictionary of fips years
@@ -134,12 +142,14 @@ def read_fips_2010():
     names_10 = pd.DataFrame(names_10.loc[4:]).reset_index(drop=True)
     # drop rows of na
     names_10 = names_10.loc[~names_10['2010 County Set Description'].isna()]
-    names_10 = names_10.loc[~names_10['FIPS County Code'].isna()].reset_index(drop=True)
+    names_10 = names_10.loc[~names_10['FIPS County Code'].isna()].reset_index(
+        drop=True)
     # new column of fips
     names_10['FIPS_2010'] = names_10['FIPS State Code'].astype(str) +\
                             names_10['FIPS County Code'].astype(str)
     # rename columns and subset df
-    names_10 = names_10.rename(columns={'2010 County Set Description': 'County_2010'})
+    names_10 = names_10.rename(columns={'2010 County Set Description':
+                                            'County_2010'})
     names_10 = names_10[['FIPS_2010', 'County_2010']]
     # drop empty fips column
     names_10['FIPS_2010'] = names_10['FIPS_2010'].str.strip()
@@ -150,7 +160,8 @@ def read_fips_2010():
 
 if __name__ == '__main__':
 
-    # consider modifying to include data for all years, as there are county level name changes
+    # consider modifying to include data for all years, as there are county
+    # level name changes
 
     # years data interested in (list)
     years = ['2015']
@@ -163,7 +174,8 @@ if __name__ == '__main__':
     # Accessed 04/10/2020
     df = fips_dic['FIPS_2015']
 
-    # modify columns depicting how counties have changed over the years - starting 2010
+    # modify columns depicting how counties have changed over the years -
+    # starting 2010
 
     # 2013 had two different/renamed fips
     df_13 = pd.DataFrame(df['FIPS_2015'])
@@ -175,7 +187,8 @@ if __name__ == '__main__':
     # so 2010 will have an additional row
     df_10 = pd.DataFrame(df_13["FIPS_2013"])
     df_10['FIPS_2010'] = df_13['FIPS_2013']
-    df_10 = df_10.append(pd.DataFrame([["51019", "51515"]], columns=df_10.columns))
+    df_10 = df_10.append(pd.DataFrame([["51019", "51515"]],
+                                      columns=df_10.columns))
 
     # merge 2010 with 2013 dataframe
     df2 = pd.merge(df_10, df_13, on="FIPS_2013", how='left')\
@@ -200,10 +213,13 @@ if __name__ == '__main__':
     df4 = pd.merge(df4, names_13, on=["State", "FIPS_2013"], how='left')
 
     # reorder dataframe
-    fips_xwalk = df4[['State', 'FIPS_2010', 'County_2010', 'FIPS_2013', 'County_2013',
-                      'FIPS_2015', 'County_2015']]
+    fips_xwalk = df4[['State', 'FIPS_2010', 'County_2010', 'FIPS_2013',
+                      'County_2013', 'FIPS_2015', 'County_2015']]
     fips_xwalk = fips_xwalk.sort_values(['FIPS_2010', 'FIPS_2013',
-                                         'FIPS_2015']).reset_index(drop=True)
+                                         'FIPS_2015'])
+    # drop peurto rico data
+    fips_xwalk = fips_xwalk[fips_xwalk['State'] != 'Puerto rico'].reset_index(
+        drop=True)
 
     # write fips crosswalk as csv
     fips_xwalk.to_csv(datapath + "FIPS_Crosswalk.csv", index=False)
