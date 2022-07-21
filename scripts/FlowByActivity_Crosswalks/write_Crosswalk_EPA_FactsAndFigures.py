@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # assign sector type
     df['SectorType'] = None
     # sort df
-    df = order_crosswalk(df)
+    df = order_crosswalk(df, match_cols=match_cols)
     # save as csv
     df.to_csv(f'{datapath}activitytosectormapping/NAICS_Crosswalk_'
               f'{datasource}.csv', index=False)

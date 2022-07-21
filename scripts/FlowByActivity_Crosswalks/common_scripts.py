@@ -48,14 +48,24 @@ def unique_activity_names(datasource, year, **_):
     return df_unique
 
 
-def order_crosswalk(df):
+def order_crosswalk(df, **_):
     """
     Set column order and sort crosswalks
     :param df: crosswalk
-    :return: df, ordered croosswalk
+    :param **_: optional parameter of "match_cols", defining a list of
+    additional column names by which to return unique activity names. See
+    "write_crosswalk_EPA_FactsAndFigures.py" for example
+    :return: df, ordered crosswalk
     """
+    # return additional columns used to return unique activity names,
+    # if specified
+    match_cols = _.get("match_cols")
+    if match_cols is None:
+        match_cols = []
     # set column order
-    df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
+    col_order = ['ActivitySourceName'] + match_cols + \
+                ['Activity', 'SectorSourceName', 'Sector', 'SectorType']
+    df = df[col_order]
     # sort df
     df = df.sort_values(['Sector', 'Activity']).reset_index(drop=True)
 
