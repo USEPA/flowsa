@@ -86,6 +86,8 @@ def ff_parse(*, df_list, year, **_):
     # remove non alphanumeric characters
     df["FlowName"] = df["FlowName"].str.replace('[^a-zA-Z0-9, ]', '',
                                                 regex=True)
+    # strip trailing white spaces
+    df["FlowName"] = df["FlowName"].str.strip()
     df['SourceName'] = 'EPA_FactsAndFigures'
     df['Class'] = 'Other'
     df['FlowType'] = "WASTE_FLOW"
