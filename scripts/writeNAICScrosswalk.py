@@ -117,7 +117,7 @@ def update_naics_crosswalk():
     missing_naics_df = missing_naics_df.reset_index(drop=True)
 
     # add missing naics to master naics crosswalk
-    total_naics = naics.append(missing_naics_df, ignore_index=True)
+    total_naics = pd.concat([naics, missing_naics_df], ignore_index=True)
 
     # sort df
     total_naics = total_naics.sort_values(
@@ -141,6 +141,24 @@ def update_naics_crosswalk():
 
     # save as csv
     naics_cw.to_csv(datapath + "NAICS_Crosswalk_TimeSeries.csv", index=False)
+
+
+def merge_df_by_crosswalk_lengths(naics_cw, d, l):
+    """
+
+    :param naics_cw:
+    :param d:
+    :param l:
+    :return:
+    """
+    naics_cw = (d[f'NAICS_{l}'].assign(temp=d[f'NAICS_{l}'][
+        f'NAICS_{l}'].str.extract(
+        pat=f"({'|'.join(map(str, naics_cw[f'NAICS_{l - 1}']))})")).merge(
+        naics_cw, how='right', left_on='temp',
+        right_on=f'NAICS_{l - 1}',
+        suffixes=['', '_y'])).drop(columns=['temp', 'secLength_y'])
+
+    return naics_cw
 
 
 def write_naics_2012_crosswalk():
@@ -184,15 +202,35 @@ def write_naics_2012_crosswalk():
 
     naics_cw = d['NAICS_2']
     for l in range(3, max_naics_length+1):
-        naics_cw = (d[f'NAICS_{l}'].assign(temp=d[f'NAICS_{l}'][
-            f'NAICS_{l}'].str.extract(
-            pat=f"({'|'.join(naics_cw[f'NAICS_{l-1}'])})")).merge(
-            naics_cw, how='right', left_on='temp',
-            right_on=f'NAICS_{l-1}',
-            suffixes=['', '_y'])).drop(columns=['temp', 'secLength_y'])
+        # first check that there are corresponding length - 1 sectors in the
+        # crosswalk, and if not, append the length-1 sectors to the previous
+        # run and rerun, drop government and household sectors
+        existing_sec_list = d[f'NAICS_{l-1}'][
+            f'NAICS_{l-1}'].drop_duplicates().tolist()
+        df_sub = d[f'NAICS_{l}'].copy()
+        df_sub[f'NAICS_{l}'] = df_sub[f'NAICS_{l}'].str[:-1]
+        df_sub.rename(columns={f'NAICS_{l}': f'NAICS_{l - 1}'}, inplace=True)
+        df_sub['secLength'] = df_sub['secLength'].str.replace(
+            f"{l}", f"{l - 1}")
+        # drop household and gov codes
+        df_sub = df_sub[~df_sub[f'NAICS_{l - 1}'].str.startswith(
+            tuple(['F0', 'S0']))].drop_duplicates()
+        missing_sectors = df_sub[~df_sub[f'NAICS_{l - 1}'].isin(
+            existing_sec_list)]
+
+        # if there are missing sectors at length l-1, append the missing
+        # sectors and rerun the previous crosswalk merge
+        if (len(missing_sectors) > 0) & (l > 3):
+            d[f'NAICS_{l - 1}'] = pd.concat(
+                [d[f'NAICS_{l - 1}'], missing_sectors], ignore_index=True)
+            # redo merge at length l-1
+            naics_cw = merge_df_by_crosswalk_lengths(naics_cw, d, l - 1).drop(
+                columns=[f"NAICS_{l - 1}_y"]).drop_duplicates()
+
+        naics_cw = merge_df_by_crosswalk_lengths(naics_cw, d, l)
+
     # drop seclength column
     naics_cw = naics_cw.drop(columns='secLength')
-
     # reorder
     naics_cw = naics_cw.reindex(sorted(naics_cw.columns), axis=1)
     # save as csv
