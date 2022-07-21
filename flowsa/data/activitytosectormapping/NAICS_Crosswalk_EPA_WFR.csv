@@ -54,12 +54,12 @@ EPA_WFR,Office Buildings,NAICS_2012_Code,551,I
 EPA_WFR,Office Buildings,NAICS_2012_Code,561,I
 EPA_WFR,Correctional Facilities,NAICS_2012_Code,5612,I
 EPA_WFR,Office Buildings,NAICS_2012_Code,562,I
-EPA_WFR,Landfill,NAICS_2012_Code,562212,I
+EPA_WFR,Landfill,NAICS_2012_Code,5622121,I
 EPA_WFR,Controlled Combustion,NAICS_2012_Code,562213,I
 EPA_WFR,Animal Feed Collection,NAICS_2012_Code,562219A,I
 EPA_WFR,Bio-based Materials/Biochemical Processing Collection,NAICS_2012_Code,562219B,I
-EPA_WFR,Codigestion/Anaerobic Digestion,NAICS_2012_Code,562219C,I
-EPA_WFR,Composting/Aerobic Processes Collection,NAICS_2012_Code,562219D,I
+EPA_WFR,Codigestion/Anaerobic Digestion,NAICS_2012_Code,5622191,I
+EPA_WFR,Composting/Aerobic Processes Collection,NAICS_2012_Code,5622192,I
 EPA_WFR,Land Application Collection,NAICS_2012_Code,562219E,I
 EPA_WFR,Office Buildings,NAICS_2012_Code,611,I
 EPA_WFR,K-12 Schools,NAICS_2012_Code,6111,I

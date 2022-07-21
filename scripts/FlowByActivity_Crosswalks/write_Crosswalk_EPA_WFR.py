@@ -9,7 +9,7 @@ manually assigning to NAICS
 
  Sector assignments are based off Table 4
     https://www.epa.gov/sites/default/files/2020-11/documents/2018_wasted_food_report-11-9-20_final_.pdf
- 
+
  Definitions of the waste management pathways are in the Wasted food measurement
  methodology scoping memo
  https://www.epa.gov/sites/production/files/2020-06/documents/food_measurement_methodology_scoping_memo-6-18-20.pdf
@@ -75,7 +75,7 @@ def assign_naics(df):
     df = df.append(pd.DataFrame(
         [['EPA_WFR', 'Animal Feed Collection', '562219A']],
         columns=['ActivitySourceName', 'Activity', 'Sector']))
-    
+
     # Converting material into industrial products. Ex. creating fibers for
     # packaging material, bioplastics , feathers (e.g., for pillows),
     # and rendering fat, oil, or grease into a raw material to make products
@@ -89,42 +89,44 @@ def assign_naics(df):
         [['EPA_WFR', 'Bio-based Materials/Biochemical Processing '
                      'Collection', '562219B']],
         columns=['ActivitySourceName', 'Activity', 'Sector']))
-    
+
     # Breaking down material via bacteria in the absence of oxygen.
     # Generates biogas and nutrient-rich matter. This destination includes
     # fermentation (converting carbohydrates via microbes into alcohols in
     # the absence of oxygen to create products such as biofuels).
     df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = \
-        '562219C'
-    
+        '5622191' # Subnaics 1 for AD
+
     # Composting refers to the production of organic material (via aerobic
     # processes) that can be used as a soil amendment
     df.loc[df['Activity'] ==
            'Composting/Aerobic Processes', 'Sector'] = '325314'
     df = df.append(pd.DataFrame(
-        [['EPA_WFR', 'Composting/Aerobic Processes Collection', '562219D']],
+        [['EPA_WFR', 'Composting/Aerobic Processes Collection', '5622192']],
         columns=['ActivitySourceName', 'Activity', 'Sector']))
-    
+        # Subnaics 2 for Compost
+
     # Sending material to a facility that is specifically designed for
     # combustion in a controlled manner, which may include some form of
     # energy recovery
     df.loc[df['Activity'] == 'Controlled Combustion', 'Sector'] = '562213'
-   
+
     # collection and redistribution of unspoiled excess food to feed people
     # through food pantries, food banks and other food rescue programs
     df.loc[df['Activity'] == 'Food Donation', 'Sector'] = '624210'
-    
+
     # Spreading, spraying, injecting, or incorporating organic material onto or
     # below the surface of the land to enhance soil quality
     df.loc[df['Activity'] == 'Land Application', 'Sector'] = '115112'
     df = df.append(pd.DataFrame(
         [['EPA_WFR', 'Land Application Collection', '562219E']],
         columns=['ActivitySourceName', 'Activity', 'Sector']))
-    
+
     # Sending material to an area of land or an excavated site that is
     # specifically designed and built to receive wastes
-    df.loc[df['Activity'] == 'Landfill', 'Sector'] = '562212'
-    
+    df.loc[df['Activity'] == 'Landfill', 'Sector'] = '5622121'
+    # Subnaics 1 for MSW Landfill
+
     # Sending material down the sewer (with or without prior treatment),
     # including that which may go to a facility designed to treat wastewater
     df.loc[df['Activity'] == 'Sewer/Wastewater Treatment', 'Sector'] = '22132'
