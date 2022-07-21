@@ -38,11 +38,12 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
                       download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
     fba = FlowByActivity.getFlowByActivity(
         full_name=datasource,
+        config={},
         year=int(year),
         download_ok=download_FBA_if_missing
     )
 
-    if len(fba) ==0:
+    if len(fba) == 0:
         raise flowsa.exceptions.FBANotAvailableError(
             message=f"Error generating {datasource} for {str(year)}")
     if flowclass is not None:
