@@ -23,20 +23,23 @@ def assign_naics(df):
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
     # assign sectors to activities
+    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '3111'
+    df.loc[df['Activity'] == 'Bio-Based Materials/Biochemical Processing',
+           'Sector'] = '562219B'
+    df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = \
+        '5622191'  # Subnaics 1 for AD
+    df.loc[df['Activity'] == 'Combusted with Energy Recovery', 'Sector'] = \
+        '562213'
+    df.loc[df['Activity'] == 'Composted', 'Sector'] = '325314'
+    df.loc[df['Activity'] == 'Donation', 'Sector'] = '624210'
+    df.loc[df['Activity'] == 'Land Application', 'Sector'] = '115112'
     # 562212 is the code for landfills, in flowsa, the 7-digit sector code
     # '5622121' represents MSW landfills, while '5622122' is industrial
     # waste landfills
-    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Bio-Based Materials/Biochemical Processing',
-           'Sector'] = ''
-    df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Combusted with Energy Recovery', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Composted', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Donation', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Land Application', 'Sector'] = ''
     df.loc[df['Activity'] == 'Landfilled', 'Sector'] = '5622121'
-    df.loc[df['Activity'] == 'Recycled', 'Sector'] = ''
-    df.loc[df['Activity'] == 'Sewer/WastewaterTreatment', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Recycled', 'Sector'] = \
+        '5629201'  # child NAICS 1 for MSW
+    df.loc[df['Activity'] == 'Sewer/WastewaterTreatment', 'Sector'] = '22132'
 
     return df
 
