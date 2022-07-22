@@ -22,21 +22,11 @@ def assign_naics(df):
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
-    # assign sectors to materials
-    # todo: will have to modify code when add additional data beyond landfill
-    df.loc[df['FlowName'] == 'Food', 'Sector'] = '5622121F'
-    df.loc[df['FlowName'] == 'Glass', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Metals, Aluminum', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Metals, Ferrous', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Metals, Other Nonferrous', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Miscellaneous Inorganic Wastes', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Other', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Paper and Paperboard', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Plastics', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Rubber and Leather', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Textiles', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Wood', 'Sector'] = ''
-    df.loc[df['FlowName'] == 'Yard Trimmings', 'Sector'] = ''
+    # assign sectors to activities
+    # 562212 is the code for landfills, in flowsa, the 7-digit sector code
+    # '5622121' represents MSW landfills, while '5622122' is industrial
+    # waste landfills
+    df.loc[df['Activity'] == 'Landfill', 'Sector'] = '5622121'
 
     return df
 
@@ -46,11 +36,10 @@ if __name__ == '__main__':
     years = ['2018']
     # datasource
     datasource = 'EPA_FactsAndFigures'
-    match_cols = ["FlowName"]
     # df of unique ers activity names
     df_list = []
     for y in years:
-        dfy = unique_activity_names(datasource, y, match_cols=match_cols)
+        dfy = unique_activity_names(datasource, y)
         df_list.append(dfy)
     df = pd.concat(df_list, ignore_index=True).drop_duplicates()
     # add manual naics 2012 assignments
@@ -61,7 +50,7 @@ if __name__ == '__main__':
     # assign sector type
     df['SectorType'] = None
     # sort df
-    df = order_crosswalk(df, match_cols=match_cols)
+    df = order_crosswalk(df)
     # save as csv
     df.to_csv(f'{datapath}activitytosectormapping/NAICS_Crosswalk_'
               f'{datasource}.csv', index=False)

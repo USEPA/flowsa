@@ -1,14 +1,2 @@
-ActivitySourceName,FlowName,Activity,SectorSourceName,Sector,SectorType
-EPA_FactsAndFigures,Glass,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,"Metals, Aluminum",Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,"Metals, Ferrous",Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,"Metals, Other Nonferrous",Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Miscellaneous Inorganic Wastes,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Other,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Paper and Paperboard,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Plastics,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Rubber and Leather,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Textiles,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Wood,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Yard Trimmings,Landfill,NAICS_2012_Code,,
-EPA_FactsAndFigures,Food,Landfill,NAICS_2012_Code,5622121F,
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+EPA_FactsAndFigures,Landfill,NAICS_2012_Code,5622121,
