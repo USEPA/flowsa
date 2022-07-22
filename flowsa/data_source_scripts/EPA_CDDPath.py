@@ -133,17 +133,45 @@ def cdd_processing(fba, source_dict):
     inputs = fba.loc[fba['FlowName'] == material]
     inputs = inputs.reset_index(drop=True)
     outputs = inputs.copy()
-    inputs['ActivityConsumedBy'] = f"{material} Processing"
-    outputs['ActivityProducedBy'] = f"{material} Processing"
 
-    outputs['Flowable'] = f"{material} Processed"
-    df1 = pd.concat([inputs, outputs], ignore_index=True)
+    pct_to_mixed = source_dict.get('pct_to_mixed')
+    inputs[f"{material} Processing"] = 1-pct_to_mixed
+    inputs["Mixed CDD Processing"] = pct_to_mixed
+
+    def melt_and_apply_percentages(df, fbacol='ActivityConsumedBy'):
+        df = (df.melt(id_vars = flow_by_activity_mapped_fields,
+                      value_vars=[f"{material} Processing", "Mixed CDD Processing"])
+              .drop(columns=[fbacol])
+              .rename(columns={'variable': fbacol})
+              )
+        df['FlowAmount'] = df['FlowAmount'] * df['value']
+        return df
+
+    inputs = melt_and_apply_percentages(inputs)
+
     cols = flow_by_activity_mapped_fields.copy()
     cols.pop('FlowAmount')
-    df1 = aggregator(df1, cols)
+    inputs = aggregator(inputs, cols)
+    inputs['Flowable'] = f"{material} waste"
 
-    df1.loc[df1['ActivityConsumedBy'] == 'Remanufacture',
-            'ActivityConsumedBy'] = f'Remanufacture - {material}'
+    landfill_from_mixed = source_dict.get('landfill_from_mixed')
+    recycled_from_mixed = source_dict.get('recycled_from_mixed')
+
+    outputs["Mixed CDD Processing"] = recycled_from_mixed
+    outputs.loc[outputs["ActivityConsumedBy"] == "Landfill",
+                "Mixed CDD Processing"] = landfill_from_mixed
+    # Remainder from single material MRF
+    outputs[f"{material} Processing"] = 1 - outputs["Mixed CDD Processing"]
+    outputs = melt_and_apply_percentages(outputs, "ActivityProducedBy")
+    outputs = aggregator(outputs, cols)
+    outputs.loc[outputs['ActivityConsumedBy'] == 'Remanufacture',
+                'ActivityConsumedBy'] = f'Remanufacture - {material}'
+    outputs['Flowable'] = outputs['ActivityConsumedBy']
+    outputs['FlowType'] = 'TECHNOSPHERE_FLOW'
+    outputs.loc[outputs['Flowable'] == 'Landfill',
+                ['Flowable', 'FlowType']] = [f"{material} waste", 'WASTE_FLOW']
+
+    df1 = pd.concat([inputs, outputs], ignore_index=True)
 
     return df1
 

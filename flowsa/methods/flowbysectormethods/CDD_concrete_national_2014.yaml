@@ -9,6 +9,9 @@ source_names:
     year: 2014
     clean_fba_df_fxn: !script_function:EPA_CDDPath cdd_processing
     cdd_parameter: "Concrete"
+    pct_to_mixed: 0.08840 # Percent of total waste that passes through Mixed CDD facility
+    landfill_from_mixed: 0.23692 # Of the total quantity landfilled, this percent comes from Mixed CDD facilities
+    recycled_from_mixed: 0.05598 # Of the total quantity recycled, this percent comes from Mixed CDD facilities
     # mfl_mapping: 'EPA_CDDPath'
     activity_sets:
       waste_gen:
