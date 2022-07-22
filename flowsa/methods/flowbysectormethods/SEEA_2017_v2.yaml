@@ -457,18 +457,17 @@ source_names:
 
 # ## Agriculture
   EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
-      attribution_method: direct
-      selection_fields:
-        PrimaryActivity:
-          - Chickpeas
-          - Cotton
-          - Maize
-          - Rice
-          - Soybeans
-          - Wheat
+    selection_fields:
+      PrimaryActivity:
+        - Chickpeas
+        - Cotton
+        - Maize
+        - Rice
+        - Soybeans
+        - Wheat
+    attribution_method: direct
 
   EPA_GHGI_T_5_3: &animals #CH4 from Enteric Fermentation
-    attribution_method: direct
     selection_fields:
       PrimaryActivity:
         - American Bison
@@ -480,6 +479,7 @@ source_names:
         - Sheep
         - Swine
         - Poultry
+    attribution_method: direct
   EPA_GHGI_T_5_7: *animals #CH4 and N2O from manure, mimics enteric fermentation
 
   EPA_GHGI_T_5_18: #Direct N2O emissions from agricultural soils
@@ -903,7 +903,7 @@ source_names:
     attribution_method: direct
 
   EPA_GHGI_T_4_101: # HFCs and PFCs from ODS Substitutes
-    clean_fba_before_activity_sets: !script_function:temp_data_source_functions clean_hfc_fba # removes HFCs from transportation
+    clean_fba_before_activity_sets: !script_function:temp_data_source_functions clean_hfc_fba_for_seea # removes HFCs from transportation
     activity_sets:
       household_refrigeration:
         selection_fields:

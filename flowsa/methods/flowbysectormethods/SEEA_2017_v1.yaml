@@ -921,7 +921,7 @@ source_names:
 
   EPA_GHGI_T_4_101: # HFCs and PFCs from ODS Substitutes
     <<: *ghgi_parameters
-    clean_fba_before_activity_sets: !script_function:temp_data_source_functions clean_hfc_fba # removes HFCs from transportation
+    clean_fba_before_activity_sets: !script_function:temp_data_source_functions clean_hfc_fba_for_seea # removes HFCs from transportation
     activity_sets:
       household_refrigeration:
         selection_fields:
