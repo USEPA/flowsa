@@ -22,12 +22,6 @@ source_names:
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2012
-        allocation_flow:
-          - "Number of employees, Federal Government"
-          - "Number of employees, State Government"
-          - "Number of employees, Local Government"
-          - "Number of employees, Private"
-        allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
         clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
@@ -45,12 +39,6 @@ source_names:
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2014
-        allocation_flow:
-          - "Number of employees, Federal Government"
-          - "Number of employees, State Government"
-          - "Number of employees, Local Government"
-          - "Number of employees, Private"
-        allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
         clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
@@ -63,11 +51,6 @@ source_names:
       general_mining: # all blm pls activities other than hardrock
         names: !from_index:BLM_PLS_2012_asets.csv general_mining
         allocation_method: direct
-        allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: national
       hardrock_mining:
         names: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
@@ -75,12 +58,6 @@ source_names:
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2012
-        allocation_flow:
-          - "Number of employees, Federal Government"
-          - "Number of employees, State Government"
-          - "Number of employees, Local Government"
-          - "Number of employees, Private"
-        allocation_compartment: None
         allocation_from_scale: national
         allocation_fba_load_scale: national
         clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
@@ -103,7 +80,6 @@ source_names:
           - "AREA IN PRODUCTION"
           - 'AREA BEARING & NON-BEARING'
           - 'AREA GROWN'
-        allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba: !script_function:USDA_CoA_Cropland coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
@@ -120,7 +96,6 @@ source_names:
           - "AREA IN PRODUCTION"
           - 'AREA BEARING & NON-BEARING'
           - 'AREA GROWN'
-        allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba: !script_function:USDA_CoA_Cropland coa_nonirrigated_cropland_fba_cleanup
         clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
@@ -135,7 +110,6 @@ source_names:
         allocation_source_year: 2012
         allocation_flow:
           - "FARM OPERATIONS"
-        allocation_compartment: None
         allocation_from_scale: state
         clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland_NAICS coa_cropland_naics_fba_wsec_cleanup
       activity_set_4:
@@ -144,11 +118,6 @@ source_names:
           - 'Land in defense and industrial areas'
           - 'Land in rural parks and wildlife areas'
         allocation_method: direct
-        allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: state
       activity_set_5:
         names:
@@ -159,10 +128,6 @@ source_names:
           "urban_land_use_for_airports": "2020",
           "urban_land_use_for_railroads": "2020",
           "transportation_sectors_based_on_FHA_fees": "1997"}
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: national
       activity_set_6:
         names:
@@ -175,20 +140,13 @@ source_names:
           "urban_land_use_for_airports": "2020",
           "urban_land_use_for_railroads": "2020",
           "open_space_fraction_of_urban_area": "2020"}
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: national
       activity_set_7:
         names:
           - 'Other land'
+        geoscale_to_use: national
         allocation_method: allocation_function
         allocation_source: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_other_land
         literature_sources: {
           "area_of_rural_land_occupied_by_houses_2013": "2017" }
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
         allocation_from_scale: national
