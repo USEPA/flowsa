@@ -24,19 +24,50 @@ def ff_call(*, resp, year, **_):
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    # only pulling table 1 for now, written expecting to import additional
-    # tables.
 
     if year == '2018':
-        pages = [9]
+        pages = [6, 8, 9]
     pdf_pages = []
     for page_number in pages:
         pdf_page = tabula.read_pdf(io.BytesIO(resp.content),
                                    pages=page_number,
                                    stream=True,
                                    guess=True)[0]
+        if page_number == 6:
+            # skip the first few rows
+            pg = pdf_page.loc[2:33].reset_index(drop=True)
+            # assign column headers
+            pg.columns = pdf_page.loc[0, ]
+            pg.columns.values[0] = "FlowName"
+            pg['FlowName'] = pg['FlowName'].str.replace("–", "-")
+            # split column
+            pg[['2000', '2005']] = \
+                pg['2000 2005'].str.split(' ', expand=True)
+            pg = pg.drop(columns=['2000 2005'])
+            # manually address errors generated in df generation - correct 2018
+            # values for other food management
+            pg.loc[24, "2018"] = "1840"
+            pg.loc[26, "2018"] = "5260"
+            pg.loc[30, "2018"] = "3740"
+            # drop rows with na for 2018
+            pg = pg.dropna(subset=['2018']).reset_index(drop=True)
+            # assign activity based on location in data table
+            pg.loc[0:11, "ActivityConsumedBy"] = "Recycled"
+            pg.loc[12:15, "ActivityConsumedBy"] = "Composted"
+            pg.loc[16:21, "ActivityConsumedBy"] = pg[
+                "FlowName"].str.replace("Food - ", '')
+            pg["ActivityConsumedBy"] = pg["ActivityConsumedBy"].str.title()
+            pg['FlowName'] = pg['FlowName'].str.replace(
+                "( -).*", "", regex=True)
+            # melt df and rename cols to standardize before merging with
+            # additional tables
+            pg = pg.melt(id_vars=["FlowName", "ActivityConsumedBy"],
+                         var_name="Year", value_name="FlowAmount")
+            pg["Description"] = "Table 2. Materials Recycled, Composted and " \
+                                "Managed by Other Food Pathways in the " \
+                                "Municipal Waste Stream"
 
-        if page_number == 9:
+        if page_number in [8, 9]:
             # skip the first few rows
             pg = pdf_page.loc[2:19].reset_index(drop=True)
             # assign column headers
@@ -46,25 +77,45 @@ def ff_call(*, resp, year, **_):
             pg[['2000', '2005', '2010']] = \
                 pg['2000 2005 2010'].str.split(' ', expand=True)
             pg = pg.drop(columns=['2000 2005 2010'])
-            # drop nas and harcode metals and inorganic wastes back in
-            pg["FlowName"] = np.where(pg["FlowName"].str.contains(
-                    "Ferrous|Aluminum|Other Nonferrous"),
-                'Metals, ' + pg["FlowName"], pg["FlowName"])
-            pg["FlowName"] = np.where(
-                pg["FlowName"] == "Wastes",
-                "Miscellaneous Inorganic " + pg["FlowName"], pg["FlowName"])
-            pg = pg.dropna()
+            pg = pg.dropna(subset=['2018']).reset_index(drop=True)
             # melt df and rename cols to standardize before merging with
             # additional tables
             pg = pg.melt(id_vars="FlowName", var_name="Year",
                          value_name="FlowAmount")
-            pg['Unit'] = "Thousands of Tons"
-            pg["ActivityConsumedBy"] = "Landfill"
-            pg["Description"] = "Table 4. Materials Landfilled in the " \
-                                "Municipal Waste Stream"
-            # drop rows with totals to avoid duplication
-            pg = pg[~pg["FlowName"].str.contains('Total')].reset_index(
-                drop=True)
+            pg = pg.dropna(subset=["FlowAmount"]).reset_index(drop=True)
+            if page_number == 8:
+                pg["ActivityConsumedBy"] = "Combusted with Energy Recovery"
+                pg["Description"] = "Table 3. Materials Combusted with " \
+                                    "Energy Recovery* in the Municipal " \
+                                    "Waste Stream"
+            if page_number == 9:
+                pg["ActivityConsumedBy"] = "Landfilled"
+                pg["Description"] = "Table 4. Materials Landfilled in the " \
+                                    "Municipal Waste Stream"
+        # following code used for page 6, 9
+        # drop nas and harcode metals and inorganic wastes back in
+        pg["FlowName"] = np.where(pg["FlowName"].str.contains(
+                "Ferrous|Aluminum|Other Nonferrous"),
+            'Metals, ' + pg["FlowName"], pg["FlowName"])
+        pg["FlowName"] = np.where(
+            pg["FlowName"] == "Wastes",
+            "Miscellaneous Inorganic " + pg["FlowName"], pg["FlowName"])
+        # Revise Activity names
+        pg["ActivityConsumedBy"] = np.where(
+            pg["ActivityConsumedBy"] == "Bio-Based",
+            "Bio-Based Materials/Biochemical Processing",
+            pg["ActivityConsumedBy"])
+        pg["ActivityConsumedBy"] = np.where(
+            pg["ActivityConsumedBy"] == "Codigestion/Anaerobic",
+            "Codigestion/Anaerobic Digestion", pg["ActivityConsumedBy"])
+        pg["ActivityConsumedBy"] = np.where(
+            pg["ActivityConsumedBy"] == "Sewer/Wastewater",
+            "Sewer/Wastewater Treatment", pg["ActivityConsumedBy"])
+        # drop rows with totals to avoid duplication
+        pg = pg[~pg["FlowName"].str.contains('Total')].reset_index(
+            drop=True)
+        pg['Unit'] = "Thousands of Tons"
+
         pdf_pages.append(pg)
 
     df = pd.concat(pdf_pages, ignore_index=True)
@@ -95,6 +146,9 @@ def ff_parse(*, df_list, year, **_):
     df = assign_fips_location_system(df, year)
     df['Year'] = str(year)
     df["FlowAmount"] = df["FlowAmount"].str.replace(',', '', regex=True)
+    # Facts and Figures defines "Neg." as "Less than 5,000 tons or 0.05
+    # percent," so replace with 0
+    df["FlowAmount"] = df["FlowAmount"].str.replace('Neg.', '0', regex=True)
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
 
