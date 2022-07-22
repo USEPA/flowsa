@@ -46,6 +46,8 @@ flow_by_sector_fields = \
      'DistributionType': [{'dtype': 'str'}, {'required': False}],
      'Min': [{'dtype': 'float'}, {'required': False}],
      'Max': [{'dtype': 'float'}, {'required': False}],
+     'ProducedBySectorType': [{'dtype': 'str'}, {'required': False}],
+     'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}],
      'DataReliability': [{'dtype': 'float'}, {'required': True}],
      'TemporalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'GeographicalCorrelation': [{'dtype': 'float'}, {'required': True}],
