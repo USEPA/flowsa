@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![FLOWSA Paper](http://img.shields.io/badge/FLOWSA%20Paper-10.3390/app12115742-blue.svg)](https://doi.org/10.3390/app12115742)
+<!-- badges: end -->
+
 # flowsa
 `flowsa` is a data processing library attributing resources (environmental, 
 monetary, and human), wastes, emissions, and losses to sectors, typically 
