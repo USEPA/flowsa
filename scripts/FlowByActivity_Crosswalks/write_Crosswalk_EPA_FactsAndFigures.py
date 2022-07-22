@@ -25,12 +25,13 @@ def assign_naics(df):
     # assign sectors to activities
     df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '3111'
     df.loc[df['Activity'] == 'Bio-Based Materials/Biochemical Processing',
-           'Sector'] = '562219B'
+           'Sector'] = '562219B' #todo: update from B to numeric
     df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = \
         '5622191'  # Subnaics 1 for AD
     df.loc[df['Activity'] == 'Combusted with Energy Recovery', 'Sector'] = \
         '562213'
-    df.loc[df['Activity'] == 'Composted', 'Sector'] = '325314'
+    df.loc[df['Activity'] == 'Composted', 'Sector'] = \
+        '5622192' # Subnaics 2 for Compost
     df.loc[df['Activity'] == 'Donation', 'Sector'] = '624210'
     df.loc[df['Activity'] == 'Land Application', 'Sector'] = '115112'
     # 562212 is the code for landfills, in flowsa, the 7-digit sector code
