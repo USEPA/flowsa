@@ -1,2 +1,11 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
-EPA_FactsAndFigures,Landfill,NAICS_2012_Code,5622121,
+EPA_FactsAndFigures,Animal Feed,NAICS_2012_Code,,
+EPA_FactsAndFigures,Bio-Based Materials/Biochemical Processing,NAICS_2012_Code,,
+EPA_FactsAndFigures,Codigestion/Anaerobic Digestion,NAICS_2012_Code,,
+EPA_FactsAndFigures,Combusted with Energy Recovery,NAICS_2012_Code,,
+EPA_FactsAndFigures,Composted,NAICS_2012_Code,,
+EPA_FactsAndFigures,Donation,NAICS_2012_Code,,
+EPA_FactsAndFigures,Land Application,NAICS_2012_Code,,
+EPA_FactsAndFigures,Recycled,NAICS_2012_Code,,
+EPA_FactsAndFigures,Landfilled,NAICS_2012_Code,5622121,
+EPA_FactsAndFigures,Sewer/Wastewater Treatment,NAICS_2012_Code,,

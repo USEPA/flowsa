@@ -26,7 +26,17 @@ def assign_naics(df):
     # 562212 is the code for landfills, in flowsa, the 7-digit sector code
     # '5622121' represents MSW landfills, while '5622122' is industrial
     # waste landfills
-    df.loc[df['Activity'] == 'Landfill', 'Sector'] = '5622121'
+    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Bio-Based Materials/Biochemical Processing',
+           'Sector'] = ''
+    df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Combusted with Energy Recovery', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Composted', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Donation', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Land Application', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Landfilled', 'Sector'] = '5622121'
+    df.loc[df['Activity'] == 'Recycled', 'Sector'] = ''
+    df.loc[df['Activity'] == 'Sewer/WastewaterTreatment', 'Sector'] = ''
 
     return df
 
