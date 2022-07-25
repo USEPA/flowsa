@@ -5,6 +5,8 @@ EPA WARM
 import pandas as pd
 import flowsa
 from flowsa.sectormapping import get_activitytosector_mapping
+import re
+
 
 if __name__ == "__main__":
 
@@ -19,6 +21,9 @@ if __name__ == "__main__":
     pathway='Landfilling' # pass as function parameter?
     warm_factors = warm_factors.query('Context.str.startswith("emission").values &'\
                                       'ProcessCategory.str.startswith(@pathway).values')
+
+    #Set material to the values in between the characters 'of ' and ';' of the Activity Name
+    warm_factors['Material'] = warm_factors['Activity'].apply(lambda x: re.search('of (.*);',x).group(1))
 
     ### Map WARM to NAICS
     mapping = get_activitytosector_mapping('EPA_WARM')
