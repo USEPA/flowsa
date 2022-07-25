@@ -73,7 +73,7 @@ def assign_naics(df):
     # supply chain (directly or after processing) to animals
     df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '3111'
     df = pd.concat([df, pd.DataFrame(
-        [['EPA_WFR', 'Animal Feed Collection', '562219A']],
+        [['EPA_WFR', 'Animal Feed Collection', '5621191']],
         columns=['ActivitySourceName', 'Activity', 'Sector'])])
 
     # Converting material into industrial products. Ex. creating fibers for
@@ -87,7 +87,7 @@ def assign_naics(df):
            'Sector'] = '3131'
     df = pd.concat([df, pd.DataFrame(
         [['EPA_WFR', 'Bio-based Materials/Biochemical Processing '
-                     'Collection', '562219B']],
+                     'Collection', '5621192']],
         columns=['ActivitySourceName', 'Activity', 'Sector'])])
 
     # Breaking down material via bacteria in the absence of oxygen.
@@ -100,11 +100,8 @@ def assign_naics(df):
     # Composting refers to the production of organic material (via aerobic
     # processes) that can be used as a soil amendment
     df.loc[df['Activity'] ==
-           'Composting/Aerobic Processes', 'Sector'] = '325314'
-    df = pd.concat([df, pd.DataFrame(
-        [['EPA_WFR', 'Composting/Aerobic Processes Collection', '5622192']],
-        columns=['ActivitySourceName', 'Activity', 'Sector'])])
-        # Subnaics 2 for Compost
+           'Composting/Aerobic Processes', 'Sector'] = \
+        '5622192'  # Subnaics 2 for Compost
 
     # Sending material to a facility that is specifically designed for
     # combustion in a controlled manner, which may include some form of
@@ -119,7 +116,7 @@ def assign_naics(df):
     # below the surface of the land to enhance soil quality
     df.loc[df['Activity'] == 'Land Application', 'Sector'] = '115112'
     df = pd.concat([df, pd.DataFrame(
-        [['EPA_WFR', 'Land Application Collection', '562219E']],
+        [['EPA_WFR', 'Land Application Collection', '5621193']],
         columns=['ActivitySourceName', 'Activity', 'Sector'])])
 
     # Sending material to an area of land or an excavated site that is
