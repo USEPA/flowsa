@@ -14,13 +14,11 @@ source_names:
     activity_parameters:
       - "Animal Feed"
       - "Bio-based Materials/Biochemical Processing"
-      - "Composting/Aerobic Processes"
       - "Land Application"
     activity_sets:
       direct_allocation:
         names:
           - "Colleges & Universities"
-          - "Composting/Aerobic Processes" # food waste management pathway
           - "Correctional Facilities"
           - "Food Banks"
           - "K-12 Schools"
