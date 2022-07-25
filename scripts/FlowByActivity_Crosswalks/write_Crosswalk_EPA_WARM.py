@@ -31,12 +31,12 @@ if __name__ == '__main__':
     df['Material'] = df['Material'].str.split(' \(', expand=True)[0]
     df['Material'] = df['Material'].str.split(';', expand=True)[0]
 
-    materials = {'Food Waste': 'F',
-                 'Concrete': 'C',}
+    # materials = {'Food Waste': 'F',
+    #              'Concrete': 'C',}
 
-    df['MaterialCode'] = df['Material'].map(materials)
-    df['MaterialCode'] = df['MaterialCode'].fillna('X')
-    df['Sector'] = df['Sector'] + df['MaterialCode']
+    # df['MaterialCode'] = df['Material'].map(materials)
+    # df['MaterialCode'] = df['MaterialCode'].fillna('X')
+    # df['Sector'] = df['Sector'] + df['MaterialCode']
 
     df['SectorSourceName'] = 'NAICS_2012_Code'
     df['SectorType'] = ''
