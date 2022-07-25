@@ -234,7 +234,7 @@ class _FlowBy(pd.DataFrame):
     def standardize_units(self: FB) -> FB:
         exchange_rate = float(
             literature_values
-            .get_Canadian_to_USD_exchange_rate(str(self.Year.unique()[0]))
+            .get_Canadian_to_USD_exchange_rate(str(self.config['year']))
         )
         conversion_table = pd.concat([
             pd.read_csv(f'{settings.datapath}unit_conversion.csv'),
@@ -1623,7 +1623,7 @@ class FlowBySector(_FlowBy):
     ) -> pd.DataFrame:
         display_tables = display_tables or self.config.get('display_tables')
         if display_tables is None:
-            log.error('Cannot generate display tables, since no configuration'
+            log.error('Cannot generate display tables, since no configuration '
                       'is specified for them')
             return None
 
