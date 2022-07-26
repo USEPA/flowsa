@@ -358,20 +358,26 @@ def equal_allocation(fba_load):
                  'to most specific sectors.')
         dfc = dfc.sort_values(['Location', 'ActivityProducedBy',
                                'ActivityConsumedBy', 'SectorProducedByLength',
-                               'SectorConsumedByLength','Class', 'Flowable',
+                               'SectorConsumedByLength', 'Class',
+                               'FlowName', 'Flowable',
                                'SectorProducedBy', 'SectorConsumedBy'
                                ])
         dfc = dfc.drop_duplicates(subset=duplicate_cols, keep="last")
 
     # Before equally allocating, check that each activity is being allocated
     # to sectors of the same length
-    dfsub = dfc[['Class', 'Flowable', 'ActivityProducedBy',
-                 'ActivityConsumedBy', 'Context', 'Location',
-                 'SectorProducedByLength',
-                 'SectorConsumedByLength']].drop_duplicates()
-    df_dup = dfsub[dfsub.duplicated(['Flowable', 'ActivityProducedBy',
-                                     'ActivityConsumedBy', 'Context',
-                                     'Location'])]
+    possible_headers = ['Class', 'FlowName', 'Flowable', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Compartment', 'Context',
+                        'Location', 'SectorProducedByLength',
+                        'SectorConsumedByLength']
+    dfsub = dfc[dfc.columns.intersection(possible_headers)].drop_duplicates()
+
+    # create column list based on if df is FBA or FBS
+    duplicated_cols = [e for e in dfsub.columns if e in
+                       ['FlowName', 'Flowable', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Compartment', 'Context',
+                        'Location']]
+    df_dup = dfsub[dfsub.duplicated(duplicated_cols)]
     if len(df_dup) > 1:
         log.error('Cannot equally allocate because sector lengths vary. All '
                   'sectors must be the same sector level.')
