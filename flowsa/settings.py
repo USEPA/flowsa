@@ -2,6 +2,7 @@ import sys
 import os
 import logging
 import subprocess
+from pathlib import Path
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
 
@@ -11,6 +12,8 @@ try:
         os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
 except NameError:
     MODULEPATH = 'flowsa/'
+
+parentpath = f"{Path(MODULEPATH).parent.parent}/"
 
 datapath = MODULEPATH + 'data/'
 crosswalkpath = datapath + 'activitytosectormapping/'

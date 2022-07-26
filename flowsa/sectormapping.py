@@ -13,7 +13,7 @@ from flowsa.common import get_flowsa_base_name, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.schema import activity_fields, dq_fields
-from flowsa.settings import log
+from flowsa.settings import log, parentpath
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
@@ -308,7 +308,7 @@ def convert_units_to_annual(df):
     return df
 
 
-def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
+def map_flows(fba, v, from_fba_source, flow_type='ELEMENTARY_FLOW',
               ignore_source_name=False, **kwargs):
     """
     Applies mapping via esupy from fedelemflowlist or material
@@ -347,10 +347,14 @@ def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
         fba = fba.rename(columns={'FlowName': 'Flowable',
                                   'Compartment': 'Context'})
 
-    mapped_df = apply_flow_mapping(fba, from_fba_source,
-                                   flow_type=flow_type,
-                                   keep_unmapped_rows=keep_unmapped_rows,
-                                   ignore_source_name=ignore_source_name)
+    # determine if should map flows using file defined in fbs method
+    designated_mapping_file = v.get('designated_mapping_file')
+
+    mapped_df = apply_flow_mapping(
+        fba, from_fba_source, flow_type=flow_type,
+        keep_unmapped_rows=keep_unmapped_rows,
+        ignore_source_name=ignore_source_name,
+        designated_mapping_file=designated_mapping_file)
 
     if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so
@@ -379,6 +383,13 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
         log.info("Mapping flows in %s to material flow list", from_fba_source)
         flow_type = 'WASTE_FLOW'
         ignore_source_name = True
+    elif 'designated_mapping_file' in v:
+        mapping_files = f"{parentpath}{v['mapping_file_repo']}" \
+                        f"/{v['designated_mapping_file']}"
+        log.info(f"Mapping flows in {from_fba_source} to flow list located "
+                 f"at {mapping_files}",
+                 )
+        flow_type = 'WASTE_FLOW'
     else:
         log.info("Mapping flows in %s to federal elementary flow list",
                  from_fba_source)
@@ -389,7 +400,7 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
             mapping_files = from_fba_source
         flow_type = 'ELEMENTARY_FLOW'
 
-    fbs_mapped = map_flows(fbs, mapping_files, flow_type,
+    fbs_mapped = map_flows(fbs, v, mapping_files, flow_type,
                            ignore_source_name, **kwargs)
 
     return fbs_mapped, mapping_files
@@ -535,3 +546,9 @@ def get_BEA_industry_output(region, io_level, year):
                .reset_index())
 
     return bea
+
+
+def get_sector_commodity_code(df_load):
+
+
+    return df
