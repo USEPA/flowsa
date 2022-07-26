@@ -3,9 +3,7 @@
 EPA WARM
 """
 import pandas as pd
-import flowsa
-from flowsa.sectormapping import get_activitytosector_mapping
-import re
+from flowsa.location import US_FIPS
 
 
 def warm_call(*, resp, **_):
@@ -24,24 +22,30 @@ def warm_call(*, resp, **_):
     return df
 
 
-def warm_parse(*, df_list, **_):
+def warm_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
+    :param year: year of FBS
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
     # concat list of dataframes (info on each page)
     df = pd.concat(df_list, sort=False)
-    # rename columns
-    df = df.rename(columns={'ProcessName': 'Activity'}).drop(
-        columns=['ProcessID'])
-    df['Context'] = df['Context'].fillna('')
+    # rename columns and reset data to FBA format
+    df = df.rename(columns={'ProcessName': 'ActivityConsumedBy',
+                            'Flowable': 'FlowName',
+                            'Context': 'Compartment'}
+                   ).drop(columns=['ProcessID', 'FlowUUID', 'ProcessCategory'])
+    df['Compartment'] = df['Compartment'].fillna('')
+    df['Location'] = df['Location'].replace('US', US_FIPS)
 
-    ### Subset WARM data
-    # pathway = 'Landfilling'  # pass as function parameter?
-    # df = df.query(
-    #     'Context.str.startswith("emission").values &' \
-    #     'ProcessCategory.str.startswith(@pathway).values')
+    # add new column info
+    df['SourceName'] = 'EPA_WARM'
+    df["Class"] = "Other"
+    df['FlowType'] = "WASTE_FLOW"
+    df["Year"] = year
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
 
     return df
