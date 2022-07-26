@@ -5,7 +5,7 @@ import pytest
 import os
 from flowsa import seeAvailableFlowByModels
 from flowsa.metadata import set_fb_meta
-from flowsa.settings import paths, datapath
+from flowsa.settings import paths, diffpath
 from flowsa.validation import compare_FBS_results
 from esupy.processed_data_mgmt import download_from_remote
 
@@ -13,7 +13,7 @@ from esupy.processed_data_mgmt import download_from_remote
 def test_FBS_against_remote():
     """Compare results for each FBS method at current HEAD with most
     recent FBS stored on remote server."""
-    outdir = f"{datapath}fbs_diff/"
+    outdir = diffpath
     if not os.path.exists(outdir):
         os.mkdir(outdir)
     for m in seeAvailableFlowByModels("FBS", print_method=False):

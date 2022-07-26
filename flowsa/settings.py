@@ -32,6 +32,7 @@ fbaoutputpath = outputpath + 'FlowByActivity/'
 fbsoutputpath = outputpath + 'FlowBySector/'
 biboutputpath = outputpath + 'Bibliography/'
 logoutputpath = outputpath + 'Log/'
+diffpath = outputpath + 'FBSComparisons/'
 plotoutputpath = outputpath + 'Plots/'
 
 # ensure directories exist
