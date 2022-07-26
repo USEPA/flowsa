@@ -1,8 +1,10 @@
 from flowsa import naics
+from flowsa import settings
 from flowsa.flowsa_log import log
 import pandas as pd
 from flowsa.data_source_scripts import EIA_MECS as mecs
 from flowsa.data_source_scripts import EPA_GHGI as ghgi
+from flowsa.data_source_scripts import USDA_CoA_Cropland as coa
 from flowsa.flowby import FlowByActivity
 
 
@@ -36,7 +38,14 @@ def clean_qcew(fba: FlowByActivity, **kwargs):
 
     target_naics = set(naics.industry_spec_key(fba.config['industry_spec'])
                        .target_naics)
-    filtered = fixed.query('ActivityProducedBy in @target_naics')
+    filtered = (
+        fixed
+        .assign(ActivityProducedBy=fixed.ActivityProducedBy.mask(
+            (fixed.ActivityProducedBy + '0').isin(target_naics),
+            fixed.ActivityProducedBy + '0'
+        ))
+        .query('ActivityProducedBy in @target_naics')
+    )
 
     return filtered
 
@@ -55,7 +64,8 @@ def clean_usda_cropland_naics(fba: FlowByActivity, **kwargs):
 
     target_naics = set(naics.industry_spec_key(fba.config['industry_spec'])
                        .target_naics)
-    filtered = fba.query('ActivityProducedBy in @target_naics')
+
+    filtered = fba.query('ActivityConsumedBy in @target_naics')
 
     return filtered
 
@@ -141,6 +151,30 @@ def split_hfcs_by_type(fba: FlowByActivity, **kwargs):
     }
 
     df = ghgi.split_HFCs_by_type(fba)
+
+    new_fba = FlowByActivity(df)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
+
+    return new_fba
+
+
+def disaggregate_coa_cropland_to_6_digit_naics(fba: FlowByActivity):
+    """
+    Disaggregate usda coa cropland to naics 6. Fragile implementation, should
+    be replaced. In particular, it will break things for any industry
+    specification other than {'default': 'NAICS_6'}.
+    :param fba: df, CoA cropland data, FBA format with sector columns
+    :return: df, CoA cropland with disaggregated NAICS sectors
+    """
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
+
+    df = coa.disaggregate_coa_cropland_to_6_digit_naics(
+        fba, fba.config, fba.config,
+        download_FBA_if_missing=settings.DEFAULT_DOWNLOAD_IF_MISSING
+    )
 
     new_fba = FlowByActivity(df)
     for attr in attributes_to_save:
