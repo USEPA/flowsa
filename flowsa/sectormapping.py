@@ -548,7 +548,24 @@ def get_BEA_industry_output(region, io_level, year):
     return bea
 
 
-def get_sector_commodity_code(df_load):
+def get_sector_commodity_code(df_load, v):
+    """
+    Append the sector commodity code to sectors using file specified in FBS
+    method yaml
+    :param df_load:
+    :return:
+    """
+    mapping_file = mapping = pd.read_csv(
+        f"{parentpath}{v['mapping_file_repo']}/"
+        f"{v['append_sector_commodity_codes']}")
 
+    # add materials
+    df = df_load.merge(mapping_file, left_on='Flowable', right_on='Material')
+
+    for s in ['SectorProducedBy', 'SectorConsumedBy']:
+        df[s] = np.where(df[s] is not None, df[s] + df['Abbr'], df[s])
+
+    # drop cols from mapping file
+    df = df.drop(columns=['Material', 'Abbr'])
 
     return df
