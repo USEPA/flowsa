@@ -119,6 +119,12 @@ EPA_CDDPath:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+EPA_FactsAndFigures:
+  class:
+    - Other
+  sector-like_activities: False
+  activity_schema: None
+  sector_aggregation_level: "aggregated"
 EPA_GHGI:
   class:
     - Chemicals
@@ -156,6 +162,12 @@ EPA_NEI_Onroad:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
+  sector_aggregation_level: "aggregated"
+EPA_WARM:
+  class:
+    - Other
+  sector-like_activities: False
+  activity_schema: None
   sector_aggregation_level: "aggregated"
 EPA_WFR:
   class:
