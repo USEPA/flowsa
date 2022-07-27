@@ -42,7 +42,7 @@ from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
 from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
-    map_fbs_flows, get_sector_list, get_sector_commodity_code
+    map_fbs_flows, get_sector_list, append_material_code
 from flowsa.settings import log, vLog, flowbysectoractivitysetspath, paths
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
@@ -398,7 +398,7 @@ def main(**kwargs):
     # the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     if 'append_sector_commodity_codes' in v:
-        fbss = get_sector_commodity_code(fbss, v, attr)
+        fbss = append_material_code(fbss, v, attr)
     # sort df
     log.info("Sort and store dataframe")
     # ensure correct data types/order of columns

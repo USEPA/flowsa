@@ -550,7 +550,7 @@ def get_BEA_industry_output(region, io_level, year):
     return bea
 
 
-def get_sector_commodity_code(df, v, attr):
+def append_material_code(df, v, attr):
     """
     Append the sector commodity code to sectors using file specified in FBS
     method yaml
