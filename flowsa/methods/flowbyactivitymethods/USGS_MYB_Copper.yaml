@@ -6,7 +6,7 @@ date_generated: '2021-03-19'
 years_available: 2011-2015
 format: xlsx
 url:
-  base_url: https://s3-us-west-2.amazonaws.com/prd-wret/assets/palladium/production/mineral-pubs/copper/myb1-2015-coppe.xlsx
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/mineral-pubs/copper/myb1-2015-coppe.xlsx
 url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB usgs_copper_call
 parse_response_fxn: !script_function:USGS_MYB usgs_copper_parse
