@@ -398,7 +398,7 @@ def main(**kwargs):
     # the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
     if 'append_sector_commodity_codes' in v:
-        fbss = get_sector_commodity_code(fbss, v)
+        fbss = get_sector_commodity_code(fbss, v, attr)
     # sort df
     log.info("Sort and store dataframe")
     # ensure correct data types/order of columns

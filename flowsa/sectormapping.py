@@ -550,24 +550,30 @@ def get_BEA_industry_output(region, io_level, year):
     return bea
 
 
-def get_sector_commodity_code(df_load, v):
+def get_sector_commodity_code(df, v, attr):
     """
     Append the sector commodity code to sectors using file specified in FBS
     method yaml
-    :param df_load:
+    :param df:
     :return:
     """
     mapping_file = mapping = pd.read_csv(
         f"{parentpath}{v['mapping_file_repo']}/"
         f"{v['append_sector_commodity_codes']}")
 
-    # add materials
-    df = df_load.merge(mapping_file, left_on='Flowable', right_on='Material')
-
-    for s in ['SectorProducedBy', 'SectorConsumedBy']:
-        df[s] = np.where(df[s] is not None, df[s] + df['Abbr'], df[s])
-
-    # drop cols from mapping file
-    df = df.drop(columns=['Material', 'Abbr'])
+    # if material is identified in the activity set, use that material to
+    # append the abbreviation, if not, then merge the mapping file to the df
+    if attr.get('material') is not None:
+        mapping_dict = mapping_file.set_index('Material').to_dict()['Abbr']
+        abbr = mapping_dict.get(attr.get('material'))
+        for s in ['SectorProducedBy', 'SectorConsumedBy']:
+            df[s] = np.where(df[s] is not None, df[s] + abbr, df[s])
+    else:
+        # add materials
+        df = df.merge(mapping_file, left_on='Flowable', right_on='Material')
+        for s in ['SectorProducedBy', 'SectorConsumedBy']:
+            df[s] = np.where(df[s] is not None, df[s] + df['Abbr'], df[s])
+        # drop cols from mapping file
+        df = df.drop(columns=['Material', 'Abbr'])
 
     return df
