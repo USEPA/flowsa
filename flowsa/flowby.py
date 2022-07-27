@@ -550,20 +550,32 @@ class _FlowBy(pd.DataFrame):
                       f'columns, since {col_type}ProducedBy and/or '
                       f'{col_type}ConsumedBy columns are missing.')
             return self
+
         else:
-            fb = self.assign(
-                **{f'Primary{col_type}': self[f'{col_type}ProducedBy'].mask(
-                    ((self.FlowType == 'TECHNOSPHERE_FLOW')
-                     | (self[f'{col_type}ProducedBy'].isna())
-                     | (self[f'{col_type}ProducedBy'].isin(
-                             ['22', '221', '2213', '22131', '221310']
-                         )
-                         & self[f'{col_type}ConsumedBy'].isin(
-                             ['F010', 'F0100', 'F01000']
-                         ))) & self[f'{col_type}ConsumedBy'].notna(),
-                    self[f'{col_type}ConsumedBy']
-                )}
-            )
+            if 'primary_action_type' in self.config:
+                fb = self.assign(
+                    **{f'Primary{col_type}':
+                        self[f'{col_type}'
+                             f'{self.config["primary_action_type"]}By']}
+                )
+
+            else:
+                fb = self.assign(
+                    **{f'Primary{col_type}':
+                        self[f'{col_type}ProducedBy'].mask(
+                            ((self.FlowType == 'TECHNOSPHERE_FLOW')
+                             | (self[f'{col_type}ProducedBy'].isna())
+                             | (self[f'{col_type}ProducedBy'].isin(
+                                 ['22', '221', '2213', '22131', '221310']
+                             )
+                             & self[f'{col_type}ConsumedBy'].isin(
+                                 ['F010', 'F0100', 'F01000']
+                             )))
+                            & self[f'{col_type}ConsumedBy'].notna(),
+                            self[f'{col_type}ConsumedBy']
+                        )
+                       }
+                )
 
             def _identify_secondary(row: _FlowBySeries) -> str:
                 sectors = [row[f'{col_type}ProducedBy'],
@@ -1015,6 +1027,8 @@ class FlowByActivity(_FlowBy):
         :param external_config_path: str, an external path to search for a
             crosswalk.
         '''
+        naics_key = naics.industry_spec_key(self.config['industry_spec'])
+
         if self.config['sector-like_activities']:
             log.info('Activities in %s are NAICS codes.',
                      self.full_name)
@@ -1039,11 +1053,10 @@ class FlowByActivity(_FlowBy):
             for direction in ['ProducedBy', 'ConsumedBy']:
                 fba_w_naics = (
                     fba_w_naics
-                    .merge(
-                        naics.industry_spec_key(self.config['industry_spec']),
-                        how='left',
-                        left_on=f'Activity{direction}',
-                        right_on='source_naics')
+                    .merge(naics_key,
+                           how='left',
+                           left_on=f'Activity{direction}',
+                           right_on='source_naics')
                     .rename(columns={'target_naics': f'Sector{direction}'})
                     .drop(columns='source_naics')
                 )
@@ -1086,8 +1099,10 @@ class FlowByActivity(_FlowBy):
                      'industry/sector aggregation structure.')
             activity_to_target_naics_crosswalk = (
                 activity_to_source_naics_crosswalk
-                .merge(naics.industry_spec_key(self.config['industry_spec']),
-                       how='left', left_on='Sector', right_on='source_naics')
+                .merge(naics_key,
+                       how='left',
+                       left_on='Sector',
+                       right_on='source_naics')
                 .assign(Sector=lambda x: x.target_naics)
                 .drop(columns=['source_naics', 'target_naics'])
                 .drop_duplicates()
