@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 import flowsa
-from flowsa.common import get_flowsa_base_name, \
+from flowsa.common import get_flowsa_base_name, load_env_file_key, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.schema import activity_fields, dq_fields
@@ -386,8 +386,7 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
         flow_type = 'WASTE_FLOW'
         ignore_source_name = True
     elif 'designated_mapping_file' in v:
-        mapping_files = f"{parentpath}{v['mapping_file_repo']}" \
-                        f"/{v['designated_mapping_file']}"
+        mapping_files = load_env_file_key('external_path', v['designated_mapping_file'])
         log.info(f"Mapping flows in {from_fba_source} to flow list located "
                  f"at {mapping_files}",
                  )
@@ -557,9 +556,9 @@ def append_material_code(df, v, attr):
     :param df:
     :return:
     """
-    mapping_file = mapping = pd.read_csv(
-        f"{parentpath}{v['mapping_file_repo']}/"
-        f"{v['append_sector_commodity_codes']}")
+    key = load_env_file_key('external_path', v['append_material_codes'])
+    mapping_file_path = key
+    mapping_file = pd.read_csv(mapping_file_path)
 
     # if material is identified in the activity set, use that material to
     # append the abbreviation, if not, then merge the mapping file to the df

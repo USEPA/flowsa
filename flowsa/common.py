@@ -36,7 +36,7 @@ sector_level_key = {"NAICS_2": 2,
 WITHDRAWN_KEYWORD = np.nan
 
 
-def load_api_key(api_source):
+def load_env_file_key(env_file, key):
     """
     Loads an API Key from "API_Keys.env" file using the
     'api_name' defined in the FBA source config file. The '.env' file contains
@@ -46,14 +46,21 @@ def load_api_key(api_source):
     See wiki for how to get an api:
     https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys
 
-    :param api_source: str, name of source, like 'BEA' or 'Census'
-    :return: the users API key as a string
+    :param env_file: str, name of env to load, either 'API_Key'
+    or 'external_path'
+    :param key: str, name of source/key defined in env file, like 'BEA' or
+    'Census'
+    :return: str, value of the key stored in the env
     """
-    load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
-    key = os.getenv(api_source)
-    if key is None:
-        raise flowsa.exceptions.APIError(api_source=api_source)
-    return key
+    if env_file == 'API_Key':
+        load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
+        value = os.getenv(key)
+        if value is None:
+            raise flowsa.exceptions.APIError(api_source=key)
+    else:
+        load_dotenv(f'{MODULEPATH}external_paths.env', verbose=True)
+        value = os.getenv(key)
+    return value
 
 
 def load_crosswalk(crosswalk_name):
