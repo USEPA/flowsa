@@ -397,7 +397,7 @@ def main(**kwargs):
     # aggregate df as activities might have data for
     # the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
-    if 'append_sector_commodity_codes' in v:
+    if 'append_material_codes' in v:
         fbss = append_material_code(fbss, v, attr)
     # sort df
     log.info("Sort and store dataframe")
