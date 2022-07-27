@@ -36,7 +36,8 @@ def warmer_parse(*, df_list, year, **_):
     # rename columns and reset data to FBA format
     df = df.rename(columns={'ProcessName': 'ActivityConsumedBy',
                             'Flowable': 'FlowName',
-                            'Context': 'Compartment'}
+                            'Context': 'Compartment',
+                            'Amount': 'FlowAmount'}
                    ).drop(columns=['ProcessID', 'FlowUUID', 'ProcessCategory'])
     df['Compartment'] = df['Compartment'].fillna('')
     df['Location'] = df['Location'].replace('US', US_FIPS)
