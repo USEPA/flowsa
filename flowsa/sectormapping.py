@@ -349,12 +349,14 @@ def map_flows(fba, v, from_fba_source, flow_type='ELEMENTARY_FLOW',
 
     # determine if should map flows using file defined in fbs method
     designated_mapping_file = v.get('designated_mapping_file')
+    field_names = v.get('mapping_field_dict')
 
-    mapped_df = apply_flow_mapping(
-        fba, from_fba_source, flow_type=flow_type,
-        keep_unmapped_rows=keep_unmapped_rows,
-        ignore_source_name=ignore_source_name,
-        designated_mapping_file=designated_mapping_file)
+    mapping = apply_flow_mapping(fba, from_fba_source, flow_type=flow_type,
+                                 keep_unmapped_rows=keep_unmapped_rows,
+                                 field_dict=field_names,
+                                 ignore_source_name=ignore_source_name,
+                                 designated_mapping_file=designated_mapping_file)
+    mapped_df = mapping
 
     if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so
