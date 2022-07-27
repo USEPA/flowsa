@@ -60,6 +60,8 @@ def load_env_file_key(env_file, key):
     else:
         load_dotenv(f'{MODULEPATH}external_paths.env', verbose=True)
         value = os.getenv(key)
+        if value is None:
+            raise flowsa.exceptions.EnvError(key=key)
     return value
 
 
