@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-EPA WARM
+EPA WARMer
 """
 import pandas as pd
 from flowsa.location import US_FIPS
+import re
 
 
-def warm_call(*, resp, **_):
+def warmer_call(*, resp, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
@@ -22,7 +23,7 @@ def warm_call(*, resp, **_):
     return df
 
 
-def warm_parse(*, df_list, year, **_):
+def warmer_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
@@ -39,6 +40,13 @@ def warm_parse(*, df_list, year, **_):
                    ).drop(columns=['ProcessID', 'FlowUUID', 'ProcessCategory'])
     df['Compartment'] = df['Compartment'].fillna('')
     df['Location'] = df['Location'].replace('US', US_FIPS)
+
+    # Add description of materials - set material to the values in between the
+    # characters 'of ' and ';' of the Activity Name - if ';' exists in string
+    df['Description'] = df['ActivityConsumedBy'].apply(
+        lambda x: re.search('of (.*)', x).group(1))
+    df['Description'] = df['Description'].apply(
+        lambda x: x.split(';', 1)[0])
 
     # add new column info
     df['SourceName'] = 'EPA_WARMer'

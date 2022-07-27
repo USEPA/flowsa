@@ -8,7 +8,7 @@ api_key_required: false
 format: csv
 url:
   base_url: 'https://raw.githubusercontent.com/USEPA/WARMer/main/warmer/data/flowsa_inputs/WARMv15_env.csv'
-call_response_fxn: !script_function:EPA_WARMer warm_call
-parse_response_fxn: !script_function:EPA_WARMer warm_parse
+call_response_fxn: !script_function:EPA_WARMer warmer_call
+parse_response_fxn: !script_function:EPA_WARMer warmer_parse
 years:
 - 2018
