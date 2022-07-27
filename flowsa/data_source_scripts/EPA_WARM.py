@@ -41,7 +41,7 @@ def warm_parse(*, df_list, year, **_):
     df['Location'] = df['Location'].replace('US', US_FIPS)
 
     # add new column info
-    df['SourceName'] = 'EPA_WARM'
+    df['SourceName'] = 'EPA_WARMer'
     df["Class"] = "Other"
     df['FlowType'] = "WASTE_FLOW"
     df["Year"] = year

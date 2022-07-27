@@ -1,14 +1,14 @@
 author: US Environmental Protection Acency
-source_name: EPA_WARM
+source_name: EPA_WARMer
 source_url: 'https://raw.githubusercontent.com/USEPA/WARMer/main/warmer/data/flowsa_inputs/WARMv15_env.csv'
 original_data_download_date: '2022-07-26'
-bib_id: EPA_WARM
+bib_id: EPA_WARMer
 api_name: None
 api_key_required: false
 format: csv
 url:
   base_url: 'https://raw.githubusercontent.com/USEPA/WARMer/main/warmer/data/flowsa_inputs/WARMv15_env.csv'
-call_response_fxn: !script_function:EPA_WARM warm_call
-parse_response_fxn: !script_function:EPA_WARM warm_parse
+call_response_fxn: !script_function:EPA_WARMer warm_call
+parse_response_fxn: !script_function:EPA_WARMer warm_parse
 years:
 - 2018

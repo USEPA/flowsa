@@ -163,7 +163,7 @@ EPA_NEI_Onroad:
   sector-like_activities: False
   activity_schema: SCC
   sector_aggregation_level: "aggregated"
-EPA_WARM:
+EPA_WARMer:
   class:
     - Other
   sector-like_activities: False

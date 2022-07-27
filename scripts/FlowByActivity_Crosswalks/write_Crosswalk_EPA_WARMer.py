@@ -1,8 +1,8 @@
-# write_Crosswalk_EPA_WARM.py (scripts)
+# write_Crosswalk_EPA_WARMer.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Create a crosswalk for EPA_WARM from WARM processes.
+Create a crosswalk for EPA_WARMer from WARM processes.
 """
 
 import pandas as pd
@@ -10,20 +10,20 @@ from flowsa.settings import datapath
 from scripts.FlowByActivity_Crosswalks.common_scripts import order_crosswalk
 
 if __name__ == '__main__':
-    datasource = 'EPA_WARM'
+    datasource = 'EPA_WARMer'
 
     df = (pd.read_csv('https://raw.githubusercontent.com/USEPA/WARMer/main/warmer/data/flowsa_inputs/WARMv15_env.csv',
-                      usecols=['ProcessName','ProcessCategory'])
+                      usecols=['ProcessName', 'ProcessCategory'])
           .drop_duplicates()
           .reset_index(drop=True)
           .rename(columns={'ProcessName': 'Activity'}))
     df['ProcessCategory'] = df['ProcessCategory'].str.split('/', expand=True)[0]
 
-    pathways = {'Anaerobic digestion': '5622191', # Subnaics 1 for AD
+    pathways = {'Anaerobic digestion': '5622191',  # Subnaics 1 for AD
                'Combustion': '562213',
-               'Landfilling': '5622121', # Subnaics 1 for MSW landfill
-               'Composting': '5622192', # Subnaics 2 for Compost
-               'Recycling': '5629201'} # Subnaics 1 for MSW MRFs
+               'Landfilling': '5622121',  # Subnaics 1 for MSW landfill
+               'Composting': '5622192',  # Subnaics 2 for Compost
+               'Recycling': '5629201'}  # Subnaics 1 for MSW MRFs
 
     df['Sector'] = df['ProcessCategory'].replace(pathways)
 
