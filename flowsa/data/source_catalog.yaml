@@ -60,6 +60,12 @@ Census_AHS:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
+Census_AMS:
+  class:
+    - Money
+  sector-like_activities: True
+  activity_schema: None # Codes for 2018 are NAICS_2017_Code
+  sector_aggregation_level: "disaggregated"
 Census_CBP:
   class:
     - Employment
