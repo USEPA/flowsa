@@ -214,7 +214,7 @@ def standardize_units(df):
         df['Unit'].isin(['TON', 'tons', 'short tons']),
         df['FlowAmount'] * ton_to_kg, df['FlowAmount'])
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousands of Tons',
-                                       df['FlowAmount'] * ton_to_kg,
+                                       df['FlowAmount'] * 1000 * ton_to_kg,
                                        df['FlowAmount'])
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
                                        df['FlowAmount'] * lb_to_kg,
