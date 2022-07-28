@@ -566,7 +566,8 @@ def append_material_code(df, v, attr):
         mapping_dict = mapping_file.set_index('Material').to_dict()['Abbr']
         abbr = mapping_dict.get(attr.get('material'))
         for s in ['SectorProducedBy', 'SectorConsumedBy']:
-            df[s] = np.where(df[s] is not None, df[s] + abbr, df[s])
+            df[s] = np.where((df[s] is not None) and (df[s] != ''),
+                             df[s] + abbr, df[s])
     else:
         # add materials
         df = df.merge(mapping_file, left_on='Flowable', right_on='Material')

@@ -368,6 +368,10 @@ def main(**kwargs):
                     flows_subset_geo, fbs_sector_subset, aset, k, v, attr,
                     method)
 
+                if 'append_material_codes' in v:
+                    fbs_sector_subset = append_material_code(
+                        fbs_sector_subset, v, attr)
+
                 log.info(f"Completed flowbysector for {aset}")
                 fbs_list.append(fbs_sector_subset)
         else:
@@ -397,8 +401,6 @@ def main(**kwargs):
     # aggregate df as activities might have data for
     # the same specified sector length
     fbss = aggregator(fbss, fbs_default_grouping_fields)
-    if 'append_material_codes' in v:
-        fbss = append_material_code(fbss, v, attr)
     # sort df
     log.info("Sort and store dataframe")
     # ensure correct data types/order of columns
