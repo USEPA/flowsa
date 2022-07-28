@@ -572,7 +572,8 @@ def append_material_code(df, v, attr):
         # add materials
         df = df.merge(mapping_file, left_on='Flowable', right_on='Material')
         for s in ['SectorProducedBy', 'SectorConsumedBy']:
-            df[s] = np.where(df[s] is not None, df[s] + df['Abbr'], df[s])
+            df[s] = np.where((df[s] is not None) and (df[s] != ''),
+                             df[s] + df['Abbr'], df[s])
         # drop cols from mapping file
         df = df.drop(columns=['Material', 'Abbr'])
 
