@@ -34,7 +34,7 @@ def warmer_parse(*, df_list, year, **_):
     # concat list of dataframes (info on each page)
     df = pd.concat(df_list, sort=False)
     # rename columns and reset data to FBA format
-    df = df.rename(columns={'ProcessName': 'ActivityConsumedBy',
+    df = df.rename(columns={'ProcessName': 'ActivityProducedBy',
                             'Flowable': 'FlowName',
                             'Context': 'Compartment',
                             'Amount': 'FlowAmount'}
@@ -44,7 +44,7 @@ def warmer_parse(*, df_list, year, **_):
 
     # Add description of materials - set material to the values in between the
     # characters 'of ' and ';' of the Activity Name - if ';' exists in string
-    df['Description'] = df['ActivityConsumedBy'].apply(
+    df['Description'] = df['ActivityProducedBy'].apply(
         lambda x: re.search('of (.*)', x).group(1))
     df['Description'] = df['Description'].apply(
         lambda x: x.split(';', 1)[0])
