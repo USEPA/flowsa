@@ -148,8 +148,11 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         # check units
         compare_df_units(flow_subset_mapped, flow_allocation)
         for i, j in activity_fields.items():
+            sector_col = j[1]["flowbysector"]
+            if flow_subset_mapped[sector_col].isnull().all():
+                continue
             fa_cols = ['Location', 'Sector', 'Multiplier']
-            l_cols = ['Location', j[1]["flowbysector"]]
+            l_cols = ['Location', sector_col]
             r_cols = ['Location', 'Sector']
             flow_subset_mapped2 = flow_subset_mapped.merge(
                 flow_allocation[fa_cols], left_on=l_cols, right_on=r_cols,
