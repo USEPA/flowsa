@@ -51,8 +51,8 @@ def warmer_parse(*, df_list, year, **_):
 
     # add new column info
     df['SourceName'] = 'EPA_WARMer'
-    df["Class"] = "Other"
-    df['FlowType'] = "WASTE_FLOW"
+    df["Class"] = "Chemicals" # Update economic flows?
+    df['FlowType'] = "ELEMENTARY_FLOW"
     df["Year"] = year
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
