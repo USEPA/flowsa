@@ -356,12 +356,13 @@ def equal_allocation(fba_load):
         log.info('Dropping rows duplicated due to assigning sector lengths '
                  'for ambiguous sectors. Keeping sector length assignments '
                  'to most specific sectors.')
-        dfc = dfc.sort_values(['Location', 'ActivityProducedBy',
-                               'ActivityConsumedBy', 'SectorProducedByLength',
-                               'SectorConsumedByLength', 'Class',
-                               'FlowName', 'Flowable',
-                               'SectorProducedBy', 'SectorConsumedBy'
-                               ])
+        sort_cols = ['Location', 'ActivityProducedBy',
+                     'ActivityConsumedBy', 'SectorProducedByLength',
+                     'SectorConsumedByLength', 'Class',
+                     'FlowName', 'Flowable',
+                     'SectorProducedBy', 'SectorConsumedBy'
+                     ]
+        dfc = dfc.sort_values([e for e in sort_cols if e in dfc.columns])
         dfc = dfc.drop_duplicates(subset=duplicate_cols, keep="last")
 
     # Before equally allocating, check that each activity is being allocated
