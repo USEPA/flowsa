@@ -36,6 +36,7 @@ BEA_Use_Detail_PRO_BeforeRedef:
   #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_Make_Detail_BeforeRedef:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
@@ -258,6 +259,7 @@ write_FBA_California_Commercial_bySector:
   activity_schema:
   sector_aggregation_level: ""
 USGS_MYB_Lead:
+  data_format: FBA
   class:
   - Geological
   sector-like_activities: False
