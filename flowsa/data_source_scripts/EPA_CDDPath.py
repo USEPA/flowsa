@@ -127,6 +127,12 @@ def assign_wood_to_engineering(fba, **_):
     return fba
 
 
+def keep_activity_consumed_by(fba, **_):
+    """clean_allocation_fba"""
+    fba['ActivityProducedBy'] = None
+    return fba
+
+
 def cdd_processing(fba, source_dict):
     """clean_fba_df_fxn"""
     material = source_dict.get('cdd_parameter')
