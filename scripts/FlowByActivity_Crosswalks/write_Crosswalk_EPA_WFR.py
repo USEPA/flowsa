@@ -52,17 +52,10 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Colleges & Universities', 'Sector'] = '6113'
     df.loc[df['Activity'] == 'K-12 Schools', 'Sector'] = '6111'
     df.loc[df['Activity'] == 'Military Installations', 'Sector'] = '92811'
-    # use office building sector assignments identified by EIA CBECS
-    # TODO: List currently duplicates some of the other assignments - modify
-    #  list when other sectors finalized
+    # use office building sector assignments identified based on definitions
+    # of the scoping memo
     df.loc[df['Activity'] == 'Office Buildings', 'Sector'] = \
-        pd.Series([['423', '424', '441', '454', '481', '482', '483', '484',
-                    '485', '486', '487', '488', '492', '493', '511', '512',
-                    '515', '516', '517', '518', '519', '521', '522', '523',
-                    '524', '525', '531', '532', '533', '541', '551', '561',
-                    '562', '611', '621', '624', '711', '712', '713', '811',
-                    '813', '921', '922', '923', '924', '925', '926', '927',
-                    '928']]*df.shape[0])
+        pd.Series([['491', '51', '52', '54', '55', '5611', '621']]*df.shape[0])
     # Household code
     df.loc[df['Activity'] == 'Residential', 'Sector'] = 'F010'
     # todo: reassess - currently assigned to food service contractors
