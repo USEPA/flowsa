@@ -12,9 +12,10 @@ import flowsa
 from flowsa.common import get_flowsa_base_name, load_env_file_key, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
-from flowsa.schema import activity_fields, dq_fields
-from flowsa.settings import log, parentpath
+from flowsa.dataclean import standardize_units
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
+from flowsa.schema import activity_fields, dq_fields
+from flowsa.settings import log
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
@@ -231,7 +232,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
         if am == 'proportional-flagged':
             subset_by_sector_cols = True
 
-    if check_activities_sector_like(fba_allocation, sourcename=source) is False:
+    if check_activities_sector_like(fba_allocation, sourcename=source) is \
+            False:
         # read in source crosswalk
         df = get_activitytosector_mapping(
             sourceconfig.get('activity_to_sector_mapping', source),
@@ -361,9 +363,12 @@ def map_flows(fba, v, from_fba_source, flow_type='ELEMENTARY_FLOW',
     if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so
         # can continue working on the FBS
-        log.warning("Error in flow mapping, flows not mapped")
+        log.warning("Error in flow mapping, flows not mapped, returning FBA "
+                    "with standardized units, but no standardized "
+                    "Flowable, Context, or FlowUUID")
         mapped_df = fba.copy()
         mapped_df['FlowUUID'] = None
+        mapped_df = standardize_units(mapped_df)
 
     return mapped_df
 
