@@ -15,44 +15,17 @@ EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31212,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31213,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31214,I
 EPA_WFR,Bio-based Materials/Biochemical Processing,NAICS_2012_Code,3131,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,423,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,424,I
 EPA_WFR,Wholesale,NAICS_2012_Code,4244,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,441,I
 EPA_WFR,Retail,NAICS_2012_Code,4451,I
 EPA_WFR,Retail,NAICS_2012_Code,4452,I
 EPA_WFR,Retail,NAICS_2012_Code,45291,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,454,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,481,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,482,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,483,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,484,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,485,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,486,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,487,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,488,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,492,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,493,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,511,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,512,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,515,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,516,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,517,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,518,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,519,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,521,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,522,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,523,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,524,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,525,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,531,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,532,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,533,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,541,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,551,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,561,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,491,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,51,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,52,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,54,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,55,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,5611,I
 EPA_WFR,Correctional Facilities,NAICS_2012_Code,5612,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,562,I
 EPA_WFR,Animal Feed Collection,NAICS_2012_Code,5621191,I
 EPA_WFR,Bio-based Materials/Biochemical Processing Collection,NAICS_2012_Code,5621192,I
 EPA_WFR,Land Application Collection,NAICS_2012_Code,5621193,I
@@ -60,33 +33,18 @@ EPA_WFR,Landfill,NAICS_2012_Code,5622121,I
 EPA_WFR,Controlled Combustion,NAICS_2012_Code,562213,I
 EPA_WFR,Codigestion/Anaerobic Digestion,NAICS_2012_Code,5622191,I
 EPA_WFR,Composting/Aerobic Processes,NAICS_2012_Code,5622192,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,611,I
 EPA_WFR,K-12 Schools,NAICS_2012_Code,6111,I
 EPA_WFR,Colleges & Universities,NAICS_2012_Code,6113,I
 EPA_WFR,Office Buildings,NAICS_2012_Code,621,I
 EPA_WFR,Hospitals,NAICS_2012_Code,622,I
 EPA_WFR,Nursing Homes,NAICS_2012_Code,623,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,624,I
 EPA_WFR,Food Banks,NAICS_2012_Code,62421,I
 EPA_WFR,Food Donation,NAICS_2012_Code,624210,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,711,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,712,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,713,I
 EPA_WFR,Hotels,NAICS_2012_Code,7211,I
 EPA_WFR,Sports Venues,NAICS_2012_Code,722310,I
 EPA_WFR,Restaurants/Food Services,NAICS_2012_Code,72232,I
 EPA_WFR,Restaurants/Food Services,NAICS_2012_Code,72233,I
 EPA_WFR,Restaurants/Food Services,NAICS_2012_Code,7225,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,811,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,813,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,921,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,922,I
 EPA_WFR,Correctional Facilities,NAICS_2012_Code,92214,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,923,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,924,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,925,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,926,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,927,I
-EPA_WFR,Office Buildings,NAICS_2012_Code,928,I
 EPA_WFR,Military Installations,NAICS_2012_Code,92811,I
 EPA_WFR,Residential,NAICS_2012_Code,F010,I
