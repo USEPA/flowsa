@@ -23,7 +23,7 @@ def assign_naics(df):
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
     # assign sectors to activities
-    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '3111'
+    df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '311119'
     df.loc[df['Activity'] == 'Bio-Based Materials/Biochemical Processing',
            'Sector'] = ''  # todo: update to manufacturing/unique code
     df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = \
