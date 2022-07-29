@@ -136,7 +136,7 @@ def standardize_units(df):
                                            df['FlowAmount'] / exchange_rate,
                                            df['FlowAmount'])
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand USD',
-                                       df['FlowAmount'] * 10000,
+                                       df['FlowAmount'] * 1000,
                                        df['FlowAmount'])
     df.loc[:, 'Unit'] = np.where(df['Unit'].isin(
         ['Canadian Dollar', 'Thousand USD']), 'USD', df['Unit'])
