@@ -297,6 +297,11 @@ def main(**kwargs):
                 # (although this includes dropping suppressed data)
                 fbs = fbs[fbs['FlowAmount'] != 0].reset_index(drop=True)
 
+                if len(fbs) == 0:
+                    log.warning(f"after allocation, no data remain in FBS for "
+                                f"activity set {aset}")
+                    continue
+
                 # define grouping columns dependent on sectors
                 # being activity-like or not
                 if check_activities_sector_like(fbs) is False:
