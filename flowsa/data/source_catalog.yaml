@@ -60,7 +60,7 @@ Census_AHS:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
-Census_AMS:
+Census_ASM:
   class:
     - Money
   sector-like_activities: True
