@@ -16,8 +16,9 @@ source_names:
       - "Bio-based Materials/Biochemical Processing"
       - "Land Application"
     activity_sets:
-      direct_allocation:
+      direct:
         names:
+          - "Animal Feed" # food waste management pathway
           - "Colleges & Universities"
           - "Correctional Facilities"
           - "Food Banks"
@@ -28,18 +29,15 @@ source_names:
           - "Sports Venues"
         allocation_method: direct
         allocation_from_scale: national
-      employment_allocation:
+      employment:
         names:
-          - "Animal Feed" # food waste management pathway
           - "Bio-based Materials/Biochemical Processing" # food waste management pathway
           - "Hospitals"
           - "Hotels"
-          - "Manufacturing/Processing"
           - "Nursing Homes"
           - "Office Buildings"
           - "Restaurants/Food Services"
           - "Retail"
-          - "Wholesale"
         allocation_method: proportional
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
@@ -47,3 +45,22 @@ source_names:
         allocation_from_scale: national
         allocation_fba_load_scale: national
         clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+      establishments:
+        names:
+          - "Wholesale"
+        allocation_method: proportional
+        allocation_source: "BLS_QCEW"
+        allocation_source_class: "Other"
+        allocation_source_year: 2018
+        allocation_from_scale: national
+        allocation_fba_load_scale: national
+        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+      manufacturing:
+        names:
+          - "Manufacturing/Processing"
+        allocation_method: proportional
+        allocation_source: "Census_ASM"
+        allocation_source_class: "Money"
+        allocation_source_year: 2018
+        allocation_from_scale: national
+        allocation_fba_load_scale: national
