@@ -203,11 +203,12 @@ def main(**kwargs):
                 # columns, if an activity has already been read in and
                 # allocated, remove that activity from the mapped flows
                 # regardless of what activity set the data was read in
-                flows_mapped = flows_mapped[
-                    ~((flows_mapped[fba_activity_fields[0]].isin(ml_act)) |
-                      (flows_mapped[fba_activity_fields[1]].isin(ml_act))
-                      )].reset_index(drop=True)
-                ml_act.extend(names)
+                if v.get('retain_activity_names') is None:
+                    flows_mapped = flows_mapped[
+                        ~((flows_mapped[fba_activity_fields[0]].isin(ml_act)) |
+                          (flows_mapped[fba_activity_fields[1]].isin(ml_act))
+                          )].reset_index(drop=True)
+                    ml_act.extend(names)
 
                 vLog.info(f"Preparing to handle {aset} in {k}")
                 # subset fba data by activity
