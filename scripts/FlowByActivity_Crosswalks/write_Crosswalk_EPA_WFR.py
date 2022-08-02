@@ -47,8 +47,6 @@ def assign_naics(df):
 
     # Activities where NAICS are not defined in T4 of report
     # method for colleges based on 4 year colleges
-    # todo: assign to 4 year colleges only? (method results based on) or all
-    #  related higher ed? junior colleges? trade schools?
     df.loc[df['Activity'] == 'Colleges & Universities', 'Sector'] = '6113'
     df.loc[df['Activity'] == 'K-12 Schools', 'Sector'] = '6111'
     df.loc[df['Activity'] == 'Military Installations', 'Sector'] = '92811'
@@ -88,7 +86,7 @@ def assign_naics(df):
     # fermentation (converting carbohydrates via microbes into alcohols in
     # the absence of oxygen to create products such as biofuels).
     df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = \
-        '5622191' # Subnaics 1 for AD
+        '5622191'  # Subnaics 1 for AD
 
     # Composting refers to the production of organic material (via aerobic
     # processes) that can be used as a soil amendment
