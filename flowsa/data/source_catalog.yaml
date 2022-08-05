@@ -171,7 +171,10 @@ EPA_NEI_Onroad:
   sector_aggregation_level: "aggregated"
 EPA_WARMer:
   class:
-    - Other
+    - Chemicals
+    - Energy
+    - Money
+    - Employment
   sector-like_activities: False
   activity_schema: None
   sector_aggregation_level: "aggregated"
