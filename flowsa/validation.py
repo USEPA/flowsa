@@ -533,16 +533,18 @@ def compare_fba_geo_subset_and_fbs_output_totals(
         df_merge = replace_NoneType_with_empty_cells(df_merge)
 
         # list of contexts and locations
-        context_list = df_merge[['Context', 'Location']].values.tolist()
+        context_list = df_merge[['Class', 'Context',
+                                 'Location']].values.tolist()
 
         # loop through the contexts and print results of comparison
         vLog.info('Comparing FBA %s %s subset to FBS results. '
                   'Details in Validation Log', activity_set,
                   source_attr['geoscale_to_use'])
-        for i, j in context_list:
+        for i, j, k in context_list:
             df_merge_subset = \
-                df_merge[(df_merge['Context'] == i) &
-                         (df_merge['Location'] == j)].reset_index(drop=True)
+                df_merge[(df_merge['Class'] == i) &
+                         (df_merge['Context'] == j) &
+                         (df_merge['Location'] == k)].reset_index(drop=True)
             diff_per = df_merge_subset['Percent_difference'][0]
             if np.isnan(diff_per):
                 vLog.info('FlowBySector FlowAmount for %s %s %s '
@@ -557,18 +559,22 @@ def compare_fba_geo_subset_and_fbs_output_totals(
 
             # diff_units = df_merge_subset['FBS_unit'][0]
             if diff_per > 0:
-                vLog.info('FlowBySector FlowAmount for %s %s %s at %s is %s%% '
+                vLog.info('FlowBySector FlowAmount for %s %s %s %s at %s is '
+                          '%s%% '
                           'less than the FlowByActivity FlowAmount',
-                          source_name, activity_set, i, j, str(abs(diff_per)))
+                          source_name, activity_set, i, j, k, str(abs(
+                    diff_per)))
             elif diff_per < 0:
-                vLog.info('FlowBySector FlowAmount for %s %s %s at %s is %s%% '
+                vLog.info('FlowBySector FlowAmount for %s %s %s %s at %s is '
+                          '%s%% '
                           'more than the FlowByActivity FlowAmount',
-                          source_name, activity_set, i, j, str(abs(diff_per)))
+                          source_name, activity_set, i, j, k,
+                          str(abs(diff_per)))
             elif diff_per == 0:
-                vLogDetailed.info('FlowBySector FlowAmount for '
-                                  '%s %s %s at %s is equal to the '
-                                  'FlowByActivity FlowAmount',
-                                  source_name, activity_set, i, j)
+                vLogDetailed.info('FlowBySector FlowAmount for %s %s %s %s at '
+                                  '%s is equal to the FlowByActivity '
+                                  'FlowAmount',
+                                  source_name, activity_set, i, j, k)
 
         # subset the df to include in the validation log
         # only print rows where the percent difference does not round to 0
