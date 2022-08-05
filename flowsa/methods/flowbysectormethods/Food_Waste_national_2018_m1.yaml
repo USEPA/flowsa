@@ -1,4 +1,5 @@
-# Attribute EPA's Wasted Food Report to sectors
+# Attribute EPA's Wasted Food Report to sectors using the scoping memo for
+# attribution methodology
 
 target_sector_level: NAICS_6
 target_subset_sector_level: {NAICS_7: ['562219']}
