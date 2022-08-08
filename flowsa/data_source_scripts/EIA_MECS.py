@@ -296,7 +296,7 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
             df_data_region.columns = table_dict[year][table]['col_names']
             df_rse_region.columns = table_dict[year][table]['col_names']
         # if table name ends in 2, the units must be stripped from the column names listed in the table dict
-        if table[-1] == '2' or table[-1] == '0' or table[-1] == '5':
+        if table[-1] == '2' or table[-1] == '0' or table[-1] == '5' or table[-1] == '6':
             df_data_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
             df_rse_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
         if table[-1] == '5':

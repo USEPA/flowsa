@@ -23,6 +23,7 @@ tables:
 - table3_2
 - table7_2
 - table7_10
+- table3_6
 table_dict:
     '2010':
       Table 2.1: 
@@ -250,6 +251,29 @@ table_dict:
           South Region : [264,345]
           West Region : [348,429]
         data_type: 'fuel consumption'
+      Table 3.6:
+        col_names:
+          - NAICS Code
+          - Subsector and Industry
+          - Pulping Liquor or Black Liquor
+          - Biomass Total
+          - Agricultural Waste
+          - Wood Harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+        regions:
+          Total United States: [ 18,34 ]
+          Northeast Region: [ 37,52 ]
+          Midwest Region: [ 55,70 ]
+          South Region: [ 73,88 ]
+          West Region: [ 91,106 ]
+        rse_regions:
+          Total United States: [ 17,32 ]
+          Northeast Region: [ 34,50 ]
+          Midwest Region: [ 53,68 ]
+          South Region: [ 71,86 ]
+          West Region: [ 89,104 ]
+        data_type: 'fuel consumption'
       Table 3.2:
         col_names: *col_names_2014_31
         regions:
@@ -406,6 +430,29 @@ table_dict:
           *regions_2018_31
         rse_regions:
           *rse_regions_2018_31
+        data_type: 'fuel consumption'
+      Table 3.6:
+        col_names:
+          - NAICS Code
+          - Subsector and Industry
+          - Pulping Liquor or Black Liquor
+          - Biomass Total
+          - Agricultural Waste
+          - Wood Harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+        regions:
+          Total United States: [ 19,34 ]
+          Northeast Region: [ 37,52 ]
+          Midwest Region: [ 55,70 ]
+          South Region: [ 73,88 ]
+          West Region: [ 91,106 ]
+        rse_regions:
+          Total United States: [ 17,32 ]
+          Northeast Region: [ 35,50 ]
+          Midwest Region: [ 53,68 ]
+          South Region: [ 71,86 ]
+          West Region: [ 89,104 ]
         data_type: 'fuel consumption'
       Table 1.2:
         col_names:
