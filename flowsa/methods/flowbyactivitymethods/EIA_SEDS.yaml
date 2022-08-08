@@ -5,7 +5,7 @@ bib_id: EIA_SEDS
 api_name: EIA_SEDS
 format: pdf
 url:
-  base_url: https://www.eia.gov/state/seds/sep_use/total/csv/use_US.csv
+  base_url: https://www.eia.gov/state/seds/sep_use/total/csv/
 url_replace_fxn: !script_function:EIA_SEDS eia_seds_url_helper
 call_response_fxn: !script_function:EIA_SEDS eia_seds_call
 parse_response_fxn: !script_function:EIA_SEDS eia_seds_parse

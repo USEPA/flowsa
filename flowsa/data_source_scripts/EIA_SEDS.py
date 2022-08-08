@@ -12,6 +12,7 @@ Last updated: September 8, 2020
 import io
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.location import getFIPS, get_all_state_FIPS_2, us_state_abbrev, US_FIPS
 
 
 def eia_seds_url_helper(*, build_url, config, **_):
@@ -28,7 +29,9 @@ def eia_seds_url_helper(*, build_url, config, **_):
     """
     urls = []
     url = build_url
-    urls.append(url)
+    csvs = ['use_all_phy.csv', 'use_US.csv']
+    for csv in csvs:
+        urls.append(url + csv)
     return urls
 
 
@@ -61,9 +64,24 @@ def eia_seds_parse(*, df_list, year, **_):
     """
     df = pd.concat(df_list, sort=False)
 
-    df = df.rename(columns={year: "FlowAmount", "MSN": "ActivityConsumedBy", "Data_Status": "Description", "State": "Location"})
+    df = df.rename(columns={year: "FlowAmount", "MSN": "ActivityConsumedBy", "Data_Status": "Description"})
     df['FlowName'] = "All consumption estimates"
-    df.loc[df['Location'] == 'US', 'Location'] = '00000'
+    fips = get_all_state_FIPS_2().reset_index(drop=True)
+    # ensure capitalization of state names
+    fips['State'] = fips['State'].apply(lambda x: x.title())
+    fips['StateAbbrev'] = fips['State'].map(us_state_abbrev)
+    # pad zeroes
+    fips['FIPS_2'] = fips['FIPS_2'].apply(lambda x: x.ljust(3 + len(x), '0'))
+    df = pd.merge(
+        df, fips, how='left', left_on='State', right_on='StateAbbrev')
+    # set us location code
+    df.loc[df['State_x'] == 'US', 'FIPS_2'] = US_FIPS
+
+    df = df.rename(columns={'FIPS_2': "Location"})
+    assign_fips_location_system(df, year)
+    df = df.drop('StateAbbrev', axis=1)
+    df = df.drop('State_x', axis=1)
+    df = df.drop('State_y', axis=1)
     # hard code data
     df['Class'] = 'Energy'
     df['SourceName'] = 'EIA_SEDS'
