@@ -21,9 +21,9 @@ tables:
 - table2_2
 - table3_1
 - table3_2
+- table3_6
 - table7_2
 - table7_10
-- table3_6
 table_dict:
     '2010':
       Table 2.1: 
