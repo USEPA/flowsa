@@ -68,7 +68,7 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     # add url of FlowBy method at time of commit
     fb_dict['method_url'] = \
         f'https://github.com/USEPA/flowsa/blob/{GIT_HASH_LONG}/flowsa/' \
-        f'data/{category.lower()}methods/{source_name}.yaml'
+        f'methods/{category.lower()}methods/{source_name}.yaml'
 
     if category == 'FlowBySector':
         method_data = return_fbs_method_data(source_name, config)
