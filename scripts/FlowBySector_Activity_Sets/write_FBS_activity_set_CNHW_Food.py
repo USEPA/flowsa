@@ -30,7 +30,12 @@ if __name__ == '__main__':
 
     # load the wasted food report activity to sector crosswalk to identify
     # data to include in activity set 1
-    wfr = pd.read_csv(f'{crosswalkpath}NAICS_Crosswalk_EPA_WFR.csv')
+    wfr_fba = flowsa.getFlowByActivity('EPA_WFR', '2018')
+    wfr_fba = wfr_fba[['ActivityProducedBy']].drop_duplicates()
+    wfr_cw = pd.read_csv(f'{crosswalkpath}NAICS_Crosswalk_EPA_WFR.csv')
+    wfr = wfr_fba.merge(wfr_cw[['Activity', 'Sector']],
+                        left_on='ActivityProducedBy',
+                        right_on='Activity').drop(columns='Activity')
 
     # add column where sectors in wfr crosswalk are a partial match to those
     # in the cnhw. Where there are values, label the wfr activity set
