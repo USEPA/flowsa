@@ -25,7 +25,7 @@ def assign_naics(df):
     # assign sectors to activities
     df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '311119'
     df.loc[df['Activity'] == 'Bio-Based Materials/Biochemical Processing',
-           'Sector'] = ''  # todo: update to manufacturing/unique code
+           'Sector'] = '562BIO'  # todo: discuss assignment
     df.loc[df['Activity'] == 'Codigestion/Anaerobic Digestion', 'Sector'] = \
         '5622191'  # Subnaics 1 for AD
     df.loc[df['Activity'] == 'Combusted with Energy Recovery', 'Sector'] = \

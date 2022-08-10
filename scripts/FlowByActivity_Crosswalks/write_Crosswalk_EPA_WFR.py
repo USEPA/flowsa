@@ -63,9 +63,9 @@ def assign_naics(df):
     # Activities consuming the food waste Diverting material from the food
     # supply chain (directly or after processing) to animals
     df.loc[df['Activity'] == 'Animal Feed', 'Sector'] = '311119'
-    df = pd.concat([df, pd.DataFrame(
-        [['EPA_WFR', 'Animal Feed Collection', '5621191']],
-        columns=['ActivitySourceName', 'Activity', 'Sector'])])
+    # df = pd.concat([df, pd.DataFrame(
+    #     [['EPA_WFR', 'Animal Feed Collection', '5621191']],
+    #     columns=['ActivitySourceName', 'Activity', 'Sector'])])
 
     # Converting material into industrial products. Ex. creating fibers for
     # packaging material, bioplastics , feathers (e.g., for pillows),
@@ -75,11 +75,11 @@ def assign_naics(df):
     # fermentation.
     # todo: update assignment to be inclusive of 31-33?
     df.loc[df['Activity'] == 'Bio-based Materials/Biochemical Processing',
-           'Sector'] = '3131'
-    df = pd.concat([df, pd.DataFrame(
-        [['EPA_WFR', 'Bio-based Materials/Biochemical Processing '
-                     'Collection', '5621192']],
-        columns=['ActivitySourceName', 'Activity', 'Sector'])])
+           'Sector'] = '562BIO'
+    # df = pd.concat([df, pd.DataFrame(
+    #     [['EPA_WFR', 'Bio-based Materials/Biochemical Processing '
+    #                  'Collection', '5621192']],
+    #     columns=['ActivitySourceName', 'Activity', 'Sector'])])
 
     # Breaking down material via bacteria in the absence of oxygen.
     # Generates biogas and nutrient-rich matter. This destination includes
@@ -106,9 +106,9 @@ def assign_naics(df):
     # Spreading, spraying, injecting, or incorporating organic material onto or
     # below the surface of the land to enhance soil quality
     df.loc[df['Activity'] == 'Land Application', 'Sector'] = '115112'
-    df = pd.concat([df, pd.DataFrame(
-        [['EPA_WFR', 'Land Application Collection', '5621193']],
-        columns=['ActivitySourceName', 'Activity', 'Sector'])])
+    # df = pd.concat([df, pd.DataFrame(
+    #     [['EPA_WFR', 'Land Application Collection', '5621193']],
+    #     columns=['ActivitySourceName', 'Activity', 'Sector'])])
 
     # Sending material to an area of land or an excavated site that is
     # specifically designed and built to receive wastes

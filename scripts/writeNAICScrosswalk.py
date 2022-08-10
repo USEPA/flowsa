@@ -172,7 +172,8 @@ def write_naics_2012_crosswalk():
     # load BEA codes that will act as NAICS
     house = load_crosswalk('household')
     govt = load_crosswalk('government')
-    bea = pd.concat([house, govt], ignore_index=True).rename(
+    bio = load_crosswalk('biochemical')
+    bea = pd.concat([house, govt, bio], ignore_index=True).rename(
         columns={'Code': 'NAICS_2012_Code',
                  'NAICS_Level_to_Use_For': 'secLength'})
     bea = bea[['NAICS_2012_Code', 'secLength']]
@@ -184,13 +185,13 @@ def write_naics_2012_crosswalk():
     # also drop the existing household and government codes because not all
     # inclusive and does not conform to NAICS length standards
     cw = cw[~cw['NAICS_2012_Code'].str.startswith(
-        tuple(['F0', 'S0']))].reset_index(drop=True)
+        tuple(['F0', 'S0', '562B']))].reset_index(drop=True)
 
     # add column of sector length
     cw['secLength'] = cw['NAICS_2012_Code'].apply(
         lambda x: f"NAICS_{str(len(x))}")
     # add bea codes subbing for NAICS
-    cw2 = pd.concat([cw, bea], ignore_index=True)
+    cw2 = pd.concat([cw, bea], ignore_index=True).drop_duplicates()
     # return max string length
     max_naics_length = cw['NAICS_2012_Code'].apply(lambda x: len(x)).max()
 
@@ -214,7 +215,7 @@ def write_naics_2012_crosswalk():
             f"{l}", f"{l - 1}")
         # drop household and gov codes
         df_sub = df_sub[~df_sub[f'NAICS_{l - 1}'].str.startswith(
-            tuple(['F0', 'S0']))].drop_duplicates()
+            tuple(['F0', 'S0', '562B']))].drop_duplicates()
         missing_sectors = df_sub[~df_sub[f'NAICS_{l - 1}'].isin(
             existing_sec_list)]
 
