@@ -22,7 +22,7 @@ write.csv(bea, file='BEA_2012_Detail_Use_PRO_BeforeRedef.csv')
 
 CSV manually added to flowsa
 
-
+---
 
 The BEA_2012_Detail_Make_BeforeRedef was pulled from USEEIOR's
 Detail_Make_2012_BeforeRedef.rda on 08/10/2022.
@@ -36,9 +36,9 @@ write.csv(bea, file='BEA_2012_Detail_Make_BeforeRedef.csv')
 
 CSV manually added to flowsa
 
-https://github.com/USEPA/useeior/commit/7567695
+https://github.com/USEPA/useeior/commit/2eece7a
 "date_last_modified": ["2021-09-29"],
-"date_accessed": ["2022-03-28"]
+"date_accessed": ["2022-07-27"]
 
 ---
 The BEA_Detail_GrossOutput was pulled from
@@ -51,9 +51,9 @@ csv obtained by running the following code in Rstudio:
 bea <- get('Detail_GrossOutput_IO')
 write.csv(bea, file='BEA_GDP_GrossOutput_IO.csv')
 
-https://github.com/USEPA/useeior/commit/f2df425
+https://github.com/USEPA/useeior/commit/2eece7a
 "date_last_modified": ["2021-10-04"],
-"date_accessed": ["2022-03-29"]
+"date_accessed": ["2022-07-27"]
 
 CSV manually added to flowsa
 
