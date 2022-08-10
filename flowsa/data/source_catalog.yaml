@@ -164,7 +164,7 @@ NETL_EIA_PlantWater:
   sector-like_activities: False
   activity_schema: None
   sector_aggregation_level: "aggregated"
-NOAA_FisheryLandings:
+NOAA_FisheriesLandings:
   class:
   - Money
   sector-like_activities: False
