@@ -213,27 +213,3 @@ def reorder_df(df):
     df = df.drop(columns=['index'])
     return df
 
-
-def foodwaste_collection(fba, source_dict):
-    """clean_fba_df_fxn"""
-    collection = source_dict.get('activity_parameters')
-    inputs = fba.loc[fba['ActivityConsumedBy'].isin(collection)]
-    inputs = inputs.reset_index(drop=True)
-    outputs = inputs.copy()
-    inputs['ActivityConsumedBy'] = inputs['ActivityConsumedBy'].apply(
-        lambda x: f"{x} Collection")
-    outputs['ActivityProducedBy'] = outputs['ActivityConsumedBy'].apply(
-        lambda x: f"{x} Collection")
-
-    outputs['Flowable'] = outputs["Flowable"].apply(lambda x:
-                                                    f"{x} Collected")
-
-    # drop list of activities from original dataset and concat new activities
-    fba_rev = fba[~fba['ActivityConsumedBy'].isin(collection)]
-
-    df1 = pd.concat([fba_rev, inputs, outputs], ignore_index=True)
-    cols = flow_by_activity_mapped_fields.copy()
-    cols.pop('FlowAmount')
-    df1 = aggregator(df1, cols)
-
-    return df1

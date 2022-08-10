@@ -11,20 +11,13 @@ source_names:
     class: Other
     geoscale_to_use: national
     year: 2018
-    clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_collection
-    activity_parameters:
-      - "Animal Feed"
-      - "Bio-based Materials/Biochemical Processing"
-      - "Land Application"
     activity_sets:
       direct:
         names:
-          - "Animal Feed" # food waste management pathway
           - "Colleges & Universities"
           - "Correctional Facilities"
           - "Food Banks"
           - "K-12 Schools"
-          - "Land Application" # food waste management pathway
           - "Military Installations"
           - "Residential"
           - "Sports Venues"
@@ -32,7 +25,6 @@ source_names:
         allocation_from_scale: national
       employment:
         names:
-          - "Bio-based Materials/Biochemical Processing" # food waste management pathway
           - "Hospitals"
           - "Hotels"
           - "Nursing Homes"
