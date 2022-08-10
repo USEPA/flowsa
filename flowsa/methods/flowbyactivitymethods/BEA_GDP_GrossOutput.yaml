@@ -1,7 +1,7 @@
 author: U.S. Bureau of Economic Analysis
 source_name: Gross Output by Industry - Detail
 source_url: 'https://www.bea.gov/data/industries/gross-output-by-industry'
-original_data_download_date: '2022-03-29'
+original_data_download_date: '2022-08-10'
 bib_id: BEA_GDP
 api_name: None
 api_key_required: false
