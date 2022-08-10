@@ -52,7 +52,7 @@ def load_naics_02_to_07_crosswalk():
 def update_naics_crosswalk():
     """
     update the useeior crosswalk with crosswalks created for
-    flowsa datasets - want to add any NAICS > 6 digits
+    flowsa datasets
     Add NAICS 2002
     :return: df of NAICS that include any unofficial NAICS
     """
@@ -77,10 +77,9 @@ def update_naics_crosswalk():
     # and add to naics list
     missing_naics_df_list = []
     # read in all the crosswalk csv files (ends in toNAICS.csv)
-    for file_name in glob.glob(
-            datapath + "activitytosectormapping/" + 'NAICS_Crosswalk_*.csv'):
+    for file_name in glob.glob(f'{crosswalkpath}NAICS_Crosswalk_*.csv'):
         # skip Statistics Canada GDP because not all sectors relevant
-        if file_name != crosswalkpath + 'Crosswalk_StatCan_GDP_toNAICS.csv':
+        if not any(s in file_name for s in ('StatCan', 'BEA')):
             df = pd.read_csv(file_name, low_memory=False, dtype=str)
             # convert all rows to string
             df = df.astype(str)
@@ -100,9 +99,7 @@ def update_naics_crosswalk():
             # mastercrosswalk
             common = df.merge(df_naics, on=[naics_year, naics_year])
             missing_naics = df[(~df[naics_year].isin(common[naics_year]))]
-            # extract sectors where len > 6 and that does not include a '-'
-            missing_naics = missing_naics[missing_naics[naics_year].apply(
-                lambda x: len(x) > 6)]
+            # drop sectors that include a '-'
             if len(missing_naics) != 0:
                 missing_naics = missing_naics[
                     ~missing_naics[naics_year].str.contains('-')]
@@ -112,6 +109,9 @@ def update_naics_crosswalk():
     missing_naics_df = \
         pd.concat(missing_naics_df_list, ignore_index=True,
                   sort=False).drop_duplicates().reset_index(drop=True)
+    # drop known non-2012 sectors  # todo: evaluate why these are identified as naics 2012
+    missing_naics_df = missing_naics_df[~missing_naics_df[
+        'NAICS_2012_Code'].isin(['325190', '516', '99'])]
     # sort df
     missing_naics_df = missing_naics_df.sort_values(['NAICS_2012_Code'])
     missing_naics_df = missing_naics_df.reset_index(drop=True)
