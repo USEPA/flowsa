@@ -22,12 +22,12 @@ source_names:
         allocation_source_class: Other
         allocation_source_year: 2018
         allocation_from_scale: national
-        allocation_merge_columns: [SectorConsumedBy]
       facts_and_figures:
         names: !from_index:CNHW_Food_asets.csv facts_and_figures
         allocation_method: proportional
         allocation_source: EPA_FactsAndFigures
         allocation_source_class: Other
+        allocation_flow:
+          - Food
         allocation_source_year: 2018
         allocation_from_scale: national
-        allocation_merge_columns: [SectorConsumedBy]
