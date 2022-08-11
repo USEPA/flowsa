@@ -3,7 +3,6 @@ target_sector_source: NAICS_2012_Code
 target_geoscale: national
 source_names:
   "BLS_QCEW": !include:Employment_common.yaml:bls_load_and_clean_national
-    year: 2017
+    year: 2018
     activity_sets:
       qcew: !include:Employment_common.yaml:bls_allocation_national
-        

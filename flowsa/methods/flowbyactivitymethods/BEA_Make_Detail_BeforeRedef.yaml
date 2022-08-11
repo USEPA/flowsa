@@ -1,7 +1,7 @@
-author: BEA
-source_name: BEA_Make_Detail_BeforeRedef
+author: U.S. Bureau of Economic Analysis
+source_name: Make Table Before Redefinitions
 source_url: 'https://www.bea.gov/industry/input-output-accounts-data'
-original_data_download_date: '2020-07-14'
+original_data_download_date: '2022-08-11'
 bib_id: BEA_Make_BR
 api_name: None
 api_key_required: false
