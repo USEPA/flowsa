@@ -387,7 +387,7 @@ def main(**kwargs):
         else:
             fxn = v.get("clean_fbs_df_fxn")
             if callable(fxn):
-                flows = fxn(flows, method, k, v)
+                flows = fxn(flows, method, k=k, v=v)
             elif fxn:
                 raise flowsa.exceptions.FBSMethodConstructionError(
                     error_type='fxn_call')
