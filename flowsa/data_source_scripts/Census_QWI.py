@@ -123,4 +123,5 @@ def census_qwi_parse(*, df_list, year, **_):
     df['SourceName'] = 'Census_QWI'
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Class'] = "Employment"
+    df['Unit'] = "p"
     return df
