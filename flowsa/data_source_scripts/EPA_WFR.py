@@ -213,3 +213,113 @@ def reorder_df(df):
     df = df.drop(columns=['index'])
     return df
 
+
+def attribute_cnhw_food(flows, method, k, v, *_):
+    """
+    TODO: incorporate this method into flowbysector.py after brining in
+     Matthew's changes - cnhw is loaded as the primary data source,
+     flowbysector.py is not set up for an FBS to be used as a primary data
+     source
+
+    Function is used to attribute CNHW food generation to waste management
+    paths using EPA WFR and Facts and Figures
+    :param flows:
+    :param method:
+    :return:
+    """
+    from flowsa.fbs_allocation import load_map_clean_fba
+    from flowsa.settings import vLog, log
+    from flowsa.flowbyfunctions import sector_aggregation
+
+    # empty list for activity results
+    activity_list = []
+    activities = v['activity_sets']
+    # subset activity data and allocate to sector
+    for aset, attr in activities.items():
+        # subset by named activities
+        names = attr['names']
+        vLog.info(f"Preparing to handle {aset} in {k}")
+        # subset fba data by activity
+        flows_subset = flows[flows['SectorProducedBy'].isin(
+            names)].reset_index(drop=True)
+
+        # load allocation df
+        # add parameters to dictionary if exist in method yaml
+        fba_dict = {}
+        if 'allocation_flow' in attr:
+            fba_dict['flowname_subset'] = attr['allocation_flow']
+        if 'allocation_compartment' in attr:
+            fba_dict['compartment_subset'] = attr['allocation_compartment']
+        if 'clean_allocation_fba' in attr:
+            fba_dict['clean_fba'] = attr['clean_allocation_fba']
+        if 'clean_allocation_fba_w_sec' in attr:
+            fba_dict['clean_fba_w_sec'] = attr['clean_allocation_fba_w_sec']
+
+        # load the allocation FBA
+        fba_allocation_wsec = \
+            load_map_clean_fba(method, attr,
+                               fba_sourcename=attr['allocation_source'],
+                               df_year=attr['allocation_source_year'],
+                               flowclass=attr['allocation_source_class'],
+                               geoscale_from=attr['allocation_from_scale'],
+                               geoscale_to=v['geoscale_to_use'],
+                               download_FBA_if_missing=True,
+                               **fba_dict)
+
+        # subset fba datasets to only keep the sectors associated
+        # with activity subset
+        if aset == 'wasted_food_report':
+            log.info("Subsetting %s for sectors in %s", attr['allocation_source'],
+                     k)
+            fba_allocation_subset = fba_allocation_wsec[fba_allocation_wsec[
+                'SectorProducedBy'].isin(names)].reset_index(drop=True)
+
+            # determine ratios of food waste by waste management pathway
+            fba_allocation_subset = fba_allocation_subset.assign(
+                Denominator=fba_allocation_subset.groupby(
+                    ['SectorProducedBy'])['FlowAmount'].transform('sum'))
+            fba_allocation_subset = fba_allocation_subset.assign(
+                FlowAmountRatio=fba_allocation_subset['FlowAmount'] /
+                                fba_allocation_subset['Denominator'])
+
+            # merge the primary data source and allocation data source,
+            # but first drop primary df sectorconsumedby because empty
+            flows_subset2 = flows_subset.drop(columns='SectorConsumedBy')
+            fbs = flows_subset2.merge(fba_allocation_subset[['SectorProducedBy',
+                                                             'SectorConsumedBy',
+                                                             'FlowAmountRatio']],
+                                      how='left')
+        elif aset == 'facts_and_figures':
+            # determine ratios of food waste by waste management pathway
+            fba_allocation_wsec = fba_allocation_wsec.assign(
+                Denominator=fba_allocation_wsec.groupby(
+                    ['FlowName'])['FlowAmount'].transform('sum'))
+            fba_allocation_wsec = fba_allocation_wsec.assign(
+                FlowAmountRatio=fba_allocation_wsec['FlowAmount'] /
+                                fba_allocation_wsec['Denominator'])
+
+            # merge the primary data source and allocation data source,
+            # but first drop primary df sectorconsumedby because empty
+            flows_subset2 = flows_subset.drop(columns='SectorConsumedBy')
+            # add temp merge col
+            df_list = [flows_subset2, fba_allocation_wsec]
+            for i, df in enumerate(df_list):
+                df_list[i]['merge_col'] = 1
+            fbs = flows_subset2.merge(fba_allocation_wsec[['SectorConsumedBy',
+                                                           'FlowAmountRatio',
+                                                           'merge_col']],
+                                      how='left').drop(columns='merge_col')
+
+        # calculate flow amounts for each sector
+        log.info("Calculating new flow amounts using flow ratios")
+        fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
+
+        # drop columns
+        fbs = fbs.drop(columns=['FlowAmountRatio'])
+
+        activity_list.append(fbs)
+
+    cnhw = pd.concat(activity_list)
+
+    return cnhw
+
