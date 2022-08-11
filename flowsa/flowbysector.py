@@ -22,7 +22,6 @@ you need functions to clean up the FBA
 
 import argparse
 import pandas as pd
-import os
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
 from flowsa.allocation import equally_allocate_parent_to_child_naics
@@ -105,6 +104,10 @@ def load_source_dataframe(method, sourcename, source_dict,
     elif source_dict['data_format'] == 'FBS':
         vLog.info("Retrieving flowbysector for datasource %s", sourcename)
         flows_df = flowsa.getFlowBySector(sourcename)
+        selection_fields = source_dict.get('selection_fields')
+        if selection_fields is not None:
+            for k, v in selection_fields.items():
+                flows_df = flows_df[flows_df[k].isin(v)].reset_index(drop=True)
     elif source_dict['data_format'] == 'FBS_outside_flowsa':
         vLog.info("Retrieving flowbysector for datasource %s", sourcename)
         fxn = source_dict.get("FBS_datapull_fxn")
@@ -384,7 +387,7 @@ def main(**kwargs):
         else:
             fxn = v.get("clean_fbs_df_fxn")
             if callable(fxn):
-                flows = fxn(flows, method)
+                flows = fxn(flows, method, k, v)
             elif fxn:
                 raise flowsa.exceptions.FBSMethodConstructionError(
                     error_type='fxn_call')
