@@ -1,6 +1,6 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
 EPA_FactsAndFigures,Land Application,NAICS_2012_Code,115112,
-EPA_FactsAndFigures,Sewer/Wastewater Treatment,NAICS_2012_Code,22132,
+EPA_FactsAndFigures,Sewer/Wastewater Treatment,NAICS_2012_Code,221320,
 EPA_FactsAndFigures,Animal Feed,NAICS_2012_Code,311119,
 EPA_FactsAndFigures,Landfilled,NAICS_2012_Code,5622121,
 EPA_FactsAndFigures,Combusted with Energy Recovery,NAICS_2012_Code,562213,
