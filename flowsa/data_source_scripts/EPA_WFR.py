@@ -229,7 +229,7 @@ def attribute_cnhw_food(flows, method, k, v, *_):
     """
     from flowsa.fbs_allocation import load_map_clean_fba
     from flowsa.settings import vLog, log
-    from flowsa.flowbyfunctions import sector_aggregation
+    from flowsa.validation import compare_activity_to_sector_flowamounts
 
     # empty list for activity results
     activity_list = []
@@ -316,6 +316,11 @@ def attribute_cnhw_food(flows, method, k, v, *_):
 
         # drop columns
         fbs = fbs.drop(columns=['FlowAmountRatio'])
+
+        # check before and after totals
+        # compare flowbysector with flowbyactivity
+        compare_activity_to_sector_flowamounts(
+            flows_subset, fbs, aset, method, v, attr)
 
         activity_list.append(fbs)
 
