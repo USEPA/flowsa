@@ -56,8 +56,7 @@ def warmer_parse(*, df_list, year, **_):
     df.loc[df['FlowName'].str.contains('Compensation|Taxes'),
            'Class'] = 'Money'
     df.loc[df['FlowName'].str.contains('Energy'), 'Class'] = 'Energy'
-    df.loc[df['Unit'].str.contains('kg|p|MJ'), 'FlowType'] = "ELEMENTARY_FLOW"
-    df.loc[df['Unit'].str.contains('USD'), 'FlowType'] = 'TECHNOSPHERE_FLOW'
+    df.loc[df['Unit'].str.contains('kg|p|MJ|USD'), 'FlowType'] = "ELEMENTARY_FLOW"
     df["Year"] = year
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
