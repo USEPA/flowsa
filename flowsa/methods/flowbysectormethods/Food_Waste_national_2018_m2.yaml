@@ -6,7 +6,7 @@ target_subset_sector_level: {NAICS_7: ['562219']}
 target_sector_source: NAICS_2012_Code
 target_geoscale: national
 source_names:
-  "CNHW_national_2014":
+  "CNHW_national_2018":
     data_format: 'FBS'
     activity_set_attribution: True
     selection_fields:
@@ -22,6 +22,7 @@ source_names:
         allocation_source_class: Other
         allocation_source_year: 2018
         allocation_from_scale: national
+        allocation_merge_columns: [SectorProducedBy]
       facts_and_figures:
         names: !from_index:CNHW_Food_asets.csv facts_and_figures
         allocation_method: proportional
@@ -31,3 +32,4 @@ source_names:
           - Food
         allocation_source_year: 2018
         allocation_from_scale: national
+        allocation_merge_columns: [SectorProducedBy]
