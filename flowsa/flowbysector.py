@@ -353,7 +353,7 @@ def main(**kwargs):
 
                 # compare flowbysector with flowbyactivity
                 compare_activity_to_sector_flowamounts(
-                    flows_mapped_wsec, fbs_agg_2, aset, method)
+                    flows_mapped_wsec, fbs_agg_2, aset, method, v, attr)
 
                 # return sector level specified in method yaml
                 # load the crosswalk linking sector lengths

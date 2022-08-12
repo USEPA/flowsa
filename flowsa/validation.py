@@ -344,7 +344,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
 
 
 def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
-                                           activity_set, config):
+                                           activity_set, config, v, attr, **_):
     """
     Function to compare the loaded flowbyactivity with the final flowbysector
     by activityname (if exists) to target sector level
@@ -356,64 +356,87 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     :return: printout data differences between loaded FBA and FBS output,
              save results as csv in local directory
     """
-    if check_activities_sector_like(fba_load):
+    data_format = v.get('data_format')
+    if (data_format == 'FBA') & (check_activities_sector_like(fba_load)):
+        print('true')
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector '
                    'ratios for a dataset with sector-like activities because '
                    'if there are modifications to flowamounts for a sector, '
                    'then the ratios will be different')
     else:
         # subset fba df
-        fba = fba_load[['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType',
-                        'ActivityProducedBy', 'ActivityConsumedBy', 'Context',
-                        'Location', 'LocationSystem', 'Year',
-                        'FlowAmount']].drop_duplicates().reset_index(drop=True)
+        col_subset = ['Class', 'MetaSources', 'Flowable', 'Unit', 'FlowType',
+                      'ActivityProducedBy', 'ActivityConsumedBy',
+                      'SectorProducedBy', 'SectorConsumedBy', 'Context',
+                      'Location', 'LocationSystem', 'Year', 'FlowAmount']
+        fba = fba_load[fba_load.columns.intersection(
+            col_subset)].reset_index(drop=True)
+        # todo: modify so location subset is based on target geoscale
         fba.loc[:, 'Location'] = US_FIPS
-        group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
-                      'Unit', 'FlowType', 'Context',
-                      'Location', 'LocationSystem', 'Year']
+        group_cols = [e for e in fba.columns if e in
+                      ['ActivityProducedBy', 'ActivityConsumedBy',
+                       'SectorProducedBy', 'SectorConsumedBy', 'Flowable',
+                       'Unit', 'FlowType', 'Context', 'Location',
+                       'LocationSystem', 'Year']]
         fba_agg = aggregator(fba, group_cols)
         fba_agg.rename(columns={'FlowAmount': 'FBA_amount'}, inplace=True)
 
         # subset fbs df
-
-        fbs = fbs_load[['Class', 'SectorSourceName', 'Flowable', 'Unit',
-                        'FlowType', 'SectorProducedBy', 'SectorConsumedBy',
+        col_subset_2 = ['Class', 'SectorSourceName', 'Flowable', 'Unit',
+                        'FlowType', 'SectorProducedBy',
                         'ActivityProducedBy', 'ActivityConsumedBy',
                         'Context', 'Location', 'LocationSystem', 'Year',
-                        'FlowAmount']].drop_duplicates().reset_index(drop=True)
+                        'FlowAmount'] + attr.get('allocation_merge_columns')
+        fbs = fbs_load[fbs_load.columns.intersection(
+            col_subset_2)].reset_index(drop=True)
 
         fbs = replace_NoneType_with_empty_cells(fbs)
 
-        fbs['ProducedLength'] = fbs['SectorProducedBy'].str.len()
-        fbs['ConsumedLength'] = fbs['SectorConsumedBy'].str.len()
-        fbs['SectorLength'] = fbs[['ProducedLength',
-                                   'ConsumedLength']].max(axis=1)
+        # determine which
+        for i in ['Produced', 'Consumed']:
+            try:
+                fbs[f'{i}Length'] = fbs[f'Sector{i}By'].str.len()
+            except KeyError:
+                pass
+        max_list = [e for e in fbs.columns if e in ['ProducedLength',
+                                                    'ConsumedLength']]
+        fbs['SectorLength'] = fbs[max_list].max(axis=1)
+
         fbs.loc[:, 'Location'] = US_FIPS
-        group_cols = ['ActivityProducedBy', 'ActivityConsumedBy', 'Flowable',
-                      'Unit', 'FlowType', 'Context', 'Location',
+        group_cols = ['Flowable', 'Unit', 'FlowType', 'Context', 'Location',
                       'LocationSystem', 'Year', 'SectorLength']
+        if v.get('data_format') == 'FBA':
+            group_cols = ['ActivityProducedBy', 'ActivityConsumedBy'] + \
+                         group_cols
+        else:
+            group_cols = attr.get('allocation_merge_columns') + group_cols
         fbs_agg = aggregator(fbs, group_cols)
         fbs_agg.rename(columns={'FlowAmount': 'FBS_amount'}, inplace=True)
 
         # merge compare 1 and compare 2
-        df_merge = fba_agg.merge(
-            fbs_agg, left_on=['ActivityProducedBy', 'ActivityConsumedBy',
-                              'Flowable', 'Unit', 'FlowType', 'Context',
-                              'Location', 'LocationSystem', 'Year'],
-            right_on=['ActivityProducedBy', 'ActivityConsumedBy',
-                      'Flowable', 'Unit', 'FlowType', 'Context',
-                      'Location', 'LocationSystem', 'Year'],
-            how='left')
+        if v.get('data_format') == 'FBA':
+            merge_cols = ['ActivityProducedBy', 'ActivityConsumedBy',
+                          'Flowable', 'Unit', 'FlowType', 'Context',
+                          'Location', 'LocationSystem', 'Year']
+        else:
+            merge_cols = attr.get('allocation_merge_columns') + \
+                         ['Flowable', 'Unit', 'FlowType', 'Context',
+                          'Location', 'LocationSystem', 'Year']
+        df_merge = fba_agg.merge(fbs_agg, left_on=merge_cols,
+                                 right_on=merge_cols, how='left')
         df_merge['Ratio'] = df_merge['FBS_amount'] / df_merge['FBA_amount']
 
         # reorder
-        df_merge = df_merge[['ActivityProducedBy', 'ActivityConsumedBy',
-                             'Flowable', 'Unit', 'FlowType', 'Context',
-                             'Location', 'LocationSystem', 'Year',
-                             'SectorLength', 'FBA_amount', 'FBS_amount',
-                             'Ratio']]
+        order_cols = ['SectorProducedBy', 'SectorConsumedBy',
+                      'ActivityProducedBy', 'ActivityConsumedBy',
+                      'Flowable', 'Unit', 'FlowType', 'Context', 'Location',
+                      'LocationSystem', 'Year', 'SectorLength',
+                      'FBA_amount', 'FBS_amount', 'Ratio']
+        df_merge = df_merge[df_merge.columns.intersection(
+            order_cols)].reset_index(drop=True)
 
-        # keep onlyrows of specified sector length
+        # keep only rows of specified sector length
+        # todo: update to also keep sub target list
         comparison = df_merge[
             df_merge['SectorLength'] == sector_level_key[
                 config['target_sector_level']]].reset_index(drop=True)
