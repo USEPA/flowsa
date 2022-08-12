@@ -52,11 +52,14 @@ def warmer_parse(*, df_list, year, **_):
     # add new column info
     df['SourceName'] = 'EPA_WARMer'
     df["Class"] = "Chemicals"
+
+    df.loc[df['FlowName'] == 'Other means of transport (no truck, train or ship)','Class'] = 'Other'
     df.loc[df['FlowName'] == 'Jobs', 'Class'] = 'Employment'
     df.loc[df['FlowName'].str.contains('Wages|Taxes'),
            'Class'] = 'Money'
     df.loc[df['FlowName'].str.contains('Energy'), 'Class'] = 'Energy'
     df.loc[df['Unit'].str.contains('kg|p|MJ|USD'), 'FlowType'] = "ELEMENTARY_FLOW"
+    df.loc[df['Unit'].str.contains('t*km'), 'FlowType'] = "TECHNOSPHERE_FLOW"
     df["Year"] = year
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
