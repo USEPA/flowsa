@@ -104,7 +104,9 @@ def calR_parse(*, year, **_):
                         data['Description'] = col_string[0]
                         if value != "-":
                             data["FlowAmount"] = int(value)
-                            output = output.append(data, ignore_index=True)
+                            output = pd.concat([output,
+                                                pd.DataFrame([data])],
+                                               ignore_index=True)
     output = assign_fips_location_system(output, year)
     return output
 
