@@ -386,7 +386,9 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
                         'FlowType', 'SectorProducedBy',
                         'ActivityProducedBy', 'ActivityConsumedBy',
                         'Context', 'Location', 'LocationSystem', 'Year',
-                        'FlowAmount'] + attr.get('allocation_merge_columns')
+                        'FlowAmount']
+        if attr.get('allocation_merge_columns') is not None:
+            col_subset_2 = col_subset_2 + attr.get('allocation_merge_columns')
         fbs = fbs_load[fbs_load.columns.intersection(
             col_subset_2)].reset_index(drop=True)
 
