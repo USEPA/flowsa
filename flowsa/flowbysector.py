@@ -41,7 +41,8 @@ from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
 from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
-    map_fbs_flows, get_sector_list, append_material_code
+    map_fbs_flows, get_sector_list, append_material_code, \
+    map_to_material_crosswalk
 from flowsa.settings import log, vLog, flowbysectoractivitysetspath, paths
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
@@ -182,6 +183,10 @@ def main(**kwargs):
             flows_mapped, mapping_files = (map_fbs_flows(
                 flows, k, v, keep_fba_columns=True,
                 keep_unmapped_rows=v.get("keep_unmapped_rows", False)))
+
+            # map to material crosswalk, if specified
+            if v.get('material_crosswalk') is not None:
+                flows_mapped = map_to_material_crosswalk(flows_mapped, k, v)
 
             # clean up fba, if specified in yaml
             fxn = v.get("clean_fba_df_fxn")

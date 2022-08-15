@@ -349,16 +349,10 @@ def map_flows(fba, v, from_fba_source, flow_type='ELEMENTARY_FLOW',
         fba = fba.rename(columns={'FlowName': 'Flowable',
                                   'Compartment': 'Context'})
 
-    # determine if should map flows using file defined in fbs method
-    designated_mapping_file = v.get('designated_mapping_file')
-    field_names = v.get('mapping_field_dict')
-
-    mapping = apply_flow_mapping(fba, from_fba_source, flow_type=flow_type,
-                                 keep_unmapped_rows=keep_unmapped_rows,
-                                 field_dict=field_names,
-                                 ignore_source_name=ignore_source_name,
-                                 designated_mapping_file=designated_mapping_file)
-    mapped_df = mapping
+    mapped_df = apply_flow_mapping(fba, from_fba_source,
+                                   flow_type=flow_type,
+                                   keep_unmapped_rows=keep_unmapped_rows,
+                                   ignore_source_name=ignore_source_name)
 
     if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so
@@ -390,12 +384,6 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
         log.info("Mapping flows in %s to material flow list", from_fba_source)
         flow_type = 'WASTE_FLOW'
         ignore_source_name = True
-    elif 'designated_mapping_file' in v:
-        mapping_files = load_env_file_key('external_path', v['designated_mapping_file'])
-        log.info(f"Mapping flows in {from_fba_source} to flow list located "
-                 f"at {mapping_files}",
-                 )
-        flow_type = 'WASTE_FLOW'
     else:
         log.info("Mapping flows in %s to federal elementary flow list",
                  from_fba_source)
@@ -552,6 +540,33 @@ def get_BEA_industry_output(region, io_level, year):
                .reset_index())
 
     return bea
+
+
+def map_to_material_crosswalk(df, source, source_attr):
+
+    material_crosswalk = load_env_file_key('external_path', source_attr[
+        'material_crosswalk'])
+    log.info(f"Mapping flows in {source} to flow list located "
+             f"at {material_crosswalk}",
+             )
+
+    # determine if should map flows using file defined in fbs method
+    # material_crosswalk = source_attr.get('material_crosswalk')
+    field_names = source_attr.get('material_crosswalk_field_dict')
+
+    mapped_df = apply_flow_mapping(df, source,
+                                   flow_type='ELEMENTARY_FLOW',
+                                   field_dict=field_names,
+                                   material_crosswalk=material_crosswalk)
+
+    if mapped_df is None or len(mapped_df) == 0:
+        # return the original df but with columns renamed so
+        # can continue working on the FBS
+        log.warning("Error in mapping, flows not mapped to material "
+                    "crosswalk")
+        mapped_df = df.copy()
+
+    return mapped_df
 
 
 def append_material_code(df, v, attr):
