@@ -559,6 +559,8 @@ def map_to_material_crosswalk(df, source, source_attr):
                                    field_dict=field_names,
                                    material_crosswalk=material_crosswalk)
 
+    mapped_df = mapped_df.replace('n.a.', np.nan)
+
     if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so
         # can continue working on the FBS
