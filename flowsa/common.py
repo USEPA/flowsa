@@ -128,7 +128,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
         # case with FBS method files located outside FLOWSA
         if filepath is not None:
             log.info(f'Loading {filename} from {filepath}')
-            folder = filepath
+            folder = f'{filepath}flowbysectormethods/'
         else:
             if flowbytype == 'FBA':
                 folder = sourceconfigpath
