@@ -15,7 +15,6 @@ source_names:
       direct:
         names:
           - "Colleges & Universities"
-          - "Correctional Facilities"
           - "Food Banks"
           - "K-12 Schools"
           - "Military Installations"
@@ -25,6 +24,7 @@ source_names:
         allocation_from_scale: national
       employment:
         names:
+          - "Correctional Facilities"
           - "Hospitals"
           - "Hotels"
           - "Nursing Homes"
