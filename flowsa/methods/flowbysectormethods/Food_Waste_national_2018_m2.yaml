@@ -33,3 +33,17 @@ source_names:
         allocation_source_year: 2018
         allocation_from_scale: national
         allocation_merge_columns: [SectorProducedBy]
+
+  # CNHW does not include residential food waste, so adding from EPA's
+  # Wasted Food Report
+  "EPA_WFR":
+    data_format: 'FBA'
+    class: Other
+    geoscale_to_use: national
+    year: 2018
+    activity_sets:
+      residential:
+        names:
+          - "Residential"
+        allocation_method: direct
+        allocation_from_scale: national
