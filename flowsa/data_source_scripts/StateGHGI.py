@@ -51,7 +51,8 @@ def ME_biogenic_parse(*, source, year, config, **_):
             year:'FlowAmount'
             }, inplace = True)
         df['ActivityProducedBy'] = df['ActivityProducedBy'] + ", " + table[15:]
-        
+        df['FlowName'] = 'Biogenic ' + df['FlowName']
+
         # drop all years except the desired emissions year
         df = df.filter(['FlowAmount', 'FlowName', 'ActivityProducedBy', 'Unit'])
 
@@ -74,8 +75,6 @@ def ME_biogenic_parse(*, source, year, config, **_):
     df0 = apply_county_FIPS(df0, year='2015', source_state_abbrev=True)
     # add FIPS location system
     df0 = assign_fips_location_system(df0, '2015')
-
-    df0.to_csv('C:/Users/EBell/Desktop/' + 'df0' + '.csv',index=False)
 
     return df0
 
