@@ -120,8 +120,6 @@ def epa_sit_parse(*, source, year, config, **_):
     # add FIPS location system
     df0 = assign_fips_location_system(df0, '2015')
 
-    df0.to_csv('C:/Users/EBell/Desktop/' + 'df0' + '.csv',index=False)
-
     return df0
 
 def disaggregate_emissions(fba, source_dict, **_):
