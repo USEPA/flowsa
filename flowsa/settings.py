@@ -13,8 +13,6 @@ try:
 except NameError:
     MODULEPATH = 'flowsa/'
 
-parentpath = f"{Path(MODULEPATH).parent.parent}/"
-
 datapath = MODULEPATH + 'data/'
 crosswalkpath = datapath + 'activitytosectormapping/'
 externaldatapath = datapath + 'external_data/'
