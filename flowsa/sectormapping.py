@@ -543,15 +543,17 @@ def get_BEA_industry_output(region, io_level, year):
 
 
 def map_to_material_crosswalk(df, source, source_attr):
-
-    material_crosswalk = load_env_file_key('external_path', source_attr[
-        'material_crosswalk'])
-    log.info(f"Mapping flows in {source} to flow list located "
-             f"at {material_crosswalk}",
-             )
+    """
+    Map df to a material crosswalk specified in the FBS method yaml.
+    Material crosswalk will standardize material names
+    :param df: df to be standardized
+    :param source: str, name of FBA to standardize
+    :param source_attr: dict, FBA
+    :return: df with standardized material names
+    """
 
     # determine if should map flows using file defined in fbs method
-    # material_crosswalk = source_attr.get('material_crosswalk')
+    material_crosswalk = source_attr.get('material_crosswalk')
     field_names = source_attr.get('material_crosswalk_field_dict')
 
     mapped_df = apply_flow_mapping(df, source,
@@ -578,9 +580,7 @@ def append_material_code(df, v, attr):
     :param df:
     :return:
     """
-    key = load_env_file_key('external_path', v['append_material_codes'])
-    mapping_file_path = key
-    mapping_file = pd.read_csv(mapping_file_path)
+    mapping_file = pd.read_csv(v['append_material_codes'])
 
     # if material is identified in the activity set, use that material to
     # append the abbreviation, if not, then merge the mapping file to the df
