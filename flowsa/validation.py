@@ -503,21 +503,25 @@ def compare_fba_geo_subset_and_fbs_output_totals(
     else:
         from_scale = activity_attr['allocation_from_scale']
 
-    # extract relevant geoscale data or aggregate existing data
-    fba = subset_df_by_geoscale(fba_load, from_scale,
-                                method['target_geoscale'])
-    if check_activities_sector_like(fba_load):
-        # if activities are sector-like, run sector aggregation and then
-        # subset df to only keep NAICS2
-        fba = fba[['Class', 'SourceName', 'FlowAmount', 'Unit', 'Context',
-                   'ActivityProducedBy', 'ActivityConsumedBy', 'Location',
-                   'LocationSystem']]
-        # rename the activity cols to sector cols for purposes of aggregation
-        fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
-                                  'ActivityConsumedBy': 'SectorConsumedBy'})
-        fba = sector_aggregation(fba)
-        # subset fba to only include NAICS2
-        fba = replace_NoneType_with_empty_cells(fba)
+    if source_attr['data_format'] == 'FBA':
+        # extract relevant geoscale data or aggregate existing data
+        fba = subset_df_by_geoscale(fba_load, from_scale,
+                                    method['target_geoscale'])
+        if check_activities_sector_like(fba_load):
+            # if activities are sector-like, run sector aggregation and then
+            # subset df to only keep NAICS2
+            fba = fba[['Class', 'SourceName', 'FlowAmount', 'Unit', 'Context',
+                       'ActivityProducedBy', 'ActivityConsumedBy', 'Location',
+                       'LocationSystem']]
+            # rename the activity cols to sector cols for purposes of aggregation
+            fba = fba.rename(columns={'ActivityProducedBy': 'SectorProducedBy',
+                                      'ActivityConsumedBy': 'SectorConsumedBy'})
+            fba = sector_aggregation(fba)
+            # subset fba to only include NAICS2
+            fba = replace_NoneType_with_empty_cells(fba)
+            fba = subset_df_by_sector_lengths(fba, [2])
+    else:
+        fba = sector_aggregation(fba_load)
         fba = subset_df_by_sector_lengths(fba, [2])
     # subset/agg dfs
     col_subset = ['Class', 'FlowAmount', 'Unit', 'Context',
@@ -612,7 +616,8 @@ def compare_fba_geo_subset_and_fbs_output_totals(
                  activity_set)
         # if df not empty, print, if empty, print string
         if df_v.empty:
-            vLogDetailed.info('Percent difference for %s all round to 0',
+            vLogDetailed.info('Percent difference between loaded FBA and '
+                              'output FBS for %s all round to 0',
                               activity_set)
         else:
             vLogDetailed.info('Comparison of FBA load to FBS total '

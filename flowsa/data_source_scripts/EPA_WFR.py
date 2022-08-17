@@ -229,7 +229,8 @@ def attribute_cnhw_food(flows, method, k, v, *_):
     """
     from flowsa.fbs_allocation import load_map_clean_fba
     from flowsa.settings import vLog, log
-    from flowsa.validation import compare_activity_to_sector_flowamounts
+    from flowsa.validation import compare_activity_to_sector_flowamounts, \
+        compare_fba_geo_subset_and_fbs_output_totals
 
     # empty list for activity results
     activity_list = []
@@ -269,8 +270,8 @@ def attribute_cnhw_food(flows, method, k, v, *_):
         # subset fba datasets to only keep the sectors associated
         # with activity subset
         if aset == 'wasted_food_report':
-            log.info("Subsetting %s for sectors in %s", attr['allocation_source'],
-                     k)
+            log.info("Subsetting %s for sectors in %s",
+                     attr['allocation_source'], k)
             fba_allocation_subset = fba_allocation_wsec[fba_allocation_wsec[
                 'SectorProducedBy'].isin(names)].reset_index(drop=True)
 
@@ -321,6 +322,8 @@ def attribute_cnhw_food(flows, method, k, v, *_):
         # compare flowbysector with flowbyactivity
         compare_activity_to_sector_flowamounts(
             flows_subset, fbs, aset, method, v, attr)
+        compare_fba_geo_subset_and_fbs_output_totals(
+            flows_subset, fbs, aset, k, v, attr, method)
 
         activity_list.append(fbs)
 
