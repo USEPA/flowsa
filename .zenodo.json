@@ -1,0 +1,32 @@
+{
+    "description": "Attributes resources (environmental, monetary, and human), emissions, wastes, and losses to US industrial and final use sectors.", 
+    "license": "MIT", 
+    "upload_type": "software", 
+    "creators": [
+        {
+            "affiliation": "US Environmental Protection Agency", 
+            "name": "Catherine Birney"
+        }, 
+        {
+            "affiliation": "Eastern Research Group", 
+            "name": "Ben Young"
+        }, 
+        {
+            "affiliation": "Global Quality Corp.", 
+            "name": "Melissa Conner"
+        }, 
+        {
+            "affiliation": "Global Quality Corp.", 
+            "name": "Jacob Specht"
+        }, 
+
+        {
+            "affiliation": "Genteral Dynamics Information Technology, Inc.", 
+            "name": "Mo Li"
+        }, 
+        {
+            "affiliation": "US Environmental Protection Agency", 
+            "name": "Wesley Ingwersen"
+        }
+    ]
+}
