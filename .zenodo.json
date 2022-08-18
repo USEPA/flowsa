@@ -1,6 +1,7 @@
 {
     "description": "Attributes resources (environmental, monetary, and human), emissions, wastes, and losses to US industrial and final use sectors.", 
-    "license": "MIT", 
+    "license": "MIT",
+    "title": "FLOWSA",
     "upload_type": "software", 
     "creators": [
         {
@@ -28,5 +29,6 @@
             "affiliation": "US Environmental Protection Agency", 
             "name": "Wesley Ingwersen"
         }
-    ]
+    ],
+    "access_right": "open"
 }
