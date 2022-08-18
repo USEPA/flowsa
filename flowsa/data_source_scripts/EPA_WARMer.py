@@ -38,7 +38,7 @@ def warmer_parse(*, df_list, year, **_):
                             'Flowable': 'FlowName',
                             'Context': 'Compartment',
                             'Amount': 'FlowAmount'}
-                   ).drop(columns=['ProcessID', 'FlowUUID', 'ProcessCategory'])
+                   ).drop(columns=['ProcessID', 'ProcessCategory'])
     df['Compartment'] = df['Compartment'].fillna('')
     df['Location'] = df['Location'].replace('US', US_FIPS)
 
@@ -58,7 +58,8 @@ def warmer_parse(*, df_list, year, **_):
     df.loc[df['FlowName'].str.contains('Wages|Taxes'),
            'Class'] = 'Money'
     df.loc[df['FlowName'].str.contains('Energy'), 'Class'] = 'Energy'
-    df.loc[df['Unit'].str.contains('kg|p|MJ|USD'), 'FlowType'] = "ELEMENTARY_FLOW"
+    df.loc[df['Unit'].str.contains('kg|Item|MJ|USD|MT'), 'FlowType'] = \
+        "ELEMENTARY_FLOW"
     df.loc[df['Unit'].str.contains('t*km'), 'FlowType'] = "TECHNOSPHERE_FLOW"
     df["Year"] = year
     df['DataReliability'] = 5  # tmp
