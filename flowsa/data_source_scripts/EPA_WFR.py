@@ -329,5 +329,10 @@ def attribute_cnhw_food(flows, method, k, v, *_):
 
     cnhw = pd.concat(activity_list)
 
+    # for consistency with food waste m1 and with the data out of the EPA
+    # WFR which is used for residential food waste, update the flowable from
+    # 'Food' to 'Food Waste'
+    cnhw['Flowable'] = 'Food Waste'
+
     return cnhw
 
