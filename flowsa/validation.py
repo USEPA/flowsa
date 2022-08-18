@@ -922,6 +922,7 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
                         if e not in possible_column_headers]
         df = aggregator(df, groupby_cols)
 
+    df = replace_strings_with_NoneType(df)
     # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
     if 'SectorConsumedBy' in df:
         df_drop = df[(df['SectorConsumedBy'].isnull()) &
@@ -939,8 +940,6 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     else:
         df = df[~((df['ActivityConsumedBy'].isnull()) &
                   (df['ActivityProducedBy'].isnull()))].reset_index(drop=True)
-
-    df = replace_strings_with_NoneType(df)
 
     return df
 
