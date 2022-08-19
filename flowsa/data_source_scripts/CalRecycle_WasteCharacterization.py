@@ -125,13 +125,14 @@ def keep_generated_quantity(fba, **_):
     return fba
 
 
-def load_and_clean_employment_data_for_cnhw(fbs, year, method):
+def load_and_clean_employment_data_for_cnhw(fbs, year, method,
+                                            geographic_level='state'):
     from flowsa.data_source_scripts.BLS_QCEW import \
         bls_clean_allocation_fba_w_sec
     bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
                                         year=year,
                                         flowclass='Employment',
-                                        geographic_level='state')
+                                        geographic_level=geographic_level)
     bls = add_sectors_to_flowbyactivity(bls)
     # estimate suppressed employment data
     bls = bls_clean_allocation_fba_w_sec(bls, method=method)
@@ -150,7 +151,7 @@ def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
     by sector and applies that quantity to employees in all states
     clean_fbs_df_fxn
     """
-    # load bls employment data for the year of CalRecyle data
+    # load bls employment data for the year of CalRecycle data
     bls = load_and_clean_employment_data_for_cnhw(
         fbs, fbs['Year'].unique()[0], method)
     # Calculate tons per employee per year per material and sector in CA
@@ -166,9 +167,9 @@ def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
     tpepy = tpepy.drop(columns=['Employees', 'FlowAmount', 'Location', 'Year'])
 
     # Apply TPEPY back to all employees in all states for year identified in
-    # method
+    # method, overwrite geoscale based on target geoscale identified in method
     bls2 = load_and_clean_employment_data_for_cnhw(
-        fbs, _.get('v')['year'], method)
+        fbs, _.get('v')['year'], method, method.get('target_geoscale'))
     national_waste = tpepy.merge(bls2, how='left')
     national_waste['Year'] = _.get('v')['year']
     national_waste['FlowAmount'] = \
