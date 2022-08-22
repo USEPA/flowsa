@@ -6,18 +6,23 @@ Create a crosswalk for EPA_WARMer from WARM processes.
 """
 
 import pandas as pd
+from flowsa.flowbyactivity import load_yaml_dict
 from flowsa.settings import datapath
 from scripts.FlowByActivity_Crosswalks.common_scripts import order_crosswalk
 
 if __name__ == '__main__':
     datasource = 'EPA_WARMer'
 
-    df = (pd.read_csv('https://raw.githubusercontent.com/USEPA/WARMer/main/warmer/data/flowsa_inputs/WARMv15_env.csv',
-                      usecols=['ProcessName', 'ProcessCategory'])
+    # load url
+    config = load_yaml_dict(datasource, flowbytype='FBA')
+
+    df = (pd.read_csv(config['source_url'], usecols=['ProcessName',
+                                                     'ProcessCategory'])
           .drop_duplicates()
           .reset_index(drop=True)
           .rename(columns={'ProcessName': 'Activity'}))
-    df['ProcessCategory'] = df['ProcessCategory'].str.split('/', expand=True)[0]
+    df['ProcessCategory'] = df['ProcessCategory'].str.split(
+        '/', expand=True)[0]
 
     pathways = {'Anaerobic digestion': '5622191',  # Subnaics 1 for AD
                'Combustion': '562213',
@@ -31,13 +36,6 @@ if __name__ == '__main__':
     df['Material'] = df['Material'].str.split(' \(', expand=True)[0]
     df['Material'] = df['Material'].str.split(';', expand=True)[0]
 
-    # materials = {'Food Waste': 'F',
-    #              'Concrete': 'C',}
-
-    # df['MaterialCode'] = df['Material'].map(materials)
-    # df['MaterialCode'] = df['MaterialCode'].fillna('X')
-    # df['Sector'] = df['Sector'] + df['MaterialCode']
-
     df['SectorSourceName'] = 'NAICS_2012_Code'
     df['SectorType'] = ''
     df['ActivitySourceName'] = datasource
@@ -45,5 +43,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f'{datapath}activitytosectormapping/NAICS_Crosswalk_'
+              f'{datasource}.csv', index=False)

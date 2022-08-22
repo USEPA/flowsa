@@ -7,7 +7,7 @@ from flowsa.location import US_FIPS
 import re
 
 
-def warmer_call(*, resp, **_):
+def warmer_call(*, url, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
@@ -17,8 +17,7 @@ def warmer_call(*, resp, **_):
         flowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
-    df = pd.read_csv('https://raw.githubusercontent.com/USEPA/WARMer/main'
-                     '/warmer/data/flowsa_inputs/WARMv15_env.csv')
+    df = pd.read_csv(url)
 
     return df
 
