@@ -178,6 +178,24 @@ def disaggregate_emissions(fba, source_dict, **_):
 
     return fba
 
+def include_select_states(fba, source_dict, **_):
+    """
+    clean_fba_df_fxn to remove states OTHER THAN those selected for
+    alternate data sources. State abbreviations must be passed as list
+    in method parameter 'state_list'
+
+    :param fba: df
+    :param source_dict: dictionary of source methods includes 'state_list'
+        key of states to remove
+    """
+    state_list = source_dict.get('state_list')
+    state_df = pd.DataFrame(state_list, columns=['State'])
+    state_df['County'] =''
+    state_df = apply_county_FIPS(state_df)
+    df_subset = fba[fba['Location'].isin(state_df['Location'])]
+   
+    return df_subset
+
 if __name__ == '__main__':
     import flowsa
     flowsa.flowbyactivity.main(source='EPA_SIT', year='2019')
