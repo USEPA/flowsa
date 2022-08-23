@@ -556,6 +556,7 @@ def map_to_material_crosswalk(df, source, source_attr):
     material_crosswalk = source_attr.get('material_crosswalk')
     field_names = source_attr.get('material_crosswalk_field_dict')
 
+    log.info(f'Mapping flows in %s to %s', source, material_crosswalk)
     mapped_df = apply_flow_mapping(df, source,
                                    flow_type='ELEMENTARY_FLOW',
                                    field_dict=field_names,
