@@ -6,11 +6,13 @@
     "creators": [
         {
             "affiliation": "US Environmental Protection Agency", 
-            "name": "Catherine Birney"
+            "name": "Catherine Birney",
+            "orcid": "https://orcid.org/0000-0003-4467-9927"
         }, 
         {
             "affiliation": "Eastern Research Group", 
-            "name": "Ben Young"
+            "name": "Ben Young",
+            "orcid": "https://orcid.org/0000-0001-6276-8670"
         }, 
         {
             "affiliation": "US Bureau of Economic Analysis", 
@@ -26,12 +28,14 @@
         }, 
 
         {
-            "affiliation": "Genteral Dynamics Information Technology, Inc.", 
-            "name": "Mo Li"
+            "affiliation": "General Dynamics Information Technology, Inc.",
+            "name": "Mo Li",
+            "orcid": "https://orcid.org/0000-0002-3672-1622"
         }, 
         {
             "affiliation": "US Environmental Protection Agency", 
-            "name": "Wesley Ingwersen"
+            "name": "Wesley Ingwersen",
+            "orcid": "https://orcid.org/0000-0002-9614-701X"
         }
     ],
     "access_right": "open"
