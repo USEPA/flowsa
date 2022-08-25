@@ -41,8 +41,8 @@ def addSectorNames(df, BEA=False):
     return df
 
 
-def plotFBSresults(method_dict, plottype, sector_length_display=None,
-                   sectors_to_include=None, plot_title=None):
+def scatterplot(method_dict, plottype, sector_length_display=None,
+                sectors_to_include=None, plot_title=None):
     """
     Plot the results of FBS models. Graphic can either be a faceted
     scatterplot or a method comparison
@@ -108,7 +108,6 @@ def plotFBSresults(method_dict, plottype, sector_length_display=None,
         g._legend.set_title('Flow-By-Sector Method')
         g.set_axis_labels(f"Flow Amount ({df3['Unit'][0]})", "")
         g.tight_layout()
-
 
 
 def stackedBarChart(methodname, impact_cat=None):
