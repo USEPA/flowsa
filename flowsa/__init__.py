@@ -30,7 +30,7 @@ from flowsa.validation import check_for_nonetypes_in_sector_col, \
 import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
-from flowsa.datavisualization import scatterplot
+from flowsa.datavisualization import FBSscatterplot
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
@@ -234,5 +234,5 @@ def generateFBSplot(method_dict, plottype, sector_length_display=None,
     :return: graphic displaying results of FBS models
     """
 
-    scatterplot(method_dict, plottype, sector_length_display,
-                sectors_to_include, plot_title)
+    FBSscatterplot(method_dict, plottype, sector_length_display,
+                   sectors_to_include, plot_title)
