@@ -9,12 +9,13 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 import flowsa
-from flowsa.common import get_flowsa_base_name, \
+from flowsa.common import get_flowsa_base_name, load_env_file_key, \
     return_true_source_catalog_name, check_activities_sector_like, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
+from flowsa.dataclean import standardize_units
+from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.schema import activity_fields, dq_fields
 from flowsa.settings import log
-from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
@@ -231,7 +232,8 @@ def get_fba_allocation_subset(fba_allocation, source, activitynames,
         if am == 'proportional-flagged':
             subset_by_sector_cols = True
 
-    if check_activities_sector_like(fba_allocation, sourcename=source) is False:
+    if check_activities_sector_like(fba_allocation, sourcename=source) is \
+            False:
         # read in source crosswalk
         df = get_activitytosector_mapping(
             sourceconfig.get('activity_to_sector_mapping', source),
@@ -308,7 +310,7 @@ def convert_units_to_annual(df):
     return df
 
 
-def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
+def map_flows(fba, v, from_fba_source, flow_type='ELEMENTARY_FLOW',
               ignore_source_name=False, **kwargs):
     """
     Applies mapping via esupy from fedelemflowlist or material
@@ -355,9 +357,12 @@ def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
     if mapped_df is None or len(mapped_df) == 0:
         # return the original df but with columns renamed so
         # can continue working on the FBS
-        log.warning("Error in flow mapping, flows not mapped")
+        log.warning("Error in flow mapping, flows not mapped, returning FBA "
+                    "with standardized units, but no standardized "
+                    "Flowable, Context, or FlowUUID")
         mapped_df = fba.copy()
         mapped_df['FlowUUID'] = None
+        mapped_df = standardize_units(mapped_df)
 
     return mapped_df
 
@@ -389,7 +394,7 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
             mapping_files = from_fba_source
         flow_type = 'ELEMENTARY_FLOW'
 
-    fbs_mapped = map_flows(fbs, mapping_files, flow_type,
+    fbs_mapped = map_flows(fbs, v, mapping_files, flow_type,
                            ignore_source_name, **kwargs)
 
     return fbs_mapped, mapping_files
@@ -535,3 +540,64 @@ def get_BEA_industry_output(region, io_level, year):
                .reset_index())
 
     return bea
+
+
+def map_to_material_crosswalk(df, source, source_attr):
+    """
+    Map df to a material crosswalk specified in the FBS method yaml.
+    Material crosswalk will standardize material names
+    :param df: df to be standardized
+    :param source: str, name of FBA to standardize
+    :param source_attr: dict, FBA
+    :return: df with standardized material names
+    """
+
+    # determine if should map flows using file defined in fbs method
+    material_crosswalk = source_attr.get('material_crosswalk')
+    field_names = source_attr.get('material_crosswalk_field_dict')
+
+    log.info(f'Mapping flows in %s to %s', source, material_crosswalk)
+    mapped_df = apply_flow_mapping(df, source,
+                                   flow_type='ELEMENTARY_FLOW',
+                                   field_dict=field_names,
+                                   material_crosswalk=material_crosswalk)
+
+    mapped_df = mapped_df.replace('n.a.', np.nan)
+
+    if mapped_df is None or len(mapped_df) == 0:
+        # return the original df but with columns renamed so
+        # can continue working on the FBS
+        log.warning("Error in mapping, flows not mapped to material "
+                    "crosswalk")
+        mapped_df = df.copy()
+
+    return mapped_df
+
+
+def append_material_code(df, v, attr):
+    """
+    Append the sector commodity code to sectors using file specified in FBS
+    method yaml
+    :param df:
+    :return:
+    """
+    mapping_file = pd.read_csv(v['append_material_codes'])
+
+    # if material is identified in the activity set, use that material to
+    # append the abbreviation, if not, then merge the mapping file to the df
+    if attr.get('material') is not None:
+        mapping_dict = mapping_file.set_index('Material').to_dict()['Abbr']
+        abbr = mapping_dict.get(attr.get('material'))
+        for s in ['SectorProducedBy', 'SectorConsumedBy']:
+            df[s] = np.where((df[s] is not None) and (df[s] != ''),
+                             df[s] + abbr, df[s])
+    else:
+        # add materials
+        df = df.merge(mapping_file, left_on='Flowable', right_on='Material')
+        for s in ['SectorProducedBy', 'SectorConsumedBy']:
+            df[s] = np.where((df[s] is not None) and (df[s] != ''),
+                             df[s] + df['Abbr'], df[s])
+        # drop cols from mapping file
+        df = df.drop(columns=['Material', 'Abbr'])
+
+    return df

@@ -36,7 +36,7 @@ sector_level_key = {"NAICS_2": 2,
 WITHDRAWN_KEYWORD = np.nan
 
 
-def load_api_key(api_source):
+def load_env_file_key(env_file, key):
     """
     Loads an API Key from "API_Keys.env" file using the
     'api_name' defined in the FBA source config file. The '.env' file contains
@@ -46,14 +46,23 @@ def load_api_key(api_source):
     See wiki for how to get an api:
     https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys
 
-    :param api_source: str, name of source, like 'BEA' or 'Census'
-    :return: the users API key as a string
+    :param env_file: str, name of env to load, either 'API_Key'
+    or 'external_path'
+    :param key: str, name of source/key defined in env file, like 'BEA' or
+    'Census'
+    :return: str, value of the key stored in the env
     """
-    load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
-    key = os.getenv(api_source)
-    if key is None:
-        raise flowsa.exceptions.APIError(api_source=api_source)
-    return key
+    if env_file == 'API_Key':
+        load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
+        value = os.getenv(key)
+        if value is None:
+            raise flowsa.exceptions.APIError(api_source=key)
+    else:
+        load_dotenv(f'{MODULEPATH}external_paths.env', verbose=True)
+        value = os.getenv(key)
+        if value is None:
+            raise flowsa.exceptions.EnvError(key=key)
+    return value
 
 
 def load_crosswalk(crosswalk_name):
@@ -67,6 +76,7 @@ def load_crosswalk(crosswalk_name):
                'sector_name': 'NAICS_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
+               'biochemical': 'Biochemical_SectorCodes',
                'BEA': 'NAICS_to_BEA_Crosswalk'
                }
 
@@ -96,7 +106,7 @@ def return_bea_codes_used_as_naics():
     :return: list of BEA codes used as NAICS
     """
     cw_list = []
-    for cw in ['household', 'government']:
+    for cw in ['household', 'government', 'biochemical']:
         df = load_crosswalk(cw)
         cw_list.append(df)
     # concat data into single dataframe
@@ -118,7 +128,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
         # case with FBS method files located outside FLOWSA
         if filepath is not None:
             log.info(f'Loading {filename} from {filepath}')
-            folder = filepath
+            folder = f'{filepath}flowbysectormethods/'
         else:
             if flowbytype == 'FBA':
                 folder = sourceconfigpath

@@ -135,8 +135,11 @@ def standardize_units(df):
         df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Canadian Dollar',
                                            df['FlowAmount'] / exchange_rate,
                                            df['FlowAmount'])
-        df.loc[:, 'Unit'] = \
-            np.where(df['Unit'] == 'Canadian Dollar', 'USD', df['Unit'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousand USD',
+                                       df['FlowAmount'] * 1000,
+                                       df['FlowAmount'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(
+        ['Canadian Dollar', 'Thousand USD']), 'USD', df['Unit'])
 
     # class = water, unit = kg
     df.loc[:, 'FlowAmount'] = \
@@ -210,16 +213,18 @@ def standardize_units(df):
         np.where(df['Unit'] == 'million Cubic metres/year', 'kg', df['Unit'])
 
     # Convert mass units (LB or TON) to kg
-    df.loc[:, 'FlowAmount'] = np.where(df['Unit'].isin(['TON', 'tons',
-                                                        'short tons']),
-                                       df['FlowAmount'] * ton_to_kg,
+    df.loc[:, 'FlowAmount'] = np.where(
+        df['Unit'].isin(['TON', 'tons', 'short tons']),
+        df['FlowAmount'] * ton_to_kg, df['FlowAmount'])
+    df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Thousands of Tons',
+                                       df['FlowAmount'] * 1000 * ton_to_kg,
                                        df['FlowAmount'])
     df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'LB',
                                        df['FlowAmount'] * lb_to_kg,
                                        df['FlowAmount'])
-    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(['TON', 'tons',
-                                                  'short tons', 'LB']),
-                                 'kg', df['Unit'])
+    df.loc[:, 'Unit'] = np.where(df['Unit'].isin(
+        ['TON', 'tons', 'short tons', 'LB', 'Thousands of Tons']), 'kg',
+        df['Unit'])
 
     return df
 
