@@ -190,12 +190,16 @@ def sector_ratios(df, sectorcolumn):
     return df_w_ratios
 
 
-def sector_aggregation(df_load):
+def sector_aggregation(df_load, return_all_possible_sector_combos=False):
     """
     Function that checks if a sector length exists, and if not,
     sums the less aggregated sector
     :param df_load: Either a flowbyactivity df with sectors or
        a flowbysector df
+    :param return_all_possible_sector_combos: bool, default false, if set to
+    true, will return all possible combinations of sectors at each sector
+    length (ex. a 4 digit SectorProducedBy will have rows for 2-6 digit
+    SectorConsumedBy). This will result in a df with double counting.
     :return: df, with aggregated sector values
     """
     # ensure None values are not strings
@@ -228,43 +232,12 @@ def sector_aggregation(df_load):
     # for loop in reverse order longest length NAICS minus 1 to 2
     # appends missing naics levels to df
     for i in range(length, 2, -1):
-        dfm = subset_and_merge_df_by_sector_lengths(
-            df, i, i-1, keep_paired_sectors_not_in_subset_list=True,
-            keep_shorter_sector_lengths=True)
-        # only keep values in left df, meaning there are no more
-        # aggregated naics in the df
-        dfm2 = dfm.query('_merge=="left_only"').drop(
-            columns=['_merge', 'SPB_tmp', 'SCB_tmp'])
-
-        sector_merge = 'NAICS_' + str(i)
-        sector_add = 'NAICS_' + str(i - 1)
-
-        # subset the df by naics length
-        cw = cw_load[[sector_merge, sector_add]].drop_duplicates()
-
-        # loop through and add additional naics
-        sectype_list = ['Produced', 'Consumed']
-        for s in sectype_list:
-            dfm2 = dfm2.merge(cw, how='left', left_on=[f'Sector{s}By'],
-                              right_on=sector_merge)
-            dfm2[f'Sector{s}By'] = np.where(
-                ~dfm2[sector_add].isnull(), dfm2[sector_add],
-                dfm2[f'Sector{s}By'])
-            dfm2 = dfm2.drop(columns=[sector_merge, sector_add])
-        dfm2 = replace_NoneType_with_empty_cells(dfm2)
-
-        # aggregate the new sector flow amounts
-        if 'FlowAmount' in dfm2.columns:
-            agg_sectors = aggregator(dfm2, group_cols)
-        # if FlowName is not in column and instead aggregating for the
-        # HelperFlow then simply sum helper flow column
+        if return_all_possible_sector_combos:
+            for j in range(1, i-1):
+                df = append_new_sectors(df, i, j, cw_load, group_cols)
         else:
-            agg_sectors = dfm2.groupby(group_cols)['HelperFlow']\
-                .sum().reset_index()
-        # append to df
-        agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
-        df = pd.concat([df, agg_sectors], ignore_index=True).reset_index(
-            drop=True)
+            df = append_new_sectors(df, i, 1, cw_load, group_cols)
+
     # if activities are source-like, set col values as
     # copies of the sector columns
     if sector_like_activities & ('FlowAmount' in df.columns) & \
@@ -274,6 +247,63 @@ def sector_aggregation(df_load):
 
     # replace null values
     df = replace_strings_with_NoneType(df).reset_index(drop=True)
+
+    return df
+
+
+def append_new_sectors(df, i, j, cw_load, group_cols):
+    """
+    Function to append new sectors at more aggregated levels
+    :param df: df, FBS
+    :param i: numeric, sector length to aggregate
+    :param j: numeric, value to subtract from sector length for new sector
+    length to add
+    :param cw_load: df, sector crosswalk
+    :param group_cols: list, cols to group by
+    :return:
+    """
+
+    # load crosswalk
+    sector_merge = 'NAICS_' + str(i)
+    sector_add = 'NAICS_' + str(i - j)
+    cw = cw_load[[sector_merge, sector_add]].drop_duplicates()
+
+    cw_melt = load_sector_length_cw_melt()
+    cw_sub = cw_melt[cw_melt['SectorLength'] == i]
+    sector_list = cw_sub['Sector'].drop_duplicates().values.tolist()
+
+    # loop through and add additional sectors
+    sectype_list = ['Produced', 'Consumed']
+    for s in sectype_list:
+        dfm = df[df[f'Sector{s}By'].isin(sector_list)]
+        dfm = dfm.merge(cw, how='left', left_on=[f'Sector{s}By'],
+                        right_on=sector_merge)
+        # replace sector column with matched sector add
+        dfm[f'Sector{s}By'] = np.where(
+            ~dfm[sector_add].isnull(), dfm[sector_add],
+            dfm[f'Sector{s}By'])
+        dfm = dfm.drop(columns=[sector_merge, sector_add])
+        dfm = replace_NoneType_with_empty_cells(dfm)
+
+        # aggregate the new sector flow amounts
+        if 'FlowAmount' in dfm.columns:
+            agg_sectors = aggregator(dfm, group_cols)
+        # if FlowName is not in column and instead aggregating for the
+        # HelperFlow then simply sum helper flow column
+        else:
+            agg_sectors = dfm.groupby(group_cols)['HelperFlow'] \
+                .sum().reset_index()
+        # append to df
+        agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
+        cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
+                'Context', 'Location', 'Unit', 'FlowType', 'Year']
+        # get copies where the indices are the columns of interest
+        df_2 = df.set_index(cols)
+        agg_sectors_2 = agg_sectors.set_index(cols)
+        # Look for index overlap, ~
+        dfi = agg_sectors[~agg_sectors_2.index.isin(df_2.index)]
+        df = pd.concat([df, dfi], ignore_index=True).reset_index(
+            drop=True)
 
     return df
 
