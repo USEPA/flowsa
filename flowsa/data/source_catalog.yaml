@@ -188,6 +188,12 @@ StatCan_LFS:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+StateGHGI:
+  class:
+    - Chemicals
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
 stateio:
   class:
     - Money
