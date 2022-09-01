@@ -1,0 +1,45 @@
+# Identify standard colors to use for sectors
+# Colors are based off those identified in useeior
+# https://github.com/USEPA/useeior/blob/master/inst/extdata/VisualizationEssentials.yml
+
+"11": "#33A02C"  # dark green, "Agriculture, forestry, fishing, and hunting"
+"21": "#000000"  # black, "Mining"
+"22": "#696969"  # dark grey, "Utilities"
+"23": "#C0C0C0"  # light grey, "Construction"
+"31": "#E31A1C"  # dark red, "Manufacturing"
+"32": "#E31A1C"  # dark red, "Manufacturing"
+"33": "#E31A1C"  # dark red, "Manufacturing"
+"42": "#1F78B4"  # dark blue, "Wholesale trade"
+"44": "#A6CEE3"  # light blue, "Retail trade"
+"45": "#ECC5C0"  # rose gold
+"48": "#FF6F00"  # dark orange, "Transportation and warehousing"
+"49": "#E56717"  # Papaya Orange
+"51": "#FDBF6F"  # light orange, "Information"
+"52": "#6A3D9A"  # dark purple, "Finance, insurance, real estate, rental, and leasing"
+"53": "#99C68E"  # frog green
+"54": "#CAB2D6"  # light purple, "Professional and business services"
+"55": "#583759"  # plum purple
+"56": "#6667AB"  # very peri
+"61": "#800000"  # maroon, "Educational services, health care, and social assistance"
+"62": "#7E354D"  # velvet maroon
+"71": "#BAB86C"  # olive green
+"72": "#D2691E"  # chocolate, "Arts, entertainment, recreation, accommodation, and food services"
+"81": "#FF007F"  # dark pink, "Other services, except government"
+"92": "#9F000F"  # cranberry
+"F010": "#D58A94"  # dusty pink, household
+"S00201": "#B2DF8A"  # light green, State and local government passenger transit
+"S00101": "B5EAAA"  # green thumb, Federal electric utilities
+"S00202": "#98FF98"  # mint green, State and local government electric utilities
+
+# waste management pathways
+"115112": "#228B22"  # forest green
+"221320": "#3090C7"  # blue ivy
+"311119": "#954535"  # chestnut
+"5622121": "#FFF380"  # corn yellow
+"562213": "#654A8B"  # purple, Waste Generated
+"5622191": "#C88141"  # tiger orange
+"5622192": "#F67280"  # pastel red
+"562BIO": "#B38481"  # rosy pink
+"624210": "#CCCCFF"  # periwinkle
+
+
