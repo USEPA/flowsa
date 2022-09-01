@@ -16,12 +16,18 @@ from flowsa.settings import log
 def addSectorNames(df, BEA=False):
     """
     Add column to an FBS df with the sector names
-    :param df: FBS df with singular "Sector" column
+    :param df: FBS df with singular "Sector" column or SectorProducedBy and
+    SectorConsumedBy Cols
     :return: FBS df with new column of combined Sector and SectorNames
     """
+    # determine which sector cols are in the df
+    sector_cols = ['SectorProducedBy', 'SectorConsumedBy']
+    if 'Sector' in df.columns:
+        sector_cols = ['Sector']
     # load crosswalk and add names
     if BEA:
-        cw = pd.read_csv('https://raw.githubusercontent.com/USEPA/useeior/develop/inst/extdata/USEEIO_Commodity_Meta.csv',
+        cw = pd.read_csv('https://raw.githubusercontent.com/USEPA/useeior'
+                         '/develop/inst/extdata/USEEIO_Commodity_Meta.csv',
                          usecols=[0,1], names=['Sector', 'Name'], skiprows=1
                          )
         cw['SectorName'] = cw['Sector'] + ' (' + cw['Name'] + ')'
@@ -35,8 +41,15 @@ def addSectorNames(df, BEA=False):
         cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
             'NAICS_2012_Name'] + ')'
         cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})
-    df = df.merge(cw[['Sector', 'SectorName']], how='left')
-    df = df.reset_index(drop=True)
+
+    # loop through sector columns, append sector name
+    for s in sector_cols:
+        df = df.merge(cw[['Sector', 'SectorName']],
+                      left_on=s,
+                      right_on='Sector',
+                      how='left').drop(columns='Sector').rename(
+            columns={'SectorName': f'{s}Name'})
+        df = df.reset_index(drop=True)
 
     return df
 
@@ -115,7 +128,7 @@ def stackedBarChart(methodname, impact_cat=None):
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
     :param methodname: str, ex. "Water_national_m1_2015"
-    :param impacts: str, name of impact category to apply and aggregate on
+    :param impact_cat: str, name of impact category to apply and aggregate on
         impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
     :return: stacked, group bar plot
     """
@@ -213,7 +226,7 @@ def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
     g = (sns.relplot(data=df, x="Coefficient", y=axis_var,
                 hue="State", alpha=0.7, style="State",
                 palette="colorblind",
-                aspect=0.7, height = 12)
+                aspect=0.7, height=12)
          # .set(title="title")
     )
     g._legend.set_title('State')
