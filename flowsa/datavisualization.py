@@ -10,6 +10,7 @@ import numpy as np
 import seaborn as sns
 import random
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import flowsa
 from flowsa.common import load_crosswalk, load_yaml_dict, \
     load_sector_length_cw_melt
@@ -325,54 +326,64 @@ def generateSankeyData(methodname, sector_length_display_ProducedBy=None,
     return nodes, flows
 
 
-def generateSankeyDiagram(methodname, sector_length_display_ProducedBy=None,
+def generateSankeyDiagram(methodnames, sector_length_display_ProducedBy=None,
                           sector_length_display_ConsumedBy=None,
-                          sectors_to_include=None, fbsconfigpath=None):
+                          sectors_to_include=None, fbsconfigpath=None,
+                          plot_title=None):
 
-    # return dfs of nodes and flows for Sankey
-    nodes, flows = generateSankeyData(methodname,
-                                      sector_length_display_ProducedBy,
-                                      sector_length_display_ConsumedBy,
-                                      sectors_to_include, fbsconfigpath)
+    fig = make_subplots(rows=1, cols=len(methodnames), shared_yaxes=True,
+                        subplot_titles=methodnames)
 
-    fig = go.Figure(data=[go.Sankey(
-        valueformat=".0f",
-        valuesuffix="kg", #todo: don't hardcode
-        # arrangement="snap",
-        # Define nodes
-        node=dict(
-            pad=15,
-            thickness=15,
-            line=dict(color="black", width=0.5),
-            label=nodes['Nodes'].values.tolist(),
-            color=nodes['Color'].values.tolist()
-        ),
-        # Add links
-        link=dict(
-            source=flows['SourceNum'].values.tolist(),
-            target=flows['TargetNum'].values.tolist(),
-            value=flows['Value'].values.tolist(),
-            label=nodes['Nodes'].values.tolist() #,
-            # color=nodes['Color'].values.tolist()
-        )
-    )])
+    for i, m in enumerate(methodnames):
+        # return dfs of nodes and flows for Sankey
+        nodes, flows = generateSankeyData(m,
+                                          sector_length_display_ProducedBy,
+                                          sector_length_display_ConsumedBy,
+                                          sectors_to_include, fbsconfigpath)
+
+        fig.add_trace(go.Sankey(
+            domain={
+                'x': [0 + (i/len(methodnames)) + 0.02,
+                      ((i+1)/len(methodnames)) - 0.02]
+            },
+            valueformat=".0f",
+            valuesuffix="kg", #todo: don't hardcode
+            # Define nodes
+            node=dict(
+                pad=15,
+                thickness=15,
+                line=dict(color="black", width=0.5),
+                label=nodes['Nodes'].values.tolist(),
+                color=nodes['Color'].values.tolist()
+            ),
+            # Add links
+            link=dict(
+                source=flows['SourceNum'].values.tolist(),
+                target=flows['TargetNum'].values.tolist(),
+                value=flows['Value'].values.tolist(),
+                label=nodes['Nodes'].values.tolist() #,
+                # color=[nodes['Color'].replace("0.8", str(0.4)) for c in
+                #        nodes['Color']]
+                # color=nodes['Color'].values.tolist()
+            )))
 
     fig.update_layout(
-        title_text="Food Waste FBS M1",
+        title_text=plot_title,
         font_size=10)
 
     fig.show()
 
 
 if __name__ == '__main__':
-    methodname = 'Food_Waste_national_2018_m2'
+    methodnames = ['Food_Waste_national_2018_m1',
+                   'Food_Waste_national_2018_m2']
     sector_length_display_ProducedBy = 2
     sector_length_display_ConsumedBy = None
     sectors_to_include = None
     fbsconfigpath = None
 
     generateSankeyDiagram(
-        methodname,
+        methodnames,
         sector_length_display_ProducedBy=sector_length_display_ProducedBy,
         sector_length_display_ConsumedBy=sector_length_display_ConsumedBy,
         sectors_to_include=None,
