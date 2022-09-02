@@ -247,12 +247,14 @@ def update_sector_name_df():
         {"NAICS_2012_Code": ['562BIO',
                              '5622191',
                              '5622192',
-                             '5622121'
+                             '5622121',
+                             '311119'
                              ],
          "NAICS_2012_Name": ['Bio-based Materials/Biochemical Processing',
                              'Codigestion/Anaerobic Digestion',
                              'Composting/Aerobic Processes',
-                             'MSW Landfill'
+                             'MSW Landfill',
+                             'Other Animal Food Manufacturing'
                              ]})
     df = pd.concat([sectors, new_sectors])
     df = df.sort_values("NAICS_2012_Code")
