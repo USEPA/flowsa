@@ -2,6 +2,7 @@ from flowsa import naics
 from flowsa import settings
 from flowsa.flowsa_log import log
 import pandas as pd
+import numpy as np
 from flowsa.data_source_scripts import EIA_MECS as mecs
 from flowsa.data_source_scripts import EPA_GHGI as ghgi
 from flowsa.data_source_scripts import USDA_CoA_Cropland as coa
@@ -48,6 +49,77 @@ def clean_qcew(fba: FlowByActivity, **kwargs):
     )
 
     return filtered
+
+
+def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
+    indexed = (
+        fba
+        .assign(n2=fba.ActivityProducedBy.str.slice(stop=2),
+                n3=fba.ActivityProducedBy.str.slice(stop=3),
+                n4=fba.ActivityProducedBy.str.slice(stop=4),
+                n5=fba.ActivityProducedBy.str.slice(stop=5),
+                n6=fba.ActivityProducedBy.str.slice(stop=6),
+                location=fba.Location,
+                category=fba.FlowName)
+        .replace({'FlowAmount': {0: np.nan},
+                  'ActivityProducedBy': {'31-33': '3X',
+                                         '44-45': '4X',
+                                         '48-49': '4Y'},
+                  'n2': {'31': '3X', '32': '3X', '33': '3X',
+                         '44': '4X', '45': '4X',
+                         '48': '4Y', '49': '4Y'}})
+        .set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'location', 'category'],
+                   verify_integrity=True)
+    )
+
+    def fill_suppressed(
+        flows: pd.Series,
+        level: int,
+        full_naics: pd.Series
+    ) -> pd.Series:
+        parent = flows[full_naics.str.len() == level]
+        children = flows[full_naics.str.len() == level + 1]
+        null_children = children[children.isna()]
+
+        if null_children.empty or parent.empty:
+            return flows
+        else:
+            value = max((parent[0] - children.sum()) / null_children.size, 0)
+            return flows.fillna(pd.Series(value, index=null_children.index))
+
+    unsuppressed = (
+        indexed
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 2, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 3, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 4, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4', 'n5',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 5, x.ActivityProducedBy)))
+        .fillna({'FlowAmount': 0})
+        .reset_index(drop=True)
+    )
+
+    aggregated = (
+        unsuppressed
+        .assign(FlowName='Number of employees')
+        .aggregate_flowby()
+    )
+
+    return aggregated
 
 
 def clean_usda_cropland_naics(fba: FlowByActivity, **kwargs):
