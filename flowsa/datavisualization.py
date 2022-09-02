@@ -270,12 +270,12 @@ def generateSankeyData(methodname,
                        sectors_to_include=None,
                        fbsconfigpath=None):
     """
-    Generate CSV files used to create a sankey
+    Generate data used to create a sankey
     :param methodname: str, FBS methodname
-    :param sector_length_display_ProducedBy: numeric, sector length by which to
+    :param SPB_display_length: numeric, sector length by which to
     aggregate, default is 'None' which returns the max sector length in a
     dataframe
-    :param sector_length_display_ConsumedBy: numeric, sector length by which to
+    :param _display_length: numeric, sector length by which to
     aggregate, default is 'None' which returns the max sector length in a
     dataframe
     :param sectors_to_include: list, sectors to include in output. Sectors
@@ -285,6 +285,7 @@ def generateSankeyData(methodname,
     """
 
     df = flowsa.getFlowBySector(methodname)
+    df = convert_units_for_graphics(df)
 
     # subset df
     if sectors_to_include is not None:
@@ -294,17 +295,17 @@ def generateSankeyData(methodname,
     method_dict = load_yaml_dict(methodname, flowbytype='FBS',
                                  filepath=fbsconfigpath)
 
-    if any(item is not None for item in [sector_length_display_ProducedBy,
-                                         sector_length_display_ConsumedBy]):
+    if any(item is not None for item in [SPB_display_length,
+                                         SCB_display_length]):
         # aggregate to all sector levels
         df = sector_aggregation(df, return_all_possible_sector_combos=True)
         df = replace_NoneType_with_empty_cells(df)
         cw_load = load_sector_length_cw_melt()
         for s in ['Produced', 'Consumed']:
-            if eval(f'sector_length_display_{s}By') is not None:
+            if eval(f'S{s[0]}B_display_length') is not None:
                 # subset the df by naics length
                 cw = cw_load[cw_load['SectorLength'].isin([eval(
-                    f'sector_length_display_{s}By')])]
+                    f'S{s[0]}B_display_length')])]
                 sector_list = cw['Sector'].drop_duplicates().values.tolist()
                 df = df[df[f'Sector{s}By'].isin(sector_list)]
             else:
@@ -316,15 +317,25 @@ def generateSankeyData(methodname,
                     secondary_sector_level_dict=secondary_sector_level)
                 df = df[df[f'Sector{s}By'].isin(sector_list)]
     # add sector names
-    # todo: update the sector name list to include all sectors in the waste
-    #  models
     df2 = addSectorNames(df)
 
     # create df for sankey diagram
-    spb = df2[['SectorProducedBy']].drop_duplicates().sort_values([
-        'SectorProducedBy']).rename(columns={'SectorProducedBy': 'Nodes'})
-    scb = df2[['SectorConsumedBy']].drop_duplicates().sort_values([
-        'SectorConsumedBy']).rename(columns={'SectorConsumedBy': 'Nodes'})
+    spb = df2[['SectorProducedBy',
+               'SectorProducedByName']].drop_duplicates().sort_values(
+        ['SectorProducedBy']).rename(
+        columns={'SectorProducedBy': 'Nodes'}).reset_index(drop=True)
+    spb['x_pos'] = 0.01
+    # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
+    spb['y_pos'] = 0.01 + (spb.index * .98/(spb['Nodes'].count()-1))
+
+    scb = df2[['SectorConsumedBy',
+               'SectorConsumedByName']].drop_duplicates().sort_values([
+        'SectorConsumedBy']).rename(
+        columns={'SectorConsumedBy': 'Nodes'}).reset_index(drop=True)
+    scb['x_pos'] = .99
+    # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
+    scb['y_pos'] = 0.01 + (scb.index * .98/(scb['Nodes'].count()-1))
+
     nodes = pd.concat([spb, scb], ignore_index=True)
     nodes['Num'] = nodes.index
     # add colors
@@ -334,60 +345,94 @@ def generateSankeyData(methodname,
     nodes['Color'] = nodes['Color'].fillna(
         "#%06x" % random.randint(0, 0xFFFFFF))
 
+    if replace_SPB_with_sectordefinition:
+        df2['SectorProducedBy'] = df2['SectorProducedByName']
+        nodes['Nodes'] = np.where(~nodes['SectorProducedByName'].isna(),
+                                  nodes['SectorProducedByName'],
+                                  nodes['Nodes'])
+    if replace_SCB_with_sectordefinition:
+        df2['SectorConsumedBy'] = df2['SectorConsumedByName']
+        nodes['Nodes'] = np.where(~nodes['SectorConsumedByName'].isna(),
+                                  nodes['SectorConsumedByName'],
+                                  nodes['Nodes'])
+    nodes = nodes.drop(columns=['SectorProducedByName',
+                                'SectorConsumedByName'])
+
     # subset df to sectors and flowamount
     flows = df2[['SectorProducedBy', 'SectorConsumedBy',
-                 'FlowAmount']].rename(columns={'SectorProducedBy': 'Source',
-                                                'SectorConsumedBy': 'Target',
-                                                'FlowAmount': 'Value'})
+                 'FlowAmount', 'Unit']].rename(
+        columns={'SectorProducedBy': 'Source',
+                 'SectorConsumedBy': 'Target',
+                 'FlowAmount': 'Value'})
     # add source and target numbers
     for c in ['Source', 'Target']:
         flows = flows.merge(nodes, left_on=c, right_on='Nodes').drop(
             columns='Nodes').rename(columns={'Num': f'{c}Num'})
     flows = flows[['SourceNum', 'Source', 'TargetNum', 'Target',
-                   'Value']].sort_values(
+                   'Value', 'Unit']].sort_values(
         ['SourceNum', 'TargetNum']).reset_index(drop=True)
 
     return nodes, flows
 
 
-def generateSankeyDiagram(methodnames, sector_length_display_ProducedBy=None,
-                          sector_length_display_ConsumedBy=None,
-                          sectors_to_include=None, fbsconfigpath=None,
+def generateSankeyDiagram(methodnames,
+                          SPB_display_length=None,
+                          SCB_display_length=None,
+                          replace_SPB_with_sectordefinition=False,
+                          replace_SCB_with_sectordefinition=False,
+                          sectors_to_include=None,
+                          fbsconfigpath=None,
                           plot_title=None):
+    """
+    Sankey diagram developed to map flows between sector produced by (source)
+    and sector consumed by (target). Sankey developed for subplot of 2
+    diagrams.
+    :param methodnames:
+    :param SPB_display_length:
+    :param SCB_display_length:
+    :param replace_SPB_with_sectordefinition:
+    :param replace_SCB_with_sectordefinition:
+    :param sectors_to_include:
+    :param fbsconfigpath:
+    :param plot_title:
+    :return:
+    """
 
     fig = make_subplots(rows=1, cols=len(methodnames), shared_yaxes=True,
                         subplot_titles=methodnames)
 
     for i, m in enumerate(methodnames):
         # return dfs of nodes and flows for Sankey
-        nodes, flows = generateSankeyData(m,
-                                          sector_length_display_ProducedBy,
-                                          sector_length_display_ConsumedBy,
-                                          sectors_to_include, fbsconfigpath)
+        nodes, flows = generateSankeyData(
+            m, SPB_display_length, SCB_display_length,
+            replace_SPB_with_sectordefinition,
+            replace_SCB_with_sectordefinition, sectors_to_include,
+            fbsconfigpath)
 
         fig.add_trace(go.Sankey(
+            arrangement="snap",
             domain={
                 'x': [0 + (i/len(methodnames)) + 0.02,
                       ((i+1)/len(methodnames)) - 0.02]
             },
-            valueformat=".0f",
-            valuesuffix="kg", #todo: don't hardcode
+            valueformat=".1f",
+            valuesuffix=flows['Unit'][0],
             # Define nodes
             node=dict(
                 pad=15,
                 thickness=15,
                 line=dict(color="black", width=0.5),
                 label=nodes['Nodes'].values.tolist(),
-                color=nodes['Color'].values.tolist()
+                color=nodes['Color'].values.tolist(),
+                x=nodes['x_pos'].values.tolist(),
+                y=nodes['y_pos'].values.tolist()
             ),
             # Add links
             link=dict(
                 source=flows['SourceNum'].values.tolist(),
                 target=flows['TargetNum'].values.tolist(),
                 value=flows['Value'].values.tolist(),
-                label=nodes['Nodes'].values.tolist() #,
-                # color=[nodes['Color'].replace("0.8", str(0.4)) for c in
-                #        nodes['Color']]
+                label=nodes['Nodes'].values.tolist(),
                 # color=nodes['Color'].values.tolist()
             )))
 
@@ -401,15 +446,19 @@ def generateSankeyDiagram(methodnames, sector_length_display_ProducedBy=None,
 if __name__ == '__main__':
     methodnames = ['Food_Waste_national_2018_m1',
                    'Food_Waste_national_2018_m2']
-    sector_length_display_ProducedBy = 2
-    sector_length_display_ConsumedBy = None
+    SPB_display_length = 2
+    SCB_display_length = None
+    replace_SPB_with_sectordefinition=False
+    replace_SCB_with_sectordefinition=True
     sectors_to_include = None
     fbsconfigpath = None
 
     generateSankeyDiagram(
         methodnames,
-        sector_length_display_ProducedBy=sector_length_display_ProducedBy,
-        sector_length_display_ConsumedBy=sector_length_display_ConsumedBy,
+        SPB_display_length=SPB_display_length,
+        SCB_display_length=SCB_display_length,
+        replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
+        replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
         sectors_to_include=None,
         fbsconfigpath=None
     )
