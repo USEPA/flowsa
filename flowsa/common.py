@@ -73,7 +73,7 @@ def load_crosswalk(crosswalk_name):
 
     cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
                'sector_length': 'NAICS_2012_Crosswalk',
-               'sector_name': 'NAICS_2012_Names',
+               'sector_name': 'Sector_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
                'biochemical': 'Biochemical_SectorCodes',
