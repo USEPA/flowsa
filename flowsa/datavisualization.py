@@ -243,9 +243,32 @@ def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
     return g
 
 
-def generateSankeyData(methodname, sector_length_display_ProducedBy=None,
-                       sector_length_display_ConsumedBy=None,
-                       sectors_to_include=None, fbsconfigpath=None):
+def convert_units_for_graphics(df):
+    """
+    Convert units for easier display in graphics
+    :param df:
+    :return:
+    """
+
+    # convert kg to million metric tons for class other
+    df['FlowAmount'] = np.where((df["Class"] == 'Other') &
+                                (df['Unit'] == 'kg'),
+                                df['FlowAmount']/(10**9),
+                                df['FlowAmount'])
+    df['Unit'] = np.where((df["Class"] == 'Other') & (df['Unit'] == 'kg'),
+                          "MMT",
+                          df['Unit'])
+
+    return df
+
+
+def generateSankeyData(methodname,
+                       SPB_display_length=None,
+                       SCB_display_length=None,
+                       replace_SPB_with_sectordefinition=False,
+                       replace_SCB_with_sectordefinition=False,
+                       sectors_to_include=None,
+                       fbsconfigpath=None):
     """
     Generate CSV files used to create a sankey
     :param methodname: str, FBS methodname
