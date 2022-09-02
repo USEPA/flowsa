@@ -238,6 +238,28 @@ def write_naics_2012_crosswalk():
     naics_cw.to_csv(datapath + "NAICS_2012_Crosswalk.csv", index=False)
 
 
+def update_sector_name_df():
+    """Update list of naics names with added sectors"""
+    sectors = pd.read_csv(f'{datapath}NAICS_2012_Names.csv', dtype=str)
+
+    # dictionary of new sector names
+    new_sectors = pd.DataFrame(
+        {"NAICS_2012_Code": ['562BIO',
+                             '5622191',
+                             '5622192',
+                             '5622121'
+                             ],
+         "NAICS_2012_Name": ['Bio-based Materials/Biochemical Processing',
+                             'Codigestion/Anaerobic Digestion',
+                             'Composting/Aerobic Processes',
+                             'MSW Landfill'
+                             ]})
+    df = pd.concat([sectors, new_sectors])
+    df = df.sort_values("NAICS_2012_Code")
+    df.to_csv(f'{datapath}Sector_2012_Names.csv', index=False)
+
+
 if __name__ == '__main__':
     update_naics_crosswalk()
     write_naics_2012_crosswalk()
+    update_sector_name_df()
