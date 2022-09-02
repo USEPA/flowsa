@@ -56,6 +56,7 @@ def addSectorNames(df, BEA=False):
                       right_on='Sector',
                       how='left').drop(columns='Sector').rename(
             columns={'SectorName': f'{s}Name'})
+        df[f'{s}Name'].fillna(df[s], inplace=True)
         df = df.reset_index(drop=True)
 
     return df
