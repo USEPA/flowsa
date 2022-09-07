@@ -25,9 +25,10 @@ def test_FBS_against_remote():
         print("--------------------------------\n"
               f"Method: {m}\n"
               "--------------------------------")
-        df = compare_FBS_results(m, m, compare_to_remote=True)
-        df.rename(columns = {'FlowAmount_fbs1': 'FlowAmount_remote',
-                             'FlowAmount_fbs2': 'FlowAmount_HEAD'},
+        df = compare_FBS_results(m, m, ignore_metasources=True,
+                                 compare_to_remote=True)
+        df.rename(columns={'FlowAmount_fbs1': 'FlowAmount_remote',
+                           'FlowAmount_fbs2': 'FlowAmount_HEAD'},
                   inplace=True)
         if len(df) > 0:
             print(f"Saving differences in {m} to csv")
