@@ -17,3 +17,4 @@ bibtexparser>=1.2.0            # Generates bibtex
 python-dotenv >= 0.19.1        # Reads .env files
 seaborn >= 0.11.2              # Plotting
 matplotlib >= 3.4.3            # Plotting
+plotly >= 5.10.0               # Plotting

@@ -29,7 +29,8 @@ setup(
         'bibtexparser>=1.2.0',
         'python-dotenv >= 0.19.1',
         'seaborn>=0.11.2',
-        'matplotlib>=3.4.3'
+        'matplotlib>=3.4.3',
+        'plotly>=5.10.0 '
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='MIT',

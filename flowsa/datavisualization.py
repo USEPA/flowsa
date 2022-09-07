@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import random
+import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import flowsa
@@ -143,13 +144,6 @@ def stackedBarChart(methodname, impact_cat=None):
         impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
     :return: stacked, group bar plot
     """
-
-    try:
-        import plotly.express as px
-        import plotly.graph_objects as go
-    except ImportError:
-        log.error("plotly required for 'stackedBarChart()'")
-        raise
 
     df = flowsa.collapse_FlowBySector(methodname)
 
