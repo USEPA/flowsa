@@ -324,18 +324,20 @@ def generateSankeyData(methodname,
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
 
     # create df for sankey diagram
-    spb = df2[['SectorProducedBy',
-               'SectorProducedByName']].drop_duplicates().sort_values(
-        ['SectorProducedBy']).rename(
-        columns={'SectorProducedBy': 'Nodes'}).reset_index(drop=True)
+    spb = df2[['SectorProducedBy', 'SectorProducedByName',
+               'FlowAmount']].sort_values(['SectorProducedBy']).rename(
+        columns={'SectorProducedBy': 'Nodes'})
+    spb = spb.groupby(['Nodes', 'SectorProducedByName'], as_index=False)[
+        'FlowAmount'].sum()
     spb['x_pos'] = 0.01
     # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
     spb['y_pos'] = 0.01 + (spb.index * .98/(spb['Nodes'].count()-1))
 
-    scb = df2[['SectorConsumedBy',
-               'SectorConsumedByName']].drop_duplicates().sort_values([
-        'SectorConsumedBy']).rename(
-        columns={'SectorConsumedBy': 'Nodes'}).reset_index(drop=True)
+    scb = df2[['SectorConsumedBy', 'SectorConsumedByName',
+               'FlowAmount']].drop_duplicates().sort_values(
+        ['SectorConsumedBy']).rename(columns={'SectorConsumedBy': 'Nodes'})
+    scb = scb.groupby(['Nodes', 'SectorConsumedByName'], as_index=False)[
+        'FlowAmount'].sum()
     scb['x_pos'] = .99
     # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
     scb['y_pos'] = 0.01 + (scb.index * .98/(scb['Nodes'].count()-1))
@@ -361,6 +363,10 @@ def generateSankeyData(methodname,
                                   nodes['Nodes'])
     nodes = nodes.drop(columns=['SectorProducedByName',
                                 'SectorConsumedByName'])
+
+    # add flow amounts to label
+    nodes['Label'] = nodes['Nodes'] + '<br>' + nodes['FlowAmount'].round(
+        2).astype(str)
 
     # subset df to sectors and flowamount
     flows = df2[['SectorProducedBy', 'SectorConsumedBy',
@@ -426,7 +432,7 @@ def generateSankeyDiagram(methodnames,
                 pad=15,
                 thickness=15,
                 line=dict(color="black", width=0.5),
-                label=nodes['Nodes'].values.tolist(),
+                label=nodes['Label'].values.tolist(),
                 color=nodes['Color'].values.tolist(),
                 x=nodes['x_pos'].values.tolist(),
                 y=nodes['y_pos'].values.tolist()
