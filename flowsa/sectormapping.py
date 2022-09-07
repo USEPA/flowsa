@@ -310,7 +310,7 @@ def convert_units_to_annual(df):
     return df
 
 
-def map_flows(fba, v, from_fba_source, flow_type='ELEMENTARY_FLOW',
+def map_flows(fba, from_fba_source, flow_type='ELEMENTARY_FLOW',
               ignore_source_name=False, **kwargs):
     """
     Applies mapping via esupy from fedelemflowlist or material
@@ -394,7 +394,7 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
             mapping_files = from_fba_source
         flow_type = 'ELEMENTARY_FLOW'
 
-    fbs_mapped = map_flows(fbs, v, mapping_files, flow_type,
+    fbs_mapped = map_flows(fbs, mapping_files, flow_type,
                            ignore_source_name, **kwargs)
 
     return fbs_mapped, mapping_files
