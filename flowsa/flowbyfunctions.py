@@ -1272,7 +1272,7 @@ def add_column_of_allocation_sources(df, attr):
         key_list = ['allocation_source', 'helper_source']
         for k in key_list:
             s = attr.get(k)
-            if s is not None:
+            if (s is not None) & (callable(s) is False):
                 sources.append(s)
         if 'literature_sources' in attr:
             sources.append('literature values')
