@@ -6,6 +6,7 @@
 Generate plots to explore Flow-By-Sector model outputs
 """
 
+import flowsa
 import flowsa.datavisualization as dv
 from flowsa.settings import plotoutputpath
 import matplotlib.pyplot as plt
