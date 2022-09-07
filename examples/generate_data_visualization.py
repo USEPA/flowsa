@@ -6,7 +6,7 @@
 Generate plots to explore Flow-By-Sector model outputs
 """
 
-import flowsa
+import flowsa.datavisualization as dv
 from flowsa.settings import plotoutputpath
 import matplotlib.pyplot as plt
 
@@ -20,7 +20,7 @@ method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
                'Employment 2017': 'Employment_national_2017'}
 
 
-flowsa.generateFBSplot(method_dict, plottype,
+dv.FBSscatterplot(method_dict, plottype,
                        sector_length_display=sector_length_display,
                        sectors_to_include=sectors,
                        plot_title='Direct Resource Use for Livestock'
