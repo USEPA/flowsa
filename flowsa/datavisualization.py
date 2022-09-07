@@ -17,10 +17,10 @@ from flowsa.common import load_crosswalk, load_yaml_dict, \
 from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.flowbyfunctions import sector_aggregation
 from flowsa.sectormapping import get_sector_list
-from flowsa.settings import log
+from flowsa.settings import log, datapath
 
 
-def addSectorNames(df, BEA=False):
+def addSectorNames(df, BEA=False, mappingfile=None):
     """
     Add column to an FBS df with the sector names
     :param df: FBS df with singular "Sector" column or SectorProducedBy and
@@ -44,10 +44,13 @@ def addSectorNames(df, BEA=False):
                                     cw['SectorName'] + '...)',
                                     cw['SectorName'])
     else:
-        cw = load_crosswalk('sector_name')
-        cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
-            'NAICS_2012_Name'] + ')'
-        cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})
+        if mappingfile is not None:
+            cw = pd.read_csv(mappingfile)
+        else:
+            cw = load_crosswalk('sector_name')
+            cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
+                'NAICS_2012_Name'] + ')'
+            cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})
 
     # loop through sector columns, append sector name
     for s in sector_cols:
@@ -317,7 +320,8 @@ def generateSankeyData(methodname,
                     secondary_sector_level_dict=secondary_sector_level)
                 df = df[df[f'Sector{s}By'].isin(sector_list)]
     # add sector names
-    df2 = addSectorNames(df)
+    sankeymappingfile = f'{datapath}SankeyNames.csv'
+    df2 = addSectorNames(df, mappingfile=sankeymappingfile)
 
     # create df for sankey diagram
     spb = df2[['SectorProducedBy',
