@@ -325,7 +325,7 @@ def generateSankeyData(methodname,
         'FlowAmount'].sum()
     # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
     spb['x_pos'] = 0.01
-    spb['y_pos'] = 0.01 + (spb.index * .98/(spb['Nodes'].count()-1))
+    spb['y_pos'] = 0.01 + (spb.index * .85/(spb['Nodes'].count()-1))
 
     scb = df2[['SectorConsumedBy', 'SectorConsumedByName',
                'FlowAmount']].drop_duplicates().sort_values(
@@ -334,7 +334,7 @@ def generateSankeyData(methodname,
         'FlowAmount'].sum()
     # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
     scb['x_pos'] = .99
-    scb['y_pos'] = 0.01 + (scb.index * .98/(scb['Nodes'].count()-1))
+    scb['y_pos'] = 0.01 + (scb.index * .85/(scb['Nodes'].count()-1))
 
     nodes = pd.concat([spb, scb], ignore_index=True)
     nodes['Num'] = nodes.index
@@ -432,8 +432,8 @@ def generateSankeyDiagram(methodnames,
 
         # define domain
         if orientation == 'vertical':
-            domain = {'y': [0 + (i / len(methodnames)) + 0.02,
-                            ((i + 1) / len(methodnames)) - 0.02]}
+            domain = {'y': [0 + (i / len(methodnames)) + 0.04,
+                            ((i + 1) / len(methodnames)) - 0.04]}
         else:
             domain = {'x': [0 + (i / len(methodnames)) + 0.02,
                             ((i + 1) / len(methodnames)) - 0.02]}
@@ -465,9 +465,16 @@ def generateSankeyDiagram(methodnames,
         title_text=plot_title,
         font_size=10)
 
-    fig.show()
-    fig.write_image(f"{plotoutputpath}flowsaSankey.png", scale=2)
+    if orientation == 'vertical':
+        width = 1400
+        height = 1600
+    else:
+        width = 1400
+        height = 800
 
+    fig.show()
+    fig.write_image(f"{plotoutputpath}flowsaSankey.svg",
+                    width=width, height=height)
 
 if __name__ == '__main__':
     methodnames = ['Food_Waste_national_2018_m1',
@@ -486,6 +493,6 @@ if __name__ == '__main__':
         replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
         replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
         sectors_to_include=None,
-        fbsconfigpath=None,
-        orientation='horizontal'
+        fbsconfigpath=None #,
+        # orientation='horizontal'
     )
