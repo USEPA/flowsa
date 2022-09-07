@@ -358,7 +358,6 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     """
     data_format = v.get('data_format')
     if (data_format == 'FBA') & (check_activities_sector_like(fba_load)):
-        print('true')
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector '
                    'ratios for a dataset with sector-like activities because '
                    'if there are modifications to flowamounts for a sector, '
@@ -975,7 +974,11 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     merge_cols = list(df2.select_dtypes(include=[
         'object', 'int']).columns)
     if ignore_metasources:
-        merge_cols.remove('MetaSources')
+        for e in ['MetaSources', 'AllocationSources']:
+            merge_cols.remove(e)
+    # ignore additional columns on merge #todo: remove next tow lines once the added columns from DataVis branch are pulled into master
+    for e in ['ProducedBySectorType', 'ConsumedBySectorType']:
+        merge_cols.remove(e)
     # check units
     compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
