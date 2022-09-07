@@ -18,7 +18,7 @@ from flowsa.common import load_crosswalk, load_yaml_dict, \
 from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.flowbyfunctions import sector_aggregation
 from flowsa.sectormapping import get_sector_list
-from flowsa.settings import log, datapath
+from flowsa.settings import log, datapath, plotoutputpath
 
 
 def addSectorNames(df, BEA=False, mappingfile=None):
@@ -323,8 +323,8 @@ def generateSankeyData(methodname,
         columns={'SectorProducedBy': 'Nodes'})
     spb = spb.groupby(['Nodes', 'SectorProducedByName'], as_index=False)[
         'FlowAmount'].sum()
-    spb['x_pos'] = 0.01
     # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
+    spb['x_pos'] = 0.01
     spb['y_pos'] = 0.01 + (spb.index * .98/(spb['Nodes'].count()-1))
 
     scb = df2[['SectorConsumedBy', 'SectorConsumedByName',
@@ -332,8 +332,8 @@ def generateSankeyData(methodname,
         ['SectorConsumedBy']).rename(columns={'SectorConsumedBy': 'Nodes'})
     scb = scb.groupby(['Nodes', 'SectorConsumedByName'], as_index=False)[
         'FlowAmount'].sum()
-    scb['x_pos'] = .99
     # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
+    scb['x_pos'] = .99
     scb['y_pos'] = 0.01 + (scb.index * .98/(scb['Nodes'].count()-1))
 
     nodes = pd.concat([spb, scb], ignore_index=True)
@@ -360,7 +360,7 @@ def generateSankeyData(methodname,
 
     # add flow amounts to label
     nodes['Label'] = nodes['Nodes'] + '<br>' + nodes['FlowAmount'].round(
-        2).astype(str)
+        2).astype(str) + ' ' + df2['Unit'][0]
 
     # subset df to sectors and flowamount
     flows = df2[['SectorProducedBy', 'SectorConsumedBy',
@@ -386,7 +386,8 @@ def generateSankeyDiagram(methodnames,
                           replace_SCB_with_sectordefinition=False,
                           sectors_to_include=None,
                           fbsconfigpath=None,
-                          plot_title=None):
+                          plot_title=None,
+                          orientation='vertical'):
     """
     Sankey diagram developed to map flows between sector produced by (source)
     and sector consumed by (target). Sankey developed for subplot of 2
@@ -401,8 +402,24 @@ def generateSankeyDiagram(methodnames,
     :param plot_title:
     :return:
     """
+    try:
+        # must install 0.1.0post1 if running windows, otherwise function
+        # runs indefinitely
+        import kaleido
+    except ImportError:
+        log.error("kaleido 0.1.0post1 required for 'generateSankeyDiagram()'")
+        raise
 
-    fig = make_subplots(rows=1, cols=len(methodnames), shared_yaxes=True,
+    # print(f"{plotoutputpath}flowsaSankey.png")
+
+    if orientation == 'vertical':
+        rows = len(methodnames)
+        cols = 1
+    else:
+        rows = 1
+        cols = len(methodnames)
+
+    fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
                         subplot_titles=methodnames)
 
     for i, m in enumerate(methodnames):
@@ -413,12 +430,17 @@ def generateSankeyDiagram(methodnames,
             replace_SCB_with_sectordefinition, sectors_to_include,
             fbsconfigpath)
 
+        # define domain
+        if orientation == 'vertical':
+            domain = {'y': [0 + (i / len(methodnames)) + 0.02,
+                            ((i + 1) / len(methodnames)) - 0.02]}
+        else:
+            domain = {'x': [0 + (i / len(methodnames)) + 0.02,
+                            ((i + 1) / len(methodnames)) - 0.02]}
+
         fig.add_trace(go.Sankey(
             arrangement="snap",
-            domain={
-                'x': [0 + (i/len(methodnames)) + 0.02,
-                      ((i+1)/len(methodnames)) - 0.02]
-            },
+            domain=domain,
             valueformat=".1f",
             valuesuffix=flows['Unit'][0],
             # Define nodes
@@ -436,8 +458,7 @@ def generateSankeyDiagram(methodnames,
                 source=flows['SourceNum'].values.tolist(),
                 target=flows['TargetNum'].values.tolist(),
                 value=flows['Value'].values.tolist(),
-                label=nodes['Nodes'].values.tolist(),
-                # color=nodes['Color'].values.tolist()
+                label=nodes['Nodes'].values.tolist()
             )))
 
     fig.update_layout(
@@ -445,6 +466,7 @@ def generateSankeyDiagram(methodnames,
         font_size=10)
 
     fig.show()
+    fig.write_image(f"{plotoutputpath}flowsaSankey.png", scale=2)
 
 
 if __name__ == '__main__':
@@ -464,5 +486,6 @@ if __name__ == '__main__':
         replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
         replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
         sectors_to_include=None,
-        fbsconfigpath=None
+        fbsconfigpath=None,
+        orientation='horizontal'
     )
