@@ -295,8 +295,10 @@ def append_new_sectors(df, i, j, cw_load, group_cols):
                 .sum().reset_index()
         # append to df
         agg_sectors = replace_NoneType_with_empty_cells(agg_sectors)
-        cols = ['Flowable', 'Class', 'SectorProducedBy', 'SectorConsumedBy',
-                'Context', 'Location', 'Unit', 'FlowType', 'Year']
+        cols = [e for e in df.columns if e in
+                ['FlowName', 'Flowable', 'Class', 'SectorProducedBy',
+                 'SectorConsumedBy', 'Compartment', 'Context', 'Location',
+                 'Unit', 'FlowType', 'Year']]
         # get copies where the indices are the columns of interest
         df_2 = df.set_index(cols)
         agg_sectors_2 = agg_sectors.set_index(cols)
