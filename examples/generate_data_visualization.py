@@ -12,7 +12,7 @@ from flowsa.settings import plotoutputpath
 import matplotlib.pyplot as plt
 
 
-# Produce facet graph of resources associated with cropland sectors
+########## Produce facet graph of resources associated with cropland sectors ##########
 sectors = ['112']
 sector_length_display = 6
 plottype = 'facet_graph'
@@ -30,7 +30,7 @@ dv.FBSscatterplot(method_dict, plottype,
 plt.savefig(f"{plotoutputpath}livestock_resource_use.png", dpi=300)
 
 
-# Compare the results between water method 1 and method 2
+########## Compare the results between water method 1 and method 2 ##########
 sectors = ['21']
 sector_length_display = 6
 plottype = 'method_comparison'
@@ -46,3 +46,26 @@ flowsa.generateFBSplot(method_dict, plottype,
                        )
 # Can manually adjust the figure pop up before saving
 plt.savefig(f"{plotoutputpath}mining_water_comp.png", dpi=300)
+
+
+########## Compare food waste flows via Sankey ##########
+methodnames = ['Food_Waste_national_2018_m1',
+               'Food_Waste_national_2018_m2']
+SPB_display_length = 2
+SCB_display_length = None
+replace_SPB_with_sectordefinition = True
+replace_SCB_with_sectordefinition = True
+sectors_to_include = None
+fbsconfigpath = None
+orientation = 'horizontal'
+
+dv.generateSankeyDiagram(
+    methodnames,
+    SPB_display_length=SPB_display_length,
+    SCB_display_length=SCB_display_length,
+    replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
+    replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
+    sectors_to_include=None,
+    fbsconfigpath=None,
+    orientation='orientation'
+)
