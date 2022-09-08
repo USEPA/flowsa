@@ -47,6 +47,7 @@ def addSectorNames(df, BEA=False, mappingfile=None):
     else:
         if mappingfile is not None:
             cw = pd.read_csv(mappingfile)
+            cw = cw.rename(columns={'Abrv_Name': 'SectorName'})
         else:
             cw = load_crosswalk('sector_name')
             cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
@@ -314,7 +315,7 @@ def generateSankeyData(methodname,
                     secondary_sector_level_dict=secondary_sector_level)
                 df = df[df[f'Sector{s}By'].isin(sector_list)]
     # add sector names
-    sankeymappingfile = f'{datapath}SankeyNames.csv'
+    sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
 
     # create df for sankey diagram
@@ -339,8 +340,9 @@ def generateSankeyData(methodname,
     nodes = pd.concat([spb, scb], ignore_index=True)
     nodes['Num'] = nodes.index
     # add colors
-    color_dict = load_yaml_dict('VisualizationColors')
-    nodes['Color'] = nodes['Nodes'].map(color_dict)
+    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv')
+    nodes = nodes.merge(vis[['Sector', 'Color']], left_on='Nodes',
+                        right_on='Sector', how='left').drop(columns=['Sector'])
     # fill in any colors missing from the color dictionary with random colors
     nodes['Color'] = nodes['Color'].fillna(
         "#%06x" % random.randint(0, 0xFFFFFF))
@@ -360,7 +362,7 @@ def generateSankeyData(methodname,
 
     # add flow amounts to label
     nodes['Label'] = nodes['Nodes'] + '<br>' + nodes['FlowAmount'].round(
-        2).astype(str) + ' ' + df2['Unit'][0]
+        2).astype(str)
 
     # subset df to sectors and flowamount
     flows = df2[['SectorProducedBy', 'SectorConsumedBy',
@@ -387,7 +389,7 @@ def generateSankeyDiagram(methodnames,
                           sectors_to_include=None,
                           fbsconfigpath=None,
                           plot_title=None,
-                          orientation='vertical'):
+                          orientation='horizonal'):
     """
     Sankey diagram developed to map flows between sector produced by (source)
     and sector consumed by (target). Sankey developed for subplot of 2
@@ -463,36 +465,19 @@ def generateSankeyDiagram(methodnames,
 
     fig.update_layout(
         title_text=plot_title,
-        font_size=10)
+        font_size=10, margin_b=150)
 
     if orientation == 'vertical':
         width = 1400
         height = 1600
     else:
         width = 1400
-        height = 800
+        height = 900
 
     fig.show()
-    fig.write_image(f"{plotoutputpath}flowsaSankey.svg",
+    filename = 'flowsaSankey.svg'
+    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
+    fig.write_image(f"{plotoutputpath}{filename}",
                     width=width, height=height)
 
-if __name__ == '__main__':
-    methodnames = ['Food_Waste_national_2018_m1',
-                   'Food_Waste_national_2018_m2']
-    SPB_display_length = 2
-    SCB_display_length = None
-    replace_SPB_with_sectordefinition=False
-    replace_SCB_with_sectordefinition=True
-    sectors_to_include = None
-    fbsconfigpath = None
 
-    generateSankeyDiagram(
-        methodnames,
-        SPB_display_length=SPB_display_length,
-        SCB_display_length=SCB_display_length,
-        replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
-        replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
-        sectors_to_include=None,
-        fbsconfigpath=None #,
-        # orientation='horizontal'
-    )
