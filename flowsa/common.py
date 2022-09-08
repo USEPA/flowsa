@@ -121,7 +121,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     or FBS files
     :return: dictionary containing all information in yaml
     """
-    if filename in ['source_catalog', 'VisualizationColors']:
+    if filename in ['source_catalog']:
         folder = datapath
     else:
         # first check if a filepath for the yaml is specified, as is the
