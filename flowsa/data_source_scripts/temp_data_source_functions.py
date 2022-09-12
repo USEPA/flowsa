@@ -134,8 +134,11 @@ def clean_usda_cropland_naics(fba: FlowByActivity, **kwargs):
         )
         fba = pd.concat([naics_2, fba]).reset_index(drop=True)
 
-    target_naics = set(naics.industry_spec_key(fba.config['industry_spec'])
-                       .target_naics)
+    target_naics = set(
+        naics.industry_spec_key(fba.config['industry_spec'])
+        .target_naics
+        .str.replace('0', '')
+    ) | {'1122', '1125'}
 
     filtered = fba.query('ActivityConsumedBy in @target_naics')
 
