@@ -277,7 +277,7 @@ def clean_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
             .drop(columns=['descendant_flows', 'descendants_y'])
         )
 
-        return mecs
+    return mecs
 
 
 def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
