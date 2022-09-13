@@ -116,6 +116,9 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     aggregated = (
         unsuppressed
         .assign(FlowName='Number of employees')
+        .replace({'ActivityProducedBy': {'3X': '31-33',
+                                         '4X': '44-45',
+                                         '4Y': '48-49'}})
         .aggregate_flowby()
     )
 
