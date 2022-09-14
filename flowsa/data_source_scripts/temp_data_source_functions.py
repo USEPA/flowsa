@@ -52,6 +52,11 @@ def clean_qcew(fba: FlowByActivity, **kwargs):
 
 
 def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
+    if fba.config.get('geoscale') == 'national':
+        fba = fba.query('Location == "00000"')
+    else:
+        log.critical('At a subnational scale, this will take a long time.')
+
     indexed = (
         fba
         .assign(n2=fba.ActivityProducedBy.str.slice(stop=2),
