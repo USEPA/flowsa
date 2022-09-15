@@ -136,19 +136,39 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         g.tight_layout()
 
 
-def stackedBarChart(methodname, impact_cat=None):
+# test
+impact_cat=None
+combine_flowable_context=False
+stacking_col = 'Material'
+plot_title=None
+index_cols = ["Flowable", "Management Pathway", "Unit"]
+orientation='h'
+grouping_variable = 'MetaSources'
+y_variable= 'Management Pathway'
+subplot = 'Flowable'
+
+
+
+
+def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
+                    stacking_col = 'AllocationSources',
+                    plot_title=None, index_cols =None, orientation='h',
+                    grouping_variable='FlowName', y_variable='Sector', subplot=None):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
-    :param methodname: str, ex. "Water_national_m1_2015"
+    :param df: str or df, either an FBS methodname (ex. "Water_national_m1_2015") or a df
     :param impact_cat: str, name of impact category to apply and aggregate on
         impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
     :return: stacked, group bar plot
     """
 
-    df = flowsa.collapse_FlowBySector(methodname)
+    # if the df provided is a string, load the fbs method, otherwise use the df provided
+    if (type(df)) == str:
+        df = flowsa.collapse_FlowBySector(df)
 
-    index_cols = ["Location", "Sector", "Unit"]
+    if index_cols is None:
+        index_cols = ["Location", "Sector", "Unit"]
     if impact_cat:
         try:
             import lciafmt
@@ -168,20 +188,33 @@ def stackedBarChart(methodname, impact_cat=None):
             log.exception('check lciafmt branch')
             return
     else:
-        # combine the flowable and context columns for graphing
-        df['Flow'] = df['Flowable'] + ', ' + df['Context']
-        var = 'Flow'
+        if grouping_variable is None:
+            # combine the flowable and context columns for graphing
+            df['Flow'] = df['Flowable'] + ', ' + df['Context']
+            var = 'Flow'
+        else:
+            var = grouping_variable
         df_unit = df['Unit'][0]
     index_cols = index_cols + [var]
 
-    # If 'Allocationsources' value is null, replace with 'Direct
-    df['AllocationSources'] = df['AllocationSources'].fillna('Direct')
+    # If 'AllocationSources' value is null, replace with 'Direct
+    try:
+        df['AllocationSources'] = df['AllocationSources'].fillna('Direct')
+    except KeyError:
+        pass
     # aggregate by location/sector/unit and optionally 'context'
-    df2 = df.groupby(index_cols + ['AllocationSources'],
+    df2 = df.groupby(index_cols + [stacking_col],
                      as_index=False).agg({"FlowAmount": sum})
-    df2 = df2.sort_values(['Sector', 'AllocationSources'])
+    df2 = df2.sort_values([y_variable, stacking_col])
 
-    fig = go.Figure()
+    # if orientation == 'h':
+    #     xaxis_title=dict(title_text=f"FlowAmount ({df_unit})")
+    #     yaxis_title=dict(title_text="Sector")
+    # else:
+    #     xaxis_title = dict(title_text="Sector")
+    #     yaxis_title = dict(title_text=f"FlowAmount ({df_unit})")
+    # fig = go.Figure()
+    fig = make_subplots(rows=df2[['Flowable']].drop_duplicates().shape[0], cols=1)
 
     fig.update_layout(
         template="simple_white",
@@ -191,25 +224,28 @@ def stackedBarChart(methodname, impact_cat=None):
     )
 
     # create list of n colors based on number of allocation sources
-    colors = px.colors.qualitative.Plotly[
-             0:len(df2['AllocationSources'].unique())]
+    colors = df2[[stacking_col]].drop_duplicates()
+    colors['Color'] = colors.apply(lambda row: "#%06x" % random.randint(0, 0xFFFFFF), axis=1)
+    # merge back into df
+    df2 = df2.merge(colors, how='left')
 
-    for r, c in zip(df2['AllocationSources'].unique(), colors):
-        plot_df = df2[df2['AllocationSources'] == r]
-        y_axis_col = [plot_df['Sector'], plot_df[var]]
-        fig.add_trace(
-            go.Bar(x=plot_df['FlowAmount'],
-                   y=y_axis_col, name=r,
-                   orientation='h',
-                   marker_color=c
-                   ))
+    for i, s in enumerate(df2[subplot].drop_duplicates().values.tolist()):
+        df3 = df2[df2[subplot] == s].reset_index(drop=True)
+        for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
+            plot_df = df3[df3[stacking_col] == r]
+            y_axis_col = [plot_df[y_variable], plot_df[var]]
+            fig.add_trace(
+                go.Bar(x=plot_df['FlowAmount'],
+                       y=y_axis_col, name=r,
+                       orientation=orientation,
+                       marker_color=c
+                       ),
+                row=i+1,
+                col = 1
+            )
 
     fig.update_yaxes(autorange="reversed")
-    fig.update_layout(title=methodname)
-
-    # Render in browser
-    # import plotly.io as pio
-    # pio.renderers.default='browser'
+    fig.update_layout(title=plot_title)
 
     fig.show()
 
