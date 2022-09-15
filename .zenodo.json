@@ -1,0 +1,43 @@
+{
+    "description": "Attributes resources (environmental, monetary, and human), emissions, wastes, and losses to US industrial and final use sectors.", 
+    "license": "MIT",
+    "title": "FLOWSA",
+    "upload_type": "software", 
+    "creators": [
+        {
+            "affiliation": "US Environmental Protection Agency", 
+            "name": "Catherine Birney",
+            "orcid": "https://orcid.org/0000-0003-4467-9927"
+        }, 
+        {
+            "affiliation": "Eastern Research Group", 
+            "name": "Ben Young",
+            "orcid": "https://orcid.org/0000-0001-6276-8670"
+        }, 
+        {
+            "affiliation": "US Bureau of Economic Analysis", 
+            "name": "Matthew Chambers",
+            "orcid": "https://orcid.org/0000-0001-6382-3344"
+        },  
+        {
+            "affiliation": "Global Quality Corp.", 
+            "name": "Melissa Conner"
+        }, 
+        {
+            "affiliation": "Global Quality Corp.", 
+            "name": "Jacob Specht"
+        }, 
+
+        {
+            "affiliation": "General Dynamics Information Technology, Inc.",
+            "name": "Mo Li",
+            "orcid": "https://orcid.org/0000-0002-3672-1622"
+        }, 
+        {
+            "affiliation": "US Environmental Protection Agency", 
+            "name": "Wesley Ingwersen",
+            "orcid": "https://orcid.org/0000-0002-9614-701X"
+        }
+    ],
+    "access_right": "open"
+}
