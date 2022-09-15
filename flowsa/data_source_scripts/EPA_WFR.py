@@ -7,6 +7,7 @@ Scrapes data from 2018 Wasted Food Report.
 
 import io
 import pandas as pd
+import numpy as np
 from string import ascii_uppercase
 import tabula
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
@@ -336,3 +337,94 @@ def attribute_cnhw_food(flows, method, k, v, *_):
 
     return cnhw
 
+
+def return_fraction_foodwaste_treated_commodities():
+    """
+    Return dictionary of how the food waste is used after entering
+    waste management pathways - fractions are pulled from EPA REI
+    https://www.epa.gov/smm/recycling-economic-information-rei-report
+    :return: dict, food waste pathway food use
+    """
+    pathway_attribution = {
+        'Animal Feed':
+            {'Wheat farming, field and seed production': 1},  # Fresh wheat, corn, (1111B0)
+        'Animal meal, meat, fats, oils, and tallow':
+            {'Dog and cat food manufacturing': 0.31,
+             'Other animal food manufacturing': 0.54,
+             'Petrochemical manufacturing': 0.03,
+             'Other basic organic chemical manufacturing': 0.03,
+             'Soap and cleaning compound manufacturing': 0.03,
+             'Toilet preparation manufacturing': 0.03,
+             'Printing ink manufacturing': 0.03},
+        'Biodiesel':
+            {'Gasoline': 1},  # 324110
+        'Anaerobic Digestion':
+            {'Natural gas': 0.0469},  # 221200, On a mass basis, there is 0.0469 kg biogas per kg waste
+        'Compost':
+            {'Support activities for agriculture and forestry': 0.13,
+             'Stone mining and quarrying': 0.02,
+             'Other nonresidential structures': 0.02,
+             'Pesticide and other agricultural chemical manufacturing': 0.8,
+             'Motor vehicle and motor vehicle parts and supplies': 0.0006,
+             'Professional and commercial equipment and supplies': 0.0011,
+             'Household appliances and electrical and electronic goods': 0.009,
+             'Machinery, equipment, and supplies': 0.001,
+             'Other durable goods merchant wholesalers': 0.0014,
+             'Drugs and druggists’ sundries': 0.0008,
+             'Grocery and related product wholesalers': 0.0008,
+             'Petroleum and petroleum products': 0.001,
+             'Other nondurable goods merchant wholesalers': 0.0018,
+             'Wholesale electronic markets and agents and brokers': 0.0004,
+             'Customs duties': 0.0002,
+             'Services to buildings and dwellings': 0.01,
+             'Museums, historical sites, zoos, and parks': 0.01
+             }
+    }
+    return pathway_attribution
+
+
+def foodwaste_use(fba, source_dict):
+    """
+    clean_fba_df_fxn
+
+    Attribute food waste to how waste is used
+    :param fba:
+    :param source_dict:
+    :return:
+    """
+    use = source_dict.get('activity_parameters')
+    outputs = fba.loc[fba['ActivityConsumedBy'].isin(use)].reset_index(drop=True)
+    outputs['ActivityProducedBy'] = outputs['ActivityConsumedBy']
+    outputs = outputs.drop(columns='ActivityConsumedBy')
+    groupcols = list(outputs.select_dtypes(include=['object', 'int']).columns)
+    outputs2 = aggregator(outputs, groupcols)
+
+    # load fw treatment dictoinary
+    fw_tmt = return_fraction_foodwaste_treated_commodities()
+    replace_keys = {'Animal meal, meat, fats, oils, and tallow': 'Bio-based Materials/Biochemical Processing',
+                    'Anaerobic Digestion': 'Codigestion/Anaerobic Digestion',
+                    'Compost': 'Composting/Aerobic Processes'}
+    for k, v in replace_keys.items():
+        fw_tmt[v] = fw_tmt.pop(k)
+
+    fw_tmt = (pd.DataFrame(fw_tmt).rename_axis(index='ActivityConsumedBy', columns='ActivityProducedBy')
+              .stack()
+              .rename('Multiplier')
+              .reset_index())
+    outputs3 = outputs2.merge(fw_tmt, how='left')
+
+    outputs3['Flowable'] = outputs3["Flowable"].apply(lambda x:
+                                                      f"{x} Treated")
+    # update flowamount with multiplier fractions
+    outputs3['FlowAmount'] = outputs3['FlowAmount'] * outputs3['Multiplier']
+
+    # also in wasted food report - APB "food banks" are the output from the ACB "Food Donation"
+    fba['Flowable'] = np.where(fba['ActivityProducedBy'] == 'Food Banks',
+                               fba["Flowable"].apply(lambda x: f"{x} Treated"), fba["Flowable"])
+
+    df1 = pd.concat([fba, outputs3], ignore_index=True)
+    cols = flow_by_activity_mapped_fields.copy()
+    cols.pop('FlowAmount')
+    df1 = aggregator(df1, cols)
+
+    return df1
