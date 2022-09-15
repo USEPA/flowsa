@@ -136,24 +136,10 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         g.tight_layout()
 
 
-# test
-impact_cat=None
-combine_flowable_context=False
-stacking_col = 'Material'
-plot_title=None
-index_cols = ["Flowable", "Management Pathway", "Unit"]
-orientation='h'
-grouping_variable = 'MetaSources'
-y_variable= 'Management Pathway'
-subplot = 'Flowable'
-
-
-
-
 def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
                     stacking_col = 'AllocationSources',
                     plot_title=None, index_cols =None, orientation='h',
-                    grouping_variable='FlowName', y_variable='Sector', subplot=None):
+                    grouping_variable='FlowName', sector_variable='Sector', subplot=None):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
@@ -205,21 +191,15 @@ def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
     # aggregate by location/sector/unit and optionally 'context'
     df2 = df.groupby(index_cols + [stacking_col],
                      as_index=False).agg({"FlowAmount": sum})
-    df2 = df2.sort_values([y_variable, stacking_col])
+    df2 = df2.sort_values([sector_variable, stacking_col])
 
-    # if orientation == 'h':
-    #     xaxis_title=dict(title_text=f"FlowAmount ({df_unit})")
-    #     yaxis_title=dict(title_text="Sector")
-    # else:
-    #     xaxis_title = dict(title_text="Sector")
-    #     yaxis_title = dict(title_text=f"FlowAmount ({df_unit})")
-    # fig = go.Figure()
-    fig = make_subplots(rows=df2[['Flowable']].drop_duplicates().shape[0], cols=1)
+    fig = make_subplots(rows=1, cols=df2[['Flowable']].drop_duplicates().shape[0],
+                        subplot_titles=df2[subplot].drop_duplicates().values.tolist())
 
     fig.update_layout(
         template="simple_white",
-        xaxis=dict(title_text=f"FlowAmount ({df_unit})"),
-        yaxis=dict(title_text="Sector"),
+        # xaxis=xaxis_title,
+        # yaxis=yaxis_title,
         barmode="stack",
     )
 
@@ -233,19 +213,33 @@ def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
         df3 = df2[df2[subplot] == s].reset_index(drop=True)
         for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
             plot_df = df3[df3[stacking_col] == r]
-            y_axis_col = [plot_df[y_variable], plot_df[var]]
+            flow_col = plot_df['FlowAmount']
+            sector_col = [plot_df[sector_variable], plot_df[var]]
+            if orientation == 'h':
+                x_data = flow_col
+                y_data = sector_col
+                xaxis_title = f"FlowAmount ({df_unit})"
+                yaxis_title = "Sector"
+            else:
+                x_data = sector_col
+                y_data = flow_col
+                xaxis_title = "Sector"
+                yaxis_title = f"FlowAmount ({df_unit})"
+            flow_col = plot_df['FlowAmount']
             fig.add_trace(
-                go.Bar(x=plot_df['FlowAmount'],
-                       y=y_axis_col, name=r,
+                go.Bar(x=x_data, y=y_data, name=r,
                        orientation=orientation,
                        marker_color=c
                        ),
-                row=i+1,
-                col = 1
+                row=1,
+                col=i+1
             )
 
-    fig.update_yaxes(autorange="reversed")
-    fig.update_layout(title=plot_title)
+    if orientation == 'h':
+        fig.update_yaxes(autorange="reversed")
+    fig.update_layout(title=plot_title,
+                      template="simple_white",
+                      )
 
     fig.show()
 
