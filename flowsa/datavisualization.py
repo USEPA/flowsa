@@ -19,6 +19,7 @@ from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.flowbyfunctions import sector_aggregation
 from flowsa.sectormapping import get_sector_list
 from flowsa.settings import log, datapath, plotoutputpath
+import textwrap
 
 
 def addSectorNames(df, BEA=False, mappingfile=None):
@@ -136,6 +137,10 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         g.tight_layout()
 
 
+def customwrap(s,width=30):
+    return "<br>".join(textwrap.wrap(s,width=width))
+
+
 def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
                     stacking_col = 'AllocationSources',
                     plot_title=None, index_cols =None, orientation='h',
@@ -180,7 +185,7 @@ def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
             var = 'Flow'
         else:
             var = grouping_variable
-        df_unit = df['Unit'][0]
+        # df_unit = df['Unit'][0]
     index_cols = index_cols + [var]
 
     # If 'AllocationSources' value is null, replace with 'Direct
@@ -193,13 +198,14 @@ def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
                      as_index=False).agg({"FlowAmount": sum})
     df2 = df2.sort_values([sector_variable, stacking_col])
 
-    fig = make_subplots(rows=1, cols=df2[['Flowable']].drop_duplicates().shape[0],
+    # wrap the sector col
+    df2[sector_variable] = df2[sector_variable].apply(lambda x: customwrap(x,width=18))
+
+    fig = make_subplots(rows=1, cols=df2[[subplot]].drop_duplicates().shape[0],
                         subplot_titles=df2[subplot].drop_duplicates().values.tolist())
 
     fig.update_layout(
         template="simple_white",
-        # xaxis=xaxis_title,
-        # yaxis=yaxis_title,
         barmode="stack",
     )
 
@@ -212,28 +218,29 @@ def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
     for i, s in enumerate(df2[subplot].drop_duplicates().values.tolist()):
         df3 = df2[df2[subplot] == s].reset_index(drop=True)
         for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
-            plot_df = df3[df3[stacking_col] == r]
+            plot_df = df3[df3[stacking_col] == r].reset_index(drop=True)
             flow_col = plot_df['FlowAmount']
             sector_col = [plot_df[sector_variable], plot_df[var]]
             if orientation == 'h':
                 x_data = flow_col
                 y_data = sector_col
-                xaxis_title = f"FlowAmount ({df_unit})"
+                xaxis_title = f"FlowAmount ({plot_df['Unit'][0]})"
                 yaxis_title = "Sector"
             else:
                 x_data = sector_col
                 y_data = flow_col
                 xaxis_title = "Sector"
-                yaxis_title = f"FlowAmount ({df_unit})"
-            flow_col = plot_df['FlowAmount']
+                yaxis_title = f"FlowAmount ({plot_df['Unit'][0]})"
             fig.add_trace(
                 go.Bar(x=x_data, y=y_data, name=r,
                        orientation=orientation,
-                       marker_color=c
+                       marker_color=c,
                        ),
                 row=1,
                 col=i+1
             )
+            fig.update_xaxes(title_text=xaxis_title, row=1, col=i+1)
+            fig.update_yaxes(title_text=yaxis_title, row=1, col=i+1)
 
     if orientation == 'h':
         fig.update_yaxes(autorange="reversed")
@@ -241,7 +248,17 @@ def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
                       template="simple_white",
                       )
 
+    # prevent duplicate legend entries
+    names = set()
+    fig.for_each_trace(
+        lambda trace:
+        trace.update(showlegend=False)
+        if (trace.name in names) else names.add(trace.name))
+
     fig.show()
+    filename = 'flowsaBarChart.svg'
+    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
+    fig.write_image(f"{plotoutputpath}{filename}")
 
 
 def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
