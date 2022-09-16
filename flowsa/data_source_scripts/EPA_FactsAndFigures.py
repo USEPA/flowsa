@@ -7,7 +7,7 @@ supporting functions.
 """
 
 import io
-import tabula
+from tabula.io import read_pdf
 import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
@@ -29,10 +29,10 @@ def ff_call(*, resp, year, **_):
         pages = [6, 8, 9]
     pdf_pages = []
     for page_number in pages:
-        pdf_page = tabula.read_pdf(io.BytesIO(resp.content),
-                                   pages=page_number,
-                                   stream=True,
-                                   guess=True)[0]
+        pdf_page = read_pdf(io.BytesIO(resp.content),
+                            pages=page_number,
+                            stream=True,
+                            guess=True)[0]
         if page_number == 6:
             # skip the first few rows
             pg = pdf_page.loc[2:33].reset_index(drop=True)
