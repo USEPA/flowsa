@@ -141,10 +141,15 @@ def customwrap(s,width=30):
     return "<br>".join(textwrap.wrap(s,width=width))
 
 
-def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
+def stackedBarChart(df,
+                    impact_cat=None,
                     stacking_col = 'AllocationSources',
-                    plot_title=None, index_cols =None, orientation='h',
-                    grouping_variable='FlowName', sector_variable='Sector', subplot=None):
+                    plot_title=None,
+                    index_cols =None,
+                    orientation='h',
+                    grouping_variable='FlowName',
+                    sector_variable='Sector',
+                    subplot=None):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
@@ -171,7 +176,7 @@ def stackedBarChart(df, impact_cat=None, combine_flowable_context=True,
             if len(df) == 0:
                 log.exception(f'Impact category: {impact_cat} not found')
                 return
-            df_unit = df['Indicator unit'][0]
+            # df_unit = df['Indicator unit'][0]
         except ImportError:
             log.exception('lciafmt not installed')
             return
