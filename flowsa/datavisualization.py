@@ -162,6 +162,9 @@ def stackedBarChart(df,
     # if the df provided is a string, load the fbs method, otherwise use the df provided
     if (type(df)) == str:
         df = flowsa.collapse_FlowBySector(df)
+        
+    # convert units
+    df = convert_units_for_graphics(df)
 
     if index_cols is None:
         index_cols = ["Location", "Sector", "Unit"]
@@ -255,7 +258,9 @@ def stackedBarChart(df,
     if orientation == 'h':
         fig.update_yaxes(autorange="reversed")
     fig.update_layout(title=plot_title,
+                      autosize=False,
                       template="simple_white",
+                      font_size=10, margin_b=150
                       )
 
     # prevent duplicate legend entries
@@ -268,7 +273,7 @@ def stackedBarChart(df,
     fig.show()
     filename = 'flowsaBarChart.svg'
     log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
-    fig.write_image(f"{plotoutputpath}{filename}")
+    fig.write_image(f"{plotoutputpath}{filename}", width=1200, height=1200)
 
 
 def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
@@ -311,8 +316,21 @@ def convert_units_for_graphics(df):
                                 df['FlowAmount']/(10**9),
                                 df['FlowAmount'])
     df['Unit'] = np.where((df["Class"] == 'Other') & (df['Unit'] == 'kg'),
-                          "MMT",
-                          df['Unit'])
+                          "MMT", df['Unit'])
+    
+    # convert kg to million metric tons for class chemicals
+    df['FlowAmount'] = np.where((df["Class"] == 'Chemicals') &
+                                (df['Unit'] == 'kg'),
+                                df['FlowAmount']/(10**9),
+                                df['FlowAmount'])
+    df['Unit'] = np.where((df["Class"] == 'Chemicals') & (df['Unit'] == 'kg'),
+                          "MMT", df['Unit'])
+    
+    # convert people to thousand
+    df['FlowAmount'] = np.where(df['Unit'] == 'p',
+                                df['FlowAmount']/(1000),
+                                df['FlowAmount'])
+    df['Unit'] = np.where(df['Unit'] == 'p', "Thousand p", df['Unit'])
 
     return df
 
