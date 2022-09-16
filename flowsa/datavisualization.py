@@ -206,7 +206,10 @@ def stackedBarChart(df,
     # wrap the sector col
     df2[sector_variable] = df2[sector_variable].apply(lambda x: customwrap(x,width=18))
 
-    fig = make_subplots(rows=1, cols=df2[[subplot]].drop_duplicates().shape[0],
+    #todo: update so not hardcoded
+    rows = 2
+    cols = 2
+    fig = make_subplots(rows=rows, cols=cols,
                         subplot_titles=df2[subplot].drop_duplicates().values.tolist())
 
     fig.update_layout(
@@ -221,6 +224,8 @@ def stackedBarChart(df,
     df2 = df2.merge(colors, how='left')
 
     for i, s in enumerate(df2[subplot].drop_duplicates().values.tolist()):
+        row = i // cols + 1
+        col = (i % rows) + 1
         df3 = df2[df2[subplot] == s].reset_index(drop=True)
         for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
             plot_df = df3[df3[stacking_col] == r].reset_index(drop=True)
@@ -241,11 +246,11 @@ def stackedBarChart(df,
                        orientation=orientation,
                        marker_color=c,
                        ),
-                row=1,
-                col=i+1
+                row=row,
+                col=col
             )
-            fig.update_xaxes(title_text=xaxis_title, row=1, col=i+1)
-            fig.update_yaxes(title_text=yaxis_title, row=1, col=i+1)
+            fig.update_xaxes(title_text=xaxis_title, row=row, col=col)
+            fig.update_yaxes(title_text=yaxis_title, row=row, col=col)
 
     if orientation == 'h':
         fig.update_yaxes(autorange="reversed")
