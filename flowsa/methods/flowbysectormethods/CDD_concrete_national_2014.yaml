@@ -8,6 +8,7 @@ source_names:
     class: Other
     geoscale_to_use: national
     year: 2014
+    activity_to_sector_mapping: 'CDD_concrete'
     clean_fba_df_fxn: !script_function:EPA_CDDPath cdd_processing
     cdd_parameter: "Concrete"
     pct_to_mixed: 0.08840 # Percent of total waste that passes through Mixed CDD facility
