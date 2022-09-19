@@ -130,9 +130,6 @@ def assign_wood_to_engineering(fba, **_):
 def keep_activity_consumed_by(fba, **_):
     """clean_allocation_fba"""
     fba['ActivityProducedBy'] = None
-    # aggregate df
-    groupcols = list(fba.select_dtypes(include=['object', 'int']).columns)
-    fba = aggregator(fba, groupcols)
     return fba
 
 

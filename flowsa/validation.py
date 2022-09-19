@@ -358,7 +358,6 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
     """
     data_format = v.get('data_format')
     if (data_format == 'FBA') & (check_activities_sector_like(fba_load)):
-        print('true')
         vLog.debug('Not comparing loaded FlowByActivity to FlowBySector '
                    'ratios for a dataset with sector-like activities because '
                    'if there are modifications to flowamounts for a sector, '
