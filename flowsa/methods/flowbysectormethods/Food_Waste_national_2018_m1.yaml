@@ -11,12 +11,12 @@ source_names:
     class: Other
     geoscale_to_use: national
     year: 2018
-#    clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
-#    activity_parameters:
-#      - "Animal Feed"
-#      - "Bio-based Materials/Biochemical Processing"
-#      - "Codigestion/Anaerobic Digestion"
-#      - "Composting/Aerobic Processes"
+    clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
+    activity_parameters:
+      - "Animal Feed"
+      - "Bio-based Materials/Biochemical Processing"
+      - "Codigestion/Anaerobic Digestion"
+      - "Composting/Aerobic Processes"
     activity_sets:
       direct:
         names:
