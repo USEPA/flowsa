@@ -9,7 +9,7 @@ import io
 import pandas as pd
 import numpy as np
 from string import ascii_uppercase
-import tabula
+from tabula.io import read_pdf
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.location import US_FIPS
 from flowsa.schema import flow_by_activity_mapped_fields
@@ -31,8 +31,8 @@ def epa_wfr_call(*, resp, **_):
     df = pd.DataFrame()
     pages = range(41, 43)
     for x in pages:
-        df_l = tabula.read_pdf(io.BytesIO(resp.content),
-                             pages=x, stream=True)
+        df_l = read_pdf(io.BytesIO(resp.content),
+                        pages=x, stream=True)
         if len(df_l[0].columns) == 12:
             df = df_l[0].set_axis(
                 ['Management Pathway', 'Manufacturing/Processing',
