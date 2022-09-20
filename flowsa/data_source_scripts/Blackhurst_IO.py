@@ -8,7 +8,7 @@ Includes supporting functions for Blackhurst paper data.
 """
 
 import io
-import tabula
+from tabula.io import read_pdf
 import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
@@ -33,8 +33,8 @@ def bh_call(*, resp, **_):
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
-        bh_df = tabula.read_pdf(io.BytesIO(resp.content),
-                                pages=x, stream=True)[0]
+        bh_df = read_pdf(io.BytesIO(resp.content),
+                         pages=x, stream=True)[0]
         bh_df_list.append(bh_df)
 
     bh_df = pd.concat(bh_df_list, sort=False)
