@@ -346,8 +346,10 @@ def return_fraction_foodwaste_treated_commodities():
     :return: dict, food waste pathway food use
     """
     pathway_attribution = {
-        'Animal Feed':
-            {'Wheat farming, field and seed production': 1},  # Fresh wheat, corn, (1111B0)
+        'Animal Feed':  # Fresh wheat, corn, (1111B0)
+            # todo: consider an alternative to 50/50 split for wheat and corn
+            {'Wheat farming, field and seed production': 0.5,
+             'Corn farming (except sweet corn), field and seed production': 0.5},
         'Animal meal, meat, fats, oils, and tallow':
             {'Dog and cat food manufacturing': 0.31,
              'Other animal food manufacturing': 0.54,
