@@ -4,10 +4,9 @@ EPA REI
 """
 import pandas as pd
 from flowsa.location import US_FIPS
-import re
 
 
-def primary_factors_call(*, url, **_):
+def rei_call(*, url, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
     df into FBA format
@@ -22,7 +21,7 @@ def primary_factors_call(*, url, **_):
     return df
 
 
-def primary_factors_parse(*, df_list, year, **_):
+def rei_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
@@ -30,14 +29,17 @@ def primary_factors_parse(*, df_list, year, **_):
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    # concat list of dataframes
+    # create list of dataframes for primary factors and waste
+    rei_list = []
+
+    # df for primary factors
     df = pd.concat(df_list, sort=False)
     df.iloc[0, 0] = 'Description'
-    df.iloc[0, 1] = 'Activity'
+    df.iloc[0, 1] = 'ActivityProducedBy'
     df = df.rename(columns=df.iloc[0]).drop(df.index[0]).reset_index(drop=True)
 
     # use "melt" fxn to convert columns into rows
-    df = df.melt(id_vars=["Description", "Activity"],
+    df = df.melt(id_vars=["Description", "ActivityProducedBy"],
                  var_name="FlowName",
                  value_name="FlowAmount")
 
@@ -52,4 +54,13 @@ def primary_factors_parse(*, df_list, year, **_):
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
 
-    return df
+    rei_list.append(df)
+
+    # waste flows only
+    df1 = df.query('Description.str.startswith("RS")',
+                   engine='python').reset_index(drop=True)
+    df1 = df1.assign(SourceName='EPA_REI_WF')
+
+    rei_list.append(df1)
+
+    return rei_list
