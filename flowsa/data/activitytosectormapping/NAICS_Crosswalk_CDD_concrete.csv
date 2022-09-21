@@ -1,0 +1,15 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+EPA_CDDPath,Buildings,NAICS_2012_Code,2361,I
+EPA_CDDPath,Other,NAICS_2012_Code,236210,I
+EPA_CDDPath,Buildings,NAICS_2012_Code,236220,I
+EPA_CDDPath,Other,NAICS_2012_Code,237110,I
+EPA_CDDPath,Other,NAICS_2012_Code,237130,I
+EPA_CDDPath,Roads and Bridges,NAICS_2012_Code,237310,I
+EPA_CDDPath,Other,NAICS_2012_Code,237990,I
+EPA_CDDPath,Concrete Processing,NAICS_2012_Code,5629203,I
+EPA_CDDPath,Mixed CDD Processing,NAICS_2012_Code,5629202,I
+EPA_CDDPath,Aggregate- Drain Rock,NAICS_2012_Code,238910,C
+EPA_CDDPath,Aggregate- Other Construction,NAICS_2012_Code,237990,C
+EPA_CDDPath,Aggregate- Road Base,NAICS_2012_Code,237310,C
+EPA_CDDPath,Landfill,NAICS_2012_Code,5622121,I
+EPA_CDDPath,Remanufacture - Concrete,NAICS_2012_Code,327310,C
