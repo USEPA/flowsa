@@ -11,12 +11,6 @@ source_names:
     class: Other
     geoscale_to_use: national
     year: 2018
-    clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
-    activity_parameters:
-      - "Animal Feed"
-      - "Bio-based Materials/Biochemical Processing"
-      - "Codigestion/Anaerobic Digestion"
-      - "Composting/Aerobic Processes"
     activity_sets:
       direct:
         names:
@@ -63,12 +57,3 @@ source_names:
         allocation_source_year: 2018
         allocation_from_scale: national
         allocation_fba_load_scale: national
-      treated_waste:
-        names:
-          - "Animal Feed"
-          - "Bio-based Materials/Biochemical Processing"
-          - "Codigestion/Anaerobic Digestion"
-          - "Composting/Aerobic Processes"
-          - "Food Banks"
-        allocation_method: direct
-        allocation_from_scale: national
