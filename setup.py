@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='1.2.2',
+    version='1.2.4',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
@@ -14,7 +14,7 @@ setup(
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
         'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
         'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
-        'pandas>=1.3.2',
+        'pandas>=1.4.0',
         'pip>=9',
         'setuptools>=41',
         'pyyaml>=5.3',
@@ -33,8 +33,8 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='MIT',
-    author='Catherine Birney, Ben Young, Melissa Conner, Jacob Specht, '
-           'Mo Li, and Wesley Ingwersen',
+    author='Catherine Birney, Ben Young, Matthew Chambers, Melissa Conner, '
+           'Jacob Specht, Mo Li, and Wesley Ingwersen',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 5 - Production/Stable",

@@ -177,10 +177,11 @@ def ghg_call(*, resp, url, year, config, **_):
                     # Skip tables when the year does not align with target year
                     continue
 
+                table_name = tables[table].get('table_name', table)
                 if is_annex:
-                    path = f"Annex/Table {table}.csv"
+                    path = f"Annex/Table {table_name}.csv"
                 else:
-                    path = f"Chapter Text/{chapter}/Table {table}.csv"
+                    path = f"Chapter Text/{chapter}/Table {table_name}.csv"
 
                 # Handle special case of table 3-22 in external data folder
                 if table == "3-22b":
@@ -225,6 +226,11 @@ def ghg_call(*, resp, url, year, config, **_):
                     df.columns = new_headers
                 elif table in ANNEX_ENERGY_TABLES:
                     df = annex_yearly_tables(data, table)
+
+                if table == '3-13':
+                    # remove notes from column headers in some years
+                    cols = [c[:4] for c in list(df.columns[1:])]
+                    df = df.rename(columns=dict(zip(df.columns[1:], cols)))
 
                 if df is not None and len(df.columns) > 1:
                     years = YEARS.copy()
@@ -273,7 +279,7 @@ def strip_char(text):
     """
     text = text + " "
     notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ",
-             " h ", " i ", " j ", " k ", " b,c ", " h,i ", " f,g "]
+             " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g "]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -422,7 +428,7 @@ def ghg_parse(*, df_list, year, config, **_):
         multi_chem_names = ["2-1", "4-46", "5-7", "5-29", "ES-5"]
         source_No_activity = ["3-22", "3-22b"]
         # Handle tables with 1 parent level category
-        source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-14", "3-15",
+        source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-13", "3-14", "3-15",
                              "5-18", "5-19", "A-76", "A-77"]
         # Tables with sub categories
         source_activity_2 =  ["3-38", "3-63", "A-103"]
@@ -495,7 +501,10 @@ def ghg_parse(*, df_list, year, config, **_):
                                  "Gasoline On-Road", "Exploration",
                                  "Production (Total)", "Refining",
                                  "Crude Oil Transportation",
-                                 "Cropland", "Grassland"]
+                                 "Cropland", "Grassland",
+                                 "Gasoline", "Distillate Fuel Oil (Diesel)",
+                                 "Jet Fuel", "Aviation Gasoline", "Residual Fuel Oil",
+                                 "Natural Gas", "LPG", "Electricity"]
             for index, row in df.iterrows():
                 apb_value = strip_char(row["ActivityProducedBy"])
                 if apb_value in activity_subtotal:
