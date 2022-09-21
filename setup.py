@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='1.2.3',
+    version='1.2.4',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
@@ -33,8 +33,8 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='MIT',
-    author='Catherine Birney, Ben Young, Melissa Conner, Jacob Specht, '
-           'Mo Li, and Wesley Ingwersen',
+    author='Catherine Birney, Ben Young, Matthew Chambers, Melissa Conner, '
+           'Jacob Specht, Mo Li, and Wesley Ingwersen',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 5 - Production/Stable",

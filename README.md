@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![FLOWSA Paper](http://img.shields.io/badge/FLOWSA%20Paper-10.3390/app12115742-blue.svg)](https://doi.org/10.3390/app12115742)
+[![DOI](https://zenodo.org/badge/225456627.svg)](https://zenodo.org/badge/latestdoi/225456627)
 <!-- badges: end -->
 
 # flowsa
