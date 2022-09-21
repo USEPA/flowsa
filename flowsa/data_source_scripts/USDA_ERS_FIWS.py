@@ -5,13 +5,14 @@
 USDA Economic Research Service (ERS) Farm Income and Wealth Statistics (FIWS)
 https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
 
-Downloads the February 5, 2020 update
+Downloads the February 2, 2022 update
 """
 
 import zipfile
 import io
 import pandas as pd
 from flowsa.location import US_FIPS, get_all_state_FIPS_2, us_state_abbrev
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def fiws_call(*, resp, **_):
@@ -79,10 +80,7 @@ def fiws_parse(*, df_list, year, **_):
     df['FlowName'] = df['Description'].str.split(',').str[0]
     # add location system based on year of data
     df['Year'] = df['Year'].astype(int)
-    df.loc[df['Year'] >= 2019, 'LocationSystem'] = 'FIPS_2019'
-    df.loc[df['Year'].between(2015, 2018), 'LocationSystem'] = 'FIPS_2015'
-    df.loc[df['Year'].between(2013, 2014), 'LocationSystem'] = 'FIPS_2013'
-    df.loc[df['Year'].between(2010, 2012), 'LocationSystem'] = 'FIPS_2010'
+    df = assign_fips_location_system(df, year)
     # drop unnecessary rows
     df = df[df['FlowName'].str.contains("Cash receipts")]
     # the unit is $1000 USD, so multiply FlowAmount by 1000 and
