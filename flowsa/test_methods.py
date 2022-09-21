@@ -40,7 +40,8 @@ def test_FBA_urls():
             print('API Key required, skipping url')
             continue
         except Exception as e:
-            if e.__class__.__name__ == m_status.get('Type'):
+            if ((m_status is not None) and
+                (e.__class__.__name__ == m_status.get('Type'))):
                 print(f'Known {m_status.get("Type")} in {m}')
             else:
                 error_list.append(m)
