@@ -11,11 +11,11 @@ source_names:
   "EPA_WFR":
     !include:Food_Waste_national_2018_m1.yaml:source_names:EPA_WFR
     clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
-      activity_parameters:
-        - "Animal Feed"
-        - "Bio-based Materials/Biochemical Processing"
-        - "Codigestion/Anaerobic Digestion"
-        - "Composting/Aerobic Processes"
+    activity_parameters:
+      - "Animal Feed"
+      - "Bio-based Materials/Biochemical Processing"
+      - "Codigestion/Anaerobic Digestion"
+      - "Composting/Aerobic Processes"
     activity_sets:
       !include:Food_Waste_national_2018_m1.yaml:source_names:EPA_WFR:activity_sets
       treated_waste:
