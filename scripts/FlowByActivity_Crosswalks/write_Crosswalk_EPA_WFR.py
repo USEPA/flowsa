@@ -17,7 +17,8 @@ manually assigning to NAICS
 """
 import pandas as pd
 from flowsa.settings import crosswalkpath
-from scripts.FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
+from scripts.FlowByActivity_Crosswalks.common_scripts import \
+unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
@@ -122,7 +123,51 @@ def assign_naics(df):
     # break each sector into separate line
     df = df.explode('Sector')
 
+    # add waste treatment sectors
+    waste_ttmt = pd.DataFrame(food_waste_ttmt().items(),
+                              columns=['Activity', 'Sector'])
+    waste_ttmt['ActivitySourceName'] = 'EPA_WFR'
+
+    # apend waste treatment
+    df = pd.concat([df, waste_ttmt], ignore_index=True)
+
     return df
+
+
+def food_waste_ttmt():
+    waste_ttmt = \
+        {'Wheat farming, field and seed production': '111140',
+         'Corn farming (except sweet corn), field and seed production':
+             '111150',
+         'Dog and cat food manufacturing': '311111',
+         'Other animal food manufacturing': '311119',
+         'Petrochemical manufacturing': '325110',
+         'Other basic organic chemical manufacturing': '32519',
+         'Soap and cleaning compound manufacturing': '32561',
+         'Toilet preparation manufacturing': '32562',
+         'Printing ink manufacturing': '325910',
+         'Gasoline': '324110',
+         'Natural gas': '2212',
+         'Support activities for agriculture and forestry': '115',
+         'Stone mining and quarrying': '21231',
+         'Other nonresidential structures': '23',  # todo: update to more specific sectors
+         'Pesticide and other agricultural chemical manufacturing': '325320',
+         'Motor vehicle and motor vehicle parts and supplies': '4231',
+         'Professional and commercial equipment and supplies': '4234',
+         'Household appliances and electrical and electronic goods': '4236',
+         'Machinery, equipment, and supplies': '4238',
+         'Other durable goods merchant wholesalers': '4239',
+         'Drugs and druggists’ sundries': '4242',
+         'Grocery and related product wholesalers': '4244',
+         'Petroleum and petroleum products': '4247',
+         'Other nondurable goods merchant wholesalers': '4249',
+         'Wholesale electronic markets and agents and brokers': '425',
+         # 'Customs duties': '', # todo: discuss how to map
+         'Services to buildings and dwellings': '5617',
+         'Museums, historical sites, zoos, and parks': '712'
+         }
+
+    return waste_ttmt
 
 
 if __name__ == '__main__':

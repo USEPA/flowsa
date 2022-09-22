@@ -1,0 +1,29 @@
+# Attribute EPA's Wasted Food Report to sectors using the scoping memo for
+# attribution methodology
+# Method 3 expands on Method 1 by appending treated waste sectors
+
+
+target_sector_level: NAICS_6
+target_subset_sector_level: {NAICS_7: ['562212', '562219']}
+target_sector_source: NAICS_2012_Code
+target_geoscale: national
+source_names:
+  "EPA_WFR":
+    !include:Food_Waste_national_2018_m1.yaml:source_names:EPA_WFR
+    clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
+    activity_parameters:
+      - "Animal Feed"
+      - "Bio-based Materials/Biochemical Processing"
+      - "Codigestion/Anaerobic Digestion"
+      - "Composting/Aerobic Processes"
+    activity_sets:
+      !include:Food_Waste_national_2018_m1.yaml:source_names:EPA_WFR:activity_sets
+      treated_waste:
+        names:
+          - "Animal Feed"
+          - "Bio-based Materials/Biochemical Processing"
+          - "Codigestion/Anaerobic Digestion"
+          - "Composting/Aerobic Processes"
+          - "Food Banks"
+        allocation_method: direct
+        allocation_from_scale: national
