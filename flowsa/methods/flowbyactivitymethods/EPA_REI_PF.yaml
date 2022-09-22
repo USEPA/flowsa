@@ -9,6 +9,6 @@ format: csv
 url:
   base_url: 'https://raw.githubusercontent.com/USEPA/HIO/main/data/REI_sourcedata/REI_primaryfactors.csv'
 call_response_fxn: !script_function:EPA_REI rei_call
-parse_response_fxn: !script_function:EPA_REI rei_parse
+parse_response_fxn: !script_function:EPA_REI primary_factors_parse
 years:
-- 2020
+- 2012
