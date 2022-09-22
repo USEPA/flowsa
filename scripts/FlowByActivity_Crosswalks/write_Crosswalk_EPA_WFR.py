@@ -152,17 +152,7 @@ def food_waste_ttmt():
          'Stone mining and quarrying': '21231',
          'Other nonresidential structures': '23',  # todo: update to more specific sectors
          'Pesticide and other agricultural chemical manufacturing': '325320',
-         'Motor vehicle and motor vehicle parts and supplies': '4231',
-         'Professional and commercial equipment and supplies': '4234',
-         'Household appliances and electrical and electronic goods': '4236',
-         'Machinery, equipment, and supplies': '4238',
-         'Other durable goods merchant wholesalers': '4239',
-         'Drugs and druggists’ sundries': '4242',
-         'Grocery and related product wholesalers': '4244',
-         'Petroleum and petroleum products': '4247',
-         'Other nondurable goods merchant wholesalers': '4249',
-         'Wholesale electronic markets and agents and brokers': '425',
-         # 'Customs duties': '', # todo: discuss how to map
+         'Wholesale Trade': '42',
          'Services to buildings and dwellings': '5617',
          'Museums, historical sites, zoos, and parks': '712'
          }

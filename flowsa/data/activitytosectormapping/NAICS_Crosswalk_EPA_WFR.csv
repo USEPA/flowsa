@@ -29,17 +29,8 @@ EPA_WFR,Pesticide and other agricultural chemical manufacturing,NAICS_2012_Code,
 EPA_WFR,Soap and cleaning compound manufacturing,NAICS_2012_Code,32561,I
 EPA_WFR,Toilet preparation manufacturing,NAICS_2012_Code,32562,I
 EPA_WFR,Printing ink manufacturing,NAICS_2012_Code,325910,I
-EPA_WFR,Motor vehicle and motor vehicle parts and supplies,NAICS_2012_Code,4231,I
-EPA_WFR,Professional and commercial equipment and supplies,NAICS_2012_Code,4234,I
-EPA_WFR,Household appliances and electrical and electronic goods,NAICS_2012_Code,4236,I
-EPA_WFR,"Machinery, equipment, and supplies",NAICS_2012_Code,4238,I
-EPA_WFR,Other durable goods merchant wholesalers,NAICS_2012_Code,4239,I
-EPA_WFR,Drugs and druggists’ sundries,NAICS_2012_Code,4242,I
-EPA_WFR,Grocery and related product wholesalers,NAICS_2012_Code,4244,I
+EPA_WFR,Wholesale Trade,NAICS_2012_Code,42,I
 EPA_WFR,Wholesale,NAICS_2012_Code,4244,I
-EPA_WFR,Petroleum and petroleum products,NAICS_2012_Code,4247,I
-EPA_WFR,Other nondurable goods merchant wholesalers,NAICS_2012_Code,4249,I
-EPA_WFR,Wholesale electronic markets and agents and brokers,NAICS_2012_Code,425,I
 EPA_WFR,Retail,NAICS_2012_Code,4451,I
 EPA_WFR,Retail,NAICS_2012_Code,4452,I
 EPA_WFR,Retail,NAICS_2012_Code,45291,I

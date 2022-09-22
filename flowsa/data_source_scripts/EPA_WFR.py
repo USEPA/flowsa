@@ -367,17 +367,7 @@ def return_fraction_foodwaste_treated_commodities():
              'Stone mining and quarrying': 0.02,
              'Other nonresidential structures': 0.02,
              'Pesticide and other agricultural chemical manufacturing': 0.8,
-             'Motor vehicle and motor vehicle parts and supplies': 0.0006,
-             'Professional and commercial equipment and supplies': 0.0011,
-             'Household appliances and electrical and electronic goods': 0.009,
-             'Machinery, equipment, and supplies': 0.001,
-             'Other durable goods merchant wholesalers': 0.0014,
-             'Drugs and druggists’ sundries': 0.0008,
-             'Grocery and related product wholesalers': 0.0008,
-             'Petroleum and petroleum products': 0.001,
-             'Other nondurable goods merchant wholesalers': 0.0018,
-             'Wholesale electronic markets and agents and brokers': 0.0004,
-             'Customs duties': 0.0002,
+             'Wholesale Trade': 0.01,
              'Services to buildings and dwellings': 0.01,
              'Museums, historical sites, zoos, and parks': 0.01
              }
