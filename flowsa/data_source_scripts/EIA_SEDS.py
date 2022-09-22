@@ -11,8 +11,10 @@ Last updated: September 8, 2020
 
 import io
 import pandas as pd
+import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.location import getFIPS, get_all_state_FIPS_2, us_state_abbrev, US_FIPS
+from flowsa.location import get_all_state_FIPS_2, \
+    us_state_abbrev, US_FIPS
 
 
 def eia_seds_url_helper(*, build_url, config, **_):
@@ -29,7 +31,7 @@ def eia_seds_url_helper(*, build_url, config, **_):
     """
     urls = []
     url = build_url
-    csvs = ['use_all_phy.csv', 'use_US.csv']
+    csvs = config.get('csvs')
     for csv in csvs:
         urls.append(url + csv)
     return urls
@@ -44,16 +46,14 @@ def eia_seds_call(*, resp, year, **_):
     """
     with io.StringIO(resp.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
-    print(year)
     columns = ['Data_Status', 'State', 'MSN']
     columns.append(year)
-    print(columns)
     for col in df.columns:
         if col not in columns:
             df = df.drop(col, axis=1)
     return df
 
-def eia_seds_parse(*, df_list, year, **_):
+def eia_seds_parse(*, df_list, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
@@ -64,8 +64,6 @@ def eia_seds_parse(*, df_list, year, **_):
     """
     df = pd.concat(df_list, sort=False)
 
-    df = df.rename(columns={year: "FlowAmount", "MSN": "ActivityConsumedBy", "Data_Status": "Description"})
-    df['FlowName'] = "All consumption estimates"
     fips = get_all_state_FIPS_2().reset_index(drop=True)
     # ensure capitalization of state names
     fips['State'] = fips['State'].apply(lambda x: x.title())
@@ -82,8 +80,55 @@ def eia_seds_parse(*, df_list, year, **_):
     df = df.drop('StateAbbrev', axis=1)
     df = df.drop('State_x', axis=1)
     df = df.drop('State_y', axis=1)
+
+
+    units = pd.read_excel(config['url']['activities_url'],
+                          sheet_name='Codes_and_Descriptions',
+                          header=10, usecols='B:D')
+    units['FuelCode'] = units['MSN'].str[0:2]
+    units['SectorCode'] = units['MSN'].str[2:4]
+    units['UnitCode'] = units['MSN'].str[4:5]
+    units = units.query("UnitCode not in ['D', 'K']")
+
+    # get fuel names from Total Consumption and Industrial Consumption
+    fuels = (units.query("SectorCode.isin(['TC', 'IC'])")
+              .reset_index(drop=True))
+    fuels['Fuel'] = (fuels.query(
+        "Description.str.contains('total consumption')")
+        .Description.str.split(' total consumption', expand=True)[0])
+    fuels['FuelName2'] = (fuels.query(
+        "Description.str.contains('consumed by')")
+        .Description.str.split(' consumed by', expand=True)[0])
+    fuels['Fuel'] = fuels['Fuel'].fillna(fuels['FuelName2'])
+    fuels['Fuel'] = fuels['Fuel'].str.rstrip(',')
+    fuels = (fuels[['Fuel','FuelCode']].dropna().sort_values(by='Fuel')
+             .drop_duplicates(subset='FuelCode'))
+
+    # get sector names
+    sectors = units.copy()
+    sectors['ActivityConsumedBy'] = (units.query(
+        "Description.str.contains('consumed by')")
+        .Description.str.split('consumed by the ', expand=True)[1]
+        .str.strip())
+    sectors = (sectors[['SectorCode', 'ActivityConsumedBy']].dropna()
+               .sort_values(by='ActivityConsumedBy')
+               .drop_duplicates(subset='SectorCode'))
+
+    units = units.merge(fuels, how='left', on='FuelCode')
+    units = units.merge(sectors, how='left', on='SectorCode')
+    units = units.drop(columns=['FuelCode','SectorCode','UnitCode'])
+    units['Description'] = units['MSN'] + ': ' + units['Description']
+
+    df = df.merge(units, how='left', on='MSN')
+    df = (df.rename(columns={year: "FlowAmount",
+                            "Fuel": "FlowName"})
+          .drop(columns=['Data_Status'])
+          .dropna())
+
     # hard code data
-    df['Class'] = 'Energy'
+    df['Class'] = np.where(df['Unit'].str.contains('Btu') |
+                           df['Unit'].str.contains('watt'),
+                           'Energy', 'Other')
     df['SourceName'] = 'EIA_SEDS'
     df['ActivityProducedBy'] = 'None'
     df['Year'] = year

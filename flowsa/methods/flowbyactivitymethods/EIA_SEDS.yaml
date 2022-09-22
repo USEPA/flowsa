@@ -6,7 +6,11 @@ api_name: EIA_SEDS
 format: pdf
 url:
   base_url: https://www.eia.gov/state/seds/sep_use/total/csv/
+  activities_url: https://www.eia.gov/state/seds/CDF/Codes_and_Descriptions.xlsx
 url_replace_fxn: !script_function:EIA_SEDS eia_seds_url_helper
+csvs:
+    - use_all_phy.csv
+    - use_all_btu.csv
 call_response_fxn: !script_function:EIA_SEDS eia_seds_call
 parse_response_fxn: !script_function:EIA_SEDS eia_seds_parse
 years:
