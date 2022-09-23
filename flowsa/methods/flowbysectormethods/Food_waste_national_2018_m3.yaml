@@ -10,6 +10,7 @@ target_geoscale: national
 source_names:
   "EPA_WFR":
     !include:Food_Waste_national_2018_m1.yaml:source_names:EPA_WFR
+    # the below function adds in treated waste and uses REI data to proportionally attribute ABP to ACB
     clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
     activity_parameters:
       - "Animal Feed"
@@ -18,12 +19,33 @@ source_names:
       - "Composting/Aerobic Processes"
     activity_sets:
       !include:Food_Waste_national_2018_m1.yaml:source_names:EPA_WFR:activity_sets
-      treated_waste:
+      treated_waste_direct:
         names:
-          - "Animal Feed"
-          - "Bio-based Materials/Biochemical Processing"
-          - "Codigestion/Anaerobic Digestion"
-          - "Composting/Aerobic Processes"
-          - "Food Banks"
+          - 'Dog and cat food manufacturing'
+          - 'Other animal food manufacturing'
+          - 'Petrochemical manufacturing'
+          - 'Other basic organic chemical manufacturing'
+          - 'Soap and cleaning compound manufacturing'
+          - 'Toilet preparation manufacturing'
+          - 'Printing ink manufacturing'
+          - 'Gasoline'
+          - 'Natural gas'
+          - 'Stone mining and quarrying'
+          - 'Pesticide and other agricultural chemical manufacturing'
         allocation_method: direct
         allocation_from_scale: national
+      treated_waste_proportional:
+        names:
+          - 'Fresh wheat, corn'
+          - 'Support activities for agriculture and forestry'
+          - 'Other nonresidential structures'
+          - 'Wholesale Trade'
+          - 'Services to buildings and dwellings'
+          - 'Museums, historical sites, zoos, and parks'
+        allocation_method: proportional
+        allocation_source: "BLS_QCEW"
+        allocation_source_class: "Employment"
+        allocation_source_year: 2018
+        allocation_from_scale: national
+        allocation_fba_load_scale: national
+        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
