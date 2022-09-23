@@ -6,7 +6,10 @@ EPA_WFR,Land Application,NAICS_2012_Code,115112,I
 EPA_WFR,Stone mining and quarrying,NAICS_2012_Code,21231,I
 EPA_WFR,Natural gas,NAICS_2012_Code,2212,I
 EPA_WFR,Sewer/Wastewater Treatment,NAICS_2012_Code,22132,I
-EPA_WFR,Other nonresidential structures,NAICS_2012_Code,23,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,2362,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,2372,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,2379,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,238,I
 EPA_WFR,Dog and cat food manufacturing,NAICS_2012_Code,311111,I
 EPA_WFR,Animal Feed,NAICS_2012_Code,311119,I
 EPA_WFR,Other animal food manufacturing,NAICS_2012_Code,311119,I

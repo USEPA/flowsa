@@ -120,9 +120,6 @@ def assign_naics(df):
     # including that which may go to a facility designed to treat wastewater
     df.loc[df['Activity'] == 'Sewer/Wastewater Treatment', 'Sector'] = '22132'
 
-    # break each sector into separate line
-    df = df.explode('Sector')
-
     # add waste treatment sectors
     waste_ttmt = pd.DataFrame(food_waste_ttmt().items(),
                               columns=['Activity', 'Sector'])
@@ -130,6 +127,9 @@ def assign_naics(df):
 
     # apend waste treatment
     df = pd.concat([df, waste_ttmt], ignore_index=True)
+
+    # break each sector into separate line
+    df = df.explode('Sector')
 
     return df
 
@@ -150,7 +150,7 @@ def food_waste_ttmt():
          'Natural gas': '2212',
          'Support activities for agriculture and forestry': '115',
          'Stone mining and quarrying': '21231',
-         'Other nonresidential structures': '23',  # todo: update to more specific sectors
+         'Other nonresidential structures': ['2362', '2372', '2379', '238'],
          'Pesticide and other agricultural chemical manufacturing': '325320',
          'Wholesale Trade': '42',
          'Services to buildings and dwellings': '5617',
