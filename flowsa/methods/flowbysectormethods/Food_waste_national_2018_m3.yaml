@@ -12,6 +12,7 @@ source_names:
     !include:Food_Waste_national_2018_m1.yaml:source_names:EPA_WFR
     # the below function adds in treated waste and uses REI data to proportionally attribute ABP to ACB
     clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
+    # use the activity_parameters to attribute treated food waste to sectors
     activity_parameters:
       - "Animal Feed"
       - "Bio-based Materials/Biochemical Processing"
@@ -30,7 +31,6 @@ source_names:
           - 'Printing ink manufacturing'
           - 'Gasoline'
           - 'Natural gas'
-          - 'Stone mining and quarrying'
           - 'Pesticide and other agricultural chemical manufacturing'
         allocation_method: direct
         allocation_from_scale: national
@@ -38,6 +38,7 @@ source_names:
         names:
           - 'Fresh wheat, corn'
           - 'Support activities for agriculture and forestry'
+          - 'Stone mining and quarrying'
           - 'Other nonresidential structures'
           - 'Wholesale Trade'
           - 'Services to buildings and dwellings'
