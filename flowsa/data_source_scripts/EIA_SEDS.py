@@ -132,6 +132,7 @@ def eia_seds_parse(*, df_list, year, config, **_):
     df['SourceName'] = 'EIA_SEDS'
     df['ActivityProducedBy'] = 'None'
     df['Year'] = year
+    df['FlowType'] = 'TECHNOSPHERE_FLOW'
     # Fill in the rest of the Flow by fields so they show
     # "None" instead of nan.
     df['Compartment'] = 'None'
