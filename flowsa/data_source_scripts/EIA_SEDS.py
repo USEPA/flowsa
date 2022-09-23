@@ -62,7 +62,7 @@ def eia_seds_parse(*, df_list, year, config, **_):
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-    df = pd.concat(df_list, sort=False)
+    df = pd.concat(df_list, sort=False, ignore_index=True)
 
     fips = get_all_state_FIPS_2().reset_index(drop=True)
     # ensure capitalization of state names
@@ -77,11 +77,9 @@ def eia_seds_parse(*, df_list, year, config, **_):
 
     df = df.rename(columns={'FIPS_2': "Location"})
     assign_fips_location_system(df, year)
-    df = df.drop('StateAbbrev', axis=1)
-    df = df.drop('State_x', axis=1)
-    df = df.drop('State_y', axis=1)
-
-
+    df = df.drop(columns=['StateAbbrev', 'State_x', 'State_y'])
+    
+    ## Extract information for SEDS codes
     units = pd.read_excel(config['url']['activities_url'],
                           sheet_name='Codes_and_Descriptions',
                           header=10, usecols='B:D')
@@ -92,7 +90,7 @@ def eia_seds_parse(*, df_list, year, config, **_):
 
     # get fuel names from Total Consumption and Industrial Consumption
     fuels = (units.query("SectorCode.isin(['TC', 'IC'])")
-              .reset_index(drop=True))
+             .reset_index(drop=True))
     fuels['Fuel'] = (fuels.query(
         "Description.str.contains('total consumption')")
         .Description.str.split(' total consumption', expand=True)[0])

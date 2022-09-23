@@ -30,15 +30,10 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
     :return: list, urls to call, concat, parse, format into
         Flow-By-Activity format
     """
-    
-    # initialize url list
-    urls = []
-    
     # maximum number of series IDs that can be called at once
     max_num_series = 100
     
     df_seriesIDs = get_series_ids()
-    
     # add year into series IDs
     year_dict = {
         '2012': '2014',
@@ -63,10 +58,10 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
     list_seriesIDs = np.pad(list_seriesIDs, (0, rows*cols - len(list_seriesIDs)), 
                             mode='constant', constant_values='')
     array_seriesIDs = list_seriesIDs.reshape(cols, rows).T
-    
+
+    urls = []
     # for each batch of series IDs...
     for col in range(array_seriesIDs.shape[1]):
-        
         # concatenate series IDs into a list separated by semicolons
         series_list = ";".join(array_seriesIDs[:,col])
         # remove any trailing semicolons
@@ -75,8 +70,8 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
         # create url from build url
         url = build_url
         userAPIKey = load_api_key(config['api_name'])
-        url = url.replace("__API_KEY__", userAPIKey)
-        url = url.replace("__SERIES_ID__", series_list)
+        url = (url.replace("__API_KEY__", userAPIKey)
+               .replace("__SERIES_ID__", series_list))
         urls.append(url)
     return urls
 
@@ -127,14 +122,12 @@ def eia_aeo_parse(*, df_list, year, **_):
     """
     # concat dataframes
     df = pd.concat(df_list, sort=False, ignore_index=True)
-    # Add year
     df['Year'] = year
     df['Location'] = '00000'
     df = df.rename(columns={year: "FlowAmount"})
 
     for index, row in df.iterrows():
-        # index = 2; row = df.iloc[2]
-        #split the string based on :
+        # split the string based on :
         name_array = row["name"].split(":")
         name_array = [n.strip() for n in name_array]
         if len(name_array) == 4:
@@ -163,7 +156,6 @@ def eia_aeo_parse(*, df_list, year, **_):
         df.loc[index, 'ActivityConsumedBy'] = clean_string(apb_string, 'activity')
     df = df.drop(columns=['Description'])
     df = df.rename(columns={'name': 'Description'})
-    # add location system based on year of data
     df = assign_fips_location_system(df, year)
     # hard code data
     df['SourceName'] = 'EIA_AEO'
@@ -174,6 +166,7 @@ def eia_aeo_parse(*, df_list, year, **_):
     df['Compartment'] = None
     df['Class'] = 'Energy'
     return df
+
 
 def get_series_ids():
     # load crosswalk of series IDs
