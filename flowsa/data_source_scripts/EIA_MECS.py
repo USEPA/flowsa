@@ -258,7 +258,6 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
     table = table.split('    ')[0]
     table = table.split('  ')[0]
 
-
     # for each of the census regions...
     # - grab the appropriate rows and columns
     # - add column names
@@ -290,15 +289,14 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
 
         # assign column names
         # if table name ends in 1, the column names are pulled from the table dict unchanged
-
-
         if table[-1] == '1':
             df_data_region.columns = table_dict[year][table]['col_names']
             df_rse_region.columns = table_dict[year][table]['col_names']
         # if table name ends in 2, the units must be stripped from the column names listed in the table dict
-        if table[-1] == '2' or table[-1] == '0' or table[-1] == '5' or table[-1] == '6':
+        if table[-1] in ['2', '0', '5', '6']:
             df_data_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
             df_rse_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
+
         if table[-1] == '5':
             major_name = ""
             df_data_region = df_data_region.dropna()
@@ -350,53 +348,40 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
                 value_vars=df_rse_region.columns[2:],
                 var_name='FlowName', value_name='Spread')
 
-
-
         # add relative standard error data
         df_data_region = pd.merge(df_data_region, df_rse_region)
         # add census region
         df_data_region['Location'] = region
-        # add units
-        df_data['Table Name'] = table
         df_data_region['Table Name'] = table
+
+        # add units
         # if table name ends in 1, units must be extracted from flow names
         if table[-1] == '1':
             flow_name_array = df_data_region['FlowName'].str.split('\s+\|+\s')
-            df_data_region['Unit'] = 'Physical Units or Btu.'
+            df_data_region['Unit'] = flow_name_array.str[1]
             df_data_region['FlowName'] = flow_name_array.str[0]
-            df_data_region['' \
-                           ''] = flow_name_array.str[1]
         # if table name ends in 2, units are 'trillion Btu'
-        elif table[-1] == '2':
-            if table[-3] == '7':
-                df_data_region['Unit'] = 'USD / million btu'
-            else:
-                df_data_region['Unit'] = 'Trillion Btu'
-            df_data_region['FlowName'] = df_data_region['FlowName']
-        elif table[-1] == '5':
+        elif table[-1] in ['2', '5']:
             df_data_region['Unit'] = 'Trillion Btu'
-            df_data_region['FlowName'] = df_data_region['FlowName']
+            if table[-3] == '7': #7_2
+                df_data_region['Unit'] = 'USD / million btu'
         elif table[-1] == '0':
             df_data_region['Unit'] = 'million USD'
-            df_data_region['FlowName'] = df_data_region['FlowName']
 
         data_type = table_dict[year][table]['data_type']
         if data_type == 'nonfuel consumption':
             df_data_region['Class'] = 'Other'
         elif data_type == 'fuel consumption':
             df_data_region['Class'] = 'Energy'
+        elif data_type == 'money':
+            df_data_region['Class'] = 'Money'
+
         # remove extra spaces before 'Subsector and Industry' descriptions
         if table[-1] != '5':
             df_data_region['Subsector and Industry'] = \
                 df_data_region['Subsector and Industry'].str.lstrip(' ')
         else:
             df_data_region['Subsector and Industry'] = "Total"
-
-        if table[-1] == '2':
-            if table[-3] == '7':
-                df_data_region['Class'] = 'Money'
-        elif table[-1] == '0':
-            df_data_region['Class'] = 'Money'
 
         # concatenate census region data with master dataframe
         df_data = pd.concat([df_data, df_data_region])
