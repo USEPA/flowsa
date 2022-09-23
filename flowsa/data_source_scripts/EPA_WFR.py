@@ -407,6 +407,7 @@ def foodwaste_use(fba, source_dict):
                                                       f"{x} Treated")
     # update flowamount with multiplier fractions
     outputs3['FlowAmount'] = outputs3['FlowAmount'] * outputs3['Multiplier']
+    outputs3 = outputs3.drop(columns='Multiplier')
 
     # also in wasted food report - APB "food banks" are the output from the ACB "Food Donation"
     fba['Flowable'] = np.where(fba['ActivityProducedBy'] == 'Food Banks',
