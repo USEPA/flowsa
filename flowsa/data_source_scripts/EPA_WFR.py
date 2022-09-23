@@ -390,7 +390,7 @@ def foodwaste_use(fba, source_dict):
     outputs2 = aggregator(outputs, groupcols)
 
     # load fw treatment dictoinary
-    fw_tmt = return_fraction_foodwaste_treated_commodities()
+    fw_tmt = return_REI_fraction_foodwaste_treated_commodities()
     replace_keys = {'Animal meal, meat, fats, oils, and tallow': 'Bio-based Materials/Biochemical Processing',
                     'Anaerobic Digestion': 'Codigestion/Anaerobic Digestion',
                     'Compost': 'Composting/Aerobic Processes'}
