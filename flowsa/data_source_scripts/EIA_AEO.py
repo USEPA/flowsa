@@ -10,6 +10,7 @@ https://www.eia.gov/outlooks/aeo/
 import json
 import pandas as pd
 import numpy as np
+import re
 import math
 from flowsa.settings import externaldatapath
 from flowsa.common import load_api_key
@@ -36,36 +37,23 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
     # maximum number of series IDs that can be called at once
     max_num_series = 100
     
-    # load crosswalk of series IDs
-    filepath = externaldatapath + 'AEOseriesIDs.csv'
-    df_seriesIDs = pd.read_csv(filepath)
+    df_seriesIDs = get_series_ids()
     
     # add year into series IDs
-
-
-    if year == '2012':
-        aeo_year = '2014'
-    elif year == '2013':
-        aeo_year = '2015'
-    elif year == '2014':
-        aeo_year = '2016'
-    elif year == '2015':
-        aeo_year = '2017'
-    elif year == '2016':
-        aeo_year = '2018'
-    elif year == '2017':
-        aeo_year = '2019'
-    elif year == '2018':
-        aeo_year = '2019'
-    elif year == '2019':
-        aeo_year = '2020'
-    elif year == '2020':
-        aeo_year = '2021'
-    elif year == '2021':
-        aeo_year = '2022'
-    else:
-        aeo_year = '2022'
-
+    year_dict = {
+        '2012': '2014',
+        '2013': '2015',
+        '2014': '2016',
+        '2015': '2017',
+        '2016': '2018',
+        '2017': '2019',
+        '2018': '2019',
+        '2019': '2020',
+        '2020': '2021',
+        '2021': '2022',
+        # else 2022
+        }
+    aeo_year = year_dict.get(year, '2022')
     df_seriesIDs['series_id'] = df_seriesIDs['series_id'].str.replace('__year__', aeo_year)
     list_seriesIDs = df_seriesIDs['series_id'].to_list()
     
@@ -87,15 +75,12 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
         # create url from build url
         url = build_url
         userAPIKey = load_api_key(config['api_name'])
-        print(userAPIKey)
         url = url.replace("__API_KEY__", userAPIKey)
         url = url.replace("__SERIES_ID__", series_list)
-        print(url)
         urls.append(url)
-    
-  #  print(urls)
-
     return urls
+
+
 def eia_aeo_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin
@@ -118,13 +103,15 @@ def eia_aeo_call(*, resp, year, **_):
             # change the column name from the current data to the row 1 year value.
             data = row_1[col]
             year_str = data[0]
-            split_data = pd.DataFrame(df_series[col].to_list(), columns=[col + "_split", year_str])
+            split_data = pd.DataFrame(df_series[col].to_list(),
+                                      columns=[col + "_split", year_str])
             df_series = pd.concat([df_series, split_data], axis=1)
             df_series = df_series.drop(col, axis=1)
             df_series = df_series.drop(col + "_split", axis=1)
             if year_str != year:
                 df_series = df_series.drop(year_str, axis=1)
-    df_series = df_series.drop(columns=["updated", "end", "start", "f", "lastHistoricalPeriod", "description"])
+    df_series = df_series.drop(columns=["updated", "end", "start", "f",
+                                        "lastHistoricalPeriod", "description"])
     df_series = df_series.rename(columns={"series_id": "Description"})
     df_series = df_series.rename(columns={"units": "Unit"})
     return df_series
@@ -139,42 +126,72 @@ def eia_aeo_parse(*, df_list, year, **_):
         flowbyactivity specifications
     """
     # concat dataframes
-    df = pd.concat(df_list, sort=False)
+    df = pd.concat(df_list, sort=False, ignore_index=True)
     # Add year
     df['Year'] = year
     df['Location'] = '00000'
     df = df.rename(columns={year: "FlowAmount"})
 
-
     for index, row in df.iterrows():
-        string_name = row["name"]
+        # index = 2; row = df.iloc[2]
         #split the string based on :
-        name_array = string_name.split(":")
+        name_array = row["name"].split(":")
+        name_array = [n.strip() for n in name_array]
         if len(name_array) == 4:
-            name_string = name_array[0] + " " + name_array[1] + " " + name_array[2]
-            apb_stting = name_array[3]
-            df.loc[index, 'FlowName'] = name_string
-            df.loc[index, 'ActivityProducedBy'] = apb_stting
+            # Except when 3rd value is 'Natural Gas'
+            if name_array[2] == 'Natural Gas':
+                apb_string = "-".join(name_array[0:2])
+                name_string = ", ".join(name_array[2:4])
+            else:
+                apb_string = "-".join(name_array[0:3])
+                name_string = name_array[3]
         elif len(name_array) == 3:
-            name_string = name_array[0] + " " + name_array[1]
-            apb_stting = name_array[2]
-            df.loc[index, 'FlowName'] = name_string
-            df.loc[index, 'ActivityProducedBy'] = apb_stting
+            # Except when first value is Residential or Commercial
+            if name_array[0] in ['Residential', 'Commercial',
+                                 'Transportation']:
+                apb_string = "-".join([name_array[0], name_array[2]])
+                name_string = name_array[1]
+            else:
+                apb_string = "-".join(name_array[0:2])
+                name_string = name_array[2]
         elif len(name_array) == 2:
-            name_string = name_array[0]
-            apb_stting = name_array[1]
-            df.loc[index, 'FlowName'] = name_string
-            df.loc[index, 'ActivityProducedBy'] = apb_stting
+            apb_string = name_array[0]
+            name_string = name_array[1]
         else:
             print(name_array)
-    df = df.drop('name', axis=1)
+        df.loc[index, 'FlowName'] = clean_string(name_string, 'flow')
+        df.loc[index, 'ActivityConsumedBy'] = clean_string(apb_string, 'activity')
+    df = df.drop(columns=['Description'])
+    df = df.rename(columns={'name': 'Description'})
     # add location system based on year of data
     df = assign_fips_location_system(df, year)
     # hard code data
     df['SourceName'] = 'EIA_AEO'
+    df['FlowType'] = 'TECHNOSPHERE_FLOW'
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
     df['Compartment'] = None
     df['Class'] = 'Energy'
     return df
+
+def get_series_ids():
+    # load crosswalk of series IDs
+    filepath = externaldatapath + 'AEOseriesIDs.csv'
+    return pd.read_csv(filepath)
+
+
+def clean_string(s, string_type):
+    # Adjustments to flow and activity strings
+    s = re.sub(', United States(.*)', '', s)
+    s = re.sub(', Reference(.*)', '', s)
+    if string_type == 'flow':
+        s = s.replace(',','')
+        s = s.replace(' Use by End Use', '')
+        if s.startswith('Total') | (s=='Energy Use by Mode'):
+            s = 'Total'
+    if string_type == 'activity':
+        if s.startswith('Energy Use-'):
+            s = s.replace('Energy Use-','')
+        s = s.replace('-Energy Use','')
+    return s
