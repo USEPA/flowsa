@@ -136,9 +136,7 @@ def assign_naics(df):
 
 def food_waste_ttmt():
     waste_ttmt = \
-        {'Wheat farming, field and seed production': '111140',
-         'Corn farming (except sweet corn), field and seed production':
-             '111150',
+        {'Fresh wheat, corn': ['111140', '111150'],
          'Dog and cat food manufacturing': '311111',
          'Other animal food manufacturing': '311119',
          'Petrochemical manufacturing': '325110',

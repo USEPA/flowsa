@@ -338,7 +338,7 @@ def attribute_cnhw_food(flows, method, k, v, *_):
     return cnhw
 
 
-def return_fraction_foodwaste_treated_commodities():
+def return_REI_fraction_foodwaste_treated_commodities():
     """
     Return dictionary of how the food waste is used after entering
     waste management pathways - fractions are pulled from EPA REI
@@ -347,9 +347,7 @@ def return_fraction_foodwaste_treated_commodities():
     """
     pathway_attribution = {
         'Animal Feed':  # Fresh wheat, corn, (1111B0)
-            # todo: consider an alternative to 50/50 split for wheat and corn
-            {'Wheat farming, field and seed production': 0.5,
-             'Corn farming (except sweet corn), field and seed production': 0.5},
+            {'Fresh wheat, corn': 1},
         'Animal meal, meat, fats, oils, and tallow':
             {'Dog and cat food manufacturing': 0.31,
              'Other animal food manufacturing': 0.54,

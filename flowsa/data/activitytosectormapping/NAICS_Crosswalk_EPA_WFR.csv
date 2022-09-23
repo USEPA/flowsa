@@ -1,6 +1,6 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
-EPA_WFR,"Wheat farming, field and seed production",NAICS_2012_Code,111140,I
-EPA_WFR,"Corn farming (except sweet corn), field and seed production",NAICS_2012_Code,111150,I
+EPA_WFR,"Fresh wheat, corn",NAICS_2012_Code,111140,I
+EPA_WFR,"Fresh wheat, corn",NAICS_2012_Code,111150,I
 EPA_WFR,Support activities for agriculture and forestry,NAICS_2012_Code,115,I
 EPA_WFR,Land Application,NAICS_2012_Code,115112,I
 EPA_WFR,Stone mining and quarrying,NAICS_2012_Code,21231,I
