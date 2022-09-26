@@ -4,7 +4,9 @@ EPA REI
 """
 import re
 import pandas as pd
+import numpy as np
 from flowsa.location import US_FIPS
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def rei_url_helper(*, build_url, config, **_):
@@ -42,7 +44,7 @@ def rei_call(*, url, **_):
     df = pd.read_csv(url)
     # append filename for use in parsing
     fn = re.search('sourcedata/REI_(.*).csv', url)
-    df['filename'] = fn.group(1)
+    df['Description'] = fn.group(1)
 
     return df
 
@@ -58,13 +60,16 @@ def primary_factors_parse(*, df_list, year, **_):
     rei_list = []
 
     for df in df_list:
-        print(f"now testing.{df['filename'][0]}.")
         # df for primary factors
-        if df['filename'][0] == 'primaryfactors':
-            df = df.drop(columns='filename')
-            df.iloc[0, 0] = 'Description'
+        if df['Description'][0] == 'primaryfactors':
             df.iloc[0, 1] = 'ActivityProducedBy'
-            df = df.rename(columns=df.iloc[0]).drop(df.index[0]).reset_index(drop=True)
+            df = (df
+                  .drop(df.columns[0], axis=1)
+                  .rename(columns=df.iloc[0])
+                  .rename(columns={'primaryfactors': 'Description'})
+                  .drop(df.index[0])
+                  .reset_index(drop=True)
+                  )
 
             # use "melt" fxn to convert columns into rows
             df = df.melt(id_vars=["Description", "ActivityProducedBy"],
@@ -72,46 +77,74 @@ def primary_factors_parse(*, df_list, year, **_):
                          value_name="FlowAmount")
             df["Class"] = "Money"
             df.loc[df['FlowName'] == 'Employment', 'Class'] = 'Employment'
+            df["FlowType"] = "TECHNOSPHERE_FLOW"
+            df.loc[df['FlowName'] == 'Employment', 'FlowType'] = \
+                'ELEMENTARY_FLOWS'
             df['Unit'] = 'Thousand USD'
             df.loc[df['FlowName'] == 'Employment', 'Unit'] = 'p'
 
         # df for waste - sector consumed by
-        elif df['filename'][0] == 'useintersection':
-            df = df.drop(columns='filename')
-            df.iloc[0, 0] = 'Description'
+        elif df['Description'][0] == 'useintersection':
             df.iloc[0, 1] = 'FlowName'
-            df = df.rename(columns=df.iloc[0]).drop(df.index[0]).reset_index(
-                drop=True)
+            df = (df
+                  .drop(df.columns[0], axis=1)
+                  .rename(columns=df.iloc[0])
+                  .rename(columns={'useintersection': 'Description'})
+                  .drop(df.index[0])
+                  .reset_index(drop=True)
+                  )
 
             df = (df
-                  .drop(columns=df.columns[[2]])
+                  .drop(columns=df.columns[[1]])
                   .drop([0, 1])  # Drop blanks
                   .melt(id_vars=['Description', 'FlowName'],
                         var_name='ActivityConsumedBy',
                         value_name='FlowAmount')
                   )
-            df = df[~df['FlowAmount'].str.contains('-')].reset_index(
-                drop=True)
+            df = df[~df['FlowAmount'].astype(str).str.contains(
+                '-')].reset_index(drop=True)
             df['FlowAmount'] = (df['FlowAmount'].str.replace(
                 ',', '').astype('float'))
             df['Unit'] = 'USD'
             # Where recyclable code >= 9 (Gleaned product), change units to MT
-            df.loc[df['Description'].str[-2:].astype('int') >= 9,
-                   'Unit'] = 'MT'
+            df.loc[df['FlowName'].str.contains('metric tons'), 'Unit'] = 'MT'
             df['FlowName'] = df['FlowName'].apply(
                 lambda x: x.split('(', 1)[0])
             df["Class"] = "Other"
             df['FlowType'] = 'WASTE_FLOW'
         # df for waste - sector produced by
-        elif df['filename'][0] == 'makecol':
-            df = df.drop(columns='filename')
-            df.iloc[0, 0] = 'Description'
+        elif df['Description'][0] == 'makecol':
+            df = (df
+                  .drop(df.columns[0], axis=1)
+                  .rename(columns={'Unnamed: 1': 'ActivityProducedBy'})
+                  .drop(df.index[0])
+                  .reset_index(drop=True)
+                  )
+
+            df = (df
+                  .melt(id_vars=['Description', 'ActivityProducedBy'],
+                        var_name='FlowName',
+                        value_name='FlowAmount')
+                  .dropna()
+                  )
+            df = df[~df['FlowAmount'].astype(str).str.contains(
+                '-')].reset_index(drop=True)
+            df['FlowAmount'] = (df['FlowAmount'].str.replace(
+                ',', '').astype('float'))
+            df['Unit'] = 'MT'
+            df['Unit'] = np.where(df['FlowName'].str.contains('$'), 'USD',
+                                  df['Unit'])
+            df['FlowName'] = df['FlowName'].apply(
+                lambda x: x.split('(', 1)[0])
+            df["Class"] = "Other"
+            df['FlowType'] = 'WASTE_FLOW'
         rei_list.append(df)
 
     df2 = pd.concat(rei_list, sort=False)
 
     # hardcode info
     df2['Location'] = US_FIPS
+    df = assign_fips_location_system(df, year)
     df2['SourceName'] = 'EPA_REI'
     df2["Year"] = year
     df2['DataReliability'] = 5
