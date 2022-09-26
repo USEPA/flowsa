@@ -79,7 +79,7 @@ def primary_factors_parse(*, df_list, year, **_):
             df.loc[df['FlowName'] == 'Employment', 'Class'] = 'Employment'
             df["FlowType"] = "TECHNOSPHERE_FLOW"
             df.loc[df['FlowName'] == 'Employment', 'FlowType'] = \
-                'ELEMENTARY_FLOWS'
+                'ELEMENTARY_FLOW'
             df['Unit'] = 'Thousand USD'
             df.loc[df['FlowName'] == 'Employment', 'Unit'] = 'p'
 
@@ -144,7 +144,7 @@ def primary_factors_parse(*, df_list, year, **_):
 
     # hardcode info
     df2['Location'] = US_FIPS
-    df = assign_fips_location_system(df, year)
+    df2 = assign_fips_location_system(df2, year)
     df2['SourceName'] = 'EPA_REI'
     df2["Year"] = year
     df2['DataReliability'] = 5
