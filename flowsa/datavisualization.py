@@ -149,7 +149,10 @@ def stackedBarChart(df,
                     orientation='h',
                     grouping_variable='FlowName',
                     sector_variable='Sector',
-                    subplot=None):
+                    subplot=None,
+                    rows = 1,
+                    cols = 1
+                    ):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
     group data by context as well as sector
@@ -159,7 +162,8 @@ def stackedBarChart(df,
     :return: stacked, group bar plot
     """
 
-    # if the df provided is a string, load the fbs method, otherwise use the df provided
+    # if the df provided is a string, load the fbs method, otherwise use the
+    # df provided
     if (type(df)) == str:
         df = flowsa.collapse_FlowBySector(df)
         
@@ -209,11 +213,8 @@ def stackedBarChart(df,
     # wrap the sector col
     df2[sector_variable] = df2[sector_variable].apply(lambda x: customwrap(x,width=18))
 
-    #todo: update so not hardcoded
-    rows = 2
-    cols = 2
-    fig = make_subplots(rows=rows, cols=cols,
-                        subplot_titles=df2[subplot].drop_duplicates().values.tolist())
+    fig = make_subplots(rows=rows, cols=cols, subplot_titles=df2[
+        subplot].drop_duplicates().values.tolist())
 
     fig.update_layout(
         template="simple_white",
@@ -336,8 +337,8 @@ def convert_units_for_graphics(df):
 
 
 def generateSankeyData(methodname,
-                       SPB_display_length=None,
-                       SCB_display_length=None,
+                       target_sector_level=None,
+                       target_subset_sector_level=None,
                        replace_SPB_with_sectordefinition=False,
                        replace_SCB_with_sectordefinition=False,
                        sectors_to_include=None,
@@ -345,10 +346,10 @@ def generateSankeyData(methodname,
     """
     Generate data used to create a sankey
     :param methodname: str, FBS methodname
-    :param SPB_display_length: numeric, sector length by which to
+    :param target_sector_level: numeric, sector length by which to
     aggregate, default is 'None' which returns the max sector length in a
     dataframe
-    :param _display_length: numeric, sector length by which to
+    :param target_subset_sector_level: numeric, sector length by which to
     aggregate, default is 'None' which returns the max sector length in a
     dataframe
     :param sectors_to_include: list, sectors to include in output. Sectors
@@ -368,27 +369,26 @@ def generateSankeyData(methodname,
     method_dict = load_yaml_dict(methodname, flowbytype='FBS',
                                  filepath=fbsconfigpath)
 
-    if any(item is not None for item in [SPB_display_length,
-                                         SCB_display_length]):
+    if any(item is not None for item in [target_sector_level,
+                                         target_subset_sector_level]):
         # aggregate to all sector levels
         df = sector_aggregation(df, return_all_possible_sector_combos=True)
         df = replace_NoneType_with_empty_cells(df)
         cw_load = load_sector_length_cw_melt()
         for s in ['Produced', 'Consumed']:
-            if eval(f'S{s[0]}B_display_length') is not None:
-                # subset the df by naics length
-                cw = cw_load[cw_load['SectorLength'].isin([eval(
-                    f'S{s[0]}B_display_length')])]
-                sector_list = cw['Sector'].drop_duplicates().values.tolist()
-                df = df[df[f'Sector{s}By'].isin(sector_list)]
-            else:
-                # subset by target sector levels
+            # subset by target sector levels, either those defined in
+            # function call or in method_dict
+            primary_sector_level = target_sector_level
+            if primary_sector_level is None:
+                primary_sector_level = method_dict['target_sector_level']
+            secondary_sector_level = target_subset_sector_level
+            if secondary_sector_level is None:
                 secondary_sector_level = method_dict.get(
                     'target_subset_sector_level')
-                sector_list = get_sector_list(
-                    method_dict['target_sector_level'],
-                    secondary_sector_level_dict=secondary_sector_level)
-                df = df[df[f'Sector{s}By'].isin(sector_list)]
+            sector_list = get_sector_list(
+                primary_sector_level,
+                secondary_sector_level_dict=secondary_sector_level)
+            df = df[df[f'Sector{s}By'].isin(sector_list)]
     # add sector names
     sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
@@ -457,8 +457,10 @@ def generateSankeyData(methodname,
 
 
 def generateSankeyDiagram(methodnames,
-                          SPB_display_length=None,
-                          SCB_display_length=None,
+                          target_sector_level=None,
+                          target_subset_sector_level=None,
+                          # SPB_display_length=None,
+                          # SCB_display_length=None,
                           replace_SPB_with_sectordefinition=False,
                           replace_SCB_with_sectordefinition=False,
                           sectors_to_include=None,
@@ -470,8 +472,8 @@ def generateSankeyDiagram(methodnames,
     and sector consumed by (target). Sankey developed for subplot of 2
     diagrams.
     :param methodnames:
-    :param SPB_display_length:
-    :param SCB_display_length:
+    :param target_sector_level:
+    :param target_subset_sector_level:
     :param replace_SPB_with_sectordefinition:
     :param replace_SCB_with_sectordefinition:
     :param sectors_to_include:
@@ -502,7 +504,7 @@ def generateSankeyDiagram(methodnames,
     for i, m in enumerate(methodnames):
         # return dfs of nodes and flows for Sankey
         nodes, flows = generateSankeyData(
-            m, SPB_display_length, SCB_display_length,
+            m, target_sector_level, target_subset_sector_level,
             replace_SPB_with_sectordefinition,
             replace_SCB_with_sectordefinition, sectors_to_include,
             fbsconfigpath)
@@ -554,5 +556,34 @@ def generateSankeyDiagram(methodnames,
     log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
     fig.write_image(f"{plotoutputpath}{filename}",
                     width=width, height=height)
+
+
+
+
+if __name__ == '__main__':
+    methodnames = ['Food_Waste_national_2018_m1',
+                   'Food_Waste_national_2018_m2']
+    target_sector_level = 'NAICS_2'
+    target_subset_sector_level = {'NAICS_6': ['62421', '31111', '562BIO',
+                                              '56221', '62421', '11511', '22132'],
+                                  'NAICS_7': ['562212', '562219']}
+    # SPB_display_length = 2
+    # SCB_display_length = None
+    replace_SPB_with_sectordefinition = True
+    replace_SCB_with_sectordefinition = True
+    sectors_to_include = None
+    fbsconfigpath = None
+    orientation = 'horizontal'
+
+    generateSankeyDiagram(
+        methodnames,
+        target_sector_level=target_sector_level,
+        target_subset_sector_level=target_subset_sector_level,
+        replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
+        replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
+        sectors_to_include=None,
+        fbsconfigpath=None,
+        orientation='orientation'
+    )
 
 
