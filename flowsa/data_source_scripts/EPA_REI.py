@@ -142,6 +142,10 @@ def primary_factors_parse(*, df_list, year, **_):
 
     df2 = pd.concat(rei_list, sort=False)
 
+    # update employment to jobs
+    df2['FlowName'] = np.where(df2['FlowName'] == 'Employment', 'Jobs',
+                               df2['FlowName'])
+
     # hardcode info
     df2['Location'] = US_FIPS
     df2 = assign_fips_location_system(df2, year)
@@ -151,5 +155,3 @@ def primary_factors_parse(*, df_list, year, **_):
     df2['DataCollection'] = 5
 
     return df2
-
-
