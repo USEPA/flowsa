@@ -139,15 +139,10 @@ EPA_GHGI:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
-EPA_REI_PF:
+EPA_REI:
   class:
     - Employment
     - Money
-  sector-like_activities: False
-  activity_schema: None
-  sector_aggregation_level: "disaggregated"
-EPA_REI_WF:
-  class:
     - Other
   sector-like_activities: False
   activity_schema: None
