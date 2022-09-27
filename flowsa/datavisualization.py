@@ -240,13 +240,13 @@ def stackedBarChart(df,
             if orientation == 'h':
                 x_data = flow_col
                 y_data = sector_col
-                xaxis_title = f"FlowAmount ({plot_df['Unit'][0]})"
+                xaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
                 yaxis_title = ""
             else:
                 x_data = sector_col
                 y_data = flow_col
                 xaxis_title = ""
-                yaxis_title = f"FlowAmount ({plot_df['Unit'][0]})"
+                yaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
             fig.add_trace(
                 go.Bar(x=x_data, y=y_data, name=r,
                        orientation=orientation,
