@@ -5,7 +5,7 @@ bib_id: EPA_SIT
 format: xlsm  # macro-enabled spreadsheet
 url: None
 parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
-state_list: ['ME', 'CT']
+state_list: ['ME', 'CT', 'VT']
 years:
 - 2019
 - 2018
@@ -161,8 +161,8 @@ files:
                 sheetname: Forest Management
                 header: 8
                 nrows: 37
-                unit: MMTCO2E
-                flow: CO2E
+                unit: MMTCO2e
+                flow: CO2e
                 headers:
                     - Forest Carbon Flux
                     - Urban Trees
@@ -191,7 +191,7 @@ files:
                 tablename: Emissions from Landfills
                 header: 13
                 nrows: 9
-                unit: MTCO2E
+                unit: MTCO2e
                 flow: CH4
                 headers:
                     - Potential CH4

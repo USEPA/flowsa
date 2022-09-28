@@ -178,21 +178,65 @@ def disaggregate_emissions(fba, source_dict, **_):
 
     return fba
 
-def include_select_states(fba, source_dict, **_):
+def clean_up_state_data(fba, source_dict, **_):
     """
-    clean_fba_df_fxn to remove states OTHER THAN those selected for
+    clean_fba_df_fxn to:
+    
+    (i) remove states OTHER THAN those selected for
     alternate data sources. State abbreviations must be passed as list
-    in method parameter 'state_list'
+    in method parameter 'state_list'.
+    
+    (ii) remove specific SIT data for specific states.
+    these data must be excluded to avoid double counting because some states 
+    have opted to use custom methods (e.g., Vermont estimates emissions from 
+    natural gas distribution separately from the SIT tool).
 
     :param fba: df
     :param source_dict: dictionary of source methods includes 'state_list'
-        key of states to remove
+        key of states to include in inventory
     """
     state_list = source_dict.get('state_list')
+    
+    # (i) drop all states OTHER THAN those selected for alternative data sources
     state_df = pd.DataFrame(state_list, columns=['State'])
     state_df['County'] =''
     state_df = apply_county_FIPS(state_df)
     df_subset = fba[fba['Location'].isin(state_df['Location'])]
+    
+    # (ii) drop unused SIT data from specific states
+    
+    # if Vermont is included in the inventory, exclude certain data
+    # (these data will later be replaced with custom data in the 'StateGHGI'
+    # stage)
+    if 'VT' in state_list:
+
+        # remove Vermont natural gas distribution data
+        df_subset.drop(df_subset[
+            ((df_subset.Location == '50000') & 
+             (df_subset.ActivityProducedBy == 'Gas and Oil, Natural Gas, Distribution')
+             )].index, inplace=True)
+        
+        # remove Vermont ODS substitutes data
+        df_subset.drop(df_subset[
+            ((df_subset.Location == '50000') & 
+             (df_subset.ActivityProducedBy == 'IP, ODS Substitutes')
+             )].index, inplace=True)    
+                
+        # remove Vermont semiconductor manufacturing data
+        df_subset.drop(df_subset[
+            ((df_subset.Location == '50000') & 
+             (df_subset.ActivityProducedBy == 'IP, Semiconductor Manufacturing')
+             )].index, inplace=True)
+                
+        # remove Vermont solid waste data
+        df_subset.drop(df_subset[
+            ((df_subset.Location == '50000') & 
+             (df_subset.Description == 'Landfills')
+             )].index, inplace=True)
+        df_subset.drop(df_subset[
+            ((df_subset.Location == '50000') & 
+             (df_subset.Description == 'Waste Combustion')
+             )].index, inplace=True)
    
     return df_subset
 
