@@ -17,7 +17,8 @@ manually assigning to NAICS
 """
 import pandas as pd
 from flowsa.settings import crosswalkpath
-from scripts.FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
+from scripts.FlowByActivity_Crosswalks.common_scripts import \
+unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
@@ -119,10 +120,42 @@ def assign_naics(df):
     # including that which may go to a facility designed to treat wastewater
     df.loc[df['Activity'] == 'Sewer/Wastewater Treatment', 'Sector'] = '22132'
 
+    # add waste treatment sectors
+    waste_ttmt = pd.DataFrame(food_waste_ttmt().items(),
+                              columns=['Activity', 'Sector'])
+    waste_ttmt['ActivitySourceName'] = 'EPA_WFR'
+
+    # apend waste treatment
+    df = pd.concat([df, waste_ttmt], ignore_index=True)
+
     # break each sector into separate line
     df = df.explode('Sector')
 
     return df
+
+
+def food_waste_ttmt():
+    waste_ttmt = \
+        {'Fresh wheat, corn': ['111140', '111150'],
+         'Dog and cat food manufacturing': '311111',
+         'Other animal food manufacturing': '311119',
+         'Petrochemical manufacturing': '325110',
+         'Other basic organic chemical manufacturing': '32519',
+         'Soap and cleaning compound manufacturing': '32561',
+         'Toilet preparation manufacturing': '32562',
+         'Printing ink manufacturing': '325910',
+         'Gasoline': '324110',
+         'Natural gas': '2212',
+         'Support activities for agriculture and forestry': '115',
+         'Stone mining and quarrying': '21231',
+         'Other nonresidential structures': ['2362', '2372', '2379', '238'],
+         'Pesticide and other agricultural chemical manufacturing': '325320',
+         'Wholesale Trade': '42',
+         'Services to buildings and dwellings': '5617',
+         'Museums, historical sites, zoos, and parks': '712'
+         }
+
+    return waste_ttmt
 
 
 if __name__ == '__main__':

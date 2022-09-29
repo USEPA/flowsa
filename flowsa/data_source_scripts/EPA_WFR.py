@@ -9,7 +9,7 @@ import io
 import pandas as pd
 import numpy as np
 from string import ascii_uppercase
-import tabula
+from tabula.io import read_pdf
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.location import US_FIPS
 from flowsa.schema import flow_by_activity_mapped_fields
@@ -31,8 +31,8 @@ def epa_wfr_call(*, resp, **_):
     df = pd.DataFrame()
     pages = range(41, 43)
     for x in pages:
-        df_l = tabula.read_pdf(io.BytesIO(resp.content),
-                             pages=x, stream=True)
+        df_l = read_pdf(io.BytesIO(resp.content),
+                        pages=x, stream=True)
         if len(df_l[0].columns) == 12:
             df = df_l[0].set_axis(
                 ['Management Pathway', 'Manufacturing/Processing',
@@ -338,7 +338,7 @@ def attribute_cnhw_food(flows, method, k, v, *_):
     return cnhw
 
 
-def return_fraction_foodwaste_treated_commodities():
+def return_REI_fraction_foodwaste_treated_commodities():
     """
     Return dictionary of how the food waste is used after entering
     waste management pathways - fractions are pulled from EPA REI
@@ -346,8 +346,8 @@ def return_fraction_foodwaste_treated_commodities():
     :return: dict, food waste pathway food use
     """
     pathway_attribution = {
-        'Animal Feed':
-            {'Wheat farming, field and seed production': 1},  # Fresh wheat, corn, (1111B0)
+        'Animal Feed':  # Fresh wheat, corn, (1111B0)
+            {'Fresh wheat, corn': 1},
         'Animal meal, meat, fats, oils, and tallow':
             {'Dog and cat food manufacturing': 0.31,
              'Other animal food manufacturing': 0.54,
@@ -365,17 +365,7 @@ def return_fraction_foodwaste_treated_commodities():
              'Stone mining and quarrying': 0.02,
              'Other nonresidential structures': 0.02,
              'Pesticide and other agricultural chemical manufacturing': 0.8,
-             'Motor vehicle and motor vehicle parts and supplies': 0.0006,
-             'Professional and commercial equipment and supplies': 0.0011,
-             'Household appliances and electrical and electronic goods': 0.009,
-             'Machinery, equipment, and supplies': 0.001,
-             'Other durable goods merchant wholesalers': 0.0014,
-             'Drugs and druggists’ sundries': 0.0008,
-             'Grocery and related product wholesalers': 0.0008,
-             'Petroleum and petroleum products': 0.001,
-             'Other nondurable goods merchant wholesalers': 0.0018,
-             'Wholesale electronic markets and agents and brokers': 0.0004,
-             'Customs duties': 0.0002,
+             'Wholesale Trade': 0.01,
              'Services to buildings and dwellings': 0.01,
              'Museums, historical sites, zoos, and parks': 0.01
              }
@@ -400,7 +390,7 @@ def foodwaste_use(fba, source_dict):
     outputs2 = aggregator(outputs, groupcols)
 
     # load fw treatment dictoinary
-    fw_tmt = return_fraction_foodwaste_treated_commodities()
+    fw_tmt = return_REI_fraction_foodwaste_treated_commodities()
     replace_keys = {'Animal meal, meat, fats, oils, and tallow': 'Bio-based Materials/Biochemical Processing',
                     'Anaerobic Digestion': 'Codigestion/Anaerobic Digestion',
                     'Compost': 'Composting/Aerobic Processes'}
@@ -417,6 +407,7 @@ def foodwaste_use(fba, source_dict):
                                                       f"{x} Treated")
     # update flowamount with multiplier fractions
     outputs3['FlowAmount'] = outputs3['FlowAmount'] * outputs3['Multiplier']
+    outputs3 = outputs3.drop(columns='Multiplier')
 
     # also in wasted food report - APB "food banks" are the output from the ACB "Food Donation"
     fba['Flowable'] = np.where(fba['ActivityProducedBy'] == 'Food Banks',

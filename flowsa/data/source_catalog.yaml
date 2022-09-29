@@ -139,6 +139,14 @@ EPA_GHGI:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+EPA_REI:
+  class:
+    - Employment
+    - Money
+    - Other
+  sector-like_activities: False
+  activity_schema: None
+  sector_aggregation_level: "disaggregated"
 EPA_StateGHGI:
   class:
     - Chemicals
