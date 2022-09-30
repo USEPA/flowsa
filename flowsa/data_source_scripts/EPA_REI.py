@@ -82,6 +82,7 @@ def primary_factors_parse(*, df_list, year, **_):
                 'ELEMENTARY_FLOW'
             df['Unit'] = 'Thousand USD'
             df.loc[df['FlowName'] == 'Employment', 'Unit'] = 'p'
+            df['FlowAmount'] = df['FlowAmount'].astype(float)
 
         # df for waste - sector consumed by
         elif df['Description'][0] == 'useintersection':
