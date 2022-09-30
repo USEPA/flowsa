@@ -132,7 +132,7 @@ def primary_factors_parse(*, df_list, year, **_):
             df['FlowAmount'] = (df['FlowAmount'].str.replace(
                 ',', '').astype('float'))
             df['Unit'] = 'MT'
-            df['Unit'] = np.where(df['FlowName'].str.contains('$'), 'USD',
+            df['Unit'] = np.where(df['FlowName'].str.contains('\$'), 'USD',
                                   df['Unit'])
             df['FlowName'] = df['FlowName'].apply(
                 lambda x: x.split('(', 1)[0])
@@ -145,6 +145,11 @@ def primary_factors_parse(*, df_list, year, **_):
     # update employment to jobs
     df2['FlowName'] = np.where(df2['FlowName'] == 'Employment', 'Jobs',
                                df2['FlowName'])
+
+    # address trailing white space
+    string_cols = list(df2.select_dtypes(include=['object', 'int']).columns)
+    for s in string_cols:
+        df2[s] = df2[s].str.strip()
 
     # hardcode info
     df2['Location'] = US_FIPS
