@@ -77,9 +77,7 @@ def primary_factors_parse(*, df_list, year, **_):
                          value_name="FlowAmount")
             df["Class"] = "Money"
             df.loc[df['FlowName'] == 'Employment', 'Class'] = 'Employment'
-            df["FlowType"] = "TECHNOSPHERE_FLOW"
-            df.loc[df['FlowName'] == 'Employment', 'FlowType'] = \
-                'ELEMENTARY_FLOW'
+            df["FlowType"] = 'ELEMENTARY_FLOW'
             df['Unit'] = 'Thousand USD'
             df.loc[df['FlowName'] == 'Employment', 'Unit'] = 'p'
             df['FlowAmount'] = df['FlowAmount'].astype(float)
