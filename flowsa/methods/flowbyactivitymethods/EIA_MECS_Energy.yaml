@@ -24,6 +24,7 @@ tables:
 - table3_6
 - table7_2
 - table7_10
+
 table_dict:
     '2010':
       Table 2.1: 
@@ -92,7 +93,7 @@ table_dict:
           *rse_regions_2010_22
         data_type: 'fuel consumption'
       Table 1.2:
-        col_names:
+        col_names: &col_names_2010_12
           - NAICS Code
           - Subsector and Industry
           - Total
@@ -111,7 +112,7 @@ table_dict:
           *rse_regions_2010_21
         data_type: 'fuel consumption'
       Table 7.2:
-        col_names:
+        col_names: &col_names_2010_72
           - NAICS Code
           - Subsector and Industry
           - TOTAL
@@ -131,7 +132,7 @@ table_dict:
           - Residual Fuel Oil
           - Blast Furnace Gas
           - Coake Oven Gass
-          - Motor Gasoline(Excluding Highway Usage)
+          - Motor Gasoline (Excluding Highway Usage)
           - Bitumen
           - Naphtha
           - Hydrogen
@@ -144,7 +145,7 @@ table_dict:
           - Steam from Sources Other than Utility
           - Tire Derived Fuel
           - Waste Gases and Byproduct Gases
-          - waste Oils and Tars
+          - Waste Oils and Tars
           - Industrial Hot Water Total
           - Biomass Total
           - Agricultural Waste
@@ -162,12 +163,12 @@ table_dict:
           - Energy Source
           - Total First Use
         regions:
-          Total United States: [ 16,49 ]
+          Total United States: [16,49]
         rse_regions:
-          Total United States: [ 10,51 ]
+          Total United States: [10,51]
         data_type: 'fuel consumption'
       Table 7.10:
-        col_names:
+        col_names: &col_names_2010_710
           - NAICS Code
           - Subsector and Industry
           - Electricity Total
@@ -192,6 +193,7 @@ table_dict:
           South Region: [ 278,364 ]
           West Region: [ 366,452 ]
         data_type: 'money'
+
     '2014':
       Table 2.1:
         col_names: &col_names_2014_21
@@ -282,66 +284,14 @@ table_dict:
           *rse_regions_2014_31
         data_type: 'fuel consumption'
       Table 1.2:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Total
-          - Net Electricity
-          - Residual Fuel Oil
-          - Distillate Fuel Oil
-          - Natural Gas
-          - HGL (excluding natural gasoline)
-          - Coal
-          - Coke and Breeze
-          - Other
-          - Shipments of Energy Sources Produced Onsite
+        col_names: *col_names_2010_12
         regions:
           *regions_2014_21
         rse_regions:
           *rse_regions_2014_21
         data_type: 'fuel consumption'
       Table 7.2:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - TOTAL
-          - Acetylene
-          - Breeze
-          - Coal Total
-          - Anthracite
-          - Bituminous and Subbituminous Coal
-          - Lignite
-          - Coal Coke
-          - Petroleum Coke
-          - Electricity Total
-          - Electricity from Local Utility
-          - Total Diesel Fuel and Distillate Fuel Oil
-          - Diesel Fuel
-          - Distillate Fuel Oil
-          - Residual Fuel Oil
-          - Blast Furnace Gas
-          - Coake Oven Gass
-          - Motor Gasoline(Excluding Highway Usage)
-          - Bitumen
-          - Naphtha
-          - Hydrogen
-          - Kerosene
-          - Pulping Liquor or Black Liquor
-          - HGL (excluding natural gasoline)
-          - Natural Gas Total
-          - Natural Gas from Local Utility
-          - Natural Gas from Sources Other than Utility
-          - Steam from Sources Other than Utility
-          - Tire Derived Fuel
-          - Waste Gases and Byproduct Gases
-          - waste Oils and Tars
-          - Industrial Hot Water Total
-          - Biomass Total
-          - Agricultural Waste
-          - Wood harvested Driectly from Treeks
-          - Wood Residues and Byproducts from Mill Processing
-          - Wood-Related and Paper-Related Refues
-          - All Other Engery Sources
+        col_names: *col_names_2010_72
         regions:
           Total United States: [ 17,101 ]
           Northeast Region: [ 103,187 ]
@@ -356,23 +306,12 @@ table_dict:
           - Energy Source
           - Total First Use
         regions:
-          Total United States: [ 13,54 ]
+          Total United States: [13,54]
         rse_regions:
-          Total United States: [ 10,51 ]
+          Total United States: [10,51]
         data_type: 'fuel consumption'
       Table 7.10:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Electricity Total
-          - Electricity from Local Utility
-          - Electricity from Sources Other than Local Utility
-          - Natural Gas Total
-          - Natural Gas from Local Utility
-          - Natural Gas from Sources Other than Local Utility
-          - Steam Total
-          - Steam from Local Utility
-          - Steam from Sources Other than Local Utility
+        col_names: *col_names_2010_710
         regions:
           Total United States: [ 16,101 ]
           Northeast Region: [ 102,187 ]
@@ -455,103 +394,40 @@ table_dict:
           West Region: [ 89,104 ]
         data_type: 'fuel consumption'
       Table 1.2:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Total
-          - Net Electricity
-          - Residual Fuel Oil
-          - Distillate Fuel Oil
-          - Natural Gas
-          - HGL (excluding natural gasoline)
-          - Coal
-          - Coke and Breeze
-          - Other
-          - Shipments of Energy Sources Produced Onsite
+        col_names: *col_names_2010_12
         regions:
           *regions_2010_21
         rse_regions:
           *rse_regions_2010_21
         data_type: 'fuel consumption'
       Table 7.2:
-              col_names:
-                - NAICS Code
-                - Subsector and Industry
-                - TOTAL
-                - Acetylene
-                - Breeze
-                - Coal Total
-                - Anthracite
-                - Bituminous and Subbituminous Coal
-                - Lignite
-                - Coal Coke
-                - Petroleum Coke
-                - Electricity Total
-                - Electricity from Local Utility
-                - Total Diesel Fuel and Distillate Fuel Oil
-                - Diesel Fuel
-                - Distillate Fuel Oil
-                - Residual Fuel Oil
-                - Blast Furnace Gas
-                - Coake Oven Gass
-                - Motor Gasoline(Excluding Highway Usage)
-                - Bitumen
-                - Naphtha
-                - Hydrogen
-                - Kerosene
-                - Pulping Liquor or Black Liquor
-                - HGL (excluding natural gasoline)
-                - Natural Gas Total
-                - Natural Gas from Local Utility
-                - Natural Gas from Sources Other than Utility
-                - Steam from Sources Other than Utility
-                - Tire Derived Fuel
-                - Waste Gases and Byproduct Gases
-                - waste Oils and Tars
-                - Industrial Hot Water Total
-                - Biomass Total
-                - Agricultural Waste
-                - Wood harvested Driectly from Treeks
-                - Wood Residues and Byproducts from Mill Processing
-                - Wood-Related and Paper-Related Refues
-                - All Other Engery Sources
-              regions:
-                *regions_2018_21
-              rse_regions:
-                *rse_regions_2018_21
-              data_type: 'money'
+        col_names: *col_names_2010_72
+        regions:
+          *regions_2018_21
+        rse_regions:
+          *rse_regions_2018_21
+        data_type: 'money'
       Table 1.5:
-          col_names:
-            - Energy Source
-            - Total First Use
-          regions:
-            Total United States: [ 14,52 ]
-          rse_regions:
-            Total United States: [ 10,49 ]
-          data_type: 'fuel consumption'
+        col_names:
+          - Energy Source
+          - Total First Use
+        regions:
+          Total United States: [ 14,52 ]
+        rse_regions:
+          Total United States: [ 10,49 ]
+        data_type: 'fuel consumption'
       Table 7.10:
-            col_names:
-              - NAICS Code
-              - Subsector and Industry
-              - Electricity Total
-              - Electricity from Local Utility
-              - Electricity from Sources Other than Local Utility
-              - Natural Gas Total
-              - Natural Gas from Local Utility
-              - Natural Gas from Sources Other than Local Utility
-              - Steam Total
-              - Steam from Local Utility
-              - Steam from Sources Other than Local Utility
-            regions:
-              Total United States: [ 16,101 ]
-              Northeast Region: [ 102,185 ]
-              Midwest Region: [ 186,270 ]
-              South Region: [ 271,355 ]
-              West Region: [ 356,439 ]
-            rse_regions:
-              Total United States: [ 13,97 ]
-              Northeast Region: [ 98,182 ]
-              Midwest Region: [ 183,267 ]
-              South Region: [ 268,352 ]
-              West Region: [ 353,436 ]
-            data_type: 'money'
+        col_names: *col_names_2010_710
+        regions:
+          Total United States: [ 16,101 ]
+          Northeast Region: [ 102,185 ]
+          Midwest Region: [ 186,270 ]
+          South Region: [ 271,355 ]
+          West Region: [ 356,439 ]
+        rse_regions:
+          Total United States: [ 13,97 ]
+          Northeast Region: [ 98,182 ]
+          Midwest Region: [ 183,267 ]
+          South Region: [ 268,352 ]
+          West Region: [ 353,436 ]
+        data_type: 'money'
