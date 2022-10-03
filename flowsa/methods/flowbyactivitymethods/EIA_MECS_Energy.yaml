@@ -144,7 +144,7 @@ table_dict:
           Total United States: [10,51]
         data_type: 'fuel consumption'
       Table 7.2:
-        col_names: &col_names_2010_72
+        col_names:
           - NAICS Code
           - Subsector and Industry
           - TOTAL
@@ -158,24 +158,24 @@ table_dict:
           - Petroleum Coke
           - Electricity Total
           - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
           - Total Diesel Fuel and Distillate Fuel Oil
           - Diesel Fuel
           - Distillate Fuel Oil
           - Residual Fuel Oil
           - Blast Furnace Gas
-          - Coake Oven Gass
+          - Coke Oven Gass
           - Motor Gasoline (Excluding Highway Usage)
-          - Bitumen
-          - Naphtha
           - Hydrogen
           - Kerosene
           - Pulping Liquor or Black Liquor
-          - HGL (excluding natural gasoline)
+          - LPG and NGL
           - Natural Gas Total
           - Natural Gas from Local Utility
           - Natural Gas from Sources Other than Utility
-          - Steam from Sources Other than Utility
-          - Tire Derived Fuel
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
           - Waste Gases and Byproduct Gases
           - Waste Oils and Tars
           - Industrial Hot Water Total
@@ -313,7 +313,49 @@ table_dict:
           Total United States: [10,51]
         data_type: 'fuel consumption'
       Table 7.2:
-        col_names: *col_names_2010_72
+        col_names:
+          - NAICS Code
+          - Subsector and Industry
+          - TOTAL
+          - Acetylene
+          - Breeze
+          - Coal Total
+          - Anthracite
+          - Bituminous and Subbituminous Coal
+          - Lignite
+          - Coal Coke
+          - Petroleum Coke
+          - Electricity Total
+          - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
+          - Total Diesel Fuel and Distillate Fuel Oil
+          - Diesel Fuel
+          - Distillate Fuel Oil
+          - Residual Fuel Oil
+          - Blast Furnace Gas
+          - Coke Oven Gass
+          - Motor Gasoline (Excluding Highway Usage)
+          - Bitumen
+          - Naphtha
+          - Hydrogen
+          - Kerosene
+          - Pulping Liquor or Black Liquor
+          - HGL (excluding natural gasoline)
+          - Natural Gas Total
+          - Natural Gas from Local Utility
+          - Natural Gas from Sources Other than Utility
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
+          - Waste Gases and Byproduct Gases
+          - Waste Oils and Tars
+          - Industrial Hot Water Total
+          - Biomass Total
+          - Agricultural Waste
+          - Wood harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+          - All Other Engery Sources
         regions:
           Total United States: [20,101]
           Northeast Region: [106,187]
@@ -420,7 +462,50 @@ table_dict:
           Total United States: [ 10,49 ]
         data_type: 'fuel consumption'
       Table 7.2:
-        col_names: *col_names_2010_72
+        col_names:
+          - NAICS Code
+          - Subsector and Industry
+          - TOTAL
+          - Acetylene
+          - Breeze
+          - Coal Total
+          - Anthracite
+          - Bituminous and Subbituminous Coal
+          - Lignite
+          - Coal Coke
+          - Petroleum Coke
+          - Electricity Total
+          - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
+          - Total Diesel Fuel and Distillate Fuel Oil
+          - Diesel Fuel
+          - Distillate Fuel Oil
+          - Residual Fuel Oil
+          - Blast Furnace Gas
+          - Coke Oven Gass
+          - Motor Gasoline (Excluding Highway Usage)
+          - Bitumen
+          - Naphtha
+          - Hydrogen
+          - Kerosene
+          - Pulping Liquor or Black Liquor
+          - HGL (excluding natural gasoline)
+          - Natural Gas Total
+          - Natural Gas from Local Utility
+          - Natural Gas from Sources Other than Utility
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
+          - Tire Dervied Fuel # new in 2018
+          - Waste Gases and Byproduct Gases
+          - Waste Oils and Tars
+          - Industrial Hot Water Total
+          - Biomass Total
+          - Agricultural Waste
+          - Wood harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+          - All Other Engery Sources
         regions: &regions_2018_72
           Total United States: [17,99]
           Northeast Region: [102,184]
