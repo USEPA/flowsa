@@ -149,9 +149,9 @@ table_dict:
           - Industrial Hot Water Total
           - Biomass Total
           - Agricultural Waste
-          - Wood harvested Driectly from Treeks
+          - Wood harvested Directly from Trees
           - Wood Residues and Byproducts from Mill Processing
-          - Wood-Related and Paper-Related Refues
+          - Wood-Related and Paper-Related Refuse
           - All Other Engery Sources
         regions:
           *regions_2010_21

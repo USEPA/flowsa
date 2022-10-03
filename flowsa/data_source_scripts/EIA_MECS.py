@@ -315,7 +315,7 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
                     major_name = row["Energy Source"]
             df_data_region = df_data_region.rename(
                 columns={'Energy Source': 'FlowName', 'Total First Use': 'FlowAmount'})
-            df_data_region['NAICS Code'] = df_data_region['FlowName']
+            df_data_region['NAICS Code'] = 'All Purposes'
             major_name = ""
             df_rse_region = df_rse_region.dropna()
             for index, row in df_rse_region.iterrows():
@@ -411,7 +411,7 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     # add hardcoded data
     df["SourceName"] = source
     df["Compartment"] = None
-    df['FlowType'] = 'TECHNOSPHERE_FLOWS'
+    df['FlowType'] = 'TECHNOSPHERE_FLOW'
     df['Year'] = year
     df['MeasureofSpread'] = "RSE"
     # assign location codes and location system
