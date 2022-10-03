@@ -405,6 +405,7 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
 
     # rename columns to match standard flowbyactivity format
     df['Description'] = df["Table Name"]
+    df.loc[df['Subsector and Industry'] == 'Total', 'NAICS Code'] = '31-33'
     df = df.drop(columns=['Table Name', 'Subsector and Industry'])
     df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy'})
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
@@ -418,7 +419,6 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df.loc[df['Location'] == 'Total United States', 'Location'] = US_FIPS
     df = assign_fips_location_system(df, year)
     df = assign_census_regions(df)
-    df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
 
