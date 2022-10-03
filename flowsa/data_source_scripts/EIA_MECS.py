@@ -453,6 +453,9 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df.loc[df['Spread'] == 'D', 'Spread'] = None
     df.loc[df['Spread'] == '-', 'Spread'] = None
 
+    # resolve issue of misprinted RSE
+    df['Spread'] = pd.to_numeric(df['Spread'], errors='coerce')
+
     return df
 
 
