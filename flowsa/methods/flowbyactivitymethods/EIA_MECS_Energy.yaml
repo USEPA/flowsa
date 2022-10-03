@@ -154,9 +154,17 @@ table_dict:
           - Wood-Related and Paper-Related Refuse
           - All Other Engery Sources
         regions:
-          *regions_2010_21
+          Total United States: [19,102]
+          Northeast Region: [107,190]
+          Midwest Region: [195,278]
+          South Region: [283,366]
+          West Region: [371,454]
         rse_regions:
-          *rse_regions_2010_21
+          Total United States: [17,100]
+          Northeast Region: [105,188]
+          Midwest Region: [193,276]
+          South Region: [281,364]
+          West Region: [369,452]
         data_type: 'money'
       Table 1.5:
         col_names:
@@ -293,13 +301,17 @@ table_dict:
       Table 7.2:
         col_names: *col_names_2010_72
         regions:
-          Total United States: [ 17,101 ]
-          Northeast Region: [ 103,187 ]
-          Midwest Region: [ 189,273 ]
-          South Region: [ 275,360 ]
-          West Region: [ 361,445 ]
+          Total United States: [20,101]
+          Northeast Region: [106,187]
+          Midwest Region: [192,273]
+          South Region: [278,359]
+          West Region: [364,445]
         rse_regions:
-          *rse_regions_2014_21
+          Total United States: [17,98]
+          Northeast Region: [103,184]
+          Midwest Region: [189,270]
+          South Region: [275,356]
+          West Region: [361,442]
         data_type: 'money'
       Table 1.5:
         col_names:
@@ -403,9 +415,17 @@ table_dict:
       Table 7.2:
         col_names: *col_names_2010_72
         regions:
-          *regions_2018_21
+          Total United States: [17,99]
+          Northeast Region: [102,184]
+          Midwest Region: [187,269]
+          South Region: [272,354]
+          West Region: [357,439]
         rse_regions:
-          *rse_regions_2018_21
+          Total United States : [14,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
         data_type: 'money'
       Table 1.5:
         col_names:
