@@ -361,7 +361,7 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
             df_data_region['Unit'] = flow_name_array.str[1]
             df_data_region['FlowName'] = flow_name_array.str[0]
         # if table name ends in 2, units are 'trillion Btu'
-        elif table[-1] in ['2', '5']:
+        elif table[-1] in ['2', '5', '6']:
             df_data_region['Unit'] = 'Trillion Btu'
             if table[-3] == '7': #7_2
                 df_data_region['Unit'] = 'USD / million btu'
@@ -404,7 +404,7 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df = pd.concat(df_list, sort=True)
 
     # rename columns to match standard flowbyactivity format
-    df['Description'] = df["Table Name"] + " " + df["Subsector and Industry"]
+    df['Description'] = df["Table Name"]
     df = df.drop(columns=['Table Name', 'Subsector and Industry'])
     df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy'})
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
