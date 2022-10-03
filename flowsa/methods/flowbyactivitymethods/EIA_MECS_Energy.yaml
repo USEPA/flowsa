@@ -92,6 +92,29 @@ table_dict:
         rse_regions:
           *rse_regions_2010_22
         data_type: 'fuel consumption'
+      Table 3.6:
+        col_names: &col_names_2010_36
+          - NAICS Code
+          - Subsector and Industry
+          - Pulping Liquor or Black Liquor
+          - Biomass Total
+          - Agricultural Waste
+          - Wood Harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+        regions:
+          Total United States: [21,36]
+          Northeast Region: [41,56]
+          Midwest Region: [61,76]
+          South Region: [81,96]
+          West Region: [101,116]
+        rse_regions:
+          Total United States: [20,35]
+          Northeast Region: [40,55]
+          Midwest Region: [60,75]
+          South Region: [80,95]
+          West Region: [100,115]
+        data_type: 'fuel consumption'
       Table 1.2:
         col_names: &col_names_2010_12
           - NAICS Code
@@ -252,15 +275,7 @@ table_dict:
           West Region : [348,429]
         data_type: 'fuel consumption'
       Table 3.6:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Pulping Liquor or Black Liquor
-          - Biomass Total
-          - Agricultural Waste
-          - Wood Harvested Directly from Trees
-          - Wood Residues and Byproducts from Mill Processing
-          - Wood-Related and Paper-Related Refuse
+        col_names: *col_names_2010_36
         regions:
           Total United States: [ 18,34 ]
           Northeast Region: [ 37,52 ]
@@ -374,15 +389,7 @@ table_dict:
           *rse_regions_2018_31
         data_type: 'fuel consumption'
       Table 3.6:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Pulping Liquor or Black Liquor
-          - Biomass Total
-          - Agricultural Waste
-          - Wood Harvested Directly from Trees
-          - Wood Residues and Byproducts from Mill Processing
-          - Wood-Related and Paper-Related Refuse
+        col_names: *col_names_2010_36
         regions:
           Total United States: [ 19,34 ]
           Northeast Region: [ 37,52 ]
