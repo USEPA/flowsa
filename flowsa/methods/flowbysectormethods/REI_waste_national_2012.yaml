@@ -19,12 +19,4 @@ source_names:
         names: !from_index:EPA_REI_waste_2012_asets.csv waste
         allocation_method: allocation_function
         allocation_source: !script_function:EPA_REI rei_waste_flows_attribution
-#        allocation_method: proportional
-#        allocation_source: EPA_REI
-#        allocation_selection_fields:
-#          Description:
-#            - makecol
-#        allocation_source_class: Other
-#        allocation_source_year: 2012
         allocation_from_scale: national
-#        allocation_merge_columns: [FlowName]
