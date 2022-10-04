@@ -67,6 +67,7 @@ if __name__ == '__main__':
     df = df_load.iloc[:, 0:2]
     df = df.rename(columns={'Unnamed: 0': 'ActivityCode',
                             'Unnamed: 1': 'Activity'}).dropna()
+    df['Activity'] = df['Activity'].str.strip()
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan'
