@@ -991,7 +991,8 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
             fba = standardize_units(fba)
     else:
         # ensure df loaded correctly/has correct dtypes
-        fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict)
+        fba = clean_df(fba, flow_by_activity_fields, fba_fill_na_dict,
+                       drop_description=False)
         fba = standardize_units(fba)
 
     return fba

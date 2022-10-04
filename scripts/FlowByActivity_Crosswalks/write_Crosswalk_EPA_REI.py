@@ -8,6 +8,7 @@ Create a crosswalk assigning sectors to Facts and Figures Activiites
 """
 import pandas as pd
 import numpy as np
+from flowsa.common import load_crosswalk
 from flowsa.settings import datapath
 from scripts.FlowByActivity_Crosswalks.common_scripts import \
     unique_activity_names, order_crosswalk
@@ -19,40 +20,54 @@ def assign_naics(df):
     :param df: df, a FlowByActivity subset that contains unique activity names
     :return: df with assigned Sector columns
     """
-    df = df[['Activity', 'ActivitySourceName']].reset_index(drop=True)
-    # assign sector source name
-    df['SectorSourceName'] = 'NAICS_2012_Code'
-
+    # subset out recycling sectors
+    dfr = df[df['ActivityCode'].str.startswith('RS')].reset_index(drop=True)
     # assign sectors
-    df['Sector'] = np.where(df['Activity'].str.contains('Recycling'),
+    dfr['Sector'] = np.where(dfr['Activity'].str.contains('Recycling'),
                             '5629201', np.nan)
-    df.loc[df['Activity'].str.contains('Minimally processed'), 'Sector'] \
+    dfr.loc[dfr['Activity'].str.contains('Minimally processed'), 'Sector'] \
         = '311119'
-    df.loc[df['Activity'].str.contains('Rendering'), 'Sector'] = \
+    dfr.loc[dfr['Activity'].str.contains('Rendering'), 'Sector'] = \
         '562BIO'
-    df.loc[df['Activity'].str.contains('Anaerobic|Biofuels'), 'Sector'] \
+    dfr.loc[dfr['Activity'].str.contains('Anaerobic|Biofuels'), 'Sector'] \
         = '5622191'
-    df.loc[df['Activity'].str.contains('Compost'), 'Sector'] = '5622192'
-    df.loc[df['Activity'].str.contains('Landscape'), 'Sector'] = '115112'
-    df.loc[df['Activity'].str.contains('Community'), 'Sector'] = \
+    dfr.loc[dfr['Activity'].str.contains('Compost'), 'Sector'] = '5622192'
+    dfr.loc[dfr['Activity'].str.contains('Landscape'), 'Sector'] = '115112'
+    dfr.loc[dfr['Activity'].str.contains('Community'), 'Sector'] = \
         '624210'
 
-    df['Sector'] = df['Sector'].replace({'nan': np.nan})
+    # assign the remaining codes based on BEA crosswalk
+    dfb = df[~df['ActivityCode'].str.startswith('RS')].reset_index(drop=True)
 
-    return df
+    # load bea crosswalk
+    cw_load = load_crosswalk('BEA')
+    cw = (cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']]
+          .drop_duplicates()
+          .dropna()
+          .reset_index(drop=True)
+          .rename(columns={'BEA_2012_Detail_Code': 'ActivityCode',
+                          'NAICS_2012_Code': 'Sector'})
+          )
+    # only keep naics6
+    cw2 = cw[cw['Sector'].apply(lambda x: len(x) == 6)].reset_index(drop=True)
+    # merge
+    dfb2 = dfb.merge(cw2, how='left')
+
+    # concat
+    df2 = pd.concat([dfb2, dfr], ignore_index=True)
+    df2['Sector'] = df2['Sector'].replace({'nan': np.nan})
+
+    return df2
 
 
 if __name__ == '__main__':
-    # select years to pull unique activity names
-    years = ['2012']
-    # datasource
+    # load primary factors df and subset cols
     datasource = 'EPA_REI'
-    # df of unique ers activity names
-    df_list = []
-    for y in years:
-        dfy = unique_activity_names(datasource, y)
-        df_list.append(dfy)
-    df = pd.concat(df_list, ignore_index=True).drop_duplicates()
+    df_load = pd.read_csv('https://raw.githubusercontent.com/USEPA/HIO/main/data/REI_sourcedata/REI_primaryfactors.csv', dtype='str')
+    df = df_load.iloc[:, 0:2]
+    df = df.rename(columns={'Unnamed: 0': 'ActivityCode',
+                            'Unnamed: 1': 'Activity'}).dropna()
+    df['Activity'] = df['Activity'].str.strip()
     # add manual naics 2012 assignments
     df = assign_naics(df)
     # drop any rows where naics12 is 'nan'
@@ -63,6 +78,9 @@ if __name__ == '__main__':
           )
     # assign sector type
     df['SectorType'] = None
+    df['ActivitySourceName'] = datasource
+    # assign sector source name
+    df['SectorSourceName'] = 'NAICS_2012_Code'
     # sort df
     df = order_crosswalk(df)
     # save as csv

@@ -300,7 +300,7 @@ def main(**kwargs):
                 # of the allocation, call on function here
                 elif attr['allocation_method'] == 'allocation_function':
                     fbs = function_allocation_method(
-                        flows_mapped_wsec, k, names, attr, fbs_list)
+                        flows_mapped_wsec, k, names, attr, fbs_list, method)
                 else:
                     fbs = dataset_allocation_method(
                         flows_mapped_wsec, attr, names, method, k, v, aset,
