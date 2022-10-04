@@ -470,10 +470,6 @@ def mecs_energy_fba_cleanup(fba, attr, **kwargs):
     # subset the df to only include values where the unit = MJ
     fba = fba.loc[fba['Unit'] == 'MJ'].reset_index(drop=True)
 
-    # Only include data from specific tables to avoid double counting
-    fba = (fba.loc[fba['Description'].isin(['Table 2.2', 'Table 3.2'])]
-           .reset_index(drop=True))
-
     return fba
 
 
