@@ -108,6 +108,8 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         fba_dict['clean_fba'] = attr['clean_allocation_fba']
     if 'clean_allocation_fba_w_sec' in attr:
         fba_dict['clean_fba_w_sec'] = attr['clean_allocation_fba_w_sec']
+    if 'allocation_selection_fields' in attr:
+        fba_dict['allocation_selection_fields'] = attr['allocation_selection_fields']
 
     # load the allocation FBA
     fba_allocation_wsec = \
@@ -283,6 +285,8 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         fba_dict['clean_fba_w_sec'] = attr['clean_helper_fba_wsec']
     if 'helper_activity_to_sector_mapping' in attr:
         fba_dict['activity_to_sector_mapping'] = attr['helper_activity_to_sector_mapping']
+    if 'helper_allocation_selection_fields' in attr:
+        fba_dict['allocation_selection_fields'] = attr['helper_allocation_selection_fields']
 
     # load the allocation FBA
     helper_allocation = \
@@ -504,7 +508,14 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         if kwargs['compartment_subset'] != 'None':
             fba = \
                 fba.loc[fba['Compartment'].isin(kwargs['compartment_subset'])]
-    fba = fba.reset_index(drop=True)
+    if 'allocation_selection_fields' in kwargs:
+        selection_fields = attr.get('allocation_selection_fields')
+        for k, v in selection_fields.items():
+            fba = fba[fba[k].isin(v)].reset_index(drop=True)
+    fba = (fba
+           .drop(columns='Description')
+           .reset_index(drop=True)
+           )
 
     if len(fba) == 0:
         raise flowsa.exceptions.FBSMethodConstructionError(
