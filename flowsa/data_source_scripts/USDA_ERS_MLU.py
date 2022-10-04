@@ -83,7 +83,8 @@ def mlu_parse(*, df_list, source, year, **_):
     return dfm3
 
 
-def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
+def allocate_usda_ers_mlu_land_in_urban_areas(*, flow_subset_mapped,
+                                              fbs_list, **_):
     """
     This function is used to allocate the USDA_ERS_MLU activity 'land in
     urban areas' to NAICS 2012 sectors. Allocation is dependent on
@@ -104,6 +105,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
                      to the activity set that calls on this fxn
     :return: df, allocated USDS ERS MLU Land, FBS format
     """
+
+    df = flow_subset_mapped.copy()
 
     # define sector column to base calculations
     sector_col = 'SectorConsumedBy'
@@ -205,7 +208,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(df, attr, fbs_list):
 
 
 def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
-        df, attr, fbs_list):
+        *, flow_subset_mapped, **_):
     """
     This function is used to allocate the USDA_ERS_MLU activity
     'land in urban areas' to NAICS 2012 sectors. Allocation
@@ -225,6 +228,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
                      to the activity set that calls on this fxn
     :return: df, allocated USDS ERS MLU Land, FBS format
     """
+
+    df = flow_subset_mapped.copy()
 
     # define sector column to base calculations
     sector_col = 'SectorConsumedBy'
@@ -278,7 +283,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     return allocated_rural_trans
 
 
-def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
+def allocate_usda_ers_mlu_other_land(*, flow_subset_mapped, **_):
     """
     From the USDA ERS MLU 2012 report:
     "Includes miscellaneous other uses, such as industrial and commercial
@@ -296,6 +301,7 @@ def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
                      set that calls on this fxn
     :return: df, allocated USDS ERS MLU Land, FBS format
     """
+    df = flow_subset_mapped.copy()
 
     # land in rural residential lots
     rural_res = get_area_of_rural_land_occupied_by_houses_2013()

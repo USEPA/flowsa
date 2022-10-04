@@ -60,7 +60,8 @@ def direct_allocation_method(fbs, k, names, method):
     return fbs
 
 
-def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
+def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list,
+                               method):
     """
     Allocate df activities to sectors using a function identified
     in the FBS method yaml
@@ -74,7 +75,9 @@ def function_allocation_method(flow_subset_mapped, k, names, attr, fbs_list):
     """
     log.info('Calling on function specified in method yaml to allocate '
              '%s to sectors', ', '.join(map(str, names)))
-    fbs = attr['allocation_source'](flow_subset_mapped, attr, fbs_list)
+    fbs = attr['allocation_source'](flow_subset_mapped=flow_subset_mapped,
+                                    k=k, names=names, attr=attr,
+                                    fbs_list=fbs_list, method=method)
     return fbs
 
 
