@@ -131,24 +131,23 @@ def combine_cdd_path(*, resp, year, config, **_):
 
 def call_generation_by_source(file_dict):
     """Extraction generation by source data from pdf"""
-    pg = 21
-    url = 'https://www.epa.gov/sites/default/files/2021-01/documents/2018_ff_fact_sheet_dec_2020_fnl_508.pdf'
-
+    pg = file_dict.get('pg')
+    url = file_dict.get('url')
     df = read_pdf(url, pages=pg, stream=True, guess=True)[0]
     # set headers
-    df = df.rename(columns={df.columns[0]: 'Material',
+    df = df.rename(columns={df.columns[0]: 'FlowName',
                             df.columns[1]: 'Buildings',
                             df.columns[2]: 'Roads and Bridges',
                             df.columns[3]: 'Other'})
     # drop total row
-    df = df[df['Material'] != 'Total']
+    df = df[df['FlowName'] != 'Total']
     # drop notes
-    df['Material'] = df['Material'].apply(lambda x: re.sub(r'\d+', '', x))
+    df['FlowName'] = df['FlowName'].apply(lambda x: re.sub(r'\d+', '', x))
 
     # melt
     df2 = df.melt(id_vars=["Material"],
-                  var_name="Source",
-                  value_name="million short tons")
+                  var_name="ActivityProducedBy",
+                  value_name="FlowAmount")
     return df2
 
 
