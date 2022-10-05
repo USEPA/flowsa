@@ -144,6 +144,15 @@ def call_generation_by_source(file_dict):
     # drop notes
     df['FlowName'] = df['FlowName'].apply(lambda x: re.sub(r'\d+', '', x))
 
+    # make sure material names match
+    name_dict = {"Wood Products": "Wood",
+                 "Drywall and Plasters": "Gypsum Drywall",
+                 "Brick and Clay Tile": "Bricks",
+                 "Steel": "Metal",
+                 "Asphalt Concrete": "Reclaimed Asphalt Pavement"}
+
+    df['FlowName'] = df['FlowName'].map(name_dict).fillna(df['FlowName'])
+
     # melt
     df2 = df.melt(id_vars=["Material"],
                   var_name="ActivityProducedBy",
