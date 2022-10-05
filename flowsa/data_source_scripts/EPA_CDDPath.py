@@ -10,6 +10,8 @@ Last updated: 2018-11-07
 """
 
 import pandas as pd
+from tabula.io import read_pdf
+import re
 from flowsa.location import US_FIPS
 from flowsa.settings import externaldatapath, log
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
@@ -97,7 +99,7 @@ def epa_cddpath_parse(*, df_list, year, **_):
     return df
 
 
-def combine_cdd_path(*, resp, year, config):
+def combine_cdd_path(*, resp, year, config, **_):
     """Call function to generate combined dataframe from generation
     by source dataset and excel CDDPath model,
     applying the ActivityProducedBy across the flows.
@@ -128,10 +130,25 @@ def combine_cdd_path(*, resp, year, config):
 
 def call_generation_by_source(file_dict):
     """Extraction generation by source data from pdf"""
-    # pg = 21
-    # url = 'https://www.epa.gov/sites/default/files/2021-01/documents/2018_ff_fact_sheet_dec_2020_fnl_508.pdf'
-    df = None
-    return df
+    pg = 21
+    url = 'https://www.epa.gov/sites/default/files/2021-01/documents/2018_ff_fact_sheet_dec_2020_fnl_508.pdf'
+
+    df = read_pdf(url, pages=pg, stream=True, guess=True)[0]
+    # set headers
+    df = df.rename(columns={df.columns[0]: 'Material',
+                            df.columns[1]: 'Buildings',
+                            df.columns[2]: 'Roads and Bridges',
+                            df.columns[3]: 'Other'})
+    # drop total row
+    df = df[df['Material'] != 'Total']
+    # drop notes
+    df['Material'] = df['Material'].apply(lambda x: re.sub(r'\d+', '', x))
+
+    # melt
+    df2 = df.melt(id_vars=["Material"],
+                  var_name="Source",
+                  value_name="million short tons")
+    return df2
 
 
 def assign_wood_to_engineering(fba, **_):
