@@ -15,65 +15,60 @@ years:
 - 2014
 - 2018
 tables:
+- table1_2
+- table1_5
 - table2_1
 - table2_2
 - table3_1
 - table3_2
+- table3_6
+- table7_2
+- table7_10
 
 table_dict:
-    '2018':
-      Table 2.1:
-        col_names:
+    '2010':
+      Table 2.1: 
+        col_names: &col_names_2010_21
           - NAICS Code
           - Subsector and Industry
           - Total | trillion Btu
           - Residual Fuel Oil | million bbl
           - Distillate Fuel Oil | million bbl
           - Natural Gas | billion cu ft
-          - Hydrocarbon Gas Liquids, excluding natural gasoline | million bbl
+          - Liquified Petroleum Gas and Natural Gas Liquids | million bbl
           - Coal | million short tons
           - Coke and Breeze | million short tons
           - Other | trillion Btu
-        regions:
-          Total United States : [14,98]
-          Northeast Region : [101,183]
-          Midwest Region : [186,268]
-          South Region : [271,353]
-          West Region : [356,438]
-        rse_regions:
-          Total United States : [12,96]
-          Northeast Region : [99,181]
-          Midwest Region : [184,266]
-          South Region : [269,351]
-          West Region : [354,436]
+        regions: &regions_2010_21
+          Total United States : [16,99]
+          Northeast Region : [104,187]
+          Midwest Region : [192,275]
+          South Region : [280,363]
+          West Region : [368,451]
+        rse_regions: &rse_regions_2010_21
+          Total United States : [15,98]
+          Northeast Region : [103,186]
+          Midwest Region : [191,274]
+          South Region : [279,362]
+          West Region : [367,450]
         data_type: 'nonfuel consumption'
-      Table 2.2:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Total
-          - Residual Fuel Oil
-          - Distillate Fuel Oil
-          - Natural Gas
-          - Hydrocarbon Gas Liquids, excluding natural gasoline
-          - Coal
-          - Coke and Breeze
-          - Other
-        regions:
-          Total United States : [14,98]
-          Northeast Region : [101,183]
-          Midwest Region : [186,268]
-          South Region : [271,353]
-          West Region : [356,438]
-        rse_regions:
-          Total United States : [12,96]
-          Northeast Region : [99,181]
-          Midwest Region : [184,266]
-          South Region : [269,351]
-          West Region : [354,436]
+      Table 2.2: 
+        col_names: *col_names_2010_21
+        regions: &regions_2010_22
+          Total United States : [15,98]
+          Northeast Region : [103,186]
+          Midwest Region : [191,274]
+          South Region : [279,362]
+          West Region : [367,450]
+        rse_regions: &rse_regions_2010_22
+          Total United States : [13,96]
+          Northeast Region : [101,184]
+          Midwest Region : [189,272]
+          South Region : [277,360]
+          West Region : [365,448]
         data_type: 'nonfuel consumption'
       Table 3.1:
-        col_names:
+        col_names: &col_names_2010_31
           - NAICS Code
           - Subsector and Industry
           - Total | trillion Btu
@@ -81,25 +76,47 @@ table_dict:
           - Residual Fuel Oil | million bbl
           - Distillate Fuel Oil | million bbl
           - Natural Gas | billion cu ft
-          - Hydrocarbon Gas Liquids, excluding natural gasoline | million bbl
+          - Liquified Petroleum Gas and Natural Gas Liquids | million bbl
           - Coal | million short tons
           - Coke and Breeze | million short tons
           - Other | trillion Btu
         regions:
-          Total United States : [14,96]
-          Northeast Region : [99,181]
-          Midwest Region : [184,266]
-          South Region : [269,351]
-          West Region : [354,436]
+          *regions_2010_21
         rse_regions:
-          Total United States : [12,94]
-          Northeast Region : [97,179]
-          Midwest Region : [182,264]
-          South Region : [267,349]
-          West Region : [352,434]
+          *rse_regions_2010_21
         data_type: 'fuel consumption'
       Table 3.2:
-        col_names:
+        col_names: *col_names_2010_31
+        regions:
+          *regions_2010_22
+        rse_regions:
+          *rse_regions_2010_22
+        data_type: 'fuel consumption'
+      Table 3.6:
+        col_names: &col_names_2010_36
+          - NAICS Code
+          - Subsector and Industry
+          - Pulping Liquor or Black Liquor
+          - Biomass Total
+          - Agricultural Waste
+          - Wood Harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+        regions:
+          Total United States: [21,36]
+          Northeast Region: [41,56]
+          Midwest Region: [61,76]
+          South Region: [81,96]
+          West Region: [101,116]
+        rse_regions:
+          Total United States: [20,35]
+          Northeast Region: [40,55]
+          Midwest Region: [60,75]
+          South Region: [80,95]
+          West Region: [100,115]
+        data_type: 'fuel consumption'
+      Table 1.2:
+        col_names: &col_names_2010_12
           - NAICS Code
           - Subsector and Industry
           - Total
@@ -107,27 +124,100 @@ table_dict:
           - Residual Fuel Oil
           - Distillate Fuel Oil
           - Natural Gas
-          - Hydrocarbon Gas Liquids, excluding natural gasoline
+          - HGL (excluding natural gasoline)
           - Coal
           - Coke and Breeze
           - Other
+          - Shipments of Energy Sources Produced Onsite
         regions:
-          Total United States : [14,96]
-          Northeast Region : [99,181]
-          Midwest Region : [184,266]
-          South Region : [269,351]
-          West Region : [354,436]
+          *regions_2010_21
         rse_regions:
-          Total United States : [12,94]
-          Northeast Region : [97,179]
-          Midwest Region : [182,264]
-          South Region : [267,349]
-          West Region : [352,434]
+          *rse_regions_2010_21
         data_type: 'fuel consumption'
+      Table 1.5:
+        col_names:
+          - Energy Source
+          - Total First Use
+        regions:
+          Total United States: [16,49]
+        rse_regions:
+          Total United States: [10,51]
+        data_type: 'fuel consumption'
+      Table 7.2:
+        col_names:
+          - NAICS Code
+          - Subsector and Industry
+          - TOTAL
+          - Acetylene
+          - Breeze
+          - Coal Total
+          - Anthracite
+          - Bituminous and Subbituminous Coal
+          - Lignite
+          - Coal Coke
+          - Petroleum Coke
+          - Electricity Total
+          - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
+          - Total Diesel Fuel and Distillate Fuel Oil
+          - Diesel Fuel
+          - Distillate Fuel Oil
+          - Residual Fuel Oil
+          - Blast Furnace Gas
+          - Coke Oven Gass
+          - Motor Gasoline (Excluding Highway Usage)
+          - Hydrogen
+          - Kerosene
+          - Pulping Liquor or Black Liquor
+          - LPG and NGL
+          - Natural Gas Total
+          - Natural Gas from Local Utility
+          - Natural Gas from Sources Other than Utility
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
+          - Waste Gases and Byproduct Gases
+          - Waste Oils and Tars
+          - Industrial Hot Water Total
+          - Biomass Total
+          - Agricultural Waste
+          - Wood harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+          - All Other Engery Sources
+        regions: &regions_2010_72
+          Total United States: [19,102]
+          Northeast Region: [107,190]
+          Midwest Region: [195,278]
+          South Region: [283,366]
+          West Region: [371,454]
+        rse_regions: &rse_regions_2010_72
+          Total United States: [17,100]
+          Northeast Region: [105,188]
+          Midwest Region: [193,276]
+          South Region: [281,364]
+          West Region: [369,452]
+        data_type: 'money'
+      Table 7.10:
+        col_names: &col_names_2010_710
+          - NAICS Code
+          - Subsector and Industry
+          - Electricity Total
+          - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
+          - Natural Gas Total
+          - Natural Gas from Local Utility
+          - Natural Gas from Sources Other than Local Utility
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
+        regions: *regions_2010_72
+        rse_regions: *rse_regions_2010_72
+        data_type: 'money'
 
     '2014':
       Table 2.1:
-        col_names:
+        col_names: &col_names_2014_21
           - NAICS Code
           - Subsector and Industry
           - Total | trillion Btu
@@ -138,13 +228,13 @@ table_dict:
           - Coal | million short tons
           - Coke and Breeze | million short tons
           - Other | trillion Btu
-        regions:
+        regions: &regions_2014_21
           Total United States : [14,97]
           Northeast Region : [100,181]
           Midwest Region : [184,265]
           South Region : [268,349]
           West Region : [352,433]
-        rse_regions:
+        rse_regions: &rse_regions_2014_21
           Total United States : [12,95]
           Northeast Region : [98,179]
           Midwest Region : [182,263]
@@ -152,32 +242,14 @@ table_dict:
           West Region : [350,431]
         data_type: 'nonfuel consumption'
       Table 2.2:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Total
-          - Residual Fuel Oil
-          - Distillate Fuel Oil
-          - Natural Gas
-          - Hydrocarbon Gas Liquids, excluding natural gasoline
-          - Coal
-          - Coke and Breeze
-          - Other
+        col_names: *col_names_2014_21
         regions:
-          Total United States : [14,97]
-          Northeast Region : [100,181]
-          Midwest Region : [184,265]
-          South Region : [268,349]
-          West Region : [352,433]
+          *regions_2014_21
         rse_regions:
-          Total United States : [12,95]
-          Northeast Region : [98,179]
-          Midwest Region : [182,263]
-          South Region : [266,347]
-          West Region : [350,431]
+          *rse_regions_2014_21
         data_type: 'nonfuel consumption'
       Table 3.1:
-        col_names:
+        col_names: &col_names_2014_31
           - NAICS Code
           - Subsector and Industry
           - Total | trillion Btu
@@ -189,146 +261,266 @@ table_dict:
           - Coal | million short tons
           - Coke and Breeze | million short tons
           - Other | trillion Btu
-        regions:
+        regions: &regions_2014_31
           Total United States : [14,95]
           Northeast Region : [98,179]
           Midwest Region : [182,263]
           South Region : [266,347]
           West Region : [350,431]
-        rse_regions:
+        rse_regions: &rse_regions_2014_31
           Total United States : [12,93]
           Northeast Region : [96,177]
           Midwest Region : [180,261]
           South Region : [264,345]
           West Region : [348,429]
         data_type: 'fuel consumption'
+      Table 3.6:
+        col_names: *col_names_2010_36
+        regions:
+          Total United States: [ 18,34 ]
+          Northeast Region: [ 37,52 ]
+          Midwest Region: [ 55,70 ]
+          South Region: [ 73,88 ]
+          West Region: [ 91,106 ]
+        rse_regions:
+          Total United States: [ 17,32 ]
+          Northeast Region: [ 34,50 ]
+          Midwest Region: [ 53,68 ]
+          South Region: [ 71,86 ]
+          West Region: [ 89,104 ]
+        data_type: 'fuel consumption'
       Table 3.2:
+        col_names: *col_names_2014_31
+        regions:
+          *regions_2014_31
+        rse_regions:
+          *rse_regions_2014_31
+        data_type: 'fuel consumption'
+      Table 1.2:
+        col_names: *col_names_2010_12
+        regions:
+          *regions_2014_21
+        rse_regions:
+          *rse_regions_2014_21
+        data_type: 'fuel consumption'
+      Table 1.5:
+        col_names:
+          - Energy Source
+          - Total First Use
+        regions:
+          Total United States: [13,54]
+        rse_regions:
+          Total United States: [10,51]
+        data_type: 'fuel consumption'
+      Table 7.2:
         col_names:
           - NAICS Code
           - Subsector and Industry
-          - Total
-          - Net Electricity
-          - Residual Fuel Oil
+          - TOTAL
+          - Acetylene
+          - Breeze
+          - Coal Total
+          - Anthracite
+          - Bituminous and Subbituminous Coal
+          - Lignite
+          - Coal Coke
+          - Petroleum Coke
+          - Electricity Total
+          - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
+          - Total Diesel Fuel and Distillate Fuel Oil
+          - Diesel Fuel
           - Distillate Fuel Oil
-          - Natural Gas
-          - Hydrocarbon Gas Liquids, excluding natural gasoline
-          - Coal
-          - Coke and Breeze
-          - Other
+          - Residual Fuel Oil
+          - Blast Furnace Gas
+          - Coke Oven Gass
+          - Motor Gasoline (Excluding Highway Usage)
+          - Bitumen
+          - Naphtha
+          - Hydrogen
+          - Kerosene
+          - Pulping Liquor or Black Liquor
+          - HGL (excluding natural gasoline)
+          - Natural Gas Total
+          - Natural Gas from Local Utility
+          - Natural Gas from Sources Other than Utility
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
+          - Waste Gases and Byproduct Gases
+          - Waste Oils and Tars
+          - Industrial Hot Water Total
+          - Biomass Total
+          - Agricultural Waste
+          - Wood harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+          - All Other Engery Sources
         regions:
-          Total United States : [14,95]
-          Northeast Region : [98,179]
-          Midwest Region : [182,263]
-          South Region : [266,347]
-          West Region : [350,431]
+          Total United States: [20,101]
+          Northeast Region: [106,187]
+          Midwest Region: [192,273]
+          South Region: [278,359]
+          West Region: [364,445]
         rse_regions:
-          Total United States : [12,93]
-          Northeast Region : [96,177]
-          Midwest Region : [180,261]
-          South Region : [264,345]
-          West Region : [348,429]
-        data_type: 'fuel consumption'
+          Total United States: [17,98]
+          Northeast Region: [103,184]
+          Midwest Region: [189,270]
+          South Region: [275,356]
+          West Region: [361,442]
+        data_type: 'money'
+      Table 7.10:
+        col_names: *col_names_2010_710
+        regions:
+          Total United States: [19,100]
+          Northeast Region: [105,186]
+          Midwest Region: [191,272]
+          South Region: [277,358]
+          West Region: [363,444]
+        rse_regions:
+          Total United States: [16,97]
+          Northeast Region: [102,183]
+          Midwest Region: [188,269]
+          South Region: [274,355]
+          West Region: [360,441]
+        data_type: 'money'
 
-    '2010':
-      Table 2.1:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Total | trillion Btu
-          - Residual Fuel Oil | million bbl
-          - Distillate Fuel Oil | million bbl
-          - Natural Gas | billion cu ft
-          - Liquified Petroleum Gas and Natural Gas Liquids | million bbl
-          - Coal | million short tons
-          - Coke and Breeze | million short tons
-          - Other | trillion Btu
-        regions:
-          Total United States : [16,99]
-          Northeast Region : [104,187]
-          Midwest Region : [192,275]
-          South Region : [280,363]
-          West Region : [368,451]
-        rse_regions:
-          Total United States : [15,98]
-          Northeast Region : [103,186]
-          Midwest Region : [191,274]
-          South Region : [279,362]
-          West Region : [367,450]
+    '2018':
+      Table 2.1: 
+        col_names: *col_names_2014_21
+        regions: &regions_2018_21
+          Total United States : [14,98]
+          Northeast Region : [101,183]
+          Midwest Region : [186,268]
+          South Region : [271,353]
+          West Region : [356,438]
+        rse_regions: &rse_regions_2018_21
+          Total United States : [12,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
         data_type: 'nonfuel consumption'
       Table 2.2:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Total
-          - Residual Fuel Oil
-          - Distillate Fuel Oil
-          - Natural Gas
-          - Liquified Petroleum Gas and Natural Gas Liquids
-          - Coal
-          - Coke and Breeze
-          - Other
+        col_names: *col_names_2014_21
         regions:
-          Total United States : [15,98]
-          Northeast Region : [103,186]
-          Midwest Region : [191,274]
-          South Region : [279,362]
-          West Region : [367,450]
+          *regions_2018_21
         rse_regions:
-          Total United States : [13,96]
-          Northeast Region : [101,184]
-          Midwest Region : [189,272]
-          South Region : [277,360]
-          West Region : [365,448]
+          *rse_regions_2018_21
         data_type: 'nonfuel consumption'
       Table 3.1:
-        col_names:
-          - NAICS Code
-          - Subsector and Industry
-          - Total | trillion Btu
-          - Net Electricity | million kWh
-          - Residual Fuel Oil | million bbl
-          - Distillate Fuel Oil | million bbl
-          - Natural Gas | billion cu ft
-          - Liquified Petroleum Gas and Natural Gas Liquids | million bbl
-          - Coal | million short tons
-          - Coke and Breeze | million short tons
-          - Other | trillion Btu
-        regions:
-          Total United States : [16,99]
-          Northeast Region : [104,187]
-          Midwest Region : [192,275]
-          South Region : [280,363]
-          West Region : [368,451]
-        rse_regions:
-          Total United States : [15,98]
-          Northeast Region : [103,186]
-          Midwest Region : [191,274]
-          South Region : [279,362]
-          West Region : [367,450]
+        col_names: *col_names_2014_31
+        regions: &regions_2018_31
+          Total United States : [14,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
+        rse_regions: &rse_regions_2018_31
+          Total United States : [12,94]
+          Northeast Region : [97,179]
+          Midwest Region : [182,264]
+          South Region : [267,349]
+          West Region : [352,434]
         data_type: 'fuel consumption'
       Table 3.2:
+        col_names: *col_names_2014_31
+        regions:
+          *regions_2018_31
+        rse_regions:
+          *rse_regions_2018_31
+        data_type: 'fuel consumption'
+      Table 3.6:
+        col_names: *col_names_2010_36
+        regions:
+          Total United States: [ 19,34 ]
+          Northeast Region: [ 37,52 ]
+          Midwest Region: [ 55,70 ]
+          South Region: [ 73,88 ]
+          West Region: [ 91,106 ]
+        rse_regions:
+          Total United States: [ 17,32 ]
+          Northeast Region: [ 35,50 ]
+          Midwest Region: [ 53,68 ]
+          South Region: [ 71,86 ]
+          West Region: [ 89,104 ]
+        data_type: 'fuel consumption'
+      Table 1.2:
+        col_names: *col_names_2010_12
+        regions:
+          *regions_2010_21
+        rse_regions:
+          *rse_regions_2010_21
+        data_type: 'fuel consumption'
+      Table 1.5:
+        col_names:
+          - Energy Source
+          - Total First Use
+        regions:
+          Total United States: [ 14,52 ]
+        rse_regions:
+          Total United States: [ 10,49 ]
+        data_type: 'fuel consumption'
+      Table 7.2:
         col_names:
           - NAICS Code
           - Subsector and Industry
-          - Total
-          - Net Electricity
-          - Residual Fuel Oil
+          - TOTAL
+          - Acetylene
+          - Breeze
+          - Coal Total
+          - Anthracite
+          - Bituminous and Subbituminous Coal
+          - Lignite
+          - Coal Coke
+          - Petroleum Coke
+          - Electricity Total
+          - Electricity from Local Utility
+          - Electricity from Sources Other than Local Utility
+          - Total Diesel Fuel and Distillate Fuel Oil
+          - Diesel Fuel
           - Distillate Fuel Oil
-          - Natural Gas
-          - Liquified Petroleum Gas and Natural Gas Liquids
-          - Coal
-          - Coke and Breeze
-          - Other
-        regions:
-          Total United States : [15,98]
-          Northeast Region : [103,186]
-          Midwest Region : [191,274]
-          South Region : [279,362]
-          West Region : [367,450]
-        rse_regions:
-          Total United States : [13,96]
-          Northeast Region : [101,184]
-          Midwest Region : [189,272]
-          South Region : [277,360]
-          West Region : [365,448]
-        data_type: 'fuel consumption'
+          - Residual Fuel Oil
+          - Blast Furnace Gas
+          - Coke Oven Gass
+          - Motor Gasoline (Excluding Highway Usage)
+          - Bitumen
+          - Naphtha
+          - Hydrogen
+          - Kerosene
+          - Pulping Liquor or Black Liquor
+          - HGL (excluding natural gasoline)
+          - Natural Gas Total
+          - Natural Gas from Local Utility
+          - Natural Gas from Sources Other than Utility
+          - Steam Total
+          - Steam from Local Utility
+          - Steam from Sources Other than Local Utility
+          - Tire Dervied Fuel # new in 2018
+          - Waste Gases and Byproduct Gases
+          - Waste Oils and Tars
+          - Industrial Hot Water Total
+          - Biomass Total
+          - Agricultural Waste
+          - Wood harvested Directly from Trees
+          - Wood Residues and Byproducts from Mill Processing
+          - Wood-Related and Paper-Related Refuse
+          - All Other Engery Sources
+        regions: &regions_2018_72
+          Total United States: [17,99]
+          Northeast Region: [102,184]
+          Midwest Region: [187,269]
+          South Region: [272,354]
+          West Region: [357,439]
+        rse_regions: &rse_regions_2018_72
+          Total United States : [14,96]
+          Northeast Region : [99,181]
+          Midwest Region : [184,266]
+          South Region : [269,351]
+          West Region : [354,436]
+        data_type: 'money'
+      Table 7.10:
+        col_names: *col_names_2010_710
+        regions: *regions_2018_72
+        rse_regions: *rse_regions_2018_72
+        data_type: 'money'
