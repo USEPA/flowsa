@@ -1,22 +1,24 @@
 author: US Department of Agriculture
 source_name: Farm Income and Wealth Statistics
-source_url: https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
+source_url: https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/data-files-u-s-and-state-level-farm-income-and-wealth-statistics/
+original_data_download_date: '2022-08-10'
 bib_id: USDA_ERS_FIWS
-# api_name: USDA_ERS_FIWS
-# api_key_required: false
+api_name: USDA_ERS_FIWS
+api_key_required: false
 format: csv
 url:
-  base_url: https://www.ers.usda.gov/media/10473/farmincome_wealthstatisticsdata_february2020.zip
+  base_url: https://www.ers.usda.gov/media/rr0gve42/farmincome_wealthstatisticsdata_february2022.zip
 call_response_fxn: !script_function:USDA_ERS_FIWS fiws_call
 parse_response_fxn: !script_function:USDA_ERS_FIWS fiws_parse
 years:
-- 2010
-- 2011
-- 2012
-- 2013
-- 2014
-- 2015
-- 2016
-- 2017
-- 2018
-- 2019
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020

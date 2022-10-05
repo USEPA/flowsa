@@ -59,6 +59,13 @@ Tables:
         "flow": "CO2e"
         "desc": "Table 3-10:  CO2, CH4, and N2O Emissions from Fossil Fuel Combustion by Sector (MMT CO2 Eq.)"
 
+      "3-13":
+        "table_name": "3-13-updated" # csv name is modified in source file
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "flow": "CO2"
+        "desc": "Table 3-13:  CO2 Emissions from Fossil Fuel Combustion in Transportation End-Use Sector"
       "3-14":
         "class": "Chemicals"
         "unit": "MMT CO2e"

@@ -94,10 +94,16 @@ EIA_CBECS_Water:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+EIA_AEO:
+  class:
+    - Energy
+  sector-like_activities: False
+  # sector_aggregation_level: "aggregated"
 EIA_MECS_Energy:
   class:
     - Energy
     - Other
+    - Money
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
@@ -113,6 +119,12 @@ EIA_MER:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
+EIA_SEDS:
+  class:
+    - Energy
+    - Money
+  sector-like_activities: False
+  # sector_aggregation_level: "aggregated"
 EPA_CDDPath:
   class:
     - Other
@@ -164,7 +176,7 @@ NETL_EIA_PlantWater:
   sector-like_activities: False
   activity_schema: None
   sector_aggregation_level: "aggregated"
-NOAA_FisheryLandings:
+NOAA_FisheriesLandings:
   class:
   - Money
   sector-like_activities: False

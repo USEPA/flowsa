@@ -10,7 +10,7 @@ import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, \
     read_source_metadata
 from flowsa.common import load_functions_loading_fbas_config, \
-    load_fbs_methods_additional_fbas_config
+    load_fbs_methods_additional_fbas_config, return_true_source_catalog_name
 from flowsa.settings import paths, PKG, PKG_VERSION_NUMBER, WRITE_FORMAT, \
     GIT_HASH, GIT_HASH_LONG, log
 
@@ -62,14 +62,6 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
     :return: object, metadata for FBA or FBS method
     """
 
-    # create empty dictionary
-    fb_dict = {}
-
-    # add url of FlowBy method at time of commit
-    fb_dict['method_url'] = \
-        f'https://github.com/USEPA/flowsa/blob/{GIT_HASH_LONG}/flowsa/' \
-        f'data/{category.lower()}methods/{source_name}.yaml'
-
     if category == 'FlowBySector':
         method_data = return_fbs_method_data(source_name, config)
 
@@ -77,6 +69,16 @@ def return_fb_meta_data(source_name, config, category, **kwargs):
         # when FBA meta created, kwargs exist for year
         year = kwargs['year']
         method_data = return_fba_method_meta(source_name, year=year)
+        # return the catalog source name to ensure the method urls are correct
+        # for FBAs
+        source_name = return_true_source_catalog_name(source_name)
+
+    # create empty dictionary
+    fb_dict = {}
+    # add url of FlowBy method at time of commit
+    fb_dict['method_url'] = \
+        f'https://github.com/USEPA/flowsa/blob/{GIT_HASH_LONG}/flowsa/' \
+        f'methods/{category.lower()}methods/{source_name}.yaml'
 
     fb_dict.update(method_data)
 
