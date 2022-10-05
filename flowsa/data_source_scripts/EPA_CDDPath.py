@@ -154,7 +154,6 @@ def call_generation_by_source(file_dict):
     # make sure material names match
     name_dict = {"Wood Products": "Wood",
                  "Drywall and Plasters": "Gypsum Drywall",
-                 "Brick and Clay Tile": "Bricks",
                  "Steel": "Metal",
                  "Asphalt Concrete": "Reclaimed Asphalt Pavement"}
 
