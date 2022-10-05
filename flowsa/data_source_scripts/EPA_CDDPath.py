@@ -127,6 +127,9 @@ def combine_cdd_path(*, resp, year, config):
 
 
 def call_generation_by_source(file_dict):
+    """Extraction generation by source data from pdf"""
+    # pg = 21
+    # url = 'https://www.epa.gov/sites/default/files/2021-01/documents/2018_ff_fact_sheet_dec_2020_fnl_508.pdf'
     df = None
     return df
 
