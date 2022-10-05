@@ -19,30 +19,28 @@ from flowsa.dataclean import standardize_units
 from flowsa.schema import flow_by_activity_mapped_fields
 
 
-# Read pdf into list of DataFrame
-def epa_cddpath_call(*, resp, year, config, **_):
+def call_cddpath_model(*, resp, year, config, **_):
     """
-    Convert response for calling url to pandas dataframe,
+    Convert response for calling url to dataframe of CDDPath model,
     begin parsing df into FBA format
     :param resp: df, response from url call
     :param year:
     :param config: 
     :return: pandas dataframe of original source data
     """
-    
     # if year requires local file, bypass url call to replace with file in
     # external data
     if year == '2014':
         source_data = resp.content
     else:
         try:
-            file = config['file'].get(str(year))
+            file = config['file'][year]
         except KeyError:
-            log.error('File path not provided in FBA method file')
+            log.error('CDDPath filepath not provided in FBA method')
             raise
         source_data = externaldatapath + file
         log.info(f"Reading from local file {file}")
-    
+
     # Convert response to dataframe
     df1 = (pd.read_excel(source_data,
                          sheet_name='Final Results',
@@ -104,11 +102,14 @@ def combine_cdd_path(*, resp, year, config, **_):
     by source dataset and excel CDDPath model,
     applying the ActivityProducedBy across the flows.
     """
-    # Extract generation by source data    
+    # Extract generation by source data from link or file in externaldatapath
+    df_csv = None
     file = config['generation_by_source'].get(year)
     if type(file) == dict:
         df_csv = call_generation_by_source(file)
-    else:
+    if df_csv is None:
+        # if not available, default to 2014 ratios
+        file = config['generation_by_source'].get('2014')
         df_csv = pd.read_csv(externaldatapath + file, header=0,
                              names=['FlowName', 'ActivityProducedBy',
                                     'FlowAmount'])
@@ -118,7 +119,7 @@ def combine_cdd_path(*, resp, year, config, **_):
     df_csv = df_csv.drop(columns=['FlowAmount'])
     
     # Extract data by end use from CDDPath excel model
-    df_excel = epa_cddpath_call(resp=resp, year=year, config=config)
+    df_excel = call_cddpath_model(resp=resp, year=year, config=config)
 
     df = df_excel.merge(df_csv, how='left', on='FlowName')
     df['pct'] = df['pct'].fillna(1)
