@@ -11,9 +11,9 @@ setup(
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories#egg=StEWI',
         'pandas>=1.4.0',
         'pip>=9',
         'setuptools>=41',
