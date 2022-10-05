@@ -12,6 +12,7 @@ Last updated: 2018-11-07
 import pandas as pd
 from tabula.io import read_pdf
 import re
+import os
 from flowsa.location import US_FIPS
 from flowsa.settings import externaldatapath, log
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
@@ -32,6 +33,7 @@ def call_cddpath_model(*, resp, year, config, **_):
     # external data
     if year == '2014':
         source_data = resp.content
+        sheet_name = 'Final Results'
     else:
         try:
             file = config['file'][year]
@@ -39,11 +41,16 @@ def call_cddpath_model(*, resp, year, config, **_):
             log.error('CDDPath filepath not provided in FBA method')
             raise
         source_data = externaldatapath + file
-        log.info(f"Reading from local file {file}")
+        if os.path.isfile(source_data):
+            log.info(f"Reading from local file {file}")
+        else:
+            log.error(f"{file} not found in external data directory")
+            raise FileNotFoundError
+        sheet_name = f"Final Results {year}"
 
     # Convert response to dataframe
     df1 = (pd.read_excel(source_data,
-                         sheet_name='Final Results',
+                         sheet_name=sheet_name,
                          # exclude extraneous rows & cols
                          header=2, nrows=30, usecols="A, B",
                          # give columns tidy names
@@ -56,7 +63,7 @@ def call_cddpath_model(*, resp, year, config, **_):
                  value_name="FlowAmount"))
 
     df2 = (pd.read_excel(source_data,
-                         sheet_name='Final Results',
+                         sheet_name=sheet_name,
                          # exclude extraneous rows & cols
                          header=2, nrows=30, usecols="A, C, D",
                          # give columns tidy names
@@ -237,8 +244,8 @@ def cdd_processing(fba, source_dict):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2014)
-    fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2014)
+    flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2018)
+    fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
 
     # flowsa.flowbysector.main(method='CDD_concrete_national_2014')
     # fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')
