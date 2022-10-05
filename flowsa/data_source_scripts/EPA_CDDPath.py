@@ -161,7 +161,7 @@ def call_generation_by_source(file_dict):
     df['FlowName'] = df['FlowName'].map(name_dict).fillna(df['FlowName'])
 
     # melt
-    df2 = df.melt(id_vars=["Material"],
+    df2 = df.melt(id_vars=["FlowName"],
                   var_name="ActivityProducedBy",
                   value_name="FlowAmount")
     return df2
