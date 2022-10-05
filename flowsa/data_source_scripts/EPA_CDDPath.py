@@ -44,7 +44,10 @@ def call_cddpath_model(*, resp, year, config, **_):
         if os.path.isfile(source_data):
             log.info(f"Reading from local file {file}")
         else:
-            log.error(f"{file} not found in external data directory")
+            log.error(f"{file} not found in external data directory. "
+                      "The source dataset is not available publicly, but "
+                      "the published FBA can be found on Data Commons at "
+                      "https://edap-ord-data-commons.s3.amazonaws.com/index.html?prefix=flowsa/")
             raise FileNotFoundError
         sheet_name = f"Final Results {year}"
 
