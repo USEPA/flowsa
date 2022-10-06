@@ -28,7 +28,7 @@ def assign_naics(df):
     dfr.loc[dfr['Activity'].str.contains('Minimally processed'), 'Sector'] \
         = '311119'
     dfr.loc[dfr['Activity'].str.contains('Rendering'), 'Sector'] = \
-        '562BIO'
+        '324110'
     dfr.loc[dfr['Activity'].str.contains('Anaerobic|Biofuels'), 'Sector'] \
         = '5622191'
     dfr.loc[dfr['Activity'].str.contains('Compost'), 'Sector'] = '5622192'
