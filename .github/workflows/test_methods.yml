@@ -12,7 +12,7 @@ on:
 
 jobs:
   FBA_testing:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
         python flowsa/test_methods.py
 
   FBS_testing:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
