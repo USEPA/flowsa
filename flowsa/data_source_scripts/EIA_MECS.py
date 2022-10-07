@@ -9,6 +9,8 @@ Last updated: 8 Sept. 2020
 """
 
 import io
+import math
+
 import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
@@ -254,6 +256,7 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
     table = df_raw_data.iloc[2][0]
     # drop the table description (retain only table name)
     table = table.split('    ')[0]
+    table = table.split('  ')[0]
 
     # for each of the census regions...
     # - grab the appropriate rows and columns
@@ -262,6 +265,7 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
     # - add columns denoting census region, relative standard error, units
     # - concatenate census region data into master dataframe
     df_data = pd.DataFrame()
+
     for region in table_dict[year][table]['regions']:
 
         # grab relevant columns
@@ -284,48 +288,100 @@ def eia_mecs_energy_call(*, resp, year, config, **_):
             grab_rows_rse[0] - 1:grab_rows_rse[1] - 1]).reindex()
 
         # assign column names
-        df_data_region.columns = table_dict[year][table]['col_names']
-        df_rse_region.columns = table_dict[year][table]['col_names']
+        # if table name ends in 1, the column names are pulled from the table dict unchanged
+        if table[-1] == '1':
+            df_data_region.columns = table_dict[year][table]['col_names']
+            df_rse_region.columns = table_dict[year][table]['col_names']
+        # if table name ends in 2, the units must be stripped from the column names listed in the table dict
+        if table[-1] in ['2', '0', '5', '6']:
+            df_data_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
+            df_rse_region.columns = [name.split(' | ', 2)[0] for name in table_dict[year][table]['col_names']]
 
-        # "unpivot" dataframe from wide format to long format
-        # ('NAICS code' and 'Subsector and Industry' are identifier variables)
-        # (all other columns are value variables)
-        df_data_region = pd.melt(
-            df_data_region,
-            id_vars=table_dict[year][table]['col_names'][0:2],
-            value_vars=table_dict[year][table]['col_names'][2:],
-            var_name='FlowName', value_name='FlowAmount')
-        df_rse_region = pd.melt(
-            df_rse_region,
-            id_vars=table_dict[year][table]['col_names'][0:2],
-            value_vars=table_dict[year][table]['col_names'][2:],
-            var_name='FlowName', value_name='Spread')
-
-        # add census region
-        df_data_region['Location'] = region
+        if table[-1] == '5':
+            major_name = ""
+            df_data_region = df_data_region.dropna()
+            for index, row in df_data_region.iterrows():
+                name = ""
+                minor_name = ""
+                name = row["Energy Source"]
+                if "    " in str(name):
+                    minor_name = name.replace('    ', '')
+                    if "Biomass Total" == minor_name:
+                        major_name = minor_name
+                        minor_name = ""
+                    name = str(major_name) + " " + str(minor_name)
+                    df_data_region.at[index, 'Energy Source'] = name
+                else:
+                    major_name = row["Energy Source"]
+            df_data_region = df_data_region.rename(
+                columns={'Energy Source': 'FlowName', 'Total First Use': 'FlowAmount'})
+            df_data_region['NAICS Code'] = 'All Purposes'
+            major_name = ""
+            df_rse_region = df_rse_region.dropna()
+            for index, row in df_rse_region.iterrows():
+                name = ""
+                minor_name = ""
+                name = row["Energy Source"]
+                if "    " in str(name):
+                    minor_name = name.replace('    ', '')
+                    if "Biomass Total" == minor_name:
+                        major_name = minor_name
+                        minor_name = ""
+                    name = str(major_name) + " " + str(minor_name)
+                    df_rse_region.at[index, 'Energy Source'] = name
+                else:
+                    major_name = row["Energy Source"]
+            df_rse_region = df_rse_region.rename(
+                columns={'Energy Source': 'FlowName', 'Total First Use': 'Spread'})
+        else:
+            # "unpivot" dataframe from wide format to long format
+            # ('NAICS code' and 'Subsector and Industry' are identifier variables)
+            # (all other columns are value variables)
+            df_data_region = pd.melt(
+                df_data_region,
+                id_vars=df_data_region.columns[0:2],
+                value_vars=df_data_region.columns[2:],
+                var_name='FlowName', value_name='FlowAmount')
+            df_rse_region = pd.melt(
+                df_rse_region,
+                id_vars=df_rse_region.columns[0:2],
+                value_vars=df_rse_region.columns[2:],
+                var_name='FlowName', value_name='Spread')
 
         # add relative standard error data
         df_data_region = pd.merge(df_data_region, df_rse_region)
+        # add census region
+        df_data_region['Location'] = region
+        df_data_region['Table Name'] = table
 
         # add units
         # if table name ends in 1, units must be extracted from flow names
         if table[-1] == '1':
             flow_name_array = df_data_region['FlowName'].str.split('\s+\|+\s')
-            df_data_region['FlowName'] = flow_name_array.str[0]
             df_data_region['Unit'] = flow_name_array.str[1]
+            df_data_region['FlowName'] = flow_name_array.str[0]
         # if table name ends in 2, units are 'trillion Btu'
-        elif table[-1] == '2':
+        elif table[-1] in ['2', '5', '6']:
             df_data_region['Unit'] = 'Trillion Btu'
-            df_data_region['FlowName'] = df_data_region['FlowName']
+            if table[-3] == '7': #7_2
+                df_data_region['Unit'] = 'USD / million btu'
+        elif table[-1] == '0':
+            df_data_region['Unit'] = 'million USD'
 
         data_type = table_dict[year][table]['data_type']
         if data_type == 'nonfuel consumption':
             df_data_region['Class'] = 'Other'
         elif data_type == 'fuel consumption':
             df_data_region['Class'] = 'Energy'
+        elif data_type == 'money':
+            df_data_region['Class'] = 'Money'
+
         # remove extra spaces before 'Subsector and Industry' descriptions
-        df_data_region['Subsector and Industry'] = \
-            df_data_region['Subsector and Industry'].str.lstrip(' ')
+        if table[-1] != '5':
+            df_data_region['Subsector and Industry'] = \
+                df_data_region['Subsector and Industry'].str.lstrip(' ')
+        else:
+            df_data_region['Subsector and Industry'] = "Total"
 
         # concatenate census region data with master dataframe
         df_data = pd.concat([df_data, df_data_region])
@@ -348,20 +404,21 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df = pd.concat(df_list, sort=True)
 
     # rename columns to match standard flowbyactivity format
-    df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
-                            'Subsector and Industry': 'Description'})
+    df['Description'] = df["Table Name"]
+    df.loc[df['Subsector and Industry'] == 'Total', 'NAICS Code'] = '31-33'
+    df = df.drop(columns=['Table Name', 'Subsector and Industry'])
+    df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy'})
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
     # add hardcoded data
     df["SourceName"] = source
     df["Compartment"] = None
-    df['FlowType'] = 'TECHNOSPHERE_FLOWS'
+    df['FlowType'] = 'TECHNOSPHERE_FLOW'
     df['Year'] = year
     df['MeasureofSpread'] = "RSE"
     # assign location codes and location system
     df.loc[df['Location'] == 'Total United States', 'Location'] = US_FIPS
     df = assign_fips_location_system(df, year)
     df = assign_census_regions(df)
-    df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
 
@@ -376,8 +433,10 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df.loc[df['FlowAmount'] == '*', 'FlowAmount'] = None
     df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = WITHDRAWN_KEYWORD
     df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = WITHDRAWN_KEYWORD
+    df.loc[df['FlowAmount'] == 'S', 'FlowAmount'] = WITHDRAWN_KEYWORD
     df.loc[df['FlowAmount'] == 'D', 'FlowAmount'] = None
     df.loc[df['FlowAmount'] == 'NA', 'FlowAmount'] = None
+    df.loc[df['FlowAmount'] == '-', 'FlowAmount'] = None
     # * = estimate is less than 0.5
     # W = withheld to avoid disclosing data for individual establishments
     # Q = withheld because relative standard error is greater than 50 percent
@@ -392,6 +451,10 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df.loc[df['Spread'] == 'X', 'Spread'] = None
     df.loc[df['Spread'] == ' ', 'Spread'] = None
     df.loc[df['Spread'] == 'D', 'Spread'] = None
+    df.loc[df['Spread'] == '-', 'Spread'] = None
+
+    # resolve issue of misprinted RSE
+    df['Spread'] = pd.to_numeric(df['Spread'], errors='coerce')
 
     return df
 
