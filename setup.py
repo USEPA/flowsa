@@ -10,6 +10,7 @@ setup(
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
+    python_requires=">=3.7",
     install_requires=[
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
         'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
