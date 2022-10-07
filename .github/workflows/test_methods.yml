@@ -34,7 +34,11 @@ jobs:
 
     - name: Test FBA config
       run: |
-        python flowsa/test_methods.py
+        for m in $(python flowsa/test_methods.py list)
+        do
+          echo "python flowsa/test_methods.py $m"
+          python flowsa/test_methods.py "$m" || true
+        done
 
   FBS_testing:
     runs-on: macos-latest
@@ -69,7 +73,11 @@ jobs:
       id: FBS
       if: always() # Proceed even if Test FBA fails
       run: |
-        python flowsa/test_FBS_against_remote.py
+        for m in $(python flowsa/test_FBS_against_remote.py list)
+        do
+          echo "python flowsa/test_FBS_against_remote.py $m"
+          python flowsa/test_FBS_against_remote.py "$m" || true
+        done
 
     - name: Upload csv files
       # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
