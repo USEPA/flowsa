@@ -1,10 +1,10 @@
 import sys
 import os
 import logging
+import resource
 import subprocess
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
-
 
 try:
     MODULEPATH = \
@@ -74,11 +74,11 @@ vLogDetailed.propagate = False
 
 # create handlers
 # create handler for overall logger
-log_fh = logging.FileHandler(logoutputpath+'flowsa.log',
+log_fh = logging.FileHandler(logoutputpath + 'flowsa.log',
                              mode='w', encoding='utf-8')
 log_fh.setFormatter(formatter)
 # create handler for general validation information
-vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log',
+vLog_fh = logging.FileHandler(logoutputpath + 'validation_flowsa.log',
                               mode='w', encoding='utf-8')
 vLog_fh.setFormatter(formatter)
 # create console handler
@@ -114,6 +114,29 @@ def return_pkg_version():
         version = 'None'
 
     return version
+
+
+# https://stackoverflow.com/a/41125461
+def memory_limit(percentage=.93):
+    # noinspection PyBroadException
+    try:
+        max_memory = get_memory()
+        print(f"Max Memory: {max_memory}")
+    except Exception:
+        print("Could not determine max memory")
+    else:
+        soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+        resource.setrlimit(resource.RLIMIT_AS, (int(max_memory * 1024 * percentage), hard))
+
+
+def get_memory():
+    with open('/proc/meminfo', 'r') as mem:
+        free_memory = 0
+        for i in mem:
+            sline = i.split()
+            if str(sline[0]) in ('MemFree:', 'Buffers:', 'Cached:', 'SwapFree:'):
+                free_memory += int(sline[1])
+    return free_memory
 
 
 # metadata
