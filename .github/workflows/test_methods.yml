@@ -61,24 +61,6 @@ jobs:
       run: |
         pip install .
 
-#    - name: Set Swap
-#      shell: bash
-#      run: |
-#          export SWAP_FILE=$(swapon --show=NAME | tail -n 1)
-#          sudo swapoff $SWAP_FILE
-#          sudo rm $SWAP_FILE
-#          sudo fallocate -l 10G $SWAP_FILE
-#          sudo chmod 600 $SWAP_FILE
-#          sudo mkswap $SWAP_FILE
-#          sudo swapon $SWAP_FILE
-#    - name: Swap space report after modification
-#      shell: bash
-#      run: |
-#        echo "Memory and swap:"
-#        free -h
-#        echo
-#        swapon --show
-#        echo
     - name: Compare FBS with remote
       id: FBS
       if: always() # Proceed even if Test FBA fails
@@ -98,8 +80,8 @@ jobs:
         name: FBS diff files
         # A file, directory or wildcard patter that describes what to upload
         path: |
-            ~/.local/share/flowsa/FBSComparisons/*
-            ~/.local/share/flowsa/FlowBySector/*
-            ~/.local/share/flowsa/Log/*
+            ~/Library/Application Support/flowsa/FBSComparisons/*
+            ~/Library/Application Support/flowsa/FlowBySector/*
+            ~/Library/Application Support/flowsa/Log/*
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
         # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.
