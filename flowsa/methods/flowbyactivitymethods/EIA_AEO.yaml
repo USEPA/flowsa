@@ -1,0 +1,23 @@
+author: US Energy Information Administration
+source_name: Annual Energy Outlook
+source_url: https://www.eia.gov/outlooks/aeo/
+api_name: EIA
+api_key_required: true
+format: json
+url:
+  base_url: https://api.eia.gov/series/?series_id=__SERIES_ID__&api_key=__API_KEY__&out=json
+url_replace_fxn: !script_function:EIA_AEO eia_aeo_url_helper
+call_response_fxn: !script_function:EIA_AEO eia_aeo_call
+parse_response_fxn: !script_function:EIA_AEO eia_aeo_parse
+years:
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022

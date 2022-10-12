@@ -587,6 +587,10 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
     # reset index
     fba2 = fba2.reset_index(drop=True)
 
+    if len(fba2) == 0:
+        raise flowsa.exceptions.FBSMethodConstructionError(
+            message='Allocation dataset is length 0 after cleaning')
+
     # assign sector to allocation dataset
     activity_to_sector_mapping = attr.get('activity_to_sector_mapping')
     if 'activity_to_sector_mapping' in kwargs:
