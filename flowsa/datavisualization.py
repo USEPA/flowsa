@@ -37,7 +37,7 @@ def addSectorNames(df, BEA=False, mappingfile=None):
     if BEA:
         cw = pd.read_csv('https://raw.githubusercontent.com/USEPA/useeior'
                          '/develop/inst/extdata/USEEIO_Commodity_Meta.csv',
-                         usecols=[0,1], names=['Sector', 'Name'], skiprows=1
+                         usecols=[0, 1], names=['Sector', 'Name'], skiprows=1
                          )
         cw['SectorName'] = cw['Sector'] + ' (' + cw['Name'] + ')'
         # Limit length to 50 characters
@@ -60,8 +60,10 @@ def addSectorNames(df, BEA=False, mappingfile=None):
         df = df.merge(cw[['Sector', 'SectorName']],
                       left_on=s,
                       right_on='Sector',
-                      how='left').drop(columns='Sector').rename(
+                      how='left').rename(
             columns={'SectorName': f'{s}Name'})
+        if s != 'Sector':
+            df = df.drop(columns='Sector')
         df[f'{s}Name'].fillna(df[s], inplace=True)
         df = df.reset_index(drop=True)
 
@@ -137,21 +139,21 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         g.tight_layout()
 
 
-def customwrap(s,width=30):
-    return "<br>".join(textwrap.wrap(s,width=width))
+def customwrap(s, width=30):
+    return "<br>".join(textwrap.wrap(s, width=width))
 
 
 def stackedBarChart(df,
                     impact_cat=None,
-                    stacking_col = 'AllocationSources',
+                    stacking_col='AllocationSources',
                     plot_title=None,
-                    index_cols =None,
+                    index_cols=None,
                     orientation='h',
                     grouping_variable='FlowName',
                     sector_variable='Sector',
                     subplot=None,
-                    rows = 1,
-                    cols = 1
+                    rows=1,
+                    cols=1
                     ):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
@@ -166,7 +168,7 @@ def stackedBarChart(df,
     # df provided
     if (type(df)) == str:
         df = flowsa.collapse_FlowBySector(df)
-        
+
     # convert units
     df = convert_units_for_graphics(df)
 
@@ -211,7 +213,8 @@ def stackedBarChart(df,
     df2 = df2.sort_values([sector_variable, stacking_col])
 
     # wrap the sector col
-    df2[sector_variable] = df2[sector_variable].apply(lambda x: customwrap(x,width=18))
+    df2[sector_variable] = df2[sector_variable].apply(
+        lambda x: customwrap(x, width=18))
 
     fig = make_subplots(rows=rows, cols=cols, subplot_titles=df2[
         subplot].drop_duplicates().values.tolist())
@@ -223,7 +226,8 @@ def stackedBarChart(df,
 
     # create list of n colors based on number of allocation sources
     colors = df2[[stacking_col]].drop_duplicates()
-    colors['Color'] = colors.apply(lambda row: "#%06x" % random.randint(0, 0xFFFFFF), axis=1)
+    colors['Color'] = colors.apply(
+        lambda row: "#%06x" % random.randint(0, 0xFFFFFF), axis=1)
     # merge back into df
     df2 = df2.merge(colors, how='left')
 
@@ -279,9 +283,10 @@ def stackedBarChart(df,
     fig.write_image(f"{plotoutputpath}{filename}", width=1200, height=1200)
 
 
-def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
+def plot_state_coefficients(fbs_coeff, indicator=None,
+                            sectors_to_include=None):
     from flowsa.location import get_state_FIPS, US_FIPS
-    df = fbs_coeff.merge(get_state_FIPS(abbrev=True), how = 'left',
+    df = fbs_coeff.merge(get_state_FIPS(abbrev=True), how='left',
                          left_on='Location', right_on='FIPS')
     df.loc[df['Location'] == US_FIPS, 'State'] = 'U.S.'
     if indicator is not None:
@@ -295,13 +300,14 @@ def plot_state_coefficients(fbs_coeff, indicator=None, sectors_to_include=None):
     else:
         axis_var = 'Sector'
     g = (sns.relplot(data=df, x="Coefficient", y=axis_var,
-                hue="State", alpha=0.7, style="State",
-                palette="colorblind",
-                aspect=0.7, height=12)
+                     hue="State", alpha=0.7, style="State",
+                     palette="colorblind",
+                     aspect=0.7, height=12)
          # .set(title="title")
-    )
+         )
     g._legend.set_title('State')
-    g.set_axis_labels(f"{df['Indicator'][0]} ({df['Indicator unit'][0]} / $)", "")
+    g.set_axis_labels(f"{df['Indicator'][0]} ({df['Indicator unit'][0]} / $)",
+                      "")
     g.tight_layout()
     return g
 
@@ -316,22 +322,22 @@ def convert_units_for_graphics(df):
     # convert kg to million metric tons for class other
     df['FlowAmount'] = np.where((df["Class"] == 'Other') &
                                 (df['Unit'] == 'kg'),
-                                df['FlowAmount']/(10**9),
+                                df['FlowAmount'] / (10 ** 9),
                                 df['FlowAmount'])
     df['Unit'] = np.where((df["Class"] == 'Other') & (df['Unit'] == 'kg'),
                           "MMT", df['Unit'])
-    
+
     # convert kg to million metric tons for class chemicals
     df['FlowAmount'] = np.where((df["Class"] == 'Chemicals') &
                                 (df['Unit'] == 'kg'),
-                                df['FlowAmount']/(10**9),
+                                df['FlowAmount'] / (10 ** 9),
                                 df['FlowAmount'])
     df['Unit'] = np.where((df["Class"] == 'Chemicals') & (df['Unit'] == 'kg'),
                           "MMT", df['Unit'])
-    
+
     # convert people to thousand
     df['FlowAmount'] = np.where(df['Unit'] == 'p',
-                                df['FlowAmount']/(1000),
+                                df['FlowAmount'] / (1000),
                                 df['FlowAmount'])
     df['Unit'] = np.where(df['Unit'] == 'p', "Thousand p", df['Unit'])
 
@@ -341,8 +347,7 @@ def convert_units_for_graphics(df):
 def generateSankeyData(methodname,
                        target_sector_level=None,
                        target_subset_sector_level=None,
-                       replace_SPB_with_sectordefinition=False,
-                       replace_SCB_with_sectordefinition=False,
+                       use_sectordefinition=False,
                        sectors_to_include=None,
                        fbsconfigpath=None):
     """
@@ -376,7 +381,6 @@ def generateSankeyData(methodname,
         # aggregate to all sector levels
         df = sector_aggregation(df, return_all_possible_sector_combos=True)
         df = replace_NoneType_with_empty_cells(df)
-        cw_load = load_sector_length_cw_melt()
         for s in ['Produced', 'Consumed']:
             # subset by target sector levels, either those defined in
             # function call or in method_dict
@@ -395,65 +399,44 @@ def generateSankeyData(methodname,
     sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
 
-    # create df for sankey diagram
-    spb = df2[['SectorProducedBy', 'SectorProducedByName',
-               'FlowAmount']].sort_values(['SectorProducedBy']).rename(
-        columns={'SectorProducedBy': 'Nodes'})
-    spb = spb.groupby(['Nodes', 'SectorProducedByName'], as_index=False)[
-        'FlowAmount'].sum()
-    # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
-    spb['x_pos'] = 0.01
-    spb['y_pos'] = 0.01 + (spb.index * .85/(spb['Nodes'].count()-1))
+    df2 = df2[['SectorProducedBy', 'SectorConsumedBy',
+               'FlowAmount', 'SectorProducedByName', 'SectorConsumedByName']]
+    df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy',
+                         'SectorProducedByName', 'SectorConsumedByName']).agg(
+        {'FlowAmount': 'sum'}).reset_index()
 
-    scb = df2[['SectorConsumedBy', 'SectorConsumedByName',
-               'FlowAmount']].drop_duplicates().sort_values(
-        ['SectorConsumedBy']).rename(columns={'SectorConsumedBy': 'Nodes'})
-    scb = scb.groupby(['Nodes', 'SectorConsumedByName'], as_index=False)[
-        'FlowAmount'].sum()
-    # returns odd figure if set 0 - 1, so scale 0.01 to 0.99
-    scb['x_pos'] = .99
-    scb['y_pos'] = 0.01 + (scb.index * .85/(scb['Nodes'].count()-1))
+    if use_sectordefinition:
+        categories = ['SectorProducedByName', 'SectorConsumedByName']
+        sources = 'SectorProducedByName'
+        targets = 'SectorConsumedByName'
+        sector_col = 'SectorName'
+    else:
+        categories = ['SectorProducedBy', 'SectorConsumedBy']
+        sources = 'SectorProducedBy'
+        targets = 'SectorConsumedBy'
+        sector_col = 'Sector'
 
-    nodes = pd.concat([spb, scb], ignore_index=True)
-    nodes['Num'] = nodes.index
+    # label_list = list(np.unique(df3[categories].values))
+
+    nodes = pd.DataFrame(
+        {'Sector': list(np.unique(df3[['SectorProducedBy',
+                                       'SectorConsumedBy']].values)),
+         'SectorName': list(np.unique(df3[['SectorProducedByName',
+                                           'SectorConsumedByName']].values))
+         })
     # add colors
     vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv')
-    nodes = nodes.merge(vis[['Sector', 'Color']], left_on='Nodes',
-                        right_on='Sector', how='left').drop(columns=['Sector'])
+    nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
     # fill in any colors missing from the color dictionary with random colors
-    nodes['Color'] = nodes['Color'].fillna(
-        "#%06x" % random.randint(0, 0xFFFFFF))
+    nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
+    "#%06x" % random.randint(0, 0xFFFFFF))
+    nodes = nodes.rename(columns={sector_col: 'node'})
 
-    if replace_SPB_with_sectordefinition:
-        df2['SectorProducedBy'] = df2['SectorProducedByName']
-        nodes['Nodes'] = np.where(~nodes['SectorProducedByName'].isna(),
-                                  nodes['SectorProducedByName'],
-                                  nodes['Nodes'])
-    if replace_SCB_with_sectordefinition:
-        df2['SectorConsumedBy'] = df2['SectorConsumedByName']
-        nodes['Nodes'] = np.where(~nodes['SectorConsumedByName'].isna(),
-                                  nodes['SectorConsumedByName'],
-                                  nodes['Nodes'])
-    nodes = nodes.drop(columns=['SectorProducedByName',
-                                'SectorConsumedByName'])
-
-    # add flow amounts to label
-    nodes['Label'] = nodes['Nodes'] + '<br>' + nodes['FlowAmount'].round(
-        2).astype(str)
-
-    # subset df to sectors and flowamount
-    flows = df2[['SectorProducedBy', 'SectorConsumedBy',
-                 'FlowAmount', 'Unit']].rename(
-        columns={'SectorProducedBy': 'Source',
-                 'SectorConsumedBy': 'Target',
-                 'FlowAmount': 'Value'})
-    # add source and target numbers
-    for c in ['Source', 'Target']:
-        flows = flows.merge(nodes, left_on=c, right_on='Nodes').drop(
-            columns='Nodes').rename(columns={'Num': f'{c}Num'})
-    flows = flows[['SourceNum', 'Source', 'TargetNum', 'Target',
-                   'Value', 'Unit']].sort_values(
-        ['SourceNum', 'TargetNum']).reset_index(drop=True)
+    flows = pd.DataFrame()
+    label_list = list(np.unique(df3[categories].values))
+    flows['source'] = df3[sources].apply(lambda x: label_list.index(x))
+    flows['target'] = df3[targets].apply(lambda x: label_list.index(x))
+    flows['value'] = df3['FlowAmount']
 
     return nodes, flows
 
@@ -461,10 +444,7 @@ def generateSankeyData(methodname,
 def generateSankeyDiagram(methodnames,
                           target_sector_level=None,
                           target_subset_sector_level=None,
-                          # SPB_display_length=None,
-                          # SCB_display_length=None,
-                          replace_SPB_with_sectordefinition=False,
-                          replace_SCB_with_sectordefinition=False,
+                          use_sectordefinition=False,
                           sectors_to_include=None,
                           fbsconfigpath=None,
                           plot_title=None,
@@ -491,8 +471,6 @@ def generateSankeyDiagram(methodnames,
         log.error("kaleido 0.1.0post1 required for 'generateSankeyDiagram()'")
         raise
 
-    # print(f"{plotoutputpath}flowsaSankey.png")
-
     if orientation == 'vertical':
         rows = len(methodnames)
         cols = 1
@@ -507,40 +485,27 @@ def generateSankeyDiagram(methodnames,
         # return dfs of nodes and flows for Sankey
         nodes, flows = generateSankeyData(
             m, target_sector_level, target_subset_sector_level,
-            replace_SPB_with_sectordefinition,
-            replace_SCB_with_sectordefinition, sectors_to_include,
+            use_sectordefinition, sectors_to_include,
             fbsconfigpath)
-
-        # define domain
-        if orientation == 'vertical':
-            domain = {'y': [0 + (i / len(methodnames)) + 0.04,
-                            ((i + 1) / len(methodnames)) - 0.04]}
-        else:
-            domain = {'x': [0 + (i / len(methodnames)) + 0.02,
-                            ((i + 1) / len(methodnames)) - 0.02]}
 
         fig.add_trace(go.Sankey(
             arrangement="snap",
-            domain=domain,
-            valueformat=".1f",
-            valuesuffix=flows['Unit'][0],
+            # valueformat=".1f",
+            # valuesuffix=flows['Unit'][0],
             # Define nodes
             node=dict(
                 pad=15,
                 thickness=15,
                 line=dict(color="black", width=0.5),
-                label=nodes['Label'].values.tolist(),
+                label=nodes['node'].values.tolist(),
                 color=nodes['Color'].values.tolist(),
-                x=nodes['x_pos'].values.tolist(),
-                y=nodes['y_pos'].values.tolist()
             ),
             # Add links
-            link=dict(
-                source=flows['SourceNum'].values.tolist(),
-                target=flows['TargetNum'].values.tolist(),
-                value=flows['Value'].values.tolist(),
-                label=nodes['Nodes'].values.tolist()
-            )))
+            link=dict(source=flows['source'].values.tolist(),
+                      target=flows['target'].values.tolist(),
+                      value=flows['value'].values.tolist(),
+            ),
+        ))
 
     fig.update_layout(
         title_text=plot_title,
@@ -560,19 +525,15 @@ def generateSankeyDiagram(methodnames,
                     width=width, height=height)
 
 
-
-
 if __name__ == '__main__':
-    methodnames = ['Food_Waste_national_2018_m1',
-                   'Food_Waste_national_2018_m2']
+    # methodnames = ['Food_Waste_national_2018_m3',
+    #                'Food_Waste_national_2018_m2']
+    methodnames = ['Food_Waste_national_2018_m3']
     target_sector_level = 'NAICS_2'
-    target_subset_sector_level = {'NAICS_6': ['62421', '31111', '562BIO',
+    target_subset_sector_level = {'NAICS_6': ['62421', '31111', '32411',
                                               '56221', '62421', '11511', '22132'],
                                   'NAICS_7': ['562212', '562219']}
-    # SPB_display_length = 2
-    # SCB_display_length = None
-    replace_SPB_with_sectordefinition = True
-    replace_SCB_with_sectordefinition = True
+    use_sectordefinition=True
     sectors_to_include = None
     fbsconfigpath = None
     orientation = 'horizontal'
@@ -581,8 +542,7 @@ if __name__ == '__main__':
         methodnames,
         target_sector_level=target_sector_level,
         target_subset_sector_level=target_subset_sector_level,
-        replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
-        replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
+        use_sectordefinition=use_sectordefinition,
         sectors_to_include=None,
         fbsconfigpath=None,
         orientation='orientation'
