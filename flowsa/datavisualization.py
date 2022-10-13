@@ -418,7 +418,25 @@ def generateSankeyData(methodname,
         targets = 'SectorConsumedBy'
         sector_col = 'Sector'
 
-    # label_list = list(np.unique(df3[categories].values))
+    # determine flow amount labels - sum incoming and outgoing flow amounts,
+    # use outgoing flow values when exist, otherwise incoming flow totals
+    outgoing = df3[[sources, 'FlowAmount']]
+    outgoing = outgoing.groupby([sources]).agg(
+        {'FlowAmount': 'sum'}).reset_index()
+    outgoing = outgoing.rename(columns={sources: 'node',
+                                        'FlowAmount': 'outgoing'})
+    incoming = df3[[targets, 'FlowAmount']]
+    incoming = incoming.groupby([targets]).agg(
+        {'FlowAmount': 'sum'}).reset_index()
+    incoming = incoming.rename(columns={targets: 'node',
+                                        'FlowAmount': 'incoming'})
+    flow_labels = outgoing.merge(incoming, how='outer')
+    flow_labels = (flow_labels.fillna(0)
+                   .assign(flow=np.where(flow_labels['outgoing'] > 0,
+                                              flow_labels['outgoing'],
+                                              flow_labels['incoming'])))
+    flow_labels['Label'] = flow_labels['node'] + '<br>' + \
+                           flow_labels['flow'].round(2).astype(str)
 
     nodes = pd.DataFrame(
         {'Sector': list(np.unique(df3[['SectorProducedBy',
@@ -433,6 +451,8 @@ def generateSankeyData(methodname,
     nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
     "#%06x" % random.randint(0, 0xFFFFFF))
     nodes = nodes.rename(columns={sector_col: 'node'})
+    # add label
+    nodes = nodes.merge(flow_labels[['node', 'Label']], how='left')
 
     flows = pd.DataFrame()
     label_list = list(np.unique(df3[categories].values))
@@ -499,7 +519,7 @@ def generateSankeyDiagram(methodnames,
                 pad=15,
                 thickness=15,
                 line=dict(color="black", width=0.5),
-                label=nodes['node'].values.tolist(),
+                label=nodes['Label'].values.tolist(),
                 color=nodes['Color'].values.tolist(),
             ),
             # Add links
