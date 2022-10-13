@@ -190,7 +190,8 @@ def sector_ratios(df, sectorcolumn):
     return df_w_ratios
 
 
-def sector_aggregation(df_load, return_all_possible_sector_combos=False):
+def sector_aggregation(df_load, return_all_possible_sector_combos=False,
+                       sectors_to_exclude_from_agg=None):
     """
     Function that checks if a sector length exists, and if not,
     sums the less aggregated sector
@@ -200,6 +201,8 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False):
     true, will return all possible combinations of sectors at each sector
     length (ex. a 4 digit SectorProducedBy will have rows for 2-6 digit
     SectorConsumedBy). This will result in a df with double counting.
+    :param sectors_to_exclude_from_agg: list, sectors that should not be
+    aggregated beyond the sector level provided
     :return: df, with aggregated sector values
     """
     # ensure None values are not strings
@@ -234,7 +237,8 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False):
     for i in range(length, 2, -1):
         if return_all_possible_sector_combos:
             for j in range(1, i-1):
-                df = append_new_sectors(df, i, j, cw_load, group_cols)
+                df = append_new_sectors(df, i, j, cw_load, group_cols,
+                                        sectors_to_exclude_from_agg)
         else:
             df = append_new_sectors(df, i, 1, cw_load, group_cols)
 
@@ -251,7 +255,8 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False):
     return df
 
 
-def append_new_sectors(df, i, j, cw_load, group_cols):
+def append_new_sectors(df, i, j, cw_load, group_cols,
+                       sectors_to_exclude_from_agg=None):
     """
     Function to append new sectors at more aggregated levels
     :param df: df, FBS
@@ -260,6 +265,8 @@ def append_new_sectors(df, i, j, cw_load, group_cols):
     length to add
     :param cw_load: df, sector crosswalk
     :param group_cols: list, cols to group by
+    :param sectors_to_exclude_from_agg: list, sectors that should not be
+    aggregated beyond the sector level provided
     :return:
     """
 
@@ -272,10 +279,15 @@ def append_new_sectors(df, i, j, cw_load, group_cols):
     cw_sub = cw_melt[cw_melt['SectorLength'] == i]
     sector_list = cw_sub['Sector'].drop_duplicates().values.tolist()
 
+    # if there is a list of sectors that should be excluded from being
+    # aggregated, remove from sector_list
+    sector_list2 = [x for x in sector_list if x not in
+                    sectors_to_exclude_from_agg]
+
     # loop through and add additional sectors
     sectype_list = ['Produced', 'Consumed']
     for s in sectype_list:
-        dfm = df[df[f'Sector{s}By'].isin(sector_list)]
+        dfm = df[df[f'Sector{s}By'].isin(sector_list2)]
         dfm = dfm.merge(cw, how='left', left_on=[f'Sector{s}By'],
                         right_on=sector_merge)
         # replace sector column with matched sector add

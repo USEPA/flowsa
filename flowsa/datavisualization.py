@@ -378,22 +378,24 @@ def generateSankeyData(methodname,
 
     if any(item is not None for item in [target_sector_level,
                                          target_subset_sector_level]):
+        # subset by target sector levels, either those defined in
+        # function call or in method_dict
+        primary_sector_level = target_sector_level
+        if primary_sector_level is None:
+            primary_sector_level = method_dict['target_sector_level']
+        secondary_sector_level = target_subset_sector_level
+        if secondary_sector_level is None:
+            secondary_sector_level = method_dict.get(
+                'target_subset_sector_level')
+        sector_list = get_sector_list(
+            primary_sector_level,
+            secondary_sector_level_dict=secondary_sector_level)
+
         # aggregate to all sector levels
-        df = sector_aggregation(df, return_all_possible_sector_combos=True)
+        df = sector_aggregation(df, return_all_possible_sector_combos=True,
+                                sectors_to_exclude_from_agg=sector_list)
         df = replace_NoneType_with_empty_cells(df)
         for s in ['Produced', 'Consumed']:
-            # subset by target sector levels, either those defined in
-            # function call or in method_dict
-            primary_sector_level = target_sector_level
-            if primary_sector_level is None:
-                primary_sector_level = method_dict['target_sector_level']
-            secondary_sector_level = target_subset_sector_level
-            if secondary_sector_level is None:
-                secondary_sector_level = method_dict.get(
-                    'target_subset_sector_level')
-            sector_list = get_sector_list(
-                primary_sector_level,
-                secondary_sector_level_dict=secondary_sector_level)
             df = df[df[f'Sector{s}By'].isin(sector_list)]
     # add sector names
     sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
