@@ -688,7 +688,8 @@ def allocate_industrial_combustion(fba, *_, **__):
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
-    pct_dict = get_manufacturing_energy_ratios(fba.config.get('year'))
+    year = fba.config.get('year') or __['source_dict']['year']
+    pct_dict = get_manufacturing_energy_ratios(year)
 
     # activities reflect flows in A_14 and 3_8 and 3_9
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
