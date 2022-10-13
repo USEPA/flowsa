@@ -11,6 +11,7 @@ flow_by_activity_fields = \
      'SourceName': [{'dtype': 'str'}, {'required': True}],
      'FlowName': [{'dtype': 'str'}, {'required': True}],
      'FlowAmount': [{'dtype': 'float'}, {'required': True}],
+     'Suppressed': [{'dtype': 'object'}, {'required': False}],
      'Unit': [{'dtype': 'str'}, {'required': True}],
      'FlowType': [{'dtype': 'str'}, {'required': True}],
      'ActivityProducedBy': [{'dtype': 'str'}, {'required': False}],

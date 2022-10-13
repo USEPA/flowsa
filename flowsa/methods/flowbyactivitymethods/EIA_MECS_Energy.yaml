@@ -9,7 +9,7 @@ url:
   base_url: https://www.eia.gov/consumption/manufacturing/data/__year__/xls/__table__.xlsx
 url_replace_fxn: !script_function:EIA_MECS eia_mecs_URL_helper
 call_response_fxn: !script_function:EIA_MECS eia_mecs_energy_call
-parse_response_fxn: !script_function:EIA_MECS eia_mecs_energy_parse
+parse_response_fxn: !script_function:temp_data_source_functions eia_mecs_energy_parse
 years:
 - 2010
 - 2014

@@ -1342,10 +1342,11 @@ class FlowByActivity(_FlowBy):
             self
             .function_socket('clean_fba_before_mapping')
             .select_by_fields()
+            .function_socket('estimate_suppressed')
             .convert_units_and_flows()
             .function_socket('clean_fba')
             .convert_to_geoscale()
-            .attribute_flows_to_sectors()  # recursive call to convert_to_fbs
+            .attribute_flows_to_sectors()  # recursive call to prepare_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
         )
