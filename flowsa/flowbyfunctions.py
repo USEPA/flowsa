@@ -281,13 +281,14 @@ def append_new_sectors(df, i, j, cw_load, group_cols,
 
     # if there is a list of sectors that should be excluded from being
     # aggregated, remove from sector_list
-    sector_list2 = [x for x in sector_list if x not in
-                    sectors_to_exclude_from_agg]
+    if sectors_to_exclude_from_agg is not None:
+        sector_list = [x for x in sector_list if x not in
+                        sectors_to_exclude_from_agg]
 
     # loop through and add additional sectors
     sectype_list = ['Produced', 'Consumed']
     for s in sectype_list:
-        dfm = df[df[f'Sector{s}By'].isin(sector_list2)]
+        dfm = df[df[f'Sector{s}By'].isin(sector_list)]
         dfm = dfm.merge(cw, how='left', left_on=[f'Sector{s}By'],
                         right_on=sector_merge)
         # replace sector column with matched sector add
