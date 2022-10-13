@@ -401,12 +401,14 @@ def generateSankeyData(methodname,
     sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
 
+    # subset df and aggregate flows by sectors
     df2 = df2[['SectorProducedBy', 'SectorConsumedBy',
                'FlowAmount', 'SectorProducedByName', 'SectorConsumedByName']]
     df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy',
-                         'SectorProducedByName', 'SectorConsumedByName']).agg(
-        {'FlowAmount': 'sum'}).reset_index()
+                       'SectorProducedByName', 'SectorConsumedByName']
+                      )['FlowAmount'].agg('sum').reset_index()
 
+    # define which columns to use as source and target
     if use_sectordefinition:
         categories = ['SectorProducedByName', 'SectorConsumedByName']
         sources = 'SectorProducedByName'
@@ -418,6 +420,26 @@ def generateSankeyData(methodname,
         targets = 'SectorConsumedBy'
         sector_col = 'Sector'
 
+    # sort df by categories to help order how sectors appear in sankey
+    df3 = df3.sort_values(categories).reset_index(drop=True)
+
+    # create new df with node information
+    nodes = pd.DataFrame(
+        {'Sector': list(pd.unique(
+            df3[['SectorProducedBy', 'SectorConsumedBy']].values.ravel('K'))),
+         'SectorName': list(
+             pd.unique(df3[['SectorProducedByName',
+                            'SectorConsumedByName']].values.ravel('K')))
+         })
+
+    # add colors
+    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv')
+    nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
+    # fill in any colors missing from the color dictionary with random colors
+    nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
+    "#%06x" % random.randint(0, 0xFFFFFF))
+    nodes = nodes.rename(columns={sector_col: 'node'})
+    # add label
     # determine flow amount labels - sum incoming and outgoing flow amounts,
     # use outgoing flow values when exist, otherwise incoming flow totals
     outgoing = df3[[sources, 'FlowAmount']]
@@ -433,29 +455,16 @@ def generateSankeyData(methodname,
     flow_labels = outgoing.merge(incoming, how='outer')
     flow_labels = (flow_labels.fillna(0)
                    .assign(flow=np.where(flow_labels['outgoing'] > 0,
-                                              flow_labels['outgoing'],
-                                              flow_labels['incoming'])))
+                                         flow_labels['outgoing'],
+                                         flow_labels['incoming'])))
     flow_labels['Label'] = flow_labels['node'] + '<br>' + \
                            flow_labels['flow'].round(2).astype(str)
-
-    nodes = pd.DataFrame(
-        {'Sector': list(np.unique(df3[['SectorProducedBy',
-                                       'SectorConsumedBy']].values)),
-         'SectorName': list(np.unique(df3[['SectorProducedByName',
-                                           'SectorConsumedByName']].values))
-         })
-    # add colors
-    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv')
-    nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
-    # fill in any colors missing from the color dictionary with random colors
-    nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
-    "#%06x" % random.randint(0, 0xFFFFFF))
-    nodes = nodes.rename(columns={sector_col: 'node'})
-    # add label
     nodes = nodes.merge(flow_labels[['node', 'Label']], how='left')
 
+    # create flow dataframe where source and target are converted to numeric
+    # indices
     flows = pd.DataFrame()
-    label_list = list(np.unique(df3[categories].values))
+    label_list = list(pd.unique(df3[categories].values.ravel('K')))
     flows['source'] = df3[sources].apply(lambda x: label_list.index(x))
     flows['target'] = df3[targets].apply(lambda x: label_list.index(x))
     flows['value'] = df3['FlowAmount']
