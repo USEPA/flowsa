@@ -435,6 +435,10 @@ def get_sector_list(sector_level, secondary_sector_level_dict=None):
             sector_list = sector_list + sector_add
             sector_drop = sector_drop + v
 
+    # check if through loop any sectors in the drop list were included in
+    # sector list, and if so, drop
+    sector_list2 = [x for x in sector_list if x not in sector_drop]
+
     # sectors at primary sector level
     sector_col = cw[[sector_level]].drop_duplicates()
     # drop any sectors that are already accounted for at a secondary sector
@@ -442,9 +446,9 @@ def get_sector_list(sector_level, secondary_sector_level_dict=None):
     sector_col = sector_col[~sector_col[sector_level].isin(sector_drop)]
     # add sectors to list
     sector_add = sector_col[sector_level].tolist()
-    sector_list = sector_list + sector_add
+    sector_list3 = sector_list2 + sector_add
 
-    return sector_list
+    return sector_list3
 
 
 def map_to_BEA_sectors(fbs_load, region, io_level, year):
