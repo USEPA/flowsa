@@ -49,23 +49,20 @@ plt.savefig(f"{plotoutputpath}mining_water_comp.png", dpi=300)
 
 
 ########## Compare food waste flows via Sankey ##########
-methodnames = ['Food_Waste_national_2018_m1',
-               'Food_Waste_national_2018_m2']
-target_sector_level = 2
-target_subset_sector_level = None
-replace_SPB_with_sectordefinition = True
-replace_SCB_with_sectordefinition = True
-sectors_to_include = None
-fbsconfigpath = None
-orientation = 'horizontal'
+methodnames = ['Food_Waste_national_2018_m3']
+target_sector_level = 'NAICS_2'
+target_subset_sector_level = {'NAICS_4': ['2212'],
+                              'NAICS_6': ['62421', '31111', '32411',
+                                          '56221', '62421', '115112',
+                                          '22132'],
+                              'NAICS_7': ['562212', '562219']}
 
 dv.generateSankeyDiagram(
     methodnames,
     target_sector_level=target_sector_level,
     target_subset_sector_level=target_subset_sector_level,
-    replace_SPB_with_sectordefinition=replace_SPB_with_sectordefinition,
-    replace_SCB_with_sectordefinition=replace_SCB_with_sectordefinition,
+    use_sectordefinition=True,
     sectors_to_include=None,
     fbsconfigpath=None,
-    orientation='orientation'
+    orientation='horizontal'
 )
