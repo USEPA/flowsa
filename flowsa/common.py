@@ -76,7 +76,6 @@ def load_crosswalk(crosswalk_name):
                'sector_name': 'Sector_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
-               'biochemical': 'Biochemical_SectorCodes',
                'BEA': 'NAICS_to_BEA_Crosswalk'
                }
 
@@ -106,7 +105,7 @@ def return_bea_codes_used_as_naics():
     :return: list of BEA codes used as NAICS
     """
     cw_list = []
-    for cw in ['household', 'government', 'biochemical']:
+    for cw in ['household', 'government']:
         df = load_crosswalk(cw)
         cw_list.append(df)
     # concat data into single dataframe

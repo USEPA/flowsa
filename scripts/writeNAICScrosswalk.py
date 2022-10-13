@@ -172,8 +172,7 @@ def write_naics_2012_crosswalk():
     # load BEA codes that will act as NAICS
     house = load_crosswalk('household')
     govt = load_crosswalk('government')
-    bio = load_crosswalk('biochemical')
-    bea = pd.concat([house, govt, bio], ignore_index=True).rename(
+    bea = pd.concat([house, govt], ignore_index=True).rename(
         columns={'Code': 'NAICS_2012_Code',
                  'NAICS_Level_to_Use_For': 'secLength'})
     bea = bea[['NAICS_2012_Code', 'secLength']]

@@ -74,9 +74,8 @@ def assign_naics(df):
     # such as soaps, biodiesel, or cosmetics. “Biochemical processing” does
     # not refer to anaerobic digestion or production of bioethanol through
     # fermentation.
-    # todo: update assignment to be inclusive of 31-33?
     df.loc[df['Activity'] == 'Bio-based Materials/Biochemical Processing',
-           'Sector'] = '562BIO'
+           'Sector'] = '324110'
     # df = pd.concat([df, pd.DataFrame(
     #     [['EPA_WFR', 'Bio-based Materials/Biochemical Processing '
     #                  'Collection', '5621192']],

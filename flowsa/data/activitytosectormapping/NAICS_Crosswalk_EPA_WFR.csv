@@ -25,6 +25,7 @@ EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,312111,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31212,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31213,I
 EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31214,I
+EPA_WFR,Bio-based Materials/Biochemical Processing,NAICS_2012_Code,324110,I
 EPA_WFR,Gasoline,NAICS_2012_Code,324110,I
 EPA_WFR,Petrochemical manufacturing,NAICS_2012_Code,325110,I
 EPA_WFR,Other basic organic chemical manufacturing,NAICS_2012_Code,32519,I
@@ -49,7 +50,6 @@ EPA_WFR,Landfill,NAICS_2012_Code,5622121,I
 EPA_WFR,Controlled Combustion,NAICS_2012_Code,562213,I
 EPA_WFR,Codigestion/Anaerobic Digestion,NAICS_2012_Code,5622191,I
 EPA_WFR,Composting/Aerobic Processes,NAICS_2012_Code,5622192,I
-EPA_WFR,Bio-based Materials/Biochemical Processing,NAICS_2012_Code,562BIO,I
 EPA_WFR,K-12 Schools,NAICS_2012_Code,6111,I
 EPA_WFR,Colleges & Universities,NAICS_2012_Code,6113,I
 EPA_WFR,Office Buildings,NAICS_2012_Code,621,I
