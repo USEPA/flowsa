@@ -227,6 +227,15 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
 
     # load naics length crosswwalk
     cw_load = load_crosswalk('sector_length')
+    # remove any parent sectors of sectors identified as those that should
+    # not be aggregated
+    if sectors_to_exclude_from_agg is not None:
+        cw_filtered = cw_load.applymap(lambda x:
+                                       x in sectors_to_exclude_from_agg)
+        locations = cw_filtered[cw_filtered > 0].stack().index.tolist()
+        for r, i in locations:
+            col_index = cw_load.columns.get_loc(i)
+            cw_load.iloc[r, 0:col_index] = np.nan
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -237,8 +246,7 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
     for i in range(length, 2, -1):
         if return_all_possible_sector_combos:
             for j in range(1, i-1):
-                df = append_new_sectors(df, i, j, cw_load, group_cols,
-                                        sectors_to_exclude_from_agg)
+                df = append_new_sectors(df, i, j, cw_load, group_cols)
         else:
             df = append_new_sectors(df, i, 1, cw_load, group_cols)
 
@@ -255,8 +263,7 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
     return df
 
 
-def append_new_sectors(df, i, j, cw_load, group_cols,
-                       sectors_to_exclude_from_agg=None):
+def append_new_sectors(df, i, j, cw_load, group_cols):
     """
     Function to append new sectors at more aggregated levels
     :param df: df, FBS
@@ -278,12 +285,6 @@ def append_new_sectors(df, i, j, cw_load, group_cols,
     cw_melt = load_sector_length_cw_melt()
     cw_sub = cw_melt[cw_melt['SectorLength'] == i]
     sector_list = cw_sub['Sector'].drop_duplicates().values.tolist()
-
-    # if there is a list of sectors that should be excluded from being
-    # aggregated, remove from sector_list
-    if sectors_to_exclude_from_agg is not None:
-        sector_list = [x for x in sector_list if x not in
-                        sectors_to_exclude_from_agg]
 
     # loop through and add additional sectors
     sectype_list = ['Produced', 'Consumed']
