@@ -427,12 +427,23 @@ def get_sector_list(sector_level, secondary_sector_level_dict=None):
     # loop through identified secondary sector levels in a dictionary
     if secondary_sector_level_dict is not None:
         for k, v in secondary_sector_level_dict.items():
+            # first determine if any sectors in the sector list are already
+            # at level k
+            cw_sec = cw[k].drop_duplicates().values.tolist()
+            sector_add_list_1 = [x for x in v if x in cw_sec]
+            # remove any sectors from v if identified in sector_add_list_1
+            v = [x for x in v if x not in sector_add_list_1]
+
+            # for any sectors at more aggregated level than k, determine the
+            # child sectors
             cw_melt = cw.melt(
                 id_vars=[k], var_name="NAICS_Length",
                 value_name="NAICS_Match").drop_duplicates()
             cw_sub = cw_melt[cw_melt['NAICS_Match'].isin(v)]
-            sector_add = cw_sub[k].unique().tolist()
-            sector_list = sector_list + sector_add
+            sector_add_list_2 = cw_sub[k].unique().tolist()
+
+            # determine sectors to add and drop
+            sector_list = sector_list + sector_add_list_1 + sector_add_list_2
             sector_drop = sector_drop + v
 
     # check if through loop any sectors in the drop list were included in
