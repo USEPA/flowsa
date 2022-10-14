@@ -365,8 +365,8 @@ def generateSankeyData(methodname,
     :return: csv file for use in generating sankey diagram
     """
 
-    df = flowsa.getFlowBySector(methodname)
-    df = convert_units_for_graphics(df)
+    df_load = flowsa.getFlowBySector(methodname)
+    df = convert_units_for_graphics(df_load)
 
     # subset df
     if sectors_to_include is not None:
@@ -519,8 +519,17 @@ def generateSankeyDiagram(methodnames,
             use_sectordefinition, sectors_to_include,
             fbsconfigpath)
 
+        # define domain
+        if orientation == 'vertical':
+            domain = {'y': [0 + (i / len(methodnames)) + 0.04,
+                            ((i + 1) / len(methodnames)) - 0.04]}
+        else:
+            domain = {'x': [0 + (i / len(methodnames)) + 0.02,
+                            ((i + 1) / len(methodnames)) - 0.02]}
+
         fig.add_trace(go.Sankey(
             arrangement="snap",
+            domain=domain,
             # valueformat=".1f",
             # valuesuffix=flows['Unit'][0],
             # Define nodes
