@@ -365,8 +365,8 @@ def generateSankeyData(methodname,
     :return: csv file for use in generating sankey diagram
     """
 
-    df_load = flowsa.getFlowBySector(methodname)
-    df = convert_units_for_graphics(df_load)
+    df = flowsa.getFlowBySector(methodname, fbsconfigpath=fbsconfigpath)
+    df = convert_units_for_graphics(df)
 
     # subset df
     if sectors_to_include is not None:
