@@ -131,6 +131,39 @@ def VT_supplementary_parse(*, source, year, config, **_):
 
     return df0
 
+
+def VT_remove_dupicate_activities(df_subset):
+    # remove Vermont natural gas distribution data
+    df_subset.drop(df_subset[
+        ((df_subset.Location == '50000') & 
+         (df_subset.ActivityProducedBy == 'Gas and Oil, Natural Gas, Distribution')
+         )].index, inplace=True)
+
+    # remove Vermont ODS substitutes data
+    df_subset.drop(df_subset[
+        ((df_subset.Location == '50000') & 
+         (df_subset.ActivityProducedBy == 'IP, ODS Substitutes')
+         )].index, inplace=True)
+
+    # remove Vermont semiconductor manufacturing data
+    df_subset.drop(df_subset[
+        ((df_subset.Location == '50000') & 
+         (df_subset.ActivityProducedBy == 'IP, Semiconductor Manufacturing')
+         )].index, inplace=True)
+
+    # remove Vermont solid waste data
+    df_subset.drop(df_subset[
+        ((df_subset.Location == '50000') & 
+         (df_subset.Description == 'Landfills')
+         )].index, inplace=True)
+    df_subset.drop(df_subset[
+        ((df_subset.Location == '50000') & 
+         (df_subset.Description == 'Waste Combustion')
+         )].index, inplace=True)
+
+    return df_subset
+
+
 if __name__ == '__main__':
     import flowsa
     flowsa.flowbyactivity.main(source='StateGHGI_ME', year='2019')

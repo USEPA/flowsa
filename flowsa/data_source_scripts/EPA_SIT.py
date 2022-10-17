@@ -177,7 +177,7 @@ def disaggregate_emissions(fba, source_dict, **_):
 
     return fba
 
-def clean_up_state_data(fba, source_dict, **_):
+def clean_up_state_data(fba, source_dict, method, **_):
     """
     clean_fba_df_fxn to:
     
@@ -206,35 +206,9 @@ def clean_up_state_data(fba, source_dict, **_):
     # if Vermont is included in the inventory, exclude certain data
     # (these data will later be replaced with custom data in the 'StateGHGI'
     # stage)
-    if 'VT' in state_list:
-
-        # remove Vermont natural gas distribution data
-        df_subset.drop(df_subset[
-            ((df_subset.Location == '50000') & 
-             (df_subset.ActivityProducedBy == 'Gas and Oil, Natural Gas, Distribution')
-             )].index, inplace=True)
-        
-        # remove Vermont ODS substitutes data
-        df_subset.drop(df_subset[
-            ((df_subset.Location == '50000') & 
-             (df_subset.ActivityProducedBy == 'IP, ODS Substitutes')
-             )].index, inplace=True)    
-                
-        # remove Vermont semiconductor manufacturing data
-        df_subset.drop(df_subset[
-            ((df_subset.Location == '50000') & 
-             (df_subset.ActivityProducedBy == 'IP, Semiconductor Manufacturing')
-             )].index, inplace=True)
-                
-        # remove Vermont solid waste data
-        df_subset.drop(df_subset[
-            ((df_subset.Location == '50000') & 
-             (df_subset.Description == 'Landfills')
-             )].index, inplace=True)
-        df_subset.drop(df_subset[
-            ((df_subset.Location == '50000') & 
-             (df_subset.Description == 'Waste Combustion')
-             )].index, inplace=True)
+    if ('VT' in state_list) and ('StateGHGI_VT' in method['source_names'].keys()):
+        from flowsa.StateGHGI import VT_remove_dupicate_activities
+        df_subset = VT_remove_dupicate_activities(df_subset)
    
     return df_subset
 

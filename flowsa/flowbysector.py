@@ -183,7 +183,8 @@ def main(**kwargs):
             fxn = v.get("clean_fba_df_fxn")
             if callable(fxn):
                 vLog.info(f"Cleaning up {k} FlowByActivity")
-                flows_mapped = fxn(fba=flows_mapped, source_dict=v)
+                flows_mapped = fxn(fba=flows_mapped, source_dict=v,
+                                   method=method)
             elif fxn:
                 raise flowsa.exceptions.FBSMethodConstructionError(
                     error_type='fxn_call')
