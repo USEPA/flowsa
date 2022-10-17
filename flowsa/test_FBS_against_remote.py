@@ -18,6 +18,7 @@ from flowsa.test_single_FBS import compare_single_FBS_against_remote
 def test_FBS_against_remote(only_run_m=None):
     """Compare results for each FBS method at current HEAD with most
     recent FBS stored on remote server."""
+    error_list = []
     outdir = diffpath
     method_status = check_method_status()
     if not os.path.exists(outdir):
@@ -29,7 +30,13 @@ def test_FBS_against_remote(only_run_m=None):
             print(f"{m} skipped due to "
                   f"{method_status.get(m).get('Status', 'Unknown')}")
             continue
-        compare_single_FBS_against_remote(m)
+        try:
+            compare_single_FBS_against_remote(m)
+        except Exception as e:
+            error_list.append(m)
+    if error_list:
+        pytest.fail(f"Error generating:"
+                    f" {', '.join([x for x in [*error_list]])}")
 
 
 

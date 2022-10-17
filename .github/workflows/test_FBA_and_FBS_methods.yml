@@ -37,7 +37,6 @@ jobs:
         for m in $(python flowsa/test_methods.py list)
         do
           echo "python flowsa/test_methods.py $m"
-          python flowsa/test_methods.py "$m" || true
         done
 
   FBS_testing:
