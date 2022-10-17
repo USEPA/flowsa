@@ -1,9 +1,8 @@
-# EPA_SIT.py (flowsa)
+# StateGHGI.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Loads EPA State Inventory Tool (SIT) data for state specified from external
-data directory. Parses EPA SIT data to flowbyactivity format.
+Loads state specific GHGI data to supplement EPA State Inventory Tool (SIT).
 """
 
 import pandas as pd
@@ -11,13 +10,12 @@ import os
 from flowsa.settings import externaldatapath, log
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS
-from flowsa.schema import flow_by_activity_fields
+
 
 data_path = f"{externaldatapath}/StateGHGI_data"
 
 def ME_biogenic_parse(*, source, year, config, **_):
     
-    # initialize the dataframe
     df0 = pd.DataFrame()
     
     filename = config['filename']
@@ -77,7 +75,6 @@ def ME_biogenic_parse(*, source, year, config, **_):
 
 def VT_supplementary_parse(*, source, year, config, **_):
     
-    # initialize the dataframe
     df0 = pd.DataFrame()
     
     filename = config['filename']
