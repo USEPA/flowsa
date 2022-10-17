@@ -3,6 +3,7 @@ source_name: Vermont State Supplementary Emissions Data
 bib_id: StateGHGI_VT
 format: xlsx  # Excel spreadsheet
 url: None
+filename: 'VT_custom_data_summary.xlsx'
 parse_response_fxn: !script_function:StateGHGI VT_supplementary_parse
 years:
 - 2019
@@ -35,10 +36,8 @@ years:
 - 1992
 - 1991
 - 1990
-
-filename: 'VT_custom_data_summary.xlsx'
     
-file_dict:
+table_dict:
 
     'Emissions from Natural Gas Distribution':
         sheetname: 'Sheet1'

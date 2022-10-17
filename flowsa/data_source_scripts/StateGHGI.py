@@ -9,10 +9,11 @@ data directory. Parses EPA SIT data to flowbyactivity format.
 import pandas as pd
 import os
 from flowsa.settings import externaldatapath, log
-from flowsa.flowbyfunctions import assign_fips_location_system, \
-    load_fba_w_standardized_units
+from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS
 from flowsa.schema import flow_by_activity_fields
+
+data_path = f"{externaldatapath}/StateGHGI_data"
 
 def ME_biogenic_parse(*, source, year, config, **_):
     
@@ -20,37 +21,34 @@ def ME_biogenic_parse(*, source, year, config, **_):
     df0 = pd.DataFrame()
     
     filename = config['filename']
-    
-    log.info(f'Loading data from file {filename}...')
-    
-    filepath = f"{externaldatapath}/StateGHGI_data/ME/{filename}"
+    filepath = f"{data_path}/{filename}"
     
     # dictionary containing Excel sheet-specific information
-    file_dict = config['file_dict']
+    table_dicts = config['table_dict']
 
     if not os.path.exists(filepath):
         raise FileNotFoundError(f'StateGHGI file not found in {filepath}')
+
+    log.info(f'Loading data from file {filename}...')
         
     # for each data table in the Excel file...
-    for table, table_dict in file_dict.items():        
-        
+    for table, table_dict in table_dicts.items():
+
         log.info(f'Loading data from table {table}...')
     
         # read in data from Excel sheet
         df = pd.read_excel(filepath,
                            header=table_dict.get('header'),
-                           usecols="A:AG",
+                           # usecols="A:AG",
                            nrows=table_dict.get('nrows'))
         df.columns = df.columns.map(str)
         
         # rename certain columns
-        df.rename(columns = {
-            'Gas':'FlowName',
-            'Sector/Activity':'ActivityProducedBy',
-            'Units':'Unit',
-            year:'FlowAmount'
-            }, inplace = True)
-        df['ActivityProducedBy'] = df['ActivityProducedBy'] + ", " + table[15:]
+        df = df.rename(columns = {'Gas':'FlowName',
+                                  'Sector/Activity':'ActivityProducedBy',
+                                  'Units':'Unit',
+                                  year:'FlowAmount'})
+        df['ActivityProducedBy'] = df['ActivityProducedBy'] + ", " + table
         df['FlowName'] = 'Biogenic ' + df['FlowName']
 
         # drop all years except the desired emissions year
@@ -71,7 +69,6 @@ def ME_biogenic_parse(*, source, year, config, **_):
 
     # add state FIPS code
     df0['State'] = 'ME'
-    df0['County'] = ''
     df0 = apply_county_FIPS(df0, year='2015', source_state_abbrev=True)
     # add FIPS location system
     df0 = assign_fips_location_system(df0, '2015')
@@ -85,38 +82,36 @@ def VT_supplementary_parse(*, source, year, config, **_):
     
     filename = config['filename']
     
-    log.info(f'Loading data from file {filename}...')
-    
-    filepath = f"{externaldatapath}/StateGHGI_data/VT/{filename}"
+    filepath = f"{data_path}/{filename}"
     
     # dictionary containing Excel sheet-specific information
-    file_dict = config['file_dict']
+    table_dicts = config['table_dict']
 
     if not os.path.exists(filepath):
-        raise FileNotFoundError(f'StateGHGI file not found in {filepath}')
+        raise FileNotFoundError(f'{filename} file not found in {filepath}')
+    log.info(f'Loading data from file {filename}...')
         
     # for each data table in the Excel file...
-    for table, table_dict in file_dict.items():        
+    for table, table_dict in table_dicts.items():
         
         log.info(f'Loading data from table {table}...')
     
         # read in data from Excel sheet
         df = pd.read_excel(filepath,
                            header=table_dict.get('header'),
-                           usecols="A:AG",
+                           # usecols="A:AG",
                            nrows=table_dict.get('nrows'))
         df.columns = df.columns.map(str)
         
         # rename certain columns
-        df.rename(columns = {
-            'Gas':'FlowName',
-            'Sector/Activity':'ActivityProducedBy',
-            'Units':'Unit',
-            year:'FlowAmount'
-            }, inplace = True)
+        df = df.rename(columns = {'Gas': 'FlowName',
+                                  'Sector/Activity': 'ActivityProducedBy',
+                                  'Units': 'Unit',
+                                  year:'FlowAmount'})
 
         # drop all years except the desired emissions year
-        df = df.filter(['FlowAmount', 'FlowName', 'ActivityProducedBy', 'Unit'])
+        df = df.filter(['FlowAmount', 'FlowName', 'ActivityProducedBy',
+                        'Unit'])
 
         # concatenate dataframe from each table with existing master dataframe
         df0 = pd.concat([df0, df])        
@@ -133,7 +128,6 @@ def VT_supplementary_parse(*, source, year, config, **_):
 
     # add state FIPS code
     df0['State'] = 'VT'
-    df0['County'] = ''
     df0 = apply_county_FIPS(df0, year='2015', source_state_abbrev=True)
     # add FIPS location system
     df0 = assign_fips_location_system(df0, '2015')

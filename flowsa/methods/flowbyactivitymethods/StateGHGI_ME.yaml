@@ -3,6 +3,7 @@ source_name: Maine State Biogenic Emissions Data
 bib_id: StateGHGI_ME
 format: xlsx  # Excel spreadsheet
 url: None
+filename: 'ME_biogenic_data_summary.xlsx'
 parse_response_fxn: !script_function:StateGHGI ME_biogenic_parse
 years:
 - 2019
@@ -36,26 +37,24 @@ years:
 - 1991
 - 1990
 
-filename: 'ME_biogenic_data_summary.xlsx'
-    
-file_dict:
+table_dict:
 
-    'Emissions from Ethanol Combustion':
+    'Ethanol Combustion':
         sheetname: 'Sheet1'
         header: 1
         nrows: 9
 
-    'Emissions from Biodiesel Combustion':
+    'Biodiesel Combustion':
         sheetname: 'Sheet1'
         header: 14
         nrows: 3
 
-    'Emissions from Solid Waste Management':
+    'Solid Waste Management':
         sheetname: 'Sheet1'
         header: 21
         nrows: 4
 
-    'Emissions from Wood and Wood Residuals':
+    'Wood and Wood Residuals':
         sheetname: 'Sheet1'
         header: 29
         nrows: 12
