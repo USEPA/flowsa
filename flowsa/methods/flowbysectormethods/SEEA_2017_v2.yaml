@@ -999,5 +999,5 @@ source_names:
     year: null
     selection_fields:
       Year: *year
-    emissions_factors: BTS_Airlines_emissions_factors
+    emissions_factors: EPA_emissions_factors
     activity_to_sector_mapping: EPA_GHGI
