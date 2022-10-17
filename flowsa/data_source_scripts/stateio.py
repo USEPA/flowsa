@@ -56,7 +56,6 @@ def parse_statior(*, source, year, config, **_):
         fba = fba.drop(columns=['ActivityConsumedBy'])
 
     # Assign location
-    fba['County'] = ''
     fba = apply_county_FIPS(fba)
     fba = assign_fips_location_system(fba, '2015')
     fba.drop(columns=['County'], inplace=True)

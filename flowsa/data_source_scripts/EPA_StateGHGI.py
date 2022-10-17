@@ -51,7 +51,6 @@ def epa_state_ghgi_parse(*, source, year, config, **_):
     df.drop(columns=activity_cols, inplace=True)
     activities = df[['ActivityProducedBy']].drop_duplicates()
 
-    df['County'] = ''
     df = apply_county_FIPS(df)
     df = assign_fips_location_system(df, '2015')
     df.drop(columns=['County'], inplace=True)

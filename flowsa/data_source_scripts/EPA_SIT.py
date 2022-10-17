@@ -117,7 +117,6 @@ def epa_sit_parse(*, source, year, config, **_):
     df0['DataCollection'] = 5
 
     # add state FIPS code
-    df0['County'] = ''
     df0 = apply_county_FIPS(df0, year='2015', source_state_abbrev=True)
     # add FIPS location system
     df0 = assign_fips_location_system(df0, '2015')
@@ -199,7 +198,6 @@ def clean_up_state_data(fba, source_dict, **_):
     
     # (i) drop all states OTHER THAN those selected for alternative data sources
     state_df = pd.DataFrame(state_list, columns=['State'])
-    state_df['County'] =''
     state_df = apply_county_FIPS(state_df)
     df_subset = fba[fba['Location'].isin(state_df['Location'])]
     

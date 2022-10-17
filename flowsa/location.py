@@ -94,6 +94,8 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
         df['State'] = df['State'].map(abbrev_us_state).fillna(df['State'])
     df['State'] = df.apply(lambda x: clean_str_and_capitalize(x.State),
                            axis=1)
+    if 'County' not in df:
+        df['County'] = ''
     df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County),
                             axis=1)
 
@@ -103,10 +105,10 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
 
     # Where no county match occurs, assign state FIPS instead
     mapping_FIPS = get_state_FIPS()
-    mapping_FIPS.drop(columns=['County'], inplace=True)
+    mapping_FIPS = mapping_FIPS.drop(columns=['County'])
     df = df.merge(mapping_FIPS, left_on='State', right_on='State', how='left')
     df['Location'] = df['FIPS_x'].where(df['FIPS_x'].notnull(), df['FIPS_y'])
-    df.drop(columns=['FIPS_x', 'FIPS_y'], inplace=True)
+    df = df.drop(columns=['FIPS_x', 'FIPS_y'])
 
     return df
 
