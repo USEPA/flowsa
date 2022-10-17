@@ -232,10 +232,11 @@ class _FlowBy(pd.DataFrame):
         return fb
 
     def standardize_units(self: FB) -> FB:
-        exchange_rate = float(
+        exchange_rate = (
             literature_values
-            .get_Canadian_to_USD_exchange_rate(str(self.config['year']))
+            .get_Canadian_to_USD_exchange_rate(self.config['year'])
         )
+
         conversion_table = pd.concat([
             pd.read_csv(f'{settings.datapath}unit_conversion.csv'),
             pd.Series({'old_unit': 'Canadian Dollar',
