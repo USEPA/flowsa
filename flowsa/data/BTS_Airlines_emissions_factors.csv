@@ -1,3 +1,0 @@
-Unit,ActivityConsumedBy,pollutant,target_unit,emissions_factor,source
-gal,Commercial Aircraft,CO2,MT CO2e,0.00975,Federal Register EPA; 40 CFR Part 98; e-CFR (see link below). Table C-1 (as amended at 81 FR 89252 Dec. 9 2016). https://www.ecfr.gov/cgi-bin/text-idx?SID=ae265d7d6f98ec86fcd8640b9793a3f6&mc=true&node=pt40.23.98&rgn=div5#ap40.23.98_19.1
-gal,Commercial Aircraft,N2O,MT CO2e,0.0000894,EPA (2021) Inventory of U.S. Greenhouse Gas Emissions and Sinks: 1990-2019 (Annexes). All values are calculated from Tables A-97 through A-98; also Intergovernmental Panel on Climate Change (IPCC) Fourth Assessment Report (AR4) 2007
