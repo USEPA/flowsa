@@ -42,6 +42,12 @@ BEA_Make_Detail_BeforeRedef:
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
+BEA_Marine_Bunker_Fuel:
+  data_format: FBA
+  class:
+    - Energy
+  sector-like_activities: False
+  sector_aggregation_level: "aggregated"
 BLS_QCEW:
   data_format: FBA
   class:
