@@ -3,6 +3,7 @@ import pandas as pd
 from pandas import ExcelWriter
 import numpy as np
 from functools import partial, reduce
+from copy import deepcopy
 from . import (common, settings, metadata, sectormapping,
                literature_values, flowbyactivity, flowbysector, flowsa_yaml,
                validation, geo, naics, exceptions)
@@ -35,11 +36,14 @@ def get_flowby_from_config(
     external_config_path: str = None,
     download_sources_ok: bool = True
 ) -> FB:
+    external_data_path = config.get('external_data_path')
+
     if config['data_format'] == 'FBA':
         return FlowByActivity.getFlowByActivity(
             full_name=name,
             config=config,
-            download_ok=download_sources_ok
+            download_ok=download_sources_ok,
+            external_data_path=external_data_path
         )
     elif config['data_format'] == 'FBS':
         return FlowBySector.getFlowBySector(
@@ -48,7 +52,8 @@ def get_flowby_from_config(
             config=config,
             external_config_path=external_config_path,
             download_sources_ok=download_sources_ok,
-            download_fbs_ok=download_sources_ok
+            download_fbs_ok=download_sources_ok,
+            external_data_path=external_data_path
         )
     elif config['data_format'] == 'FBS_outside_flowsa':
         return FlowBySector(
@@ -191,7 +196,11 @@ class _FlowBy(pd.DataFrame):
         *,
         full_name: str = None,
         config: dict = None,
+        external_data_path: str = None
     ) -> '_FlowBy':
+        paths = deepcopy(settings.paths)
+        paths.local_path = external_data_path or paths.local_path
+
         for attempt in ['import local', 'download', 'generate']:
             log.info(
                 'Attempting to %s %s %s',
@@ -200,20 +209,20 @@ class _FlowBy(pd.DataFrame):
             if attempt == 'download' and download_ok:
                 esupy.processed_data_mgmt.download_from_remote(
                     file_metadata,
-                    settings.paths
+                    paths
                 )
             if attempt == 'generate':
                 flowby_generator()
             df = esupy.processed_data_mgmt.load_preprocessed_output(
                 file_metadata,
-                settings.paths
+                paths
             )
             if df is None:
                 log.info(
                     '%s %s not found in %s',
                     file_metadata.name_data,
                     file_metadata.category,
-                    output_path
+                    paths.local_path
                 )
             else:
                 log.info(
@@ -690,7 +699,8 @@ class FlowByActivity(_FlowBy):
             flowby_generator=flowby_generator,
             output_path=settings.fbaoutputpath,
             full_name=full_name,
-            config=config
+            config=config,
+            **kwargs
         )
 
     # TODO: probably only slight modification is needed to allow for material
