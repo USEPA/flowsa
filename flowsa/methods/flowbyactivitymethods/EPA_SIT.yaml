@@ -1,5 +1,6 @@
 author: US Environmental Protection Agency
 source_name: State Inventory Tool
+# Aligns with March 2022 version of tool
 source_url: 'https://www.epa.gov/statelocalenergy/state-inventory-and-projection-tool'
 bib_id: EPA_SIT
 format: xlsm  # macro-enabled spreadsheet
