@@ -563,29 +563,3 @@ def generateSankeyDiagram(methodnames,
     log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
     fig.write_image(f"{plotoutputpath}{filename}",
                     width=width, height=height)
-
-
-if __name__ == '__main__':
-    # methodnames = ['Food_Waste_national_2018_m3',
-    #                'Food_Waste_national_2018_m2']
-    methodnames = ['Food_Waste_national_2018_m3']
-    target_sector_level = 'NAICS_2'
-    target_subset_sector_level = {'NAICS_6': ['62421', '31111', '32411',
-                                              '56221', '62421', '11511', '22132'],
-                                  'NAICS_7': ['562212', '562219']}
-    use_sectordefinition=True
-    sectors_to_include = None
-    fbsconfigpath = None
-    orientation = 'horizontal'
-
-    generateSankeyDiagram(
-        methodnames,
-        target_sector_level=target_sector_level,
-        target_subset_sector_level=target_subset_sector_level,
-        use_sectordefinition=use_sectordefinition,
-        sectors_to_include=None,
-        fbsconfigpath=None,
-        orientation='orientation'
-    )
-
-
