@@ -43,18 +43,22 @@ table_dict:
         sheetname: 'Sheet1'
         header: 1
         nrows: 2
+        SIT_APB_proxy: 'Gas and Oil, Natural Gas, Distribution'
 
     'Emissions from ODS Substitutes':
         sheetname: 'Sheet1'
         header: 7
         nrows: 5
+        SIT_APB_proxy: 'IP, ODS Substitutes'
 
     'Emissions from Semiconductor Manufacturing':
         sheetname: 'Sheet1'
         header: 16
         nrows: 7
+        SIT_APB_proxy: 'IP, Semiconductor Manufacturing'
 
     'Emissions from Solid Waste':
         sheetname: 'Sheet1'
         header: 27
         nrows: 3
+        SIT_APB_proxy: ['Landfills', 'Waste Combustion']

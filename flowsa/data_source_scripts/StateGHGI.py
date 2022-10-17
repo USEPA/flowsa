@@ -10,6 +10,7 @@ import os
 from flowsa.settings import externaldatapath, log
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS
+from flowsa.common import load_yaml_dict
 
 
 data_path = f"{externaldatapath}/StateGHGI_data"
@@ -133,33 +134,16 @@ def VT_supplementary_parse(*, source, year, config, **_):
 
 
 def VT_remove_dupicate_activities(df_subset):
-    # remove Vermont natural gas distribution data
-    df_subset.drop(df_subset[
-        ((df_subset.Location == '50000') & 
-         (df_subset.ActivityProducedBy == 'Gas and Oil, Natural Gas, Distribution')
-         )].index, inplace=True)
-
-    # remove Vermont ODS substitutes data
-    df_subset.drop(df_subset[
-        ((df_subset.Location == '50000') & 
-         (df_subset.ActivityProducedBy == 'IP, ODS Substitutes')
-         )].index, inplace=True)
-
-    # remove Vermont semiconductor manufacturing data
-    df_subset.drop(df_subset[
-        ((df_subset.Location == '50000') & 
-         (df_subset.ActivityProducedBy == 'IP, Semiconductor Manufacturing')
-         )].index, inplace=True)
-
-    # remove Vermont solid waste data
-    df_subset.drop(df_subset[
-        ((df_subset.Location == '50000') & 
-         (df_subset.Description == 'Landfills')
-         )].index, inplace=True)
-    df_subset.drop(df_subset[
-        ((df_subset.Location == '50000') & 
-         (df_subset.Description == 'Waste Combustion')
-         )].index, inplace=True)
+    """Remove activities from standard SIT that are captured by supplementary
+    file."""
+    fba_config = load_yaml_dict('StateGHGI_VT', flowbytype='FBA')
+    for table, table_dict in fba_config['table_dict'].items():
+        proxy = table_dict['SIT_APB_proxy']
+        proxy = [proxy] if isinstance(proxy, str) else proxy
+        df_subset = df_subset.drop(df_subset[
+            ((df_subset.Location == '50000') & 
+             (df_subset.ActivityProducedBy.isin(proxy))
+             )].index)
 
     return df_subset
 
