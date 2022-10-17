@@ -7,7 +7,7 @@ _fba_base_fields: &fba_base_fields
   Description: object
   DistributionType: object
   FlowAmount: float
-  Suppressed: object
+  # Suppressed: object
   FlowType: object
   Location: object
   LocationSystem: object
