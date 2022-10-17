@@ -6,11 +6,23 @@ Sector,Color,Abrv_Name
 2212,#00EEEE,Nat Gas
 221320,#3090C7,Sewer
 23,#C0C0C0,Construction
+236115,#a45a52,Single-Family Housing Const.
+236116,#7fffd4,Multifamily Housing Const.
+236117,#dd8888,Housing For-Sale Builders
+236118,#657065,Res. Remodelers
+236210,#FF7F00,Industrial Building Construction
+236220,#7D9EC0,Commercial/Institutional Building Construction
+237110,#8B0000,Water/Sewer Construction
+237130,#71C671,Power/Com. Construction
+237310,#4876FF,Highway/Street/Bridge Construction
+237990,#912CEE,Other Construction
+238910,#FF1493,Site Prep
 31,#E31A1C,Manuf - 31
 311111,#C1FFC1,Dog/Cat Food Manuf
 311119,#954535,Animal Feed
 32,#E31A1C,Manuf - 32
 324110,#00688B,Gasoline
+327310,#16645f,Concrete Manuf
 33,#E31A1C,Manuf - 33
 42,#1F78B4,Wholesale Trade
 44,#A6CEE3,Retail Trade - 44
@@ -27,6 +39,8 @@ Sector,Color,Abrv_Name
 562213,#654A8B,Solid Waste
 5622191,#C88141,Anaerobic Digestion
 5622192,#F67280,Composting
+5629202,#91a3b0,Mixed CDD Proc.
+5629203,#9999ff,Concrete Proc.
 61,#800000,Educ
 62,#7E354D,Health Care
 624210,#CCCCFF,Food Bank
