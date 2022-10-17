@@ -2,6 +2,7 @@
 .idea
 venv
 .venv
+external_data.yaml
 *.env
 *__pycache__
 *.egg*
