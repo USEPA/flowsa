@@ -129,6 +129,13 @@ Tables:
         "flow": "N2O"
         "desc": "Table 3-67: N2O Emissions from Natural Gas Systems (Metric Tons CO2 Eq.)"
 
+# International Bunker Fuels
+      "3-104":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "desc": "Table 3-104:  CO2, CH4, and N2O Emissions from International Bunker Fuels (MMT CO2 Eq.)"
+
   "Ch 4 - Industrial Processes":
       "4-14": # Emissions captured in 2-1
         "class": "Chemicals"

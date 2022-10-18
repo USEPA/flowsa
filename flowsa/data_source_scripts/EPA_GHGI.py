@@ -419,7 +419,7 @@ def ghg_parse(*, df_list, year, config, **_):
         df = assign_fips_location_system(df, str(year))
 
         # modified_activity_list = ["ES-5"]
-        multi_chem_names = ["2-1", "4-46", "5-7", "5-29", "ES-5"]
+        multi_chem_names = ["2-1", "3-104", "4-46", "5-7", "5-29", "ES-5"]
         source_No_activity = ["3-22", "3-22b"]
         # Handle tables with 1 parent level category
         source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-14", "3-15",
