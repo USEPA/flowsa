@@ -1,34 +1,34 @@
 Sector,Color,Abrv_Name
 11,#33A02C,Ag
-115112,#228B22,Land Application
+115112,#228B22,Land App
 21,#000000,Mining
 22,#696969,Utilities
 2212,#00EEEE,Nat Gas
 221320,#3090C7,Sewer
 23,#C0C0C0,Construction
-236115,#a45a52,Single-Family Housing Const.
-236116,#7fffd4,Multifamily Housing Const.
+236115,#a45a52,Single-Family Housing Const
+236116,#7fffd4,Multifamily Housing Const
 236117,#dd8888,Housing For-Sale Builders
 236118,#657065,Res. Remodelers
-236210,#FF7F00,Industrial Building Construction
-236220,#7D9EC0,Commercial/Institutional Building Construction
-237110,#8B0000,Water/Sewer Construction
-237130,#71C671,Power/Com. Construction
-237310,#4876FF,Highway/Street/Bridge Construction
-237990,#912CEE,Other Construction
+236210,#FF7F00,Industrial Bldg Const
+236220,#7D9EC0,Commercial/Institutional Bldg Const
+237110,#8B0000,Water/Sewer Const
+237130,#71C671,Power/Com. Const
+237310,#4876FF,Road/Bridge Const
+237990,#912CEE,Other Const
 238910,#FF1493,Site Prep
-31,#E31A1C,Manuf - 31
-311111,#C1FFC1,Dog/Cat Food Manuf
+31,#E31A1C,Mfg - 31
+311111,#C1FFC1,Dog/Cat Food Mfg
 311119,#954535,Animal Feed
-32,#E31A1C,Manuf - 32
+32,#E31A1C,Mfg - 32
 324110,#00688B,Gasoline
-327310,#16645f,Concrete Manuf
-33,#E31A1C,Manuf - 33
+327310,#16645f,Concrete Mfg
+33,#E31A1C,Mfg - 33
 42,#1F78B4,Wholesale Trade
 44,#A6CEE3,Retail Trade - 44
 45,#ECC5C0,Retail Trade - 45
-48,#FF6F00,Transp & Warehousing - 48
-49,#E56717,Transp & Warehousing - 49
+48,#FF6F00,Transp & Whs - 48
+49,#E56717,Transp & Whs - 49
 51,#FDBF6F,Info
 52,#6A3D9A,Finance and Ins
 53,#99C68E,Real Estate
@@ -49,6 +49,6 @@ Sector,Color,Abrv_Name
 81,#FF007F,Other Serv
 92,#9F000F,Pub Admin
 F010,#D58A94,Residential
-S00201,#B2DF8A,Gov Loc Passenger Transit
+S00201,#B2DF8A,Gov Loc Psg Transit
 S00101,B5EAAA,Gov Fed Elec Util
 S00202,#98FF98,Gov Loc Elec Util
