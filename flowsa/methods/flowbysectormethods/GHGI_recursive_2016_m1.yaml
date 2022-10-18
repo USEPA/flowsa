@@ -575,7 +575,7 @@ source_names:
               FlowName: Natural Gas
 
   EPA_GHGI_T_3_9:
-      <<: *stationary_combustion # N2O emissions from stationary combustion
+    <<: *stationary_combustion # N2O emissions from stationary combustion
     fedefl_mapping: GHGI
     clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
     activity_sets:
