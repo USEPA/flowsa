@@ -502,8 +502,9 @@ def update_regions_to_states(fba_load, attr, **_):
                                        if len(x) < 5 else x))
 
     # Allocate MECS based on employment FBS
-    year = 2017 #TODO update when more FBS available
-    hlp = flowsa.getFlowBySector(methodname=f'Employment_state_{year}')
+    year = attr.get('allocation_source_year')
+    hlp = flowsa.getFlowBySector(methodname=f'Employment_state_{year}',
+                                 download_FBS_if_missing=True)
 
     # To match the various sector resolution of MECS, generate employment
     # dataset for all NAICS resolution by aggregating
@@ -521,6 +522,7 @@ def update_regions_to_states(fba_load, attr, **_):
                    how='left', on=['Region','SectorConsumedBy'])
     fba['FlowAmount'] = fba['FlowAmount'] * fba['Allocation']
     fba = fba.drop(columns=['Allocation','Region'])
+    fba['LocationSystem'] = 'FIPS_2015'
 
     # Check for data loss
     if (abs(1-(sum(fba['FlowAmount']) /
