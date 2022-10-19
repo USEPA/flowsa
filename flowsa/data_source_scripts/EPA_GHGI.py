@@ -205,7 +205,7 @@ def ghg_call(*, resp, url, year, config, **_):
                     # Default case
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                      thousands=",")
-                elif table in ['3-10', '4-46', '5-28']:
+                elif table in ['3-10', '5-28']:
                     # Skip single row
                     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")
@@ -389,7 +389,6 @@ def ghg_parse(*, df_list, year, config, **_):
             # Standard years (one or more) as column headers
             df = df.melt(id_vars=id_vars, var_name="Year",
                          value_name="FlowAmount")
-
 
         # Dropping all rows with value "+": represents non-zero value
         df["FlowAmount"].replace("\+", np.nan, inplace=True, regex=True)
