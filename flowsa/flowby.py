@@ -4,10 +4,10 @@ from pandas import ExcelWriter
 import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
-from . import (common, settings, metadata, sectormapping,
-               literature_values, flowbyactivity, flowbysector, flowsa_yaml,
-               validation, geo, naics, exceptions)
-from .flowsa_log import log
+from flowsa import (common, settings, metadata, sectormapping,
+                    literature_values, flowbyactivity, flowbysector, flowsa_yaml,
+                    validation, geo, naics, exceptions)
+from flowsa.flowsa_log import log
 import esupy.processed_data_mgmt
 import esupy.dqi
 import fedelemflowlist
