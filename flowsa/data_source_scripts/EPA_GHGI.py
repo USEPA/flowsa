@@ -424,14 +424,11 @@ def ghg_parse(*, df_list, year, config, **_):
         df["LocationSystem"] = 'None'
         df = assign_fips_location_system(df, str(year))
 
-        # modified_activity_list = ["ES-5"]
-        multi_chem_names = ["2-1", "4-46", "5-7", "5-28", "ES-4"]
-        source_No_activity = ["3-22", "3-22b"]
-        # Handle tables with 1 parent level category
-        source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-13", "3-14", "3-15",
-                             "5-17", "5-18", "A-70", "A-71"]
-        # Tables with sub categories
-        source_activity_2 =  ["3-42", "3-68", "A-97"]
+        # Define special table lists from config      
+        multi_chem_names = config.get('multi_chem_names')
+        source_No_activity = config.get('source_No_activity')
+        source_activity_1 = config.get('source_activity_1')
+        source_activity_2 = config.get('source_activity_2')
 
         if table_name in multi_chem_names:
             bool_apb = False
