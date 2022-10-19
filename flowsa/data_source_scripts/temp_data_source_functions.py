@@ -212,7 +212,6 @@ def estimate_suppressed_mecs_energy(
     industry without its own line item in the MECS anyway. '*' is for value
     less than 0.5 Trillion Btu and will be assumed to be 0.25 Trillion Btu
     '''
-    print(fba.Suppressed.value_counts())
     dropped = fba.query('Suppressed not in ["D", "Q"]')
     unsuppressed = dropped.assign(
         FlowAmount=dropped.FlowAmount.mask(dropped.Suppressed == '*', 0.25)
