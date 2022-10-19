@@ -173,3 +173,4 @@ EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EP
 EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
 EPA_GHGI,Landfills,NAICS_2012_Code,ACC,,,"EPA_GHGI_T_2_1"
 EPA_GHGI,Marine Shipping,NAICS_2012_Code,4831,,,"BEA_Bunker_Fuel"
+EPA_GHGI,Marine,NAICS_2012_Code,4831,,,"GHGI2020_3_104"

@@ -1,0 +1,47 @@
+%YAML 1.1
+
+---
+# m1 for the GHG national replicates the method used in the National GHG Industry Attribution Model
+#(https://doi.org/10.23719/1517571), except that sector attribution is to 6-digit NAICS,
+# rather than the BEA 2012 IO schema
+
+industry_spec:
+  default: NAICS_6
+year: 2017
+target_naics_year: 2012
+geoscale: national
+
+sources_to_cache:
+  BLS_QCEW:
+    year: 2012
+    selection_fields:
+      Class: Employment
+    clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
+    clean_fba: !script_function:temp_data_source_functions clean_qcew
+
+source_names:
+  BEA_Marine_Bunker_Fuel:
+    external_data_path: !include:external_data.yaml:BEA_Marine_Bunker_Fuel
+    year: null
+    emissions_factors: EPA_emissions_factors
+    activity_to_sector_mapping: EPA_GHGI_SEEA
+    attribution_method: proportional
+    attribution_source: BLS_QCEW
+    activity_sets:
+      imports:
+        selection_fields:
+          Year: 2017
+          Description: Imports
+      exports:
+        selection_fields:
+          Year: 2017
+          Description: Exports
+        adjustment_factor: -1
+
+  GHGI2020_3_104:
+    selection_fields:
+      ActivityProducedBy: Marine
+    # fedefl_mapping: GHGI
+    activity_to_sector_mapping: EPA_GHGI_SEEA
+    attribution_method: proportional
+    attribution_source: BLS_QCEW
