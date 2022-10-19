@@ -8,6 +8,9 @@ format: csv
 url:
   base_url: https://www.epa.gov/system/files/other-files/2022-05/Main%20Chapter.zip
   annex_url: https://www.epa.gov/system/files/other-files/2022-06/Annex.zip
+path:
+  base: "Chapter Tables/{chapter}/Table {table_name}.csv"
+  annex: "Annex/{chapter}/Table {table_name}.csv"
 url_replace_fxn: !script_function:EPA_GHGI ghg_url_helper
 call_response_fxn: !script_function:EPA_GHGI ghg_call
 parse_response_fxn: !script_function:EPA_GHGI ghg_parse
@@ -69,7 +72,6 @@ Tables:
         "desc": "Table 3-10:  CO2, CH4, and N2O Emissions from Fossil Fuel Combustion by Sector (MMT CO2 Eq.)"
 
       "3-13":
-        "table_name": "3-13-updated" # csv name is modified in source file
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
@@ -262,7 +264,7 @@ Tables:
             from Land Use, Land-Use Change, and Forestry (MMT CO2 Eq.)
 
 Annex:
-  "Annex":
+  "Annex 2":
       "A-4": # Not currently used
         "class": "Energy"
         "unit": "TBtu"
@@ -397,6 +399,7 @@ Annex:
           Fossil Fuel Combustion by Fuel Type
         "year": "2010"
 
+  "Annex 3":
       "A-73": # Allocation datasource
         "class": "Energy"
         "unit": "mgal"

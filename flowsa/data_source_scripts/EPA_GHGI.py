@@ -164,7 +164,7 @@ def ghg_call(*, resp, url, year, config, **_):
     df = None
     with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         frames = []
-        if 'annex' in url:
+        if any(x in url for x in ['annex', 'Annex']):
             is_annex = True
             t_tables = config['Annex']
         else:
@@ -179,21 +179,27 @@ def ghg_call(*, resp, url, year, config, **_):
 
                 table_name = tables[table].get('table_name', table)
                 if is_annex:
-                    path = f"Annex/Table {table_name}.csv"
+                    path = config['path']['annex']
                 else:
-                    path = f"Chapter Text/{chapter}/Table {table_name}.csv"
+                    path = config['path']['base']
+                path = (path.replace('{chapter}', chapter)
+                            .replace('{table_name}', table_name))
 
                 # TODO Update for 2020
                 # Handle special case of table 3-22 in external data folder
                 if table == "3-22b":
-                    if str(year) == '2019':
+                    if str(year) in ['2019', '2020']:
                         # Skip 3-22b for year 2019 (use 3-22 instead)
                         continue
                     else:
                         df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
                                          skiprows=2, encoding="ISO-8859-1", thousands=",")
                 else:
-                    data = f.open(path)
+                    try:
+                        data = f.open(path)
+                    except KeyError:
+                        log.error(f"error reading {table}")
+                        continue
 
                 if table not in SPECIAL_FORMAT + ANNEX_ENERGY_TABLES:
                     # Default case
@@ -851,4 +857,4 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.flowbyactivity.main(year=2016, source='EPA_GHGI')
+    fba = flowsa.flowbyactivity.main(year=2020, source='EPA_GHGI')
