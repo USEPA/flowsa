@@ -139,7 +139,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
 
     try:
         with open(yaml_path, 'r') as f:
-            config = flowsa_yaml.load(f, folder)
+            config = flowsa_yaml.load(f, filepath)
     except FileNotFoundError:
         raise flowsa.exceptions.FlowsaMethodNotFoundError(
             method_type=flowbytype, method=filename)
