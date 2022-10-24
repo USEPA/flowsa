@@ -395,7 +395,12 @@ def generateSankeyData(methodname,
         primary_sector_level = target_sector_level
         if primary_sector_level is None:
             primary_sector_level = method_dict['target_sector_level']
-        secondary_sector_level = target_subset_sector_level
+        # pull secondary sector level by methodname if specified, otherwise
+        # use singular sector level
+        try:
+            secondary_sector_level = target_subset_sector_level[methodname]
+        except KeyError:
+            secondary_sector_level = target_subset_sector_level
         if secondary_sector_level is None:
             secondary_sector_level = method_dict.get(
                 'target_subset_sector_level')
