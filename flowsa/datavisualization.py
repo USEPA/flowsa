@@ -153,7 +153,9 @@ def stackedBarChart(df,
                     sector_variable='Sector',
                     subplot=None,
                     rows=1,
-                    cols=1
+                    cols=1,
+                    graphic_width = 1200,
+                    graphic_height = 1200
                     ):
     """
     Create a grouped, stacked barchart by sector code. If impact=True,
@@ -213,12 +215,19 @@ def stackedBarChart(df,
     # aggregate by location/sector/unit and optionally 'context'
     df2 = df.groupby(index_cols + [stacking_col],
                      as_index=False).agg({"FlowAmount": sum})
-    df2 = df2.sort_values([sector_variable, stacking_col])
+    # resort df
+    if subplot is not None:
+        df2[subplot] = pd.Categorical(df2[subplot], plot_list)
+        df2 = df2.sort_values([subplot, sector_variable, stacking_col]
+                              ).reset_index(drop=True)
+    else:
+        df2 = df2.sort_values([sector_variable, stacking_col])
 
     # wrap the sector col
     df2[sector_variable] = df2[sector_variable].apply(
-        lambda x: customwrap(x, width=18))
+        lambda x: customwrap(x, width=12))
 
+    # establish subplots
     fig = make_subplots(rows=rows, cols=cols, subplot_titles=df2[
         subplot].drop_duplicates().values.tolist())
 
@@ -282,7 +291,8 @@ def stackedBarChart(df,
     fig.show()
     filename = 'flowsaBarChart.svg'
     log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
-    fig.write_image(f"{plotoutputpath}{filename}", width=1200, height=1200)
+    fig.write_image(f"{plotoutputpath}{filename}", width=graphic_width,
+                    height=graphic_height)
 
 
 def plot_state_coefficients(fbs_coeff, indicator=None,
