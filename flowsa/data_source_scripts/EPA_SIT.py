@@ -207,7 +207,7 @@ def clean_up_state_data(fba, source_dict, method, **_):
     # (these data will later be replaced with custom data in the 'StateGHGI'
     # stage)
     if ('VT' in state_list) and ('StateGHGI_VT' in method['source_names'].keys()):
-        from flowsa.StateGHGI import VT_remove_dupicate_activities
+        from flowsa.data_source_scripts.StateGHGI import VT_remove_dupicate_activities
         df_subset = VT_remove_dupicate_activities(df_subset)
    
     return df_subset
