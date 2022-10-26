@@ -1,0 +1,20 @@
+﻿old_unit,new_unit,conversion_factor
+ACRES,m2,4046.856422
+Acres,m2,4046.856422
+million sq ft,m2,92903
+million square feet,m2,92903
+square feet,m2,0.092903
+gallons/animal/day,kg,1383.35
+Mgal,kg,3790000
+Bgal,kg,3790000000
+gal,kg,3.79
+million Cubic metres/year,kg,1000000000
+TON,kg,907.185
+LB,kg,0.45359
+ACRE FEET / ACRE,kg/m2,304.8000006
+gal/USD,kg/USD,3.79
+Quadrillion Btu,MJ,1.05506E+12
+Trillion Btu,MJ,1055055900
+Tbtu,MJ,1055055900
+MT CO2e,MMT CO2e,0.000001
+p,employees,1

@@ -34,10 +34,12 @@ biboutputpath = outputpath + 'Bibliography/'
 logoutputpath = outputpath + 'Log/'
 diffpath = outputpath + 'FBSComparisons/'
 plotoutputpath = outputpath + 'Plots/'
+tableoutputpath = outputpath + 'DisplayTables/'
 
 # ensure directories exist
 create_paths_if_missing(logoutputpath)
 create_paths_if_missing(plotoutputpath)
+create_paths_if_missing(tableoutputpath)
 
 DEFAULT_DOWNLOAD_IF_MISSING = False
 

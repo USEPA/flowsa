@@ -28,6 +28,9 @@ strings unless noted.
 - _year_: year of available dataset (ex. 2015)
 - _activity_to_sector_mapping_: (optional) name of activity to sector
   mapping file, if not provided will use the source name
+- _source_flows_: (list, optional, only usable with flowsa.flowby.FlowBySector
+    .getFlowBySector()). Specifies the 'Flowable'(s) from the FBS to use.
+    If not provided, all flows are used.
 - _apply_urban_rural_: Assign flow quantities as urban or rural based on
   population density by FIPS.
 - _clean_fba_before_mapping_df_fxn_: (optional) calls on function in the

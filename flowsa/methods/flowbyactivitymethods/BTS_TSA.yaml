@@ -10,7 +10,7 @@ call_response_fxn: !script_function:BTS_TSA tsa_call
 parse_response_fxn: !script_function:BTS_TSA tsa_parse
 parse:
   rename_columns_use:  # Dict to rename columns from USE table {old_name: new_name}
-    col_code: ActivityProducedBy
+    col_code: ActivityConsumedBy
     row_label: Description
     dollars: FlowAmount
     year: Year

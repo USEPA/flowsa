@@ -29,18 +29,27 @@ BEA_Use:
 #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_Use_Detail_PRO_BeforeRedef:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
   #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_Make_Detail_BeforeRedef:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
+BEA_Marine_Bunker_Fuel:
+  data_format: FBA
+  class:
+    - Energy
+  sector-like_activities: False
+  sector_aggregation_level: "aggregated"
 BLS_QCEW:
+  data_format: FBA
   class:
     - Employment
     - Money
@@ -48,6 +57,12 @@ BLS_QCEW:
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
+BTS_TSA:
+  data_format: FBA
+  sector-like_activities: False
+BTS_Airlines:
+  data_format: FBA
+  sector-like_activities: False
 CalRecycle_WasteCharacterization:
   class:
     - Other
@@ -100,6 +115,7 @@ EIA_AEO:
   sector-like_activities: False
   # sector_aggregation_level: "aggregated"
 EIA_MECS_Energy:
+  data_format: FBA
   class:
     - Energy
     - Other
@@ -132,6 +148,16 @@ EPA_CDDPath:
   activity_schema:
   sector_aggregation_level: "aggregated"
 EPA_GHGI:
+  data_format: FBA
+  class:
+    - Chemicals
+    - Energy
+    - Other
+  sector-like_activities: False
+  activity_schema:
+  sector_aggregation_level: "aggregated"
+GHGI2020:
+  data_format: FBA
   class:
     - Chemicals
     - Energy
@@ -152,11 +178,13 @@ EPA_SIT:
   activity_schema:
   sector_aggregation_level: "aggregated"
 EPA_NEI_Nonpoint:
+  data_format: FBA
   class:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
-  sector_aggregation_level: "aggregated"
+  fedefl_mapping: NEI
+  # sector_aggregation_level: "aggregated"
 EPA_NEI_Nonroad:
   class:
   - Chemicals
@@ -207,6 +235,7 @@ stateio:
   # activity_schema: BEA_2012_Summary_Code
   sector_aggregation_level: "disaggregated"
 USDA_CoA_Cropland:
+  data_format: FBA
   class:
     - Land
     - Other
@@ -214,6 +243,7 @@ USDA_CoA_Cropland:
   activity_schema:
   sector_aggregation_level: "disaggregated"
 USDA_CoA_Cropland_NAICS:
+  data_format: FBA
   class:
     - Land
   sector-like_activities: True
@@ -262,6 +292,7 @@ write_FBA_California_Commercial_bySector:
   activity_schema:
   sector_aggregation_level: ""
 USGS_MYB_Lead:
+  data_format: FBA
   class:
   - Geological
   sector-like_activities: False

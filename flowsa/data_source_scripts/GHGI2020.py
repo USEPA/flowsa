@@ -60,7 +60,7 @@ def ghg_url_helper(*, build_url, config, **_):
         format
     """
     annex_url = config['url']['annex_url']
-    return [build_url, annex_url]
+    return [build_url]
 
 
 def cell_get_name(value, default_flow_name):
@@ -164,7 +164,7 @@ def ghg_call(*, resp, url, year, config, **_):
     df = None
     with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         frames = []
-        if 'annex' in url:
+        if 'Annex' in url:
             is_annex = True
             t_tables = config['Annex']
         else:
@@ -177,11 +177,10 @@ def ghg_call(*, resp, url, year, config, **_):
                     # Skip tables when the year does not align with target year
                     continue
 
-                table_name = tables[table].get('table_name', table)
                 if is_annex:
-                    path = f"Annex/Table {table_name}.csv"
+                    path = f"Annex/{chapter}/Table {table}.csv"
                 else:
-                    path = f"Chapter Text/{chapter}/Table {table_name}.csv"
+                    path = f"Chapter Tables/{chapter}/Table {table}.csv"
 
                 # Handle special case of table 3-22 in external data folder
                 if table == "3-22b":
@@ -227,16 +226,11 @@ def ghg_call(*, resp, url, year, config, **_):
                 elif table in ANNEX_ENERGY_TABLES:
                     df = annex_yearly_tables(data, table)
 
-                if table == '3-13':
-                    # remove notes from column headers in some years
-                    cols = [c[:4] for c in list(df.columns[1:])]
-                    df = df.rename(columns=dict(zip(df.columns[1:], cols)))
-
                 if df is not None and len(df.columns) > 1:
                     years = YEARS.copy()
                     years.remove(str(year))
                     df = df.drop(columns=(DROP_COLS + years), errors='ignore')
-                    df["SourceName"] = f"EPA_GHGI_T_{table.replace('-', '_')}"
+                    df["SourceName"] = f"GHGI2020_{table.replace('-', '_')}"
                     frames.append(df)
                 else:
                     log.warning(f"Error in generating {table}")
@@ -279,7 +273,7 @@ def strip_char(text):
     """
     text = text + " "
     notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ",
-             " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g "]
+             " h ", " i ", " j ", " k ", " b,c ", " h,i ", " f,g "]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -299,7 +293,7 @@ def ghg_parse(*, df_list, year, config, **_):
     cleaned_list = []
     for df in df_list:
         source_name = df["SourceName"][0]
-        table_name = source_name[11:].replace("_","-")
+        table_name = source_name.replace("GHGI2020_", "").replace('_', '-')
         log.info(f'Processing {source_name}')
 
         # Specify to ignore errors in case one of the drop_cols is missing.
@@ -428,7 +422,7 @@ def ghg_parse(*, df_list, year, config, **_):
         multi_chem_names = ["2-1", "3-104", "4-46", "5-7", "5-29", "ES-5"]
         source_No_activity = ["3-22", "3-22b"]
         # Handle tables with 1 parent level category
-        source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-13", "3-14", "3-15",
+        source_activity_1 = ["3-7", "3-8", "3-9", "3-10", "3-14", "3-15",
                              "5-18", "5-19", "A-76", "A-77"]
         # Tables with sub categories
         source_activity_2 =  ["3-38", "3-63", "A-103"]
@@ -501,10 +495,7 @@ def ghg_parse(*, df_list, year, config, **_):
                                  "Gasoline On-Road", "Exploration",
                                  "Production (Total)", "Refining",
                                  "Crude Oil Transportation",
-                                 "Cropland", "Grassland",
-                                 "Gasoline", "Distillate Fuel Oil (Diesel)",
-                                 "Jet Fuel", "Aviation Gasoline", "Residual Fuel Oil",
-                                 "Natural Gas", "LPG", "Electricity"]
+                                 "Cropland", "Grassland"]
             for index, row in df.iterrows():
                 apb_value = strip_char(row["ActivityProducedBy"])
                 if apb_value in activity_subtotal:
@@ -621,6 +612,7 @@ def ghg_parse(*, df_list, year, config, **_):
 
         df['ActivityProducedBy'] = df['ActivityProducedBy'].str.strip()
         df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
+        print(df.FlowName.unique())
         df['FlowName'] = df['FlowName'].str.strip()
 
         # Update location for terriory-based activities
@@ -658,10 +650,8 @@ def get_manufacturing_energy_ratios(year):
     mecs = load_fba_w_standardized_units(datasource='EIA_MECS_Energy',
                                          year=mecs_year,
                                          flowclass='Energy')
-    mecs = (mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
-                     (mecs['Location'] == '00000') &
-                     (mecs['Description'].isin(['Table 3.2', 'Table 2.2']))]
-            .reset_index(drop=True))
+    mecs = mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
+                    (mecs['Location'] == '00000')].reset_index(drop=True)
     mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
 
     # Identify the GHGI table that matches EIA_MECS

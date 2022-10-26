@@ -31,57 +31,23 @@ import flowsa.flowbyactivity
 import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
 from flowsa.datavisualization import plotFBSresults
+from .flowby import FlowByActivity, FlowBySector
 
 
 def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
                       download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
-    """
-    Retrieves stored data in the FlowByActivity format
-    :param datasource: str, the code of the datasource.
-    :param year: int, a year, e.g. 2012
-    :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
-    :param geographic_level: str, a geographic level of the data.
-                             Optional. E.g. 'national', 'state', 'county'.
-    :param download_FBA_if_missing: bool, if True will attempt to load from
-        remote server prior to generating if file not found locally
-    :return: a pandas DataFrame in FlowByActivity format
-    """
-    # Set fba metadata
-    name = flowsa.flowbyactivity.set_fba_name(datasource, year)
-    fba_meta = set_fb_meta(name, "FlowByActivity")
+    fba = FlowByActivity.getFlowByActivity(
+        full_name=datasource,
+        config={},
+        year=int(year),
+        download_ok=download_FBA_if_missing
+    )
 
-    # Try to load a local version of FBA
-    fba = load_preprocessed_output(fba_meta, paths)
-    # If that didn't work, try to download a remote version of FBA
-    if fba is None and download_FBA_if_missing:
-        log.info(f'{datasource} {str(year)} not found in {fbaoutputpath}, '
-                 'downloading from remote source')
-        download_from_remote(fba_meta, paths)
-        fba = load_preprocessed_output(fba_meta, paths)
-    # If that didn't work or wasn't allowed, try to construct the FBA
-    if fba is None:
-        log.info(f'{datasource} {str(year)} not found in {fbaoutputpath}, '
-                 'running functions to generate FBA')
-        # Generate the fba
-        flowsa.flowbyactivity.main(year=year, source=datasource)
-        # Now load the fba
-        fba = load_preprocessed_output(fba_meta, paths)
-    # If none of the above worked, log an error message
-    if fba is None:
-        raise flowsa.exceptions.FBANotAvailableError(method=datasource,
-                                                     year=year)
-    # Otherwise (that is, if one of the above methods successfuly loaded the
-    # FBA), log it.
-    else:
-        log.info(f'Loaded {datasource} {str(year)} from {fbaoutputpath}')
-
-    if len(fba) ==0:
+    if len(fba) == 0:
         raise flowsa.exceptions.FBANotAvailableError(
             message=f"Error generating {datasource} for {str(year)}")
-
-    # Address optional parameters
     if flowclass is not None:
-        fba = fba[fba['Class'] == flowclass]
+        fba = fba.query('Class == @flowclass')
     # if geographic level specified, only load rows in geo level
     if geographic_level is not None:
         fba = filter_by_geoscale(fba, geographic_level)
@@ -91,51 +57,12 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
 def getFlowBySector(methodname, fbsconfigpath=None,
                     download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
                     download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
-    """
-    Loads stored FlowBySector output or generates it if it doesn't exist,
-    then loads
-    :param methodname: string, Name of an available method for the given class
-    :param fbsconfigpath: str, path to the FBS method file if loading a file
-        from outside the flowsa repository
-    :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
-        used in generating the FBS from remote server prior to generating if
-        file not found locally
-    :param download_FBS_if_missing: bool, if True will attempt to load from
-        remote server prior to generating if file not found locally
-    :return: dataframe in flow by sector format
-    """
-    fbs_meta = set_fb_meta(methodname, "FlowBySector")
-    # Try to load a local version of the FBS
-    fbs = load_preprocessed_output(fbs_meta, paths)
-    # If that didn't work, try to download a remote version of FBS
-    if fbs is None and download_FBS_if_missing:
-        log.info('%s not found in %s, downloading from remote source',
-                 methodname, fbsoutputpath)
-        # download and load the FBS parquet
-        subdirectory_dict = {'.log': 'Log'}
-        download_from_remote(fbs_meta, paths,
-                             subdirectory_dict=subdirectory_dict)
-        fbs = load_preprocessed_output(fbs_meta, paths)
-    # If that didn't work or wasn't allowed, try to construct the FBS
-    if fbs is None:
-        log.info('%s not found in %s, running functions to generate FBS',
-                 methodname, fbsoutputpath)
-        # Generate the fbs, with option to download any required FBAs from
-        # Data Commons
-        flowsa.flowbysector.main(
-            method=methodname,
-            fbsconfigpath=fbsconfigpath,
-            download_FBAs_if_missing=download_FBAs_if_missing
-        )
-        # Now load the fbs
-        fbs = load_preprocessed_output(fbs_meta, paths)
-    # If none of the above worked, log an error message
-    if fbs is None:
-        log.error('getFlowBySector failed, FBS not found')
-    # Otherwise (that is, if one of the above methods successfuly loaded the
-    # FBS), log it.
-    else:
-        log.info('Loaded %s from %s', methodname, fbsoutputpath)
+    fbs = FlowBySector.getFlowBySector(
+        method=methodname,
+        external_config_path=fbsconfigpath,
+        download_sources_ok=download_FBAs_if_missing,
+        download_fbs_ok=download_FBS_if_missing
+    )
     return fbs
 
 
@@ -219,7 +146,7 @@ def seeAvailableFlowByModels(flowbytype, print_method=True):
 
 
 def generateFBSplot(method_dict, plottype, sector_length_display=None,
-                   sectors_to_include=None, plot_title=None):
+                    sectors_to_include=None, plot_title=None):
     """
     Plot the results of FBS models. Graphic can either be a faceted
     scatterplot or a method comparison

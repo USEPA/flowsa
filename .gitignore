@@ -2,8 +2,10 @@
 .idea
 venv
 .venv
+external_data.yaml
 *.env
 *__pycache__
 *.egg*
 *.cache
 **/data/fbs_diff/*
+flowby-old.py
