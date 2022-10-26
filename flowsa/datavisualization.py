@@ -404,16 +404,36 @@ def generateSankeyData(methodname,
         if secondary_sector_level is None:
             secondary_sector_level = method_dict.get(
                 'target_subset_sector_level')
-        sector_list = get_sector_list(
-            primary_sector_level,
-            secondary_sector_level_dict=secondary_sector_level)
+        # check if different rules for sector columns
+        if any([s in secondary_sector_level for s in
+                ['SectorProducedBy', 'SectorConsumedBy']]):
+            sector_list = {}
+            for s in ['Produced', 'Consumed']:
+                try:
+                    sectors = get_sector_list(
+                        primary_sector_level,
+                        secondary_sector_level_dict=secondary_sector_level[f'Sector{s}By'])
+                    sector_list[f'Sector{s}By'] = sectors
+                except KeyError:
+                    sectors = get_sector_list(
+                        primary_sector_level,
+                        secondary_sector_level_dict=None)
+                    sector_list[f'Sector{s}By'] = sectors
+        else:
+            sector_list = get_sector_list(
+                primary_sector_level,
+                secondary_sector_level_dict=secondary_sector_level)
 
         # aggregate to all sector levels
         df = sector_aggregation(df, return_all_possible_sector_combos=True,
                                 sectors_to_exclude_from_agg=sector_list)
         df = replace_NoneType_with_empty_cells(df)
         for s in ['Produced', 'Consumed']:
-            df = df[df[f'Sector{s}By'].isin(sector_list)]
+            if isinstance(sector_list, dict):
+                df = df[df[f'Sector{s}By'].isin(sector_list[f'Sector{s}By'])]
+            else:
+                df = df[df[f'Sector{s}By'].isin(sector_list)]
+
     # add sector names
     sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)

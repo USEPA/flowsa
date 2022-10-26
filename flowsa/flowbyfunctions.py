@@ -190,6 +190,21 @@ def sector_ratios(df, sectorcolumn):
     return df_w_ratios
 
 
+def remove_parent_sectors_from_crosswalk(cw_load, sector_list):
+    """
+    Remove parent sectors to a list of sectors from the crosswalk
+    :return:
+    """
+    cw_filtered = cw_load.applymap(lambda x:
+                                   x in sector_list)
+    locations = cw_filtered[cw_filtered > 0].stack().index.tolist()
+    for r, i in locations:
+        col_index = cw_load.columns.get_loc(i)
+        cw_load.iloc[r, 0:col_index] = np.nan
+
+    return cw_load
+
+
 def sector_aggregation(df_load, return_all_possible_sector_combos=False,
                        sectors_to_exclude_from_agg=None):
     """
@@ -201,8 +216,9 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
     true, will return all possible combinations of sectors at each sector
     length (ex. a 4 digit SectorProducedBy will have rows for 2-6 digit
     SectorConsumedBy). This will result in a df with double counting.
-    :param sectors_to_exclude_from_agg: list, sectors that should not be
-    aggregated beyond the sector level provided
+    :param sectors_to_exclude_from_agg: list or dict, sectors that should not be
+    aggregated beyond the sector level provided. Dictionary if separate lists
+    for SectorProducedBy and SectorConsumedBy
     :return: df, with aggregated sector values
     """
     # ensure None values are not strings
@@ -230,12 +246,21 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
     # remove any parent sectors of sectors identified as those that should
     # not be aggregated
     if sectors_to_exclude_from_agg is not None:
-        cw_filtered = cw_load.applymap(lambda x:
-                                       x in sectors_to_exclude_from_agg)
-        locations = cw_filtered[cw_filtered > 0].stack().index.tolist()
-        for r, i in locations:
-            col_index = cw_load.columns.get_loc(i)
-            cw_load.iloc[r, 0:col_index] = np.nan
+        # if sectors are in a dictionary create cw for sectorproducedby and
+        # sectorconsumedby otherwise single cr
+        if isinstance(sectors_to_exclude_from_agg, dict):
+            cws = {}
+            for s in ['Produced', 'Consumed']:
+                try:
+                    cw = remove_parent_sectors_from_crosswalk(
+                        cw_load, sectors_to_exclude_from_agg[f'Sector{s}By'])
+                    cws[f'Sector{s}By'] = cw
+                except KeyError:
+                    cws[f'Sector{s}By'] = cw_load
+            cw_load = cws.copy()
+        else:
+            cw_load = remove_parent_sectors_from_crosswalk(
+                cw_load, sectors_to_exclude_from_agg)
 
     # find the longest length sector
     length = df[[fbs_activity_fields[0], fbs_activity_fields[1]]].apply(
@@ -280,7 +305,18 @@ def append_new_sectors(df, i, j, cw_load, group_cols):
     # load crosswalk
     sector_merge = 'NAICS_' + str(i)
     sector_add = 'NAICS_' + str(i - j)
-    cw = cw_load[[sector_merge, sector_add]].drop_duplicates()
+
+    cw_dict = {}
+    if isinstance(cw_load, dict):
+        for s in ['Produced', 'Consumed']:
+            cw = cw_load[f'Sector{s}By'][[sector_merge,
+                                          sector_add]].drop_duplicates()
+            cw_dict[s] = cw
+    else:
+        cw_dict['Produced'] = cw_load[
+            [sector_merge, sector_add]].drop_duplicates()
+        cw_dict['Consumed'] = cw_load[
+            [sector_merge, sector_add]].drop_duplicates()
 
     cw_melt = load_sector_length_cw_melt()
     cw_sub = cw_melt[cw_melt['SectorLength'] == i]
@@ -290,7 +326,7 @@ def append_new_sectors(df, i, j, cw_load, group_cols):
     sectype_list = ['Produced', 'Consumed']
     for s in sectype_list:
         dfm = df[df[f'Sector{s}By'].isin(sector_list)]
-        dfm = dfm.merge(cw, how='left', left_on=[f'Sector{s}By'],
+        dfm = dfm.merge(cw_dict[s], how='left', left_on=[f'Sector{s}By'],
                         right_on=sector_merge)
         # replace sector column with matched sector add
         dfm[f'Sector{s}By'] = np.where(

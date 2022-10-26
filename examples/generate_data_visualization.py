@@ -22,10 +22,10 @@ method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
 
 
 dv.FBSscatterplot(method_dict, plottype,
-                       sector_length_display=sector_length_display,
-                       sectors_to_include=sectors,
-                       plot_title='Direct Resource Use for Livestock'
-                       )
+                  sector_length_display=sector_length_display,
+                  sectors_to_include=sectors,
+                  plot_title='Direct Resource Use for Livestock'
+                  )
 # Can manually adjust the figure pop up before saving
 plt.savefig(f"{plotoutputpath}livestock_resource_use.png", dpi=300)
 
@@ -49,20 +49,21 @@ plt.savefig(f"{plotoutputpath}mining_water_comp.png", dpi=300)
 
 
 ########## Compare food waste flows via Sankey ##########
-methodnames =  ['Food_Waste_national_2018_m3', 'Food_Waste_national_2018_m2']
+methodnames = ['Food_Waste_national_2018_m3', 'Food_Waste_national_2018_m2']
 target_sector_level = 'NAICS_2'
-target_subset_sector_level = {'Food_Waste_national_2018_m3':
-                                  {'NAICS_4': ['2212'],
-                              'NAICS_6': ['62421', '31111', '32411',
-                                          '56221', '62421', '115112',
-                                          '22132'],
-                              'NAICS_7': ['562212', '562219']
-                               },
-                              'Food_Waste_national_2018_m2':
-                                  {'NAICS_6': ['115112', '22132','311119',
-                                           '32411', '562213','62421'],
-                              'NAICS_7': ['562212', '562219']
+target_subset_sector_level = {
+    'Food_Waste_national_2018_m3': {'NAICS_4': ['2212'],
+                                    'NAICS_6': ['62421', '31111', '32411',
+                                                '56221', '62421', '115112',
+                                                '22132'],
+                                    'NAICS_7': ['562212', '562219']
+                                    },
+    'Food_Waste_national_2018_m2': {
+        'SectorConsumedBy': {'NAICS_6': ['115112', '22132','311119',
+                                         '32411', '562213','62421'],
+                             'NAICS_7': ['562212', '562219']
                                }}
+}
 
 dv.generateSankeyDiagram(
     methodnames,
