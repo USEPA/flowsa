@@ -17,6 +17,11 @@ Blackhurst_IO:
     Status: Error in HTTP request during testing only
     Type: HTTPError
 
+BTS_Airlines:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
 
 # Flow By Sector
 CNHW_state_2014:
