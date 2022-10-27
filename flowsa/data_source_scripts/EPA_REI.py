@@ -102,7 +102,7 @@ def primary_factors_parse(*, df_list, year, **_):
                         value_name='FlowAmount')
                   )
             df = df[~df['FlowAmount'].astype(str).str.contains(
-                '-')].reset_index(drop=True)
+                '- ')].reset_index(drop=True)
             df['FlowAmount'] = (df['FlowAmount'].str.replace(
                 ',', '').astype('float'))
             df['Unit'] = 'USD'
@@ -193,6 +193,8 @@ def rei_waste_flows_attribution(*, flow_subset_mapped, k, names, method, **_):
         ['Flowable', 'Unit'])['FlowAmount'].transform('sum'))
     c2 = c2.assign(AttributionRatio=c2['FlowAmount']/c2['Denominator'])
     c2 = c2.sort_values(['Flowable', 'ActivityConsumedBy'])
+    # Drop imports and exports so that the quantity is not allocated to SCB
+    c2 = c2.query('SectorConsumedBy not in ("F04000", "F05000")').reset_index(drop=True)
 
     # merge data and recalculate flow amounts
     df = p2.merge(c2[['Flowable', 'Unit', 'ActivityConsumedBy',
