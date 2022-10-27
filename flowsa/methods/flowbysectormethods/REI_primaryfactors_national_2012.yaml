@@ -1,4 +1,5 @@
-# National level recycling flows using REI as primary data source
+# National level economic indicators for recycling sectors 
+# using REI as primary data source
 target_sector_level: NAICS_6
 target_subset_sector_level: {NAICS_7: ['562920', '562212', '562219', '562212']}
 target_sector_source: NAICS_2012_Code
