@@ -107,6 +107,8 @@ waste,Electronics Recycling,useintersection
 waste,Elementary and secondary schools,makecol
 waste,Employment services,makecol
 waste,Environmental and other technical consulting services,makecol
+waste,Estimate from Post-Consumer Waste,makecol
+waste,Exports of goods and services,useintersection
 waste,Fabric mills,makecol
 waste,Fabricated pipe and pipe fitting manufacturing,makecol
 waste,Facilities support services,makecol
@@ -155,6 +157,7 @@ waste,Household cooking appliance manufacturing,makecol
 waste,Household laundry equipment manufacturing,makecol
 waste,Household refrigerator and home freezer manufacturing,makecol
 waste,Ice cream and frozen dessert manufacturing,makecol
+waste,Imports of goods and services,useintersection
 waste,In-vitro diagnostic substance manufacturing,makecol
 waste,"Independent artists, writers, and performers",makecol
 waste,Individual and family services,makecol
