@@ -36,6 +36,10 @@ def assign_naics(df):
     dfr.loc[dfr['Activity'].str.contains('Community'), 'Sector'] = \
         '624210'
 
+    # Special handling of post consumer waste
+    dfr.loc[len(dfr)] = {'Activity': 'Estimate from Post-Consumer Waste',
+                         'Sector': 'F01000'}
+
     # assign the remaining codes based on BEA crosswalk
     dfb = df[~df['ActivityCode'].str.startswith('RS')].reset_index(drop=True)
 

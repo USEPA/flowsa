@@ -120,7 +120,8 @@ def primary_factors_parse(*, df_list, year, **_):
                   .drop(df.index[0])
                   .reset_index(drop=True)
                   )
-
+            # Assign final row as Post-consumer
+            df['ActivityProducedBy'].iloc[-1] = 'Estimate from Post-Consumer Waste'
             df = (df
                   .melt(id_vars=['Description', 'ActivityProducedBy'],
                         var_name='FlowName',
