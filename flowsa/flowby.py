@@ -1,4 +1,4 @@
-from typing import List, Literal, TypeVar
+from typing import List, Literal, TypeVar, Union
 import pandas as pd
 from pandas import ExcelWriter
 import numpy as np
@@ -612,6 +612,28 @@ class _FlowBy(pd.DataFrame):
         # ^^^ For some reason, the extra features of a FlowBy stop the
         #     to_parquet method inherited from DatFrame from working, so this
         #     casts the data back to plain DataFrame to write to a parquet.
+
+    def astype(self: FB, *args, **kwargs) -> FB:
+        '''
+        Overrides DataFrame.astype(). Necessary only for pandas >= 1.5.0.
+        With this update, DataFrame.astype() calls the constructor method
+        of the calling dataframe. The FlowBy constructor 1) calls .astype() and
+        2) adds missing FlowBy columns. Consequently, when it's called in the
+        middle of DataFrame.astype() it creates an infinite loop. When the
+        infinite loop is fixed elsewhere, a problem still exists because of
+        missing columns being added (the data submitted to the constructor by
+        DataFrame.astype() don't have column names, so a bunch of empty columns
+        are added on the end and then .astype() can't assign data types and add
+        column names back properly). This function fixes the problem by making
+        it so DataFrame.astype() is not called by a FlowBy dataframe, but
+        instead by a plain pd.DataFrame.
+        '''
+        metadata = {attribute: self.__getattr__(attribute)
+                    for attribute in self._metadata}
+        df = pd.DataFrame(self).astype(*args, **kwargs)
+        fb = type(self)(df, **metadata)
+
+        return fb
 
 
 class FlowByActivity(_FlowBy):
