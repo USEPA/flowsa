@@ -218,10 +218,11 @@ def stackedBarChart(df,
     # resort df
     if subplot is not None:
         df2[subplot] = pd.Categorical(df2[subplot], plot_list)
-        df2 = df2.sort_values([subplot, sector_variable, stacking_col]
-                              ).reset_index(drop=True)
+        df2 = df2.sort_values([subplot, sector_variable, grouping_variable,
+                               stacking_col]).reset_index(drop=True)
     else:
-        df2 = df2.sort_values([sector_variable, stacking_col])
+        df2 = df2.sort_values([sector_variable, grouping_variable,
+                               stacking_col]).reset_index(drop=True)
 
     # wrap the sector col
     df2[sector_variable] = df2[sector_variable].apply(
