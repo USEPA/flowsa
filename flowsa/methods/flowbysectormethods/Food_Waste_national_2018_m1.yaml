@@ -11,6 +11,14 @@ source_names:
     class: Other
     geoscale_to_use: national
     year: 2018
+    # the below function adds in treated waste and uses REI data to proportionally attribute ABP to ACB
+    clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
+    # use the activity_parameters to attribute treated food waste to sectors
+    activity_parameters:
+      - "Animal Feed"
+      - "Bio-based Materials/Biochemical Processing"
+      - "Codigestion/Anaerobic Digestion"
+      - "Composting/Aerobic Processes"
     activity_sets:
       direct:
         names:
@@ -57,3 +65,33 @@ source_names:
         allocation_source_year: 2018
         allocation_from_scale: national
         allocation_fba_load_scale: national
+      treated_waste_direct:
+        names:
+          - 'Dog and cat food manufacturing'
+          - 'Other animal food manufacturing'
+          - 'Petrochemical manufacturing'
+          - 'Other basic organic chemical manufacturing'
+          - 'Soap and cleaning compound manufacturing'
+          - 'Toilet preparation manufacturing'
+          - 'Printing ink manufacturing'
+          - 'Gasoline'
+          - 'Natural gas'
+          - 'Pesticide and other agricultural chemical manufacturing'
+        allocation_method: direct
+        allocation_from_scale: national
+      treated_waste_proportional:
+        names:
+          - 'Fresh wheat, corn'
+          - 'Support activities for agriculture and forestry'
+          - 'Stone mining and quarrying'
+          - 'Other nonresidential structures'
+          - 'Wholesale Trade'
+          - 'Services to buildings and dwellings'
+          - 'Museums, historical sites, zoos, and parks'
+        allocation_method: proportional
+        allocation_source: "BLS_QCEW"
+        allocation_source_class: "Employment"
+        allocation_source_year: 2018
+        allocation_from_scale: national
+        allocation_fba_load_scale: national
+        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
