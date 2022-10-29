@@ -27,3 +27,8 @@ BTS_Airlines:
 CNHW_state_2014:
     Active: True
     Status: Memory Error # Skip during GH-action testing
+
+marine_shipping_adjustment:
+    Active: True
+    Status: Private data
+    Type: FileNoutFoundError
