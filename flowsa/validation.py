@@ -931,8 +931,10 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     # load second file
     if compare_to_remote:
         # Generate the FBS locally and then immediately load
-        flowsa.flowbysector.main(method=fbs2,
-                                 download_FBAs_if_missing=True)
+        flowsa.flowby.FlowBySector.generateFlowBySector(method=fbs2,
+                                                        download_sources_ok=True)
+        # flowsa.flowbysector.main(method=fbs2,
+        #                           download_FBAs_if_missing=True)
     df2 = flowsa.getFlowBySector(fbs2).rename(
         columns={'FlowAmount': 'FlowAmount_fbs2'})
     df2 = replace_strings_with_NoneType(df2)
