@@ -51,10 +51,12 @@ def test_FBA_urls():
 
 def test_FBS_methods():
     """Succesfully load the yaml method for all FBS"""
+    method_status = check_method_status()
     for m in seeAvailableFlowByModels("FBS", print_method=False):
         print(f"Testing method: {m}")
-        load_yaml_dict(m, flowbytype='FBS')
+        if method_status.get(m) is None:
+            load_yaml_dict(m, flowbytype='FBS')
 
 if __name__ == "__main__":
-    test_FBA_urls()
-    # test_FBS_methods()
+    # test_FBA_urls()
+    test_FBS_methods()

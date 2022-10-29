@@ -32,3 +32,8 @@ marine_shipping_adjustment:
     Active: True
     Status: Private data
     Type: FileNoutFoundError
+
+SEEA_2017_kg_v1:
+    Active: False
+    Status: Method error
+    Type: ParserError
