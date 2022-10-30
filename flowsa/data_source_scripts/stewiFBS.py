@@ -118,7 +118,7 @@ def stewi_to_sector(yaml_load, method, *_):
             download_if_missing=True)
         inv['Year'] = year
         inv['MetaSources'] = database
-        df = df.append(inv)
+        df = pd.concat([df, inv], ignore_index=True)
     if yaml_load.get('compartments'):
         # Subset based on primary compartment
         df = df[df['Compartment'].str.split('/', expand=True)
