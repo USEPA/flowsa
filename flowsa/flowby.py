@@ -36,6 +36,11 @@ def get_flowby_from_config(
     external_config_path: str = None,
     download_sources_ok: bool = True
 ) -> FB:
+    """
+    Loads FBA or FBS dataframe
+
+    :return: a FlowByActivity dataframe
+    """
     external_data_path = config.get('external_data_path')
 
     if config['data_format'] == 'FBA':
@@ -62,7 +67,7 @@ def get_flowby_from_config(
             ),
             full_name=name,
             config=config
-        )
+        ).aggregate_flowby()
     else:
         log.critical('Unrecognized data format %s for source %s',
                      config['data_format'], name)
@@ -986,6 +991,7 @@ class FlowByActivity(_FlowBy):
         attribution_method = fba.config.get('attribution_method')
 
         if attribution_method == 'proportional':
+            # First check cache for FlowBy
             if isinstance(fba.config['attribution_source'], str):
                 attribution_fbs = (fba.config['cache']
                                    [fba.config['attribution_source']])
@@ -1371,12 +1377,13 @@ class FlowByActivity(_FlowBy):
                 .reset_index(drop=True)
             )
 
+        # Primary FlowBySector generation approach:
         return FlowBySector(
             self
             .function_socket('clean_fba_before_mapping')
             .select_by_fields()
             .function_socket('estimate_suppressed')
-            .convert_units_and_flows()
+            .convert_units_and_flows() # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to prepare_fbs
@@ -1609,6 +1616,7 @@ class FlowBySector(_FlowBy):
         method_config = common.load_yaml_dict(method, 'FBS',
                                               external_config_path)
 
+        # Cache one or more sources by attaching to method_config
         to_cache = method_config.pop('sources_to_cache', {})
         if 'cache' in method_config:
             log.warning('Config key "cache" for %s about to be overwritten',
@@ -1633,6 +1641,7 @@ class FlowBySector(_FlowBy):
             #     so that later entries in method_config['sources_to_cache']
             #     can make use of the cached copy of an earlier entry.
 
+        # Generate FBS from method_config
         sources = method_config.pop('source_names')
 
         fbs = pd.concat([
