@@ -295,7 +295,7 @@ def prepare_stewi_fbs(df_load, yaml_load, method):
     geo_scale = method.get('target_geoscale')
 
     # update location to appropriate geoscale prior to aggregating
-    df = df_load.dropna(subset=['Location'])
+    df = df_load.dropna(subset=['Location']).reset_index(drop=True)
     df['Location'] = df['Location'].astype(str)
     df = update_geoscale(df, geo_scale)
 
