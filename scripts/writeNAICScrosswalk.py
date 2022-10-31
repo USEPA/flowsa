@@ -243,16 +243,16 @@ def update_sector_name_df():
 
     # dictionary of new sector names
     new_sectors = pd.DataFrame(
-        {"NAICS_2012_Code": ['562BIO',
-                             '5622191',
+        {"NAICS_2012_Code": ['5622191',
                              '5622192',
                              '5622121',
+                             '5629201',
                              '311119'
                              ],
-         "NAICS_2012_Name": ['Bio-based Materials/Biochemical Processing',
-                             'Codigestion/Anaerobic Digestion',
+         "NAICS_2012_Name": ['Codigestion/Anaerobic Digestion',
                              'Composting/Aerobic Processes',
                              'MSW Landfill',
+                             'MSW Recycling',
                              'Other Animal Food Manufacturing'
                              ]})
     df = pd.concat([sectors, new_sectors])
