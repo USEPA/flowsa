@@ -67,7 +67,7 @@ def get_flowby_from_config(
             ),
             full_name=name,
             config=config
-        ).aggregate_flowby()
+        )
     else:
         log.critical('Unrecognized data format %s for source %s',
                      config['data_format'], name)
@@ -1673,6 +1673,7 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             # TODO: Add a method to convert to proper industry spec.
             .convert_fips_to_geoscale()
+            .aggregate_flowby() # necessary after consolidating geoscale
         )
 
     def display_tables(
