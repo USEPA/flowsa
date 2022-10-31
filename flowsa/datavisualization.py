@@ -440,9 +440,9 @@ def generateSankeyData(methodname,
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
 
     # subset df and aggregate flows by sectors
-    df2 = df2[['SectorProducedBy', 'SectorConsumedBy',
-               'FlowAmount', 'SectorProducedByName', 'SectorConsumedByName']]
-    df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy',
+    df2 = df2[['SectorProducedBy', 'SectorConsumedBy', 'FlowAmount', 'Unit',
+               'SectorProducedByName', 'SectorConsumedByName']]
+    df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy', 'Unit',
                        'SectorProducedByName', 'SectorConsumedByName']
                       )['FlowAmount'].agg('sum').reset_index()
 
@@ -506,6 +506,7 @@ def generateSankeyData(methodname,
     flows['source'] = df3[sources].apply(lambda x: label_list.index(x))
     flows['target'] = df3[targets].apply(lambda x: label_list.index(x))
     flows['value'] = df3['FlowAmount']
+    flows['Unit'] = df3['Unit']
 
     return nodes, flows
 
