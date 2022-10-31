@@ -517,7 +517,8 @@ def generateSankeyDiagram(methodnames,
                           sectors_to_include=None,
                           fbsconfigpath=None,
                           plot_title=None,
-                          orientation='horizonal'):
+                          orientation='horizonal',
+                          domain_dict=None):
     """
     Sankey diagram developed to map flows between sector produced by (source)
     and sector consumed by (target). Sankey developed for subplot of 2
@@ -530,6 +531,8 @@ def generateSankeyDiagram(methodnames,
     :param sectors_to_include:
     :param fbsconfigpath:
     :param plot_title:
+    :param orientation:
+    :param domain_dict: dict, manually set x and y coordinates of each subplot
     :return:
     """
     try:
@@ -547,8 +550,8 @@ def generateSankeyDiagram(methodnames,
         rows = 1
         cols = len(methodnames)
 
-    fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
-                        subplot_titles=methodnames)
+    fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True) #,
+                        # subplot_titles=methodnames)
 
     for i, m in enumerate(methodnames):
         # return dfs of nodes and flows for Sankey
@@ -558,18 +561,24 @@ def generateSankeyDiagram(methodnames,
             fbsconfigpath)
 
         # define domain
-        if orientation == 'vertical':
-            domain = {'y': [0 + (i / len(methodnames)) + 0.04,
-                            ((i + 1) / len(methodnames)) - 0.04]}
+        if domain_dict is None:
+            if orientation == 'vertical':
+                domain = {'x': [0, 1],
+                          'y': [0 + (i / len(methodnames)) + 0.04,
+                                ((i + 1) / len(methodnames)) - 0.04]}
+            else:
+                domain = {'x': [0 + (i / len(methodnames)) + 0.02,
+                                ((i + 1) / len(methodnames)) - 0.02],
+                          'y': [0, 1]}
         else:
-            domain = {'x': [0 + (i / len(methodnames)) + 0.02,
-                            ((i + 1) / len(methodnames)) - 0.02]}
+            domain = {'x': domain_dict[i]['x'],
+                      'y': domain_dict[i]['y']}
 
         fig.add_trace(go.Sankey(
             arrangement="snap",
             domain=domain,
-            # valueformat=".1f",
-            # valuesuffix=flows['Unit'][0],
+            valueformat=".1f",
+            valuesuffix=flows['Unit'][0],
             # Define nodes
             node=dict(
                 pad=15,
@@ -586,15 +595,14 @@ def generateSankeyDiagram(methodnames,
         ))
 
     fig.update_layout(
-        title_text=plot_title,
-        font_size=10, margin_b=150)
+        title_text=plot_title, font_size=10, margin_b=150)
 
     if orientation == 'vertical':
         width = 1400
         height = 1600
     else:
-        width = 1400
-        height = 900
+        width = 1500
+        height = 1100
 
     fig.show()
     filename = 'flowsaSankey.svg'

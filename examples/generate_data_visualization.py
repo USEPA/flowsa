@@ -64,6 +64,10 @@ target_subset_sector_level = {
                              'NAICS_7': ['562212', '562219']
                                }}
 }
+# set domain to scale sankey diagrams
+domain_dict = {0: {'x': [0.02, 0.48], 'y': [0, 1]},
+               1: {'x': [.54, 0.96], 'y': [.15, .85]}
+               }
 
 dv.generateSankeyDiagram(
     methodnames,
@@ -72,5 +76,6 @@ dv.generateSankeyDiagram(
     use_sectordefinition=True,
     sectors_to_include=None,
     fbsconfigpath=None,
-    orientation='horizontal'
+    orientation='horizontal',
+    domain_dict=domain_dict
 )
