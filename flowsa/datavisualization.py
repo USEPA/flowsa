@@ -362,7 +362,8 @@ def generateSankeyData(methodname,
                        target_subset_sector_level=None,
                        use_sectordefinition=False,
                        sectors_to_include=None,
-                       fbsconfigpath=None):
+                       fbsconfigpath=None,
+                       value_label_format='line_break'):
     """
     Generate data used to create a sankey
     :param methodname: str, FBS methodname
@@ -495,8 +496,12 @@ def generateSankeyData(methodname,
                    .assign(flow=np.where(flow_labels['outgoing'] > 0,
                                          flow_labels['outgoing'],
                                          flow_labels['incoming'])))
-    flow_labels['Label'] = flow_labels['node'] + '<br>' + \
-                           flow_labels['flow'].round(2).astype(str)
+    if value_label_format == 'line_break':
+        flow_labels['Label'] = flow_labels['node'] + '<br>' + \
+                               flow_labels['flow'].round(2).astype(str)
+    elif value_label_format == 'brackets':
+        flow_labels['Label'] = flow_labels['node'] + ' (' + \
+                               flow_labels['flow'].round(2).astype(str) + ')'
     nodes = nodes.merge(flow_labels[['node', 'Label']], how='left')
 
     # create flow dataframe where source and target are converted to numeric
@@ -520,7 +525,8 @@ def generateSankeyDiagram(methodnames,
                           plot_title=None,
                           orientation='horizonal',
                           domain_dict=None,
-                          plot_dimension=None):
+                          plot_dimension=None,
+                          value_label_format='line_break'):
     """
     Sankey diagram developed to map flows between sector produced by (source)
     and sector consumed by (target). Sankey developed for subplot of 2
@@ -536,6 +542,7 @@ def generateSankeyDiagram(methodnames,
     :param orientation:
     :param domain_dict: dict, manually set x and y coordinates of each subplot
     :param plot_dimension: list, [width, height]
+    :parm value_label_format: string, either 'line_break' or 'brackets'
     :return:
     """
     try:
@@ -553,15 +560,15 @@ def generateSankeyDiagram(methodnames,
         rows = 1
         cols = len(methodnames)
 
-    fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True) #,
-                        # subplot_titles=methodnames)
+    fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
+                        subplot_titles=methodnames)
 
     for i, m in enumerate(methodnames):
         # return dfs of nodes and flows for Sankey
         nodes, flows = generateSankeyData(
             m, target_sector_level, target_subset_sector_level,
             use_sectordefinition, sectors_to_include,
-            fbsconfigpath)
+            fbsconfigpath, value_label_format=value_label_format)
 
         # define domain
         if domain_dict is None:
@@ -605,7 +612,7 @@ def generateSankeyDiagram(methodnames,
             width = 1400
             height = 1600
         else:
-            width = 1400
+            width = 1100
             height = 900
     else:
         width = plot_dimension[0]
