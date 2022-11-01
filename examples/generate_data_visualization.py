@@ -49,10 +49,10 @@ plt.savefig(f"{plotoutputpath}mining_water_comp.png", dpi=300)
 
 
 ########## Compare food waste flows via Sankey ##########
-methodnames = ['Food_Waste_national_2018_m3', 'Food_Waste_national_2018_m2']
+methodnames = ['Food_Waste_national_2018_m1', 'Food_Waste_national_2018_m2']
 target_sector_level = 'NAICS_2'
 target_subset_sector_level = {
-    'Food_Waste_national_2018_m3': {'NAICS_4': ['2212'],
+    'Food_Waste_national_2018_m1': {'NAICS_4': ['2212'],
                                     'NAICS_6': ['62421', '31111', '32411',
                                                 '56221', '62421', '115112',
                                                 '22132'],
