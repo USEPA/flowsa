@@ -526,7 +526,8 @@ def generateSankeyDiagram(methodnames,
                           orientation='horizonal',
                           domain_dict=None,
                           plot_dimension=None,
-                          value_label_format='line_break'):
+                          value_label_format='line_break',
+                          subplot_titles=None):
     """
     Sankey diagram developed to map flows between sector produced by (source)
     and sector consumed by (target). Sankey developed for subplot of 2
@@ -542,7 +543,8 @@ def generateSankeyDiagram(methodnames,
     :param orientation:
     :param domain_dict: dict, manually set x and y coordinates of each subplot
     :param plot_dimension: list, [width, height]
-    :parm value_label_format: string, either 'line_break' or 'brackets'
+    :param value_label_format: string, either 'line_break' or 'brackets'
+    :param subplot_titles: list, subplot titles
     :return:
     """
     try:
@@ -561,7 +563,7 @@ def generateSankeyDiagram(methodnames,
         cols = len(methodnames)
 
     fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
-                        subplot_titles=methodnames)
+                        subplot_titles=subplot_titles)
 
     for i, m in enumerate(methodnames):
         # return dfs of nodes and flows for Sankey

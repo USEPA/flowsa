@@ -78,5 +78,6 @@ dv.generateSankeyDiagram(
     fbsconfigpath=None,
     orientation='horizontal',
     domain_dict=domain_dict,
-    value_label_format='brackets'
+    value_label_format='brackets',
+    subplot_titles=['m1', 'm2']
 )
