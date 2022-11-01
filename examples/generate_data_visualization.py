@@ -65,8 +65,8 @@ target_subset_sector_level = {
                                }}
 }
 # set domain to scale sankey diagrams
-domain_dict = {0: {'x': [0.02, 0.48], 'y': [0, 1]},
-               1: {'x': [.54, 0.96], 'y': [.15, .85]}
+domain_dict = {0: {'x': [0.01, 0.49], 'y': [0, 1]},
+               1: {'x': [.51, 0.99], 'y': [.12, .88]}
                }
 
 dv.generateSankeyDiagram(
@@ -77,5 +77,6 @@ dv.generateSankeyDiagram(
     sectors_to_include=None,
     fbsconfigpath=None,
     orientation='horizontal',
-    domain_dict=domain_dict
+    domain_dict=domain_dict,
+    value_label_format='brackets'
 )
