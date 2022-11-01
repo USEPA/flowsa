@@ -1,17 +1,11 @@
-industry_spec:
-  default: NAICS_6
-year: 2017
-target_naics_year: 2012
 geoscale: state
-
-# temporarily maintain target_sector_level for 
-# allocation.equally_allocate_parent_to_child_naics()
-target_sector_level: NAICS_6
-
 source_names:
   "stewiFBS":
     data_format: 'FBS_outside_flowsa'
     FBS_datapull_fxn: !script_function:stewiFBS stewi_to_sector
+    # temporarily maintain target_sector_level for
+    # allocation.equally_allocate_parent_to_child_naics()
+    target_sector_level: NAICS_6
     inventory_dict: {"RCRAInfo":"2017"}
     compartments:
       - 'waste'
