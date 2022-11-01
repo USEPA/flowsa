@@ -20,10 +20,16 @@ NAME_SEP_CHAR = '.'
 
 with open(settings.datapath + 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
+    # ^^^ Replaces schema.py
 
 
 # TODO: Move this to common.py
 def get_catalog_info(source_name: str) -> dict:
+    '''
+    Retrieves the information on a given source from source_catalog.yaml.
+    Replaces (when used appropriately), common.check_activities_sector_like()
+    as well as various pieces of code that load the source_catalog yaml.
+    '''
     source_catalog = common.load_yaml_dict('source_catalog')
     source_name = common.return_true_source_catalog_name(source_name)
     return source_catalog.get(source_name, {})
@@ -37,7 +43,8 @@ def get_flowby_from_config(
     download_sources_ok: bool = True
 ) -> FB:
     """
-    Loads FBA or FBS dataframe
+    Loads FBA or FBS dataframe from a config dictionary and attaches that
+    dictionary to the FBA or FBS. Exists for convenience.
 
     :return: a FlowByActivity dataframe
     """
@@ -89,6 +96,15 @@ class _FlowBy(pd.DataFrame):
         string_null: 'np.nan' or None = np.nan,
         **kwargs
     ) -> None:
+        '''
+        Extends pandas DataFrame. Attaches metadata if provided as kwargs and
+        ensures that all columns described in  flowby_config.yaml are present
+        and of the correct datatype.
+
+        All args and kwargs not specified above or in FBA/FBS metadata are
+        passed to the DataFrame constructor.
+        '''
+
         # Assign values to metadata attributes, checking the following sources,
         # in order: self, data, kwargs; then defaulting to an empty version of
         # the type specified in the type hints, or None.
