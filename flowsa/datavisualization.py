@@ -519,7 +519,8 @@ def generateSankeyDiagram(methodnames,
                           fbsconfigpath=None,
                           plot_title=None,
                           orientation='horizonal',
-                          domain_dict=None):
+                          domain_dict=None,
+                          plot_dimension=None):
     """
     Sankey diagram developed to map flows between sector produced by (source)
     and sector consumed by (target). Sankey developed for subplot of 2
@@ -534,6 +535,7 @@ def generateSankeyDiagram(methodnames,
     :param plot_title:
     :param orientation:
     :param domain_dict: dict, manually set x and y coordinates of each subplot
+    :param plot_dimension: list, [width, height]
     :return:
     """
     try:
@@ -598,12 +600,16 @@ def generateSankeyDiagram(methodnames,
     fig.update_layout(
         title_text=plot_title, font_size=10, margin_b=150)
 
-    if orientation == 'vertical':
-        width = 1400
-        height = 1600
+    if plot_dimension is None:
+        if orientation == 'vertical':
+            width = 1400
+            height = 1600
+        else:
+            width = 1400
+            height = 900
     else:
-        width = 1500
-        height = 1100
+        width = plot_dimension[0]
+        height = plot_dimension[1]
 
     fig.show()
     filename = 'flowsaSankey.svg'
