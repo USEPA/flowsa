@@ -5,7 +5,7 @@ import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
 from flowsa import (common, settings, metadata, sectormapping,
-                    literature_values, flowbyactivity, flowbysector, flowsa_yaml,
+                    literature_values, flowbyactivity, flowsa_yaml,
                     validation, geo, naics, exceptions)
 from flowsa.flowsa_log import log
 import esupy.processed_data_mgmt
@@ -953,7 +953,7 @@ class FlowByActivity(_FlowBy):
             validation.compare_geographic_totals(
                 fba_at_target_geoscale, self,
                 self.source_name, self.config,
-                self.activity_set, self.config['names']
+                self.full_name.split('.')[-1], self.config['names']
                 # ^^^ TODO: Rewrite validation to use fb metadata
             )
 
@@ -1383,7 +1383,7 @@ class FlowByActivity(_FlowBy):
             .function_socket('clean_fba_before_mapping')
             .select_by_fields()
             .function_socket('estimate_suppressed')
-            .convert_units_and_flows() # and also map to flow lists
+            .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to prepare_fbs
@@ -1673,7 +1673,7 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             # TODO: Add a method to convert to proper industry spec.
             .convert_fips_to_geoscale()
-            .aggregate_flowby() # necessary after consolidating geoscale
+            .aggregate_flowby()  # necessary after consolidating geoscale
         )
 
     def display_tables(
