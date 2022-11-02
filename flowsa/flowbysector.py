@@ -22,7 +22,6 @@ you need functions to clean up the FBA
 
 import argparse
 import pandas as pd
-import os
 from esupy.processed_data_mgmt import write_df_to_file
 import flowsa
 from flowsa.allocation import equally_allocate_parent_to_child_naics
@@ -37,13 +36,13 @@ from flowsa.fbs_allocation import direct_allocation_method, \
 from flowsa.flowbyfunctions import agg_by_geoscale, sector_aggregation, \
     aggregator, subset_df_by_geoscale, sector_disaggregation, \
     update_geoscale, subset_df_by_sector_list
-from flowsa.location import fips_number_key, merge_urb_cnty_pct
+from flowsa.location import merge_urb_cnty_pct
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_fields_w_activity
 from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
     map_fbs_flows, get_sector_list
-from flowsa.settings import log, vLog, flowbysectoractivitysetspath, paths
+from flowsa.settings import log, vLog, paths
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, check_for_negative_flowamounts, \
@@ -241,9 +240,11 @@ def main(**kwargs):
                     flows_subset2 = flows_subset.copy()
 
                 # extract relevant geoscale data or aggregate existing data
+                geoscale_to_use = attr.get('geoscale_to_use')
+                if geoscale_to_use is None:
+                    geoscale_to_use = v['geoscale_to_use']
                 flows_subset_geo = subset_df_by_geoscale(
-                    flows_subset2, v['geoscale_to_use'],
-                    attr['allocation_from_scale'])
+                    flows_subset2, geoscale_to_use, v['geoscale_to_use'])
                 # if loading data subnational geoscale, check for data loss
                 if attr['allocation_from_scale'] != 'national':
                     compare_geographic_totals(
@@ -311,15 +312,10 @@ def main(**kwargs):
                 # aggregate df geographically, if necessary
                 log.info("Aggregating flowbysector to %s level",
                          method['target_geoscale'])
-                # determine from scale
-                if fips_number_key[v['geoscale_to_use']] <\
-                        fips_number_key[attr['allocation_from_scale']]:
-                    from_scale = v['geoscale_to_use']
-                else:
-                    from_scale = attr['allocation_from_scale']
 
                 fbs_geo_agg = agg_by_geoscale(
-                    fbs, from_scale, method['target_geoscale'], groupingcols)
+                    fbs, geoscale_to_use, method['target_geoscale'],
+                    groupingcols)
 
                 # aggregate data to every sector level
                 log.info("Aggregating flowbysector to all sector levels")
