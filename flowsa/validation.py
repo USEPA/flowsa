@@ -970,7 +970,9 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
 
 
 def compare_geographic_totals(
-        df_subset, df_load, sourcename, attr, activity_set, activity_names):
+    df_subset, df_load, sourcename, attr, activity_set, activity_names,
+    df_type='FBA', subnational_geoscale=None
+):
     """
     Check for any data loss between the geoscale used and published
     national data
@@ -980,7 +982,11 @@ def compare_geographic_totals(
     :param attr: dictionary, attributes
     :param activity_set: str, activity set
     :param activity_names: list of names in the activity set by which
-           to subset national level data
+        to subset national level data
+    :param type: str, 'FBA' or 'FBS'
+    :param subnational_geoscale: geoscale being compared against the
+        national geoscale. Only necessary if df_subset is a FlowBy object
+        rather than a DataFrame.
     :return: df, comparing published national level data to df subset
     """
 
@@ -1003,9 +1009,13 @@ def compare_geographic_totals(
             columns={'FlowAmount': 'FlowAmount_sub'})
 
         # compare df
-        merge_cols = ['Class', 'SourceName', 'FlowName', 'Unit',
-                      'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
-                      'Compartment', 'Location', 'LocationSystem', 'Year']
+        merge_cols = (['Class', 'SourceName', 'FlowName', 'Unit',
+                       'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
+                       'Compartment', 'Location', 'LocationSystem', 'Year']
+                      if df_type == 'FBA' else
+                      ['Class', 'SourceName', 'Flowable', 'Unit',
+                       'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
+                       'Context', 'Location', 'LocationSystem', 'Year'])
         # comapare units
         compare_df_units(nat, sub2)
         df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
@@ -1021,14 +1031,16 @@ def compare_geographic_totals(
         df_m_sub = df_m[(df_m['Percent_Diff'] > 1) |
                         (df_m['Percent_Diff'].isna())].reset_index(drop=True)
 
+        subnational_geoscale = (subnational_geoscale
+                                or attr['allocation_from_scale'])
         if len(df_m_sub) == 0:
             vLog.info('No data loss greater than 1%% between national '
                       'level data and %s subset',
-                      attr['allocation_from_scale'])
+                      subnational_geoscale)
         else:
             vLog.info('There are data differences between published national'
                       ' values and %s subset, saving to validation log',
-                      attr['allocation_from_scale'])
+                      subnational_geoscale)
 
             vLogDetailed.info(
                 'Comparison of National FlowAmounts to aggregated data '

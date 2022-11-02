@@ -960,7 +960,8 @@ class FlowByActivity(_FlowBy):
             validation.compare_geographic_totals(
                 fba_at_target_geoscale, self,
                 self.source_name, self.config,
-                self.full_name.split('.')[-1], activities
+                self.full_name.split('.')[-1], activities,
+                df_type='FBS', subnational_geoscale=target_geoscale
                 # ^^^ TODO: Rewrite validation to use fb metadata
             )
 
