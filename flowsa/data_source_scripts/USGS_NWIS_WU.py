@@ -392,7 +392,7 @@ def usgs_fba_data_cleanup(fba, **_):
     vLogDetailed.info('Drop rows where the FlowName is total to prevent'
                       'double counting at the state and county levels. '
                       'Retain rows at national level')
-    df2 = dfc[dfc['FlowName'] == 'total']
+    df2 = dfc[dfc['Flowable'] == 'Water']
     # set conditions for data to keep when flowname = 'total
     c1 = df2['Location'] != US_FIPS
     c2 = (~df2['ActivityProducedBy'].isnull()) & \
@@ -401,8 +401,8 @@ def usgs_fba_data_cleanup(fba, **_):
     df2 = df2[c1 & c2].reset_index(drop=True)
 
     # second subset doesn't have total flowname or total compartment
-    df3 = dfc[dfc['FlowName'] != 'total']
-    df3 = df3[df3['Compartment'] != 'total']
+    df3 = dfc[dfc['Flowable'] != 'Water']
+    df3 = df3[df3['Context'] != 'resource/water']
     df3 = df3[df3['Location'] != US_FIPS]
 
     # concat the two df
@@ -411,7 +411,7 @@ def usgs_fba_data_cleanup(fba, **_):
     # In 2015, there is data for consumptive water use for
     # thermo and crop, drop because do not calculate consumptive water loss
     # for all water categories
-    dfd = dfd[dfd['Compartment'] != 'air'].reset_index(drop=True)
+    dfd = dfd[dfd['Context'] != 'air'].reset_index(drop=True)
 
     return dfd
 
@@ -471,10 +471,10 @@ def calculate_net_public_supply(df_load):
     # split consumed further into fresh water (assumption domestic
     # deliveries are freshwater) assumption that water withdrawal taken
     # equally from ground and surface
-    df_w1 = df_w[(df_w['FlowName'] == 'fresh') &
-                 (df_w['Compartment'] != 'total')]
-    df_w2 = df_w[(df_w['FlowName'] == 'fresh') &
-                 (df_w['Compartment'] == 'total')]
+    df_w1 = df_w[(df_w['Flowable'] == 'Water, fresh') &
+                 (df_w['Context'] != 'resource/water')]
+    df_w2 = df_w[(df_w['Flowable'] == 'Water, fresh') &
+                 (df_w['Context'] == 'resource/water')]
     # compare units
     compare_df_units(df_w1, df_w2)
     df_wm = pd.merge(df_w1, df_w2[['FlowAmount', 'Location', 'Unit']],
@@ -506,17 +506,16 @@ def calculate_net_public_supply(df_load):
 
     # compare units
     compare_df_units(df_d, net_ps)
-    # because assuming domestic is all fresh, drop
-    # flowname/flowable/Compartment/context
+    # because assuming domestic is all fresh, drop flowable/context
     # and instead use those column data from the net_ps df
-    df_d_modified = df_d.drop(columns=['FlowName', 'Flowable', 'Compartment',
-                                       'Context', 'FlowUUID'])
+    df_d_modified = df_d.drop(columns=['Flowable', 'Context', 'FlowUUID'])
     # Also allocate to ground/surface from state ratios
-    df_d_modified = pd.merge(
-        df_d_modified, net_ps[['FlowName', 'Flowable', 'Compartment',
-                               'Context', 'FlowUUID', 'Location',
-                               'FlowRatio']],
-        how='left', left_on='Location', right_on='Location')
+    df_d_modified = pd.merge(df_d_modified,
+                             net_ps[['Flowable', 'Context', 'FlowUUID',
+                                     'Location', 'FlowRatio']],
+                             how='left',
+                             left_on='Location',
+                             right_on='Location')
     df_d_modified.loc[:, 'FlowAmount'] = \
         df_d_modified['FlowAmount'] * df_d_modified['FlowRatio']
     df_d_modified = df_d_modified.drop(columns=["FlowRatio"])
@@ -599,12 +598,12 @@ def subset_and_merge_irrigation_types(df):
     # merge the golf and total irrigation into crop df and
     # modify crop FlowAmounts if necessary
     df_m = pd.merge(df_i,
-                    df_g[['FlowName', 'FlowAmount', 'ActivityProducedBy',
-                          'ActivityConsumedBy', 'Compartment', 'Location',
+                    df_g[['Flowable', 'FlowAmount', 'ActivityProducedBy',
+                          'ActivityConsumedBy', 'Context', 'Location',
                           'Year']],
                     how='outer',
-                    right_on=['FlowName', 'Compartment', 'Location', 'Year'],
-                    left_on=['FlowName', 'Compartment', 'Location', 'Year'])
+                    right_on=['Flowable', 'Context', 'Location', 'Year'],
+                    left_on=['Flowable', 'Context', 'Location', 'Year'])
     df_m = df_m.rename(columns={"FlowAmount_x": "FlowAmount",
                                 "ActivityProducedBy_x": "ActivityProducedBy",
                                 "ActivityConsumedBy_x": "ActivityConsumedBy",
@@ -614,12 +613,12 @@ def subset_and_merge_irrigation_types(df):
                                 })
     compare_df_units(df_m, df_c)
     df_m2 = pd.merge(df_m,
-                     df_c[['FlowName', 'FlowAmount', 'ActivityProducedBy',
-                           'ActivityConsumedBy', 'Compartment',
+                     df_c[['Flowable', 'FlowAmount', 'ActivityProducedBy',
+                           'ActivityConsumedBy', 'Context',
                            'Location', 'Year', 'Description']],
                      how='outer',
-                     right_on=['FlowName', 'Compartment', 'Location', 'Year'],
-                     left_on=['FlowName', 'Compartment', 'Location', 'Year'])
+                     right_on=['Flowable', 'Context', 'Location', 'Year'],
+                     left_on=['Flowable', 'Context', 'Location', 'Year'])
     df_m2 = df_m2.rename(columns={"FlowAmount_x": "FlowAmount",
                                   "ActivityProducedBy_x": "ActivityProducedBy",
                                   "ActivityConsumedBy_x": "ActivityConsumedBy",
