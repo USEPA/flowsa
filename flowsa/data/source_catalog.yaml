@@ -64,6 +64,7 @@ BTS_Airlines:
   data_format: FBA
   sector-like_activities: False
 CalRecycle_WasteCharacterization:
+  data_format: FBA
   class:
     - Other
   sector-like_activities: False
@@ -95,6 +96,7 @@ Census_QWI:
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 Census_VIP:
+  data_format: FBA
   class: Money
   sector-like_activities: False
   activity_schema:
@@ -142,6 +144,7 @@ EIA_SEDS:
   sector-like_activities: False
   # sector_aggregation_level: "aggregated"
 EPA_CDDPath:
+  data_format: FBA
   class:
     - Other
   sector-like_activities: False
