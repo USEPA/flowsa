@@ -12,6 +12,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def clean_qcew(fba: FlowByActivity, **kwargs):
+    #todo: check function method for state
     if fba.config.get('geoscale') == 'national':
         fba = fba.query('Location == "00000"')
 
@@ -61,17 +62,15 @@ def clean_qcew_for_fbs(fba: FlowByActivity, **kwargs):
     dictionary of FBA method yaml parameters
     :return: df, BLS QCEW FBA with estimated suppressed data
     """
-    df = clean_qcew(FlowByActivity, **kwargs)
+    df = clean_qcew(fba, **kwargs)
 
     # for purposes of allocation, we do not need to differentiate between
     # federal government, state government, local government, or private
     # sectors. So after estimating the suppressed data (above), modify the
     # flow names and aggregate data
-    df['Flowable'] = df['Flowable'].str.split(',').str[0]
-    df2 = aggregator(df, groupcols)
-
-    # rename flowname value
-    df2['Flowable'] = df2['Flowable'].str.replace('Number of employees', 'Jobs')
+    df['Flowable'] = (df['Flowable'].str.split(',').str[0]
+                      .str.replace('Number of employees', 'Jobs'))
+    df2 = df.aggregate_flowby()
 
     return df2
 
