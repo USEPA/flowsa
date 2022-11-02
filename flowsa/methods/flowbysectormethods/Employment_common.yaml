@@ -1,8 +1,8 @@
 _bls_load_and_clean: &bls_load_and_clean
   selection_fields:
     Class: Employment
-  clean_fba_df_fxn: !script_function:BLS_QCEW clean_bls_qcew_fba_for_employment_sat_table
-  clean_fba_w_sec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+  clean_fba: !script_function:BLS_QCEW clean_bls_qcew_fba_for_employment_sat_table
+  clean_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
 _bls_allocation: &bls_allocation
   selection_fields:
