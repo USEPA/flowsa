@@ -53,6 +53,29 @@ def clean_qcew(fba: FlowByActivity, **kwargs):
     return filtered
 
 
+def clean_qcew_for_fbs(fba: FlowByActivity, **kwargs):
+    """
+    clean up bls df with sectors by estimating suppresed data
+    :param df_w_sec: df, FBA format BLS QCEW data
+    :param kwargs: additional arguments can include 'attr', a
+    dictionary of FBA method yaml parameters
+    :return: df, BLS QCEW FBA with estimated suppressed data
+    """
+    df = clean_qcew(FlowByActivity, **kwargs)
+
+    # for purposes of allocation, we do not need to differentiate between
+    # federal government, state government, local government, or private
+    # sectors. So after estimating the suppressed data (above), modify the
+    # flow names and aggregate data
+    df['Flowable'] = df['Flowable'].str.split(',').str[0]
+    df2 = aggregator(df, groupcols)
+
+    # rename flowname value
+    df2['Flowable'] = df2['Flowable'].str.replace('Number of employees', 'Jobs')
+
+    return df2
+
+
 def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     if fba.config.get('geoscale') == 'national':
         fba = fba.query('Location == "00000"')
