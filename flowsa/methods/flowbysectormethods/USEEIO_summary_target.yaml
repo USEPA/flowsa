@@ -14,3 +14,7 @@ industry_spec:
 # In USEEIO models 221 (Utilities) is disaggregated to 2211, 2212, and 2213
 # '336' and '541' carry over from the BEA summary sectors
 target_naics_year: 2012
+
+# Needed temporarily still for some old subetting functions
+target_sector_level: NAICS_3
+target_subset_sector_level: {NAICS_4: ['221', '336', '541']}
