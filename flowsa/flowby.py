@@ -205,12 +205,15 @@ class _FlowBy(pd.DataFrame):
         paths = deepcopy(settings.paths)
         paths.local_path = external_data_path or paths.local_path
 
-        for attempt in ['import local', 'download', 'generate']:
+        attempt_list = (['import local', 'download', 'generate']
+                        if download_ok else ['import local', 'generate'])
+
+        for attempt in attempt_list:
             log.info(
                 'Attempting to %s %s %s',
                 attempt, file_metadata.name_data, file_metadata.category
             )
-            if attempt == 'download' and download_ok:
+            if attempt == 'download':
                 esupy.processed_data_mgmt.download_from_remote(
                     file_metadata,
                     paths
