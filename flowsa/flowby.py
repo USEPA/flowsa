@@ -247,6 +247,17 @@ class _FlowBy(pd.DataFrame):
         fb = cls(df, full_name=full_name or '', config=config or {})
         return fb
 
+    def convert_daily_to_annual(self: FB) -> FB:
+        if any(self.Unit.str.contains('/d')):
+            log.info('Converting daily flows %s to annual',
+                     [unit for unit in self.Unit.unique() if '/d' in unit])
+        return (
+            self
+            .assign(FlowAmount=self.FlowAmount.mask(
+                        self.Unit.str.contains('/d'), self.FlowAmount * 365),
+                    Unit=self.Unit.str.replace('/d', ''))
+        )
+
     def standardize_units(self: FB) -> FB:
         exchange_rate = (
             literature_values
@@ -260,16 +271,9 @@ class _FlowBy(pd.DataFrame):
                        'conversion_factor': 1 / exchange_rate}).to_frame().T
         ])
 
-        if any(self.Unit.str.contains('/d')):
-            log.info('Converting daily flows %s to annual',
-                     [unit for unit in self.Unit.unique() if '/d' in unit])
-
         standardized = (
             self
             .assign(Unit=self.Unit.str.strip())
-            .assign(FlowAmount=self.FlowAmount.mask(
-                        self.Unit.str.contains('/d'), self.FlowAmount * 365),
-                    Unit=self.Unit.str.replace('/d', ''))
             .merge(conversion_table, how='left',
                    left_on='Unit', right_on='old_unit')
             .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
@@ -1472,12 +1476,13 @@ class FlowByActivity(_FlowBy):
             self = self.assign(FlowAmount=self.FlowAmount
                                * self.config['adjustment_factor'])
 
-        standardized = self.standardize_units()
+        self = self.convert_daily_to_annual()
         if self.config.get('fedefl_mapping'):
-            return standardized.map_to_fedefl_list()
+            mapped = self.map_to_fedefl_list()
         else:
-            return standardized.rename(columns={'FlowName': 'Flowable',
-                                                'Compartment': 'Context'})
+            mapped = self.rename(columns={'FlowName': 'Flowable',
+                                          'Compartment': 'Context'})
+        return (mapped.standardize_units())
 
     def convert_activity_to_emissions(
         self: 'FlowByActivity'

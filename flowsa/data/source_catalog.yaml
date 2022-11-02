@@ -1,28 +1,33 @@
 Blackhurst_IO:
+  data_format: FBA
   class:
     - Water
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
 BLM_PLS:
+  data_format: FBA
   class:
     - Land
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 BEA_GDP:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False
   #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_GDP_GrossOutput:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False
   #  activity_schema: BEA_2012_Detail_Code
   sector_aggregation_level: "disaggregated"
 BEA_Use:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
@@ -70,13 +75,8 @@ CalRecycle_WasteCharacterization:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
-Census_AHS:
-  class:
-    - Land
-  sector-like_activities: False
-  activity_schema:
-  sector_aggregation_level: "disaggregated"
 Census_CBP:
+  data_format: FBA
   class:
     - Employment
     - Money
@@ -85,11 +85,13 @@ Census_CBP:
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 Census_PEP_Population:
+  data_format: FBA
   class: Other
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: ""
 Census_QWI:
+  data_format: FBA
   class:
     - Employment
   sector-like_activities: True
@@ -102,16 +104,19 @@ Census_VIP:
   activity_schema:
   sector_aggregation_level: "aggregated"
 EIA_CBECS_Land:
+  data_format: FBA
   class: Land
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 EIA_CBECS_Water:
+  data_format: FBA
   class: Water
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 EIA_AEO:
+  data_format: FBA
   class:
     - Energy
   sector-like_activities: False
@@ -126,18 +131,21 @@ EIA_MECS_Energy:
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 EIA_MECS_Land:
+  data_format: FBA
   class:
   - Land
   sector-like_activities: True
   activity_schema:
   sector_aggregation_level: "disaggregated"
 EIA_MER:
+  data_format: FBA
   class:
   - Energy
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
 EIA_SEDS:
+  data_format: FBA
   class:
     - Energy
     - Money
@@ -253,36 +261,42 @@ USDA_CoA_Cropland_NAICS:
   activity_schema: NAICS_2012_Code
   sector_aggregation_level: "disaggregated"
 USDA_CoA_Livestock:
+  data_format: FBA
   class:
   - Other
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
 USDA_ERS_FIWS:
+  data_format: FBA
   class:
   - Money
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: ""
 USDA_ERS_MLU:
+  data_format: FBA
   class:
   - Land
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 USDA_IWMS:
+  data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 USGS_NWIS_WU:
+  data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
 USGS_WU_Coef:
+  data_format: FBA
   class:
   - Water
   sector-like_activities: False

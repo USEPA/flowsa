@@ -125,20 +125,16 @@ def keep_generated_quantity(fba, **_):
     return fba
 
 
-def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
+def apply_tons_per_employee_per_year_to_states(fbs, **kwargs):
     """
     Calculates tons per employee per year based on BLS_QCEW employees
     by sector and applies that quantity to employees in all states
     clean_fbs_df_fxn
     """
     bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
-                                        year=fbs['Year'].unique()[0],
+                                        year=fbs.config['year'],
                                         flowclass='Employment',
                                         geographic_level='state')
-    bls = bls[bls['FlowName'].isin(["Number of employees, Federal Government",
-                                    "Number of employees, State Government",
-                                    "Number of employees, Local Government",
-                                    "Number of employees, Private"])]
     bls = add_sectors_to_flowbyactivity(bls)
 
     # Subset BLS dataset
@@ -164,7 +160,10 @@ def apply_tons_per_employee_per_year_to_states(fbs, method, **_):
     national_waste['FlowAmount'] = \
         national_waste['Employees'] * national_waste['TPEPY']
 
-    df = aggregate_and_subset_for_target_sectors(national_waste, method)
+    df = aggregate_and_subset_for_target_sectors(national_waste,
+                                                 national_waste.config)
+    # Ensure config remains on the dataframe
+    df.config = national_waste.config
     df = replace_strings_with_NoneType(df)
 
     return df

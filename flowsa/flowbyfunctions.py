@@ -1173,7 +1173,7 @@ def aggregate_and_subset_for_target_sectors(df, method):
     # load the crosswalk linking sector lengths
     secondary_sector_level = method.get('target_subset_sector_level')
     sector_list = get_sector_list(
-        method['target_sector_level'],
+        method.get('target_sector_level'),
         secondary_sector_level_dict=secondary_sector_level)
 
     # subset df to get NAICS at the target level

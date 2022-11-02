@@ -4,6 +4,9 @@ year: 2014
 target_naics_year: 2012
 geoscale: national
 
+# Needed temporarily still for aggregate_and_subset_for_target_sectors
+target_sector_level: NAICS_6
+
 source_names:
   CNHW_CA_2014:
     data_format: FBS
