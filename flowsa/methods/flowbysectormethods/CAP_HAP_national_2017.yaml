@@ -5,21 +5,7 @@ year: 2017
 target_naics_year: 2012
 geoscale: national
 
-sources_to_cache:
-  BLS_QCEW:
-    year: 2014
-    selection_fields:
-      Class: Employment
-    clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
-    clean_fba: !script_function:temp_data_source_functions clean_qcew
-    # clean_fba_wsec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-  BLS_QCEW: # What to do about same data source but different year?
-    year: 2012
-    selection_fields:
-      Class: Employment
-    clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
-    clean_fba: !script_function:temp_data_source_functions clean_qcew
-    # clean_fba_wsec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+# sources_to_cache:
 
 _attribution_sources:
   EIA_MECS_Energy: &mecs_energy
@@ -37,13 +23,19 @@ _attribution_sources:
     # clean_fba_df_fxn: !script_function:EIA_MECS mecs_energy_fba_cleanup
     # clean_fba_w_sec_df_fxn: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
     attribution_method: proportional # cleaning fxns remove need for proportional-flagged
-    attribution_source: BLS_QCEW
+    attribution_source:
+      Employment_national_2018: # replace with 2014 when available
+        data_format: FBS
+        year: 2018
 
   BEA: &bea
     year: 2012
     activity_to_sector_mapping: BEA_2012_Detail
     attribution_method: proportional
-    attribution_source: BLS_QCEW
+    attribution_source:
+      Employment_national_2018: # replace with 2012 when available
+        data_format: FBS
+        year: 2018
 
 source_names:
   EPA_NEI_Nonpoint:
@@ -213,7 +205,10 @@ source_names:
               Class: Money
               FlowName: Gross Output
             attribution_method: proportional
-            attribution_source: BLS_QCEW
+            attribution_source:
+              Employment_national_2017:
+                data_format: FBS
+                year: 2017
 
 
   "EPA_NEI_Nonroad":

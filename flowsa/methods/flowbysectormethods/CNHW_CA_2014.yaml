@@ -32,12 +32,9 @@ source_names:
           - Not Elsewhere Classified
         attribution_method: proportional
         attribution_source: 
-          BLS_QCEW:
+          Employment_state_2014:
+            data_format: FBS
             year: 2014
-            selection_fields:
-              Class: Employment
-            clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
-            clean_fba: !script_function:temp_data_source_functions clean_qcew
       direct:
         selection_fields:
           PrimaryActivity:
