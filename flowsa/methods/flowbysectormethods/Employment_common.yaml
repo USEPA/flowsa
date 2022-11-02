@@ -1,6 +1,14 @@
-_bls_load_and_clean: &bls_load_and_clean
+_bls_selection_fields_national: &bls_selection_fields_national
   selection_fields:
     Class: Employment
+    Location: '00000'
+
+_bls_selection_fields_state: &bls_selection_fields_state
+  selection_fields:
+    Class: Employment
+#    Location:
+
+_bls_load_and_clean: &bls_load_and_clean
   clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
   clean_fba: !script_function:temp_data_source_functions clean_qcew_for_fbs
 
@@ -10,18 +18,18 @@ _bls_allocation: &bls_allocation
   attribution_method: direct
 
 bls_load_and_clean_national:
+  <<: *bls_selection_fields_national
   <<: *bls_load_and_clean
   geoscale: &geoscaleNational national
-#  source_fba_load_scale: *geoscaleNational
 
 bls_allocation_national:
   <<: *bls_allocation
   geoscale: *geoscaleNational
 
 bls_load_and_clean_state:
+  <<: *bls_selection_fields_state
   <<: *bls_load_and_clean
   geoscale: &geoscaleState state
-#  source_fba_load_scale: *geoscaleState
 
 bls_allocation_state:
   <<: *bls_allocation
