@@ -53,7 +53,6 @@ def get_flowby_from_config(
     elif config['data_format'] == 'FBS':
         return FlowBySector.getFlowBySector(
             method=name,
-            full_name=name,
             config=config,
             external_config_path=external_config_path,
             download_sources_ok=download_sources_ok,
@@ -950,10 +949,18 @@ class FlowByActivity(_FlowBy):
         )
 
         if target_geoscale != geo.scale.NATIONAL:
+            # TODO: This block of code can be simplified a great deal once
+            #       validation.py is rewritten to use the FB config dictionary
+            activities = list(
+                self
+                .add_primary_secondary_columns('Activity')
+                .PrimaryActivity.unique()
+            )
+
             validation.compare_geographic_totals(
                 fba_at_target_geoscale, self,
                 self.source_name, self.config,
-                self.full_name.split('.')[-1], self.config['names']
+                self.full_name.split('.')[-1], activities
                 # ^^^ TODO: Rewrite validation to use fb metadata
             )
 
@@ -1553,6 +1560,7 @@ class FlowBySector(_FlowBy):
     def getFlowBySector(
         cls,
         method: str,
+        config: dict = None,
         external_config_path: str = None,
         download_sources_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
         download_fbs_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
@@ -1577,10 +1585,12 @@ class FlowBySector(_FlowBy):
         '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
 
-        try:
-            config = common.load_yaml_dict(method, 'FBS', external_config_path)
-        except exceptions.FlowsaMethodNotFoundError:
-            config = {}
+        if config is None:
+            try:
+                config = common.load_yaml_dict(method, 'FBS',
+                                               external_config_path)
+            except exceptions.FlowsaMethodNotFoundError:
+                config = {}
 
         flowby_generator = (
             lambda x=method, y=external_config_path, z=download_sources_ok:
