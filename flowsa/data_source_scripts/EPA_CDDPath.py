@@ -103,14 +103,9 @@ def assign_wood_to_engineering(fba, **_):
     :param fba: df, FBA of CDDPath
     :return: df, CDDPath FBA with wood reassigned
     """
-
     # Update wood to a new activity for improved mapping
     fba.loc[((fba.FlowName == 'Wood') &
            (fba.ActivityProducedBy == 'Other')),
            'ActivityProducedBy'] = 'Other - Wood'
-
-    # if no mapping performed, still update units
-    if 'short tons' in fba['Unit'].values:
-        fba = standardize_units(fba)
 
     return fba
