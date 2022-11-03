@@ -39,4 +39,5 @@ source_names:
         selection_fields:
           PrimaryActivity:
           - Multifamily
+          Description: Generated
         attribution_method: direct
