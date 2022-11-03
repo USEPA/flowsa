@@ -111,26 +111,14 @@ def calR_parse(*, year, **_):
     return output
 
 
-def keep_generated_quantity(fba, **_):
-    """
-    Function to clean CalRecycles FBA to remove quantities not
-    assigned as Generated
-    :param fba: df, FBA format
-    :return: df, modified CalRecycles FBA
-    """
-    fba = fba[fba['Description'] == 'Generated'].reset_index(drop=True)
-    # if no mapping performed, still update units
-    if 'tons' in fba['Unit'].values:
-        fba = standardize_units(fba)
-    return fba
-
-
 def apply_tons_per_employee_per_year_to_states(fbs, **kwargs):
     """
     Calculates tons per employee per year based on BLS_QCEW employees
     by sector and applies that quantity to employees in all states
     clean_fbs_df_fxn
     """
+    ### TODO replace the below with the employment FBS
+
     bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
                                         year=fbs.config['year'],
                                         flowclass='Employment',

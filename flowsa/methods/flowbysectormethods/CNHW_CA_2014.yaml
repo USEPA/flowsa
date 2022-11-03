@@ -8,8 +8,7 @@ source_names:
   CalRecycle_WasteCharacterization:
     geoscale: state
     year: 2014
-    clean_fba_df_fxn: !script_function:CalRecycle_WasteCharacterization keep_generated_quantity
-    mfl_mapping: CalRecycle
+    # mfl_mapping: CalRecycle
     activity_sets:
       employment:
         selection_fields:
@@ -30,6 +29,7 @@ source_names:
           - Services Professional Technical Financial
           - Services Repair Personal
           - Not Elsewhere Classified
+          Description: Generated
         attribution_method: proportional
         attribution_source: 
           Employment_state_2014:
