@@ -280,6 +280,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
 
 def allocate_usda_ers_mlu_other_land(df, attr, fbs_list):
     """
+    Function only designed for national model
+
     From the USDA ERS MLU 2012 report:
     "Includes miscellaneous other uses, such as industrial and commercial
     sites in rural areas, cemeteries, golf courses, mining areas, quarry sites,
