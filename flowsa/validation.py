@@ -946,6 +946,8 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
                   'Unit', 'FlowType', 'Year', 'MetaSources']
     if ignore_metasources:
         merge_cols.remove('MetaSources')
+        df1 = df1.groupby(merge_cols).agg({'FlowAmount_fbs1':'sum'}).reset_index()
+        df2 = df2.groupby(merge_cols).agg({'FlowAmount_fbs2':'sum'}).reset_index()
     # check units
     compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
