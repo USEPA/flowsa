@@ -1002,22 +1002,21 @@ class FlowByActivity(_FlowBy):
         attribution_method = fba.config.get('attribution_method')
 
         if attribution_method == 'proportional':
-            # First check cache for FlowBy
             attribution_source = fba.config['attribution_source']
+
             if isinstance(attribution_source, str):
-                # attribution_source as string MUST BE cached
-                attribution_fbs = (fba.config['cache'][attribution_source])
+                name, config = attribution_source, {}
             else:
-                (name, config), = fba.config['attribution_source'].items()
-            if name in fba.config['cache'].keys():
-                # cached attribution_source passed as dictionary can include
-                # additional selection fields
-                attribution_fbs = fba.config['cache'][name]
-                if config.get('selection_fields'):
-                    attribution_fbs = (attribution_fbs
-                                       .select_by_fields(
-                                           config.get('selection_fields')
-                                           ))
+                (name, config), = attribution_source.items()
+
+            if name in fba.config['cache']:
+                attribution_fbs = fba.config['cache'][name].copy()
+                attribution_fbs.config = {
+                    **{k: attribution_fbs.config[k]
+                       for k in attribution_fbs.config['method_config_keys']},
+                    **config
+                }
+                attribution_fbs = attribution_fbs.prepare_fbs()
             else:
                 attribution_fbs = get_flowby_from_config(
                     name=name,
