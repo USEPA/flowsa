@@ -274,29 +274,29 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
         flow_subset_mapped2 = flow_subset_mapped2.drop(
             columns=['Location_tmp'], errors='ignore')
 
-        # merge the flowamount columns
-        flow_subset_mapped2.loc[:, 'FlowAmountRatio'] =\
-            flow_subset_mapped2['FlowAmountRatio_x'].fillna(
-                flow_subset_mapped2['FlowAmountRatio_y'])
-        # fill null rows with 0 because no allocation info
-        flow_subset_mapped2['FlowAmountRatio'] = \
-            flow_subset_mapped2['FlowAmountRatio'].fillna(0)
+    # merge the flowamount columns
+    flow_subset_mapped2.loc[:, 'FlowAmountRatio'] =\
+        flow_subset_mapped2['FlowAmountRatio_x'].fillna(
+            flow_subset_mapped2['FlowAmountRatio_y'])
+    # fill null rows with 0 because no allocation info
+    flow_subset_mapped2['FlowAmountRatio'] = \
+        flow_subset_mapped2['FlowAmountRatio'].fillna(0)
 
-        # drop rows where there is no allocation data
-        fbs = flow_subset_mapped2.dropna(
-            subset=['Sector_x', 'Sector_y'], how='all').reset_index(drop=True)
+    # drop rows where there is no allocation data
+    fbs = flow_subset_mapped2.dropna(
+        subset=['Sector_x', 'Sector_y'], how='all').reset_index(drop=True)
 
-        # calculate flow amounts for each sector
-        log.info("Calculating new flow amounts using flow ratios")
-        fbs.loc[:, 'FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
+    # calculate flow amounts for each sector
+    log.info("Calculating new flow amounts using flow ratios")
+    fbs.loc[:, 'FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
 
-        # drop columns
-        log.info("Cleaning up new flow by sector")
-        fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y',
-                                'FlowAmountRatio_y', 'FlowAmountRatio',
-                                'FBA_Activity_x', 'FBA_Activity_y',
-                                'disaggregate_flag', 'Description'],
-                       errors='ignore')
+    # drop columns
+    log.info("Cleaning up new flow by sector")
+    fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y',
+                            'FlowAmountRatio_y', 'FlowAmountRatio',
+                            'FBA_Activity_x', 'FBA_Activity_y',
+                            'disaggregate_flag', 'Description'],
+                   errors='ignore')
 
     # if activities are source like, reset activity columns
     sector_like_activities = check_activities_sector_like(flow_subset_mapped)
