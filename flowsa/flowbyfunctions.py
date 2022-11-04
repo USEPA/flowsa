@@ -126,6 +126,8 @@ def aggregator(df, groupbycols, retain_zeros=True):
                       if e in df.columns.values.tolist()]
 
     groupbycols = [c for c in groupbycols if c not in column_headers]
+    # check cols exist in df
+    groupbycols = [c for c in groupbycols if c in df.columns]
 
     df_dfg = df.groupby(groupbycols).agg({'FlowAmount': ['sum']})
 

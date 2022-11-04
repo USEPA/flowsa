@@ -19,4 +19,6 @@ Blackhurst_IO:
 
 
 # Flow By Sector
-
+CNHW_state_2014:
+    Active: True
+    Status: Memory Error # Skip during GH-action testing
