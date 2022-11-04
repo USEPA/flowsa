@@ -67,7 +67,7 @@ jobs:
         for m in $(python flowsa/test_FBS_against_remote.py list)
         do
           echo "python flowsa/test_FBS_against_remote.py $m"
-          python flowsa/test_FBS_against_remote.py "$m" || true
+          python flowsa/test_FBS_against_remote.py "$m"
         done
 
     - name: Upload csv files
