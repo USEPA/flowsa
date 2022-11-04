@@ -12,7 +12,7 @@ on:
 
 jobs:
   FBA_testing:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -34,10 +34,13 @@ jobs:
 
     - name: Test FBA config
       run: |
-        python flowsa/test_methods.py
+        for m in $(python flowsa/test_methods.py list)
+        do
+          echo "python flowsa/test_methods.py $m"
+        done
 
   FBS_testing:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -61,7 +64,11 @@ jobs:
       id: FBS
       if: always() # Proceed even if Test FBA fails
       run: |
-        python flowsa/test_FBS_against_remote.py
+        for m in $(python flowsa/test_FBS_against_remote.py list)
+        do
+          echo "python flowsa/test_FBS_against_remote.py $m"
+          python flowsa/test_FBS_against_remote.py "$m"
+        done
 
     - name: Upload csv files
       # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
@@ -72,8 +79,8 @@ jobs:
         name: FBS diff files
         # A file, directory or wildcard patter that describes what to upload
         path: |
-            ~/.local/share/flowsa/FBSComparisons/*
-            ~/.local/share/flowsa/FlowBySector/*
-            ~/.local/share/flowsa/Log/*
+            ~/Library/Application Support/flowsa/FBSComparisons/*
+            ~/Library/Application Support/flowsa/FlowBySector/*
+            ~/Library/Application Support/flowsa/Log/*
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
         # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.
