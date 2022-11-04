@@ -13,7 +13,7 @@ import numpy as np
 import re
 import math
 from flowsa.settings import externaldatapath
-from flowsa.common import load_api_key
+from flowsa.common import load_env_file_key
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -69,7 +69,7 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
         
         # create url from build url
         url = build_url
-        userAPIKey = load_api_key(config['api_name'])
+        userAPIKey = load_env_file_key('API_Key', config['api_name'])
         url = (url.replace("__API_KEY__", userAPIKey)
                .replace("__SERIES_ID__", series_list))
         urls.append(url)
