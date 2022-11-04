@@ -43,7 +43,7 @@ from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
 from flowsa.sectormapping import add_sectors_to_flowbyactivity, \
     map_fbs_flows, get_sector_list, append_material_code, \
     map_to_material_crosswalk
-from flowsa.settings import log, vLog, flowbysectoractivitysetspath, paths
+from flowsa.settings import log, vLog, paths
 from flowsa.validation import compare_activity_to_sector_flowamounts, \
     compare_fba_geo_subset_and_fbs_output_totals, compare_geographic_totals,\
     replace_naics_w_naics_from_another_year, check_for_negative_flowamounts, \
