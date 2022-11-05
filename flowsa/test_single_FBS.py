@@ -1,5 +1,5 @@
 """
-Tests to run during github action
+Targeted comparison of FBS against remote
 """
 import pytest
 import os
@@ -8,7 +8,8 @@ from flowsa.settings import paths, diffpath
 from flowsa.validation import compare_FBS_results
 from esupy.processed_data_mgmt import download_from_remote
 
-@pytest.mark.skip(reason="Perform targeted test for compare_FBS on PR")
+
+@pytest.mark.skip(reason="Perform targeted test on manual trigger")
 def compare_single_FBS_against_remote(m, outdir=diffpath):
     status = download_from_remote(set_fb_meta(m, "FlowBySector"),
                                   paths)
