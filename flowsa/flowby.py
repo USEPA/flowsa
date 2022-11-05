@@ -83,6 +83,7 @@ class _FlowBy(pd.DataFrame):
         self,
         data: pd.DataFrame or '_FlowBy' = None,
         *args,
+        add_missing_columns: bool = True,
         fields: dict = None,
         column_order: List[str] = None,
         string_null: 'np.nan' or None = np.nan,
@@ -102,6 +103,13 @@ class _FlowBy(pd.DataFrame):
                 )
 
         if isinstance(data, pd.DataFrame) and fields is not None:
+            if add_missing_columns:
+                data = data.assign(**{field: None
+                                      for field in fields
+                                      if field not in data.columns})
+            else:
+                fields = {k: v for k, v in fields.items() if k in data.columns}
+
             fill_na_dict = {
                 field: 0 if dtype in ['int', 'float'] else string_null
                 for field, dtype in fields.items()
@@ -112,12 +120,12 @@ class _FlowBy(pd.DataFrame):
                                      np.nan, pd.NA, None]}
                 for field, dtype in fields.items() if dtype == 'object'
             }
+
             data = (data
-                    .assign(**{field: None
-                            for field in fields if field not in data.columns})
                     .fillna(fill_na_dict)
                     .replace(null_string_dict)
                     .astype(fields))
+
         if isinstance(data, pd.DataFrame) and column_order is not None:
             data = data[[c for c in column_order if c in data.columns]
                         + [c for c in data.columns if c not in column_order]]
@@ -642,7 +650,7 @@ class _FlowBy(pd.DataFrame):
         metadata = {attribute: self.__getattr__(attribute)
                     for attribute in self._metadata}
         df = pd.DataFrame(self).astype(*args, **kwargs)
-        fb = type(self)(df, **metadata)
+        fb = type(self)(df, add_missing_columns=False, **metadata)
 
         return fb
 
