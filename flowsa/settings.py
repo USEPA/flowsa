@@ -98,9 +98,6 @@ vLogDetailed.addHandler(vLog_fh)
 
 
 def return_pkg_version():
-    # GitHub actions can't query git but can use this environment variable
-    if os.environ.get('GITHUB_SHA'):
-        return os.environ['GITHUB_SHA']
     # return version with git describe
     try:
         # set path to flowsa repository, necessary if running method files
@@ -144,8 +141,9 @@ def get_memory():
 # metadata
 PKG = "flowsa"
 PKG_VERSION_NUMBER = return_pkg_version()
-GIT_HASH = os.environ.get('GITHUB_SHA') or get_git_hash()
 GIT_HASH_LONG = os.environ.get('GITHUB_SHA') or get_git_hash('long')
+if GIT_HASH_LONG:
+    GIT_HASH = GIT_HASH_LONG[0:7]
 
 # Common declaration of write format for package data products
 WRITE_FORMAT = "parquet"
