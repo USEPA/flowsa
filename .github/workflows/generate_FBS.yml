@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
 
@@ -44,7 +44,7 @@ jobs:
         name: FlowBySector
         # A file, directory or wildcard patter that describes what to upload
         path: | # uses local user data dir for ubuntu
-          ~/.local/share/flowsa/FlowBySector/*
-          ~/.local/share/stewi/Log/*
+          ~/Library/Application Support/flowsa/FlowBySector/*
+          ~/Library/Application Support/flowsa/Log/*
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
         # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.
