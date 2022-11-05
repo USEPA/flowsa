@@ -766,7 +766,7 @@ class FlowByActivity(_FlowBy):
             'SourceFlowContext'
         ]
         merge_type = 'inner' if drop_unmapped_rows else 'left'
-
+        ## TODO update this logic
         if self.config.get('fedefl_mapping') is True:
             mapping_subset = self.source_name
         else:
@@ -777,17 +777,11 @@ class FlowByActivity(_FlowBy):
         log.info('Mapping flows in %s to federal elementary flow list',
                  self.full_name)
 
-        if any(self.Unit.str.contains('/d')):
-            log.info('Converting daily flows %s to annual',
-                     [unit for unit in self.Unit.unique() if '/d' in unit])
         fba = (
             self
             .assign(Flowable=self.FlowName,
                     Context=self.Compartment,
-                    FlowAmount=self.FlowAmount.mask(
-                        self.Unit.str.contains('/d'),
-                        self.FlowAmount * 365),
-                    Unit=self.Unit.str.replace('/d', ''))
+                    )
             .drop(columns=['FlowName', 'Compartment'])
         )
 
