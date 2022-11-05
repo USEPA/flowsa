@@ -51,7 +51,7 @@ def test_FBS_against_remote(only_run_m=None):
 
 
 if __name__ == "__main__":
-    memory_limit()
+    # memory_limit()  # Not functioning
     if len(sys.argv) < 2:
         test_FBS_against_remote()
     elif sys.argv[1] == "list":
