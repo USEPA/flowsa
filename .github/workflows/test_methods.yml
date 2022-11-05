@@ -15,9 +15,9 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
@@ -40,9 +40,9 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
@@ -69,7 +69,7 @@ jobs:
     - name: Upload csv files
       # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
       if: always()
-      uses: actions/upload-artifact@v2.3.0
+      uses: actions/upload-artifact@v3
       with:
         # Artifact name
         name: FBS diff files
