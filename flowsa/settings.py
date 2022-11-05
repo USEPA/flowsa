@@ -1,7 +1,7 @@
 import sys
 import os
 import logging
-import subprocess
+from importlib.metadata import version
 from pathlib import Path
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
@@ -98,19 +98,8 @@ vLogDetailed.addHandler(vLog_fh)
 
 
 def return_pkg_version():
-    # return version with git describe
-    try:
-        # set path to flowsa repository, necessary if running method files
-        # outside the flowsa repo
-        tags = subprocess.check_output(
-            ["git", "describe", "--tags", "--always"],
-            cwd=MODULEPATH).decode().strip()
-        version = tags.split("-", 1)[0].replace('v', "")
-    except subprocess.CalledProcessError:
-        log.info('Unable to return version with git describe')
-        version = 'None'
-
-    return version
+    # As of Python 3.8 can use the following:
+    return version('flowsa')
 
 
 # https://stackoverflow.com/a/41125461
