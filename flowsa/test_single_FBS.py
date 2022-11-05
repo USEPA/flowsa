@@ -3,6 +3,7 @@ Targeted comparison of FBS against remote
 """
 import pytest
 import os
+import flowsa
 from flowsa.metadata import set_fb_meta
 from flowsa.settings import paths, diffpath
 from flowsa.validation import compare_FBS_results
@@ -10,11 +11,17 @@ from esupy.processed_data_mgmt import download_from_remote
 
 
 @pytest.mark.skip(reason="Perform targeted test on manual trigger")
-def compare_single_FBS_against_remote(m, outdir=diffpath):
-    status = download_from_remote(set_fb_meta(m, "FlowBySector"),
-                                  paths)
-    if not status:
-        print(f"{m} not found in remote server. Skipping...")
+def compare_single_FBS_against_remote(m, outdir=diffpath,
+                                      run_single=False):
+    downloaded = download_from_remote(set_fb_meta(m, "FlowBySector"),
+                                      paths)
+    if not downloaded:
+        if run_single:
+            # Run a single file even if no comparison available
+            flowsa.flowbysector.main(method=m,
+                                     download_FBAs_if_missing=True)
+        else:
+            print(f"{m} not found in remote server. Skipping...")
         return
     print("--------------------------------\n"
           f"Method: {m}\n"
@@ -40,4 +47,5 @@ if __name__ == "__main__":
     if not os.path.exists(outdir):
         os.mkdir(outdir)
 
-    compare_single_FBS_against_remote(m=args['method'])
+    compare_single_FBS_against_remote(m=args['method'],
+                                      run_single=True)
