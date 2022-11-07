@@ -27,10 +27,14 @@ SECTOR_DICT = {'Res.': 'Residential',
                'Terr.': 'U.S. Territory'}
 
 ANNEX_HEADERS = {"Total Consumption (TBtu) a": "Total Consumption (TBtu)",
+                 "Total Consumption (TBtu)a": "Total Consumption (TBtu)",
                  "Adjustments (TBtu) b": "Adjustments (TBtu)",
                  "Adjusted Consumption (TBtu) a": "Adjusted Consumption (TBtu)",
+                 "Adjusted Consumption (TBtu)a": "Adjusted Consumption (TBtu)",
                  "Emissions b (MMT CO2 Eq.) from Energy Use":
-                     "Emissions (MMT CO2 Eq.) from Energy Use"
+                     "Emissions (MMT CO2 Eq.) from Energy Use",
+                 "Emissionsb (MMT CO2 Eq.) from Energy Use":
+                     "Emissions (MMT CO2 Eq.) from Energy Use",
                  }
 
 # Tables for annual CO2 emissions from fossil fuel combustion
@@ -285,12 +289,31 @@ def strip_char(text):
     """
     text = text + " "
     notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ",
-             " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g "]
+             " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g ",
+             ")b", ")f", ")k", ]
     for i in notes:
         if i in text:
             text_split = text.split(i)
             text = text_split[0]
+
+    footnotes = {'Gasolineb': 'Gasoline',
+                 'Trucksc': 'Trucks',
+                 'Boatsd': 'Boats',
+                 'Boatse': 'Boats',
+                 'Fuelsb': 'Fuels',
+                 'Fuelsf': 'Fuels',
+                 'Consumptiona': 'Consumption',
+                 'Aircraftg': 'Aircraft',
+                 'Pipelineh': 'Pipeline',
+                 'Electricityh': 'Electricity',
+                 'Ethanoli': 'Ethanol',
+                 'Biodieseli': 'Biodiesel',
+                 }
+    for key in footnotes:
+        text = text.replace(key, footnotes[key])
+
     return text.strip()
+
 
 
 def ghg_parse(*, df_list, year, config, **_):
@@ -393,10 +416,12 @@ def ghg_parse(*, df_list, year, config, **_):
         # Dropping all rows with value "+": represents non-zero value
         df["FlowAmount"].replace("\+", np.nan, inplace=True, regex=True)
         # Dropping all rows with value "NE"
+        df["FlowAmount"].replace(" NE ", np.nan, inplace=True)
         df["FlowAmount"].replace("NE", np.nan, inplace=True)
         # Convert all empty cells to nan cells
         df["FlowAmount"].replace("", np.nan, inplace=True)
         # Table 3-10 has some NO (Not Occuring) values, dropping these.
+        df["FlowAmount"].replace(" NO ", np.nan, inplace=True)
         df["FlowAmount"].replace("NO", np.nan, inplace=True)
         # Table A-118 has some IE values, dropping these.
         df["FlowAmount"].replace("IE", np.nan, inplace=True)
