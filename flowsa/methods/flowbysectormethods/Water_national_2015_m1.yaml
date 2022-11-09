@@ -29,12 +29,9 @@ source_names:
           - "Mining"
         attribution_method: proportional
         attribution_source:
-        BLS_QCEW:
-          year: 2015
-          geoscale: national
-          selection_fields:
-            Class: "Employment"
-          clean_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+          Employment_national_2015:
+            data_format: FBS
+            year: 2015
       cropland_attribution:
         selection_fields:
           PrimaryActivity:
