@@ -43,6 +43,7 @@ source_names:
     activity_to_sector_mapping: SCC
     clean_fba_before_mapping: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
     fedefl_mapping: NEI
+    primary_action_type: Produced
     activity_sets:
       direct_allocation:
         selection_fields:
