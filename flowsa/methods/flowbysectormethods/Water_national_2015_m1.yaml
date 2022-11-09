@@ -10,7 +10,7 @@ source_names:
   "USGS_NWIS_WU":
     fedefl_mapping: USGS_NWIS_WU
     geoscale: state
-    clean_fba: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
     clean_fba_w_sec: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
     activity_sets:
       direct_attribution:
