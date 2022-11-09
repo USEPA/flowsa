@@ -582,10 +582,16 @@ class _FlowBy(pd.DataFrame):
 
         else:
             if 'primary_action_type' in self.config:
+                primary_action_type = self.config['primary_action_type']
+                secondary_action_type = ('Consumed'
+                                         if primary_action_type == 'Produced'
+                                         else 'Produced')
+
                 fb = self.assign(
                     **{f'Primary{col_type}':
-                        self[f'{col_type}'
-                             f'{self.config["primary_action_type"]}By']}
+                        self[f'{col_type}{primary_action_type}By'],
+                       f'Secondary{col_type}':
+                        self[f'{col_type}{secondary_action_type}By']}
                 )
 
             else:
@@ -606,18 +612,18 @@ class _FlowBy(pd.DataFrame):
                        }
                 )
 
-            def _identify_secondary(row: _FlowBySeries) -> str:
-                sectors = [row[f'{col_type}ProducedBy'],
-                           row[f'{col_type}ConsumedBy']]
-                sectors.remove(row[f'Primary{col_type}'])
-                return sectors[0]
+                def _identify_secondary(row: _FlowBySeries) -> str:
+                    sectors = [row[f'{col_type}ProducedBy'],
+                               row[f'{col_type}ConsumedBy']]
+                    sectors.remove(row[f'Primary{col_type}'])
+                    return sectors[0]
 
-            fb = fb.assign(
-                **{f'Secondary{col_type}': (
-                    fb.apply(_identify_secondary, axis='columns')
-                    # ^^^ Applying with axis='columns' applies TO each row.
-                    .astype('object'))}
-            )
+                fb = fb.assign(
+                    **{f'Secondary{col_type}': (
+                        fb.apply(_identify_secondary, axis='columns')
+                        # ^^^ Applying with axis='columns' applies TO each row.
+                        .astype('object'))}
+                )
 
             return fb
 
