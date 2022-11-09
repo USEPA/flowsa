@@ -9,7 +9,7 @@ Bureau of Land Management Public Land Statistics data
 
 import re
 import io
-import tabula
+from tabula.io import read_pdf
 import pandas as pd
 from flowsa.location import get_all_state_FIPS_2
 from flowsa.common import WITHDRAWN_KEYWORD
@@ -490,9 +490,9 @@ def blm_pls_call(*, resp, year, **_):
             for page_number in pg:
                 found_header = False
 
-                pdf_page = tabula.read_pdf(io.BytesIO(resp.content),
-                                           pages=page_number, stream=True,
-                                           guess=False)[0]
+                pdf_page = read_pdf(io.BytesIO(resp.content),
+                                    pages=page_number, stream=True,
+                                    guess=False)[0]
 
                 if pdf_page.shape[1] == 1:
                     pdf_page.columns = ["one"]

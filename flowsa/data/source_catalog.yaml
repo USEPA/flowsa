@@ -60,6 +60,12 @@ Census_AHS:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "disaggregated"
+Census_ASM:
+  class:
+    - Money
+  sector-like_activities: True
+  activity_schema: None # Codes for 2018 are NAICS_2017_Code
+  sector_aggregation_level: "disaggregated"
 Census_CBP:
   class:
     - Employment
@@ -131,6 +137,12 @@ EPA_CDDPath:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+EPA_FactsAndFigures:
+  class:
+    - Other
+  sector-like_activities: False
+  activity_schema: None
+  sector_aggregation_level: "aggregated"
 EPA_GHGI:
   class:
     - Chemicals
@@ -139,6 +151,14 @@ EPA_GHGI:
   sector-like_activities: False
   activity_schema:
   sector_aggregation_level: "aggregated"
+EPA_REI:
+  class:
+    - Employment
+    - Money
+    - Other
+  sector-like_activities: False
+  activity_schema: None
+  sector_aggregation_level: "disaggregated"
 EPA_StateGHGI:
   class:
     - Chemicals
@@ -168,6 +188,21 @@ EPA_NEI_Onroad:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
+  sector_aggregation_level: "aggregated"
+EPA_WARMer:
+  class:
+    - Chemicals
+    - Energy
+    - Money
+    - Employment
+  sector-like_activities: False
+  activity_schema: None
+  sector_aggregation_level: "aggregated"
+EPA_WFR:
+  class:
+    - Other
+  sector-like_activities: False
+  activity_schema: None
   sector_aggregation_level: "aggregated"
 NETL_EIA_PlantWater:
   class:

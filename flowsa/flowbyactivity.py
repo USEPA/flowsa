@@ -14,7 +14,7 @@ from urllib import parse
 import flowsa
 from esupy.processed_data_mgmt import write_df_to_file
 from esupy.remote import make_url_request
-from flowsa.common import load_api_key, sourceconfigpath, \
+from flowsa.common import load_env_file_key, sourceconfigpath, \
     load_yaml_dict, rename_log_file, get_flowsa_base_name
 from flowsa.settings import paths, log
 from flowsa.metadata import set_fb_meta, write_metadata
@@ -72,7 +72,7 @@ def assemble_urls_for_query(*, source, year, config):
     # substitute year from arguments and users api key into the url
     build_url = build_url.replace("__year__", str(year))
     if "__apiKey__" in build_url:
-        userAPIKey = load_api_key(config['api_name'])  # (common.py fxn)
+        userAPIKey = load_env_file_key('API_Key', config['api_name'])
         build_url = build_url.replace("__apiKey__", userAPIKey)
 
     fxn = config.get("url_replace_fxn")
