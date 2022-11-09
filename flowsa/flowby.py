@@ -918,6 +918,7 @@ class FlowByActivity(_FlowBy):
              .rename(columns={
                  'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
                  }))
+            .astype(object)
             for scale in geo.scale
             if scale.has_fips_level and scale <= target_geoscale
         ]
