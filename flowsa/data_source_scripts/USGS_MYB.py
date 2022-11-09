@@ -113,7 +113,7 @@ def usgs_myb_static_variables():
     """
     data = {}
     data["Class"] = "Geological"
-    data['FlowType'] = "ELEMENTARY_FLOWS"
+    data['FlowType'] = "ELEMENTARY_FLOW"
     data["Location"] = US_FIPS
     data["Compartment"] = "ground"
     data["Context"] = None

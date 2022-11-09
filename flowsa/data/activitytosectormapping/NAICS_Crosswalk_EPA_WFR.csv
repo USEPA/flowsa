@@ -1,0 +1,68 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
+EPA_WFR,"Fresh wheat, corn",NAICS_2012_Code,111140,I
+EPA_WFR,"Fresh wheat, corn",NAICS_2012_Code,111150,I
+EPA_WFR,Support activities for agriculture and forestry,NAICS_2012_Code,115,I
+EPA_WFR,Land Application,NAICS_2012_Code,115112,I
+EPA_WFR,Stone mining and quarrying,NAICS_2012_Code,21231,I
+EPA_WFR,Natural gas,NAICS_2012_Code,2212,I
+EPA_WFR,Sewer/Wastewater Treatment,NAICS_2012_Code,22132,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,2362,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,2372,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,2379,I
+EPA_WFR,Other nonresidential structures,NAICS_2012_Code,238,I
+EPA_WFR,Dog and cat food manufacturing,NAICS_2012_Code,311111,I
+EPA_WFR,Animal Feed,NAICS_2012_Code,311119,I
+EPA_WFR,Other animal food manufacturing,NAICS_2012_Code,311119,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3112,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3113,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3114,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3115,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3116,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3117,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3118,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,3119,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,312111,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31212,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31213,I
+EPA_WFR,Manufacturing/Processing,NAICS_2012_Code,31214,I
+EPA_WFR,Bio-based Materials/Biochemical Processing,NAICS_2012_Code,324110,I
+EPA_WFR,Gasoline,NAICS_2012_Code,324110,I
+EPA_WFR,Petrochemical manufacturing,NAICS_2012_Code,325110,I
+EPA_WFR,Other basic organic chemical manufacturing,NAICS_2012_Code,32519,I
+EPA_WFR,Pesticide and other agricultural chemical manufacturing,NAICS_2012_Code,325320,I
+EPA_WFR,Soap and cleaning compound manufacturing,NAICS_2012_Code,32561,I
+EPA_WFR,Toilet preparation manufacturing,NAICS_2012_Code,32562,I
+EPA_WFR,Printing ink manufacturing,NAICS_2012_Code,325910,I
+EPA_WFR,Wholesale Trade,NAICS_2012_Code,42,I
+EPA_WFR,Wholesale,NAICS_2012_Code,4244,I
+EPA_WFR,Retail,NAICS_2012_Code,4451,I
+EPA_WFR,Retail,NAICS_2012_Code,4452,I
+EPA_WFR,Retail,NAICS_2012_Code,45291,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,491,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,51,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,52,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,54,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,55,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,5611,I
+EPA_WFR,Correctional Facilities,NAICS_2012_Code,5612,I
+EPA_WFR,Services to buildings and dwellings,NAICS_2012_Code,5617,I
+EPA_WFR,Landfill,NAICS_2012_Code,5622121,I
+EPA_WFR,Controlled Combustion,NAICS_2012_Code,562213,I
+EPA_WFR,Codigestion/Anaerobic Digestion,NAICS_2012_Code,5622191,I
+EPA_WFR,Composting/Aerobic Processes,NAICS_2012_Code,5622192,I
+EPA_WFR,K-12 Schools,NAICS_2012_Code,6111,I
+EPA_WFR,Colleges & Universities,NAICS_2012_Code,6113,I
+EPA_WFR,Office Buildings,NAICS_2012_Code,621,I
+EPA_WFR,Hospitals,NAICS_2012_Code,622,I
+EPA_WFR,Nursing Homes,NAICS_2012_Code,623,I
+EPA_WFR,Food Banks,NAICS_2012_Code,62421,I
+EPA_WFR,Food Donation,NAICS_2012_Code,624210,I
+EPA_WFR,"Museums, historical sites, zoos, and parks",NAICS_2012_Code,712,I
+EPA_WFR,Hotels,NAICS_2012_Code,7211,I
+EPA_WFR,Sports Venues,NAICS_2012_Code,722310,I
+EPA_WFR,Restaurants/Food Services,NAICS_2012_Code,72232,I
+EPA_WFR,Restaurants/Food Services,NAICS_2012_Code,72233,I
+EPA_WFR,Restaurants/Food Services,NAICS_2012_Code,7225,I
+EPA_WFR,Correctional Facilities,NAICS_2012_Code,92214,I
+EPA_WFR,Military Installations,NAICS_2012_Code,92811,I
+EPA_WFR,Residential,NAICS_2012_Code,F010,I

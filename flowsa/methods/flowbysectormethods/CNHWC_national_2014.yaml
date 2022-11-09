@@ -7,7 +7,7 @@ source_names:
     class: Other
     geoscale_to_use: national
     year: 2014
-    clean_fba_df_fxn: !script_function:EPA_CDDPath 'assign_wood_to_engineering'
+    clean_fba_df_fxn: !script_function:EPA_CDDPath assign_wood_to_engineering
     mfl_mapping: 'EPA_CDDPath'
     activity_sets:
       activity_set_1:

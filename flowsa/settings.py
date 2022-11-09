@@ -1,10 +1,10 @@
 import sys
 import os
 import logging
-import subprocess
+from importlib.metadata import version
+from pathlib import Path
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
-
 
 try:
     MODULEPATH = \
@@ -74,11 +74,11 @@ vLogDetailed.propagate = False
 
 # create handlers
 # create handler for overall logger
-log_fh = logging.FileHandler(logoutputpath+'flowsa.log',
+log_fh = logging.FileHandler(logoutputpath + 'flowsa.log',
                              mode='w', encoding='utf-8')
 log_fh.setFormatter(formatter)
 # create handler for general validation information
-vLog_fh = logging.FileHandler(logoutputpath+'validation_flowsa.log',
+vLog_fh = logging.FileHandler(logoutputpath + 'validation_flowsa.log',
                               mode='w', encoding='utf-8')
 vLog_fh.setFormatter(formatter)
 # create console handler
@@ -98,27 +98,41 @@ vLogDetailed.addHandler(vLog_fh)
 
 
 def return_pkg_version():
+    # As of Python 3.8 can use the following:
+    return version('flowsa')
 
-    # return version with git describe
+
+# https://stackoverflow.com/a/41125461
+def memory_limit(percentage=.93):
+    # Placed here becuase older versions of Python do not have this
+    import resource
+    # noinspection PyBroadException
     try:
-        # set path to flowsa repository, necessary if running method files
-        # outside the flowsa repo
-        tags = subprocess.check_output(
-            ["git", "describe", "--tags", "--always"],
-            cwd=MODULEPATH).decode().strip()
-        version = tags.split("-", 1)[0].replace('v', "")
-    except subprocess.CalledProcessError:
-        log.info('Unable to return version with git describe')
-        version = 'None'
+        max_memory = get_memory()
+        print(f"Max Memory: {max_memory}")
+    except Exception:
+        print("Could not determine max memory")
+    else:
+        soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+        resource.setrlimit(resource.RLIMIT_AS, (int(max_memory * 1024 * percentage), hard))
 
-    return version
+
+def get_memory():
+    with open('/proc/meminfo', 'r') as mem:
+        free_memory = 0
+        for i in mem:
+            sline = i.split()
+            if str(sline[0]) in ('MemFree:', 'Buffers:', 'Cached:', 'SwapFree:'):
+                free_memory += int(sline[1])
+    return free_memory
 
 
 # metadata
 PKG = "flowsa"
 PKG_VERSION_NUMBER = return_pkg_version()
-GIT_HASH = get_git_hash()
-GIT_HASH_LONG = get_git_hash('long')
+GIT_HASH_LONG = os.environ.get('GITHUB_SHA') or get_git_hash('long')
+if GIT_HASH_LONG:
+    GIT_HASH = GIT_HASH_LONG[0:7]
 
 # Common declaration of write format for package data products
 WRITE_FORMAT = "parquet"
