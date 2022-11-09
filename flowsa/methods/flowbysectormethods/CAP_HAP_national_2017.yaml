@@ -43,6 +43,7 @@ source_names:
     activity_to_sector_mapping: SCC
     clean_fba_before_mapping: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
     fedefl_mapping: NEI
+    primary_action_type: Produced
     activity_sets:
       direct_allocation:
         selection_fields:
@@ -150,7 +151,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv mobile_and_fuel_storage
         attribution_method: proportional
         attribution_source:
-          BEA_Make_Detail_BeforeRedef:
+          BEA_Use_Detail_BeforeRedef:
             <<: *bea
             primary_action_type: Consumed # confirm this
             selection_fields:
@@ -161,7 +162,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv fertilizers
         attribution_method: proportional
         attribution_source:
-          BEA_Make_Detail_BeforeRedef:
+          BEA_Use_Detail_BeforeRedef:
             <<: *bea
             primary_action_type: Consumed  # confirm this
             selection_fields:
@@ -172,7 +173,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
         attribution_method: proportional
         attribution_source:
-          BEA_Make_Detail_BeforeRedef:
+          BEA_Use_Detail_BeforeRedef:
             <<: *bea
             primary_action_type: Consumed  # confirm this
             selection_fields:
@@ -213,7 +214,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonroad_2017_asets.csv offroad_vehicles_equipment
         attribution_method: proportional
         attribution_source:
-          BEA_Make_Detail_BeforeRedef:
+          BEA_Use_Detail_BeforeRedef:
             <<: *bea
             primary_action_type: Consumed  # confirm this
             selection_fields:
@@ -236,7 +237,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Onroad_2017_asets.csv onroad_vehicles_gas_stations
         attribution_method: proportional
         attribution_source:
-          BEA_Make_Detail_BeforeRedef:
+          BEA_Use_Detail_BeforeRedef:
             <<: *bea
             primary_action_type: Consumed  # confirm this
             selection_fields:
