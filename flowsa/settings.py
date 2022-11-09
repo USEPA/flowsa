@@ -1,7 +1,7 @@
 import sys
 import os
 import logging
-import subprocess
+from importlib.metadata import version
 from pathlib import Path
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
 from esupy.util import get_git_hash
@@ -98,22 +98,8 @@ vLogDetailed.addHandler(vLog_fh)
 
 
 def return_pkg_version():
-    # GitHub actions can't query git but can use this environment variable
-    if os.environ.get('GITHUB_SHA'):
-        return os.environ['GITHUB_SHA']
-    # return version with git describe
-    try:
-        # set path to flowsa repository, necessary if running method files
-        # outside the flowsa repo
-        tags = subprocess.check_output(
-            ["git", "describe", "--tags", "--always"],
-            cwd=MODULEPATH).decode().strip()
-        version = tags.split("-", 1)[0].replace('v', "")
-    except subprocess.CalledProcessError:
-        log.info('Unable to return version with git describe')
-        version = 'None'
-
-    return version
+    # As of Python 3.8 can use the following:
+    return version('flowsa')
 
 
 # https://stackoverflow.com/a/41125461
@@ -144,8 +130,9 @@ def get_memory():
 # metadata
 PKG = "flowsa"
 PKG_VERSION_NUMBER = return_pkg_version()
-GIT_HASH = os.environ.get('GITHUB_SHA') or get_git_hash()
 GIT_HASH_LONG = os.environ.get('GITHUB_SHA') or get_git_hash('long')
+if GIT_HASH_LONG:
+    GIT_HASH = GIT_HASH_LONG[0:7]
 
 # Common declaration of write format for package data products
 WRITE_FORMAT = "parquet"

@@ -10,14 +10,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
@@ -38,13 +38,13 @@ jobs:
 
     - name: Upload files
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3.1.1
       with:
         # Artifact name
         name: FlowBySector
         # A file, directory or wildcard patter that describes what to upload
         path: | # uses local user data dir for ubuntu
-          ~/.local/share/flowsa/FlowBySector/*
-          ~/.local/share/stewi/Log/*
+          ~/Library/Application Support/flowsa/FlowBySector/*
+          ~/Library/Application Support/flowsa/Log/*
         if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
         # retention-days: 5 # cannot exceed the retention limit set by the repository, organization, or enterprise.
