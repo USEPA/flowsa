@@ -28,6 +28,7 @@ sources_to_cache:
 _attribution_sources:
   BEA: &bea
     year: 2012
+    geoscale: national
     activity_to_sector_mapping: BEA_2012_Detail
     attribution_method: proportional
     attribution_source:
@@ -154,9 +155,8 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv mobile_and_fuel_storage
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_BeforeRedef:
+          BEA_Use_Detail_PRO_BeforeRedef:
             <<: *bea
-            primary_action_type: Consumed # confirm this
             selection_fields:
               ActivityProducedBy: {'324110': ''}  # Petroleum
 
@@ -165,9 +165,8 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv fertilizers
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_BeforeRedef:
+          BEA_Use_Detail_PRO_BeforeRedef:
             <<: *bea
-            primary_action_type: Consumed  # confirm this
             selection_fields:
               ActivityProducedBy: {'325310': ''}  # Fertilizers
 
@@ -177,9 +176,8 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_BeforeRedef:
+          BEA_Use_Detail_PRO_BeforeRedef:
             <<: *bea
-            primary_action_type: Consumed  # confirm this
             selection_fields:
               ActivityProducedBy: {'325320': ''}  # Pesticides
 
@@ -219,9 +217,8 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonroad_2017_asets.csv offroad_vehicles_equipment
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_BeforeRedef:
+          BEA_Use_Detail_PRO_BeforeRedef:
             <<: *bea
-            primary_action_type: Consumed  # confirm this
             selection_fields:
               ActivityProducedBy: {'324110': ''}  # Petroleum
 
@@ -243,9 +240,8 @@ source_names:
           PrimaryActivity: !from_index:NEI_Onroad_2017_asets.csv onroad_vehicles_gas_stations
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_BeforeRedef:
+          BEA_Use_Detail_PRO_BeforeRedef:
             <<: *bea
-            primary_action_type: Consumed  # confirm this
             selection_fields:
               ActivityProducedBy: {'324110': ''}  # Petroleum
 
