@@ -62,10 +62,7 @@ source_names:
               Class: Land
               FlowName: AREA HARVESTED
             ## CONFIRM HOW TO HANDLE THESE CLEANING FXNS
-            clean_fba_w_sec_df_fxn: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
-            # OR
-            attribution_method: function
-            attribution function: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics # wrapped in an appropriate aggregation
+            clean_fba_w_sec_df_fxn: !script_function:temp_data_source_functions disaggregate_coa_cropland_to_6_digit_naics
 
       industry_combustion_coal: #only allocating to 3digits
         selection_fields:
@@ -201,6 +198,7 @@ source_names:
   EPA_NEI_Nonroad:
     geoscale: state
     year: 2017
+    primary_action_type: Produced
     activity_to_sector_mapping: SCC
     clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
@@ -224,6 +222,7 @@ source_names:
   EPA_NEI_Onroad:
     geoscale: state
     year: 2017
+    primary_action_type: Produced
     activity_to_sector_mapping: SCC
     clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
