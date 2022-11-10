@@ -987,6 +987,33 @@ class FlowByActivity(_FlowBy):
 
         return fba_at_target_geoscale
 
+    def load_prepare_attribution_source(self: 'FlowByActivity') -> 'FlowBySector':
+        attribution_source = self.config['attribution_source']
+
+        if isinstance(attribution_source, str):
+            name, config = attribution_source, {}
+        else:
+            (name, config), = attribution_source.items()
+
+        if name in self.config['cache']:
+            attribution_fbs = self.config['cache'][name].copy()
+            attribution_fbs.config = {
+                **{k: attribution_fbs.config[k]
+                   for k in attribution_fbs.config['method_config_keys']},
+                **config
+            }
+            attribution_fbs = attribution_fbs.prepare_fbs()
+        else:
+            attribution_fbs = get_flowby_from_config(
+                name=name,
+                config={**{k: v for k, v in self.config.items()
+                           if k in self.config['method_config_keys']
+                           or k == 'method_config_keys'},
+                        **get_catalog_info(name),
+                        **config}
+            ).prepare_fbs()
+        return attribution_fbs
+
     def attribute_flows_to_sectors(
         self: 'FlowByActivity',
         external_config_path: str = None
@@ -1019,31 +1046,7 @@ class FlowByActivity(_FlowBy):
         attribution_method = fba.config.get('attribution_method')
 
         if attribution_method == 'proportional':
-            attribution_source = fba.config['attribution_source']
-
-            if isinstance(attribution_source, str):
-                name, config = attribution_source, {}
-            else:
-                (name, config), = attribution_source.items()
-
-            if name in fba.config['cache']:
-                attribution_fbs = fba.config['cache'][name].copy()
-                attribution_fbs.config = {
-                    **{k: attribution_fbs.config[k]
-                       for k in attribution_fbs.config['method_config_keys']},
-                    **config
-                }
-                attribution_fbs = attribution_fbs.prepare_fbs()
-            else:
-                attribution_fbs = get_flowby_from_config(
-                    name=name,
-                    config={**{k: v for k, v in fba.config.items()
-                            if k in fba.config['method_config_keys']
-                            or k == 'method_config_keys'},
-                            **get_catalog_info(name),
-                            **config}
-                ).prepare_fbs()
-
+            attribution_fbs = fba.load_prepare_attribution_source()
             attributed_fba = fba.proportionally_attribute(attribution_fbs)
 
         # elif attribution_method == 'proportional-flagged':
