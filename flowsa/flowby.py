@@ -483,9 +483,10 @@ class _FlowBy(pd.DataFrame):
         return replaced_fb
 
     def aggregate_flowby(
-        self: FB,
-        columns_to_group_by: List[str] = None,
-        columns_to_average: List[str] = None
+            self: FB,
+            columns_to_group_by: List[str] = None,
+            columns_to_average: List[str] = None,
+            retain_zeros: bool = False
     ) -> FB:
         """
         Aggregates (sums) FlowBy 'FlowAmount' column based on group_by_columns
@@ -507,14 +508,24 @@ class _FlowBy(pd.DataFrame):
                 if self[x].dtype == 'float' and x != 'FlowAmount'
             ]
 
-        fb = (
-            self
-            .query('FlowAmount != 0')
-            .drop(columns=[c for c in self.columns
-                           if c not in ['FlowAmount',
-                                        *columns_to_average,
-                                        *columns_to_group_by]])
-        )
+        if retain_zeros:
+            # keep rows of zero values
+            fb = (
+                self
+                .drop(columns=[c for c in self.columns
+                               if c not in ['FlowAmount',
+                                            *columns_to_average,
+                                            *columns_to_group_by]])
+            )
+        else:
+            fb = (
+                self
+                    .query('FlowAmount != 0')
+                    .drop(columns=[c for c in self.columns
+                                   if c not in ['FlowAmount',
+                                                *columns_to_average,
+                                                *columns_to_group_by]])
+            )
 
         aggregated = (
             fb
