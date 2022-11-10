@@ -61,6 +61,7 @@ source_names:
             selection_fields:
               Class: Land
               FlowName: AREA HARVESTED
+            attribution_method: proportional
             attribution_source:
               USDA_CoA_Cropland_NAICS:
                 year: 2017
