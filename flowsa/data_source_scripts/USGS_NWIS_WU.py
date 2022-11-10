@@ -15,6 +15,7 @@ from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.validation import compare_df_units, \
     calculate_flowamount_diff_between_dfs
+from flowsa.flowby import FlowByActivity
 
 
 def usgs_URL_helper(*, build_url, config, **_):
@@ -354,7 +355,7 @@ def standardize_usgs_nwis_names(flowbyactivity_df):
     return flowbyactivity_df
 
 
-def usgs_fba_data_cleanup(fba, **_):
+def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     """
     Clean up the dataframe to prepare for flowbysector. Used in flowbysector.py
     :param fba: df, FBA format
@@ -416,7 +417,7 @@ def usgs_fba_data_cleanup(fba, **_):
     return dfd
 
 
-def calculate_net_public_supply(df_load):
+def calculate_net_public_supply(df_load: FlowByActivity):
     """
     USGS Provides info on the quantity of public supply withdrawals that
     are delivered to domestic use. The USGS PS withdrawals are not necessarily
@@ -530,7 +531,7 @@ def calculate_net_public_supply(df_load):
     return modified_ps
 
 
-def check_golf_and_crop_irrigation_totals(df_load):
+def check_golf_and_crop_irrigation_totals(df_load: FlowByActivity):
     """
     Check that golf + crop values equal published irrigation totals.
     If not, assign water to crop irrigation.
@@ -564,11 +565,12 @@ def check_golf_and_crop_irrigation_totals(df_load):
         df_w_missing_crop = pd.concat([df_load, df_m3], ignore_index=True)
 
         group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
-        df_w_missing_crop = aggregator(df_w_missing_crop, group_cols,
-                                       retain_zeros=True)
+
+        df_w_missing_crop2 = df_w_missing_crop.aggregate_flowby(
+            retain_zeros=True, columns_to_group_by=group_cols)
 
         # validate results - the differences should all be 0
-        df_check = subset_and_merge_irrigation_types(df_w_missing_crop)
+        df_check = subset_and_merge_irrigation_types(df_w_missing_crop2)
         df_check = df_check[df_check['Location'] != US_FIPS].reset_index(
             drop=True)
         df_check['Diff'] = df_check['Diff'].apply(lambda x: round(x, 2))
@@ -579,12 +581,12 @@ def check_golf_and_crop_irrigation_totals(df_load):
         else:
             vLogDetailed.info('The golf and crop irrigation add up to total '
                               'irrigation.')
-        return df_w_missing_crop
+        return df_w_missing_crop2
     else:
         return df_load
 
 
-def subset_and_merge_irrigation_types(df):
+def subset_and_merge_irrigation_types(df: FlowByActivity):
     # subset into golf, crop, and total irrigation (and non irrigation)
     df_i = df[(df[fba_activity_fields[0]] == 'Irrigation') |
               (df[fba_activity_fields[1]] == 'Irrigation')]
@@ -635,7 +637,7 @@ def subset_and_merge_irrigation_types(df):
     return df_m2
 
 
-def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
+def usgs_fba_w_sectors_data_cleanup(df_wsec: FlowByActivity, attr, **kwargs) -> FlowByActivity:
     """
     Call on functions to modify the fba with sectors df before being allocated
     to sectors used in flowbysector.py
@@ -651,7 +653,7 @@ def usgs_fba_w_sectors_data_cleanup(df_wsec, attr, **kwargs):
     return df
 
 
-def modify_sector_length(df_wsec):
+def modify_sector_length(df_wsec: FlowByActivity):
     """
     After assigning sectors to activities, modify the sector length of an
     activity, to match the assigned sector in another sector column (
