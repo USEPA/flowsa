@@ -15,7 +15,7 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import sector_level_key, \
     load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
-    fba_default_grouping_fields, check_activities_sector_like
+    fba_mapped_default_grouping_fields, check_activities_sector_like
 from flowsa.location import US_FIPS, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
 
@@ -300,10 +300,10 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     # Because code will sometimes change terminology, aggregate
     # data by context and flowable to compare df differences
     # subset df
-    dfs = df[['Flowable', 'Context', 'ActivityProducedBy',
+    dfs = df[['FlowName', 'Compartment', 'ActivityProducedBy',
               'ActivityConsumedBy', 'FlowAmount_Original',
               'FlowAmount_Modified', 'Unit', 'geoscale']]
-    agg_cols = ['Flowable', 'Context', 'ActivityProducedBy',
+    agg_cols = ['FlowName', 'Compartment', 'ActivityProducedBy',
                 'ActivityConsumedBy', 'Unit', 'geoscale']
     dfagg = dfs.groupby(
         agg_cols, dropna=False, as_index=False).agg(
@@ -324,7 +324,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
             columns=['ActivityProducedBy', 'ActivityConsumedBy',
                      'FlowAmount_Difference', 'Percent_Difference'])
         dfagg4 = dfagg3.groupby(
-            ['Flowable', 'Context', 'Unit', 'geoscale'],
+            ['FlowName', 'Compartment', 'Unit', 'geoscale'],
             dropna=False, as_index=False).agg(
             {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
         # column calculating difference
@@ -1007,7 +1007,7 @@ def compare_geographic_totals(
         # depending on the datasource, might need to rename some
         # strings for national comparison
         sub = rename_column_values_for_comparison(sub, sourcename)
-        sub2 = aggregator(sub, fba_default_grouping_fields).rename(
+        sub2 = aggregator(sub, fba_mapped_default_grouping_fields).rename(
             columns={'FlowAmount': 'FlowAmount_sub'})
 
         # compare df
@@ -1018,7 +1018,7 @@ def compare_geographic_totals(
                       ['Class', 'SourceName', 'Flowable', 'Unit',
                        'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
                        'Context', 'Location', 'LocationSystem', 'Year'])
-        # comapare units
+        # compare units
         compare_df_units(nat, sub2)
         df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
                         sub2[merge_cols + ['FlowAmount_sub']],
@@ -1064,12 +1064,10 @@ def rename_column_values_for_comparison(df, sourcename):
     # for fresh/saline and ground/surface water. Therefore, to compare
     # subset data to national level, rename to match national values.
     if sourcename == 'USGS_NWIS_WU':
-        df['FlowName'] = np.where(
-            df['ActivityConsumedBy'] != 'Livestock', 'total', df['FlowName'])
-        df['Compartment'] = df['Compartment'].str.replace(
-            'ground', 'total', regex=True)
-        df['Compartment'] = df['Compartment'].str.replace(
-            'surface', 'total', regex=True)
+        df['Flowable'] = np.where(
+            df['ActivityConsumedBy'] != 'Livestock', 'Water', df['Flowable'])
+        df['Context'] = np.where(df['Context'].str.contains('resource/water/'),
+                                 'resource/water', df['Context'])
 
     return df
 
