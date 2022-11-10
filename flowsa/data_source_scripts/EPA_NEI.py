@@ -11,6 +11,7 @@ from os import path
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import standardize_units
+from flowsa.flowby import FlowByActivity
 
 
 def epa_nei_url_helper(*, build_url, year, config, **_):
@@ -155,11 +156,11 @@ def epa_nei_nonpoint_parse(*, df_list, source, year, config, **_):
     return df
 
 
-def clean_NEI_fba(fba, **_):
+def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     """
     Clean up the NEI FBA for use in FBS creation
     :param fba: df, FBA format
-    :return: df, modified FBA
+    :return: modified FBA
     """
     fba = remove_duplicate_NEI_flows(fba)
     fba = drop_GHGs(fba)
@@ -178,17 +179,9 @@ def clean_NEI_fba(fba, **_):
     fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
             ['FlowName', 'Flowable', 'FlowUUID']] = ['PM10-PM2.5',
                                                      PM_list[0], PM_list[1]]
-    return fba
+    # Drop zero values to reduce size
+    fba = fba.query('FlowAmount != 0').reset_index(drop=True)
 
-
-def clean_NEI_fba_no_pesticides(fba, **_):
-    """
-    Clean up the NEI FBA with no pesicides for use in FBS creation
-    :param fba: df, FBA format
-    :return: df, modified FBA
-    """
-    fba = drop_pesticides(fba)
-    fba = clean_NEI_fba(fba=fba)
     return fba
 
 

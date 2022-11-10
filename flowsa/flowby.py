@@ -768,7 +768,6 @@ class FlowByActivity(_FlowBy):
         drop_unmapped_rows: bool = False
     ) -> 'FlowByActivity':
         fba_merge_keys = [
-            'SourceName',
             'Flowable',
             'Unit',
             'Context'
@@ -785,22 +784,16 @@ class FlowByActivity(_FlowBy):
             'TargetFlowUUID'
         ]
         mapping_merge_keys = [
-            'SourceListName',
             'SourceFlowName',
             'SourceUnit',
             'SourceFlowContext'
         ]
         merge_type = 'inner' if drop_unmapped_rows else 'left'
-        ## TODO update this logic
-        if self.config.get('fedefl_mapping') is True:
-            mapping_subset = self.source_name
-        else:
-            mapping_subset = self.config.get('fedefl_mapping')
-            fba_merge_keys.remove('SourceName')
-            mapping_merge_keys.remove('SourceListName')
 
-        log.info('Mapping flows in %s to federal elementary flow list',
-                 self.full_name)
+        mapping_subset = self.config.get('fedefl_mapping')
+
+        log.info(f'Mapping flows in {self.full_name} to '
+                 f'{mapping_subset} in federal elementary flow list')
 
         fba = (
             self
@@ -1508,7 +1501,9 @@ class FlowByActivity(_FlowBy):
 
         self = self.convert_daily_to_annual()
         if self.config.get('fedefl_mapping'):
-            mapped = self.map_to_fedefl_list()
+            mapped = self.map_to_fedefl_list(
+                drop_unmapped_rows=self.config.get('drop_unmapped_rows', False)
+                )
         else:
             mapped = self.rename(columns={'FlowName': 'Flowable',
                                           'Compartment': 'Context'})

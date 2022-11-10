@@ -11,6 +11,7 @@ sources_to_cache:
     selection_fields:
       Class: Energy
       Unit: Trillion Btu
+      Location: '00000'
       # NEW EIA MECS Energy FBAs show tables in description
       Description:
           - Table 2.2
@@ -18,8 +19,6 @@ sources_to_cache:
     estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_mecs_energy
     clean_fba: !script_function:temp_data_source_functions clean_mecs_energy_fba
     clean_fba_w_sec: !script_function:temp_data_source_functions clean_mapped_mecs_energy_fba
-    # clean_fba_df_fxn: !script_function:EIA_MECS mecs_energy_fba_cleanup
-    # clean_fba_w_sec_df_fxn: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
     attribution_method: proportional
     attribution_source:
       Employment_national_2014:
@@ -40,10 +39,11 @@ source_names:
   EPA_NEI_Nonpoint:
     geoscale: state
     year: 2017
-    activity_to_sector_mapping: SCC
-    clean_fba_before_mapping: !script_function:EPA_NEI clean_NEI_fba_no_pesticides
-    fedefl_mapping: NEI
     primary_action_type: Produced
+    activity_to_sector_mapping: SCC
+    clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
+    fedefl_mapping: NEI
+    drop_unmapped_rows: True
     activity_sets:
       direct_allocation:
         selection_fields:
@@ -61,11 +61,14 @@ source_names:
             selection_fields:
               Class: Land
               FlowName: AREA HARVESTED
-            ## CONFIRM HOW TO HANDLE THESE CLEANING FXNS
-            clean_fba_w_sec_df_fxn: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
-            # OR
-            attribution_method: function
-            attribution function: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics # wrapped in an appropriate aggregation
+            attribution_method: proportional
+            attribution_source:
+              USDA_CoA_Cropland_NAICS:
+                year: 2017
+                geoscale: state
+                selection_fields:
+                  Class: Land
+                  FlowName: AG LAND, CROPLAND, HARVESTED
 
       industry_combustion_coal: #only allocating to 3digits
         selection_fields:
@@ -74,7 +77,7 @@ source_names:
         attribution_source:
           EIA_MECS_Energy:
             selection_fields:
-              FlowName: Coal
+              Flowable: Coal
       
       industry_combustion_coke: #only allocating to 3digits
         selection_fields:
@@ -83,7 +86,7 @@ source_names:
         attribution_source:
           EIA_MECS_Energy:
             selection_fields:
-              FlowName: Coke and Breeze
+              Flowable: Coke and Breeze
       
       industry_combustion_distillate: #only allocating to 3digits
         selection_fields:
@@ -92,7 +95,7 @@ source_names:
         attribution_source:
           EIA_MECS_Energy:
             selection_fields:
-              FlowName: Distillate Fuel Oil
+              Flowable: Distillate Fuel Oil
       
       industry_combustion_hgl: #only allocating to 3digits
         selection_fields:
@@ -101,7 +104,7 @@ source_names:
         attribution_source:
           EIA_MECS_Energy:
             selection_fields:
-              FlowName: Hydrocarbon Gas Liquids, excluding natural gasoline
+              Flowable: Hydrocarbon Gas Liquids, excluding natural gasoline
               
       industry_combustion_nat_gas: #only allocating to 3digits
         selection_fields:
@@ -110,7 +113,7 @@ source_names:
         attribution_source:
           EIA_MECS_Energy:
             selection_fields:
-              FlowName: Natural Gas
+              Flowable: Natural Gas
 
       industry_combustion_other: #only allocating to 3digits
         selection_fields:
@@ -119,7 +122,7 @@ source_names:
         attribution_source:
           EIA_MECS_Energy:
             selection_fields:
-              FlowName: Other
+              Flowable: Other
 
       industry_combustion_residual: #only allocating to 3digits
         selection_fields:
@@ -128,7 +131,7 @@ source_names:
         attribution_source:
           EIA_MECS_Energy:
             selection_fields:
-              FlowName: Residual Fuel Oil
+              Flowable: Residual Fuel Oil
 
       livestock: #Livestock losing NAICS 11211
         selection_fields:
@@ -169,6 +172,7 @@ source_names:
               ActivityProducedBy: {'325310': ''}  # Fertilizers
 
       pesticides: # pesticides
+        clean_fba_before_mapping: !script_function:EPA_NEI drop_pesticides
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
         attribution_method: proportional
@@ -200,6 +204,7 @@ source_names:
   EPA_NEI_Nonroad:
     geoscale: state
     year: 2017
+    primary_action_type: Produced
     activity_to_sector_mapping: SCC
     clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
@@ -223,6 +228,7 @@ source_names:
   EPA_NEI_Onroad:
     geoscale: state
     year: 2017
+    primary_action_type: Produced
     activity_to_sector_mapping: SCC
     clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
