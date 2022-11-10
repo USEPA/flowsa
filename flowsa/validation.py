@@ -1007,17 +1007,20 @@ def compare_geographic_totals(
         # depending on the datasource, might need to rename some
         # strings for national comparison
         sub = rename_column_values_for_comparison(sub, sourcename)
-        sub2 = aggregator(sub, fba_default_grouping_fields).rename(
-            columns={'FlowAmount': 'FlowAmount_sub'})
 
         # compare df
-        merge_cols = (['Class', 'SourceName', 'FlowName', 'Unit',
+        merge_cols = ['Class', 'SourceName', 'Unit',
                        'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
-                       'Compartment', 'Location', 'LocationSystem', 'Year']
-                      if df_type == 'FBA' else
-                      ['Class', 'SourceName', 'Flowable', 'Unit',
-                       'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
-                       'Context', 'Location', 'LocationSystem', 'Year'])
+                       'Location', 'LocationSystem', 'Year']
+
+        if df_type == 'FBA':
+            merge_cols.extend(['FlowName', 'Compartment'])
+        else:
+             merge_cols.extend(['Flowable', 'Context'])
+
+        sub2 = aggregator(sub, merge_cols).rename(
+            columns={'FlowAmount': 'FlowAmount_sub'})
+
         # comapare units
         compare_df_units(nat, sub2)
         df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
