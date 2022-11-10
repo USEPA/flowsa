@@ -459,46 +459,6 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     return df
 
 
-def mecs_energy_fba_cleanup(fba, attr, **kwargs):
-    """
-    Clean up the EIA MECS energy FlowByActivity
-    :param fba: df, FBA format
-    :param attr: dictionary, attribute data from method yaml for activity set
-    :param kwargs: optional, can also include bool 'download_FBAs_if_missing'
-    :return: df, subset of EIA MECS Energy FBA
-    """
-    # subset the df to only include values where the unit = MJ
-    fba = fba.loc[fba['Unit'] == 'MJ'].reset_index(drop=True)
-
-    return fba
-
-
-def eia_mecs_energy_clean_allocation_fba_w_sec(
-        df_w_sec, attr, method, **kwargs):
-    """
-    clean up eia_mecs_energy df with sectors by estimating missing data
-    :param df_w_sec: df, EIA MECS Energy, FBA format with sector columns
-    :param attr: dictionary, attribute data from method yaml for activity set
-    :param method: dictionary, FBS method yaml
-    :param kwargs: includes "sourcename" which is required for other
-        'clean_fba_w_sec' fxns
-    :return: df, EIA MECS energy with estimated missing data
-    """
-
-    # drop rows where flowamount = 0, which drops supressed data
-    df_w_sec = df_w_sec[df_w_sec['FlowAmount'] != 0].reset_index(drop=True)
-
-    # estimate missing data
-    sector_column = 'SectorConsumedBy'
-    df = determine_flows_requiring_disaggregation(
-        df_w_sec, attr, method, sector_column)
-
-    # drop rows where flowamount = 0
-    df2 = df[df['FlowAmount'] != 0].reset_index(drop=True)
-
-    return df2
-
-
 def mecs_land_fba_cleanup(fba, **_):
     """
     Modify the EIA MECS Land FBA
@@ -552,6 +512,7 @@ def mecs_land_clean_allocation_mapped_fba_w_sec(df, attr, method):
     return df
 
 
+# TODO confirm this function can be dropped and replaced
 def determine_flows_requiring_disaggregation(
         df_load, attr, method, sector_column):
     """

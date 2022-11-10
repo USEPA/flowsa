@@ -19,8 +19,6 @@ sources_to_cache:
     estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_mecs_energy
     clean_fba: !script_function:temp_data_source_functions clean_mecs_energy_fba
     clean_fba_w_sec: !script_function:temp_data_source_functions clean_mapped_mecs_energy_fba
-    # clean_fba_df_fxn: !script_function:EIA_MECS mecs_energy_fba_cleanup
-    # clean_fba_w_sec_df_fxn: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
     attribution_method: proportional
     attribution_source:
       Employment_national_2014:
@@ -47,27 +45,27 @@ source_names:
     fedefl_mapping: NEI
     drop_unmapped_rows: True
     activity_sets:
-      # direct_allocation:
-      #   selection_fields:
-      #     PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv direct_allocation
-      #   attribution_method: direct
+      direct_allocation:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv direct_allocation
+        attribution_method: direct
       
-      # cropland:
-      #   selection_fields:
-      #     PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv cropland
-      #   attribution_method: proportional
-      #   attribution_source:
-      #     USDA_CoA_Cropland:
-      #       year: 2017
-      #       geoscale: state
-      #       selection_fields:
-      #         Class: Land
-      #         FlowName: AREA HARVESTED
-      #       ## CONFIRM HOW TO HANDLE THESE CLEANING FXNS
-      #       clean_fba_w_sec_df_fxn: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
-      #       # OR
-      #       attribution_method: function
-      #       attribution function: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics # wrapped in an appropriate aggregation
+      cropland:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv cropland
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            year: 2017
+            geoscale: state
+            selection_fields:
+              Class: Land
+              FlowName: AREA HARVESTED
+            ## CONFIRM HOW TO HANDLE THESE CLEANING FXNS
+            clean_fba_w_sec_df_fxn: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
+            # OR
+            attribution_method: function
+            attribution function: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics # wrapped in an appropriate aggregation
 
       industry_combustion_coal: #only allocating to 3digits
         selection_fields:
