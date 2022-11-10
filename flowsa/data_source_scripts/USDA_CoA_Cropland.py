@@ -353,18 +353,18 @@ def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
-    # todo: replace with download_sources_ok
+    # todo: update download fba if missing to use default input (download_sources_ok)
     fba_w_sector = disaggregate_pastureland(
         fba_w_sector, attr, method, year=fba_w_sector.config['year'],
-        sector_column=sector_col, download_FBA_if_missing=kwargs['download_FBA_if_missing'],
+        sector_column=sector_col, download_FBA_if_missing=True,
         parameter_drop=['1125'])
 
     # use ratios of usda 'harvested cropland' to determine missing 6 digit
     # naics
+    # todo: update download fba if missing to use default input (download_sources_ok)
     fba_w_sector = disaggregate_cropland(
         fba_w_sector, attr, method, year=fba_w_sector.config['year'],
-        sector_column=sector_col, download_FBA_if_missing=kwargs[
-            'download_FBA_if_missing'])
+        sector_column=sector_col, download_FBA_if_missing=True)
 
     return fba_w_sector
 
