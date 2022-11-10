@@ -61,8 +61,13 @@ source_names:
             selection_fields:
               Class: Land
               FlowName: AREA HARVESTED
-            ## CONFIRM HOW TO HANDLE THESE CLEANING FXNS
-            clean_fba_w_sec_df_fxn: !script_function:temp_data_source_functions disaggregate_coa_cropland_to_6_digit_naics
+            attribution_source:
+              USDA_CoA_Cropland_NAICS:
+                year: 2017
+                geoscale: state
+                selection_fields:
+                  Class: Land
+                  FlowName: AG LAND, CROPLAND, HARVESTED
 
       industry_combustion_coal: #only allocating to 3digits
         selection_fields:
