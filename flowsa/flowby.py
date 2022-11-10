@@ -1049,6 +1049,10 @@ class FlowByActivity(_FlowBy):
             attribution_fbs = fba.load_prepare_attribution_source()
             attributed_fba = fba.proportionally_attribute(attribution_fbs)
 
+        elif attribution_method == 'multiplication':
+            attribution_fbs = fba.load_prepare_attribution_source()
+            attributed_fba = fba.multiplication_attribution(attribution_fbs)
+
         # elif attribution_method == 'proportional-flagged':
         #     attributed_fba = fba.flagged_proportionally_attribute90
 
@@ -1399,6 +1403,75 @@ class FlowByActivity(_FlowBy):
                            'temp_location'],
                   errors='ignore')
             .reset_index(drop=True)
+        )
+
+    def multiplication_attribution(self: 'FlowByActivity',
+                                   other: 'FlowBySector' ) -> 'FlowByActivity':
+        """
+        This method takes flows from the calling FBA which are mapped to
+        multiple sectors and multiplies them by flows from other (an FBS).
+        """
+        # todo: function not working correctly
+
+        fba_geoscale = geo.scale.from_string(self.config['geoscale'])
+        other_geoscale = geo.scale.from_string(other.config['geoscale'])
+
+        log.info('Multiplying flows in %s by %s.',
+                 self.full_name, other.full_name)
+
+        if other_geoscale < fba_geoscale:
+            other = (
+                other
+                .convert_fips_to_geoscale(fba_geoscale)
+                .aggregate_flowby()
+            )
+        elif other_geoscale > fba_geoscale:
+            self = (
+                self
+                .assign(temp_location=self.Location)
+                .convert_fips_to_geoscale(other_geoscale,
+                                          column='temp_location')
+            )
+
+        fba = self.add_primary_secondary_columns('Sector')
+        other = (
+            other
+            .add_primary_secondary_columns('Sector')
+            [['PrimarySector', 'Location', 'FlowAmount']]
+            .groupby(['PrimarySector', 'Location'])
+            .agg('sum')
+            .reset_index()
+        )
+
+        groupby_cols = ['group_id']
+        for rank in ['Primary', 'Secondary']:
+            merged = (fba
+                      .merge(other,
+                             how='left',
+                             left_on=[f'{rank}Sector',
+                                      'temp_location'
+                                      if 'temp_location' in fba
+                                      else 'Location'],
+                             right_on=['PrimarySector', 'Location'],
+                             suffixes=[None, '_other'])
+                      .fillna({'FlowAmount_other': 0})
+                      )
+
+            fba = (merged
+                   .assign(FlowAmount=lambda x: (x.FlowAmount
+                                                 * x.FlowAmount_other))
+                   .drop(columns=['PrimarySector_other', 'Location_other',
+                                  'FlowAmount_other', 'denominator'],
+                         errors='ignore')
+                   )
+            groupby_cols.append(f'{rank}Sector')
+
+        return (
+            fba
+                .drop(columns=['PrimarySector', 'SecondarySector',
+                               'temp_location'],
+                      errors='ignore')
+                .reset_index(drop=True)
         )
 
     # def flagged_proportionally_attribute(self: 'FlowByActivity'):
