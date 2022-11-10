@@ -508,24 +508,14 @@ class _FlowBy(pd.DataFrame):
                 if self[x].dtype == 'float' and x != 'FlowAmount'
             ]
 
-        if retain_zeros:
-            # keep rows of zero values
-            fb = (
-                self
-                .drop(columns=[c for c in self.columns
-                               if c not in ['FlowAmount',
-                                            *columns_to_average,
-                                            *columns_to_group_by]])
-            )
-        else:
-            fb = (
-                self
-                    .query('FlowAmount != 0')
-                    .drop(columns=[c for c in self.columns
-                                   if c not in ['FlowAmount',
-                                                *columns_to_average,
-                                                *columns_to_group_by]])
-            )
+        if not retain_zeros:
+            self = self.query('FlowAmount != 0')
+            # ^^^ keep rows of zero values
+
+        fb = self.drop(columns=[c for c in self.columns
+                                if c not in ['FlowAmount',
+                                             *columns_to_average,
+                                             *columns_to_group_by]])
 
         aggregated = (
             fb
@@ -921,8 +911,10 @@ class FlowByActivity(_FlowBy):
              .reset_index()
              .rename(columns={
                  'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
-                 }))
-            .astype(object)
+                 })
+             .astype({activity: flowby_config['fba_fields'][activity]
+                      for activity in ['ActivityProducedBy',
+                                       'ActivityConsumedBy']}))
             for scale in geo.scale
             if scale.has_fips_level and scale <= target_geoscale
         ]
