@@ -92,7 +92,12 @@ def stewicombo_to_sector(
     return fbs
 
 
-def stewi_to_sector(config, **_) -> 'FlowBySector':
+def stewi_to_sector(
+        config,
+        full_name,
+        external_config_path: str = None,
+        **_
+        ) -> 'FlowBySector':
     """
     Returns emissions from stewi in fbs format, requires stewi >= 0.9.5
     :param config: which may contain the following elements:
@@ -105,6 +110,7 @@ def stewi_to_sector(config, **_) -> 'FlowBySector':
     """
     # determine if fxns specified in FBS method yaml
     functions = config.get('functions', [])
+    config['full_name'] = full_name
 
     # run stewi to generate inventory and filter for LCI
     df = pd.DataFrame()
@@ -289,8 +295,9 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     :return: df
     """
     config['sector-like_activities']=True
-    config['fedefl_mapping'] = list(
-        config.get('inventory_dict').keys())
+    config['fedefl_mapping'] = (
+        [x for x in config.get('inventory_dict').keys()
+         if x != 'RCRAInfo'])
     config['drop_unmapped_rows'] = True
 
     # update location to appropriate geoscale prior to aggregating
