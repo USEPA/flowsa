@@ -1,10 +1,12 @@
+industry_spec:
+  default: NAICS_6
+year: 2017
 geoscale: national
 source_names:
   stewiFBS:
     data_format: FBS_outside_flowsa
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     # Below are arguments needed by the stewicombo_to_sector function
-    target_sector_level: NAICS_6
     inventory_dict: {"TRI":"2017"}
     local_inventory_name: TRI_GRDREL_2017
     compartments:

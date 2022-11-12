@@ -62,7 +62,9 @@ def get_flowby_from_config(
     elif config['data_format'] == 'FBS_outside_flowsa':
         return FlowBySector(
             config['FBS_datapull_fxn'](
-                config, config, external_config_path
+                config=config,
+                external_config_path=external_config_path,
+                full_name=name
             ),
             full_name=name,
             config=config
