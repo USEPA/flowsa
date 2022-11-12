@@ -204,7 +204,7 @@ source_names:
     year: 2017
     primary_action_type: Produced
     activity_to_sector_mapping: SCC
-    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
+    clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
     activity_sets:
       direct_allocation:
@@ -227,7 +227,7 @@ source_names:
     year: 2017
     primary_action_type: Produced
     activity_to_sector_mapping: SCC
-    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
+    clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
     activity_sets:
       direct_allocation:
@@ -253,7 +253,7 @@ source_names:
     # temporarily maintain target_sector_level for
     # allocation.equally_allocate_parent_to_child_naics()
     target_sector_level: NAICS_6
-    clean_fbs_df_fxn: !script_function:EPA_NEI drop_GHGs
+    clean_fbs: !script_function:EPA_NEI drop_GHGs
     compartments:
      - air
     reassign_process_to_sectors:

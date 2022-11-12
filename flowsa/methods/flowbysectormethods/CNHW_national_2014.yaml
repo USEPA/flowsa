@@ -10,5 +10,5 @@ target_sector_level: NAICS_6
 source_names:
   CNHW_CA_2014:
     data_format: FBS
-    clean_fbs_df_fxn: !script_function:CalRecycle_WasteCharacterization apply_tons_per_employee_per_year_to_states
+    clean_fbs: !script_function:CalRecycle_WasteCharacterization apply_tons_per_employee_per_year_to_states
     year: 2014

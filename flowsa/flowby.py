@@ -1783,7 +1783,7 @@ class FlowBySector(_FlowBy):
     def prepare_fbs(self: 'FlowBySector') -> 'FlowBySector':
         return (
             self
-            .function_socket('clean_fbs_df_fxn')
+            .function_socket('clean_fbs')
             .select_by_fields()
             # TODO: Add a method to convert to proper industry spec.
             .convert_fips_to_geoscale()
