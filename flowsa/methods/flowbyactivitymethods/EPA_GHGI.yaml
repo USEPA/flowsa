@@ -28,7 +28,7 @@ years:
 - 2020
 
 # Special table lists
-multi_chem_names: ["2-1", "4-46", "5-7", "5-28", "ES-4"]
+multi_chem_names: ["2-1", "4-46", "5-6", "5-28", "ES-4"]
 source_No_activity: ["3-22", "3-22b"]
 # Handle tables with 1 parent level category
 source_activity_1: ["3-7", "3-8", "3-9", "3-10", "5-17", "5-18", "A-70", "A-71"]
@@ -156,7 +156,7 @@ Tables:
         "flow": "CO2"
         "desc": "Table 4-14:  CO2 Emissions from Other Process Uses of Carbonates (MMT CO2 Eq.)"
         "melt_var": "ActivityProducedBy"
-      "4-33": # Emissions captured in in 2-1
+      "4-33": # Emissions captured in 2-1
         "class": "Chemicals"
         "compartment": "air"
         "flow": "N2O"
@@ -227,12 +227,12 @@ Tables:
         "compartment": "air"
         "flow": "CH4"
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
-      "5-7":
+      "5-6":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2e"
-        "desc": "Table 5-7:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
+        "desc": "Table 5-6:  CH4 and N2O Emissions from Manure Management (MMT CO2 Eq.)"
 
       "5-17":
         "class": "Chemicals"
