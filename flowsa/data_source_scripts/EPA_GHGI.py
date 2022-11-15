@@ -40,9 +40,6 @@ ANNEX_HEADERS = {"Total Consumption (TBtu) a": "Total Consumption (TBtu)",
 # Tables for annual CO2 emissions from fossil fuel combustion
 ANNEX_ENERGY_TABLES = ["A-" + str(x) for x in list(range(4,16))]
 
-SPECIAL_FORMAT = ["3-10", "3-22", "3-22b", "4-46", "5-29"]
-
-
 DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
     start="1990", end="2010", freq='Y').year.astype(str))
 
@@ -165,7 +162,6 @@ def ghg_call(*, resp, url, year, config, **_):
     :param config: dictionary, items in FBA method yaml
     :return: pandas dataframe of original source data
     """
-    df = None
     with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         frames = []
         if any(x in url for x in ['annex', 'Annex']):
@@ -176,6 +172,7 @@ def ghg_call(*, resp, url, year, config, **_):
             t_tables = config['Tables']
         for chapter, tables in t_tables.items():
             for table in tables:
+                df = None
                 tbl_year = tables[table].get('year')
                 if tbl_year is not None and tbl_year != year:
                     # Skip tables when the year does not align with target year
@@ -204,12 +201,8 @@ def ghg_call(*, resp, url, year, config, **_):
                     except KeyError:
                         log.error(f"error reading {table}")
                         continue
-
-                if table not in SPECIAL_FORMAT + ANNEX_ENERGY_TABLES:
-                    # Default case
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                     thousands=",")
-                elif table in ['3-10', '5-28']:
+                
+                if table in ['3-10', '5-28']:
                     # Skip single row
                     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")
@@ -236,6 +229,11 @@ def ghg_call(*, resp, url, year, config, **_):
                     df.columns = new_headers
                 elif table in ANNEX_ENERGY_TABLES:
                     df = annex_yearly_tables(data, table)
+                elif table != '3-22b':
+                    # Except for 3-22b already as df, 
+                    # Proceed with default case
+                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                     thousands=",")
 
                 if table == '3-13':
                     # remove notes from column headers in some years
@@ -901,4 +899,4 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.flowbyactivity.main(year=2020, source='EPA_GHGI')
+    fba = flowsa.flowbyactivity.main(year=2017, source='EPA_GHGI')
