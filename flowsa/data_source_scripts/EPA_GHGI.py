@@ -308,6 +308,18 @@ def strip_char(text):
                  'Electricityh': 'Electricity',
                  'Ethanoli': 'Ethanol',
                  'Biodieseli': 'Biodiesel',
+                 'Changee': 'Change',
+                 'Emissionsc': 'Emissions',
+                 'Equipmentd': 'Equipment',
+                 'Equipmente': 'Equipment',
+                 'Totalf': 'Total',
+                 'Roadg': 'Road',
+                 'Otherf': 'Other',
+                 'Railc': 'Rail',
+                 'Usesb': 'Uses',
+                 'Substancesd': 'Substances',
+                 'Territoriesa': 'Territories',
+                 'Roadb': 'Road',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
@@ -458,6 +470,7 @@ def ghg_parse(*, df_list, year, config, **_):
         multi_chem_names = config.get('multi_chem_names')
         source_No_activity = config.get('source_No_activity')
         source_activity_1 = config.get('source_activity_1')
+        source_activity_1_fuel = config.get('source_activity_1_fuel')
         source_activity_2 = config.get('source_activity_2')
 
         if table_name in multi_chem_names:
@@ -518,20 +531,27 @@ def ghg_parse(*, df_list, year, config, **_):
                     if "Total" == apb_value or "Total " == apb_value:
                         df = df.drop(index)
 
-        elif table_name in source_activity_1:
+        elif table_name in (source_activity_1 + source_activity_1_fuel) :
             apbe_value = ""
-            activity_subtotal = ["Electric Power", "Industrial", "Commercial",
+            activity_subtotal_sector = ["Electric Power", "Industrial", "Commercial",
                                  "Residential", "U.S. Territories",
                                  "Transportation",
-                                 "Fuel Type/Vehicle Type", "Diesel On-Road",
-                                 "Alternative Fuel On-Road", "Non-Road",
-                                 "Gasoline On-Road", "Exploration",
+                                 "Exploration",
                                  "Production (Total)", "Refining",
                                  "Crude Oil Transportation",
-                                 "Cropland", "Grassland",
-                                 "Gasoline", "Distillate Fuel Oil (Diesel)",
-                                 "Jet Fuel", "Aviation Gasoline", "Residual Fuel Oil",
-                                 "Natural Gas", "LPG", "Electricity"]
+                                 "Cropland", "Grassland"]
+            activity_subtotal_fuel = [
+                "Gasoline", "Distillate Fuel Oil (Diesel)",
+                "Jet Fuel", "Aviation Gasoline", "Residual Fuel Oil",
+                "Natural Gas", "LPG", "Electricity",
+                "Fuel Type/Vehicle Type", "Diesel On-Road",
+                "Alternative Fuel On-Road", "Non-Road",
+                "Gasoline On-Road",
+                ]
+            if table_name in source_activity_1:
+                activity_subtotal = activity_subtotal_sector
+            else:
+                activity_subtotal = activity_subtotal_fuel
             for index, row in df.iterrows():
                 apb_value = strip_char(row["ActivityProducedBy"])
                 if apb_value in activity_subtotal:
@@ -614,7 +634,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-84", "4-96", "4-100"]:
+            elif table_name in ["4-86", "4-96", "4-100"]:
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
