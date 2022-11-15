@@ -2,8 +2,8 @@
 # Industry Attribution Model (https://doi.org/10.23719/1517571), except that
 # sector attribution is to 6-digit NAICS, rather than the BEA 2012 IO schema
 
-# Differences from 2016 method are 1) source year, 2) replace A-14 with A-12
-# (2018)
+# Differences from 2017 method are 1) source year, 2) replace A-14 with A-13
+# (2017)
 
 target_sector_level: NAICS_6
 target_sector_source: NAICS_2012_Code
@@ -11,7 +11,7 @@ target_geoscale: national
 source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1
-    year: &ghgi_year 2018
+    year: &ghgi_year 2017
   "EPA_GHGI_T_3_63": #CH4 from Natural Gas Systems
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_63
     year: *ghgi_year
@@ -77,11 +77,11 @@ source_names:
     year: *ghgi_year
 
 ## Major CO2 Sources
-  "EPA_GHGI_T_A_12":  # CO2 emissions from stationary combustion and transportation
+  "EPA_GHGI_T_A_13":  # CO2 emissions from stationary combustion and transportation
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2018 # Table A_12 is specific to 2018
+    year: 2017 # Table A_13 is specific to 2017
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:

@@ -1,9 +1,6 @@
-%YAML 1.1
-
----
-# m1 for the GHG national replicates the method used in the National GHG Industry Attribution Model
-#(https://doi.org/10.23719/1517571), except that sector attribution is to 6-digit NAICS,
-# rather than the BEA 2012 IO schema
+# m1 for the GHG national replicates the method used in the National GHG
+# Industry Attribution Model (https://doi.org/10.23719/1517571), except that
+# sector attribution is to 6-digit NAICS, rather than the BEA 2012 IO schema
 
 _allocation_types:
   _mecs_allocation: &fuel_MECS
