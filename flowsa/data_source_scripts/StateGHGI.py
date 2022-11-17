@@ -218,7 +218,7 @@ def NY_customized_parse(*, source, year, config, **_):
     df['FlowType'] = 'ELEMENTARY_FLOW'
     df['Compartment'] = 'air'
     df['Year'] = year
-    df['Units'] = 'MT'
+    df['Unit'] = 'MT'
     df['DataReliability'] = 5
     df['DataCollection'] = 5
 
