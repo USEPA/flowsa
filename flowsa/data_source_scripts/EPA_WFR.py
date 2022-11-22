@@ -419,3 +419,17 @@ def foodwaste_use(fba, source_dict):
     df1 = aggregator(df1, cols)
 
     return df1
+
+def reset_wfr_APB(fba, **_):
+    """
+    For "Waste_national_2018", only interested in total food waste that
+    enters a waste management pathway, not interested in where the food
+    waste is generated. Remove the activity produced by values to enable
+    direct attribution of food waste rather than requiring attribution data
+    sources for the waste generation
+    :return:
+    """
+
+    fba['ActivityProducedBy'] = None
+
+    return fba
