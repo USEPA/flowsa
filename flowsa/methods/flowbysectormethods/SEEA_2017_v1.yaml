@@ -192,6 +192,7 @@ _attribution_sources:
     attribution_method: proportional
     attribution_source: BLS_QCEW
   EPA_GHGI_T_A_79: &t_a_79
+    <<: *ghgi_parameters
     attribution_method: proportional
     attribution_source: BLS_QCEW
   EIA_MECS_Energy: &mecs_energy
@@ -1017,7 +1018,8 @@ source_names:
           ActivityProducedBy: T008 # Gross output.
 
   BTS_Airlines:
+    year: null
     selection_fields:
       Year: *year
-    emissions_factors: BTS_Airlines_emissions_factors
+    emissions_factors: EPA_emissions_factors
     activity_to_sector_mapping: EPA_GHGI
