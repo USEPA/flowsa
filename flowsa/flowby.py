@@ -981,7 +981,9 @@ class FlowByActivity(_FlowBy):
 
         return fba_at_target_geoscale
 
-    def load_prepare_attribution_source(self: 'FlowByActivity') -> 'FlowBySector':
+    def load_prepare_attribution_source(
+        self: 'FlowByActivity'
+    ) -> 'FlowBySector':
         attribution_source = self.config['attribution_source']
 
         if isinstance(attribution_source, str):
@@ -1399,8 +1401,10 @@ class FlowByActivity(_FlowBy):
             .reset_index(drop=True)
         )
 
-    def multiplication_attribution(self: 'FlowByActivity',
-                                   other: 'FlowBySector' ) -> 'FlowByActivity':
+    def multiplication_attribution(
+        self: 'FlowByActivity',
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
         """
         This method takes flows from the calling FBA which are mapped to
         multiple sectors and multiplies them by flows from other (an FBS).
@@ -1462,10 +1466,10 @@ class FlowByActivity(_FlowBy):
 
         return (
             fba
-                .drop(columns=['PrimarySector', 'SecondarySector',
-                               'temp_location'],
-                      errors='ignore')
-                .reset_index(drop=True)
+            .drop(columns=['PrimarySector', 'SecondarySector',
+                           'temp_location'],
+                  errors='ignore')
+            .reset_index(drop=True)
         )
 
     # def flagged_proportionally_attribute(self: 'FlowByActivity'):
@@ -1777,6 +1781,7 @@ class FlowBySector(_FlowBy):
         ])
 
         fbs.full_name = method
+        fbs.config = method_config
 
         fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
         # TODO: Needs refinement + saving metadata
