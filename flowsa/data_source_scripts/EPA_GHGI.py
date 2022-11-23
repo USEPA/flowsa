@@ -10,6 +10,7 @@ import io
 import zipfile
 import numpy as np
 import pandas as pd
+import flowsa
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
 from flowsa.dataclean import replace_NoneType_with_empty_cells
@@ -640,55 +641,55 @@ def ghg_parse(*, df_list, year, config, **_):
 
 
 def get_manufacturing_energy_ratios(year):
-    """Calculate energy ratio by fuel between GHGI and EIA MECS."""
-    # flow correspondence between GHGI and MECS
-    flow_corr = {'Industrial Other Coal': 'Coal',
-                 'Natural Gas': 'Natural Gas',
-                 }
+    """Calculate energy ratio by fuel between EIA MECS and GHGI."""
+    flows = [('Industrial Other Coal', 'Coal'), ('Natural Gas', 'Natural Gas')]
+    # ^^^ (GHGI flow name, MECS flow name)
 
-    def closest_value(input_list, input_value):
-        difference = lambda input_list : abs(input_list - input_value)
-        return min(input_list, key=difference)
+    mecs_config = load_yaml_dict('EIA_MECS_Energy', flowbytype='FBA')
+    ghgi_config = load_yaml_dict('EPA_GHGI', flowbytype='FBA')
 
-    mecs_year = closest_value(load_yaml_dict('EIA_MECS_Energy',
-                                             flowbytype='FBA').get('years'),
-                              year)
+    mecs_year = min(mecs_config.get('years'), key=lambda x: abs(x - year))
 
-    # Filter MECS for total national energy consumption for manufacturing sectors
-    mecs = load_fba_w_standardized_units(datasource='EIA_MECS_Energy',
-                                         year=mecs_year,
-                                         flowclass='Energy')
-    mecs = (mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
-                     (mecs['Location'] == '00000') &
-                     (mecs['Description'].isin(['Table 3.2', 'Table 2.2']))]
-            .reset_index(drop=True))
-    mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
+    mecs = (
+        flowsa.getFlowByActivity('EIA_MECS_Energy', mecs_year)
+        .select_by_fields({
+            'Class': 'Energy',
+            'ActivityConsumedBy': '31-33',
+            'Location': '00000',
+            # 'Description': ['Table 3.2', 'Table 2.2'],
+            'Unit': 'Trillion Btu'
+        })
+        .standardize_units(year=mecs_year)
+    )
 
-    # Identify the GHGI table that matches EIA_MECS
-    for t, v in (load_yaml_dict('EPA_GHGI', 'FBA')
-                 .get('Annex').get('Annex').items()):
+    # Identify the corresponding GHGI table
+    for t, v in ghgi_config['Annex']['Annex'].items():
         if ((v.get('class') == 'Energy')
-        & ('Energy Consumption Data' in v.get('desc'))
-        & (v.get('year') == str(mecs_year))):
-                table = f"EPA_GHGI_T_{t.replace('-', '_')}"
-                break
+                & ('Energy Consumption Data' in v.get('desc'))
+                & (v.get('year') == str(mecs_year))):
+            ghgi_table = f"EPA_GHGI_T_{t.replace('-', '_')}"
+            break
     else:
         log.error('unable to identify corresponding GHGI table')
 
-    ghgi = load_fba_w_standardized_units(datasource=table,
-                                         year=mecs_year,
-                                         flowclass='Energy')
-    ghgi = ghgi[ghgi['ActivityConsumedBy']=='Industrial'].reset_index(drop=True)
+    ghgi = (
+        flowsa.getFlowByActivity(ghgi_table, mecs_year)
+        .select_by_fields({
+            'Class': 'Energy',
+            'ActivityConsumedBy': 'Industrial'
+        })
+    )
 
-    pct_dict = {}
-    for ghgi_flow, mecs_flow in flow_corr.items():
-        # Calculate percent energy contribution from MECS based on v
-        mecs_energy = mecs.loc[mecs['FlowName'] == mecs_flow, 'FlowAmount'].values[0]
-        ghgi_energy = ghgi.loc[ghgi['FlowName'] == ghgi_flow, 'FlowAmount'].values[0]
-        pct = np.minimum(mecs_energy / ghgi_energy, 1)
-        pct_dict[mecs_flow] = pct
+    log.critical(f'MECS length: {len(mecs)}\nMECS columns: {mecs.columns}')
 
-    return pct_dict
+    ratio_dict = {}
+    for ghgi_flow, mecs_flow in flows:
+        mecs_energy = mecs.query(f'FlowName == @mecs_flow').FlowAmount.values[0]
+        ghgi_energy = ghgi.query(f'FlowName == @ghgi_flow').FlowAmount.values[0]
+
+        ratio_dict[mecs_flow] = min(mecs_energy / ghgi_energy, 1)
+
+    return ratio_dict
 
 
 def allocate_industrial_combustion(fba, *_, **__):
