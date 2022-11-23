@@ -268,10 +268,10 @@ class _FlowBy(pd.DataFrame):
                     Unit=self.Unit.str.replace('/d', ''))
         )
 
-    def standardize_units(self: FB) -> FB:
+    def standardize_units(self: FB, year: int = None) -> FB:
         exchange_rate = (
             literature_values
-            .get_Canadian_to_USD_exchange_rate(self.config['year'])
+            .get_Canadian_to_USD_exchange_rate(year or self.config['year'])
         )
 
         conversion_table = pd.concat([
@@ -1473,17 +1473,20 @@ class FlowByActivity(_FlowBy):
 
     def prepare_fbs(self: 'FlowByActivity') -> 'FlowBySector':
         if 'activity_sets' in self.config:
-            return (
-                pd.concat([
-                    fba.prepare_fbs()
-                    for fba in (
-                        self
-                        .function_socket('clean_fba_before_activity_sets')
-                        .activity_sets()
-                    )
-                ])
-                .reset_index(drop=True)
-            )
+            try:
+                return (
+                    pd.concat([
+                        fba.prepare_fbs()
+                        for fba in (
+                            self
+                            .function_socket('clean_fba_before_activity_sets')
+                            .activity_sets()
+                        )
+                    ])
+                    .reset_index(drop=True)
+                )
+            except ValueError:
+                return FlowBySector(pd.DataFrame())
 
         # Primary FlowBySector generation approach:
         return FlowBySector(
