@@ -39,6 +39,7 @@ Sector,Color,Abrv_Name
 562213,#654A8B,Solid Waste
 5622191,#C88141,Anaerobic Digestion
 5622192,#F67280,Composting
+5629201,#FFA15A,MSW Recycling
 5629202,#91a3b0,Mixed CDD Proc.
 5629203,#9999ff,Concrete Proc.
 61,#800000,Educ
