@@ -1415,7 +1415,6 @@ class FlowByActivity(_FlowBy):
         This method takes flows from the calling FBA which are mapped to
         multiple sectors and multiplies them by flows from other (an FBS).
         """
-        # todo: function not working correctly
 
         fba_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
@@ -1447,28 +1446,25 @@ class FlowByActivity(_FlowBy):
             .reset_index()
         )
 
-        groupby_cols = ['group_id']
-        for rank in ['Primary', 'Secondary']:
-            merged = (fba
-                      .merge(other,
-                             how='left',
-                             left_on=[f'{rank}Sector',
-                                      'temp_location'
-                                      if 'temp_location' in fba
-                                      else 'Location'],
-                             right_on=['PrimarySector', 'Location'],
-                             suffixes=[None, '_other'])
-                      .fillna({'FlowAmount_other': 0})
-                      )
+        # multiply using each dfs primary sector col
+        merged = (fba
+                  .merge(other,
+                         how='left',
+                         left_on=['PrimarySector', 'temp_location'
+                                  if 'temp_location' in fba
+                                  else 'Location'],
+                         right_on=['PrimarySector', 'Location'],
+                         suffixes=[None, '_other'])
+                  .fillna({'FlowAmount_other': 0})
+                  )
 
-            fba = (merged
-                   .assign(FlowAmount=lambda x: (x.FlowAmount
-                                                 * x.FlowAmount_other))
-                   .drop(columns=['PrimarySector_other', 'Location_other',
-                                  'FlowAmount_other', 'denominator'],
-                         errors='ignore')
-                   )
-            groupby_cols.append(f'{rank}Sector')
+        fba = (merged
+               .assign(FlowAmount=lambda x: (x.FlowAmount
+                                             * x.FlowAmount_other))
+               .drop(columns=['PrimarySector_other', 'Location_other',
+                              'FlowAmount_other', 'denominator'],
+                     errors='ignore')
+               )
 
         return (
             fba
