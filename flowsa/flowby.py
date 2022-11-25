@@ -1067,19 +1067,22 @@ class FlowByActivity(_FlowBy):
 
             attributed_fba = fba.equally_attribute()
 
-        validation_fba = attributed_fba.assign(
-            validation_total=(attributed_fba.groupby('group_id')
-                              ['FlowAmount'].transform('sum'))
-        )
-        if not np.allclose(validation_fba.group_total,
-                           validation_fba.validation_total, equal_nan=True):
-            errors = (validation_fba
-                      .query('validation_total != group_total')
-                      [['group_id', 'ActivityProducedBy', 'ActivityConsumedBy',
-                        'SectorProducedBy', 'SectorConsumedBy',
-                        'FlowAmount', 'group_total', 'validation_total']])
-            log.error('Errors in attributing flows from %s:\n%s',
-                      self.full_name, errors)
+        # if the attribution method is not multiplication, check that new df
+        # values equal original df values
+        if attribution_method != 'multiplication':
+            validation_fba = attributed_fba.assign(
+                validation_total=(attributed_fba.groupby('group_id')
+                                  ['FlowAmount'].transform('sum'))
+            )
+            if not np.allclose(validation_fba.group_total,
+                               validation_fba.validation_total, equal_nan=True):
+                errors = (validation_fba
+                          .query('validation_total != group_total')
+                          [['group_id', 'ActivityProducedBy', 'ActivityConsumedBy',
+                            'SectorProducedBy', 'SectorConsumedBy',
+                            'FlowAmount', 'group_total', 'validation_total']])
+                log.error('Errors in attributing flows from %s:\n%s',
+                          self.full_name, errors)
 
         return attributed_fba.drop(columns=['group_id', 'group_total'])
 
