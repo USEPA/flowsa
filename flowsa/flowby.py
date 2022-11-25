@@ -258,14 +258,17 @@ class _FlowBy(pd.DataFrame):
         return fb
 
     def convert_daily_to_annual(self: FB) -> FB:
-        if any(self.Unit.str.contains('/d')):
+        daily_list = ['/d', '/day']
+        if any(self.Unit.str.endswith(tuple(daily_list))):
             log.info('Converting daily flows %s to annual',
-                     [unit for unit in self.Unit.unique() if '/d' in unit])
+                     [unit for unit in self.Unit.unique() if any(
+                         x in unit for x in daily_list)])
         return (
             self
             .assign(FlowAmount=self.FlowAmount.mask(
-                        self.Unit.str.contains('/d'), self.FlowAmount * 365),
-                    Unit=self.Unit.str.replace('/d', ''))
+                self.Unit.str.endswith(tuple(daily_list)),
+                self.FlowAmount * 365),
+                Unit=self.Unit.apply(lambda x: x.split('/d', 1)[0]))
         )
 
     def standardize_units(self: FB, year: int = None) -> FB:
