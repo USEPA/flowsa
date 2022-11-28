@@ -292,7 +292,8 @@ def disaggregate_coa_cropland_to_6_digit_naics(
         ~fba_w_sector[sector_col].isna()].reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = equal_allocation(fba_w_sector)
+    fba_w_sector = fba_w_sector.equally_attribute()
+    # fba_w_sector = equal_allocation(fba_w_sector)
 
     # use ratios of usda 'land in farms' to determine animal use of
     # pasturelands at 6 digit naics
@@ -333,7 +334,8 @@ def disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal(
         .reset_index(drop=True)
 
     # modify the flowamounts related to the 6 naics 'orchards' are mapped to
-    fba_w_sector = equal_allocation(fba_w_sector)
+    # fba_w_sector = equal_allocation(fba_w_sector)
+    fba_w_sector = fba_w_sector.equally_attribute()
 
     # todo: add back in once suppression fxn modified to accept non-naics
     #  like activities and mixed level final naics (naics6 and naics7)
@@ -419,7 +421,7 @@ def disaggregate_pastureland(fba_w_sector, attr, method, year,
             df_f = df_f[~df_f['ActivityConsumedBy'].isin(drop_list)]
         # create sector columns
         df_f = add_sectors_to_flowbyactivity(
-            df_f, sectorsourcename=method['target_sector_source'])
+            df_f, sectorsourcename=f"NAICS_{str(method['target_naics_year'])}_Code")
         # estimate suppressed data by equal allocation
         df_f = equally_allocate_suppressed_parent_to_child_naics(
             df_f, method, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
@@ -501,7 +503,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
         '&')].reset_index(drop=True)
     # add sectors
     naics = add_sectors_to_flowbyactivity(
-        naics, sectorsourcename=method['target_sector_source'])
+        naics, sectorsourcename=f"NAICS_"
+                                f"{str(method['target_naics_year'])}_Code")
     # estimate suppressed data by equally allocating parent to child naics
     naics = equally_allocate_suppressed_parent_to_child_naics(
         naics, method, 'SectorConsumedBy', fba_wsec_default_grouping_fields)
@@ -570,7 +573,8 @@ def disaggregate_cropland(fba_w_sector, attr, method, year,
     crop = crop.drop(columns=['Location_tmp'])
 
     # equally allocate any further missing naics
-    crop = equally_allocate_parent_to_child_naics(crop, method)
+    # crop = equally_allocate_parent_to_child_naics(crop, method)
+    crop = crop.equally_attribute()
 
     # pasture data
     pasture = \
