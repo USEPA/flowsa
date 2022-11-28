@@ -36,11 +36,6 @@ source_names:
         allocation_source: "BLS_QCEW"
         allocation_source_class: "Employment"
         allocation_source_year: 2015
-        allocation_flow:
-          - "Number of employees, Federal Government"
-          - "Number of employees, State Government"
-          - "Number of employees, Local Government"
-          - "Number of employees, Private"
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec

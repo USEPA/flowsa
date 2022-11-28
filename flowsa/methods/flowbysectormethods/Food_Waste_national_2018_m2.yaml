@@ -1,0 +1,49 @@
+# Attribute EPA's Wasted Food Report to sectors using the scoping memo for
+# attribution methodology
+
+target_sector_level: NAICS_6
+target_subset_sector_level: {NAICS_7: ['562212', '562219']}
+target_sector_source: NAICS_2012_Code
+target_geoscale: national
+source_names:
+  "CNHW_national_2018":
+    data_format: 'FBS'
+    activity_set_attribution: True
+    selection_fields:
+      Flowable:
+        - Food
+    geoscale_to_use: national
+    clean_fbs_df_fxn: !script_function:EPA_WFR attribute_cnhw_food
+    activity_sets:
+      wasted_food_report:
+        names: !from_index:CNHW_Food_asets.csv wasted_food_report
+        allocation_method: proportional
+        allocation_source: EPA_WFR
+        allocation_source_class: Other
+        allocation_source_year: 2018
+        allocation_from_scale: national
+        allocation_merge_columns: [SectorProducedBy]
+      facts_and_figures:
+        names: !from_index:CNHW_Food_asets.csv facts_and_figures
+        allocation_method: proportional
+        allocation_source: EPA_FactsAndFigures
+        allocation_source_class: Other
+        allocation_flow:
+          - Food
+        allocation_source_year: 2018
+        allocation_from_scale: national
+        allocation_merge_columns: [SectorProducedBy]
+
+  # CNHW does not include residential food waste, so adding from EPA's
+  # Wasted Food Report
+  "EPA_WFR":
+    data_format: 'FBA'
+    class: Other
+    geoscale_to_use: national
+    year: 2018
+    activity_sets:
+      residential:
+        names:
+          - "Residential"
+        allocation_method: direct
+        allocation_from_scale: national
