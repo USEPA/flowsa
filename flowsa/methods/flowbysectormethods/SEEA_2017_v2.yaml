@@ -1,10 +1,6 @@
 %YAML 1.1
 
 ---
-# m2 for the GHG national replicates the method used in the National GHG Industry Attribution Model
-#(https://doi.org/10.23719/1517571), except that sector attribution is to 6-digit NAICS,
-# rather than the BEA 2012 IO schema
-
 # !include:BEA_summary_target.yaml
 industry_spec:
   default: NAICS_3
@@ -219,14 +215,7 @@ _attribution_sources:
         - AREA IN PRODUCTION # Vegetable totals
     year: 2017
     clean_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
-
-sources_to_cache:
-  BLS_QCEW:
-    selection_fields:
-      Class: Employment
-    year: 2012
-    clean_fba: !script_function:temp_data_source_functions clean_qcew
-  BTS_TSA:
+  BTS_TSA: &bts_tsa
     year: 2017
     selection_fields:
       Description:
@@ -235,6 +224,13 @@ sources_to_cache:
     activity_to_sector_mapping: BTS_TSA
     attribution_method: proportional
     attribution_source: BLS_QCEW
+
+sources_to_cache:
+  BLS_QCEW:
+    selection_fields:
+      Class: Employment
+    year: 2012
+    clean_fba: !script_function:temp_data_source_functions clean_qcew
 
 source_names:
   # stewiFBS:
@@ -545,7 +541,8 @@ source_names:
             - Medium- and Heavy-Duty Trucks and Buses Diesel On-Road
         activity_to_sector_mapping: EPA_GHGI_SEEA
         attribution_method: proportional
-        attribution_source: BTS_TSA
+        attribution_source:
+          BTS_TSA: *bts_tsa
 
       construction_and_mining:
         selection_fields:
@@ -733,7 +730,8 @@ source_names:
                     - Medium- and Heavy-Duty Trucks
                 activity_to_sector_mapping: EPA_GHGI_SEEA
                 attribution_method: proportional
-                attribution_source: BTS_TSA
+                attribution_source:
+                  BTS_TSA: *bts_tsa
               buses:
                 selection_fields:
                   FlowName: Distillate Fuel Oil (Diesel Fuel)
@@ -773,7 +771,8 @@ source_names:
                     - Medium- and Heavy-Duty Trucks
                 activity_to_sector_mapping: EPA_GHGI_SEEA
                 attribution_method: proportional
-                attribution_source: BTS_TSA
+                attribution_source:
+                  BTS_TSA: *bts_tsa
               buses:
                 selection_fields:
                   FlowName: Motor Gasoline
@@ -955,7 +954,8 @@ source_names:
         adjustment_factor: 0.99
         activity_to_sector_mapping: EPA_GHGI_SEEA
         attribution_method: proportional
-        attribution_source: BTS_TSA
+        attribution_source:
+          BTS_TSA: *bts_tsa
       refrigerated_trucks:
         selection_fields:
           PrimaryActivity: Medium- and Heavy-Duty Trucks
