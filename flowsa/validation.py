@@ -975,10 +975,16 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
         'object', 'int']).columns)
     if ignore_metasources:
         for e in ['MetaSources', 'AllocationSources']:
-            merge_cols.remove(e)
-    # ignore additional columns on merge #todo: remove next tow lines once the added columns from DataVis branch are pulled into master
+            try:
+                merge_cols.remove(e)
+            except ValueError:
+                pass
+    # ignore additional columns on merge #todo: remove next two lines once the added columns from DataVis branch are pulled into master
     for e in ['ProducedBySectorType', 'ConsumedBySectorType']:
-        merge_cols.remove(e)
+        try:
+            merge_cols.remove(e)
+        except ValueError:
+            pass
     # check units
     compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
