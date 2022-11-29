@@ -280,6 +280,7 @@ NAICS_2012_Code,NAICS_2012_Name
 311,Food Manufacturing
 3111,Animal Food Manufacturing
 31111,Animal Food Manufacturing
+311119,Other Animal Food Manufacturing
 3112,Grain and Oilseed Milling
 31121,Flour Milling and Malt Manufacturing
 31122,Starch and Vegetable Fats and Oils Manufacturing
@@ -1440,13 +1441,17 @@ NAICS_2012_Code,NAICS_2012_Name
 56221,Waste Treatment and Disposal
 562211,Hazardous Waste Treatment and Disposal
 562212,Solid Waste Landfill
+5622121,MSW Landfill
 562213,Solid Waste Combustors and Incinerators
 562219,Other Nonhazardous Waste Treatment and Disposal
+5622191,Codigestion/Anaerobic Digestion
+5622192,Composting/Aerobic Processes
 5629,Remediation and Other Waste Management Services
 56291,Remediation Services
 562910,Remediation Services
 56292,Materials Recovery Facilities
 562920,Materials Recovery Facilities
+5629201,MSW Recycling
 56299,All Other Waste Management Services
 562991,Septic Tank and Related Services
 562998,All Other Miscellaneous Waste Management Services
