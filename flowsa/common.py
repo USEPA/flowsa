@@ -73,7 +73,7 @@ def load_crosswalk(crosswalk_name):
 
     cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
                'sector_length': 'NAICS_2012_Crosswalk',
-               'sector_name': 'Sector_2012_Names',
+               'sector_name': 'NAICS_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
                'BEA': 'NAICS_to_BEA_Crosswalk'
@@ -120,7 +120,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     or FBS files
     :return: dictionary containing all information in yaml
     """
-    if filename in ['source_catalog']:
+    if filename == 'source_catalog':
         folder = datapath
     else:
         # first check if a filepath for the yaml is specified, as is the
