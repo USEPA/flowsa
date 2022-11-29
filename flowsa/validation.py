@@ -974,13 +974,13 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     merge_cols = list(df2.select_dtypes(include=[
         'object', 'int']).columns)
     if ignore_metasources:
-        for e in ['MetaSources', 'AllocationSources']:
+        for e in ['MetaSources']:
             try:
                 merge_cols.remove(e)
             except ValueError:
                 pass
     # ignore additional columns on merge #todo: remove next two lines once the added columns from DataVis branch are pulled into master
-    for e in ['ProducedBySectorType', 'ConsumedBySectorType']:
+    for e in ['ProducedBySectorType', 'ConsumedBySectorType', 'AllocationSources']:
         try:
             merge_cols.remove(e)
         except ValueError:
