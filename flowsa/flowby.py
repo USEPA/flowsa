@@ -258,14 +258,17 @@ class _FlowBy(pd.DataFrame):
         return fb
 
     def convert_daily_to_annual(self: FB) -> FB:
-        if any(self.Unit.str.contains('/d')):
+        daily_list = ['/d', '/day']
+        if any(self.Unit.str.endswith(tuple(daily_list))):
             log.info('Converting daily flows %s to annual',
-                     [unit for unit in self.Unit.unique() if '/d' in unit])
+                     [unit for unit in self.Unit.unique() if any(
+                         x in unit for x in daily_list)])
         return (
             self
             .assign(FlowAmount=self.FlowAmount.mask(
-                        self.Unit.str.contains('/d'), self.FlowAmount * 365),
-                    Unit=self.Unit.str.replace('/d', ''))
+                self.Unit.str.endswith(tuple(daily_list)),
+                self.FlowAmount * 365),
+                Unit=self.Unit.apply(lambda x: x.split('/d', 1)[0]))
         )
 
     def standardize_units(self: FB, year: int = None) -> FB:
@@ -1064,19 +1067,22 @@ class FlowByActivity(_FlowBy):
 
             attributed_fba = fba.equally_attribute()
 
-        validation_fba = attributed_fba.assign(
-            validation_total=(attributed_fba.groupby('group_id')
-                              ['FlowAmount'].transform('sum'))
-        )
-        if not np.allclose(validation_fba.group_total,
-                           validation_fba.validation_total, equal_nan=True):
-            errors = (validation_fba
-                      .query('validation_total != group_total')
-                      [['group_id', 'ActivityProducedBy', 'ActivityConsumedBy',
-                        'SectorProducedBy', 'SectorConsumedBy',
-                        'FlowAmount', 'group_total', 'validation_total']])
-            log.error('Errors in attributing flows from %s:\n%s',
-                      self.full_name, errors)
+        # if the attribution method is not multiplication, check that new df
+        # values equal original df values
+        if attribution_method != 'multiplication':
+            validation_fba = attributed_fba.assign(
+                validation_total=(attributed_fba.groupby('group_id')
+                                  ['FlowAmount'].transform('sum'))
+            )
+            if not np.allclose(validation_fba.group_total,
+                               validation_fba.validation_total, equal_nan=True):
+                errors = (validation_fba
+                          .query('validation_total != group_total')
+                          [['group_id', 'ActivityProducedBy', 'ActivityConsumedBy',
+                            'SectorProducedBy', 'SectorConsumedBy',
+                            'FlowAmount', 'group_total', 'validation_total']])
+                log.error('Errors in attributing flows from %s:\n%s',
+                          self.full_name, errors)
 
         return attributed_fba.drop(columns=['group_id', 'group_total'])
 
@@ -1409,7 +1415,6 @@ class FlowByActivity(_FlowBy):
         This method takes flows from the calling FBA which are mapped to
         multiple sectors and multiplies them by flows from other (an FBS).
         """
-        # todo: function not working correctly
 
         fba_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
@@ -1441,28 +1446,25 @@ class FlowByActivity(_FlowBy):
             .reset_index()
         )
 
-        groupby_cols = ['group_id']
-        for rank in ['Primary', 'Secondary']:
-            merged = (fba
-                      .merge(other,
-                             how='left',
-                             left_on=[f'{rank}Sector',
-                                      'temp_location'
-                                      if 'temp_location' in fba
-                                      else 'Location'],
-                             right_on=['PrimarySector', 'Location'],
-                             suffixes=[None, '_other'])
-                      .fillna({'FlowAmount_other': 0})
-                      )
+        # multiply using each dfs primary sector col
+        merged = (fba
+                  .merge(other,
+                         how='left',
+                         left_on=['PrimarySector', 'temp_location'
+                                  if 'temp_location' in fba
+                                  else 'Location'],
+                         right_on=['PrimarySector', 'Location'],
+                         suffixes=[None, '_other'])
+                  .fillna({'FlowAmount_other': 0})
+                  )
 
-            fba = (merged
-                   .assign(FlowAmount=lambda x: (x.FlowAmount
-                                                 * x.FlowAmount_other))
-                   .drop(columns=['PrimarySector_other', 'Location_other',
-                                  'FlowAmount_other', 'denominator'],
-                         errors='ignore')
-                   )
-            groupby_cols.append(f'{rank}Sector')
+        fba = (merged
+               .assign(FlowAmount=lambda x: (x.FlowAmount
+                                             * x.FlowAmount_other))
+               .drop(columns=['PrimarySector_other', 'Location_other',
+                              'FlowAmount_other', 'denominator'],
+                     errors='ignore')
+               )
 
         return (
             fba
