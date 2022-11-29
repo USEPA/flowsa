@@ -913,10 +913,7 @@ class FlowByActivity(_FlowBy):
              .reset_index()
              .rename(columns={
                  'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
-                 })
-             .astype({activity: flowby_config['fba_fields'][activity]
-                      for activity in ['ActivityProducedBy',
-                                       'ActivityConsumedBy']}))
+                 }))
             for scale in geo.scale
             if scale.has_fips_level and scale <= target_geoscale
         ]
@@ -960,6 +957,9 @@ class FlowByActivity(_FlowBy):
             .drop(columns='source_geoscale')
             .convert_fips_to_geoscale(target_geoscale)
             .aggregate_flowby()
+            .astype({activity: flowby_config['fba_fields'][activity]
+                     for activity in ['ActivityProducedBy',
+                                      'ActivityConsumedBy']})
         )
 
         if target_geoscale != geo.scale.NATIONAL:
