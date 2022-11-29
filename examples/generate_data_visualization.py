@@ -81,3 +81,14 @@ dv.generateSankeyDiagram(
     value_label_format='brackets',
     subplot_titles=['m1', 'm2']
 )
+
+
+####### GHG Bar Chart ############
+# Option 1 - GHG emissions by GHG
+dv.stackedBarChart('GHG_national_2018_m1',
+                sectors_to_include=['111110', '112120', '325312'])
+
+# Option 2 - specify indicator, much have LCIAformatter installed
+# https://github.com/USEPA/LCIAformatter
+dv.stackedBarChart('GHG_national_2018_m1', impact_cat='Global warming',
+                sectors_to_include=['111110', '112120', '325312'])
