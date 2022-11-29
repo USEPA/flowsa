@@ -145,11 +145,12 @@ def customwrap(s, width=30):
 
 def stackedBarChart(df,
                     impact_cat=None,
+                    sectors_to_include=None,
                     stacking_col='AllocationSources',
                     plot_title=None,
                     index_cols=None,
                     orientation='h',
-                    grouping_variable='FlowName',
+                    grouping_variable=None,
                     sector_variable='Sector',
                     subplot=None,
                     rows=1,
@@ -171,8 +172,14 @@ def stackedBarChart(df,
     if (type(df)) == str:
         df = flowsa.collapse_FlowBySector(df)
 
+    if sectors_to_include is not None:
+        df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
+
     # determine list of subplots
-    plot_list = df[subplot].drop_duplicates().values.tolist()
+    try:
+        plot_list = df[subplot].drop_duplicates().values.tolist()
+    except KeyError:
+        plot_list = None
 
     # convert units
     df = convert_units_for_graphics(df)
@@ -187,10 +194,11 @@ def stackedBarChart(df,
                                    'Impact': 'FlowAmount'}))
             var = 'Indicator'
             df = df[df['Indicator'] == impact_cat]
+            df_unit = df['Indicator unit'][0]
+            sort_cols = [sector_variable, stacking_col]
             if len(df) == 0:
                 log.exception(f'Impact category: {impact_cat} not found')
                 return
-            # df_unit = df['Indicator unit'][0]
         except ImportError:
             log.exception('lciafmt not installed')
             return
@@ -204,7 +212,8 @@ def stackedBarChart(df,
             var = 'Flow'
         else:
             var = grouping_variable
-        # df_unit = df['Unit'][0]
+        df_unit = df['Unit'][0]
+        sort_cols = [sector_variable, var, stacking_col]
     index_cols = index_cols + [var]
 
     # If 'AllocationSources' value is null, replace with 'Direct
@@ -218,19 +227,20 @@ def stackedBarChart(df,
     # resort df
     if subplot is not None:
         df2[subplot] = pd.Categorical(df2[subplot], plot_list)
-        df2 = df2.sort_values([subplot, sector_variable, grouping_variable,
-                               stacking_col]).reset_index(drop=True)
+        df2 = df2.sort_values([subplot] + sort_cols).reset_index(drop=True)
     else:
-        df2 = df2.sort_values([sector_variable, grouping_variable,
-                               stacking_col]).reset_index(drop=True)
+        df2 = df2.sort_values(sort_cols).reset_index(drop=True)
 
     # wrap the sector col
     df2[sector_variable] = df2[sector_variable].apply(
         lambda x: customwrap(x, width=12))
 
-    # establish subplots
-    fig = make_subplots(rows=rows, cols=cols, subplot_titles=df2[
-        subplot].drop_duplicates().values.tolist())
+    # establish subplots if necessary
+    try:
+        fig = make_subplots(rows=rows, cols=cols, subplot_titles=df2[
+            subplot].drop_duplicates().values.tolist())
+    except KeyError:
+        fig = go.Figure()
 
     fig.update_layout(
         template="simple_white",
@@ -244,35 +254,48 @@ def stackedBarChart(df,
     # merge back into df
     df2 = df2.merge(colors, how='left')
 
-    s = 0
-    for row in range(1, rows + 1):
-        for col in range(1, cols + 1):
-            df3 = df2[df2[subplot] == plot_list[s]].reset_index(drop=True)
-            for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
-                plot_df = df3[df3[stacking_col] == r].reset_index(drop=True)
-                flow_col = plot_df['FlowAmount']
-                sector_col = [plot_df[sector_variable], plot_df[var]]
-                if orientation == 'h':
-                    x_data = flow_col
-                    y_data = sector_col
-                    xaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
-                    yaxis_title = ""
-                else:
-                    x_data = sector_col
-                    y_data = flow_col
-                    xaxis_title = ""
-                    yaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
-                fig.add_trace(
-                    go.Bar(x=x_data, y=y_data, name=r,
-                           orientation=orientation,
-                           marker_color=c,
-                           ),
-                    row=row,
-                    col=col
-                )
-                fig.update_xaxes(title_text=xaxis_title, row=row, col=col)
-                fig.update_yaxes(title_text=yaxis_title, row=row, col=col)
-            s = s + 1
+    if subplot is None:
+        for r, c in zip(df2[stacking_col].unique(), df2['Color'].unique()):
+            plot_df = df2[df2[stacking_col] == r]
+            y_axis_col = [plot_df[sector_variable], plot_df[var]]
+            fig.add_trace(
+                go.Bar(x=plot_df['FlowAmount'],
+                       y=y_axis_col, name=r,
+                       orientation='h',
+                       marker_color=c
+                       ))
+        fig.update_xaxes(title_text=f"FlowAmount ({df_unit})")
+        fig.update_yaxes(title_text="Sector", tickmode='linear')
+    else:
+        s = 0
+        for row in range(1, rows + 1):
+            for col in range(1, cols + 1):
+                df3 = df2[df2[subplot] == plot_list[s]].reset_index(drop=True)
+                for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
+                    plot_df = df3[df3[stacking_col] == r].reset_index(drop=True)
+                    flow_col = plot_df['FlowAmount']
+                    sector_col = [plot_df[sector_variable], plot_df[var]]
+                    if orientation == 'h':
+                        x_data = flow_col
+                        y_data = sector_col
+                        xaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+                        yaxis_title = ""
+                    else:
+                        x_data = sector_col
+                        y_data = flow_col
+                        xaxis_title = ""
+                        yaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+                    fig.add_trace(
+                        go.Bar(x=x_data, y=y_data, name=r,
+                               orientation=orientation,
+                               marker_color=c,
+                               ),
+                        row=row,
+                        col=col
+                    )
+                    fig.update_xaxes(title_text=xaxis_title, row=row, col=col)
+                    fig.update_yaxes(title_text=yaxis_title, row=row, col=col)
+                s = s + 1
 
     if orientation == 'h':
         fig.update_yaxes(autorange="reversed")
