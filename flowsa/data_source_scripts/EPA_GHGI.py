@@ -328,7 +328,7 @@ def strip_char(text):
     for key in footnotes:
         text = text.replace(key, footnotes[key])
 
-    return text.strip()
+    return ' '.join(text.split())
 
 
 
@@ -649,17 +649,10 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
                 df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
 
-            elif table_name in ["4-14", "4-100"]:
+            elif table_name in ["4-14", "4-102", "A-95"]:
                 # Remove notes from activity names
                 for index, row in df.iterrows():
-                    apb_value = strip_char(row["ActivityProducedBy"])
-                    if "(" in apb_value:
-                        text_split = apb_value.split("(")
-                        df.loc[index, 'ActivityProducedBy'] = text_split[0]
-
-            elif table_name in ["A-95"]:
-                for index, row in df.iterrows():
-                    apb_value = strip_char(row["ActivityProducedBy"])
+                    apb_value = strip_char(row["ActivityProducedBy"].split("(")[0])
                     df.loc[index, 'ActivityProducedBy'] = apb_value
 
             else:
