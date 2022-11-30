@@ -327,6 +327,16 @@ def strip_char(text):
                  'Amendmenta': 'Amendment',
                  'Residue Nb': 'Residue N',
                  'Residue Nd': 'Residue N',
+                 'Landa': 'Land',
+                 'Landb': 'Land',
+                 'landb': 'land',
+                 'landc': 'land',
+                 'landd': 'land',
+                 'Settlementsc': 'Settlements',
+                 'Wetlandse': 'Wetlands',
+                 'Settlementsf': 'Settlements',
+                 'Totali': 'Total',
+                 'Othersa': 'Others',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
