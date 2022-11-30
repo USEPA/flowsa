@@ -186,11 +186,10 @@ def ghg_call(*, resp, url, year, config, **_):
                 path = (path.replace('{chapter}', chapter)
                             .replace('{table_name}', table_name))
 
-                # TODO Update for 2020
                 # Handle special case of table 3-22 in external data folder
                 if table == "3-22b":
-                    if str(year) in ['2019', '2020']:
-                        # Skip 3-22b for year 2019 (use 3-22 instead)
+                    if str(year) in ['2020']:
+                        # Skip 3-22b for current year (use 3-22 instead)
                         continue
                     else:
                         df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
