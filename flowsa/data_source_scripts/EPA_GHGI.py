@@ -202,10 +202,11 @@ def ghg_call(*, resp, url, year, config, **_):
                         log.error(f"error reading {table}")
                         continue
                 
-                if table in ['3-10', '5-28']:
+                if table in ['3-10', '5-28', 'A-73']:
                     # Skip single row
                     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")
+                    df = df.rename(columns={'2010a':'2010'})
                 elif table == "3-22":
                     # Skip first two rows, as usual, but make headers the next 3 rows:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
@@ -286,9 +287,9 @@ def strip_char(text):
     Removes the footnote chars from the text
     """
     text = text + " "
-    notes = [" a ", " b ", " c ", " d ", " e ", " f ", " g ",
+    notes = ["f, g", " a ", " b ", " c ", " d ", " e ", " f ", " g ",
              " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g ",
-             ")b", ")f", ")k", ]
+             ")b", ")f", ")k", "b,c", "h,i"]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -318,6 +319,11 @@ def strip_char(text):
                  'Substancesd': 'Substances',
                  'Territoriesa': 'Territories',
                  'Roadb': 'Road',
+                 'Raile': 'Rail',
+                 'LPGf': 'LPG',
+                 'Gasf': 'Gas',
+                 'Gasolinef': 'Gasoline',
+                 'Fuelf': 'Fuel',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
@@ -620,7 +626,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 else:
                     # fuel header
                     fuel_name = df.loc[index, 'ActivityConsumedBy']
-                    fuel_name = strip_char(fuel_name)
+                    fuel_name = strip_char(fuel_name.split('(')[0])
                     df.loc[index, 'ActivityConsumedBy'] = "All activities"
                     df.loc[index, 'FlowName'] = fuel_name
                 if fuel_name in A_79_unit_dict.keys():
