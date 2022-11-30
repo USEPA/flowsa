@@ -479,6 +479,7 @@ def ghg_parse(*, df_list, year, config, **_):
 
         if table_name in multi_chem_names:
             bool_apb = False
+            bool_LULUCF = False
             apbe_value = ""
             flow_name_list = ["CO2", "CH4", "N2O", "NF3", "HFCs", "PFCs",
                               "SF6", "NF3", "CH4 a", "N2O b", "CO", "NOx"]
@@ -492,14 +493,18 @@ def ghg_parse(*, df_list, year, config, **_):
                     apb_value = "CO2"
 
                 if apb_value in flow_name_list:
-                    apbe_value = apb_value
-                    df.loc[index, 'FlowName'] = apbe_value
-                    df.loc[index, 'ActivityProducedBy'] = "All activities"
-                    bool_apb = True
+                    if bool_LULUCF:
+                        df = df.drop(index)
+                    else:
+                        apbe_value = apb_value
+                        df.loc[index, 'FlowName'] = apbe_value
+                        df.loc[index, 'ActivityProducedBy'] = "All activities"
+                        bool_apb = True
                 elif apb_value.startswith('LULUCF'):
                     df.loc[index, 'FlowName'] = 'CO2e'
                     df.loc[index, 'ActivityProducedBy'] = strip_char(apb_value)
-                elif apb_value.startswith('Total'):
+                    bool_LULUCF = True
+                elif apb_value.startswith(('Total', 'Net')):
                     df = df.drop(index)
                 else:
                     apb_txt = df.loc[index, 'ActivityProducedBy']
