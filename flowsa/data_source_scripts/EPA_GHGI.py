@@ -324,6 +324,9 @@ def strip_char(text):
                  'Gasf': 'Gas',
                  'Gasolinef': 'Gasoline',
                  'Fuelf': 'Fuel',
+                 'Amendmenta': 'Amendment',
+                 'Residue Nb': 'Residue N',
+                 'Residue Nd': 'Residue N',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
