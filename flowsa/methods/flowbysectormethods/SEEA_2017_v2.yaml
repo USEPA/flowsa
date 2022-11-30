@@ -521,7 +521,7 @@ source_names:
       pasture:
         <<: *pasture
 
-## Mobile Sources (N20 and CH4)
+## Mobile Sources (N2O and CH4)
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
     activity_sets:
       direct_attribution: # Some of these need to be separated and attributed differently
