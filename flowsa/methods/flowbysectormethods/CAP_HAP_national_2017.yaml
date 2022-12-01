@@ -9,6 +9,10 @@ _allocation_types:
     allocation_method: proportional
     allocation_source_class: "Energy"
     allocation_source_year: 2014
+    allocation_selection_fields:
+        Description:
+            - "Table 2.2"
+            - "Table 3.2"
     # allocation_flow:  # override this
     #   - "Coal"
     allocation_compartment: None
