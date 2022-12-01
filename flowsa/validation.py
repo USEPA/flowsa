@@ -980,7 +980,7 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
             except ValueError:
                 pass
     # ignore additional columns on merge #todo: remove next two lines once the added columns from DataVis branch are pulled into master
-    for e in ['ProducedBySectorType', 'ConsumedBySectorType', 'AllocationSources']:
+    for e in ['ProducedBySectorType', 'ConsumedBySectorType', 'AttributionSources']:
         try:
             merge_cols.remove(e)
         except ValueError:

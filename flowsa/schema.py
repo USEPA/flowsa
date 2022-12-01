@@ -54,7 +54,7 @@ flow_by_sector_fields = \
      'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
      'MetaSources': [{'dtype': 'str'}, {'required': True}],
-     'AllocationSources': [{'dtype': 'str'}, {'required': False}],
+     'AttributionSources': [{'dtype': 'str'}, {'required': False}],
      'FlowUUID': [{'dtype': 'str'}, {'required': True}]
      }
 flow_by_sector_fields_w_activity = flow_by_sector_fields.copy()
@@ -84,7 +84,7 @@ flow_by_sector_collapsed_fields = \
      'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
      'MetaSources': [{'dtype': 'str'}, {'required': True}],
-     'AllocationSources': [{'dtype': 'str'}, {'required': False}],
+     'AttributionSources': [{'dtype': 'str'}, {'required': False}],
      'FlowUUID': [{'dtype': 'str'}, {'required': True}]
      }
 flow_by_activity_mapped_fields = \

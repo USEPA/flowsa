@@ -146,7 +146,7 @@ def customwrap(s, width=30):
 def stackedBarChart(df,
                     impact_cat=None,
                     sectors_to_include=None,
-                    stacking_col='AllocationSources',
+                    stacking_col='AttributionSources',
                     plot_title=None,
                     index_cols=None,
                     orientation='h',
@@ -216,9 +216,9 @@ def stackedBarChart(df,
         sort_cols = [sector_variable, var, stacking_col]
     index_cols = index_cols + [var]
 
-    # If 'AllocationSources' value is null, replace with 'Direct
+    # If 'AttributionSources' value is null, replace with 'Direct
     try:
-        df['AllocationSources'] = df['AllocationSources'].fillna('Direct')
+        df['AttributionSources'] = df['AttributionSources'].fillna('Direct')
     except KeyError:
         pass
     # aggregate by location/sector/unit and optionally 'context'

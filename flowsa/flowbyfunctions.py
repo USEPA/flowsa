@@ -1314,20 +1314,21 @@ def aggregate_and_subset_for_target_sectors(df, method):
     return df_subset
 
 
-def add_column_of_allocation_sources(df, attr):
+def add_attribution_sources_col(df, attr):
     """
-
-    :param df_load:
+    Add new column to FBS with the primary data source used for attribution
+    :param df:
     :param attr:
     :return:
     """
-    # first assign a data source as the source name
-    df = df.assign(AllocationSources=None)
+    # first assume method is direct - replace with attribution source if not
+    # direct
+    df = df.assign(AttributionSources='Direct')
 
     # if allocation method is not direct, add data sources
     if attr['allocation_method'] != 'direct':
         sources = []
-        key_list = ['allocation_source', 'helper_source']
+        key_list = ['allocation_source']  # , 'helper_source']
         for k in key_list:
             s = attr.get(k)
             if (s is not None) & (callable(s) is False):
@@ -1337,5 +1338,5 @@ def add_column_of_allocation_sources(df, attr):
         # concat sources into single string
         allocation_sources = ', '.join(sources)
         # update data sources column with additional sources
-        df = df.assign(AllocationSources=allocation_sources)
+        df = df.assign(AttributionSources=allocation_sources)
     return df
