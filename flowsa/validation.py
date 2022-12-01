@@ -974,17 +974,27 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     merge_cols = list(df2.select_dtypes(include=[
         'object', 'int']).columns)
     if ignore_metasources:
-        for e in ['MetaSources']:
+        for e in ['MetaSources', 'AttributionSources']:
             try:
                 merge_cols.remove(e)
             except ValueError:
                 pass
-    # ignore additional columns on merge #todo: remove next two lines once the added columns from DataVis branch are pulled into master
-    for e in ['ProducedBySectorType', 'ConsumedBySectorType', 'AttributionSources']:
-        try:
-            merge_cols.remove(e)
-        except ValueError:
-            pass
+    # todo: remove merge_col edit once the added columns from DataVis branch
+    #  are pulled into master 12/1/22
+    # ignore additional columns on merge if they do not exist in first
+    # dataframe (version on Data commons if comparing to remote)
+    merge_cols = [e for e in merge_cols if e in df1.columns]
+
+    # aggregate dfs before merge - might have duplicate sectors due to
+    # dropping metasources/attribution sources
+    df1 = aggregator(df1[merge_cols + ['FlowAmount_fbs1']],
+                     groupbycols=list(df1.select_dtypes(include=[
+                         'object', 'int']).columns),
+                     flowcolname='FlowAmount_fbs1')
+    df2 = aggregator(df2[merge_cols + ['FlowAmount_fbs2']],
+                     groupbycols=list(df2.select_dtypes(include=[
+                         'object', 'int']).columns),
+                     flowcolname='FlowAmount_fbs2')
     # check units
     compare_df_units(df1, df2)
     df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
