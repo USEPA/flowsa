@@ -197,6 +197,7 @@ EPA_NEI_Nonpoint:
   fedefl_mapping: NEI
   # sector_aggregation_level: "aggregated"
 EPA_NEI_Nonroad:
+  data_format: FBA
   class:
   - Chemicals
   sector-like_activities: False
