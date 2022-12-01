@@ -575,7 +575,8 @@ def generateSankeyDiagram(methodnames,
         # runs indefinitely
         import kaleido
     except ImportError:
-        log.error("kaleido 0.1.0post1 required for 'generateSankeyDiagram()'")
+        log.error("kaleido 0.1.0post1 required for 'generateSankeyDiagram("
+                  ")', if running on Windows, otherwise install 0.1.0")
         raise
 
     if orientation == 'vertical':

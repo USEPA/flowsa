@@ -17,7 +17,6 @@ setup(
         'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
         'appdirs>=1.4.3',
         'bibtexparser>=1.2.0',
-        'kaleido==0.1.0.post1',
         'matplotlib>=3.4.3',
         'numpy>=1.20.1',
         'openpyxl>=3.0.7',
