@@ -9,12 +9,10 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import random
-import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import flowsa
-from flowsa.common import load_crosswalk, load_yaml_dict, \
-    load_sector_length_cw_melt
+from flowsa.common import load_crosswalk, load_yaml_dict
 from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.flowbyfunctions import sector_aggregation
 from flowsa.sectormapping import get_sector_list
@@ -570,14 +568,6 @@ def generateSankeyDiagram(methodnames,
     :param subplot_titles: list, subplot titles
     :return:
     """
-    try:
-        # must install 0.1.0post1 if running windows, otherwise function
-        # runs indefinitely
-        import kaleido
-    except ImportError:
-        log.error("kaleido 0.1.0post1 required for 'generateSankeyDiagram()'")
-        raise
-
     if orientation == 'vertical':
         rows = len(methodnames)
         cols = 1
