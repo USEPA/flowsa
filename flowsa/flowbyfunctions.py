@@ -92,7 +92,7 @@ def agg_by_geoscale(df, from_scale, to_scale, groupbycols):
     return fba_agg
 
 
-def aggregator(df, groupbycols, retain_zeros=True):
+def aggregator(df, groupbycols, retain_zeros=True, flowcolname='FlowAmount'):
     """
     Aggregates flowbyactivity or flowbysector 'FlowAmount' column in df and
     generate weighted average values based on FlowAmount values for numeric
@@ -112,7 +112,7 @@ def aggregator(df, groupbycols, retain_zeros=True):
 
     # drop columns with flowamount = 0
     if retain_zeros is False:
-        df = df[df['FlowAmount'] != 0]
+        df = df[df[flowcolname] != 0]
 
     # list of column headers, that if exist in df, should be
     # aggregated using the weighted avg fxn
@@ -129,7 +129,7 @@ def aggregator(df, groupbycols, retain_zeros=True):
     # check cols exist in df
     groupbycols = [c for c in groupbycols if c in df.columns]
 
-    df_dfg = df.groupby(groupbycols).agg({'FlowAmount': ['sum']})
+    df_dfg = df.groupby(groupbycols).agg({flowcolname: ['sum']})
 
     def is_identical(s):
         a = s.to_numpy()
@@ -140,7 +140,7 @@ def aggregator(df, groupbycols, retain_zeros=True):
         if len(df) > 0 and is_identical(df[e]):
             df_dfg.loc[:, e] = df[e].iloc[0]
         else:
-            df_dfg[e] = get_weighted_average(df, e, 'FlowAmount', groupbycols)
+            df_dfg[e] = get_weighted_average(df, e, flowcolname, groupbycols)
 
     df_dfg = df_dfg.reset_index()
     df_dfg.columns = df_dfg.columns.droplevel(level=1)
