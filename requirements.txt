@@ -3,7 +3,7 @@ git+https://github.com/USEPA/esupy.git@develop#egg=esupy
 git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI
 appdirs >= 1.4.3               # Storing user data
 bibtexparser>=1.2.0            # Generates bibtex
-kaleido == 0.1.0post1          # Sankey, versions after kaleido 0.1.0post1 do not work
+kaleido == 0.1.0.post1          # Sankey, versions after kaleido 0.1.0.post1 do not work
 matplotlib >= 3.4.3            # Plotting
 numpy>=1.20.1                  # Library used for arrays
 openpyxl >= 3.0.7              # Extract data from xlsm files
