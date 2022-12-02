@@ -126,7 +126,8 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
         # first check if a filepath for the yaml is specified, as is the
         # case with FBS method files located outside FLOWSA
         if filepath is not None:
-            log.info(f'Loading {filename} from {filepath}flowbysectormethods/')
+            log.info(f'Loading {filename}.yaml from'
+                     f' {filepath}flowbysectormethods/')
             folder = f'{filepath}flowbysectormethods/'
         else:
             if flowbytype == 'FBA':
