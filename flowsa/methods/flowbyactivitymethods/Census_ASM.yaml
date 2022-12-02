@@ -1,0 +1,24 @@
+author: US Census Bureau
+source_name: Annual Survey of Manufacturers
+source_url: https://www.census.gov/programs-surveys/cbp.html
+bib_id: Census_ASM
+api_name: Census
+api_key_required: true
+format: json
+url:
+  base_url: http://api.census.gov/data/
+  api_path: timeseries/asm/area2017?
+  url_params:
+    get: GEO_ID,NAICS2017,YEAR,RCPTOT  # replace  __NAICS__ based on year of data. >=2017 is NAICS2017, 2012-2016 is NAICS2012
+    for: "us:*&time=__year__"  # retrieves us data
+    key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
+  key_param: key
+url_replace_fxn: !script_function:Census_ASM asm_URL_helper
+call_response_fxn: !script_function:Census_ASM asm_call
+parse_response_fxn: !script_function:Census_ASM asm_parse
+years:
+- 2018
+
+
+#  https://api.census.gov/data/timeseries/asm/area2017?get=GEO_ID,NAICS2017,YEAR,RCPTOT&for=us:*&time=2020
+#  http:/api.census.gov/data/timeseries/asm/area2017?get=GEO_ID%2CNAICS2017%2CYEAR%2CRCPTOT&for=us:*&time=2018&key=

@@ -45,7 +45,8 @@ if __name__ == '__main__':
     sec_list = df['Sector'].drop_duplicates().values.tolist()
     for s in sec_list:
         df = df.append(pd.DataFrame([[s, 'Vacant']],
-                                    columns=['Sector', 'Activity']), ignore_index=True, sort=False)
+                                    columns=['Sector', 'Activity']),
+                       ignore_index=True, sort=False)
 
     # the original dataset is for NAICS 2002, but 3 digit NAICS
     # have not changed between 2002 and 2012, so labeling 2012
@@ -63,7 +64,8 @@ if __name__ == '__main__':
             df = standardize_eia_cbecs_land_activity_names(df, 'Activity')
 
         # reorder and drop columns
-        df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
+        df = df[['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector', 'SectorType']]
 
         # sort df
         df = df.sort_values(['Activity', 'Sector']).reset_index(drop=True)

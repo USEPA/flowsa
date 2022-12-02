@@ -41,6 +41,8 @@ flow_by_sector_fields = \
      'Unit': [{'dtype': 'str'}, {'required': True}],
      'FlowType': [{'dtype': 'str'}, {'required': True}],
      'Year': [{'dtype': 'int'}, {'required': True}],
+     'ProducedBySectorType': [{'dtype': 'str'}, {'required': False}],
+     'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}],
      'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
      'Spread': [{'dtype': 'float'}, {'required': False}],
      'DistributionType': [{'dtype': 'str'}, {'required': False}],
@@ -52,6 +54,7 @@ flow_by_sector_fields = \
      'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
      'MetaSources': [{'dtype': 'str'}, {'required': True}],
+     'AttributionSources': [{'dtype': 'str'}, {'required': False}],
      'FlowUUID': [{'dtype': 'str'}, {'required': True}]
      }
 flow_by_sector_fields_w_activity = flow_by_sector_fields.copy()
@@ -81,6 +84,7 @@ flow_by_sector_collapsed_fields = \
      'TechnologicalCorrelation': [{'dtype': 'float'}, {'required': True}],
      'DataCollection': [{'dtype': 'float'}, {'required': True}],
      'MetaSources': [{'dtype': 'str'}, {'required': True}],
+     'AttributionSources': [{'dtype': 'str'}, {'required': False}],
      'FlowUUID': [{'dtype': 'str'}, {'required': True}]
      }
 flow_by_activity_mapped_fields = \

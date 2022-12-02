@@ -16,7 +16,7 @@ import json
 import pandas as pd
 import numpy as np
 from flowsa.location import get_all_state_FIPS_2, get_county_FIPS, US_FIPS
-from flowsa.common import fba_default_grouping_fields, load_api_key
+from flowsa.common import fba_default_grouping_fields, load_env_file_key
 from flowsa.schema import flow_by_activity_wsec_fields, \
     flow_by_activity_mapped_wsec_fields
 from flowsa.flowbyfunctions import assign_fips_location_system, \
@@ -53,7 +53,7 @@ def census_qwi_url_helper(*, build_url, year, config, **_):
         for d in county_fips:
             url = build_url
             url = url.replace('__year__', str(year))
-            userAPIKey = load_api_key(config['api_name'])
+            userAPIKey = load_env_file_key('API_Key', config['api_name'])
             url = url.replace("__apiKey__", userAPIKey)
             state_digit = str(d[0]) + str(d[1])
             county_digit = str(d[2]) + str(d[3]) + str(d[4])
@@ -78,7 +78,6 @@ def census_qwi_call(*, resp, **_):
         df = pd.DataFrame(data=json_load[1:len(json_load)],
                           columns=json_load[0])
     except:
-        print(resp)
         df = pd.DataFrame()
     finally:
         return df
