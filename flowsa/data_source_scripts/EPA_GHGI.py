@@ -336,6 +336,7 @@ def strip_char(text):
                  'Settlementsf': 'Settlements',
                  'Totali': 'Total',
                  'Othersa': 'Others',
+                 'N?0': 'N20',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
@@ -567,7 +568,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 "Natural Gas", "LPG", "Electricity",
                 "Fuel Type/Vehicle Type", "Diesel On-Road",
                 "Alternative Fuel On-Road", "Non-Road",
-                "Gasoline On-Road",
+                "Gasoline On-Road", "Distillate Fuel Oil",
                 ]
             if table_name in source_activity_1:
                 activity_subtotal = activity_subtotal_sector

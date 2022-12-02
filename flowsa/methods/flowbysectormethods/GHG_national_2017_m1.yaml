@@ -45,6 +45,9 @@ source_names:
   "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_18
     year: *ghgi_year
+  "EPA_GHGI_T_3_13": #C02 from mobile combustion
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_13
+    year: *ghgi_year
   "EPA_GHGI_T_3_14": #CH4 from mobile combustion
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_14
     year: *ghgi_year
@@ -171,26 +174,11 @@ source_names:
         helper_source_year: *ghgi_year
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_8:
-        <<: *transport_direct
-        names:
-            - "Aviation Gasoline Transportation"
-        allocation_flow: ['Aviation Gasoline']
-      activity_set_9:
-        <<: *transport_direct
-        names:
-            - "Jet Fuel Transportation"
-        allocation_flow: ['Jet Fuel']
       activity_set_10:
         <<: *transport_direct
         names:
             - "LPG (Propane) Transportation"
         allocation_flow: ['LPG']
-      activity_set_11:
-        <<: *transport_direct
-        names:
-            - "Residual Fuel Transportation"
-        allocation_flow: ['Residual Fuel Oil']
       activity_set_12: &transport_use
         names:
             - "Distillate Fuel Oil Transportation"
