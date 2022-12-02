@@ -153,6 +153,7 @@ def stackedBarChart(df,
                     subplot=None,
                     rows=1,
                     cols=1,
+                    filename = 'flowsaBarChart',
                     graphic_width = 1200,
                     graphic_height = 1200
                     ):
@@ -311,9 +312,8 @@ def stackedBarChart(df,
         if (trace.name in names) else names.add(trace.name))
 
     fig.show()
-    filename = 'flowsaBarChart.svg'
-    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
-    fig.write_image(f"{plotoutputpath}{filename}", width=graphic_width,
+    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}.svg")
+    fig.write_image(f"{plotoutputpath}{filename}.svg", width=graphic_width,
                     height=graphic_height)
 
 
@@ -548,7 +548,8 @@ def generateSankeyDiagram(methodnames,
                           domain_dict=None,
                           plot_dimension=None,
                           value_label_format='line_break',
-                          subplot_titles=None):
+                          subplot_titles=None,
+                          filename='flowsaSankey'):
     """
     Sankey diagram developed to map flows between sector produced by (source)
     and sector consumed by (target). Sankey developed for subplot of 2
@@ -634,7 +635,6 @@ def generateSankeyDiagram(methodnames,
         height = plot_dimension[1]
 
     fig.show()
-    filename = 'flowsaSankey.svg'
-    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}")
-    fig.write_image(f"{plotoutputpath}{filename}",
+    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}.svg")
+    fig.write_image(f"{plotoutputpath}{filename}.svg",
                     width=width, height=height)
