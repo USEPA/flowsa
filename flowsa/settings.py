@@ -133,6 +133,8 @@ PKG_VERSION_NUMBER = return_pkg_version()
 GIT_HASH_LONG = os.environ.get('GITHUB_SHA') or get_git_hash('long')
 if GIT_HASH_LONG:
     GIT_HASH = GIT_HASH_LONG[0:7]
+else:
+    GIT_HASH = None
 
 # Common declaration of write format for package data products
 WRITE_FORMAT = "parquet"
