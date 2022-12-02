@@ -208,7 +208,7 @@ def remove_duplicate_NEI_flows(df):
     return df
 
 
-def drop_GHGs(df, *_):
+def drop_GHGs(df, method=None, **_):
     """
     GHGs are included in some NEI datasets. If these data are not
     compiled together with GHGRP, need to remove them as they will be

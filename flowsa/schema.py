@@ -41,6 +41,8 @@ flow_by_sector_fields = \
      'Unit': [{'dtype': 'str'}, {'required': True}],
      'FlowType': [{'dtype': 'str'}, {'required': True}],
      'Year': [{'dtype': 'int'}, {'required': True}],
+     'ProducedBySectorType': [{'dtype': 'str'}, {'required': False}],
+     'ConsumedBySectorType': [{'dtype': 'str'}, {'required': False}],
      'MeasureofSpread': [{'dtype': 'str'}, {'required': False}],
      'Spread': [{'dtype': 'float'}, {'required': False}],
      'DistributionType': [{'dtype': 'str'}, {'required': False}],
