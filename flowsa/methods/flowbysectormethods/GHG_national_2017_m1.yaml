@@ -12,38 +12,38 @@ source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1
     year: &ghgi_year 2017
-  "EPA_GHGI_T_3_63": #CH4 from Natural Gas Systems
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_63
+  "EPA_GHGI_T_3_68": #CH4 from Natural Gas Systems
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_68
     year: *ghgi_year
-  "EPA_GHGI_T_3_65": #CO2 from Natural Gas Systems mimics CH4
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_65
+  "EPA_GHGI_T_3_70": #CO2 from Natural Gas Systems mimics CH4
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_70
     year: *ghgi_year
-  "EPA_GHGI_T_3_67":  #N2O from Natural Gas Systems, not used in original method, mimics CH4
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_67
+  "EPA_GHGI_T_3_72":  #N2O from Natural Gas Systems, not used in original method, mimics CH4
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_72
     year: *ghgi_year
-  "EPA_GHGI_T_3_38": #CH4 from Petroleum Systems
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_38
-    year: *ghgi_year
-  "EPA_GHGI_T_3_40": #CO2 from Petroleum Systems mimics CH4
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_40
-    year: *ghgi_year
-  "EPA_GHGI_T_3_42": #N2O from Petroleum Systems mimics CH4
+  "EPA_GHGI_T_3_42": #CH4 from Petroleum Systems
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_42
     year: *ghgi_year
-  "EPA_GHGI_T_5_29": #CH4, N2O, CO and NOx from field burning of residues
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_29
+  "EPA_GHGI_T_3_44": #CO2 from Petroleum Systems mimics CH4
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_44
+    year: *ghgi_year
+  "EPA_GHGI_T_3_46": #N2O from Petroleum Systems mimics CH4
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_46
+    year: *ghgi_year
+  "EPA_GHGI_T_5_28": #CH4, N2O, CO and NOx from field burning of residues
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_28
     year: *ghgi_year
   "EPA_GHGI_T_5_3": #CH4 from Enteric Fermentation
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_3
     year: *ghgi_year
-  "EPA_GHGI_T_5_7": #CH4 and N2O from manure, mimics enteric fermentation
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_7
+  "EPA_GHGI_T_5_6": #CH4 and N2O from manure, mimics enteric fermentation
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_6
     year: *ghgi_year
-  "EPA_GHGI_T_5_18": #Direct N2O emissions from agricultural soils
+  "EPA_GHGI_T_5_17": #Direct N2O emissions from agricultural soils
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_17
+    year: *ghgi_year
+  "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_18
-    year: *ghgi_year
-  "EPA_GHGI_T_5_19": #Indirect N2O emissions from agricultural soils
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_19
     year: *ghgi_year
   "EPA_GHGI_T_3_14": #CH4 from mobile combustion
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_14
@@ -57,31 +57,31 @@ source_names:
   "EPA_GHGI_T_4_50": # HFCs from HCFC-22 production
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_50
     year: *ghgi_year
-  "EPA_GHGI_T_4_94": # HFCs and other emissions from electronics manufacture
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_94
+  "EPA_GHGI_T_4_96": # HFCs and other emissions from electronics manufacture
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_96
     year: *ghgi_year
-  "EPA_GHGI_T_4_101": # HFCs and PFCs from ODS Substitutes
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_101
+  "EPA_GHGI_T_4_102": # HFCs and PFCs from ODS Substitutes
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_102
     year: *ghgi_year
-  "EPA_GHGI_T_A_103": # HFCs from Transportation
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_A_103
+  "EPA_GHGI_T_A_97": # HFCs from Transportation
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_A_97
     year: *ghgi_year
   "EPA_GHGI_T_4_80": # PFCs from aluminum production
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_80
     year: *ghgi_year
-  "EPA_GHGI_T_4_84": # HFCs, SF6, CO2 from magnesium production
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_84
+  "EPA_GHGI_T_4_86": # HFCs, SF6, CO2 from magnesium production
+    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_4_86
     year: *ghgi_year
   "EPA_GHGI_T_3_22b": #Fossil fuel for non-energy uses
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_22b
     year: *ghgi_year
 
 ## Major CO2 Sources
-  "EPA_GHGI_T_A_13":  # CO2 emissions from stationary combustion and transportation
+  "EPA_GHGI_T_A_8":  # CO2 emissions from stationary combustion and transportation
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2017 # Table A_13 is specific to 2017
+    year: 2017 # Table A_8 is specific to 2017
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
@@ -159,7 +159,7 @@ source_names:
         names:
             - "Natural Gas Transportation"
         allocation_method: proportional
-        allocation_source: "EPA_GHGI_T_A_79"
+        allocation_source: "EPA_GHGI_T_A_73"
         allocation_source_class: "Energy"
         allocation_source_year: *ghgi_year
         allocation_flow: ['Natural Gas']
@@ -195,10 +195,10 @@ source_names:
         names:
             - "Distillate Fuel Oil Transportation"
         allocation_method: proportional
-        allocation_source: "EPA_GHGI_T_A_79"
+        allocation_source: "EPA_GHGI_T_A_73"
         allocation_source_class: "Energy"
         allocation_source_year: *ghgi_year
-        allocation_flow: ['Distillate Fuel Oil (Diesel Fuel)']
+        allocation_flow: ['Distillate Fuel Oil']
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: !script_function:EPA_GHGI adjust_transport_activities

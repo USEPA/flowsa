@@ -77,7 +77,7 @@ source_names:
           - "Glass Production" #CO2
           - "Carbide Production and Consumption" #CO2, CH4
           - "Landfills" #CH4
-          - "Coal Mining" #CH4
+          - "Coal Mining" #CO2, CH4
           - "Wastewater Treatment" #CH4, N2O
           - "Rice Cultivation" #CH4
           - "Abandoned Oil and Gas Wells" #CH4
@@ -151,7 +151,7 @@ source_names:
         clean_parameter: {"325120": 'ActivityProducedBy'} # Industrial gases
 
 ## Fossil Fuels
-  "EPA_GHGI_T_3_63": &natgas #CH4 from Natural Gas Systems
+  "EPA_GHGI_T_3_68": &natgas #CH4 from Natural Gas Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -168,9 +168,9 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_65": *natgas #CO2 from Natural Gas Systems mimics CH4
-  "EPA_GHGI_T_3_67": *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
-  "EPA_GHGI_T_3_38": &petroleum #CH4 from Petroleum Systems
+  "EPA_GHGI_T_3_70": *natgas #CO2 from Natural Gas Systems mimics CH4
+  "EPA_GHGI_T_3_72": *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
+  "EPA_GHGI_T_3_42": &petroleum #CH4 from Petroleum Systems
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -186,11 +186,11 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_3_40": *petroleum #CO2 from Petroleum Systems mimics CH4
-  "EPA_GHGI_T_3_42": *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
+  "EPA_GHGI_T_3_44": *petroleum #CO2 from Petroleum Systems mimics CH4
+  "EPA_GHGI_T_3_46": *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
 
 ## Agriculture
-  "EPA_GHGI_T_5_29": #CH4, N2O, CO and NOx from field burning of residues
+  "EPA_GHGI_T_5_28": #CH4, N2O, CO and NOx from field burning of residues
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
@@ -229,9 +229,9 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-  "EPA_GHGI_T_5_7": *animals #CH4 and N2O from manure, mimics enteric fermentation
+  "EPA_GHGI_T_5_6": *animals #CH4 and N2O from manure, mimics enteric fermentation
 
-  "EPA_GHGI_T_5_18": #Direct N2O emissions from agricultural soils
+  "EPA_GHGI_T_5_17": #Direct N2O emissions from agricultural soils
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -273,7 +273,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
 
-  "EPA_GHGI_T_5_19": #Indirect N2O emissions from agricultural soils
+  "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
@@ -331,11 +331,11 @@ source_names:
   "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
 
 ## Major CO2 Sources
-  "EPA_GHGI_T_A_14":  # CO2 emissions from stationary combustion and transportation
+  "EPA_GHGI_T_A_9":  # CO2 emissions from stationary combustion and transportation
     data_format: 'FBA'
     class: Chemicals
     geoscale_to_use: national
-    year: 2016 # Table A_14 is specific to 2016
+    year: 2016 # Table A_9 is specific to 2016
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
@@ -380,7 +380,7 @@ source_names:
         names:
             - "Natural Gas Transportation"
         allocation_method: proportional
-        allocation_source: "EPA_GHGI_T_A_79"
+        allocation_source: "EPA_GHGI_T_A_73"
         allocation_source_class: "Energy"
         allocation_source_year: *ghgi_year
         allocation_flow: ['Natural Gas']
@@ -416,10 +416,10 @@ source_names:
         names:
             - "Distillate Fuel Oil Transportation"
         allocation_method: proportional
-        allocation_source: "EPA_GHGI_T_A_79"
+        allocation_source: "EPA_GHGI_T_A_73"
         allocation_source_class: "Energy"
         allocation_source_year: *ghgi_year
-        allocation_flow: ['Distillate Fuel Oil (Diesel Fuel)']
+        allocation_flow: ['Distillate Fuel Oil']
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba: !script_function:EPA_GHGI adjust_transport_activities
@@ -584,7 +584,7 @@ source_names:
             - "HCFC-22 Production"
           allocation_method: direct
           allocation_from_scale: national
-  "EPA_GHGI_T_4_94": # HFCs and other emissions from electronics manufacture
+  "EPA_GHGI_T_4_96": # HFCs and other emissions from electronics manufacture
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
@@ -596,7 +596,7 @@ source_names:
             - "Electronics Production"
           allocation_method: direct
           allocation_from_scale: national
-  "EPA_GHGI_T_4_101": # HFCs and PFCs from ODS Substitutes
+  "EPA_GHGI_T_4_102": # HFCs and PFCs from ODS Substitutes
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
@@ -624,7 +624,7 @@ source_names:
           names:
             - "Foams - Urethane"
           clean_parameter: {"326150": 'ActivityProducedBy'} # Urethane and other foam
-  "EPA_GHGI_T_A_103": # HFCs from Transportation
+  "EPA_GHGI_T_A_97": # HFCs from Transportation
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
@@ -656,7 +656,7 @@ source_names:
             - "Aluminum Production"
           allocation_method: direct
           allocation_from_scale: national
-  "EPA_GHGI_T_4_84": # HFCs, SF6, CO2 from magnesium production
+  "EPA_GHGI_T_4_86": # HFCs, SF6, CO2 from magnesium production
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
