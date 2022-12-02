@@ -427,13 +427,28 @@ def get_sector_list(sector_level, secondary_sector_level_dict=None):
     # loop through identified secondary sector levels in a dictionary
     if secondary_sector_level_dict is not None:
         for k, v in secondary_sector_level_dict.items():
+            # first determine if any sectors in the sector list are already
+            # at level k
+            cw_sec = cw[k].drop_duplicates().values.tolist()
+            sector_add_list_1 = [x for x in v if x in cw_sec]
+            # remove any sectors from v if identified in sector_add_list_1
+            v = [x for x in v if x not in sector_add_list_1]
+
+            # for any sectors at more aggregated level than k, determine the
+            # child sectors
             cw_melt = cw.melt(
                 id_vars=[k], var_name="NAICS_Length",
                 value_name="NAICS_Match").drop_duplicates()
             cw_sub = cw_melt[cw_melt['NAICS_Match'].isin(v)]
-            sector_add = cw_sub[k].unique().tolist()
-            sector_list = sector_list + sector_add
+            sector_add_list_2 = cw_sub[k].unique().tolist()
+
+            # determine sectors to add and drop
+            sector_list = sector_list + sector_add_list_1 + sector_add_list_2
             sector_drop = sector_drop + v
+
+    # check if through loop any sectors in the drop list were included in
+    # sector list, and if so, drop
+    sector_list2 = [x for x in sector_list if x not in sector_drop]
 
     # sectors at primary sector level
     sector_col = cw[[sector_level]].drop_duplicates()
@@ -442,9 +457,9 @@ def get_sector_list(sector_level, secondary_sector_level_dict=None):
     sector_col = sector_col[~sector_col[sector_level].isin(sector_drop)]
     # add sectors to list
     sector_add = sector_col[sector_level].tolist()
-    sector_list = sector_list + sector_add
+    sector_list3 = sector_list2 + sector_add
 
-    return sector_list
+    return sector_list3
 
 
 def map_to_BEA_sectors(fbs_load, region, io_level, year):

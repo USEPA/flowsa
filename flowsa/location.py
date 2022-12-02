@@ -130,7 +130,7 @@ def update_geoscale(df, to_scale):
     return df
 
 
-def get_state_FIPS(year='2015'):
+def get_state_FIPS(year='2015', abbrev=False):
     """
     Filters FIPS df for state codes only
     :param year: str, year of FIPS, defaults to 2015
@@ -140,6 +140,8 @@ def get_state_FIPS(year='2015'):
     fips = read_stored_FIPS(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
+    if abbrev:
+        fips['State'] = fips['State'].str.title().replace(us_state_abbrev)
     return fips
 
 

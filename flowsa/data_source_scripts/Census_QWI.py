@@ -78,7 +78,6 @@ def census_qwi_call(*, resp, **_):
         df = pd.DataFrame(data=json_load[1:len(json_load)],
                           columns=json_load[0])
     except:
-        print(resp)
         df = pd.DataFrame()
     finally:
         return df
