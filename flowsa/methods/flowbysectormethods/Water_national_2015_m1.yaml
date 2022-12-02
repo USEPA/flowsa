@@ -55,6 +55,8 @@ source_names:
               USDA_IWMS:
                 year: 2018
                 geoscale: state
+                selection_fields:
+                    Class: Water
                 clean_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
       livestock_attribution:
         selection_fields:
