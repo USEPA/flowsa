@@ -232,71 +232,71 @@ def dataset_allocation_method(flow_subset_mapped, attr, names, method,
                  "dataframes use the same location systems")
         check_if_location_systems_match(flow_subset_mapped2, flow_allocation)
 
-    # determine how to merge dfs based on location
-    if (attr['allocation_from_scale'] == 'state') and \
-            (v['geoscale_to_use'] == 'county'):
-        flow_allocation['Location_tmp'] = flow_allocation['Location'].apply(
-            lambda x: x[0:2])
-        flow_subset_mapped2['Location_tmp'] = flow_subset_mapped2[
-            'Location'].apply(lambda x: x[0:2])
-        loc_col = ['Location_tmp']
-    elif (attr['allocation_from_scale'] == 'national') and \
-            (v['geoscale_to_use'] != 'national'):
-        loc_col = []
-    else:
-        loc_col = ['Location']
-
-    # merge fba df w/flow allocation dataset
-    log.info("Merge %s and subset of %s", k, attr['allocation_source'])
-    for i, j in activity_fields.items():
-        # check units
-        compare_df_units(flow_subset_mapped2, flow_allocation)
-        # create list of columns to merge on
-        if 'allocation_merge_columns' in attr:
-            fa_cols = loc_col + \
-                      ['Sector', 'FlowAmountRatio', 'FBA_Activity'] + \
-                      attr['allocation_merge_columns']
-            l_cols = loc_col + \
-                     [j[1]["flowbysector"], j[0]["flowbyactivity"]] + \
-                     attr['allocation_merge_columns']
-            r_cols = loc_col + \
-                     ['Sector', 'FBA_Activity'] + \
-                     attr['allocation_merge_columns']
+        # determine how to merge dfs based on location
+        if (attr['allocation_from_scale'] == 'state') and \
+                (v['geoscale_to_use'] == 'county'):
+            flow_allocation['Location_tmp'] = flow_allocation['Location'].apply(
+                lambda x: x[0:2])
+            flow_subset_mapped2['Location_tmp'] = flow_subset_mapped2[
+                'Location'].apply(lambda x: x[0:2])
+            loc_col = ['Location_tmp']
+        elif (attr['allocation_from_scale'] == 'national') and \
+                (v['geoscale_to_use'] != 'national'):
+            loc_col = []
         else:
-            fa_cols = loc_col + ['Sector', 'FlowAmountRatio', 'FBA_Activity']
-            l_cols = loc_col + [j[1]["flowbysector"], j[0]["flowbyactivity"]]
-            r_cols = loc_col + ['Sector', 'FBA_Activity']
+            loc_col = ['Location']
 
-        flow_subset_mapped2 = flow_subset_mapped2.merge(
-            flow_allocation[fa_cols], left_on=l_cols, right_on=r_cols,
-            how='left')
-        # drop location_tmp, if exists
-        flow_subset_mapped2 = flow_subset_mapped2.drop(
-            columns=['Location_tmp'], errors='ignore')
+        # merge fba df w/flow allocation dataset
+        log.info("Merge %s and subset of %s", k, attr['allocation_source'])
+        for i, j in activity_fields.items():
+            # check units
+            compare_df_units(flow_subset_mapped2, flow_allocation)
+            # create list of columns to merge on
+            if 'allocation_merge_columns' in attr:
+                fa_cols = loc_col + \
+                          ['Sector', 'FlowAmountRatio', 'FBA_Activity'] + \
+                          attr['allocation_merge_columns']
+                l_cols = loc_col + \
+                         [j[1]["flowbysector"], j[0]["flowbyactivity"]] + \
+                         attr['allocation_merge_columns']
+                r_cols = loc_col + \
+                         ['Sector', 'FBA_Activity'] + \
+                         attr['allocation_merge_columns']
+            else:
+                fa_cols = loc_col + ['Sector', 'FlowAmountRatio', 'FBA_Activity']
+                l_cols = loc_col + [j[1]["flowbysector"], j[0]["flowbyactivity"]]
+                r_cols = loc_col + ['Sector', 'FBA_Activity']
 
-    # merge the flowamount columns
-    flow_subset_mapped2.loc[:, 'FlowAmountRatio'] =\
-        flow_subset_mapped2['FlowAmountRatio_x'].fillna(
-            flow_subset_mapped2['FlowAmountRatio_y'])
-    # fill null rows with 0 because no allocation info
-    flow_subset_mapped2['FlowAmountRatio'] = \
-        flow_subset_mapped2['FlowAmountRatio'].fillna(0)
+            flow_subset_mapped2 = flow_subset_mapped2.merge(
+                flow_allocation[fa_cols], left_on=l_cols, right_on=r_cols,
+                how='left')
+            # drop location_tmp, if exists
+            flow_subset_mapped2 = flow_subset_mapped2.drop(
+                columns=['Location_tmp'], errors='ignore')
 
-    # drop rows where there is no allocation data
-    fbs = flow_subset_mapped2.dropna(
-        subset=['Sector_x', 'Sector_y'], how='all').reset_index(drop=True)
+        # merge the flowamount columns
+        flow_subset_mapped2.loc[:, 'FlowAmountRatio'] =\
+            flow_subset_mapped2['FlowAmountRatio_x'].fillna(
+                flow_subset_mapped2['FlowAmountRatio_y'])
+        # fill null rows with 0 because no allocation info
+        flow_subset_mapped2['FlowAmountRatio'] = \
+            flow_subset_mapped2['FlowAmountRatio'].fillna(0)
 
-    # calculate flow amounts for each sector
-    log.info("Calculating new flow amounts using flow ratios")
-    fbs.loc[:, 'FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
+        # drop rows where there is no allocation data
+        fbs = flow_subset_mapped2.dropna(
+            subset=['Sector_x', 'Sector_y'], how='all').reset_index(drop=True)
 
-    # drop columns
-    log.info("Cleaning up new flow by sector")
-    fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y',
-                            'FlowAmountRatio_y', 'FlowAmountRatio',
-                            'FBA_Activity_x', 'FBA_Activity_y',
-                            'disaggregate_flag', 'Description'],
-                   errors='ignore')
+        # calculate flow amounts for each sector
+        log.info("Calculating new flow amounts using flow ratios")
+        fbs.loc[:, 'FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
+
+        # drop columns
+        log.info("Cleaning up new flow by sector")
+        fbs = fbs.drop(columns=['Sector_x', 'FlowAmountRatio_x', 'Sector_y',
+                                'FlowAmountRatio_y', 'FlowAmountRatio',
+                                'FBA_Activity_x', 'FBA_Activity_y',
+                                'disaggregate_flag', 'Description'],
+                       errors='ignore')
 
     # if activities are source like, reset activity columns
     sector_like_activities = check_activities_sector_like(flow_subset_mapped)

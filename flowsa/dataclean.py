@@ -264,10 +264,7 @@ def harmonize_FBS_columns(df):
     df = replace_NoneType_with_empty_cells(df)
 
     # subset all string cols of the df and drop duplicates
-    string_cols = ['Flowable', 'Class', 'SectorProducedBy',
-                   'SectorConsumedBy', 'SectorSourceName', 'Context',
-                   'Location', 'LocationSystem', 'Unit', 'FlowType',
-                   'Year', 'MeasureofSpread', 'MetaSources']
+    string_cols = list(df.select_dtypes(include=['object']).columns)
     df_sub = df[string_cols].drop_duplicates().reset_index(drop=True)
     # sort df
     df_sub = df_sub.sort_values(['MetaSources', 'SectorProducedBy',

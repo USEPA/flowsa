@@ -26,7 +26,8 @@ TemporalCorrelation |  Numeric | Y | A 1-5 score of data collection based on rep
 GeographicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md).
 TechnologicalCorrelation |  Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md).
 DataCollection | Numeric | Y | A 1-5 score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md).
-MetaSources | String | Y | The major data source(s) value is based on, usually a FlowByActivity set.
+MetaSources | String | Y | The major data source(s) the value is based on, usually a FlowByActivity set.
+AttributionSources | String | Y | The primary attribution data source value is based on, usually a FlowByActivity set.
 FlowUUID| String| Y | UUID from Federal Commons Flow List. 
 
 * At minimum, either SectorProducedBy or SectorConsumedBy must be present. 

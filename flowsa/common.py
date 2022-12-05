@@ -73,7 +73,7 @@ def load_crosswalk(crosswalk_name):
 
     cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
                'sector_length': 'NAICS_2012_Crosswalk',
-               'sector_name': 'NAICS_2012_Names',
+               'sector_name': 'Sector_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
                'BEA': 'NAICS_to_BEA_Crosswalk'
@@ -120,13 +120,14 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     or FBS files
     :return: dictionary containing all information in yaml
     """
-    if filename == 'source_catalog':
+    if filename in ['source_catalog']:
         folder = datapath
     else:
         # first check if a filepath for the yaml is specified, as is the
         # case with FBS method files located outside FLOWSA
         if filepath is not None:
-            log.info(f'Loading {filename} from {filepath}')
+            log.info(f'Loading {filename}.yaml from'
+                     f' {filepath}flowbysectormethods/')
             folder = f'{filepath}flowbysectormethods/'
         else:
             if flowbytype == 'FBA':
