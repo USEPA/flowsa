@@ -201,7 +201,7 @@ def ghg_call(*, resp, url, year, config, **_):
                         log.error(f"error reading {table}")
                         continue
                 
-                if table in ['3-10', '5-28', 'A-73']:
+                if table in ['3-10', '5-28', 'A-73', 'A-97']:
                     # Skip single row
                     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")
