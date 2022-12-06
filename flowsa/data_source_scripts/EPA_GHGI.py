@@ -728,7 +728,7 @@ def get_manufacturing_energy_ratios(year):
 
     # Identify the GHGI table that matches EIA_MECS
     for t, v in (load_yaml_dict('EPA_GHGI', 'FBA')
-                 .get('Annex').get('Annex').items()):
+                 .get('Annex').get('Annex 2').items()):
         if ((v.get('class') == 'Energy')
         & ('Energy Consumption Data' in v.get('desc'))
         & (v.get('year') == str(mecs_year))):
