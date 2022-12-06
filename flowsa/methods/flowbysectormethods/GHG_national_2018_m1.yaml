@@ -45,9 +45,9 @@ source_names:
   "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_5_18
     year: *ghgi_year
-  "EPA_GHGI_T_3_13": #C02 from mobile combustion
-    !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_13
-    year: *ghgi_year
+  # "EPA_GHGI_T_3_13": #C02 from mobile combustion
+  #   !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_13
+  #   year: *ghgi_year
   "EPA_GHGI_T_3_14": #CH4 from mobile combustion
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_14
     year: *ghgi_year
