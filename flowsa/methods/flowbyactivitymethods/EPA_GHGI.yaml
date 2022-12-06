@@ -266,17 +266,17 @@ Tables:
 
 Annex:
   "Annex 2":
-      "A-4": # Not currently used
-        "class": "Energy"
-        "unit": "TBtu"
-        "emission_compartment": "air"
-        "emission": "CO2"
-        "emission_unit": "MMT CO2e"
-        "emission_class": "Chemicals"
-        "desc": >
-          2020 Energy Consumption Data by Fuel Type (TBtu)
-          and Adjusted Energy Consumption Data
-        "year": "2020"
+      # "A-4": # Not currently used
+      #   "class": "Energy"
+      #   "unit": "TBtu"
+      #   "emission_compartment": "air"
+      #   "emission": "CO2"
+      #   "emission_unit": "MMT CO2e"
+      #   "emission_class": "Chemicals"
+      #   "desc": >
+      #     2020 Energy Consumption Data by Fuel Type (TBtu)
+      #     and Adjusted Energy Consumption Data
+      #   "year": "2020"
 
       "A-5": # Separate emissions table for each year
         "class": "Energy"
