@@ -173,11 +173,25 @@ source_names:
         helper_flow: None
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+      activity_set_8:
+        <<: *transport_direct
+        names:
+            - "Aviation Gasoline Transportation"
+        allocation_flow: ['Aviation Gasoline']
+      activity_set_9:
+        <<: *transport_direct
+        names:
+            - "Jet Fuel Transportation"
+        allocation_flow: ['Jet Fuel']
       activity_set_10:
         <<: *transport_direct
         names:
             - "LPG (Propane) Transportation"
         allocation_flow: ['LPG']
+      activity_set_11:
+        <<: *transport_direct
+        names:
+            - "Residual Fuel Transportation"
       activity_set_12: &transport_use
         names:
             - "Distillate Fuel Oil Transportation"

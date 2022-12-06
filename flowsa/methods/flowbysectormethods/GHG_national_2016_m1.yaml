@@ -290,24 +290,24 @@ source_names:
 
 
 ## Mobile Sources
-  "EPA_GHGI_T_3_13": #CO2 from mobile combustion
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
-    year: *ghgi_year
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      activity_set_1:  #this set is direct
-        names:
-            - "Pipeline Natural Gas"
-            - "General Aviation Aircraft Aviation Gasoline"
-            - "General Aviation Aircraft Jet Fuel"
-            - "Commercial Aircraft Jet Fuel"
-            - "Military Aircraft Jet Fuel"
-            - "Ships and Non-Recreational Boats Residual Fuel Oil"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
+  # "EPA_GHGI_T_3_13": #CO2 from mobile combustion
+  #   data_format: 'FBA'
+  #   class: Chemicals
+  #   geoscale_to_use: national
+  #   year: *ghgi_year
+  #   fedefl_mapping: 'GHGI'
+  #   activity_sets:
+  #     activity_set_1:  #this set is direct
+  #       names:
+  #           - "Pipeline Natural Gas"
+  #           - "General Aviation Aircraft Aviation Gasoline"
+  #           - "General Aviation Aircraft Jet Fuel"
+  #           - "Commercial Aircraft Jet Fuel"
+  #           - "Military Aircraft Jet Fuel"
+  #           - "Ships and Non-Recreational Boats Residual Fuel Oil"
+  #       allocation_method: direct
+  #       allocation_source: None
+  #       allocation_from_scale: national
 
   "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
     data_format: 'FBA'
@@ -397,12 +397,12 @@ source_names:
     ### Transportation
       activity_set_7: &transport_direct
         names:
-            - "LPG (Propane) Transportation"
+            - "Natural Gas Transportation"
         allocation_method: proportional
         allocation_source: "EPA_GHGI_T_A_73"
         allocation_source_class: "Energy"
         allocation_source_year: *ghgi_year
-        allocation_flow: ['LPG']
+        allocation_flow: ['Natural Gas']
         allocation_compartment: None
         allocation_from_scale: national
         helper_source: "BLS_QCEW"
@@ -411,6 +411,26 @@ source_names:
         helper_source_year: *ghgi_year
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+      activity_set_8:
+        <<: *transport_direct
+        names:
+            - "Aviation Gasoline Transportation"
+        allocation_flow: ['Aviation Gasoline']
+      activity_set_9:
+        <<: *transport_direct
+        names:
+            - "Jet Fuel Transportation"
+        allocation_flow: ['Jet Fuel']
+      activity_set_10:
+        <<: *transport_direct
+        names:
+            - "LPG (Propane) Transportation"
+        allocation_flow: ['LPG']
+      activity_set_11:
+        <<: *transport_direct
+        names:
+            - "Residual Fuel Transportation"
+        allocation_flow: ['Residual Fuel Oil']
       activity_set_12: &transport_use
         names:
             - "Distillate Fuel Oil Transportation"
