@@ -2,7 +2,7 @@
 # Industry Attribution Model (https://doi.org/10.23719/1517571), except that
 # sector attribution is to 6-digit NAICS, rather than the BEA 2012 IO schema
 
-# Differences from 2017 method are 1) source year, 2) replace A-14 with A-13
+# Differences from 2017 method are 1) source year, 2) replace A-9 with A-8
 # (2017)
 
 target_sector_level: NAICS_6
