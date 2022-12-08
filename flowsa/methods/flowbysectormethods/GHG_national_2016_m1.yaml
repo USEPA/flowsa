@@ -101,7 +101,7 @@ source_names:
         allocation_from_scale: national
       activity_set_3: &electricity_make
         names:
-        - "Electric Power" #CO2
+        - "Electric Power Sector" #CO2
         allocation_method: proportional
         allocation_source: "BEA_Make_Detail_BeforeRedef"
         activity_to_sector_mapping: "BEA_2012_Detail"
