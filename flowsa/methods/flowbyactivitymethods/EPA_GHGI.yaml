@@ -117,7 +117,7 @@ Tables:
         "desc": "Table 3-42:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
       "3-44":
         "class": "Chemicals"
-        "unit": "MMT CO2"
+        "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 3-44:  CO2 Emissions from Petroleum Systems (MMT CO2)"
@@ -137,7 +137,7 @@ Tables:
         "desc": "Table 3-68:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)a"
       "3-70":
         "class": "Chemicals"
-        "unit": "MMT CO2"
+        "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 3-70:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
