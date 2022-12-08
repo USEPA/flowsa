@@ -108,7 +108,6 @@ def return_pkg_version():
             cwd=MODULEPATH).decode().strip()
         pkg_version = tags.split("-", 1)[0].replace('v', "")
     except subprocess.CalledProcessError:
-        log.info('Unable to return version with git describe')
         pkg_version = version('flowsa')
 
     return pkg_version
