@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import subprocess
 from importlib.metadata import version
 from pathlib import Path
 from esupy.processed_data_mgmt import Paths, create_paths_if_missing
@@ -98,8 +99,18 @@ vLogDetailed.addHandler(vLog_fh)
 
 
 def return_pkg_version():
-    # As of Python 3.8 can use the following:
-    return version('flowsa')
+    # return version with git describe
+    try:
+        # set path to flowsa repository, necessary if running method files
+        # outside the flowsa repo
+        tags = subprocess.check_output(
+            ["git", "describe", "--tags", "--always"],
+            cwd=MODULEPATH).decode().strip()
+        pkg_version = tags.split("-", 1)[0].replace('v', "")
+    except subprocess.CalledProcessError:
+        pkg_version = version('flowsa')
+
+    return pkg_version
 
 
 # https://stackoverflow.com/a/41125461
@@ -133,6 +144,8 @@ PKG_VERSION_NUMBER = return_pkg_version()
 GIT_HASH_LONG = os.environ.get('GITHUB_SHA') or get_git_hash('long')
 if GIT_HASH_LONG:
     GIT_HASH = GIT_HASH_LONG[0:7]
+else:
+    GIT_HASH = None
 
 # Common declaration of write format for package data products
 WRITE_FORMAT = "parquet"
