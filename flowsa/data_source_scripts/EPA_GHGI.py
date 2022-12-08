@@ -461,13 +461,13 @@ def ghg_parse(*, df_list, year, config, **_):
 
         if table_name not in ANNEX_ENERGY_TABLES:
             if 'Unit' not in df:
-                df.loc[df["SourceName"] == source_name, "Unit"] = meta.get("unit")
+                df['Unit'] = meta.get("unit")
             if 'FlowName' not in df:
-                df.loc[df["SourceName"] == source_name, "FlowName"] = meta.get("flow")
+                df['FlowName'] = meta.get('flow')
 
-            df.loc[df["SourceName"] == source_name, "Class"] = meta.get("class")
-            df.loc[df["SourceName"] == source_name, "Description"] = meta.get("desc")
-            df.loc[df["SourceName"] == source_name, "Compartment"] = meta.get("compartment")
+            df["Class"] = meta.get("class")
+            df["Description"] = meta.get("desc")
+            df["Compartment"] = meta.get("compartment")
 
         if 'Year' not in df.columns:
             df['Year'] = year
@@ -672,14 +672,6 @@ def ghg_parse(*, df_list, year, config, **_):
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"].split("(")[0])
                     df.loc[index, 'ActivityProducedBy'] = apb_value
-
-            else:
-                for index, row in df.iterrows():
-                    if "CO2" in row['Unit']:
-                        if table_name in ["3-42", "3-67"]:
-                            df.loc[index, 'Unit'] = df.loc[index, 'Unit']
-                        else:
-                            df.loc[index, 'Unit'] = "MMT CO2e"
 
         df['ActivityProducedBy'] = df['ActivityProducedBy'].str.strip()
         df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
