@@ -336,7 +336,7 @@ def strip_char(text):
                  'Settlementsf': 'Settlements',
                  'Totali': 'Total',
                  'Othersa': 'Others',
-                 'N?0': 'N20',
+                 'N?O': 'N2O',
                  'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
                  }
     for key in footnotes:
@@ -498,7 +498,7 @@ def ghg_parse(*, df_list, year, config, **_):
             flow_name_list = ["CO2", "CH4", "N2O", "NF3", "HFCs", "PFCs",
                               "SF6", "NF3", "CH4 a", "N2O b", "CO", "NOx"]
             for index, row in df.iterrows():
-                apb_value = row["ActivityProducedBy"]
+                apb_value = strip_char(row["ActivityProducedBy"])
                 if "CH4" in apb_value:
                     apb_value = "CH4"
                 elif "N2O" in apb_value and apb_value != "N2O from Product Uses":
