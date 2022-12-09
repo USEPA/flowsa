@@ -337,11 +337,12 @@ def strip_char(text):
                  'Totali': 'Total',
                  'Othersa': 'Others',
                  'N?0': 'N20',
+                 'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
 
-    return ' '.join(text.split())
+    return ' '.join(text.split()) # remove extra spaces between words
 
 
 
@@ -563,7 +564,7 @@ def ghg_parse(*, df_list, year, config, **_):
                                  "Crude Oil Transportation",
                                  "Cropland", "Grassland"]
             activity_subtotal_fuel = [
-                "Gasoline", "Distillate Fuel Oil (Diesel)",
+                "Gasoline", "Distillate Fuel Oil",
                 "Jet Fuel", "Aviation Gasoline", "Residual Fuel Oil",
                 "Natural Gas", "LPG", "Electricity",
                 "Fuel Type/Vehicle Type", "Diesel On-Road",
