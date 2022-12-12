@@ -766,7 +766,7 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
                            'Natural Gas Industrial': 'Natural Gas',
                            'Coal Industrial': 'Coal',
-                           'Natural gas industrial': 'Natural Gas'}
+                           }
 
     for activity, fuel in activities_to_split.items():
         df_subset = fba.loc[fba['ActivityProducedBy'] == activity].reset_index(drop=True)

@@ -234,7 +234,7 @@ source_names:
       activity_set_7: # Industrial
         <<: *fuel_MECS
         names:
-            - "Natural gas Industrial - Manufacturing"
+            - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"
 
@@ -252,6 +252,6 @@ source_names:
       activity_set_7: # Industrial
         <<: *fuel_MECS
         names:
-            - "Natural gas Industrial - Manufacturing"
+            - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"

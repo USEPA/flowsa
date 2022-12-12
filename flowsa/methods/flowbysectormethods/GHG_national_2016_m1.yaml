@@ -481,7 +481,7 @@ source_names:
         <<: *electricity_make # Electric power
         names:
             - "Coal Electric Power"
-            - "Natural gas Electric Power" # note lower case
+            - "Natural Gas Electric Power"
             - "Fuel Oil Electric Power"
             - "Wood Electric Power"
       activity_set_3: # Commercial Fuel Oil
@@ -493,8 +493,8 @@ source_names:
       activity_set_4: # Commercial Natural gas
         <<: *use_allocation
         names:
-            - "Natural gas Commercial"
-            - "Natural gas Industrial"
+            - "Natural Gas Commercial"
+            - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
       activity_set_5:
         <<: *use_allocation
@@ -510,19 +510,12 @@ source_names:
       activity_set_7: # Industrial
         <<: *fuel_MECS
         names:
-            - "Natural gas Industrial - Manufacturing"
+            - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"
 
   "EPA_GHGI_T_3_9":
       <<: *stationary_combustion # N2O emissions from stationary combustion
-      activity_set_2: # Replace this activity set to update names
-        <<: *electricity_make # Electric power
-        names:
-            - "Coal Electric Power"
-            - "Natural Gas Electric Power" # Note upper case
-            - "Fuel Oil Electric Power"
-            - "Wood Electric Power"
 
 ## Other sources
   "EPA_GHGI_T_4_46": #CO2 for selected petrochemicals
