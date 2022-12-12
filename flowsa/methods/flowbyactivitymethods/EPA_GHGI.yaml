@@ -205,7 +205,7 @@ Tables:
         "flow": "CO2e"
         "activity": "Electronics Production"
         "desc": "Table 4-96:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture [1] (MMT CO2 Eq.)"
-      "4-100":  # Used to speciate HFC emissions in 4-101
+      "4-100":  # Used to speciate HFC emissions in 4-102
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
@@ -403,7 +403,7 @@ Annex:
   "Annex 3":
       "A-73": # Allocation datasource
         "class": "Energy"
-        "unit": "mgal"
+        "unit": "million gallons"
         "activity": "Fuel Consumption"
         "desc": "Fuel Consumption by Fuel and Vehicle Type (million gallons unless otherwise specified)"
 

@@ -304,6 +304,7 @@ def strip_char(text):
                  'Aircraftg': 'Aircraft',
                  'Pipelineh': 'Pipeline',
                  'Electricityh': 'Electricity',
+                 'Electricityl': 'Electricity',
                  'Ethanoli': 'Ethanol',
                  'Biodieseli': 'Biodiesel',
                  'Changee': 'Change',
@@ -338,6 +339,7 @@ def strip_char(text):
                  'Othersa': 'Others',
                  'N?O': 'N2O',
                  'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
+                 'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
@@ -570,6 +572,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 "Fuel Type/Vehicle Type", "Diesel On-Road",
                 "Alternative Fuel On-Road", "Non-Road",
                 "Gasoline On-Road", "Distillate Fuel Oil",
+                "Biofuels-Ethanol", "Biofuels-Biodiesel",
                 ]
             if table_name in source_activity_1:
                 activity_subtotal = activity_subtotal_sector
@@ -659,7 +662,8 @@ def ghg_parse(*, df_list, year, config, **_):
 
             elif table_name in ["4-86", "4-96", "4-100"]:
                 # Table with flow names as Rows
-                df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
+                df.loc[:, 'FlowName'] = (df.loc[:, 'ActivityProducedBy']
+                                         .apply(lambda x: strip_char(x)))
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
             elif table_name in ["4-33", "4-50", "4-80"]:
