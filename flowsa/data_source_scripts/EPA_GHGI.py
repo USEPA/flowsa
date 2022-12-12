@@ -322,6 +322,7 @@ def strip_char(text):
                  'Raile': 'Rail',
                  'LPGf': 'LPG',
                  'Gasf': 'Gas',
+                 'Gasolinec': 'Gasoline',
                  'Gasolinef': 'Gasoline',
                  'Fuelf': 'Fuel',
                  'Amendmenta': 'Amendment',
@@ -341,6 +342,7 @@ def strip_char(text):
                  'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
                  'N2O (Semiconductors)': 'N2O',
+                 'HGLb': 'HGL',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
