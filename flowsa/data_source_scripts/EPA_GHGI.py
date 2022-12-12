@@ -340,6 +340,7 @@ def strip_char(text):
                  'N?O': 'N2O',
                  'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
+                 'N2O (Semiconductors)': 'N2O',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
@@ -664,6 +665,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = (df.loc[:, 'ActivityProducedBy']
                                          .apply(lambda x: strip_char(x)))
+                df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
             elif table_name in ["4-33", "4-50", "4-80"]:

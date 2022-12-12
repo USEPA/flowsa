@@ -204,7 +204,7 @@ Tables:
         "compartment": "air"
         "flow": "CO2e"
         "activity": "Electronics Production"
-        "desc": "Table 4-96:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture [1] (MMT CO2 Eq.)"
+        "desc": "Table 4-96:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture (MMT CO2 Eq.)"
       "4-100":  # Used to speciate HFC emissions in 4-102
         "class": "Chemicals"
         "unit": "MMT CO2e"
