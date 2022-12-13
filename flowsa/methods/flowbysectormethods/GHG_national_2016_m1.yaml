@@ -86,7 +86,7 @@ source_names:
           - "Composting" #CH4, N2O
           - "Nitric Acid Production" #N2O
           - "Adipic Acid Production" #N2O
-          - "Caprolactam, Glyoxal, and Glyoxylic Acid Production" #CH4
+          - "Caprolactam, Glyoxal, and Glyoxylic Acid Production" #N2O
         source_flows: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
         allocation_method: direct
         allocation_source: None
@@ -319,12 +319,15 @@ source_names:
       activity_set_1:  #this set is direct
         names:
             - "Passenger Cars Gasoline On-Road"
+            - "Passenger Cars Diesel On-Road"
             - "Light-Duty Trucks Gasoline On-Road"
             - "Rail Non-Road"
             - "Ships and Boats Non-Road"
             - "Aircraft Non-Road"
+            - "Light-Duty Trucks Diesel On-Road"
             - "Medium- and Heavy-Duty Trucks Diesel On-Road"
             - "Medium- and Heavy-Duty Buses Diesel On-Road"
+            - "Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road"
             - "Motorcycles Gasoline On-Road"
         allocation_method: direct
         allocation_source: None
