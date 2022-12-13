@@ -87,7 +87,6 @@ source_names:
           - "Nitric Acid Production" #N2O
           - "Adipic Acid Production" #N2O
           - "Caprolactam, Glyoxal, and Glyoxylic Acid Production" #CH4
-          - "Electronics Industry" #N2O
         source_flows: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
         allocation_method: direct
         allocation_source: None
@@ -517,6 +516,8 @@ source_names:
             - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"
+
+    ## TODO MISSING 'Wood Commercial' and 'Wood Industrial'
 
   "EPA_GHGI_T_3_9":
       <<: *stationary_combustion # N2O emissions from stationary combustion
