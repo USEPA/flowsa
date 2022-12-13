@@ -324,7 +324,9 @@ source_names:
             - "Rail Non-Road"
             - "Ships and Boats Non-Road"
             - "Aircraft Non-Road"
-            - "Medium- and Heavy-Duty Trucks and Buses Diesel On-Road"
+            - "Medium- and Heavy-Duty Trucks Diesel On-Road"
+            - "Medium- and Heavy-Duty Buses Diesel On-Road"
+            - "Motorcycles Gasoline On-Road"
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
