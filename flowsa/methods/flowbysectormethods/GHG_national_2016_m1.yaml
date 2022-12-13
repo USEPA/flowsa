@@ -99,7 +99,7 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_3: &electricity_make
+      activity_set_3: &make_allocation
         names:
         - "Electric Power Sector" #CO2
         allocation_method: proportional
@@ -481,12 +481,13 @@ source_names:
         allocation_source: None
         allocation_from_scale: national
       activity_set_2:
-        <<: *electricity_make # Electric power
+        <<: *make_allocation # Electric power
         names:
             - "Coal Electric Power"
             - "Natural Gas Electric Power"
             - "Fuel Oil Electric Power"
             - "Wood Electric Power"
+        clean_parameter: {"221100": 'ActivityConsumedBy'} # Electricity
       activity_set_3: # Commercial Fuel Oil
         <<: *use_allocation
         names:
@@ -679,7 +680,7 @@ source_names:
       fedefl_mapping: 'GHGI'
       activity_sets:
         activity_set_1:
-            <<: *electricity_make # Make table allocation
+            <<: *make_allocation # Make table allocation
             names:
             - "Magnesium Production and Processing"
             clean_parameter: {"T008": 'ActivityConsumedBy'} # Gross Output
