@@ -61,7 +61,7 @@ source_names:
     year: &ghgi_year 2016
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1:
+      direct:
         names:
           - "Iron and Steel Production & Metallurgical Coke Production" #CO2, CH4
           - "Cement Production" #CO2
@@ -91,14 +91,14 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2:
+      electricity_transmission:
         names:
           - "Electrical Transmission and Distribution" #SF6
         source_flows: ["SF6"]
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_3: &make_allocation
+      electric_power: &make_allocation
         names:
         - "Electric Power Sector" #CO2
         allocation_method: proportional
@@ -118,23 +118,23 @@ source_names:
         helper_source_year: 2012
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_4:
+      liming:
         <<: *use_allocation
         names:
         - "Liming"  #CO2
         clean_parameter: {"327400": 'ActivityProducedBy'} # Lime
-      activity_set_5:
+      urea:
         <<: *use_allocation
         names:
         - "Urea Fertilization" #CO2
         - "Urea Consumption for Non-Agricultural Purposes" #CO2
         clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
-      activity_set_6:
+      carbonates:
         <<: *use_allocation
         names:
         - "Other Process Uses of Carbonates" #CO2
         clean_parameter: {"325180": 'ActivityProducedBy'} # Other Basic Inorganic Chemicals
-      activity_set_7:
+      lead:
         names:
         - "Lead Production" #CO2
         allocation_method: proportional
@@ -143,7 +143,7 @@ source_names:
         allocation_source_year: 2016
         allocation_compartment: None
         allocation_from_scale: national
-      activity_set_8:
+      N2O_products:
         <<: *use_allocation
         names:
         - "N2O from Product Uses" #N2O
@@ -157,7 +157,7 @@ source_names:
     year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1:
+      nat_gas:
         names:
           - "Distribution"
           - "Distribution - Post-Meter"
@@ -177,7 +177,7 @@ source_names:
     year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1:
+      petroleum:
         names:
           - "Crude Oil Transportation"
           - "Exploration"
@@ -197,7 +197,7 @@ source_names:
       year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:  #this set is direct
+        crops:
           names:
             - "Chickpeas"
             - "Cotton"
@@ -215,7 +215,7 @@ source_names:
     year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1:
+      animals:
         names:
           - "American Bison"
           - "Beef Cattle"
@@ -238,14 +238,14 @@ source_names:
     year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1:  # allocated based on fertilizer use
+      fertilizer_use:  # allocated based on fertilizer use
         <<: *use_allocation
         names:
             - "Organic Amendment Cropland"
             - "Residue N Cropland"
             - "Synthetic Fertilizer Cropland"
         clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
-      activity_set_2:  # allocated based on USDA land area harvested
+      land_area:  # allocated based on USDA land area harvested
         names:
             - "Mineralization and Asymbiotic Fixation Cropland"
             - "Drained Organic Soils Cropland"
@@ -261,7 +261,7 @@ source_names:
         allocation_compartment: None
         allocation_from_scale: national
         clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
-      activity_set_3: &grassland # allocated based on USDA Animal operation land (acres)
+      grassland: &grassland # allocated based on USDA Animal operation land (acres)
         names:
             - "All activities Grassland"
         allocation_method: proportional
@@ -280,13 +280,13 @@ source_names:
     year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1:  # allocated based on fertilizer use
+      fertilizer_use:  # allocated based on fertilizer use
         <<: *use_allocation
         names:
             - "Volatilization & Atm. Deposition Cropland"
             - "Surface Leaching & Run-Off Cropland"
         clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
-      activity_set_2: *grassland # allocated based on USDA Animal operation land (acres)
+      grassland: *grassland # allocated based on USDA Animal operation land (acres)
 
 
 ## Mobile Sources
@@ -316,7 +316,7 @@ source_names:
     year: *ghgi_year
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1:  #this set is direct
+      direct:  #this set is direct
         names:
             - "Passenger Cars Gasoline On-Road"
             - "Passenger Cars Diesel On-Road"
@@ -332,22 +332,22 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2: #this set is allocated by purchases of construction equipment
+      construction: #this set is allocated by purchases of construction equipment
         <<: *use_allocation
         names:
           - "Construction/Mining Equipment Non-Road"
         clean_parameter: {"333120": 'ActivityProducedBy'} # purchases of construction equipment
-      activity_set_3: #this set is allocated by purchases of farm machinery
+      ag: #this set is allocated by purchases of farm machinery
         <<: *use_allocation
         names:
           - "Agricultural Equipment Non-Road"
         clean_parameter: {"333111": 'ActivityProducedBy'} # purchases of farm machinery
-      activity_set_4: #this set is allocated by purchases of petroleum refining
+      other_non_road: #this set is allocated by purchases of petroleum refining
         <<: *use_allocation
         names:
           - "Other Non-Road"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery products
-      activity_set_5: #this set is allocated by purchases of natural gas
+      alternatives: #this set is allocated by purchases of natural gas
         <<: *use_allocation
         names:
           - "Alternative Fuel On-Road"
@@ -363,44 +363,44 @@ source_names:
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1: #direct allocation
+      direct:
         names:
             - "Total (All Fuels) Residential"
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2: # Coal
+      coal:
         <<: *use_allocation
         names:
             - "Commercial Coal Commercial"
             - "Industrial Other Coal Industrial"
         clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
-      activity_set_3: # Natural Gas
+      natural_gas:
         <<: *use_allocation
         names:
             - "Natural Gas Commercial"
             - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      activity_set_4: # Petroleum
+      petroleum:
         <<: *use_allocation
         names:
             - "Total Petroleum Commercial"
             - "Total Petroleum Industrial"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
-      activity_set_5: # Industrial Coal for Manufacturing
+      coal_manufacturing:
         <<: *fuel_MECS
         names:
             - "Industrial Other Coal Industrial - Manufacturing"
         allocation_flow:
             - "Coal"
-      activity_set_6: # Industrial Natural Gas for manufacturing
+      natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         <<: *fuel_MECS
         names:
             - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"
     ### Transportation
-      activity_set_7: &transport_direct
+      ng_transport: &transport_direct
         names:
             - "Natural Gas Transportation"
         allocation_method: proportional
@@ -416,27 +416,27 @@ source_names:
         helper_source_year: *ghgi_year
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_8:
+      aviation_transport:
         <<: *transport_direct
         names:
             - "Aviation Gasoline Transportation"
         allocation_flow: ['Aviation Gasoline']
-      activity_set_9:
+      jet_transport:
         <<: *transport_direct
         names:
             - "Jet Fuel Transportation"
         allocation_flow: ['Jet Fuel']
-      activity_set_10:
+      lpg_transport:
         <<: *transport_direct
         names:
             - "LPG (Propane) Transportation"
         allocation_flow: ['LPG']
-      activity_set_11:
+      rfo_transport:
         <<: *transport_direct
         names:
             - "Residual Fuel Transportation"
         allocation_flow: ['Residual Fuel Oil']
-      activity_set_12: &transport_use
+      dfo_transport: &transport_use
         names:
             - "Distillate Fuel Oil Transportation"
         allocation_method: proportional
@@ -457,7 +457,7 @@ source_names:
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BEA subset_and_allocate_BEA_table
         clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
-      activity_set_13:
+      gasoline_transport:
         <<: *transport_use
         names:
             - "Motor Gasoline Transportation"
@@ -473,7 +473,7 @@ source_names:
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1: #direct allocation
+      residential:
         names:
             - "Fuel Oil Residential"
             - "Coal Residential"
@@ -482,38 +482,38 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2:
-        <<: *make_allocation # Electric power
+      electric_power:
+        <<: *make_allocation
         names:
             - "Coal Electric Power"
             - "Natural Gas Electric Power"
             - "Fuel Oil Electric Power"
             - "Wood Electric Power"
         clean_parameter: {"221100": 'ActivityConsumedBy'} # Electricity
-      activity_set_3: # Commercial Fuel Oil
+      fuel_oil:
         <<: *use_allocation
         names:
             - "Fuel Oil Commercial"
             - "Fuel Oil Industrial"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
-      activity_set_4: # Commercial Natural gas
+      natural_gas: # Commercial Natural gas
         <<: *use_allocation
         names:
             - "Natural Gas Commercial"
             - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      activity_set_5:
+      coal:
         <<: *use_allocation
         names:
             - "Coal Industrial"
         clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
-      activity_set_6: # Industrial
+      coal_manufacturing: # Industrial
         <<: *fuel_MECS
         names:
             - "Coal Industrial - Manufacturing"
         allocation_flow:
             - "Coal"
-      activity_set_7: # Industrial
+      ng_manufacturing: # Industrial
         <<: *fuel_MECS
         names:
             - "Natural Gas Industrial - Manufacturing"
@@ -533,7 +533,7 @@ source_names:
       year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:  #this set is direct
+        direct:
           names:
             - "Acrylonitrile"
             - "Carbon Black"
@@ -544,20 +544,20 @@ source_names:
           allocation_method: direct
           allocation_source: None
           allocation_from_scale: national
-  "EPA_GHGI_T_3_22b": #Fossil fuel for non-energy uses
+  "EPA_GHGI_T_3_22b": # Fossil fuel for non-energy uses
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
       year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:  #this set is direct for coal products
+        coal:
           names:
             - "Industry Industrial Coking Coal"
             - "Industry Industrial Other Coal"
           allocation_method: direct
           allocation_from_scale: national
-        activity_set_2: # consumed petroleum products
+        petroleum:
           <<: *fuel_MECS
           names:
             - "Industry Asphalt & Road Oil"
@@ -576,7 +576,7 @@ source_names:
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
             - "Other" # consistent with original, but other flows may be better
-        activity_set_3: # consumed nat gas to chemical plants
+        natural_gas: # consumed nat gas to chemical plants
           <<: *fuel_MECS
           names:
             - "Industry Natural Gas to Chemical Plants"
@@ -584,7 +584,7 @@ source_names:
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
             - "Natural Gas"
-        activity_set_4:
+        transport_lubricants:
           <<: *use_allocation
           names:
             - "Transportation Lubricants"
@@ -599,7 +599,7 @@ source_names:
       clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI remove_HFC_kt
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:
+        direct:
           names:
             - "HCFC-22 Production"
           allocation_method: direct
@@ -611,7 +611,7 @@ source_names:
       year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:
+        direct:
           names:
             - "Electronics Production"
           allocation_method: direct
@@ -624,22 +624,22 @@ source_names:
       clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI clean_HFC_fba # removes HFCs from transportation
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:
+        households:
           names:
             - "Refrigeration/Air Conditioning - Households"
           allocation_method: direct
           allocation_from_scale: national
-        activity_set_2:
+        refrigerants:
           <<: *use_allocation
           names:
             - "Refrigeration/Air Conditioning"
           clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
-        activity_set_3:
+        foams_polystyrene:
           <<: *use_allocation
           names:
             - "Foams - Polystyrene"
           clean_parameter: {"326140": 'ActivityProducedBy'} # Polystyrene foam
-        activity_set_4:
+        foams_urethane:
           <<: *use_allocation
           names:
             - "Foams - Urethane"
@@ -652,7 +652,7 @@ source_names:
       clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI split_HFCs_by_type
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:
+        direct:
           names:
             - "Mobile AC - Passenger Cars"
             - "Mobile AC - Heavy-Duty Vehicles"
@@ -671,7 +671,7 @@ source_names:
       year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:
+        aluminum:
           names:
             - "Aluminum Production"
           allocation_method: direct
@@ -683,7 +683,7 @@ source_names:
       year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:
+        magnesium:
             <<: *make_allocation # Make table allocation
             names:
             - "Magnesium Production and Processing"

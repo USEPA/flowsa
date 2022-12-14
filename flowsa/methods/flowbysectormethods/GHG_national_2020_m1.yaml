@@ -85,13 +85,13 @@ source_names:
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
     fedefl_mapping: 'GHGI'
     activity_sets:
-      activity_set_1: #direct allocation
+      direct: #direct allocation
         names:
             - "Total (All Fuels) Residential"
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      activity_set_2: &use_allocation # Coal
+      coal: &use_allocation # Coal
         names:
             - "Commercial Coal Commercial"
             - "Industrial Other Coal Industrial"
@@ -113,19 +113,19 @@ source_names:
         helper_flow: None
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_3: # Natural Gas
+      natural_gas: # Natural Gas
         <<: *use_allocation
         names:
             - "Natural Gas Commercial"
             - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      activity_set_4: # Petroleum
+      petroleum: # Petroleum
         <<: *use_allocation
         names:
             - "Total Petroleum Commercial"
             - "Total Petroleum Industrial"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
-      activity_set_5: &fuel_MECS # Industrial Coal for Manufacturing
+      coal_manufacturing: &fuel_MECS # Industrial Coal for Manufacturing
         names:
             - "Industrial Other Coal Industrial - Manufacturing"
         allocation_method: proportional
@@ -149,14 +149,14 @@ source_names:
         helper_flow: None
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_6: # Industrial Natural Gas for manufacturing
+      natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         <<: *fuel_MECS
         names:
             - "Natural Gas Industrial - Manufacturing"
         allocation_flow:
             - "Natural Gas"
     ### Transportation
-      activity_set_7: &transport_direct
+      ng_transport: &transport_direct
         names:
             - "Natural Gas Transportation"
         allocation_method: proportional
@@ -173,26 +173,26 @@ source_names:
         helper_flow: None
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_8:
+      aviation_transport:
         <<: *transport_direct
         names:
             - "Aviation Gasoline Transportation"
         allocation_flow: ['Aviation Gasoline']
-      activity_set_9:
+      jet_transport:
         <<: *transport_direct
         names:
             - "Jet Fuel Transportation"
         allocation_flow: ['Jet Fuel']
-      activity_set_10:
+      lpg_transport:
         <<: *transport_direct
         names:
             - "LPG (Propane) Transportation"
         allocation_flow: ['LPG']
-      activity_set_11:
+      rfo_transport:
         <<: *transport_direct
         names:
             - "Residual Fuel Transportation"
-      activity_set_12: &transport_use
+      dfo_transport: &transport_use
         names:
             - "Distillate Fuel Oil Transportation"
         allocation_method: proportional
@@ -213,7 +213,7 @@ source_names:
         helper_from_scale: national
         clean_helper_fba_wsec: !script_function:BEA subset_and_allocate_BEA_table
         clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
-      activity_set_13:
+      gasoline_transport:
         <<: *transport_use
         names:
             - "Motor Gasoline Transportation"
@@ -224,13 +224,13 @@ source_names:
     year: *ghgi_year
     activity_sets:
       !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_8:activity_sets
-      activity_set_6:
+      coal_manufacturing:
         <<: *fuel_MECS
         names:
             - "Coal Industrial - Manufacturing"
         allocation_flow:
             - "Coal"
-      activity_set_7: # Industrial
+      ng_manufacturing: # Industrial
         <<: *fuel_MECS
         names:
             - "Natural Gas Industrial - Manufacturing"
@@ -242,13 +242,13 @@ source_names:
     year: *ghgi_year
     activity_sets:
       !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_9:activity_sets
-      activity_set_6:
+      coal_manufacturing:
         <<: *fuel_MECS
         names:
             - "Coal Industrial - Manufacturing"
         allocation_flow:
             - "Coal"
-      activity_set_7: # Industrial
+      ng_manufacturing: # Industrial
         <<: *fuel_MECS
         names:
             - "Natural Gas Industrial - Manufacturing"
@@ -262,13 +262,13 @@ source_names:
       year: *ghgi_year
       fedefl_mapping: 'GHGI'
       activity_sets:
-        activity_set_1:  #this set is direct for coal products
+        coal:
           names:
             - "Industry Industrial Coking Coal"
             - "Industry Industrial Other Coal"
           allocation_method: direct
           allocation_from_scale: national
-        activity_set_2: # consumed petroleum products
+        petroleum: # consumed petroleum products
           <<: *fuel_MECS
           names:
             - "Industry Asphalt & Road Oil"
@@ -287,7 +287,7 @@ source_names:
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
             - "Other" # consistent with original, but other flows may be better
-        activity_set_3: # consumed nat gas to chemical plants
+        natural_gas: # consumed nat gas to chemical plants
           <<: *fuel_MECS
           names:
             - "Industry Natural Gas to Chemical Plants"
@@ -295,7 +295,7 @@ source_names:
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
             - "Natural Gas"
-        activity_set_4:
+        transport_lubricants:
           <<: *use_allocation
           names:
             - "Transportation Lubricants"
