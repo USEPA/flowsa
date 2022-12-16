@@ -11,35 +11,14 @@ import io
 from tabula.io import read_pdf
 import pandas as pd
 import numpy as np
+from flowsa.allocation import \
+    proportional_allocation_by_location_and_activity
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
-from flowsa.allocation import \
-    proportional_allocation_by_location_and_activity
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
+from flowsa.settings import externaldatapath
 from flowsa.validation import compare_df_units
-
-
-def bh_call(*, resp, **_):
-    """
-    Convert response for calling url to pandas dataframe, begin parsing
-    df into FBA format
-    :param url: string, url
-    :param resp: df, response from url call
-    :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
-    :return: pandas dataframe of original source data
-    """
-    pages = range(5, 13)
-    bh_df_list = []
-    for x in pages:
-        bh_df = read_pdf(io.BytesIO(resp.content),
-                         pages=x, stream=True)[0]
-        bh_df_list.append(bh_df)
-
-    bh_df = pd.concat(bh_df_list, sort=False)
-
-    return bh_df
 
 
 def bh_parse(*, df_list, **_):
@@ -49,8 +28,16 @@ def bh_parse(*, df_list, **_):
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    # concat list of dataframes (info on each page)
-    df = pd.concat(df_list, sort=False)
+
+    # load pdf from externaldatapath directory
+    pages = range(5, 13)
+    bh_df_list = []
+    for x in pages:
+        bh_df = read_pdf(f'{externaldatapath}Blackhurst_WatWithdrawalsforUSIndustrialSectorsSI.pdf',
+                         pages=x, stream=True)[0]
+        bh_df_list.append(bh_df)
+
+    df = pd.concat(bh_df_list, sort=False)
     df = df.rename(columns={"I-O code": "ActivityConsumedBy",
                             "I-O description": "Description",
                             "gal/$M": "FlowAmount",
