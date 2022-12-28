@@ -23,6 +23,7 @@ source_names:
           - "Domestic"
         attribution_method: direct
       employment_attribution:
+        geoscale: national
         selection_fields:
           PrimaryActivity:
           - "Industrial"
