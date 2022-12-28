@@ -927,7 +927,7 @@ class FlowByActivity(_FlowBy):
         # with the original object dtype. So convert float cols back to object
         for df in highest_reporting_level_by_geoscale:
             for c in ['ActivityProducedBy', 'ActivityConsumedBy']:
-                if df[c].dtype == np.float:
+                if df[c].dtype == float:
                     df[c] = df[c].astype(object)
 
         fba_with_reporting_levels = reduce(
