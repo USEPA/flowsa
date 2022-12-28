@@ -921,6 +921,15 @@ class FlowByActivity(_FlowBy):
             if scale.has_fips_level and scale <= target_geoscale
         ]
 
+        # if an activity column is a mix of string and np.nan values but
+        # after subsetting, the column is all np.nan, then the column dtype is
+        # converted to float which causes an error when merging float col back
+        # with the original object dtype. So convert float cols back to object
+        for df in highest_reporting_level_by_geoscale:
+            for c in ['ActivityProducedBy', 'ActivityConsumedBy']:
+                if df[c].dtype == np.float:
+                    df[c] = df[c].astype(object)
+
         fba_with_reporting_levels = reduce(
             lambda x, y: x.merge(y, how='left'),
             [self, geoscale_by_fips, *highest_reporting_level_by_geoscale]
