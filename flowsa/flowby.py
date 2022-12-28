@@ -1794,6 +1794,14 @@ class FlowBySector(_FlowBy):
         fbs.full_name = method
         fbs.config = method_config
 
+        # aggregate to target sector
+        fbs = (
+            fbs
+            .convert_fips_to_geoscale(
+                geo.scale.from_string(fbs.config.get('geoscale')))
+            .aggregate_flowby()
+        )
+
         fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
         # TODO: Needs refinement + saving metadata
 
