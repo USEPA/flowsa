@@ -41,7 +41,6 @@ source_names:
         attribution_source:
           USDA_CoA_Cropland:
             year: 2017
-            geoscale: state
             selection_fields:
               Class: "Land"
               FlowName:
@@ -55,7 +54,6 @@ source_names:
             attribution_source:
               USDA_IWMS:
                 year: 2018
-                geoscale: state
                 selection_fields:
                     Class: Water
                 clean_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
@@ -67,7 +65,6 @@ source_names:
         attribution_source:
           USDA_CoA_Livestock:
             year: 2017
-            geoscale: state
             selection_fields:
               Class: Other
               FlowName:
