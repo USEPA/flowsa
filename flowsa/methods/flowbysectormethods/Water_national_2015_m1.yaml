@@ -34,6 +34,16 @@ source_names:
             data_format: FBS
             year: 2015
       cropland_attribution:
+        industry_spec:
+          default: NAICS_6
+          '111120': { default: NAICS_7 }
+          '111130': { default: NAICS_7 }
+          '111150': { default: NAICS_7 }
+          '111199': { default: NAICS_7 }
+          '111421': { default: NAICS_7 }
+          '111930': { default: NAICS_7 }
+          '111991': { default: NAICS_7 }
+          '111998': { default: NAICS_7 }
         selection_fields:
           PrimaryActivity:
             - "Irrigation Crop"
@@ -58,6 +68,15 @@ source_names:
                     Class: Water
                 clean_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
       livestock_attribution:
+        industry_spec:
+          default: NAICS_6
+          '112130': { default: NAICS_7 }
+          '112320': { default: NAICS_7 }
+          '112390': { default: NAICS_7 }
+          '112910': { default: NAICS_7 }
+          '112920': { default: NAICS_7 }
+          '112930': { default: NAICS_7 }
+          '112990': { default: NAICS_7 }
         selection_fields:
           PrimaryActivity:
             - "Livestock"
