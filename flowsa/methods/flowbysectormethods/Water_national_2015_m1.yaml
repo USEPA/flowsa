@@ -23,7 +23,6 @@ source_names:
           - "Domestic"
         attribution_method: direct
       employment_attribution:
-        geoscale: national
         selection_fields:
           PrimaryActivity:
           - "Industrial"
@@ -31,6 +30,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           Employment_national_2015:
+            geoscale: national
             data_format: FBS
             year: 2015
       cropland_attribution:
