@@ -1316,12 +1316,17 @@ class FlowByActivity(_FlowBy):
                  self.full_name, other.full_name)
 
         if other_geoscale < fba_geoscale:
+            log.info('Aggregating %s from %s to %s', other.full_name,
+                     other_geoscale, fba_geoscale)
             other = (
                 other
                 .convert_fips_to_geoscale(fba_geoscale)
                 .aggregate_flowby()
             )
         elif other_geoscale > fba_geoscale:
+            log.info('%s is %s, while %s is %s, so attributing %s to '
+                     '%s', other.full_name, other_geoscale, self.full_name,
+                     fba_geoscale, other_geoscale, fba_geoscale)
             self = (
                 self
                 .assign(temp_location=self.Location)
@@ -1432,12 +1437,17 @@ class FlowByActivity(_FlowBy):
                  self.full_name, other.full_name)
 
         if other_geoscale < fba_geoscale:
+            log.info('Aggregating %s from %s to %s', other.full_name,
+                     other_geoscale, fba_geoscale)
             other = (
                 other
                 .convert_fips_to_geoscale(fba_geoscale)
                 .aggregate_flowby()
             )
         elif other_geoscale > fba_geoscale:
+            log.info('%s is %s, while %s is %s, so attributing %s to '
+                     '%s', other.full_name, other_geoscale, self.full_name,
+                     fba_geoscale, other_geoscale, fba_geoscale)
             self = (
                 self
                 .assign(temp_location=self.Location)
