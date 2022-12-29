@@ -1794,16 +1794,42 @@ class FlowBySector(_FlowBy):
         fbs.full_name = method
         fbs.config = method_config
 
-        # aggregate to target sector
+        # aggregate to target geoscale
         fbs = (
             fbs
             .convert_fips_to_geoscale(
                 geo.scale.from_string(fbs.config.get('geoscale')))
             .aggregate_flowby()
         )
+        # aggregate to target sector
+        fbs = fbs.sector_aggregation()
 
         fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
         # TODO: Needs refinement + saving metadata
+
+        return fbs
+
+    def sector_aggregation(self):
+        """
+        In the event activity sets in an FBS are at a less aggregated target
+        sector level than the overall target level, aggregate the sectors to
+        the FBS target scale
+        :return:
+        """
+
+        naics_key = naics.industry_spec_key(self.config['industry_spec'])
+
+        fbs = self
+        for direction in ['ProducedBy', 'ConsumedBy']:
+            fbs = (
+                fbs
+                .rename(columns={f'Sector{direction}': 'source_naics'})
+                .merge(naics_key,
+                       how='left')
+                .rename(columns={'target_naics': f'Sector{direction}'})
+                .drop(columns='source_naics')
+                .aggregate_flowby()
+            )
 
         return fbs
 
