@@ -1530,6 +1530,7 @@ class FlowByActivity(_FlowBy):
                         fba.prepare_fbs()
                         for fba in (
                             self
+                            .select_by_fields()
                             .function_socket('clean_fba_before_activity_sets')
                             .activity_sets()
                         )
