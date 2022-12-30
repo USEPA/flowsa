@@ -1139,22 +1139,48 @@ class FlowByActivity(_FlowBy):
                 log.info('NAICS Activities in %s use NAICS year %s.',
                          self.full_name, source_year)
 
-            log.info('Converting NAICS codes to desired industry/sector '
-                     'aggregation structure.')
-            fba_w_naics = self.assign(
-                ActivitySourceName=self.source_name,
-                SectorType=np.nan
-            )
-            for direction in ['ProducedBy', 'ConsumedBy']:
+            # todo: expand on this start. There will be cases where although data is disaggregated,
+            #  there might not be all mappings (might stop at NAICS5 in df because NAICS6 is just NAICS5 with added 0)
+            if self.config['sector_aggregation_level'] == 'disaggregated':
+                log.info('NAICS are already disaggregated, assigning activity '
+                         'columns directly to sector columns')
+                target_naics = set(
+                    naics.industry_spec_key(self.config['industry_spec'])
+                    .target_naics)
+                fba_w_naics = self
+                for direction in ['ProducedBy', 'ConsumedBy']:
+                    fba_w_naics = (
+                        fba_w_naics
+                        .assign(**{f'Sector{direction}': fba_w_naics[f'Activity{direction}'].mask(
+                                (fba_w_naics[f'Activity{direction}']).isin(target_naics),
+                                fba_w_naics[f'Activity{direction}']
+                    )}))
                 fba_w_naics = (
                     fba_w_naics
-                    .merge(naics_key,
-                           how='left',
-                           left_on=f'Activity{direction}',
-                           right_on='source_naics')
-                    .rename(columns={'target_naics': f'Sector{direction}'})
-                    .drop(columns='source_naics')
+                    .assign(ActivitySourceName=fba_w_naics.source_name,
+                            SectorType=np.nan)
+                    .query('SectorProducedBy  in @target_naics '
+                           '| SectorConsumedBy in @target_naics')
                 )
+            else:
+                # if sector-like activities are aggregated, then map all
+                # sectors to target sector level
+                log.info('Converting NAICS codes to desired industry/sector '
+                         'aggregation structure.')
+                fba_w_naics = self.assign(
+                    ActivitySourceName=self.source_name,
+                    SectorType=np.nan
+                )
+                for direction in ['ProducedBy', 'ConsumedBy']:
+                    fba_w_naics = (
+                        fba_w_naics
+                        .merge(naics_key,
+                               how='left',
+                               left_on=f'Activity{direction}',
+                               right_on='source_naics')
+                        .rename(columns={'target_naics': f'Sector{direction}'})
+                        .drop(columns='source_naics')
+                    )
 
         else:
             log.info('Getting crosswalk between activities in %s and '
