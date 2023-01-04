@@ -1853,15 +1853,18 @@ class FlowBySector(_FlowBy):
         the FBS target scale
         :return:
         """
-
         naics_key = naics.industry_spec_key(self.config['industry_spec'])
+        # subset naics to those where the source_naics string length is longer
+        # than target_naics
+        naics_key_sub = naics_key.query(
+            'source_naics.str.len() >= target_naics.str.len()')
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
             fbs = (
                 fbs
                 .rename(columns={f'Sector{direction}': 'source_naics'})
-                .merge(naics_key,
+                .merge(naics_key_sub,
                        how='left')
                 .rename(columns={'target_naics': f'Sector{direction}'})
                 .drop(columns='source_naics')
