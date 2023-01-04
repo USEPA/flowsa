@@ -42,14 +42,9 @@ source_names:
           USDA_CoA_Cropland:
             industry_spec:
               default: NAICS_6
-              '111120': { default: NAICS_7 }
-              '111130': { default: NAICS_7 }
               '111150': { default: NAICS_7 }
               '111199': { default: NAICS_7 }
-              '111421': { default: NAICS_7 }
-              '111930': { default: NAICS_7 }
-              '111991': { default: NAICS_7 }
-              '111998': { default: NAICS_7 }
+              '111940': { default: NAICS_7 }
             year: 2017
             selection_fields:
               Class: "Land"
@@ -63,11 +58,6 @@ source_names:
             attribution_method: multiplication
             attribution_source:
               USDA_IWMS:
-                industry_spec:
-                  default: NAICS_6
-                  '111150': { default: NAICS_7 }
-                  '111199': { default: NAICS_7 }
-                  '111940': { default: NAICS_7 }
                 year: 2018
                 selection_fields:
                     Class: Water
