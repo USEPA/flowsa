@@ -15,9 +15,9 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
@@ -34,18 +34,15 @@ jobs:
 
     - name: Test FBA config
       run: |
-        for m in $(python flowsa/test_methods.py list)
-        do
-          echo "python flowsa/test_methods.py $m"
-        done
+        python flowsa/test_methods.py
 
   FBS_testing:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
@@ -66,14 +63,13 @@ jobs:
       run: |
         for m in $(python flowsa/test_FBS_against_remote.py list)
         do
-          echo "python flowsa/test_FBS_against_remote.py $m"
-          python flowsa/test_FBS_against_remote.py "$m" || true
+          python flowsa/test_FBS_against_remote.py "$m"
         done
 
     - name: Upload csv files
       # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
       if: always()
-      uses: actions/upload-artifact@v2.3.0
+      uses: actions/upload-artifact@v3.1.1
       with:
         # Artifact name
         name: FBS diff files

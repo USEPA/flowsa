@@ -1,0 +1,14 @@
+author: US Environmental Protection Agency
+source_name: Facts and Figures Report
+source_url: https://www.epa.gov/sites/default/files/2021-01/documents/2018_tables_and_figures_dec_2020_fnl_508.pdf
+bib_id: FactsAndFigures
+api_name: FactsAndFigures
+api_key_required: false
+format: pdf
+url:
+  base_url: https://www.epa.gov/sites/default/files/2021-01/documents/2018_tables_and_figures_dec_2020_fnl_508.pdf
+#allow_http_request_cookies: True
+call_response_fxn: !script_function:EPA_FactsAndFigures ff_call
+parse_response_fxn: !script_function:EPA_FactsAndFigures ff_parse
+years:
+  - 2018

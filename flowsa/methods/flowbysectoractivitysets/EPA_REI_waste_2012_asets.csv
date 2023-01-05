@@ -1,0 +1,420 @@
+activity_set,name,note
+waste,Abrasive product manufacturing,makecol
+waste,Accommodation,makecol
+waste,"Accounting, tax preparation, bookkeeping, and payroll services",makecol
+waste,Adhesive manufacturing,makecol
+waste,"Advertising, public relations, and related services",makecol
+waste,Air and gas compressor manufacturing,makecol
+waste,"Air conditioning, refrigeration, and warm air heating equipment manufacturing",makecol
+waste,Air transportation,makecol
+waste,Aircraft engine and engine parts manufacturing,makecol
+waste,Aircraft manufacturing,makecol
+waste,All other chemical product and preparation manufacturing,makecol
+waste,All other converted paper product manufacturing,makecol
+waste,All other food and drinking places,makecol
+waste,All other food manufacturing,makecol
+waste,"All other forging, stamping, and sintering",makecol
+waste,All other miscellaneous electrical equipment and component manufacturing,makecol
+waste,All other miscellaneous manufacturing,makecol
+waste,"All other miscellaneous professional, scientific, and technical services",makecol
+waste,All other retail,makecol
+waste,All other transportation equipment manufacturing,makecol
+waste,All other wood product manufacturing,makecol
+waste,Alumina refining and primary aluminum production,makecol
+waste,Aluminum product manufacturing from purchased aluminum,makecol
+waste,"Ammunition, arms, ordnance, and accessories manufacturing",makecol
+waste,Amusement parks and arcades,makecol
+waste,Anaerobic digestion,useintersection
+waste,Analytical laboratory instrument manufacturing,makecol
+waste,"Animal (except poultry) slaughtering, rendering, and processing",makecol
+waste,"Animal production, except cattle and poultry and eggs",makecol
+waste,Apparel manufacturing,makecol
+waste,"Architectural, engineering, and related services",makecol
+waste,Asphalt paving mixture and block manufacturing,makecol
+waste,Asphalt shingle and coating materials manufacturing,makecol
+waste,Audio and video equipment manufacturing,makecol
+waste,Automatic environmental control manufacturing,makecol
+waste,Automobile manufacturing,makecol
+waste,Automotive equipment rental and leasing,makecol
+waste,Automotive repair and maintenance,makecol
+waste,Ball and roller bearing manufacturing,makecol
+waste,Biofuels manufacturing,useintersection
+waste,Biological product (except diagnostic) manufacturing,makecol
+waste,Boat building,makecol
+waste,Book publishers,makecol
+waste,Bread and bakery product manufacturing,makecol
+waste,Breakfast cereal manufacturing,makecol
+waste,Breweries,makecol
+waste,Broadcast and wireless communications equipment,makecol
+waste,Building material and garden equipment and supplies dealers,makecol
+waste,Business support services,makecol
+waste,Cable and other subscription programming,makecol
+waste,Carbon and graphite product manufacturing,makecol
+waste,Carpet and rug mills,makecol
+waste,Cement manufacturing,makecol
+waste,Cheese manufacturing,makecol
+waste,Child day care services,makecol
+waste,"Civic, social, professional, and similar organizations",makecol
+waste,Clay product and refractory manufacturing,makecol
+waste,Clothing and clothing accessories stores,makecol
+waste,Coal mining,makecol
+waste,"Coating, engraving, heat treating and allied activities",makecol
+waste,Coffee and tea manufacturing,makecol
+waste,Commercial and industrial machinery and equipment rental and leasing,makecol
+waste,Commercial and industrial machinery and equipment repair and maintenance,makecol
+waste,Communication and energy wire and cable manufacturing,makecol
+waste,Community food program,useintersection
+waste,"Community food, housing, and other relief services, including rehabilitation services",makecol
+waste,Compost manufacturing,useintersection
+waste,Computer storage device manufacturing,makecol
+waste,Computer systems design services,makecol
+waste,Computer terminals and other computer peripheral equipment manufacturing,makecol
+waste,"Concrete pipe, brick, and block manufacturing",makecol
+waste,Construction and Demolition Recycling,useintersection
+waste,Construction machinery manufacturing,makecol
+waste,"Cookie, cracker, pasta, and tortilla manufacturing",makecol
+waste,"Copper rolling, drawing, extruding and alloying",makecol
+waste,"Copper, nickel, lead, and zinc mining",makecol
+waste,Couriers and messengers,makecol
+waste,Curtain and linen mills,makecol
+waste,Custom computer programming services,makecol
+waste,Custom roll forming,makecol
+waste,Cut stone and stone product manufacturing,makecol
+waste,Cutlery and handtool manufacturing,makecol
+waste,"Cutting and machine tool accessory, rolling mill, and other metalworking machinery manufacturing",makecol
+waste,Dairy cattle and milk production,makecol
+waste,"Data processing, hosting, and related services",makecol
+waste,Death care services,makecol
+waste,Dental equipment and supplies manufacturing,makecol
+waste,Dental laboratories,makecol
+waste,Direct life insurance carriers,makecol
+waste,"Directory, mailing list, and other publishers",makecol
+waste,Distilleries,makecol
+waste,Dog and cat food manufacturing,makecol
+waste,"Doll, toy, and game manufacturing",makecol
+waste,Drilling oil and gas wells,makecol
+waste,Drugs and druggists’ sundries,makecol
+waste,"Dry, condensed, and evaporated dairy product manufacturing",makecol
+waste,Dry-cleaning and laundry services,makecol
+waste,Educational and vocational structures,makecol
+waste,Electric lamp bulb and part manufacturing,makecol
+waste,"Electric power generation, transmission, and distribution",makecol
+waste,Electricity and signal testing instruments manufacturing,makecol
+waste,Electromedical and electrotherapeutic apparatus manufacturing,makecol
+waste,Electronic and precision equipment repair and maintenance,makecol
+waste,Electronic computer manufacturing,makecol
+waste,Electronics Recycling,useintersection
+waste,Elementary and secondary schools,makecol
+waste,Employment services,makecol
+waste,Environmental and other technical consulting services,makecol
+waste,Estimate from Post-Consumer Waste,makecol
+waste,Exports of goods and services,useintersection
+waste,Fabric mills,makecol
+waste,Fabricated pipe and pipe fitting manufacturing,makecol
+waste,Facilities support services,makecol
+waste,Farm machinery and equipment manufacturing,makecol
+waste,Fats and oils refining and blending,makecol
+waste,Federal electric utilities,makecol
+waste,Federal general government (defense),makecol
+waste,Federal general government (nondefense),makecol
+waste,Ferrous Metals Recycling,useintersection
+waste,Ferrous metal foundries,makecol
+waste,Fertilizer manufacturing,makecol
+waste,"Fiber, yarn, and thread mills",makecol
+waste,"Fishing, hunting and trapping",makecol
+waste,Flavoring syrup and concentrate manufacturing,makecol
+waste,Flour milling and malt manufacturing,makecol
+waste,Fluid milk and butter manufacturing,makecol
+waste,Fluid power process machinery,makecol
+waste,Food and beverage stores,makecol
+waste,Forestry and logging,makecol
+waste,Frozen food manufacturing,makecol
+waste,Fruit and tree nut farming,makecol
+waste,"Fruit and vegetable canning, pickling, and drying",makecol
+waste,Full-service restaurants,makecol
+waste,"Funds, trusts, and other financial vehicles",makecol
+waste,Gambling industries (except casino hotels),makecol
+waste,Gasoline stations,makecol
+waste,General and consumer goods rental,makecol
+waste,General merchandise stores,makecol
+waste,Glass Recycling,useintersection
+waste,Glass and glass product manufacturing,makecol
+waste,Grain farming,makecol
+waste,"Grantmaking, giving, and social advocacy organizations",makecol
+waste,"Greenhouse, nursery, and floriculture production",makecol
+waste,Grocery and related product wholesalers,makecol
+waste,Ground or treated mineral and earth manufacturing,makecol
+waste,Guided missile and space vehicle manufacturing,makecol
+waste,Hardware manufacturing,makecol
+waste,Health and personal care stores,makecol
+waste,Health care structures,makecol
+waste,Heating equipment (except warm air furnaces) manufacturing,makecol
+waste,Heavy duty truck manufacturing,makecol
+waste,Home health care services,makecol
+waste,Hospitals,makecol
+waste,Household appliances and electrical and electronic goods,makecol
+waste,Household cooking appliance manufacturing,makecol
+waste,Household laundry equipment manufacturing,makecol
+waste,Household refrigerator and home freezer manufacturing,makecol
+waste,Ice cream and frozen dessert manufacturing,makecol
+waste,Imports of goods and services,useintersection
+waste,In-vitro diagnostic substance manufacturing,makecol
+waste,"Independent artists, writers, and performers",makecol
+waste,Individual and family services,makecol
+waste,Industrial and commercial fan and blower and air purification equipment manufacturing,makecol
+waste,Industrial gas manufacturing,makecol
+waste,Industrial mold manufacturing,makecol
+waste,Industrial process furnace and oven manufacturing,makecol
+waste,Industrial process variable instruments manufacturing,makecol
+waste,Institutional furniture manufacturing,makecol
+waste,"Insurance agencies, brokerages, and related activities",makecol
+waste,"Insurance carriers, except direct life",makecol
+waste,Internet publishing and broadcasting and Web search portals,makecol
+waste,Investigation and security services,makecol
+waste,Iron and steel mills and ferroalloy manufacturing,makecol
+waste,"Iron, gold, silver, and other metal ore mining",makecol
+waste,Irradiation apparatus manufacturing,makecol
+waste,Jewelry and silverware manufacturing,makecol
+waste,"Junior colleges, colleges, universities, and professional schools",makecol
+waste,"Laminated plastics plate, sheet (except packaging), and shape manufacturing",makecol
+waste,Landscape materials application,useintersection
+waste,Lawn and garden equipment manufacturing,makecol
+waste,Leather and allied product manufacturing,makecol
+waste,Legal services,makecol
+waste,Lessors of nonfinancial intangible assets,makecol
+waste,Light truck and utility vehicle manufacturing,makecol
+waste,Lighting fixture manufacturing,makecol
+waste,Lime and gypsum product manufacturing,makecol
+waste,Limited-service restaurants,makecol
+waste,Machine shops,makecol
+waste,Machine tool manufacturing,makecol
+waste,"Machinery, equipment, and supplies",makecol
+waste,Management consulting services,makecol
+waste,Management of companies and enterprises,makecol
+waste,Manufacturing and reproducing magnetic and optical media,makecol
+waste,Manufacturing structures,makecol
+waste,Material handling equipment manufacturing,makecol
+waste,Mechanical power transmission equipment manufacturing,makecol
+waste,Medical and diagnostic laboratories,makecol
+waste,Medicinal and botanical manufacturing,makecol
+waste,"Metal can, box, and other metal container (light gauge) manufacturing",makecol
+waste,"Metal crown, closure, and other metal stamping (except automotive)",makecol
+waste,Metal tank (heavy gauge) manufacturing,makecol
+waste,"Military armored vehicle, tank, and tank component manufacturing",makecol
+waste,Millwork,makecol
+waste,Mineral wool manufacturing,makecol
+waste,Minimally processed animal feed,useintersection
+waste,Mining and oil and gas field machinery manufacturing,makecol
+waste,Miscellaneous nonmetallic mineral products,makecol
+waste,Monetary authorities and depository credit intermediation,makecol
+waste,Motion picture and video industries,makecol
+waste,Motor and generator manufacturing,makecol
+waste,Motor home manufacturing,makecol
+waste,Motor vehicle and motor vehicle parts and supplies,makecol
+waste,Motor vehicle and parts dealers,makecol
+waste,Motor vehicle body manufacturing,makecol
+waste,Motor vehicle electrical and electronic equipment manufacturing,makecol
+waste,Motor vehicle gasoline engine and engine parts manufacturing,makecol
+waste,Motor vehicle metal stamping,makecol
+waste,Motor vehicle seating and interior trim manufacturing,makecol
+waste,"Motor vehicle steering, suspension component (except spring), and brake systems manufacturing",makecol
+waste,Motor vehicle transmission and power train parts manufacturing,makecol
+waste,"Motorcycle, bicycle, and parts manufacturing",makecol
+waste,Multifamily residential structures,makecol
+waste,"Museums, historical sites, zoos, and parks",makecol
+waste,Natural gas distribution,makecol
+waste,"News syndicates, libraries, archives and all other information services",makecol
+waste,Newspaper publishers,makecol
+waste,Nondepository credit intermediation and related activities,makecol
+waste,Nonferrous Metal (except Aluminum) Smelting and Refining,makecol
+waste,Nonferrous Metals Recycling (Aluminum),useintersection
+waste,"Nonferrous metal (except copper and aluminum) rolling, drawing, extruding and alloying",makecol
+waste,Nonferrous metal foundries,makecol
+waste,Nonresidential maintenance and repair,makecol
+waste,Nonstore retailers,makecol
+waste,Nonupholstered wood household furniture manufacturing,makecol
+waste,Nursing and community care facilities,makecol
+waste,Office administrative services,makecol
+waste,Office and commercial structures,makecol
+waste,Office furniture and custom architectural woodwork and millwork manufacturing,makecol
+waste,Office supplies (except paper) manufacturing,makecol
+waste,Offices of dentists,makecol
+waste,Offices of other health practitioners,makecol
+waste,Offices of physicians,makecol
+waste,Oil and gas extraction,makecol
+waste,Oilseed farming,makecol
+waste,Ophthalmic goods manufacturing,makecol
+waste,Optical instrument and lens manufacturing,makecol
+waste,Ornamental and architectural metal products manufacturing,makecol
+waste,Other Basic Inorganic Chemical Manufacturing,makecol
+waste,Other Motor Vehicle Parts Manufacturing,makecol
+waste,Other aircraft parts and auxiliary equipment manufacturing,makecol
+waste,Other ambulatory health care services,makecol
+waste,Other amusement and recreation industries,makecol
+waste,Other animal food manufacturing,makecol
+waste,Other basic organic chemical manufacturing,makecol
+waste,Other commercial and service industry machinery manufacturing,makecol
+waste,Other communications equipment manufacturing,makecol
+waste,"Other computer related services, including facilities management",makecol
+waste,Other concrete product manufacturing,makecol
+waste,Other crop farming,makecol
+waste,Other durable goods merchant wholesalers,makecol
+waste,Other educational services,makecol
+waste,Other electronic component manufacturing,makecol
+waste,Other engine equipment manufacturing,makecol
+waste,Other fabricated metal manufacturing,makecol
+waste,Other financial investment activities,makecol
+waste,Other furniture related product manufacturing,makecol
+waste,Other general purpose machinery manufacturing,makecol
+waste,Other household nonupholstered furniture,makecol
+waste,Other industrial machinery manufacturing,makecol
+waste,Other major household appliance manufacturing,makecol
+waste,Other nondurable goods merchant wholesalers,makecol
+waste,Other nonmetallic mineral mining and quarrying,makecol
+waste,Other nonresidential structures,makecol
+waste,Other personal services,makecol
+waste,Other petroleum and coal products manufacturing,makecol
+waste,Other plastics product manufacturing,makecol
+waste,Other real estate,makecol
+waste,Other residential structures,makecol
+waste,Other rubber product manufacturing,makecol
+waste,Other state and local government enterprises,makecol
+waste,Other support activities for mining,makecol
+waste,Other support services,makecol
+waste,Other textile product mills,makecol
+waste,Outpatient care centers,makecol
+waste,Owner-occupied housing,makecol
+waste,Packaging machinery manufacturing,makecol
+waste,Paint and coating manufacturing,makecol
+waste,Paper Bag and Coated and Treated Paper Manufacturing,makecol
+waste,Paper Recycling,useintersection
+waste,Paper mills,makecol
+waste,Paperboard container manufacturing,makecol
+waste,Paperboard mills,makecol
+waste,Performing arts companies,makecol
+waste,Periodical Publishers,makecol
+waste,Personal and household goods repair and maintenance,makecol
+waste,Personal care services,makecol
+waste,Pesticide and other agricultural chemical manufacturing,makecol
+waste,Petrochemical manufacturing,makecol
+waste,Petroleum and petroleum products,makecol
+waste,Petroleum refineries,makecol
+waste,Pharmaceutical preparation manufacturing,makecol
+waste,Photographic and photocopying equipment manufacturing,makecol
+waste,Photographic services,makecol
+waste,Pipeline transportation,makecol
+waste,Plastics Recycling,useintersection
+waste,Plastics bottle manufacturing,makecol
+waste,Plastics material and resin manufacturing,makecol
+waste,Plastics packaging materials and unlaminated film and sheet manufacturing,makecol
+waste,"Plastics pipe, pipe fitting, and unlaminated profile shape manufacturing",makecol
+waste,Plate work and fabricated structural product manufacturing,makecol
+waste,Plumbing fixture fitting and trim manufacturing,makecol
+waste,Polystyrene foam product manufacturing,makecol
+waste,Postal service,makecol
+waste,Poultry and egg production,makecol
+waste,Poultry processing,makecol
+waste,Power and communication structures,makecol
+waste,Power boiler and heat exchanger manufacturing,makecol
+waste,"Power, distribution, and specialty transformer manufacturing",makecol
+waste,Power-driven handtool manufacturing,makecol
+waste,Primary battery manufacturing,makecol
+waste,Printed circuit assembly (electronic assembly) manufacturing,makecol
+waste,Printing,makecol
+waste,Printing ink manufacturing,makecol
+waste,Professional and commercial equipment and supplies,makecol
+waste,Promoters of performing arts and sports and agents for public figures,makecol
+waste,Propulsion units and parts for space vehicles and guided missiles,makecol
+waste,Pulp mills,makecol
+waste,Pump and pumping equipment manufacturing,makecol
+waste,Radio and television broadcasting,makecol
+waste,Rail transportation,makecol
+waste,Railroad rolling stock manufacturing,makecol
+waste,Ready-mix concrete manufacturing,makecol
+waste,Relay and industrial control manufacturing,makecol
+waste,Religious organizations,makecol
+waste,Rendering and animal by-product processing,useintersection
+waste,Residential maintenance and repair,makecol
+waste,"Residential mental health, substance abuse, and other residential care facilities",makecol
+waste,Rubber Recycling,useintersection
+waste,Rubber and plastics hoses and belting manufacturing,makecol
+waste,Sanitary paper product manufacturing,makecol
+waste,"Satellite, telecommunications resellers, and all other telecommunications",makecol
+waste,Sawmills and wood preservation,makecol
+waste,Scenic and sightseeing transportation and support activities for transportation,makecol
+waste,Scientific research and development services,makecol
+waste,Seafood product preparation and packaging,makecol
+waste,"Search, detection, and navigation instruments manufacturing",makecol
+waste,Seasoning and dressing manufacturing,makecol
+waste,Secondary smelting and alloying of aluminum,makecol
+waste,Securities and commodity contracts intermediation and brokerage,makecol
+waste,Semiconductor and related device manufacturing,makecol
+waste,Semiconductor machinery manufacturing,makecol
+waste,Services to buildings and dwellings,makecol
+waste,Ship building and repairing,makecol
+waste,"Showcase, partition, shelving, and locker manufacturing",makecol
+waste,Sign manufacturing,makecol
+waste,Single-family residential structures,makecol
+waste,Small electrical appliance manufacturing,makecol
+waste,Snack food manufacturing,makecol
+waste,Soap and cleaning compound manufacturing,makecol
+waste,Soft drink and ice manufacturing,makecol
+waste,Software publishers,makecol
+waste,Sound recording industries,makecol
+waste,Soybean and other oilseed processing,makecol
+waste,"Special tool, die, jig, and fixture manufacturing",makecol
+waste,Specialized design services,makecol
+waste,Spectator sports,makecol
+waste,"Speed changer, industrial high-speed drive, and gear manufacturing",makecol
+waste,Sporting and athletic goods manufacturing,makecol
+waste,Spring and wire product manufacturing,makecol
+waste,State and local government educational services,makecol
+waste,State and local government electric utilities,makecol
+waste,State and local government hospitals and health services,makecol
+waste,State and local government other services,makecol
+waste,State and local government passenger transit,makecol
+waste,Stationery product manufacturing,makecol
+waste,Steel product manufacturing from purchased steel,makecol
+waste,Stone mining and quarrying,makecol
+waste,Storage battery manufacturing,makecol
+waste,Sugar and confectionery product manufacturing,makecol
+waste,Support activities for agriculture and forestry,makecol
+waste,Support activities for printing,makecol
+waste,Surgical and medical instrument manufacturing,makecol
+waste,Surgical appliance and supplies manufacturing,makecol
+waste,Switchgear and switchboard apparatus manufacturing,makecol
+waste,Synthetic dye and pigment manufacturing,makecol
+waste,Synthetic rubber and artificial and synthetic fibers and filaments manufacturing,makecol
+waste,Telephone apparatus manufacturing,makecol
+waste,Tenant-occupied housing,makecol
+waste,Textile and fabric finishing and fabric coating mills,makecol
+waste,Tire manufacturing,makecol
+waste,Tobacco product manufacturing,makecol
+waste,Toilet preparation manufacturing,makecol
+waste,Totalizing fluid meter and counting device manufacturing,makecol
+waste,Transit and ground passenger transportation,makecol
+waste,Transportation structures and highways and streets,makecol
+waste,Travel arrangement and reservation services,makecol
+waste,Travel trailer and camper manufacturing,makecol
+waste,Truck trailer manufacturing,makecol
+waste,Truck transportation,makecol
+waste,Turbine and turbine generator set units manufacturing,makecol
+waste,"Turned product and screw, nut, and bolt manufacturing",makecol
+waste,Upholstered household furniture manufacturing,makecol
+waste,Urethane and other foam product (except polystyrene) manufacturing,makecol
+waste,Valve and fittings other than plumbing,makecol
+waste,Vegetable and melon farming,makecol
+waste,"Veneer, plywood, and engineered wood product manufacturing",makecol
+waste,Veterinary services,makecol
+waste,Warehousing and storage,makecol
+waste,Waste management and remediation services,makecol
+waste,"Watch, clock, and other measuring and controlling device manufacturing",makecol
+waste,Water transportation,makecol
+waste,"Water, sewage and other systems",makecol
+waste,Wet corn milling,makecol
+waste,Wholesale electronic markets and agents and brokers,makecol
+waste,Wineries,makecol
+waste,Wired telecommunications carriers,makecol
+waste,Wireless telecommunications carriers (except satellite),makecol
+waste,Wiring device manufacturing,makecol
+waste,Wood kitchen cabinet and countertop manufacturing,makecol
