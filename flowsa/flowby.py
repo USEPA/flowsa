@@ -1831,6 +1831,8 @@ class FlowBySector(_FlowBy):
         fbs.full_name = method
         fbs.config = method_config
 
+        # drop year from LocationSystem for FBS use with USEEIO
+        fbs['LocationSystem'] = fbs['LocationSystem'].str.split('_').str[0]
         # aggregate to target geoscale
         fbs = (
             fbs
