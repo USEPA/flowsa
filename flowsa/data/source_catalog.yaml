@@ -4,55 +4,55 @@ Blackhurst_IO:
     - Water
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 BLM_PLS:
   data_format: FBA
   class:
     - Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 BEA_GDP:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False
   #  activity_schema: BEA_2012_Detail_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 BEA_GDP_GrossOutput:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False
   #  activity_schema: BEA_2012_Detail_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 BEA_Use:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 BEA_Use_Detail_PRO_BeforeRedef:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
   #  activity_schema: BEA_2012_Detail_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 BEA_Make_Detail_BeforeRedef:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 BEA_Marine_Bunker_Fuel:
   data_format: FBA
   class:
     - Energy
   sector-like_activities: False
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 BLS_QCEW:
   data_format: FBA
   class:
@@ -61,7 +61,7 @@ BLS_QCEW:
     - Other
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 BTS_TSA:
   data_format: FBA
   sector-like_activities: False
@@ -74,13 +74,13 @@ CalRecycle_WasteCharacterization:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 Census_ASM:
   class:
     - Money
   sector-like_activities: True
   activity_schema: None # Codes for 2018 are NAICS_2017_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 Census_CBP:
   data_format: FBA
   class:
@@ -89,44 +89,44 @@ Census_CBP:
     - Other
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 Census_PEP_Population:
   data_format: FBA
   class: Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""
 Census_QWI:
   data_format: FBA
   class:
     - Employment
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 Census_VIP:
   data_format: FBA
   class: Money
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EIA_CBECS_Land:
   data_format: FBA
   class: Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EIA_CBECS_Water:
   data_format: FBA
   class: Water
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EIA_AEO:
   data_format: FBA
   class:
     - Energy
   sector-like_activities: False
-  # sector_aggregation_level: "aggregated"
+  # sector_hierarchy: "parent"
 EIA_MECS_Energy:
   data_format: FBA
   class:
@@ -135,41 +135,41 @@ EIA_MECS_Energy:
     - Money
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 EIA_MECS_Land:
   data_format: FBA
   class:
   - Land
   sector-like_activities: True
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 EIA_MER:
   data_format: FBA
   class:
   - Energy
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 EIA_SEDS:
   data_format: FBA
   class:
     - Energy
     - Money
   sector-like_activities: False
-  # sector_aggregation_level: "aggregated"
+  # sector_hierarchy: "parent"
 EPA_CDDPath:
   data_format: FBA
   class:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_FactsAndFigures:
   class:
     - Other
   sector-like_activities: False
   activity_schema: None
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_GHGI:
   data_format: FBA
   class:
@@ -178,7 +178,7 @@ EPA_GHGI:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 GHGI2020:
   data_format: FBA
   class:
@@ -187,7 +187,7 @@ GHGI2020:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_REI:
   class:
     - Employment
@@ -195,19 +195,19 @@ EPA_REI:
     - Other
   sector-like_activities: False
   activity_schema: None
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 EPA_StateGHGI:
   class:
     - Chemicals
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_SIT:
   class:
     - Chemicals
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_NEI_Nonpoint:
   data_format: FBA
   class:
@@ -215,20 +215,20 @@ EPA_NEI_Nonpoint:
   sector-like_activities: False
   activity_schema: SCC
   fedefl_mapping: NEI
-  # sector_aggregation_level: "aggregated"
+  # sector_hierarchy: "parent"
 EPA_NEI_Nonroad:
   data_format: FBA
   class:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_NEI_Onroad:
   class:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_WARMer:
   class:
     - Chemicals
@@ -237,50 +237,50 @@ EPA_WARMer:
     - Employment
   sector-like_activities: False
   activity_schema: None
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 EPA_WFR:
   class:
     - Other
   sector-like_activities: False
   activity_schema: None
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 NETL_EIA_PlantWater:
   class:
   - Water
   - Energy
   sector-like_activities: False
   activity_schema: None
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 NOAA_FisheriesLandings:
   class:
   - Money
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""
 StatCan_GDP:
   class:
   - Money
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 StatCan_IWS_MI:
   class:
   - Water
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 StatCan_LFS:
   class:
     - Employment
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 stateio:
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
   # activity_schema: BEA_2012_Summary_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 USDA_CoA_Cropland:
   data_format: FBA
   class:
@@ -288,84 +288,84 @@ USDA_CoA_Cropland:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 USDA_CoA_Cropland_NAICS:
   data_format: FBA
   class:
     - Land
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 USDA_CoA_Livestock:
   data_format: FBA
   class:
   - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "disaggregated"
+  sector_hierarchy: "parent-child"
 USDA_ERS_FIWS:
   data_format: FBA
   class:
   - Money
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""
 USDA_ERS_MLU:
   data_format: FBA
   class:
   - Land
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 USDA_IWMS:
   data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 USGS_NWIS_WU:
   data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 USGS_WU_Coef:
   data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: "aggregated"
+  sector_hierarchy: "parent"
 write_FBA_California_Commercial_bySector:
   class:
   - Other
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""
 USGS_MYB_Lead:
   data_format: FBA
   class:
   - Geological
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""
 USGS_MYB_ManufacturedAbrasive:
   class:
   - Geological
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""
 USGS_MYB_SodaAsh:
   class:
   - Geological
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""
 USGS_MYB_Copper:
   class:
     - Geological
   sector-like_activities: False
   activity_schema:
-  sector_aggregation_level: ""
+  sector_hierarchy: ""

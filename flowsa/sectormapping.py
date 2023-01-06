@@ -86,11 +86,11 @@ def add_sectors_to_flowbyactivity(
     src_info = load_yaml_dict('source_catalog')[ts]
     # read the pre-determined level of sector aggregation of
     # each crosswalk from the source catalog
-    levelofSectoragg = src_info['sector_aggregation_level']
+    levelofSectoragg = src_info['sector_hierarchy']
     # if the FBS activity set is 'direct', overwrite the
     # levelofsectoragg, or if specified in fxn call
     if allocationmethod == 'direct':
-        levelofSectoragg = 'disaggregated'
+        levelofSectoragg = 'parent-child'
     if overwrite_sectorlevel is not None:
         levelofSectoragg = overwrite_sectorlevel
     # if data are provided in NAICS format, use the mastercrosswalk

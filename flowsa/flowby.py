@@ -1141,8 +1141,8 @@ class FlowByActivity(_FlowBy):
 
             # todo: expand on this start. There will be cases where although data is disaggregated,
             #  there might not be all mappings (might stop at NAICS5 in df because NAICS6 is just NAICS5 with added 0)
-            if self.config['sector_aggregation_level'] == 'disaggregated':
-                log.info('NAICS are already disaggregated, assigning activity '
+            if self.config['sector_hierarchy'] == 'parent-child':
+                log.info('NAICS are a mix of parent-child, assigning activity '
                          'columns directly to sector columns')
                 target_naics = set(
                     naics.industry_spec_key(self.config['industry_spec'])

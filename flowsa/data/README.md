@@ -15,7 +15,7 @@ Flow-By-Activity.
 - _activity_schema_: 'None' if 'sector-like_activities' is False, otherwise 
   the year of the sector data
   (ex. NAICS_2012_Code)
-- _sector_aggregation_level_: 'aggregated' or 'disaggregated'. Some dataset 
+- _sector_hierarchy_: 'parent' or 'parent-child'. Some dataset 
   crosswalks contain every level of relevant sectors (ex. NAICS for 2-6 
   digits), that is they are fully disaggregated. Other datasets only 
   contain information for the highest relevant sector level, in which case, 
