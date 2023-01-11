@@ -322,6 +322,8 @@ source_names:
               ActivityProducedBy: {'221200': ''} # purchases of natural gas
 
   EPA_GHGI_T_3_15: *mobile #N2O from mobile combustion duplicates method for CH4
+  # ^^^ TODO: double check this is working as intended. I had a situation where
+  #     we were only getting the first activity set.
 
 ## Major CO2 Sources
   EPA_GHGI_T_A_14:  # CO2 emissions from stationary combustion and transportation

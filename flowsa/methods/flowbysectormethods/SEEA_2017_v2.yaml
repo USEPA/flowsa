@@ -372,85 +372,6 @@ source_names:
   EPA_GHGI_T_3_40: *petroleum #CO2 from Petroleum Systems mimics CH4
   EPA_GHGI_T_3_42: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
 
-# ## Stationary Combustion (note that CO2 is electric power only)
-  EPA_GHGI_T_3_8: &stationary_combustion # CH4 emissions from stationary combustion
-    clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
-    activity_sets:
-      direct_attribution:
-        selection_fields:
-          PrimaryActivity:
-            - Fuel Oil Residential
-            - Coal Residential
-            - Natural Gas Residential
-            - Wood Residential
-        attribution_method: direct
-      electric_power: &stationary_electric
-        selection_fields:
-          PrimaryActivity:
-            - Coal Electric Power
-            - Natural Gas Electric Power
-            - Natural gas Electric Power # note lower case
-            - Fuel Oil Electric Power
-            - Geothermal Electric Power
-            - Wood Electric Power
-        activity_to_sector_mapping: EPA_GHGI_m2
-        attribution_method: direct
-      fuel_oil:
-        selection_fields:
-          PrimaryActivity:
-            - Fuel Oil Commercial
-            - Fuel Oil Industrial
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea_use
-            selection_fields:
-              ActivityProducedBy: '324110'  # purchases of refinery products
-      natural_gas:
-        selection_fields:
-          PrimaryActivity:
-            - Natural gas Commercial
-            - Natural gas Industrial
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea_use
-            selection_fields:
-              ActivityProducedBy: '221200'  # purchases of natural gas
-      coal:
-        selection_fields:
-          PrimaryActivity: Coal Industrial
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea_use
-            selection_fields:
-              ActivityProducedBy: '212100'  # purchases of coal
-      coal_manufacturing:
-        selection_fields:
-          PrimaryActivity: Coal Industrial - Manufacturing
-        attribution_method: proportional
-        attribution_source:
-          EIA_MECS_Energy:
-            <<: *mecs_energy
-            selection_fields:
-              <<: *mecs_energy_default_selection
-              FlowName: Coal
-      natural_gas_manufacturing:
-        selection_fields:
-          PrimaryActivity: Natural gas Industrial - Manufacturing
-        attribution_method: proportional
-        attribution_source:
-          EIA_MECS_Energy:
-            <<: *mecs_energy
-            selection_fields:
-              <<: *mecs_energy_default_selection
-              FlowName: Natural Gas
-  EPA_GHGI_T_3_9: # N2O emissions from stationary combustion
-    <<: *stationary_combustion
-  EPA_GHGI_T_3_7: # CO2 emissions from stationary combustion (electricity only)
-    <<: *stationary_electric
-
 # ## Agriculture
   EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
     selection_fields:
@@ -723,6 +644,7 @@ source_names:
                 attribution_method: direct
               trucking:
                 adjustment_factor: 0.99
+                # ^^^ This is wrong. As is, it's just shifting attribution toward other transportation modes rather than making a true residency adjustment
                 selection_fields:
                   FlowName: Distillate Fuel Oil (Diesel Fuel)
                   PrimaryActivity:
@@ -783,6 +705,85 @@ source_names:
                     <<: *bea_use
                     selection_fields:
                       ActivityProducedBy: '324110' # use of petroleum products
+
+# ## Stationary Combustion (note that CO2 is electric power only)
+  EPA_GHGI_T_3_8: &stationary_combustion # CH4 emissions from stationary combustion
+    clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
+    activity_sets:
+      direct_attribution:
+        selection_fields:
+          PrimaryActivity:
+            - Fuel Oil Residential
+            - Coal Residential
+            - Natural Gas Residential
+            - Wood Residential
+        attribution_method: direct
+      electric_power: &stationary_electric
+        selection_fields:
+          PrimaryActivity:
+            - Coal Electric Power
+            - Natural Gas Electric Power
+            - Natural gas Electric Power # note lower case
+            - Fuel Oil Electric Power
+            - Geothermal Electric Power
+            - Wood Electric Power
+        activity_to_sector_mapping: EPA_GHGI_m2
+        attribution_method: direct
+      fuel_oil:
+        selection_fields:
+          PrimaryActivity:
+            - Fuel Oil Commercial
+            - Fuel Oil Industrial
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea_use
+            selection_fields:
+              ActivityProducedBy: '324110'  # purchases of refinery products
+      natural_gas:
+        selection_fields:
+          PrimaryActivity:
+            - Natural gas Commercial
+            - Natural gas Industrial
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea_use
+            selection_fields:
+              ActivityProducedBy: '221200'  # purchases of natural gas
+      coal:
+        selection_fields:
+          PrimaryActivity: Coal Industrial
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea_use
+            selection_fields:
+              ActivityProducedBy: '212100'  # purchases of coal
+      coal_manufacturing:
+        selection_fields:
+          PrimaryActivity: Coal Industrial - Manufacturing
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              <<: *mecs_energy_default_selection
+              FlowName: Coal
+      natural_gas_manufacturing:
+        selection_fields:
+          PrimaryActivity: Natural gas Industrial - Manufacturing
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              <<: *mecs_energy_default_selection
+              FlowName: Natural Gas
+  EPA_GHGI_T_3_9: # N2O emissions from stationary combustion
+    <<: *stationary_combustion
+  EPA_GHGI_T_3_7: # CO2 emissions from stationary combustion (electricity only)
+    <<: *stationary_electric
 
 ## Other sources
   EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
