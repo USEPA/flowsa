@@ -151,6 +151,15 @@ EIA_SEDS:
     - Money
   sector-like_activities: False
   # sector_aggregation_level: "aggregated"
+Employment_national:
+  data_format: FBS
+  class:
+    - Employment
+    - Money
+    - Other
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
+  sector_aggregation_level: "disaggregated"
 EPA_CDDPath:
   data_format: FBA
   class:
