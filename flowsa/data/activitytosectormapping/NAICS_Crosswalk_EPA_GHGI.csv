@@ -35,8 +35,6 @@ EPA_GHGI,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",NAICS_2012_Code,3
 EPA_GHGI,Electronics Industry,NAICS_2012_Code,334413,,"334413, name change from Semiconductor Manufacture",EPA_GHGI_T_2_1
 EPA_GHGI,Electrical Transmission and Distribution,NAICS_2012_Code,2211,,221100,EPA_GHGI_T_2_1
 EPA_GHGI,Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)",EPA_GHGI_T_2_1
-EPA_GHGI,Electric Power,NAICS_2012_Code,S00101,,,EPA_GHGI_T_2_1
-EPA_GHGI,Electric Power,NAICS_2012_Code,S00202,,,EPA_GHGI_T_2_1
 EPA_GHGI,Liming,NAICS_2012_Code,111,,"111, 112",EPA_GHGI_T_2_1
 EPA_GHGI,Liming,NAICS_2012_Code,112,,,EPA_GHGI_T_2_1
 EPA_GHGI,Urea Fertilization,NAICS_2012_Code,111,,"111, 112",EPA_GHGI_T_2_1
@@ -198,16 +196,6 @@ EPA_GHGI,Fuel Oil Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I:
 EPA_GHGI,Natural gas Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)",EPA_GHGI_T_3_8
 EPA_GHGI,Natural Gas Electric Power,NAICS_2012_Code,2211,,,EPA_GHGI_T_3_9
 EPA_GHGI,Wood Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)","EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Coal Electric Power,NAICS_2012_Code,S00101,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Fuel Oil Electric Power,NAICS_2012_Code,S00101,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Natural gas Electric Power,NAICS_2012_Code,S00101,,,EPA_GHGI_T_3_8
-EPA_GHGI,Natural Gas Electric Power,NAICS_2012_Code,S00101,,,EPA_GHGI_T_3_9
-EPA_GHGI,Wood Electric Power,NAICS_2012_Code,S00101,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Coal Electric Power,NAICS_2012_Code,S00202,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Fuel Oil Electric Power,NAICS_2012_Code,S00202,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Natural gas Electric Power,NAICS_2012_Code,S00202,,,EPA_GHGI_T_3_8
-EPA_GHGI,Natural Gas Electric Power,NAICS_2012_Code,S00202,,,EPA_GHGI_T_3_9
-EPA_GHGI,Wood Electric Power,NAICS_2012_Code,S00202,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Coal Residential,NAICS_2012_Code,F01000,,F01000,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Fuel Oil Residential,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Natural Gas Residential,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
@@ -520,7 +508,6 @@ EPA_GHGI,Ships and Boats,NAICS_2012_Code,483,,483000,EPA_GHGI_T_A_103
 EPA_GHGI,Transit Buses,,,,excluded,EPA_GHGI_T_A_103
 EPA_GHGI,Buses,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_79
 EPA_GHGI,Buses,NAICS_2012_Code,4871,,,EPA_GHGI_T_A_79
-EPA_GHGI,Buses,NAICS_2012_Code,S00201,,,EPA_GHGI_T_A_79
 EPA_GHGI,Buses - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_79
 EPA_GHGI,Buses - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,487,,48A000,EPA_GHGI_T_A_79
 EPA_GHGI,Buses - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,488,,,EPA_GHGI_T_A_79
