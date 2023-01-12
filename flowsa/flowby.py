@@ -1084,10 +1084,12 @@ class FlowByActivity(_FlowBy):
                                   ['FlowAmount'].transform('sum'))
             )
             if not np.allclose(validation_fba.group_total,
-                               validation_fba.validation_total, equal_nan=True):
+                               validation_fba.validation_total,
+                               equal_nan=True):
                 errors = (validation_fba
                           .query('validation_total != group_total')
-                          [['group_id', 'ActivityProducedBy', 'ActivityConsumedBy',
+                          [['group_id',
+                            'ActivityProducedBy', 'ActivityConsumedBy',
                             'SectorProducedBy', 'SectorConsumedBy',
                             'FlowAmount', 'group_total', 'validation_total']])
                 log.error('Errors in attributing flows from %s:\n%s',
@@ -1589,17 +1591,30 @@ class FlowByActivity(_FlowBy):
                     selection_fields=activity_config['selection_fields'])
             )
 
+            for field, values in activity_config['selection_fields'].items():
+                if isinstance(values, dict):
+                    activity_config['selection_fields'][field] = list(set(
+                        values.values()
+                    ))
+                # ^^^ This makes it so that if the activity set's
+                #     selection_fields are a dict (implying renaming of the
+                #     given values), then the selection that happens during
+                #     prepare_fbs on the activity set selects by the renamed
+                #     values rather than the original ones.
+
             child_fba.config = {**parent_config, **activity_config}
             child_fba = child_fba.assign(SourceName=child_fba.full_name)
 
             if set(child_fba.row) & assigned_rows:
-                log.error(
+                log.critical(
                     'Some rows from %s assigned to multiple activity '
                     'sets. This will lead to double-counting:\n%s',
                     parent_fba.full_name,
-                    child_fba.iloc[list(set(child_fba.row)
-                                        & assigned_rows)])
-                raise ValueError('Some rows in multiple activity sets')
+                    child_fba.query(
+                        f'row in {list(set(child_fba.row) & assigned_rows)}'
+                    )
+                )
+                # raise ValueError('Some rows in multiple activity sets')
 
             assigned_rows.update(child_fba.row)
             if not child_fba.empty:

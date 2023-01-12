@@ -54,14 +54,19 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     return fba
 
 
-def getFlowBySector(methodname, fbsconfigpath=None,
-                    download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
-                    download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
+def getFlowBySector(
+    methodname,
+    fbsconfigpath=None,
+    download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+    download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+    **kwargs
+) -> FlowBySector:
     fbs = FlowBySector.getFlowBySector(
         method=methodname,
         external_config_path=fbsconfigpath,
         download_sources_ok=download_FBAs_if_missing,
-        download_fbs_ok=download_FBS_if_missing
+        download_fbs_ok=download_FBS_if_missing,
+        **kwargs
     )
     return fbs
 

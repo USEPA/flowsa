@@ -6,6 +6,7 @@
 
 import shutil
 import os
+from os import path
 import yaml
 import pandas as pd
 import numpy as np
@@ -116,10 +117,14 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     else:
         # first check if a filepath for the yaml is specified, as is the
         # case with FBS method files located outside FLOWSA
-        if filepath is not None:
+        # if filepath is not None:
+        if path.exists(path.join(str(filepath), f'{filename}.yaml')):
             log.info(f'Loading {filename} from {filepath}')
             folder = filepath
         else:
+            if filepath is not None:
+                log.warning(f'{filename} not found in {filepath}. '
+                            f'Checking default folders')
             if flowbytype == 'FBA':
                 folder = sourceconfigpath
             elif flowbytype == 'FBS':
