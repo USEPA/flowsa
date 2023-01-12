@@ -11,7 +11,7 @@ BLM_PLS:
     - Land
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 BEA_GDP:
   data_format: FBA
   class:
@@ -52,7 +52,7 @@ BEA_Marine_Bunker_Fuel:
   class:
     - Energy
   sector-like_activities: False
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 BLS_QCEW:
   data_format: FBA
   class:
@@ -74,7 +74,7 @@ CalRecycle_WasteCharacterization:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 Census_ASM:
   class:
     - Money
@@ -108,25 +108,25 @@ Census_VIP:
   class: Money
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EIA_CBECS_Land:
   data_format: FBA
   class: Land
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EIA_CBECS_Water:
   data_format: FBA
   class: Water
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EIA_AEO:
   data_format: FBA
   class:
     - Energy
   sector-like_activities: False
-  # sector_hierarchy: "parent"
+  # sector_hierarchy: "flat"
 EIA_MECS_Energy:
   data_format: FBA
   class:
@@ -156,7 +156,7 @@ EIA_SEDS:
     - Energy
     - Money
   sector-like_activities: False
-  # sector_hierarchy: "parent"
+  # sector_hierarchy: "flat"
 Employment_national:
   data_format: FBS
   class:
@@ -172,13 +172,13 @@ EPA_CDDPath:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_FactsAndFigures:
   class:
     - Other
   sector-like_activities: False
   activity_schema: None
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_GHGI:
   data_format: FBA
   class:
@@ -187,7 +187,7 @@ EPA_GHGI:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 GHGI2020:
   data_format: FBA
   class:
@@ -196,7 +196,7 @@ GHGI2020:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_REI:
   class:
     - Employment
@@ -210,13 +210,13 @@ EPA_StateGHGI:
     - Chemicals
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_SIT:
   class:
     - Chemicals
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_NEI_Nonpoint:
   data_format: FBA
   class:
@@ -224,20 +224,20 @@ EPA_NEI_Nonpoint:
   sector-like_activities: False
   activity_schema: SCC
   fedefl_mapping: NEI
-  # sector_hierarchy: "parent"
+  # sector_hierarchy: "flat"
 EPA_NEI_Nonroad:
   data_format: FBA
   class:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_NEI_Onroad:
   class:
   - Chemicals
   sector-like_activities: False
   activity_schema: SCC
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_WARMer:
   class:
     - Chemicals
@@ -246,20 +246,20 @@ EPA_WARMer:
     - Employment
   sector-like_activities: False
   activity_schema: None
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 EPA_WFR:
   class:
     - Other
   sector-like_activities: False
   activity_schema: None
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 NETL_EIA_PlantWater:
   class:
   - Water
   - Energy
   sector-like_activities: False
   activity_schema: None
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 NOAA_FisheriesLandings:
   class:
   - Money
@@ -277,13 +277,13 @@ StatCan_IWS_MI:
   - Water
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 StatCan_LFS:
   class:
     - Employment
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 stateio:
   class:
     - Money
@@ -325,28 +325,28 @@ USDA_ERS_MLU:
   - Land
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 USDA_IWMS:
   data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 USGS_NWIS_WU:
   data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 USGS_WU_Coef:
   data_format: FBA
   class:
   - Water
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent"
+  sector_hierarchy: "flat"
 write_FBA_California_Commercial_bySector:
   class:
   - Other
