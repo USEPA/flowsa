@@ -1550,6 +1550,7 @@ class FlowByActivity(_FlowBy):
             .function_socket('estimate_suppressed')
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
+            .attribute_flows_to_sectors()  # recursive call to prepare_fbs
             .convert_to_geoscale()
             .attribute_flows_to_sectors()  # recursive call to prepare_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
