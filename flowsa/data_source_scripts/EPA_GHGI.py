@@ -680,8 +680,6 @@ def get_manufacturing_energy_ratios(year):
         })
     )
 
-    log.critical(f'MECS length: {len(mecs)}\nMECS columns: {mecs.columns}')
-
     ratio_dict = {}
     for ghgi_flow, mecs_flow in flows:
         mecs_energy = mecs.query(f'FlowName == @mecs_flow').FlowAmount.values[0]

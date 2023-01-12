@@ -157,6 +157,15 @@ EIA_SEDS:
     - Money
   sector-like_activities: False
   # sector_hierarchy: "parent"
+Employment_national:
+  data_format: FBS
+  class:
+    - Employment
+    - Money
+    - Other
+  sector-like_activities: True
+  activity_schema: NAICS_2012_Code
+  sector_hierarchy: "parent-child"
 EPA_CDDPath:
   data_format: FBA
   class:
