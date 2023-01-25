@@ -90,7 +90,7 @@ def add_sectors_to_flowbyactivity(
     # if the FBS activity set is 'direct', overwrite the
     # levelofsectoragg, or if specified in fxn call
     if allocationmethod == 'direct':
-        levelofSectoragg = 'parent-child'
+        levelofSectoragg = 'parent-completeChild'
     if overwrite_sectorlevel is not None:
         levelofSectoragg = overwrite_sectorlevel
     # if data are provided in NAICS format, use the mastercrosswalk

@@ -4,7 +4,7 @@ Blackhurst_IO:
     - Water
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 BLM_PLS:
   data_format: FBA
   class:
@@ -18,35 +18,35 @@ BEA_GDP:
     - Money
   sector-like_activities: False
   #  activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 BEA_GDP_GrossOutput:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False
   #  activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 BEA_Use:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 BEA_Use_Detail_PRO_BeforeRedef:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
   #  activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 BEA_Make_Detail_BeforeRedef:
   data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
 #  activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 BEA_Marine_Bunker_Fuel:
   data_format: FBA
   class:
@@ -61,7 +61,7 @@ BLS_QCEW:
     - Other
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 BTS_TSA:
   data_format: FBA
   sector-like_activities: False
@@ -80,7 +80,7 @@ Census_ASM:
     - Money
   sector-like_activities: True
   activity_schema: None # Codes for 2018 are NAICS_2017_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 Census_CBP:
   data_format: FBA
   class:
@@ -89,7 +89,7 @@ Census_CBP:
     - Other
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 Census_PEP_Population:
   data_format: FBA
   class: Other
@@ -102,7 +102,7 @@ Census_QWI:
     - Employment
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 Census_VIP:
   data_format: FBA
   class: Money
@@ -135,21 +135,21 @@ EIA_MECS_Energy:
     - Money
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 EIA_MECS_Land:
   data_format: FBA
   class:
   - Land
   sector-like_activities: True
   activity_schema:
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 EIA_MER:
   data_format: FBA
   class:
   - Energy
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 EIA_SEDS:
   data_format: FBA
   class:
@@ -165,7 +165,7 @@ Employment_national:
     - Other
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 EPA_CDDPath:
   data_format: FBA
   class:
@@ -204,7 +204,7 @@ EPA_REI:
     - Other
   sector-like_activities: False
   activity_schema: None
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 EPA_StateGHGI:
   class:
     - Chemicals
@@ -271,7 +271,7 @@ StatCan_GDP:
   - Money
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 StatCan_IWS_MI:
   class:
   - Water
@@ -289,7 +289,7 @@ stateio:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
   # activity_schema: BEA_2012_Summary_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 USDA_CoA_Cropland:
   data_format: FBA
   class:
@@ -297,21 +297,21 @@ USDA_CoA_Cropland:
     - Other
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 USDA_CoA_Cropland_NAICS:
   data_format: FBA
   class:
     - Land
   sector-like_activities: True
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 USDA_CoA_Livestock:
   data_format: FBA
   class:
   - Other
   sector-like_activities: False
   activity_schema:
-  sector_hierarchy: "parent-child"
+  sector_hierarchy: "parent-completeChild"
 USDA_ERS_FIWS:
   data_format: FBA
   class:

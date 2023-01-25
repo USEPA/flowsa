@@ -1143,9 +1143,9 @@ class FlowByActivity(_FlowBy):
 
             # todo: expand on this start. There will be cases where although data is disaggregated,
             #  there might not be all mappings (might stop at NAICS5 in df because NAICS6 is just NAICS5 with added 0)
-            if self.config['sector_hierarchy'] == 'parent-child':
-                log.info('NAICS are a mix of parent-child, assigning activity '
-                         'columns directly to sector columns')
+            if self.config['sector_hierarchy'] == 'parent-completeChild':
+                log.info('NAICS are a mix of parent-completeChild, assigning '
+                         'activity columns directly to sector columns')
                 target_naics = set(
                     naics.industry_spec_key(self.config['industry_spec'])
                     .target_naics)
@@ -1220,7 +1220,7 @@ class FlowByActivity(_FlowBy):
 
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
-            if self.config['sector_hierarchy'] == 'parent-child':
+            if self.config['sector_hierarchy'] == 'parent-completeChild':
                 existing_sectors = activity_to_source_naics_crosswalk[['Sector']]
                 # load master crosswalk
                 cw = common.load_crosswalk('sector_timeseries')
