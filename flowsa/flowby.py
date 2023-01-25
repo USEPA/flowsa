@@ -1230,34 +1230,42 @@ class FlowByActivity(_FlowBy):
                            )
                 # create list of sectors that exist in original df, which,
                 # if created when expanding sector list cannot be added
+                naics_df = pd.DataFrame([])
+                for i in existing_sectors['Sector']:
+                    dig = len(str(i))
+                    n = existing_sectors[
+                        existing_sectors['Sector'].apply(
+                            lambda x: x[0:dig]) == i]
+                    if len(n) == 1:
+                        expanded_n = sectors[
+                            sectors['NAICS_2012_Code'].apply(
+                                lambda x: x[0:dig] == i)]
+                        expanded_n = expanded_n.assign(Sector=i)
+                        naics_df = pd.concat([naics_df, expanded_n])
+
+                activity_to_source_naics_crosswalk = (
+                    activity_to_source_naics_crosswalk
+                    .merge(naics_df, how='left')
+                    .assign(Sector=lambda x: np.where(
+                        x['NAICS_2012_Code'].isna(), x['Sector'],
+                        x['NAICS_2012_Code']))
+                    .drop(columns=['NAICS_2012_Code'])
+                )
+
+                target_naics = set(
+                    naics.industry_spec_key(self.config['industry_spec'])
+                    .target_naics)
+
+                activity_to_target_naics_crosswalk = (
+                    activity_to_source_naics_crosswalk
+                    .query('Sector  in @target_naics')
+                )
 
                 fba_w_naics = self
                 for direction in ['ProducedBy', 'ConsumedBy']:
-                    naics_df = pd.DataFrame([])
-                    for i in existing_sectors['Sector']:
-                        dig = len(str(i))
-                        n = existing_sectors[
-                            existing_sectors['Sector'].apply(
-                                lambda x: x[0:dig]) == i]
-                        if len(n) == 1:
-                            expanded_n = sectors[
-                                sectors['NAICS_2012_Code'].apply(
-                                    lambda x: x[0:dig] == i)]
-                            expanded_n = expanded_n.assign(Sector=i)
-                            naics_df = pd.concat([naics_df, expanded_n])
-
-                    activity_to_source_naics_crosswalk = (
-                        activity_to_source_naics_crosswalk
-                        .merge(naics_df, how='left')
-                        .assign(Sector=lambda x: np.where(
-                            x['NAICS_2012_Code'].isna(), x['Sector'],
-                            x['NAICS_2012_Code']))
-                        .drop(columns=['NAICS_2012_Code'])
-                    )
-
                     fba_w_naics = (
                         fba_w_naics
-                        .merge(activity_to_source_naics_crosswalk,
+                        .merge(activity_to_target_naics_crosswalk,
                                how='left',
                                left_on=f'Activity{direction}',
                                right_on='Activity')
@@ -1268,16 +1276,6 @@ class FlowByActivity(_FlowBy):
                                        'Activity'],
                               errors='ignore')
                     )
-
-                target_naics = set(
-                    naics.industry_spec_key(self.config['industry_spec'])
-                    .target_naics)
-
-                fba_w_naics = (
-                    fba_w_naics
-                    .query('SectorProducedBy  in @target_naics '
-                           '| SectorConsumedBy in @target_naics')
-                )
 
             else:
                 activity_to_target_naics_crosswalk = (
