@@ -12,6 +12,11 @@ source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1
     year: &ghgi_year 2020
+    activity_sets: # Update USGS year for these activity_sets
+      !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1:activity_sets
+      lead:
+        !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead
+        allocation_source_year: 2019 # 2020 not yet available
   "EPA_GHGI_T_3_68": #CH4 from Natural Gas Systems
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_68
     year: *ghgi_year

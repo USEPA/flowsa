@@ -12,6 +12,11 @@ source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1
     year: &ghgi_year 2018
+    activity_sets: # Update USGS year for these activity_sets
+      !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1:activity_sets
+      lead:
+        !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead
+        allocation_source_year: *ghgi_year
   "EPA_GHGI_T_3_68": #CH4 from Natural Gas Systems
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_68
     year: *ghgi_year
@@ -78,7 +83,7 @@ source_names:
   "EPA_GHGI_T_3_22b": #Fossil fuel for non-energy uses
     !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_22b
     year: *ghgi_year
-    activity_sets: # Update EIA_MECS year for these activity_sets
+    activity_sets: # Update EIA_MECS year for some activity_sets
       !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_22b:activity_sets
       petroleum:
         !include:GHG_national_2016_m1.yaml:source_names:EPA_GHGI_T_3_22b:activity_sets:petroleum
