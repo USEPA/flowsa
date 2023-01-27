@@ -1057,9 +1057,9 @@ def compare_geographic_totals(
         sub = rename_column_values_for_comparison(sub, sourcename)
 
         # compare df
-        merge_cols = ['Class', 'MetaSources', 'Unit',
-                       'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
-                       'Location', 'LocationSystem', 'Year']
+        merge_cols = ['Class', 'SourceName', 'Unit', 'FlowType',
+                      'ActivityProducedBy', 'ActivityConsumedBy',
+                      'Location', 'LocationSystem', 'Year']
 
         if df_type == 'FBA':
             merge_cols.extend(['FlowName', 'Compartment'])
