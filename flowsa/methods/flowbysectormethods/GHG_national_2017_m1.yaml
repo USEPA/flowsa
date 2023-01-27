@@ -3,9 +3,7 @@
 # MECS year is 2018
 # CoA year is 2017
 
-target_sector_level: NAICS_6
-target_sector_source: NAICS_2012_Code
-target_geoscale: national
+!include:GHG_national_m1.yaml
 source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_2_1
