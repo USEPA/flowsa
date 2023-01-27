@@ -138,6 +138,7 @@ source_names:
         allocation_source_year: *mecs_year
         helper_source_year: *mecs_year
       ng_manufacturing: # Industrial
+        !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:ng_manufacturing
         allocation_source_year: *mecs_year
         helper_source_year: *mecs_year
 
