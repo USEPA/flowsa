@@ -115,6 +115,26 @@ _allocation_types:
     allocation_compartment: None
     allocation_from_scale: national
 
+  _transport_energy_use_allocation: &transport_energy_use_allocation
+    allocation_method: proportional
+    allocation_source: "EPA_GHGI_T_A_73" #Energy consumption by source and transport type
+    allocation_source_class: "Energy"
+    #allocation_source_year: # override with ghgi_year
+    # allocation_flow: # override with activity name, e.g.  ['Distillate Fuel Oil']
+    allocation_compartment: None
+    allocation_from_scale: national
+    clean_allocation_fba: !script_function:EPA_GHGI adjust_transport_activities
+    clean_allocation_fba_w_sec: !script_function:EPA_GHGI keep_six_digit_naics
+    helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
+    helper_activity_to_sector_mapping: "BEA_2012_Detail"
+    helper_method: proportional
+    helper_source_class: "Money"
+    helper_source_year: 2012
+    helper_flow: ["USD2012"]
+    helper_from_scale: national
+    clean_helper_fba_wsec: !script_function:BEA subset_and_allocate_BEA_table
+    clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
+
 source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     data_format: 'FBA'
@@ -454,29 +474,14 @@ source_names:
         names:
             - "Residual Fuel Transportation"
         allocation_flow: ['Residual Fuel Oil']
-      dfo_transport: &transport_use
+      dfo_transport:
+        <<: *transport_energy_use_allocation
         names:
             - "Distillate Fuel Oil Transportation"
-        allocation_method: proportional
-        allocation_source: "EPA_GHGI_T_A_73"
-        allocation_source_class: "Energy"
         #allocation_source_year: # override with ghgi_year
         allocation_flow: ['Distillate Fuel Oil']
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba: !script_function:EPA_GHGI adjust_transport_activities
-        clean_allocation_fba_w_sec: !script_function:EPA_GHGI keep_six_digit_naics
-        helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
-        helper_activity_to_sector_mapping: "BEA_2012_Detail"
-        helper_method: proportional
-        helper_source_class: "Money"
-        helper_source_year: 2012
-        helper_flow: ["USD2012"]
-        helper_from_scale: national
-        clean_helper_fba_wsec: !script_function:BEA subset_and_allocate_BEA_table
-        clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
       gasoline_transport:
-        <<: *transport_use
+        <<: *transport_energy_use_allocation
         names:
             - "Motor Gasoline Transportation"
         allocation_flow: ['Motor Gasoline']
