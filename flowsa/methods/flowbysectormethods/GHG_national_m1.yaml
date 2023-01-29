@@ -542,7 +542,7 @@ source_names:
         allocation_flow:
             - "Natural Gas"
 
-    ## TODO MISSING 'Wood Commercial' and 'Wood Industrial'
+    ##Intentionally left out 'Wood Commercial' and 'Wood Industrial'
 
   "EPA_GHGI_T_3_9":
       <<: *stationary_combustion # N2O emissions from stationary combustion
