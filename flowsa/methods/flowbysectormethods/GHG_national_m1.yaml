@@ -27,13 +27,6 @@ _allocation_types:
             - "Table 3.2"  # Fuel (class Energy)
     clean_allocation_fba: !script_function:EIA_MECS mecs_energy_fba_cleanup
     clean_allocation_fba_w_sec: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
-    helper_source: "BLS_QCEW"
-    helper_method: proportional-flagged
-    helper_source_class: "Employment"
-    # helper_source_year: # override this
-    helper_flow: None
-    helper_from_scale: national
-    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _use_allocation: &use_allocation
     # names: # override this
@@ -48,13 +41,6 @@ _allocation_types:
     allocation_from_scale: national
     clean_allocation_fba: !script_function:BEA subset_BEA_table
     # clean_parameter: # override this with dictionary like {"324110": 'ActivityProducedBy'}
-    helper_source: "BLS_QCEW"
-    helper_method: proportional
-    helper_source_class: "Employment"
-    helper_source_year: 2012
-    helper_flow: None
-    helper_from_scale: national
-    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _make_allocation: &make_allocation
     #names: # override this
@@ -69,12 +55,6 @@ _allocation_types:
     allocation_from_scale: national
     clean_allocation_fba: !script_function:BEA subset_BEA_table
     # clean_parameter: # over ride this with dictionary, like {"221100": 'ActivityConsumedBy'} # Electricity
-    helper_source: "BLS_QCEW"
-    helper_method: proportional
-    helper_source_class: "Employment"
-    helper_source_year: 2012
-    helper_from_scale: national
-    clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
 
   _lead_allocation: &lead_allocation
     names:
@@ -448,12 +428,6 @@ source_names:
         allocation_flow: ['Natural Gas']
         allocation_compartment: None
         allocation_from_scale: national
-        helper_source: "BLS_QCEW"
-        helper_method: proportional
-        helper_source_class: "Employment"
-        # helper_source_year: *ghgi_year
-        helper_from_scale: national
-        clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
       aviation_transport:
         <<: *transport_direct
         names:
