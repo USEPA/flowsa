@@ -619,6 +619,8 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         fba2,
         sectorsourcename=method['target_sector_source'],
         activity_to_sector_mapping=activity_to_sector_mapping,
+        overwrite_sectorlevel=attr.get(
+            'activity_to_sector_aggregation_level'),
         fbsconfigpath=fbsconfigpath
     )
 

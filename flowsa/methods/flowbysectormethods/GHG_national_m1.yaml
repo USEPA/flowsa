@@ -428,6 +428,7 @@ source_names:
         allocation_flow: ['Natural Gas']
         allocation_compartment: None
         allocation_from_scale: national
+        activity_to_sector_aggregation_level: disaggregated
       aviation_transport:
         <<: *transport_direct
         names:
