@@ -9,6 +9,7 @@ Generation of BEA Gross Output data and industry transcation data as FBA,
 Source csv files for BEA data are documented
 in scripts/write_BEA_Use_from_useeior.py
 """
+from functools import reduce
 import pandas as pd
 from flowsa.location import US_FIPS
 from flowsa.common import fbs_activity_fields
@@ -199,4 +200,47 @@ def subset_and_allocate_BEA_table(df, attr, **_):
     df2 = allocation_helper(df, attr2, method2, v, False)
     # Drop remaining rows with no sectors e.g. T001 and other final demands
     df2 = df2.dropna(subset=['SectorConsumedBy']).reset_index(drop=True)
+    return df2
+
+
+def subset_and_equally_allocate_BEA_table(df, attr, **_):
+    """
+    Temporary function to equally attribute BEA table. This function will
+    be unnecessary after merge with recursive branch
+    """
+
+    df = subset_BEA_table(df, attr)
+
+    # equally attribute bea codes to each mapped sector
+    groupby_cols = ['group_id']
+    df2 = (
+        df
+        .assign(
+            **{f'_naics_{n}': df['SectorConsumedBy'].str.slice(stop=n)
+               for n in range(2, 7)},
+            **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                x.groupby(groupby_cols if i == 2
+                          else [*groupby_cols, f'_naics_{i - 1}'],
+                          dropna=False)
+                [[f'_naics_{i}']]
+                .transform('nunique', dropna=False)
+            )
+               for n in range(2, 7)},
+            FlowAmount=lambda x: reduce(
+                lambda x, y: x / y,
+                [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
+                                 for n in range(2, 7)]]
+            )
+        )
+    )
+    groupby_cols.append('SectorConsumedBy')
+
+    # replace ACB
+    df2['ActivityConsumedBy'] = df2['SectorConsumedBy']
+
+    df2 = df2.drop(
+        columns=['group_id', *[f'_naics_{n}' for n in range(2, 7)],
+                 *[f'_unique_naics_{n}_by_group' for n in range(2, 7)]]
+    )
+
     return df2
