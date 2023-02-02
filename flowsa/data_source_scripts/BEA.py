@@ -213,10 +213,13 @@ def subset_and_equally_allocate_BEA_table(df, attr, **_):
 
     # equally attribute bea codes to each mapped sector
     groupby_cols = ['group_id']
+    c = 'Produced'
+    if df[f'Activity{c}By'].isnull().values.all():
+        col = 'Consumed'
     df2 = (
         df
         .assign(
-            **{f'_naics_{n}': df['SectorConsumedBy'].str.slice(stop=n)
+            **{f'_naics_{n}': df[f'Sector{c}By'].str.slice(stop=n)
                for n in range(2, 7)},
             **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
                 x.groupby(groupby_cols if i == 2
@@ -233,10 +236,10 @@ def subset_and_equally_allocate_BEA_table(df, attr, **_):
             )
         )
     )
-    groupby_cols.append('SectorConsumedBy')
+    groupby_cols.append(f'Sector{c}By')
 
     # replace ACB
-    df2['ActivityConsumedBy'] = df2['SectorConsumedBy']
+    df2[f'Activity{c}By'] = df2[f'Sector{c}By']
 
     df2 = df2.drop(
         columns=['group_id', *[f'_naics_{n}' for n in range(2, 7)],
