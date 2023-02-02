@@ -25,8 +25,9 @@ _allocation_types:
         Description:
             - "Table 2.2"  # Nonfuel (class Other)
             - "Table 3.2"  # Fuel (class Energy)
-    clean_allocation_fba: !script_function:EIA_MECS mecs_energy_fba_cleanup
-    clean_allocation_fba_w_sec: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
+        Unit:
+            - "MJ"
+    clean_allocation_fba_w_sec: !script_function:EIA_MECS mecs_energy_equally_attribute
 
   _use_allocation: &use_allocation
     # names: # override this

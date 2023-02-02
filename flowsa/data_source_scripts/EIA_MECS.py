@@ -7,16 +7,17 @@ MANUFACTURING ENERGY CONSUMPTION SURVEY (MECS)
 https://www.eia.gov/consumption/manufacturing/data/2014/
 Last updated: 8 Sept. 2020
 """
-
+from functools import reduce
 import io
 import math
 
 import pandas as pd
 import numpy as np
+from flowsa.allocation import equally_allocate_parent_to_child_naics
 from flowsa.location import US_FIPS
-from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.common import WITHDRAWN_KEYWORD, load_crosswalk
 from flowsa.settings import vLogDetailed
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.data_source_scripts.EIA_CBECS_Land import \
@@ -497,6 +498,131 @@ def eia_mecs_energy_clean_allocation_fba_w_sec(
     df2 = df[df['FlowAmount'] != 0].reset_index(drop=True)
 
     return df2
+
+def mecs_energy_equally_attribute(
+        df_w_sec, attr, method, **kwargs):
+    """
+    This function equally attributes EIA MECS data to NAICS6. This function
+    was developed by pulling from existing functions in the recursive_refac
+    branch: clean_mecs_energy_fba(), clean_mapped_mecs_energy_fba(),
+    and equally_attribute().
+
+    :param df_w_sec: df, EIA MECS Energy, FBA format with sector columns
+    :param attr: dictionary, attribute data from method yaml for activity set
+    :param method: dictionary, FBS method yaml
+    :param kwargs: includes "sourcename" which is required for other
+        'clean_fba_w_sec' fxns
+    :return: df, EIA MECS energy with estimated missing data
+    """
+
+    # drop rows where flowamount = 0, which drops supressed data
+    df = df_w_sec[df_w_sec['FlowAmount'] != 0].reset_index(drop=True)
+
+    mecs = (
+        df
+        .assign(descendants='')
+        .assign(group_id=df.reset_index().index)
+    )
+
+    for level in [5, 4, 3]:
+        descendants = (
+            mecs
+            .drop(columns='descendants')
+            .query(f'ActivityConsumedBy.str.len() > {level}')
+            .assign(
+                parent=lambda x: x.ActivityConsumedBy.str.slice(stop=level)
+            )
+            .groupby(['FlowName', 'Location', 'parent'])
+            .agg({'FlowAmount': 'sum', 'ActivityConsumedBy': ' '.join})
+            .reset_index()
+            .rename(columns={'ActivityConsumedBy': 'descendants',
+                             'FlowAmount': 'descendant_flows',
+                             'parent': 'ActivityConsumedBy'})
+        )
+
+        mecs = (
+            mecs
+            .merge(descendants,
+                   how='left',
+                   on=['FlowName', 'Location', 'ActivityConsumedBy'],
+                   suffixes=(None, '_y'))
+            .fillna({'descendant_flows': 0, 'descendants_y': ''})
+            .assign(
+                descendants=lambda x: x.descendants.mask(x.descendants == '',
+                                                         x.descendants_y),
+                FlowAmount=lambda x: (x.FlowAmount - x.descendant_flows).mask(
+                    x.FlowAmount - x.descendant_flows < 0, 0)
+            )
+            .drop(columns=['descendant_flows', 'descendants_y'])
+        )
+
+    # drop sector columns and map all data to NAICS6
+    # load naics 2 to naics 6 crosswalk
+    cw_load = load_crosswalk('sector_length')
+    # only keep official naics
+    cw = cw_load.drop(columns=['NAICS_7']).drop_duplicates()
+    cw_melt = pd.melt(cw,
+                      id_vars=["NAICS_6"], var_name="NAICS_Length",
+                      value_name="Activity").drop(
+        columns=['NAICS_Length']).drop_duplicates()
+
+    mecs2 = mecs.drop(columns=['SectorConsumedBy'])
+    mecs2 = (mecs2
+             .merge(cw_melt, how='left', left_on='ActivityConsumedBy',
+                        right_on='Activity')
+             .rename(columns={'NAICS_6': 'SectorConsumedBy'})
+             .drop(columns=['Activity'])
+             )
+    mecs2['SectorConsumedBy'] = mecs2['SectorConsumedBy'].fillna(
+        mecs2['ActivityConsumedBy'])
+
+    mecs_sub = (
+        mecs2
+        .assign(to_keep=mecs2.apply(
+            lambda x: not any([x.SectorConsumedBy.startswith(d)
+                               for d in x.descendants.split()]),
+            axis='columns'
+        ))
+        .query('to_keep')
+        .drop(columns=['descendants', 'to_keep'])
+    )
+
+    groupby_cols = ['group_id']
+    mecs_sub = (
+        mecs_sub
+        .assign(
+            **{f'_naics_{n}': mecs_sub['SectorConsumedBy'].str.slice(stop=n)
+               for n in range(2, 7)},
+            **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                x.groupby(groupby_cols if i == 2
+                          else [*groupby_cols, f'_naics_{i - 1}'],
+                          dropna=False)
+                [[f'_naics_{i}']]
+                .transform('nunique', dropna=False)
+            )
+               for n in range(2, 7)},
+            FlowAmount=lambda x: reduce(
+                lambda x, y: x / y,
+                [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
+                                 for n in range(2, 7)]]
+            )
+        )
+    )
+    groupby_cols.append('SectorConsumedBy')
+
+    # replace ACB
+    mecs_sub['ActivityConsumedBy'] = mecs_sub['SectorConsumedBy']
+
+    mecs_sub = mecs_sub.drop(
+        columns=['group_id', *[f'_naics_{n}' for n in range(2, 7)],
+                 *[f'_unique_naics_{n}_by_group' for n in range(2, 7)]]
+    )
+    # aggregate
+    mecs_sub2 = sector_aggregation(mecs_sub)
+    mecs_sub2 = mecs_sub2[mecs_sub2['FlowAmount'] != 0].sort_values(
+        'SectorConsumedBy').reset_index(drop=True)
+
+    return mecs_sub
 
 
 def mecs_land_fba_cleanup(fba, **_):
