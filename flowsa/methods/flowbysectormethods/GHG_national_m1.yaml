@@ -40,7 +40,7 @@ _allocation_types:
       - "USD2012"
     allocation_compartment: None
     allocation_from_scale: national
-    clean_allocation_fba: !script_function:BEA subset_BEA_table
+    clean_allocation_fba: !script_function:BEA subset_and_equally_allocate_BEA_table
     # clean_parameter: # override this with dictionary like {"324110": 'ActivityProducedBy'}
 
   _make_allocation: &make_allocation
@@ -54,7 +54,7 @@ _allocation_types:
       - "USD2012"
     allocation_compartment: None
     allocation_from_scale: national
-    clean_allocation_fba: !script_function:BEA subset_BEA_table
+    clean_allocation_fba: !script_function:BEA subset_and_equally_allocate_BEA_table
     # clean_parameter: # over ride this with dictionary, like {"221100": 'ActivityConsumedBy'} # Electricity
 
   _lead_allocation: &lead_allocation
@@ -113,7 +113,7 @@ _allocation_types:
     helper_source_year: 2012
     helper_flow: ["USD2012"]
     helper_from_scale: national
-    clean_helper_fba_wsec: !script_function:BEA subset_BEA_table
+    clean_helper_fba_wsec: !script_function:BEA subset_and_equally_allocate_BEA_table
     clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
 
 source_names:
