@@ -113,7 +113,7 @@ _allocation_types:
     helper_source_year: 2012
     helper_flow: ["USD2012"]
     helper_from_scale: national
-    clean_helper_fba_wsec: !script_function:BEA subset_and_allocate_BEA_table
+    clean_helper_fba_wsec: !script_function:BEA subset_BEA_table
     clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
 
 source_names:
