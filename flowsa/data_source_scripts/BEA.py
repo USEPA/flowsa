@@ -15,7 +15,7 @@ from flowsa.location import US_FIPS
 from flowsa.common import fbs_activity_fields
 from flowsa.schema import activity_fields
 from flowsa.settings import externaldatapath
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.fbs_allocation import allocation_helper
 
 
@@ -208,42 +208,51 @@ def subset_and_equally_allocate_BEA_table(df, attr, **_):
     Temporary function to equally attribute BEA table. This function will
     be unnecessary after merge with recursive branch
     """
-
-    df = subset_BEA_table(df, attr)
+    # Necessary to run equal attribution before subsetting dataset by an
+    # activity because in some situations both the BEA ActivityConsumedBy
+    # and ActivityProducedBy values map to multiple sectors. The
+    # "subset_BEA_table()" fxn resets one of the activity columns to NaN.
+    # For example, for "Liming" in the GHG attribution model,
+    # the ActivityProducedBy 327500 maps to both 327410 and 327420 - so data
+    # is double counted, but subsetting the BEA table resets
+    # ActivityProducedBy to NaN and that double counting is lost.
 
     # equally attribute bea codes to each mapped sector
     groupby_cols = ['group_id']
-    c = 'Produced'
-    if df[f'Activity{c}By'].isnull().values.all():
-        col = 'Consumed'
-    df2 = (
-        df
-        .assign(
-            **{f'_naics_{n}': df[f'Sector{c}By'].str.slice(stop=n)
-               for n in range(2, 7)},
-            **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
-                x.groupby(groupby_cols if i == 2
-                          else [*groupby_cols, f'_naics_{i - 1}'],
-                          dropna=False)
-                [[f'_naics_{i}']]
-                .transform('nunique', dropna=False)
-            )
-               for n in range(2, 7)},
-            FlowAmount=lambda x: reduce(
-                lambda x, y: x / y,
-                [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
-                                 for n in range(2, 7)]]
+    for c in ['Produced', 'Consumed']:
+        df = (
+            df
+            .assign(
+                **{f'_naics_{n}': df[f'Sector{c}By'].str.slice(stop=n)
+                   for n in range(2, 7)},
+                **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                    x.groupby(groupby_cols if i == 2
+                              else [*groupby_cols, f'_naics_{i - 1}'],
+                              dropna=False)
+                    [[f'_naics_{i}']]
+                    .transform('nunique', dropna=False)
+                )
+                   for n in range(2, 7)},
+                FlowAmount=lambda x: reduce(
+                    lambda x, y: x / y,
+                    [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
+                                     for n in range(2, 7)]]
+                )
             )
         )
-    )
-    groupby_cols.append(f'Sector{c}By')
+        groupby_cols.append(f'Sector{c}By')
 
-    # replace ACB
-    df2[f'Activity{c}By'] = df2[f'Sector{c}By']
+        df = df.drop(
+            columns=[*[f'_naics_{n}' for n in range(2, 7)],
+                     *[f'_unique_naics_{n}_by_group' for n in range(2, 7)]]
+        )
 
-    df2 = df2.drop(
-        columns=['group_id', *[f'_naics_{n}' for n in range(2, 7)],
-                 *[f'_unique_naics_{n}_by_group' for n in range(2, 7)]]
-    )
+    df2 = subset_BEA_table(df, attr)
 
-    return df2
+    # in the cases where both activity cols mapped to multiple sectors,
+    # aggregate after resetting one of those columns to nan
+    df2 = df2.drop(columns=['group_id'])
+    aggcols = list(df2.select_dtypes(include=['object', 'int']).columns)
+    df3 = aggregator(df2, aggcols)
+
+    return df3
