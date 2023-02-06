@@ -13,7 +13,7 @@ source_names:
       !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_2_1:activity_sets
       lead:
         !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead
-        allocation_source_year: *ghgi_year
+        allocation_source_year: 2019  # latest year
   "EPA_GHGI_T_3_68": #CH4 from Natural Gas Systems
     !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_68
     year: *ghgi_year
