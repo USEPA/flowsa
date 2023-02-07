@@ -34,17 +34,17 @@ source_names:
             data_format: FBS
             year: 2015
       cropland_attribution:
+        industry_spec:
+          default: NAICS_6
+          '111150': { default: NAICS_7 }
+          '111199': { default: NAICS_7 }
+          '111940': { default: NAICS_7 }
         selection_fields:
           PrimaryActivity:
             - "Irrigation Crop"
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Cropland:
-            industry_spec:
-              default: NAICS_6
-              '111150': { default: NAICS_7 }
-              '111199': { default: NAICS_7 }
-              '111940': { default: NAICS_7 }
             year: 2017
             activity_sets:
               cropland_attribution-pastureland:
@@ -89,20 +89,20 @@ source_names:
                   PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
                                     'MUSTARD, SEED', 'RAPESEED',
                                     'SAFFLOWER', 'SESAME', 'SUNFLOWER',
-                                    'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL 
-                                    LIMA), INCL CHICKPEAS', 'BEANS, DRY 
+                                    'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL
+                                    LIMA), INCL CHICKPEAS', 'BEANS, DRY
                                     EDIBLE, (EXCL CHICKPEAS & LIMA)',
                     'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
                     'PEAS, DRY EDIBLE', 'PEAS, DRY, SOUTHERN (COWPEAS)',
                     'WHEAT', 'CORN', 'CORN, GRAIN', 'CORN, SILAGE',
                     'POPCORN, SHELLED', 'RICE', 'BARLEY', 'BUCKWHEAT',
                     'MILLET, PROSO', 'OATS', 'RYE', 'SORGHUM, GRAIN',
-                    'SORGHUM, SILAGE', 'SORGHUM, SYRUP', 'TRITICALE', 'WILD 
+                    'SORGHUM, SILAGE', 'SORGHUM, SYRUP', 'TRITICALE', 'WILD
                     RICE', 'EMMER & SPELT', 'VEGETABLE TOTALS', 'ORCHARDS',
                     'BERRY TOTALS', 'CUT CHRISTMAS TREES', 'SHORT TERM WOODY
                      CROPS', 'TOBACCO', 'COTTON', 'SUGARCANE, SUGAR',
                     'SUGARCANE, SEED', 'HAY & HAYLAGE', 'SUGARBEETS',
-                    'SUGARBEETS, SEED', 'PEANUTS', 'DILL, OIL', 'GRASSES & 
+                    'SUGARBEETS, SEED', 'PEANUTS', 'DILL, OIL', 'GRASSES &
                     LEGUMES TOTALS, SEED', 'GUAR', 'HERBS, DRY', 'HOPS',
                     'JOJOBA', 'MINT, OIL', 'MISCANTHUS', 'MINT, TEA LEAVES',
                     'SWITCHGRASS', 'FIELD CROPS, OTHER']
