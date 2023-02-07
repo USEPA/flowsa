@@ -1046,11 +1046,6 @@ class FlowByActivity(_FlowBy):
             .rename(columns={'SourceName': 'MetaSources'})
         )
 
-        if all(fba.groupby('group_id')['group_id'].agg('count') == 1):
-            log.info('No attribution needed for %s at the given industry '
-                     'aggregation level', fba.full_name)
-            return fba.drop(columns=['group_id', 'group_total'])
-
         attribution_method = fba.config.get('attribution_method')
 
         if attribution_method == 'proportional':
@@ -1061,10 +1056,12 @@ class FlowByActivity(_FlowBy):
             attribution_fbs = fba.load_prepare_attribution_source()
             attributed_fba = fba.multiplication_attribution(attribution_fbs)
 
-        # elif attribution_method == 'proportional-flagged':
-        #     attributed_fba = fba.flagged_proportionally_attribute90
-
         else:
+            if all(fba.groupby('group_id')['group_id'].agg('count') == 1):
+                log.info('No attribution needed for %s at the given industry '
+                         'aggregation level', fba.full_name)
+                return fba.drop(columns=['group_id', 'group_total'])
+
             if attribution_method is None:
                 log.warning('No attribution method specified for %s. '
                             'Using equal attribution as default.',
@@ -1616,7 +1613,7 @@ class FlowByActivity(_FlowBy):
 
     def activity_sets(self) -> List['FlowByActivity']:
         '''
-        This function breaks up an FBA datset into its activity sets, if its
+        This function breaks up an FBA dataset into its activity sets, if its
         config dictionary specifies activity sets, and returns a list of the
         resulting FBAs. Otherwise, it returns a list containing the calling
         FBA.
