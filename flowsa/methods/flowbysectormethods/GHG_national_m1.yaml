@@ -557,7 +557,7 @@ source_names:
           allocation_from_scale: national
         petroleum:
           <<: *fuel_MECS
-          names:
+          names: #Flows are from T_3_22b except where noted, as they change in T_3_22 post 2019
             - "Industry Asphalt & Road Oil"
             - "Industry Distillate Fuel Oil"
             - "Industry LPG"
@@ -565,11 +565,13 @@ source_names:
             - "Industry Miscellaneous Products"
             - "Industry Naphtha (<401 F)"
             - "Industry Other Oil (>401 F)"
-            - "Industry Pentanes Plus"
             - "Industry Petroleum Coke"
             - "Industry Special Naphtha"
             - "Industry Still Gas"
             - "Industry Waxes"
+            - "Industry Pentanes Plus"
+            - "Industry Natural Gasoline" #T_3_22. Also produced by nat gas plants
+            - "Industry HGL" #T_3_22. Also produced by nat gas plants
           allocation_source: "EIA_MECS_Energy"
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
@@ -588,7 +590,7 @@ source_names:
             - "Transportation Lubricants"
           clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
-## Other Emissions
+### Other Emissions
   "EPA_GHGI_T_4_50": # HFCs from HCFC-22 production
       data_format: 'FBA'
       class: Chemicals
