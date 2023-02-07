@@ -542,7 +542,7 @@ source_names:
           allocation_method: direct
           allocation_source: None
           allocation_from_scale: national
-  "EPA_GHGI_T_3_22b": # Fossil fuel for non-energy uses
+  "GHGI_nonenergy_fossil_fuel_emissions": # Fossil fuel for non-energy uses
       data_format: 'FBA'
       class: Chemicals
       geoscale_to_use: national
