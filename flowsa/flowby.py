@@ -1261,6 +1261,23 @@ class FlowByActivity(_FlowBy):
                 .reset_index(drop=True)
             )
 
+            # only retain the activities in the crosswalk that exist in
+            # the FBA. Necessary because the crosswalk could contain parent
+            # to child relationships that do not exist in the FBA subset and
+            # if those parent-child relationships are kept in the crosswalk,
+            # the FBA could be mapped incorrectly
+            activities_in_fba = (pd.Series(self[['ActivityProducedBy',
+                                                 'ActivityConsumedBy']]
+                                           .values.ravel('F'))
+                                 .dropna()
+                                 .drop_duplicates()
+                                 .values.tolist()
+                                 )
+            activity_to_source_naics_crosswalk = \
+                activity_to_source_naics_crosswalk[
+                    activity_to_source_naics_crosswalk['Activity'].isin(
+                        activities_in_fba)]
+
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
             if self.config['sector_hierarchy'] == 'parent-completeChild':
