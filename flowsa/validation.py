@@ -1069,7 +1069,7 @@ def compare_geographic_totals(
         sub2 = aggregator(sub, merge_cols).rename(
             columns={'FlowAmount': 'FlowAmount_sub'})
 
-        # comapare units
+        # compare units
         compare_df_units(nat, sub2)
         df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
                         sub2[merge_cols + ['FlowAmount_sub']],
