@@ -1283,12 +1283,7 @@ class FlowByActivity(_FlowBy):
             if self.config['sector_hierarchy'] == 'parent-completeChild':
                 existing_sectors = activity_to_source_naics_crosswalk[
                     ['Sector']]
-                # load master crosswalk
-                cw = common.load_crosswalk('sector_timeseries')
-                sectors = (cw[['NAICS_2012_Code']]
-                           .drop_duplicates()
-                           .dropna()
-                           )
+
                 # create list of sectors that exist in original df, which,
                 # if created when expanding sector list cannot be added
                 naics_df = pd.DataFrame([])
@@ -1298,28 +1293,15 @@ class FlowByActivity(_FlowBy):
                         existing_sectors['Sector'].apply(
                             lambda x: x[0:dig]) == i]
                     if len(n) == 1:
-                        expanded_n = sectors[
-                            sectors['NAICS_2012_Code'].apply(
-                                lambda x: x[0:dig] == i)]
-                        expanded_n = expanded_n.assign(Sector=i)
+                        expanded_n = naics_key[naics_key['source_naics'] == i]
                         naics_df = pd.concat([naics_df, expanded_n])
-
-                activity_to_source_naics_crosswalk = (
-                    activity_to_source_naics_crosswalk
-                    .merge(naics_df, how='left')
-                    .assign(Sector=lambda x: np.where(
-                        x['NAICS_2012_Code'].isna(), x['Sector'],
-                        x['NAICS_2012_Code']))
-                    .drop(columns=['NAICS_2012_Code'])
-                )
-
-                target_naics = set(
-                    naics.industry_spec_key(self.config['industry_spec'])
-                    .target_naics)
 
                 activity_to_target_naics_crosswalk = (
                     activity_to_source_naics_crosswalk
-                    .query('Sector  in @target_naics')
+                    .merge(naics_df, how='left', left_on='Sector',
+                           right_on='source_naics')
+                    .assign(Sector=lambda x: x['target_naics'])
+                    .drop(columns=['source_naics', 'target_naics'])
                 )
 
                 fba_w_naics = self
