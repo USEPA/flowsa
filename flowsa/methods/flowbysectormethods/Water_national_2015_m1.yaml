@@ -70,6 +70,7 @@ source_names:
                                         "11231", "11232", "11233", "11234",
                                         "11239", "11241", "11242", "11291",
                                         "11292", "11293", "11299"]
+                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
                     attribution_method: multiplication
                     attribution_source:
                       USDA_IWMS:
@@ -123,6 +124,7 @@ source_names:
                                         "111336", "111339", "11141",
                                         "111421", "111422", "11191", "11192",
                                         "11193", "11194", "11199"]
+                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
                     attribution_method: multiplication
                     attribution_source:
                       USDA_IWMS:
