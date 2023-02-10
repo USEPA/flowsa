@@ -308,26 +308,6 @@ source_names:
         clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
       grassland: *grassland # allocated based on USDA Animal operation land (acres)
 
-## Mobile Sources
-  # "EPA_GHGI_T_3_13": #CO2 from mobile combustion
-  #   data_format: 'FBA'
-  #   class: Chemicals
-  #   geoscale_to_use: national
-  #   year: *ghgi_year
-  #   fedefl_mapping: 'GHGI'
-  #   activity_sets:
-  #     activity_set_1:  #this set is direct
-  #       names:
-  #           - "Pipeline Natural Gas"
-  #           - "General Aviation Aircraft Aviation Gasoline"
-  #           - "General Aviation Aircraft Jet Fuel"
-  #           - "Commercial Aircraft Jet Fuel"
-  #           - "Military Aircraft Jet Fuel"
-  #           - "Ships and Non-Recreational Boats Residual Fuel Oil"
-  #       allocation_method: direct
-  #       allocation_source: None
-  #       allocation_from_scale: national
-
   "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
     data_format: 'FBA'
     class: Chemicals
