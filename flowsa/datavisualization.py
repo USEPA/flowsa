@@ -143,7 +143,7 @@ def customwrap(s, width=30):
 
 def stackedBarChart(df,
                     impact_cat=None,
-                    sectors_to_include=None,
+                    selection_fields=None,
                     target_sector_level=None,
                     target_subset_sector_level=None,
                     stacking_col='AttributionSources',
@@ -179,8 +179,9 @@ def stackedBarChart(df,
             'Allocated',
             df['AttributionSources'])
 
-    if sectors_to_include is not None:
-        df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
+    if selection_fields is not None:
+        for k, v in selection_fields.items():
+            df = df[df[k].str.startswith(tuple(v))]
 
     # agg sectors for data visualization
     if any(item is not None for item in [target_sector_level,
@@ -235,6 +236,9 @@ def stackedBarChart(df,
         sort_cols = [sector_variable, var, stacking_col]
     index_cols = index_cols + [var]
 
+    # if only single var in df, do not include in the graph on axis
+    var_count = df[var].nunique()
+
     # If 'AttributionSources' value is null, replace with 'Direct
     try:
         df['AttributionSources'] = df['AttributionSources'].fillna('Direct')
@@ -276,7 +280,10 @@ def stackedBarChart(df,
     if subplot is None:
         for r, c in zip(df2[stacking_col].unique(), df2['Color'].unique()):
             plot_df = df2[df2[stacking_col] == r]
-            y_axis_col = [plot_df[sector_variable], plot_df[var]]
+            y_axis_col = plot_df[sector_variable]
+            # if there are more than one variable category add to y-axis
+            if var_count > 1:
+                y_axis_col = [plot_df[sector_variable], plot_df[var]]
             fig.add_trace(
                 go.Bar(x=plot_df['FlowAmount'],
                        y=y_axis_col, name=r,
