@@ -434,11 +434,6 @@ def generateSankeyData(methodname,
     if sectors_to_include is not None:
         df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
 
-    # aggregate/subset to specified sectors to display
-    df = aggregate_FBS_sectors_for_datavis(df, methodname, target_sector_level,
-                                           target_subset_sector_level,
-                                           fbsconfigpath)
-
     method_dict = load_yaml_dict(methodname, flowbytype='FBS',
                                  filepath=fbsconfigpath)
 
