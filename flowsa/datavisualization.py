@@ -144,7 +144,10 @@ def customwrap(s, width=30):
 def stackedBarChart(df,
                     impact_cat=None,
                     sectors_to_include=None,
+                    target_sector_level=None,
+                    target_subset_sector_level=None,
                     stacking_col='AttributionSources',
+                    generalize_AttributionSources=False,
                     plot_title=None,
                     index_cols=None,
                     orientation='h',
@@ -165,14 +168,31 @@ def stackedBarChart(df,
         impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
     :return: stacked, group bar plot
     """
-
     # if the df provided is a string, load the fbs method, otherwise use the
     # df provided
     if (type(df)) == str:
         df = flowsa.collapse_FlowBySector(df)
 
+    if generalize_AttributionSources:
+        df['AttributionSources'] = np.where(
+            df['AttributionSources'] != 'Direct',
+            'Allocated',
+            df['AttributionSources'])
+
     if sectors_to_include is not None:
         df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
+
+    # agg sectors for data visualization
+    if any(item is not None for item in [target_sector_level,
+                                         target_subset_sector_level]):
+        sector_list = get_sector_list(
+            target_sector_level,
+            secondary_sector_level_dict=target_subset_sector_level)
+
+        # aggregate to all sector levels
+        df = sector_aggregation(df, sectors_to_exclude_from_agg=sector_list)
+        df = df[df['Sector'].isin(sector_list)]
+        df = df.reset_index(drop=True)
 
     # determine list of subplots
     try:
@@ -408,6 +428,10 @@ def generateSankeyData(methodname,
         df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
 
     # aggregate/subset to specified sectors to display
+    df = aggregate_FBS_sectors_for_datavis(df, methodname, target_sector_level,
+                                           target_subset_sector_level,
+                                           fbsconfigpath)
+
     method_dict = load_yaml_dict(methodname, flowbytype='FBS',
                                  filepath=fbsconfigpath)
 
