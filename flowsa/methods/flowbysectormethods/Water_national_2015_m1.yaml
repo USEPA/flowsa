@@ -73,11 +73,17 @@ source_names:
                     estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
                     attribution_method: multiplication
                     attribution_source:
-                      USDA_IWMS:
+                      USDA_IWMS: &usda_iwms
                         year: 2018
                         selection_fields:
                             Class: Water
-                        clean_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
+                        allocation method: proportional
+                        allocation_source:
+                          USDA_IWMS:
+                            year: 2018
+                            selection_fields:
+                              Class: Land
+                              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
               cropland_attribution-cropland:
                 selection_fields:
                   Class: "Land"
@@ -128,10 +134,7 @@ source_names:
                     attribution_method: multiplication
                     attribution_source:
                       USDA_IWMS:
-                        year: 2018
-                        selection_fields:
-                            Class: Water
-                        clean_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
+                        <<: *usda_iwms
       livestock_attribution:
         industry_spec:
           default: NAICS_6
