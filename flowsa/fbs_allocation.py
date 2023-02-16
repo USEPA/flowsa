@@ -483,6 +483,10 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         modified_fba_allocation = modified_fba_allocation.assign(
             FlowAmountRatio=modified_fba_allocation['HelperFlow'] /
                             modified_fba_allocation['Denominator'])
+        # where disagg flag is 0, ensure flowamountratio is 1
+        modified_fba_allocation['FlowAmountRatio'] = np.where(
+            modified_fba_allocation['disaggregate_flag'] == 0, 1,
+            modified_fba_allocation['FlowAmountRatio'])
         modified_fba_allocation =\
             modified_fba_allocation.assign(
                 FlowAmount=modified_fba_allocation['FlowAmount'] *
