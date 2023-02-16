@@ -167,3 +167,4 @@ source_names:
                   default: NAICS_6
                 year: 2005
                 geoscale: national
+                attribution_method: direct
