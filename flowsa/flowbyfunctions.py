@@ -232,7 +232,7 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
     if 'Sector' in df.columns:
         sector_cols = ['Sector']
 
-    if 'ActivityProducedBy' in df.columns:
+    if 'ActivityProducedBy' in df_load.columns:
         # determine if activities are sector-like, if aggregating a df with a
         # 'SourceName'
         sector_like_activities = check_activities_sector_like(df_load)
@@ -280,7 +280,7 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
         else:
             df = append_new_sectors(df, i, 1, cw_load, group_cols)
 
-    if 'ActivityProducedBy' in df.columns:
+    if 'ActivityProducedBy' in df_load.columns:
         # if activities are source-like, set col values as
         # copies of the sector columns
         if sector_like_activities & ('FlowAmount' in df.columns) & \
