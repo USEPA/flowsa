@@ -361,7 +361,10 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     :param fba: df, FBA format
     :return: df, modified FBA
     """
-
+    vLogDetailed.info('Converting Bgal/d to Mgal/d')
+    fba['FlowAmount'] = np.where(fba['Unit'] == 'Bgal/d',
+                 fba['FlowAmount'] * 1000, fba['FlowAmount'])
+    fba['Unit'] = np.where(fba['Unit'] == 'Bgal/d', 'Mgal/d', fba['Unit'])
     # drop rows of commercial data (because only exists for 3 states),
     # causes issues because linked with public supply
     # also drop closed-loop or once-through cooling (thermoelectric power)
