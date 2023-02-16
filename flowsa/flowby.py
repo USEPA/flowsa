@@ -1520,11 +1520,12 @@ class FlowByActivity(_FlowBy):
             unattributable = with_denominator.query(f'denominator == 0 ')
 
             if not unattributable.empty:
-                log.error(
+                log.warning(
                     'Could not attribute activities %s in %s due to lack of '
                     'flows in attribution source %s for mapped %s sectors %s',
                     set(zip(unattributable.ActivityProducedBy,
-                            unattributable.ActivityConsumedBy)),
+                            unattributable.ActivityConsumedBy,
+                            unattributable.Location)),
                     unattributable.full_name,
                     other.full_name,
                     rank,
