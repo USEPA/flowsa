@@ -19,7 +19,6 @@ _allocation_types:
     # allocation_source_year:  # override this
     # allocation_flow:  # override this
     #   - "Coal"
-    allocation_compartment: None
     allocation_from_scale: national
     allocation_selection_fields:
         Description:
@@ -27,10 +26,10 @@ _allocation_types:
             - "Table 3.2"  # Fuel (class Energy)
         Unit:
             - "MJ"
-    #clean_allocation_fba_w_sec: !script_function:EIA_MECS mecs_energy_equally_attribute # removing to use clean_helper instead
+    clean_allocation_fba_w_sec: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
     helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
     helper_activity_to_sector_mapping: "BEA_2012_Detail"
-    helper_method: proportional
+    helper_method: proportional-flagged
     helper_source_class: "Money"
     helper_source_year: 2012
     helper_flow:
