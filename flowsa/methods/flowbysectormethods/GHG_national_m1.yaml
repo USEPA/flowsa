@@ -425,7 +425,7 @@ source_names:
         allocation_flow:
             - "Residual Fuel Oil"
             - "Distillate Fuel Oil"
-            - "HGL (excluding natural gasoline)"
+            - "Hydrocarbon Gas Liquids, excluding natural gasoline"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
     ### Transportation
       ng_transport: &transport_direct
@@ -543,7 +543,7 @@ source_names:
         allocation_flow:
             - "Residual Fuel Oil"
             - "Distillate Fuel Oil"
-            - "HGL (excluding natural gasoline)"
+            - "Hydrocarbon Gas Liquids, excluding natural gasoline"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
     #Intentionally left out 'Wood Commercial' and 'Wood Industrial'
@@ -604,7 +604,7 @@ source_names:
           allocation_flow:
             - "Residual Fuel Oil"
             - "Distillate Fuel Oil"
-            - "HGL (excluding natural gasoline)"
+            - "Hydrocarbon Gas Liquids, excluding natural gasoline"
           clean_parameter: {"324110": 'ActivityProducedBy'} # use purchases of petroleum refineries
         natural_gas: # consumed nat gas to chemical plants
           <<: *fuel_MECS

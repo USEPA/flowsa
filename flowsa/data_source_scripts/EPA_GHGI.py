@@ -710,7 +710,7 @@ def get_manufacturing_energy_ratios(parameter_dict):
                  'Total Petroleum': (
                      'Petroleum', ['Residual Fuel Oil',
                                    'Distillate Fuel Oil',
-                                   'HGL (excluding natural gasoline)',
+                                   'Hydrocarbon Gas Liquids, excluding natural gasoline',
                                    ])
                  }
     mecs_year = parameter_dict.get('year')
@@ -734,16 +734,16 @@ def get_manufacturing_energy_ratios(parameter_dict):
     pct_dict = {}
     for ghgi_flow, v in flow_corr.items():
         if type(v) is tuple:
-            mecs_flow = v[0]
+            label = v[0]
             mecs_flows = v[1]
         else:
-            mecs_flow = v
+            label = v
             mecs_flows = [v]
         # Calculate percent energy contribution from MECS based on v
-        mecs_energy = mecs.loc[mecs['FlowName'].isin(mecs_flows), 'FlowAmount'].values[0]
+        mecs_energy = sum(mecs.loc[mecs['FlowName'].isin(mecs_flows), 'FlowAmount'].values)
         ghgi_energy = ghgi.loc[ghgi['FlowName'] == ghgi_flow, 'FlowAmount'].values[0]
         pct = np.minimum(mecs_energy / ghgi_energy, 1)
-        pct_dict[mecs_flow] = pct
+        pct_dict[label] = pct
 
     return pct_dict
 
