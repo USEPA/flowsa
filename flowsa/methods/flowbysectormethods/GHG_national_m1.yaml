@@ -364,28 +364,32 @@ source_names:
 #  "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
 #
 ### Major CO2 Sources
-#  "GHGI_CO2_stationary_combustion_and_transport": # CO2 emissions from stationary combustion and transportation
-#    data_format: 'FBA'
-#    class: Chemicals
-#    geoscale_to_use: national
-#    #year: # override this
-#    clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
-#    fedefl_mapping: 'GHGI'
-#    activity_sets:
+  "GHGI_CO2_stationary_combustion_and_transport": # CO2 emissions from stationary combustion and transportation
+    data_format: 'FBA'
+    class: Chemicals
+    geoscale_to_use: national
+    #year: # override this
+    clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
+    fedefl_mapping: 'GHGI'
+    activity_sets:
 #      direct:
 #        names:
 #            - "Total (All Fuels) Residential"
 #        allocation_method: direct
 #        allocation_source: None
 #        allocation_from_scale: national
-#      coal:
-#        <<: *use_allocation
-#        names:
-#            - "Commercial Coal Commercial"
-#            - "Industrial Other Coal Industrial"
-#        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
+      coal:
+        <<: *fuel_MECS
+        names:
+            - "Commercial Coal Commercial"
+            - "Industrial Other Coal Industrial"
+        allocation_source_class: "Energy" # nonfuel consumption
+        allocation_flow:
+          - "Coal"
+          - "Coke and Breeze"
+        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
 #      natural_gas:
-#        <<: *use_allocation
+#        <<: *fuel_MECS
 #        names:
 #            - "Natural Gas Commercial"
 #            - "Natural Gas Industrial"
@@ -507,12 +511,12 @@ source_names:
 #            - "Natural Gas Industrial - Manufacturing"
 #        allocation_flow:
 #            - "Natural Gas"
-#
-#    ##Intentionally left out 'Wood Commercial' and 'Wood Industrial'
-#
+
+    ##Intentionally left out 'Wood Commercial' and 'Wood Industrial'
+
 #  "EPA_GHGI_T_3_9":
 #      <<: *stationary_combustion # N2O emissions from stationary combustion
-#
+
 ### Other sources
 #  "EPA_GHGI_T_4_46": #CO2 for selected petrochemicals
 #      data_format: 'FBA'
@@ -532,51 +536,51 @@ source_names:
 #          allocation_method: direct
 #          allocation_source: None
 #          allocation_from_scale: national
-  "GHGI_nonenergy_fossil_fuel_emissions": # Fossil fuel for non-energy uses
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      #year: #override with ghgi_year
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        coal:
-          names:
-            - "Industry Industrial Coking Coal"
-            - "Industry Industrial Other Coal"
-          allocation_method: direct
-          allocation_from_scale: national
-        petroleum:
-          <<: *fuel_MECS
-          names: #Flows are from T_3_22b except where noted, as they change in T_3_22 post 2019
-            - "Industry Asphalt & Road Oil"
-            - "Industry Distillate Fuel Oil"
-            - "Industry LPG"
-            - "Industry Lubricants"
-            - "Industry Miscellaneous Products"
-            - "Industry Naphtha (<401 F)"
-            - "Industry Other Oil (>401 F)"
-            - "Industry Petroleum Coke"
-            - "Industry Special Naphtha"
-            - "Industry Still Gas"
-            - "Industry Waxes"
-            - "Industry Pentanes Plus"
-            - "Industry Natural Gasoline" #T_3_22. Also produced by nat gas plants
-            - "Industry HGL" #T_3_22. Also produced by nat gas plants
-          allocation_source_class: "Other" # nonfuel consumption
-          allocation_flow:
-            - "Other" # consistent with original, but other flows may be better
-        natural_gas: # consumed nat gas to chemical plants
-          <<: *fuel_MECS
-          names:
-            - "Industry Natural Gas to Chemical Plants"
-          allocation_source_class: "Other" # nonfuel consumption
-          allocation_flow:
-            - "Natural Gas"
-        transport_lubricants:
-          <<: *use_allocation
-          names:
-            - "Transportation Lubricants"
-          clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
+#  "GHGI_nonenergy_fossil_fuel_emissions": # Fossil fuel for non-energy uses
+#      data_format: 'FBA'
+#      class: Chemicals
+#      geoscale_to_use: national
+#      #year: #override with ghgi_year
+#      fedefl_mapping: 'GHGI'
+#      activity_sets:
+#        coal:
+#          names:
+#            - "Industry Industrial Coking Coal"
+#            - "Industry Industrial Other Coal"
+#          allocation_method: direct
+#          allocation_from_scale: national
+#        petroleum:
+#          <<: *fuel_MECS
+#          names: #Flows are from T_3_22b except where noted, as they change in T_3_22 post 2019
+#            - "Industry Asphalt & Road Oil"
+#            - "Industry Distillate Fuel Oil"
+#            - "Industry LPG"
+#            - "Industry Lubricants"
+#            - "Industry Miscellaneous Products"
+#            - "Industry Naphtha (<401 F)"
+#            - "Industry Other Oil (>401 F)"
+#            - "Industry Petroleum Coke"
+#            - "Industry Special Naphtha"
+#            - "Industry Still Gas"
+#            - "Industry Waxes"
+#            - "Industry Pentanes Plus"
+#            - "Industry Natural Gasoline" #T_3_22. Also produced by nat gas plants
+#            - "Industry HGL" #T_3_22. Also produced by nat gas plants
+#          allocation_source_class: "Other" # nonfuel consumption
+#          allocation_flow:
+#            - "Other" # consistent with original, but other flows may be better
+#        natural_gas: # consumed nat gas to chemical plants
+#          <<: *fuel_MECS
+#          names:
+#            - "Industry Natural Gas to Chemical Plants"
+#          allocation_source_class: "Other" # nonfuel consumption
+#          allocation_flow:
+#            - "Natural Gas"
+#        transport_lubricants:
+#          <<: *use_allocation
+#          names:
+#            - "Transportation Lubricants"
+#          clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
 ### Other Emissions
 #  "EPA_GHGI_T_4_50": # HFCs from HCFC-22 production
