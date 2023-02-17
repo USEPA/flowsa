@@ -107,9 +107,6 @@ source_names:
       natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:natural_gas_manufacturing
         allocation_source_year: *mecs_year
-      petroleum_manufacturing:
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:petroleum_manufacturing
-        allocation_source_year: *mecs_year
     ### Transportation
       ng_transport: &transport_direct
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:ng_transport
@@ -145,9 +142,6 @@ source_names:
       ng_manufacturing:
         !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:ng_manufacturing
         allocation_source_year: *mecs_year
-      fuel_oil_manufacturing:
-        !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:fuel_oil_manufacturing
-        allocation_source_year: *mecs_year
 
   "EPA_GHGI_T_3_9": # N2O emissions from stationary combustion
     !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9
@@ -160,7 +154,4 @@ source_names:
         allocation_source_year: *mecs_year
       ng_manufacturing:
         !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:ng_manufacturing
-        allocation_source_year: *mecs_year
-      fuel_oil_manufacturing:
-        !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:fuel_oil_manufacturing
         allocation_source_year: *mecs_year

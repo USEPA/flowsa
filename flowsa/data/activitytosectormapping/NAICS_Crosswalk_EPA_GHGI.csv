@@ -247,9 +247,9 @@ EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_
 EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,2212,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Fuel Oil Industrial - Manufacturing,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Fuel Oil Industrial - Manufacturing,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
-EPA_GHGI,Fuel Oil Industrial - Manufacturing,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Natural gas Industrial,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Natural gas Industrial,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
 EPA_GHGI,Natural gas Industrial,NAICS_2012_Code,2212,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
@@ -391,13 +391,13 @@ EPA_GHGI,Natural Gas Industrial,NAICS_2012_Code,23,,,EPA_GHGI_T_A_14
 EPA_GHGI,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,31,,"31, 32, 33",EPA_GHGI_T_A_14
 EPA_GHGI,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,32,,,EPA_GHGI_T_A_14
 EPA_GHGI,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,33,,,EPA_GHGI_T_A_14
-EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,11,,"11, 21, 2212, 23",EPA_GHGI_T_A_14
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,11,,"11, 21, 2212, 23, 31, 32, 33",EPA_GHGI_T_A_14
 EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,21,,,EPA_GHGI_T_A_14
 EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,2212,,,EPA_GHGI_T_A_14
 EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,23,,,EPA_GHGI_T_A_14
-EPA_GHGI,Total Petroleum Industrial - Manufacturing,NAICS_2012_Code,31,,"31, 32, 33",EPA_GHGI_T_A_14
-EPA_GHGI,Total Petroleum Industrial - Manufacturing,NAICS_2012_Code,32,,,EPA_GHGI_T_A_14
-EPA_GHGI,Total Petroleum Industrial - Manufacturing,NAICS_2012_Code,33,,,EPA_GHGI_T_A_14
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,31,,,EPA_GHGI_T_A_14
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,32,,,EPA_GHGI_T_A_14
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,33,,,EPA_GHGI_T_A_14
 EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,2213,,"2213, 42, 44, 45, 493, 5, 6, 7, 8, S00102, GSLGE, GSLGH",EPA_GHGI_T_A_14
 EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,42,,,EPA_GHGI_T_A_14
 EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,44,,,EPA_GHGI_T_A_14

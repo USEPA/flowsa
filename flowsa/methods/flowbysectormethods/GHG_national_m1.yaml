@@ -394,7 +394,7 @@ source_names:
             - "Natural Gas Commercial"
             - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      petroleum_nonmanufacturing:
+      petroleum:
         <<: *use_allocation
         names:
             - "Total Petroleum Commercial"
@@ -417,16 +417,6 @@ source_names:
         allocation_flow:
             - "Natural Gas"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      petroleum_manufacturing:
-        <<: *fuel_MECS
-        names:
-            - "Total Petroleum Industrial - Manufacturing"
-        allocation_source_class: "Energy" # fuel consumption
-        allocation_flow:
-            - "Residual Fuel Oil"
-            - "Distillate Fuel Oil"
-            - "Hydrocarbon Gas Liquids, excluding natural gasoline"
-        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
     ### Transportation
       ng_transport: &transport_direct
         names:
@@ -501,7 +491,7 @@ source_names:
             - "Fuel Oil Electric Power"
             - "Wood Electric Power"
         clean_parameter: {"221100": 'ActivityConsumedBy'} # Electricity
-      fuel_oil_nonmanufacturing:
+      fuel_oil:
         <<: *use_allocation
         names:
             - "Fuel Oil Commercial"
@@ -534,17 +524,6 @@ source_names:
         allocation_flow:
             - "Natural Gas"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      fuel_oil_manufacturing: # Industrial Petroleum fuels
-        <<: *fuel_MECS
-        # While this is labeled as Fuel Oil - it aligns with Total Petroleum Fuels
-        names:
-            - "Fuel Oil Industrial - Manufacturing"
-        allocation_source_class: "Energy" # fuel consumption
-        allocation_flow:
-            - "Residual Fuel Oil"
-            - "Distillate Fuel Oil"
-            - "Hydrocarbon Gas Liquids, excluding natural gasoline"
-        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
     #Intentionally left out 'Wood Commercial' and 'Wood Industrial'
 

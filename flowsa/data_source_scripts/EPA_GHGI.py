@@ -707,11 +707,11 @@ def get_manufacturing_energy_ratios(parameter_dict):
     # flow correspondence between GHGI and MECS
     flow_corr = {'Industrial Other Coal': 'Coal',
                  'Natural Gas': 'Natural Gas',
-                 'Total Petroleum': (
-                     'Petroleum', ['Residual Fuel Oil',
-                                   'Distillate Fuel Oil',
-                                   'Hydrocarbon Gas Liquids, excluding natural gasoline',
-                                   ])
+                 # 'Total Petroleum': (
+                 #     'Petroleum', ['Residual Fuel Oil',
+                 #                   'Distillate Fuel Oil',
+                 #                   'Hydrocarbon Gas Liquids, excluding natural gasoline',
+                 #                   ])
                  }
     mecs_year = parameter_dict.get('year')
 
@@ -762,8 +762,8 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
                            'Natural Gas Industrial': 'Natural Gas',
                            'Coal Industrial': 'Coal',
-                           'Total Petroleum Industrial': 'Petroleum',
-                           'Fuel Oil Industrial': 'Petroleum',
+                           # 'Total Petroleum Industrial': 'Petroleum',
+                           # 'Fuel Oil Industrial': 'Petroleum',
                            }
 
     for activity, fuel in activities_to_split.items():
