@@ -702,23 +702,17 @@ def ghg_parse(*, df_list, year, config, **_):
     return cleaned_list
 
 
-def get_manufacturing_energy_ratios(year):
+def get_manufacturing_energy_ratios(parameter_dict):
     """Calculate energy ratio by fuel between GHGI and EIA MECS."""
     # flow correspondence between GHGI and MECS
     flow_corr = {'Industrial Other Coal': 'Coal',
                  'Natural Gas': 'Natural Gas',
                  }
 
-    def closest_value(input_list, input_value):
-        difference = lambda input_list : abs(input_list - input_value)
-        return min(input_list, key=difference)
-
-    mecs_year = closest_value(load_yaml_dict('EIA_MECS_Energy',
-                                             flowbytype='FBA').get('years'),
-                              year)
+    mecs_year = parameter_dict.get('year')
 
     # Filter MECS for total national energy consumption for manufacturing sectors
-    mecs = load_fba_w_standardized_units(datasource='EIA_MECS_Energy',
+    mecs = load_fba_w_standardized_units(datasource=parameter_dict.get('energy_fba'),
                                          year=mecs_year,
                                          flowclass='Energy')
     mecs = (mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
@@ -727,18 +721,7 @@ def get_manufacturing_energy_ratios(year):
             .reset_index(drop=True))
     mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
 
-    # Identify the GHGI table that matches EIA_MECS
-    for t, v in (load_yaml_dict('EPA_GHGI', 'FBA')
-                 .get('Annex').get('Annex 2').items()):
-        if ((v.get('class') == 'Energy')
-        & ('Energy Consumption Data' in v.get('desc'))
-        & (v.get('year') == str(mecs_year))):
-                table = f"EPA_GHGI_T_{t.replace('-', '_')}"
-                break
-    else:
-        log.error('unable to identify corresponding GHGI table')
-
-    ghgi = load_fba_w_standardized_units(datasource=table,
+    ghgi = load_fba_w_standardized_units(datasource=parameter_dict.get('ghg_fba'),
                                          year=mecs_year,
                                          flowclass='Energy')
     ghgi = ghgi[ghgi['ActivityConsumedBy']=='Industrial'].reset_index(drop=True)
@@ -762,7 +745,7 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
-    pct_dict = get_manufacturing_energy_ratios(source_dict.get('year'))
+    pct_dict = get_manufacturing_energy_ratios(source_dict['clean_parameter'])
 
     # activities reflect flows in A_14 and 3_8 and 3_9
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',

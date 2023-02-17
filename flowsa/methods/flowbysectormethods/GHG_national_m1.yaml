@@ -370,6 +370,10 @@ source_names:
     geoscale_to_use: national
     #year: # override this
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
+    # clean_parameter: # Override each year for use in allocate_industrial_combustion
+    #     energy_fba: 'EIA_MECS_Energy'
+    #     year: 2018
+    #     ghg_fba: 'EPA_GHGI_T_A_7' # 2018 Table
     fedefl_mapping: 'GHGI'
     activity_sets:
 #      direct:
