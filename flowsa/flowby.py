@@ -454,10 +454,16 @@ class _FlowBy(pd.DataFrame):
 
         filtered_fb = self
         for field, values in special_fields.items():
-            filtered_fb = filtered_fb.query(f'{field}ProducedBy in @values '
-                                            f'| {field}ConsumedBy in @values')
+            check_values = ([*values.keys(), *values.values()]
+                            if isinstance(values, dict) else values)
+            filtered_fb = filtered_fb.query(
+                f'{field}ProducedBy in @check_values '
+                f'| {field}ConsumedBy in @check_values'
+            )
         for field, values in other_fields.items():
-            filtered_fb = filtered_fb.query(f'{field} in @values')
+            check_values = ([*values.keys(), *values.values()]
+                            if isinstance(values, dict) else values)
+            filtered_fb = filtered_fb.query(f'{field} in @check_values')
 
         if filtered_fb.empty:
             log.warning('%s FBA is empty', filtered_fb.full_name)
@@ -1544,17 +1550,6 @@ class FlowByActivity(_FlowBy):
                 .select_by_fields(
                     selection_fields=activity_config['selection_fields'])
             )
-
-            for field, values in activity_config['selection_fields'].items():
-                if isinstance(values, dict):
-                    activity_config['selection_fields'][field] = list(set(
-                        values.values()
-                    ))
-                # ^^^ This makes it so that if the activity set's
-                #     selection_fields are a dict (implying renaming of the
-                #     given values), then the selection that happens during
-                #     prepare_fbs on the activity set selects by the renamed
-                #     values rather than the original ones.
 
             child_fba.config = {**parent_config, **activity_config}
             child_fba = child_fba.assign(SourceName=child_fba.full_name)
