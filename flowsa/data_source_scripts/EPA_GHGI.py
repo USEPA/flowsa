@@ -707,8 +707,12 @@ def get_manufacturing_energy_ratios(parameter_dict):
     # flow correspondence between GHGI and MECS
     flow_corr = {'Industrial Other Coal': 'Coal',
                  'Natural Gas': 'Natural Gas',
+                 'Total Petroleum': (
+                     'Petroleum', ['Residual Fuel Oil',
+                                   'Distillate Fuel Oil',
+                                   'HGL (excluding natural gasoline)',
+                                   ])
                  }
-
     mecs_year = parameter_dict.get('year')
 
     # Filter MECS for total national energy consumption for manufacturing sectors
@@ -721,15 +725,22 @@ def get_manufacturing_energy_ratios(parameter_dict):
             .reset_index(drop=True))
     mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
 
+    # Load energy consumption data by fuel from GHGI
     ghgi = load_fba_w_standardized_units(datasource=parameter_dict.get('ghg_fba'),
                                          year=mecs_year,
                                          flowclass='Energy')
     ghgi = ghgi[ghgi['ActivityConsumedBy']=='Industrial'].reset_index(drop=True)
 
     pct_dict = {}
-    for ghgi_flow, mecs_flow in flow_corr.items():
+    for ghgi_flow, v in flow_corr.items():
+        if type(v) is tuple:
+            mecs_flow = v[0]
+            mecs_flows = v[1]
+        else:
+            mecs_flow = v
+            mecs_flows = [v]
         # Calculate percent energy contribution from MECS based on v
-        mecs_energy = mecs.loc[mecs['FlowName'] == mecs_flow, 'FlowAmount'].values[0]
+        mecs_energy = mecs.loc[mecs['FlowName'].isin(mecs_flows), 'FlowAmount'].values[0]
         ghgi_energy = ghgi.loc[ghgi['FlowName'] == ghgi_flow, 'FlowAmount'].values[0]
         pct = np.minimum(mecs_energy / ghgi_energy, 1)
         pct_dict[mecs_flow] = pct
@@ -751,6 +762,8 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
                            'Natural Gas Industrial': 'Natural Gas',
                            'Coal Industrial': 'Coal',
+                           'Total Petroleum Industrial': 'Petroleum',
+                           'Fuel Oil Industrial': 'Petroleum',
                            }
 
     for activity, fuel in activities_to_split.items():

@@ -382,19 +382,19 @@ source_names:
         allocation_method: direct
         allocation_source: None
         allocation_from_scale: national
-      coal:
-        <<: *use_allocation
+      coal_nonmanufacturing:
+        <<: *use_allocation # Applies to non-manufacturing sectors like ag and mining
         names:
             - "Commercial Coal Commercial"
             - "Industrial Other Coal Industrial"
         clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
-      natural_gas:
-        <<: *fuel_MECS
+      natural_gas_nonmanufacturing:
+        <<: *use_allocation  # Applies to non-manufacturing sectors like ag and mining
         names:
             - "Natural Gas Commercial"
             - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      petroleum:
+      petroleum_nonmanufacturing:
         <<: *use_allocation
         names:
             - "Total Petroleum Commercial"
@@ -413,8 +413,20 @@ source_names:
         <<: *fuel_MECS
         names:
             - "Natural Gas Industrial - Manufacturing"
+        allocation_source_class: "Energy" # fuel consumption
         allocation_flow:
             - "Natural Gas"
+        clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
+      petroleum_manufacturing:
+        <<: *fuel_MECS
+        names:
+            - "Total Petroleum Industrial - Manufacturing"
+        allocation_source_class: "Energy" # fuel consumption
+        allocation_flow:
+            - "Residual Fuel Oil"
+            - "Distillate Fuel Oil"
+            - "HGL (excluding natural gasoline)"
+        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
     ### Transportation
       ng_transport: &transport_direct
         names:
@@ -451,7 +463,7 @@ source_names:
         <<: *transport_energy_use_allocation
         names:
             - "Distillate Fuel Oil Transportation"
-        #allocation_source_year: # override with ghgi_year
+        # allocation_source_year: # override with ghgi_year
         allocation_flow: ['Distillate Fuel Oil']
       gasoline_transport:
         <<: *transport_energy_use_allocation
@@ -466,6 +478,10 @@ source_names:
     geoscale_to_use: national
     # year: #override this with ghgi_year
     clean_fba_df_fxn: !script_function:EPA_GHGI allocate_industrial_combustion
+    # clean_parameter: # Override each year for use in allocate_industrial_combustion
+    #     energy_fba: 'EIA_MECS_Energy'
+    #     year: 2018
+    #     ghg_fba: 'EPA_GHGI_T_A_7' # 2018 Table
     fedefl_mapping: 'GHGI'
     activity_sets:
       residential:
@@ -485,19 +501,19 @@ source_names:
             - "Fuel Oil Electric Power"
             - "Wood Electric Power"
         clean_parameter: {"221100": 'ActivityConsumedBy'} # Electricity
-      fuel_oil:
+      fuel_oil_nonmanufacturing:
         <<: *use_allocation
         names:
             - "Fuel Oil Commercial"
             - "Fuel Oil Industrial"
         clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
-      natural_gas: # Commercial Natural gas
+      natural_gas_nonmanufacturing: # Commercial Natural gas
         <<: *use_allocation
         names:
             - "Natural Gas Commercial"
             - "Natural Gas Industrial"
         clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-      coal:
+      coal_nonmanufacturing:
         <<: *use_allocation
         names:
             - "Coal Industrial"
@@ -506,14 +522,29 @@ source_names:
         <<: *fuel_MECS
         names:
             - "Coal Industrial - Manufacturing"
+        allocation_source_class: "Energy" # fuel consumption
         allocation_flow:
             - "Coal"
+        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
       ng_manufacturing: # Industrial
         <<: *fuel_MECS
         names:
             - "Natural Gas Industrial - Manufacturing"
+        allocation_source_class: "Energy" # fuel consumption
         allocation_flow:
             - "Natural Gas"
+        clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
+      fuel_oil_manufacturing: # Industrial Petroleum fuels
+        <<: *fuel_MECS
+        # While this is labeled as Fuel Oil - it aligns with Total Petroleum Fuels
+        names:
+            - "Fuel Oil Industrial - Manufacturing"
+        allocation_source_class: "Energy" # fuel consumption
+        allocation_flow:
+            - "Residual Fuel Oil"
+            - "Distillate Fuel Oil"
+            - "HGL (excluding natural gasoline)"
+        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
     #Intentionally left out 'Wood Commercial' and 'Wood Industrial'
 
@@ -571,7 +602,10 @@ source_names:
             - "Industry HGL" #T_3_22. Also produced by nat gas plants
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
-            - "Other" # consistent with original, but other flows may be better
+            - "Residual Fuel Oil"
+            - "Distillate Fuel Oil"
+            - "HGL (excluding natural gasoline)"
+          clean_parameter: {"324110": 'ActivityProducedBy'} # use purchases of petroleum refineries
         natural_gas: # consumed nat gas to chemical plants
           <<: *fuel_MECS
           names:
@@ -579,6 +613,7 @@ source_names:
           allocation_source_class: "Other" # nonfuel consumption
           allocation_flow:
             - "Natural Gas"
+          clean_parameter: {"221200": 'ActivityProducedBy'} #use purchases of natural gas distribution
         transport_lubricants:
           <<: *use_allocation
           names:
