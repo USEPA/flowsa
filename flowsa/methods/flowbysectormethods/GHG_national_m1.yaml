@@ -378,16 +378,12 @@ source_names:
 #        allocation_method: direct
 #        allocation_source: None
 #        allocation_from_scale: national
-      coal:
-        <<: *fuel_MECS
-        names:
-            - "Commercial Coal Commercial"
-            - "Industrial Other Coal Industrial"
-        allocation_source_class: "Energy" # nonfuel consumption
-        allocation_flow:
-          - "Coal"
-          - "Coke and Breeze"
-        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
+#      coal:
+#        <<: *use_allocation
+#        names:
+#            - "Commercial Coal Commercial"
+#            - "Industrial Other Coal Industrial"
+#        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
 #      natural_gas:
 #        <<: *fuel_MECS
 #        names:
@@ -400,12 +396,15 @@ source_names:
 #            - "Total Petroleum Commercial"
 #            - "Total Petroleum Industrial"
 #        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
-#      coal_manufacturing:
-#        <<: *fuel_MECS
-#        names:
-#            - "Industrial Other Coal Industrial - Manufacturing"
-#        allocation_flow:
-#            - "Coal"
+      coal_manufacturing:
+        <<: *fuel_MECS
+        names:
+            - "Industrial Other Coal Industrial - Manufacturing"
+        allocation_source_class: "Energy" # fuel consumption
+        allocation_flow:
+          - "Coal"
+          - "Coke and Breeze"
+        clean_parameter: {"212100": 'ActivityProducedBy'} # purchases of coal
 #      natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
 #        <<: *fuel_MECS
 #        names:

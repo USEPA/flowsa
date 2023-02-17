@@ -96,13 +96,12 @@ source_names:
     year: *ghgi_year
     activity_sets: # Update EIA_MECS year for some activity_sets
       !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets
-      coal:
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:coal
-        allocation_source_year: *mecs_year
-#      coal_manufacturing:
-#        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:coal_manufacturing
+#      coal:
+#        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:coal
 #        allocation_source_year: *mecs_year
-#        helper_source_year: *mecs_year
+      coal_manufacturing:
+        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:coal_manufacturing
+        allocation_source_year: *mecs_year
 #      natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
 #        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:natural_gas_manufacturing
 #        allocation_source_year: *mecs_year
