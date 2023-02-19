@@ -357,6 +357,7 @@ EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,491,,,EPA_GHGI_T_A_1
 EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,492,,,EPA_GHGI_T_A_14
 EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,92,,,EPA_GHGI_T_A_14
 EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,F01000,,,EPA_GHGI_T_A_14
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,S00201,,,EPA_GHGI_T_A_14
 EPA_GHGI,Jet Fuel Transportation,NAICS_2012_Code,48,,,EPA_GHGI_T_A_14
 EPA_GHGI,Jet Fuel Transportation,NAICS_2012_Code,491,,,EPA_GHGI_T_A_14
 EPA_GHGI,Jet Fuel Transportation,NAICS_2012_Code,492,,,EPA_GHGI_T_A_14
@@ -540,10 +541,10 @@ EPA_GHGI,Comfort Cooling for Trains and Buses - School and Tour Buses,NAICS_2012
 EPA_GHGI,Refrigerated Transport - Ships and Boats,NAICS_2012_Code,483,,483000,EPA_GHGI_T_A_103
 EPA_GHGI,Comfort Cooling for Trains and Buses - Transit Buses,,,,excluded,EPA_GHGI_T_A_103
 EPA_GHGI,Buses,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_79
-EPA_GHGI,Buses - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_79
-EPA_GHGI,Buses - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,487,,48A000,EPA_GHGI_T_A_79
-EPA_GHGI,Buses - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,488,,,EPA_GHGI_T_A_79
-EPA_GHGI,Buses - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,S00201,,S00201,EPA_GHGI_T_A_79
+EPA_GHGI,Buses - Distillate Fuel Oil,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_79
+EPA_GHGI,Buses - Distillate Fuel Oil,NAICS_2012_Code,487,,48A000,EPA_GHGI_T_A_79
+EPA_GHGI,Buses - Distillate Fuel Oil,NAICS_2012_Code,488,,,EPA_GHGI_T_A_79
+EPA_GHGI,Buses - Distillate Fuel Oil,NAICS_2012_Code,S00201,,S00201,EPA_GHGI_T_A_79
 EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,481,,481000,EPA_GHGI_T_A_79
 EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,481,,481000,EPA_GHGI_T_A_79
 EPA_GHGI,Military Aircraft,NAICS_2012_Code,928110,,S00500,EPA_GHGI_T_A_79
@@ -555,10 +556,10 @@ EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79
 EPA_GHGI,Light-Duty Trucks - Gasoline,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79
 EPA_GHGI,Light-Duty Trucks - Gasoline,NAICS_2012_Code,492,,492000,EPA_GHGI_T_A_79
 EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,92212,,S00203,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,92214,,,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil (Diesel Fuel),NAICS_2012_Code,92216,,,EPA_GHGI_T_A_79
+EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil,NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_79
+EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil,NAICS_2012_Code,92212,,S00203,EPA_GHGI_T_A_79
+EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil,NAICS_2012_Code,92214,,,EPA_GHGI_T_A_79
+EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil,NAICS_2012_Code,92216,,,EPA_GHGI_T_A_79
 EPA_GHGI,Motorcycles,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79
 EPA_GHGI,Passenger Cars,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79
 EPA_GHGI,Passenger Cars - Gasoline,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79

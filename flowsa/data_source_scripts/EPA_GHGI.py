@@ -891,7 +891,7 @@ def adjust_transport_activities(df, **_):
     clean_allocation_fba used in EPA_GHGI_T_A_14"""
     activities = {'Gasoline': ['Light-Duty Trucks',
                                'Passenger Cars'],
-                  'Distillate Fuel Oil (Diesel Fuel)':
+                  'Distillate Fuel Oil':
                       ['Medium- and Heavy-Duty Trucks',
                        'Buses'],
                  }

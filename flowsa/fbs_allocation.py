@@ -417,15 +417,17 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         # load bea codes that sub for naics
         bea = return_bea_codes_used_as_naics()
         # replace sector column and helperflow value if the sector column to
-        # merge is in the bea list to prevent dropped data
-        modified_fba_allocation['Sector'] = \
-            np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
-                     modified_fba_allocation[sector_col_to_merge],
-                     modified_fba_allocation['Sector'])
-        modified_fba_allocation['HelperFlow'] = \
-            np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
-                     modified_fba_allocation['FlowAmount'],
-                     modified_fba_allocation['HelperFlow'])
+        # merge is in the bea list to prevent dropped data,
+        # unless these bea codes already are in the helper dataframe, then skip
+        if not modified_fba_allocation['Sector'].isin(bea).any():
+            modified_fba_allocation['Sector'] = \
+                np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
+                         modified_fba_allocation[sector_col_to_merge],
+                         modified_fba_allocation['Sector'])
+            modified_fba_allocation['HelperFlow'] = \
+                np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
+                         modified_fba_allocation['FlowAmount'],
+                         modified_fba_allocation['HelperFlow'])
 
     # modify flow amounts using helper data
     if 'multiplication' in attr['helper_method']:
