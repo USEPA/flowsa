@@ -622,7 +622,7 @@ def mecs_energy_equally_attribute(
     mecs_sub2 = mecs_sub2[mecs_sub2['FlowAmount'] != 0].sort_values(
         'SectorConsumedBy').reset_index(drop=True)
 
-    return mecs_sub
+    return mecs_sub2
 
 
 def mecs_land_fba_cleanup(fba, **_):
