@@ -630,7 +630,29 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       # year: # override with ghgi_year
-      clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI clean_HFC_fba # removes HFCs from transportation
+      # This table is preprocessed across several steps in this clean fxn
+      clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI clean_HFC_fba
+      clean_parameter:
+          transport_fba: 'EPA_GHGI_T_A_97' # removes HFCs from transportation
+          # 1) These transport activities are removed from ods_activity before attributing
+          # and later pulled from a separate table
+          transport_activities:
+            - 'Mobile AC'
+            - 'Comfort Cooling for Trains and Buses'
+            - 'Refrigerated Transport'
+          ods_activity: 'Refrigeration/Air Conditioning'
+          # 2) A portion of refrigeration emissions are split and direclty
+          # attributed to households based on make table
+          make_fba: 'BEA_Make_Detail_BeforeRedef'
+          make_year: 2012
+          household_make: '335222' # Household refrigerator and home freezer
+          industry_make: '333415' # Air conditioning, refrigeration manufacturing
+          # 3) Foam emissions are split based on make table and allocated separately
+          foam_activity: 'Foams'
+          polystyrene_make: '326140' # Polystyrene foam
+          urethane_make: '326150' # Urethane and other foam
+          # 4) Proportions of specific HFCs are assigned based on national total
+          flow_fba: 'EPA_GHGI_T_4_100'
       fedefl_mapping: 'GHGI'
       activity_sets:
         households:
@@ -659,6 +681,8 @@ source_names:
       geoscale_to_use: national
       # year: # override with ghgi_year
       clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI split_HFCs_by_type
+      clean_parameter:
+          flow_fba: 'EPA_GHGI_T_4_100'
       fedefl_mapping: 'GHGI'
       activity_sets:
         direct:

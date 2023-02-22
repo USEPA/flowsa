@@ -779,10 +779,11 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     return fba
 
 
-def split_HFCs_by_type(fba, **_):
+def split_HFCs_by_type(fba, source_dict, **_):
     """Speciates HFCs and PFCs for all activities based on T_4_100.
     clean_fba_before_mapping_df_fxn"""
-    splits = load_fba_w_standardized_units(datasource='EPA_GHGI_T_4_100',
+    tbl = source_dict['clean_parameter']['flow_fba']
+    splits = load_fba_w_standardized_units(datasource=tbl,
                                            year=fba['Year'][0])
     splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
     splits = splits[['FlowName', 'pct']]
@@ -800,35 +801,37 @@ def split_HFCs_by_type(fba, **_):
     return speciated_df
 
 
-def subtract_HFC_transport_emissions(df):
+def subtract_HFC_transport_emissions(df, parameter_dict):
     """Remove the portion of transportation emissions which are sourced elsewhere."""
-    transport_df = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_97',
+    tbl = parameter_dict.get('transport_fba')
+    transport_df = load_fba_w_standardized_units(datasource=tbl,
                                                  year=df['Year'][0])
-    activity_list = ['Mobile AC', 'Comfort Cooling for Trains and Buses',
-                     'Refrigerated Transport'] # Total of all sub categories
+    activity_list = parameter_dict.get('transport_activities')
     transport_df = transport_df[transport_df['ActivityProducedBy'].isin(activity_list)]
-    df.loc[df['ActivityProducedBy'] == 'Refrigeration/Air Conditioning',
+    df.loc[df['ActivityProducedBy'] == parameter_dict.get('ods_activity'),
            'FlowAmount'] = df['FlowAmount'] - transport_df['FlowAmount'].sum()
     return df
 
 
-def allocate_HFC_to_residential(df):
+def allocate_HFC_to_residential(df, parameter_dict):
     """Split HFC emissions into two buckets to be further allocated.
 
     Calculate the portion of Refrigerants applied to households based on production of
     household: 335222
     industry: 333415
     """
-    make_df = load_fba_w_standardized_units(datasource='BEA_Make_Detail_BeforeRedef',
-                                            year=2012)
-    household = make_df[(make_df['ActivityProducedBy'] == '335222') &
-                        (make_df['ActivityConsumedBy'] == '335222')
+    make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
+                                            year=parameter_dict.get('make_year'))
+    h_sec = parameter_dict.get('household_make')
+    i_sec = parameter_dict.get('industry_make')
+    household = make_df[(make_df['ActivityProducedBy'] == h_sec) &
+                        (make_df['ActivityConsumedBy'] == h_sec)
                         ].reset_index()['FlowAmount'][0]
-    industry = make_df[(make_df['ActivityProducedBy'] == '333415') &
-                       (make_df['ActivityConsumedBy'] == '333415')
+    industry = make_df[(make_df['ActivityProducedBy'] == i_sec) &
+                       (make_df['ActivityConsumedBy'] == i_sec)
                        ].reset_index()['FlowAmount'][0]
 
-    activity = 'Refrigeration/Air Conditioning'
+    activity = parameter_dict.get('ods_activity')
     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
     df_subset['FlowAmount'] = df_subset[
         'FlowAmount'] * (household / (industry + household))
@@ -840,23 +843,25 @@ def allocate_HFC_to_residential(df):
     return df
 
 
-def split_HFC_foams(df):
+def split_HFC_foams(df, parameter_dict):
     """Split HFC emissions from foams into two buckets to be allocated separately.
 
     Calculate the portion for
     Polystyrene: 326140
     Urethane: 326150
     """
-    make_df = load_fba_w_standardized_units(datasource='BEA_Make_Detail_BeforeRedef',
-                                            year=2012)
-    polystyrene = make_df[(make_df['ActivityProducedBy'] == '326140') &
-                          (make_df['ActivityConsumedBy'] == '326140')
+    make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
+                                            year=parameter_dict.get('make_year'))
+    polys_sec = parameter_dict.get('polystyrene_make')
+    ure_sec = parameter_dict.get('urethane_make')
+    polystyrene = make_df[(make_df['ActivityProducedBy'] == polys_sec) &
+                          (make_df['ActivityConsumedBy'] == polys_sec)
                           ].reset_index()['FlowAmount'][0]
-    urethane = make_df[(make_df['ActivityProducedBy'] == '326150') &
-                       (make_df['ActivityConsumedBy'] == '326150')
+    urethane = make_df[(make_df['ActivityProducedBy'] == ure_sec) &
+                       (make_df['ActivityConsumedBy'] == ure_sec)
                        ].reset_index()['FlowAmount'][0]
 
-    activity = 'Foams'
+    activity = parameter_dict.get('foam_activity')
     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
     df_subset['FlowAmount'] = df_subset[
         'FlowAmount'] * (polystyrene / (urethane + polystyrene))
@@ -870,13 +875,14 @@ def split_HFC_foams(df):
     return df
 
 
-def clean_HFC_fba(fba, **_):
+def clean_HFC_fba(fba, source_dict, **_):
     """Adjust HFC emissions for improved parsing.
     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_102."""
-    df = subtract_HFC_transport_emissions(fba)
-    df = allocate_HFC_to_residential(df)
-    df = split_HFC_foams(df)
-    df = split_HFCs_by_type(df)
+    parameter_dict = source_dict['clean_parameter']
+    df = subtract_HFC_transport_emissions(fba, parameter_dict)
+    df = allocate_HFC_to_residential(df, parameter_dict)
+    df = split_HFC_foams(df, parameter_dict)
+    df = split_HFCs_by_type(df, source_dict)
     return df
 
 
