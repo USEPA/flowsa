@@ -643,4 +643,7 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
             download_FBA_if_missing=kwargs['download_FBA_if_missing']
         )
 
+    # drop group_id, which are used in some clean_fba_w_sec fnxs
+    fba_wsec = fba_wsec.drop(columns=['group_id'], errors='ignore')
+
     return fba_wsec
