@@ -88,8 +88,6 @@ _allocation_types:
       - "AREA HARVESTED"
       - "AREA BEARING & NON-BEARING" # Orchards
       - "AREA GROWN" # Berry totals
-      - "AREA IN PRODUCTION" # Vegetable totals
-    allocation_compartment: None
     allocation_from_scale: national
     clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
 
