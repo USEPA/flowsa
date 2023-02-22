@@ -182,9 +182,13 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     # concatenate dataframe list into single dataframe
     df = pd.concat(df_list, sort=True)
 
+    print(df['Table Name'].unique())
+
     # rename columns to match standard flowbyactivity format
     df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
-                            'Subsector and Industry': 'Description'})
+                            'Table Name': 'Description'})
+    df.loc[df['Subsector and Industry'] == 'Total', 'ActivityConsumedBy'] = '31-33'
+    df = df.drop(columns='Subsector and Industry')
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
     # add hardcoded data
     df["SourceName"] = source
@@ -196,7 +200,6 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df.loc[df['Location'] == 'Total United States', 'Location'] = US_FIPS
     df = assign_fips_location_system(df, year)
     df = assign_census_regions(df)
-    df.loc[df['Description'] == 'Total', 'ActivityConsumedBy'] = '31-33'
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
 

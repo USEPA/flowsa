@@ -233,6 +233,7 @@ EPA_NEI_Nonroad:
   activity_schema: SCC
   sector_hierarchy: "flat"
 EPA_NEI_Onroad:
+  data_format: FBA
   class:
   - Chemicals
   sector-like_activities: False
