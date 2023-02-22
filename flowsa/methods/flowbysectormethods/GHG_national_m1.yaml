@@ -663,16 +663,13 @@ source_names:
           names:
             - "Refrigeration/Air Conditioning"
           clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
-        foams_polystyrene:
+        foams:
           <<: *use_allocation
           names:
-            - "Foams - Polystyrene"
-          clean_parameter: {"326140": 'ActivityProducedBy'} # Polystyrene foam
-        foams_urethane:
-          <<: *use_allocation
-          names:
-            - "Foams - Urethane"
-          clean_parameter: {"326150": 'ActivityProducedBy'} # Urethane and other foam
+            - "Foams"
+          clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
+                            "326150": 'ActivityProducedBy'} # Urethane and other foam
+
   "EPA_GHGI_T_A_97": # HFCs from Transportation
       data_format: 'FBA'
       class: Chemicals
