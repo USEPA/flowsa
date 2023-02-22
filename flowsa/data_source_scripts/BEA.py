@@ -172,10 +172,8 @@ def subset_BEA_table(df_load, attr, **_):
                     SectorCol = v[1]['flowbysector']
             df.loc[:, SectorCol] = None
         df2 = pd.concat([df, df2])
-    # aggregate dfs
-    df3 = aggregator(df2, list(df2.select_dtypes(include=['object',
-                                                          'int']).columns))
-    return df3
+
+    return df2
 
 
 def subset_and_allocate_BEA_table(df, attr, **_):
