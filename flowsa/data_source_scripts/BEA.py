@@ -173,7 +173,12 @@ def subset_BEA_table(df_load, attr, **_):
             df.loc[:, SectorCol] = None
         df2 = pd.concat([df, df2])
 
-    return df2
+    # aggregate cols
+    df2 = df2.drop(columns=['group_id'], errors='ignore')
+    df3 = aggregator(df2, list(df2.select_dtypes(include=['object',
+                                                          'int']).columns))
+
+    return df3
 
 
 def subset_and_allocate_BEA_table(df, attr, **_):
@@ -253,10 +258,4 @@ def subset_and_equally_allocate_BEA_table(df, attr, **_):
 
     df2 = subset_BEA_table(df, attr)
 
-    # in the cases where both activity cols mapped to multiple sectors,
-    # aggregate after resetting one of those columns to nan
-    df2 = df2.drop(columns=['group_id'])
-    aggcols = list(df2.select_dtypes(include=['object', 'int']).columns)
-    df3 = aggregator(df2, aggcols)
-
-    return df3
+    return df2
