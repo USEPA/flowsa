@@ -704,6 +704,9 @@ def determine_flows_requiring_disaggregation(
 
     from flowsa.sectormapping import add_sectors_to_flowbyactivity
 
+    # drop group_id, which are used in some clean_fba_w_sec fnxs
+    df_load = df_load.drop(columns=['group_id'], errors='ignore')
+
     df_load = replace_NoneType_with_empty_cells(df_load)
     # drop rows where there is no value in sector column, which might occur if
     # sector-like activities have a "-" in them
@@ -717,7 +720,7 @@ def determine_flows_requiring_disaggregation(
 
     # original df - subset
     # subset cols of original df
-    dfo = df_load[['FlowAmount', 'Location', sector_column]]
+    dfo = df_load[['FlowName', 'FlowAmount', 'Location', sector_column]]
     # min and max length
     min_length = min(df_load[sector_column].apply(
         lambda x: len(str(x))).unique())
@@ -744,9 +747,10 @@ def determine_flows_requiring_disaggregation(
         df2 = df2.rename(
             columns={'FlowAmount': 'SubtractFlow', sector_column: 'Sector'})
         df_m = pd.merge(
-            vars()[df_name_1][['FlowAmount', 'Location', sector_column]],
-            df2, left_on=['Location', sector_column],
-            right_on=['Location', 'SectorMatch'],
+            vars()[df_name_1][['FlowName', 'FlowAmount', 'Location',
+                               sector_column]],
+            df2, left_on=['FlowName', 'Location', sector_column],
+            right_on=['FlowName', 'Location', 'SectorMatch'],
             indicator=True, how='outer')
         # subset by merge and append to appropriate df
         df_both = df_m[df_m['_merge'] == 'both']
@@ -756,7 +760,7 @@ def determine_flows_requiring_disaggregation(
                 columns=['Sector', 'SectorMatch', '_merge'])
             # aggregate before subtracting
             df_both2 = df_both1.groupby(
-                ['FlowAmount', 'Location', sector_column],
+                ['FlowName', 'FlowAmount', 'Location', sector_column],
                 as_index=False).agg({"SubtractFlow": sum})
             df_both3 = df_both2.assign(
                 FlowAmount=df_both2['FlowAmount'] - df_both2['SubtractFlow'])
@@ -774,7 +778,7 @@ def determine_flows_requiring_disaggregation(
             df_right = df_right.assign(SectorMatch=df_right[
                 sector_column].apply(lambda x: x[:(s - 2)]))
             # reorder
-            df_right = df_right[['FlowAmount', 'Location',
+            df_right = df_right[['FlowName', 'FlowAmount', 'Location',
                                  sector_column, 'SectorMatch']]
             df_not_merged = pd.concat([df_not_merged, df_right],
                                       ignore_index=True)
@@ -802,9 +806,9 @@ def determine_flows_requiring_disaggregation(
         [activity_column, sector_column]).reset_index(drop=True)
     # drop the sectors that are duplicated by different naics being
     # mapped to naics6
-    if len(dfn2[dfn2.duplicated(subset=['Location', sector_column],
+    if len(dfn2[dfn2.duplicated(subset=['FlowName', 'Location', sector_column],
                                 keep=False)]) > 0:
-        dfn2.drop_duplicates(subset=['Location', sector_column],
+        dfn2.drop_duplicates(subset=['FlowName', 'Location', sector_column],
                              keep='last', inplace=True)
     # want to allocate at NAICS6, so drop all other sectors
     dfn2 = \
