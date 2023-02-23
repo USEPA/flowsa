@@ -77,7 +77,7 @@ source_names:
                         year: 2018
                         selection_fields:
                           Class: Water
-                        estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_iwms
+                        estimate_suppressed: !script_function:USDA_IWMS estimate_suppressed_iwms
 #                        attribution_method: proportional
 #                        attribution_source:
 #                          USDA_IWMS:
