@@ -1596,11 +1596,12 @@ class FlowByActivity(_FlowBy):
         other = (
             other
             .add_primary_secondary_columns('Sector')
-            [['PrimarySector', 'Location', 'FlowAmount']]
-            .groupby(['PrimarySector', 'Location'])
+            [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
+            .groupby(['PrimarySector', 'Location', 'Unit'])
             .agg('sum')
             .reset_index()
         )
+        # todo: update units after multiplying
 
         # multiply using each dfs primary sector col
         merged = (fba
@@ -1621,6 +1622,18 @@ class FlowByActivity(_FlowBy):
                               'FlowAmount_other', 'denominator'],
                      errors='ignore')
                )
+
+        # determine if any flows are lost because multiplied by 0
+        fba_null = fba[fba['FlowAmount'] == 0]
+        if len(fba_null) > 0:
+            log.warning('FlowAmounts in %s are reset to 0 due to lack of '
+                        'flows in attribution source %s for '
+                        'ActivityProducedBy/ActivityConsumedBy/Location: %s',
+                        fba.full_name, other.full_name,
+                        set(zip(fba_null.ActivityProducedBy,
+                                fba_null.ActivityConsumedBy,
+                                fba_null.Location))
+                        )
 
         return (
             fba
