@@ -76,14 +76,15 @@ source_names:
                       USDA_IWMS: &usda_iwms
                         year: 2018
                         selection_fields:
-                            Class: Water
-                        allocation method: proportional
-                        allocation_source:
-                          USDA_IWMS:
-                            year: 2018
-                            selection_fields:
-                              Class: Land
-                              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
+                          Class: Water
+                        estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_iwms
+#                        attribution_method: proportional
+#                        attribution_source:
+#                          USDA_IWMS:
+#                            year: 2018
+#                            selection_fields:
+#                              Class: Land
+#                              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
               cropland_attribution-cropland:
                 selection_fields:
                   Class: "Land"
@@ -105,14 +106,14 @@ source_names:
                     'POPCORN, SHELLED', 'RICE', 'BARLEY', 'BUCKWHEAT',
                     'MILLET, PROSO', 'OATS', 'RYE', 'SORGHUM, GRAIN',
                     'SORGHUM, SILAGE', 'SORGHUM, SYRUP', 'TRITICALE', 'WILD
-                    RICE', 'EMMER & SPELT', 'VEGETABLE TOTALS', 'ORCHARDS',
+                    RICE', 'VEGETABLE TOTALS', 'ORCHARDS',
                     'BERRY TOTALS', 'CUT CHRISTMAS TREES', 'SHORT TERM WOODY
                      CROPS', 'TOBACCO', 'COTTON', 'SUGARCANE, SUGAR',
                     'SUGARCANE, SEED', 'HAY & HAYLAGE', 'SUGARBEETS',
-                    'SUGARBEETS, SEED', 'PEANUTS', 'DILL, OIL', 'GRASSES &
-                    LEGUMES TOTALS, SEED', 'GUAR', 'HERBS, DRY', 'HOPS',
-                    'JOJOBA', 'MINT, OIL', 'MISCANTHUS', 'MINT, TEA LEAVES',
-                    'SWITCHGRASS', 'FIELD CROPS, OTHER']
+                    'SUGARBEETS, SEED', 'PEANUTS', 'GRASSES &
+                    LEGUMES TOTALS, SEED', 'HERBS, DRY', 'HOPS',
+                    'MINT, OIL', 'MISCANTHUS', 'MINT, TEA LEAVES',
+                    'FIELD CROPS, OTHER']
                 attribution_method: proportional
                 attribution_source:
                   USDA_CoA_Cropland_NAICS:
