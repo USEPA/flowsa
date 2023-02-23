@@ -10,15 +10,13 @@ Water Management Survey data
 import json
 import pandas as pd
 import numpy as np
-from esupy.dqi import get_weighted_average
-from flowsa.location import US_FIPS
-from flowsa.common import WITHDRAWN_KEYWORD, fba_wsec_default_grouping_fields
-from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+from flowsa.location import US_FIPS, get_state_FIPS
+from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    load_fba_w_standardized_units
+    load_fba_w_standardized_units, filter_by_geoscale
 from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, \
     disaggregate_cropland
-
+from flowsa.flowby import FlowByActivity
 
 def iwms_url_helper(*, build_url, config, **_):
     """
@@ -207,3 +205,53 @@ def iwms_aggregation(df_load, **kwargs):
     df4 = pd.concat([df_o, df3], ignore_index=True)
 
     return df4
+
+
+def estimate_suppressed_iwms(fba: FlowByActivity) -> FlowByActivity:
+    """
+    Fill suppressed state level data with national level rates. Also sub in
+    national level rates when there is no available state data
+    :param fba:
+    :return:
+    """
+    # subset to national data
+    fba_nat = fba.query('Location == @US_FIPS')
+    fba_nat_sub = (fba_nat[['FlowAmount', 'ActivityConsumedBy']]
+                   .rename(columns={'FlowAmount': 'FlowAmountNat'})
+                   )
+
+    # subset state data
+    fba_state = filter_by_geoscale(fba, "state")
+    # merge state with national data and fill in suppressed state data with
+    # national
+    fba_state = fba_state.merge(fba_nat_sub, how='left')
+    fba_state['FlowAmount'] = np.where(fba_state['FlowAmount'] == 0,
+                                       fba_state['FlowAmountNat'],
+                                       fba_state['FlowAmount'])
+    # merge state and nat
+    fbam = (pd.concat([fba_nat, fba_state])
+            .drop(columns='FlowAmountNat'))
+
+    # subset state df columns
+    fba_state_sub = (
+        fba_state[['ActivityConsumedBy', 'Location', 'FlowAmount']]
+        .rename(columns={'FlowAmount': 'FlowAmountState',
+                         'Location': 'FIPS'}))
+    # add all possible state FIPS to national df
+    statefips = (get_state_FIPS()[['FIPS']]
+                 .assign(Location=US_FIPS))
+    fba_nat2 = fba_nat.merge(statefips)
+    # merge national and state dfs and subset to state data that does not
+    # exist, fill with national level rates
+    m = (fba_nat2.merge(fba_state_sub, how='left')
+         .fillna(0)
+         .query('FlowAmountState == 0'))
+    m2 = (m
+          .assign(Location=m['FIPS'])
+          .drop(columns=['FIPS', 'FlowAmountState'])
+          )
+
+    # append new state level rates
+    fbam2 = pd.concat([fbam, m2], ignore_index=True)
+
+    return fbam2
