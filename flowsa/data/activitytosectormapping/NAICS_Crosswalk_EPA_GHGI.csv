@@ -474,17 +474,18 @@ EPA_GHGI,Electronics Production,NAICS_2012_Code,334413,,334413,EPA_GHGI_T_4_94
 EPA_GHGI,Magnesium Production and Processing,NAICS_2012_Code,331410,,"331410, 331490, 331520",EPA_GHGI_T_4_84
 EPA_GHGI,Magnesium Production and Processing,NAICS_2012_Code,33149,,,EPA_GHGI_T_4_84
 EPA_GHGI,Magnesium Production and Processing,NAICS_2012_Code,33152,,,EPA_GHGI_T_4_84
-EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,11,,"All sectors, excluding transport",EPA_GHGI_T_4_101
+EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,11,,,EPA_GHGI_T_4_101
 EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,21,,,EPA_GHGI_T_4_101
-EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,22,,,EPA_GHGI_T_4_101
+EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,2212,,,EPA_GHGI_T_4_101
 EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,23,,,EPA_GHGI_T_4_101
 EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,31,,,EPA_GHGI_T_4_101
 EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,32,,,EPA_GHGI_T_4_101
 EPA_GHGI,Industrial Process Refrigeration,NAICS_2012_Code,33,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,2213,,Apply same mapping as Commercial elsewhere,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,42,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,44,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,45,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,4931,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,493,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,51,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,52,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,53,,,EPA_GHGI_T_4_101
@@ -496,18 +497,14 @@ EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,62,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,71,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,72,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,81,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,92,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,11,,"All sectors, excluding transport",EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,21,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,22,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,23,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,31,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,32,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,33,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,927110,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,923110,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Refrigeration,NAICS_2012_Code,923120,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,2213,,Apply same mapping as Commercial elsewhere,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,42,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,44,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,45,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,4931,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,493,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,51,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,52,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,53,,,EPA_GHGI_T_4_101
@@ -519,7 +516,9 @@ EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,62,,,EPA_GHGI_T_
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,71,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,72,,,EPA_GHGI_T_4_101
 EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,81,,,EPA_GHGI_T_4_101
-EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,92,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,927110,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,923110,,,EPA_GHGI_T_4_101
+EPA_GHGI,Commercial Stationary Air Conditioning,NAICS_2012_Code,923120,,,EPA_GHGI_T_4_101
 EPA_GHGI,Domestic Refrigeration,NAICS_2012_Code,F01000,,,EPA_GHGI_T_4_101
 EPA_GHGI,Residential Stationary Air Conditioning,NAICS_2012_Code,F01000,,,EPA_GHGI_T_4_101
 EPA_GHGI,Aerosols,,,,excluded,EPA_GHGI_T_4_101
