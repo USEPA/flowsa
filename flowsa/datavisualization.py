@@ -272,8 +272,14 @@ def stackedBarChart(df,
 
     # create list of n colors based on number of allocation sources
     colors = df2[[stacking_col]].drop_duplicates()
-    colors['Color'] = colors.apply(
-        lambda row: "#%06x" % random.randint(0, 0xFFFFFF), axis=1)
+    # add colors
+    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv').rename(
+        columns={'AttributionSource': stacking_col})
+    colors = colors.merge(vis[[stacking_col, 'Color']], how='left')
+
+    # fill in any colors missing from the color dictionary with random colors
+    colors['Color'] = colors['Color'].apply(lambda x: x if pd.notnull(x) else
+    "#%06x" % random.randint(0, 0xFFFFFF))
     # merge back into df
     df2 = df2.merge(colors, how='left')
 
