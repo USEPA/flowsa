@@ -628,51 +628,39 @@ source_names:
       class: Chemicals
       geoscale_to_use: national
       # year: # override with ghgi_year
-      # This table is preprocessed across several steps in this clean fxn
-      clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI clean_HFC_fba
+      clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI split_HFCs_by_type
       clean_parameter:
-          transport_fba: 'EPA_GHGI_T_A_97' # removes HFCs from transportation
-          # 1) These transport activities are removed from ods_activity before attributing
-          # and later pulled from a separate table
-          transport_activities:
-            - 'Mobile AC'
-            - 'Comfort Cooling for Trains and Buses'
-            - 'Refrigerated Transport'
-          ods_activity: 'Refrigeration/Air Conditioning'
-          # 2) A portion of refrigeration emissions are split and direclty
-          # attributed to households based on make table
-          make_fba: 'BEA_Make_Detail_BeforeRedef'
-          make_year: 2012
-          household_make: '335222' # Household refrigerator and home freezer
-          industry_make: '333415' # Air conditioning, refrigeration manufacturing
-          # 3) Foam emissions are split based on make table and allocated separately
-          foam_activity: 'Foams'
-          polystyrene_make: '326140' # Polystyrene foam
-          urethane_make: '326150' # Urethane and other foam
-          # 4) Proportions of specific HFCs are assigned based on national total
+          # Proportions of specific HFCs are assigned based on national total
           flow_fba: 'EPA_GHGI_T_4_100'
       fedefl_mapping: 'GHGI'
       activity_sets:
         households:
           names:
-            - "Refrigeration/Air Conditioning - Households"
+            - "Domestic Refrigeration"
+            - "Residential Stationary Air Conditioning"
           allocation_method: direct
           allocation_from_scale: national
         refrigerants:
           <<: *use_allocation
           names:
-            - "Refrigeration/Air Conditioning"
+            - "Commercial Refrigeration"
+            - "Industrial Process Refrigeration"
           clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
-        foams_polystyrene:
+        air_conditioning:
           <<: *use_allocation
           names:
-            - "Foams - Polystyrene"
-          clean_parameter: {"326140": 'ActivityProducedBy'} # Polystyrene foam
-        foams_urethane:
+            - "Commercial Stationary Air Conditioning"
+          clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
+        foams:
           <<: *use_allocation
           names:
-            - "Foams - Urethane"
-          clean_parameter: {"326150": 'ActivityProducedBy'} # Urethane and other foam
+            - "Foams"
+          clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
+                            "326150": 'ActivityProducedBy'} # Urethane and other foam
+      # 'Mobile Air Conditioning' and 'Transport Refrigeration' come from
+      # different table.
+      # Intentionally left out 'Solvents', 'Aerosols', 'Fire Protection'
+
   "EPA_GHGI_T_A_97": # HFCs from Transportation
       data_format: 'FBA'
       class: Chemicals
@@ -680,6 +668,7 @@ source_names:
       # year: # override with ghgi_year
       clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI split_HFCs_by_type
       clean_parameter:
+          # Proportions of specific HFCs are assigned based on national total
           flow_fba: 'EPA_GHGI_T_4_100'
       fedefl_mapping: 'GHGI'
       activity_sets:

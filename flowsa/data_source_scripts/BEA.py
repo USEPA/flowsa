@@ -151,25 +151,34 @@ def bea_make_ar_parse(*, year, **_):
     return df
 
 
-def subset_BEA_table(df, attr, **_):
+def subset_BEA_table(df_load, attr, **_):
     """
     Modify loaded BEA table (make or use) based on data in the FBA method yaml
-    :param df: df, flowbyactivity format
+    :param df_load: df, flowbyactivity format
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe
     """
+    df2 = pd.DataFrame()
     # extract commodity to filter and which Activity column used to filter
-    (commodity, ActivityCol), *rest = attr['clean_parameter'].items()
-    df = df.loc[df[ActivityCol] == commodity].reset_index(drop=True)
+    for commodity, ActivityCol in attr['clean_parameter'].items():
+        df = df_load.loc[df_load[ActivityCol] == commodity].reset_index(
+            drop=True)
 
-    # set column to None to enable generalizing activity column later
-    df.loc[:, ActivityCol] = None
-    if set(fbs_activity_fields).issubset(df.columns):
-        for v in activity_fields.values():
-            if v[0]['flowbyactivity'] == ActivityCol:
-                SectorCol = v[1]['flowbysector']
-        df.loc[:, SectorCol] = None
-    return df
+        # set column to None to enable generalizing activity column later
+        df.loc[:, ActivityCol] = None
+        if set(fbs_activity_fields).issubset(df.columns):
+            for v in activity_fields.values():
+                if v[0]['flowbyactivity'] == ActivityCol:
+                    SectorCol = v[1]['flowbysector']
+            df.loc[:, SectorCol] = None
+        df2 = pd.concat([df, df2])
+
+    # aggregate cols
+    df2 = df2.drop(columns=['group_id'], errors='ignore')
+    df3 = aggregator(df2, list(df2.select_dtypes(include=['object',
+                                                          'int']).columns))
+
+    return df3
 
 
 def subset_and_allocate_BEA_table(df, attr, **_):
@@ -249,10 +258,4 @@ def subset_and_equally_allocate_BEA_table(df, attr, **_):
 
     df2 = subset_BEA_table(df, attr)
 
-    # in the cases where both activity cols mapped to multiple sectors,
-    # aggregate after resetting one of those columns to nan
-    df2 = df2.drop(columns=['group_id'])
-    aggcols = list(df2.select_dtypes(include=['object', 'int']).columns)
-    df3 = aggregator(df2, aggcols)
-
-    return df3
+    return df2
