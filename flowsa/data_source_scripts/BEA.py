@@ -9,12 +9,13 @@ Generation of BEA Gross Output data and industry transcation data as FBA,
 Source csv files for BEA data are documented
 in scripts/write_BEA_Use_from_useeior.py
 """
+from functools import reduce
 import pandas as pd
 from flowsa.location import US_FIPS
 from flowsa.common import fbs_activity_fields
 from flowsa.schema import activity_fields
 from flowsa.settings import externaldatapath
-from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.fbs_allocation import allocation_helper
 
 
@@ -150,25 +151,34 @@ def bea_make_ar_parse(*, year, **_):
     return df
 
 
-def subset_BEA_table(df, attr, **_):
+def subset_BEA_table(df_load, attr, **_):
     """
     Modify loaded BEA table (make or use) based on data in the FBA method yaml
-    :param df: df, flowbyactivity format
+    :param df_load: df, flowbyactivity format
     :param attr: dictionary, attribute data from method yaml for activity set
     :return: modified BEA dataframe
     """
+    df2 = pd.DataFrame()
     # extract commodity to filter and which Activity column used to filter
-    (commodity, ActivityCol), *rest = attr['clean_parameter'].items()
-    df = df.loc[df[ActivityCol] == commodity].reset_index(drop=True)
+    for commodity, ActivityCol in attr['clean_parameter'].items():
+        df = df_load.loc[df_load[ActivityCol] == commodity].reset_index(
+            drop=True)
 
-    # set column to None to enable generalizing activity column later
-    df.loc[:, ActivityCol] = None
-    if set(fbs_activity_fields).issubset(df.columns):
-        for v in activity_fields.values():
-            if v[0]['flowbyactivity'] == ActivityCol:
-                SectorCol = v[1]['flowbysector']
-        df.loc[:, SectorCol] = None
-    return df
+        # set column to None to enable generalizing activity column later
+        df.loc[:, ActivityCol] = None
+        if set(fbs_activity_fields).issubset(df.columns):
+            for v in activity_fields.values():
+                if v[0]['flowbyactivity'] == ActivityCol:
+                    SectorCol = v[1]['flowbysector']
+            df.loc[:, SectorCol] = None
+        df2 = pd.concat([df, df2])
+
+    # aggregate cols
+    df2 = df2.drop(columns=['group_id'], errors='ignore')
+    df3 = aggregator(df2, list(df2.select_dtypes(include=['object',
+                                                          'int']).columns))
+
+    return df3
 
 
 def subset_and_allocate_BEA_table(df, attr, **_):
@@ -199,4 +209,53 @@ def subset_and_allocate_BEA_table(df, attr, **_):
     df2 = allocation_helper(df, attr2, method2, v, False)
     # Drop remaining rows with no sectors e.g. T001 and other final demands
     df2 = df2.dropna(subset=['SectorConsumedBy']).reset_index(drop=True)
+    return df2
+
+
+def subset_and_equally_allocate_BEA_table(df, attr, **_):
+    """
+    Temporary function to equally attribute BEA table. This function will
+    be unnecessary after merge with recursive branch
+    """
+    # Necessary to run equal attribution before subsetting dataset by an
+    # activity because in some situations both the BEA ActivityConsumedBy
+    # and ActivityProducedBy values map to multiple sectors. The
+    # "subset_BEA_table()" fxn resets one of the activity columns to NaN.
+    # For example, for "Liming" in the GHG attribution model,
+    # the ActivityProducedBy 327500 maps to both 327410 and 327420 - so data
+    # is double counted, but subsetting the BEA table resets
+    # ActivityProducedBy to NaN and that double counting is lost.
+
+    # equally attribute bea codes to each mapped sector
+    groupby_cols = ['group_id']
+    for c in ['Produced', 'Consumed']:
+        df = (
+            df
+            .assign(
+                **{f'_naics_{n}': df[f'Sector{c}By'].str.slice(stop=n)
+                   for n in range(2, 7)},
+                **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                    x.groupby(groupby_cols if i == 2
+                              else [*groupby_cols, f'_naics_{i - 1}'],
+                              dropna=False)
+                    [[f'_naics_{i}']]
+                    .transform('nunique', dropna=False)
+                )
+                   for n in range(2, 7)},
+                FlowAmount=lambda x: reduce(
+                    lambda x, y: x / y,
+                    [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
+                                     for n in range(2, 7)]]
+                )
+            )
+        )
+        groupby_cols.append(f'Sector{c}By')
+
+        df = df.drop(
+            columns=[*[f'_naics_{n}' for n in range(2, 7)],
+                     *[f'_unique_naics_{n}_by_group' for n in range(2, 7)]]
+        )
+
+    df2 = subset_BEA_table(df, attr)
+
     return df2
