@@ -247,6 +247,17 @@ def stackedBarChart(df,
     # aggregate by location/sector/unit and optionally 'context'
     df2 = df.groupby(index_cols + [stacking_col],
                      as_index=False).agg({"FlowAmount": sum})
+
+    # fill in non existent data with 0s to enable accurate sorting of sectors
+    flows = (df2[['Location', 'Unit', var, 'Sector']]
+             .drop_duplicates()
+             )
+    scv = df[stacking_col].unique().tolist()
+    flows[stacking_col] = [scv for _ in range(len(flows))]
+    flows = flows.explode(stacking_col)
+
+    df2 = df2.merge(flows, how='outer')
+    df2['FlowAmount'] = df2['FlowAmount'].fillna(0)
     # resort df
     if subplot is not None:
         df2[subplot] = pd.Categorical(df2[subplot], plot_list)
