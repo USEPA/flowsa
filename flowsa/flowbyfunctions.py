@@ -104,9 +104,11 @@ def aggregator(df, groupbycols, retain_zeros=True, flowcolname='FlowAmount'):
     be dropped
     :return: df, with aggregated columns
     """
-
-    # reset index
-    df = df.reset_index(drop=True)
+    # drop group_id from cols before aggregating
+    df = (df
+          .drop(columns='group_id', errors='ignore')
+          .reset_index(drop=True)
+          )
     # tmp replace null values with empty cells
     df = replace_NoneType_with_empty_cells(df)
 

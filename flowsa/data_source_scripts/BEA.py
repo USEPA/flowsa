@@ -174,7 +174,6 @@ def subset_BEA_table(df_load, attr, **_):
         df2 = pd.concat([df, df2])
 
     # aggregate cols
-    df2 = df2.drop(columns=['group_id'], errors='ignore')
     df3 = aggregator(df2, list(df2.select_dtypes(include=['object',
                                                           'int']).columns))
 

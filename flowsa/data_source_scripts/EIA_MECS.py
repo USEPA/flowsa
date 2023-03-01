@@ -704,9 +704,6 @@ def determine_flows_requiring_disaggregation(
 
     from flowsa.sectormapping import add_sectors_to_flowbyactivity
 
-    # drop group_id, which are used in some clean_fba_w_sec fnxs
-    df_load = df_load.drop(columns=['group_id'], errors='ignore')
-
     df_load = replace_NoneType_with_empty_cells(df_load)
     # drop rows where there is no value in sector column, which might occur if
     # sector-like activities have a "-" in them
