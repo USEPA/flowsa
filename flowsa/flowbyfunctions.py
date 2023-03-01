@@ -561,6 +561,7 @@ def return_activity_from_scale(df, provided_from_scale):
     """
 
     # determine the unique combinations of activityproduced/consumedby
+    df = replace_NoneType_with_empty_cells(df)
     unique_activities = unique_activity_names(df)
     # filter by geoscale
     fips = create_geoscale_list(df, provided_from_scale)
