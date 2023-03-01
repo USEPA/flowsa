@@ -227,7 +227,7 @@ def eia_mecs_land_parse(*, df_list, year, **_):
     df['DataCollection'] = 5  # tmp
 
     # modify flowname
-    df['FlowName'] = df['Description'] + ', ' + df['FlowName'].str.strip()
+    df['FlowName'] = df['FlowName'].str.strip()
 
     return df
 
