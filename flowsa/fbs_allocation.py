@@ -608,7 +608,8 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         )
     # reset index
     fba2 = fba2.reset_index(drop=True)
-    fba2 = fba2.assign(group_id=fba2.reset_index().index.astype(str))
+    if kwargs.get('clean_fba_w_sec').__name__ in ('subset_and_equally_allocate_BEA_table'):
+        fba2 = fba2.assign(group_id=fba2.reset_index().index.astype(str))
 
     if len(fba2) == 0:
         raise flowsa.exceptions.FBSMethodConstructionError(
