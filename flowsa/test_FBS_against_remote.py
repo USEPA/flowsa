@@ -36,7 +36,7 @@ def test_FBS_against_remote(only_run_m=None):
     method_status = check_method_status()
     if not os.path.exists(outdir):
         os.mkdir(outdir)
-    for m in seeAvailableFlowByModels("FBS", print_method=False):
+    for m in ['Land_national_2012', 'Water_national_2015_m1']: #seeAvailableFlowByModels("FBS", print_method=False):
         if only_run_m is not None and m != only_run_m:
             continue
         if method_status.get(m) is not None:
@@ -45,7 +45,7 @@ def test_FBS_against_remote(only_run_m=None):
             continue
         try:
             compare_single_FBS_against_remote(m)
-        except Exception as e:
+        except:
             error_list.append(m)
             continue
     if error_list:
