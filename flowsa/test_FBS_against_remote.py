@@ -47,6 +47,7 @@ def test_FBS_against_remote(only_run_m=None):
             compare_single_FBS_against_remote(m)
         except Exception as e:
             error_list.append(m)
+            continue
     if error_list:
         pytest.fail(f"Error generating:"
                     f" {', '.join([x for x in [*error_list]])}")
