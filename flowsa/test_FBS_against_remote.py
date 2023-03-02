@@ -31,7 +31,7 @@ def test_generate_fbs():
 def test_FBS_against_remote(only_run_m=None):
     """Compare results for each FBS method at current HEAD with most
     recent FBS stored on remote server."""
-    error_list = []
+    # error_list = []
     outdir = diffpath
     method_status = check_method_status()
     if not os.path.exists(outdir):
@@ -43,14 +43,14 @@ def test_FBS_against_remote(only_run_m=None):
             print(f"{m} skipped due to "
                   f"{method_status.get(m).get('Status', 'Unknown')}")
             continue
-        try:
-            compare_single_FBS_against_remote(m)
-        except:
-            error_list.append(m)
-            continue
-    if error_list:
-        pytest.fail(f"Error generating:"
-                    f" {', '.join([x for x in [*error_list]])}")
+        # try:
+        compare_single_FBS_against_remote(m)
+        # except:
+        #     error_list.append(m)
+        #     continue
+    # if error_list:
+    #     pytest.fail(f"Error generating:"
+    #                 f" {', '.join([x for x in [*error_list]])}")
 
 
 if __name__ == "__main__":

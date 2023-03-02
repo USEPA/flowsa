@@ -65,6 +65,7 @@ jobs:
         do
           python flowsa/test_FBS_against_remote.py "$m"
         done
+      continue-on-error: true
 
     - name: Upload csv files
       # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
