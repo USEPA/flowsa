@@ -13,7 +13,7 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy.git@data_commons_url#egg=esupy',
+        'esupy @ git+https://github.com/USEPA/esupy#egg=esupy',
         'StEWI @ git+https://github.com/USEPA/standardizedinventories#egg=StEWI',
         'appdirs>=1.4.3',
         'bibtexparser>=1.2.0',
