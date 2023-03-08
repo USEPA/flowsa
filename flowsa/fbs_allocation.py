@@ -417,15 +417,17 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         # load bea codes that sub for naics
         bea = return_bea_codes_used_as_naics()
         # replace sector column and helperflow value if the sector column to
-        # merge is in the bea list to prevent dropped data
-        modified_fba_allocation['Sector'] = \
-            np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
-                     modified_fba_allocation[sector_col_to_merge],
-                     modified_fba_allocation['Sector'])
-        modified_fba_allocation['HelperFlow'] = \
-            np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
-                     modified_fba_allocation['FlowAmount'],
-                     modified_fba_allocation['HelperFlow'])
+        # merge is in the bea list to prevent dropped data,
+        # unless these bea codes already are in the helper dataframe, then skip
+        if not modified_fba_allocation['Sector'].isin(bea).any():
+            modified_fba_allocation['Sector'] = \
+                np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
+                         modified_fba_allocation[sector_col_to_merge],
+                         modified_fba_allocation['Sector'])
+            modified_fba_allocation['HelperFlow'] = \
+                np.where(modified_fba_allocation[sector_col_to_merge].isin(bea),
+                         modified_fba_allocation['FlowAmount'],
+                         modified_fba_allocation['HelperFlow'])
 
     # modify flow amounts using helper data
     if 'multiplication' in attr['helper_method']:
@@ -483,6 +485,9 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
         modified_fba_allocation = modified_fba_allocation.assign(
             FlowAmountRatio=modified_fba_allocation['HelperFlow'] /
                             modified_fba_allocation['Denominator'])
+        # where disagg flag is 0, ensure flowamountratio is 1
+        modified_fba_allocation['FlowAmountRatio'] = \
+            modified_fba_allocation['FlowAmountRatio'].fillna(0)
         modified_fba_allocation =\
             modified_fba_allocation.assign(
                 FlowAmount=modified_fba_allocation['FlowAmount'] *
@@ -491,14 +496,13 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
             modified_fba_allocation.drop(
                 columns=['disaggregate_flag', 'Sector', 'HelperFlow',
                          'Denominator', 'FlowAmountRatio'])
-        # run sector aggregation
-        modified_fba_allocation = \
-            sector_aggregation(modified_fba_allocation)
 
     # drop rows of 0
-    modified_fba_allocation =\
-        modified_fba_allocation[
+    modified_fba_allocation = modified_fba_allocation[
             modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
+
+    # run sector aggregation
+    modified_fba_allocation = sector_aggregation(modified_fba_allocation)
 
     modified_fba_allocation.loc[
         modified_fba_allocation['Unit'] == 'gal/employee', 'Unit'] = 'gal'
@@ -604,6 +608,11 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         )
     # reset index
     fba2 = fba2.reset_index(drop=True)
+    try:
+        if kwargs.get('clean_fba_w_sec').__name__ in ('subset_and_equally_allocate_BEA_table'):
+            fba2 = fba2.assign(group_id=fba2.reset_index().index.astype(str))
+    except AttributeError:
+        pass
 
     if len(fba2) == 0:
         raise flowsa.exceptions.FBSMethodConstructionError(
@@ -619,6 +628,8 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
         fba2,
         sectorsourcename=method['target_sector_source'],
         activity_to_sector_mapping=activity_to_sector_mapping,
+        overwrite_sectorlevel=attr.get(
+            'activity_to_sector_aggregation_level'),
         fbsconfigpath=fbsconfigpath
     )
 
@@ -633,5 +644,8 @@ def load_map_clean_fba(method, attr, fba_sourcename, df_year, flowclass,
             sourcename=fba_sourcename,
             download_FBA_if_missing=kwargs['download_FBA_if_missing']
         )
+
+    # drop group_id, which are used in some clean_fba_w_sec fnxs
+    fba_wsec = fba_wsec.drop(columns=['group_id'], errors='ignore')
 
     return fba_wsec
