@@ -140,7 +140,7 @@ source_names:
             Description:
                 - "Table 2.2"  # Nonfuel (class Other)
                 - "Table 3.2"  # Fuel (class Energy)
-        clean_allocation_fba: !script_function:EIA_MECS mecs_energy_fba_cleanup
+            Unit: MJ
         clean_allocation_fba_w_sec: !script_function:EIA_MECS eia_mecs_energy_clean_allocation_fba_w_sec
         helper_source: "BLS_QCEW"
         helper_method: proportional-flagged

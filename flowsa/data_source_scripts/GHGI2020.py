@@ -651,8 +651,8 @@ def get_manufacturing_energy_ratios(year):
                                          year=mecs_year,
                                          flowclass='Energy')
     mecs = mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
-                    (mecs['Location'] == '00000')].reset_index(drop=True)
-    mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
+                    (mecs['Location'] == '00000') &
+                    (mecs['Unit'] == 'MJ')].reset_index(drop=True)
 
     # Identify the GHGI table that matches EIA_MECS
     for t, v in (load_yaml_dict('EPA_GHGI', 'FBA')
