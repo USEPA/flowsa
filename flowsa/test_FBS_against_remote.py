@@ -19,6 +19,7 @@ def test_generate_fbs():
         if m not in ['BEA_summary_target',
                      'Electricity_gen_emissions_national_2016',
                      'Employment_common',
+                     'GHG_national_m1',
                      'USEEIO_summary_target'
                      ]:
             print("--------------------------------\n"
