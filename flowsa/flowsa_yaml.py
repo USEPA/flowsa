@@ -122,6 +122,8 @@ def load(stream: IO, external_path: str = None) -> dict:
     loader = FlowsaLoader(stream)
     if external_path:
         loader.external_paths_to_search.append(external_path)
+        loader.external_paths_to_search.append(
+            f'{external_path}flowbysectormethods/')
         loader.external_path_to_pass = external_path
     try:
         return loader.get_single_data()
