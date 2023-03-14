@@ -702,23 +702,21 @@ def ghg_parse(*, df_list, year, config, **_):
     return cleaned_list
 
 
-def get_manufacturing_energy_ratios(year):
+def get_manufacturing_energy_ratios(parameter_dict):
     """Calculate energy ratio by fuel between GHGI and EIA MECS."""
     # flow correspondence between GHGI and MECS
     flow_corr = {'Industrial Other Coal': 'Coal',
                  'Natural Gas': 'Natural Gas',
+                 # 'Total Petroleum': (
+                 #     'Petroleum', ['Residual Fuel Oil',
+                 #                   'Distillate Fuel Oil',
+                 #                   'Hydrocarbon Gas Liquids, excluding natural gasoline',
+                 #                   ])
                  }
-
-    def closest_value(input_list, input_value):
-        difference = lambda input_list : abs(input_list - input_value)
-        return min(input_list, key=difference)
-
-    mecs_year = closest_value(load_yaml_dict('EIA_MECS_Energy',
-                                             flowbytype='FBA').get('years'),
-                              year)
+    mecs_year = parameter_dict.get('year')
 
     # Filter MECS for total national energy consumption for manufacturing sectors
-    mecs = load_fba_w_standardized_units(datasource='EIA_MECS_Energy',
+    mecs = load_fba_w_standardized_units(datasource=parameter_dict.get('energy_fba'),
                                          year=mecs_year,
                                          flowclass='Energy')
     mecs = (mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
@@ -727,29 +725,25 @@ def get_manufacturing_energy_ratios(year):
             .reset_index(drop=True))
     mecs = EIA_MECS.mecs_energy_fba_cleanup(mecs, None)
 
-    # Identify the GHGI table that matches EIA_MECS
-    for t, v in (load_yaml_dict('EPA_GHGI', 'FBA')
-                 .get('Annex').get('Annex 2').items()):
-        if ((v.get('class') == 'Energy')
-        & ('Energy Consumption Data' in v.get('desc'))
-        & (v.get('year') == str(mecs_year))):
-                table = f"EPA_GHGI_T_{t.replace('-', '_')}"
-                break
-    else:
-        log.error('unable to identify corresponding GHGI table')
-
-    ghgi = load_fba_w_standardized_units(datasource=table,
+    # Load energy consumption data by fuel from GHGI
+    ghgi = load_fba_w_standardized_units(datasource=parameter_dict.get('ghg_fba'),
                                          year=mecs_year,
                                          flowclass='Energy')
     ghgi = ghgi[ghgi['ActivityConsumedBy']=='Industrial'].reset_index(drop=True)
 
     pct_dict = {}
-    for ghgi_flow, mecs_flow in flow_corr.items():
+    for ghgi_flow, v in flow_corr.items():
+        if type(v) is tuple:
+            label = v[0]
+            mecs_flows = v[1]
+        else:
+            label = v
+            mecs_flows = [v]
         # Calculate percent energy contribution from MECS based on v
-        mecs_energy = mecs.loc[mecs['FlowName'] == mecs_flow, 'FlowAmount'].values[0]
+        mecs_energy = sum(mecs.loc[mecs['FlowName'].isin(mecs_flows), 'FlowAmount'].values)
         ghgi_energy = ghgi.loc[ghgi['FlowName'] == ghgi_flow, 'FlowAmount'].values[0]
         pct = np.minimum(mecs_energy / ghgi_energy, 1)
-        pct_dict[mecs_flow] = pct
+        pct_dict[label] = pct
 
     return pct_dict
 
@@ -762,12 +756,14 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
-    pct_dict = get_manufacturing_energy_ratios(source_dict.get('year'))
+    pct_dict = get_manufacturing_energy_ratios(source_dict['clean_parameter'])
 
     # activities reflect flows in A_14 and 3_8 and 3_9
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',
                            'Natural Gas Industrial': 'Natural Gas',
                            'Coal Industrial': 'Coal',
+                           # 'Total Petroleum Industrial': 'Petroleum',
+                           # 'Fuel Oil Industrial': 'Petroleum',
                            }
 
     for activity, fuel in activities_to_split.items():
@@ -783,10 +779,11 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     return fba
 
 
-def split_HFCs_by_type(fba, **_):
+def split_HFCs_by_type(fba, source_dict, **_):
     """Speciates HFCs and PFCs for all activities based on T_4_100.
     clean_fba_before_mapping_df_fxn"""
-    splits = load_fba_w_standardized_units(datasource='EPA_GHGI_T_4_100',
+    tbl = source_dict['clean_parameter']['flow_fba']
+    splits = load_fba_w_standardized_units(datasource=tbl,
                                            year=fba['Year'][0])
     splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
     splits = splits[['FlowName', 'pct']]
@@ -804,35 +801,37 @@ def split_HFCs_by_type(fba, **_):
     return speciated_df
 
 
-def subtract_HFC_transport_emissions(df):
+def subtract_HFC_transport_emissions(df, parameter_dict):
     """Remove the portion of transportation emissions which are sourced elsewhere."""
-    transport_df = load_fba_w_standardized_units(datasource='EPA_GHGI_T_A_97',
+    tbl = parameter_dict.get('transport_fba')
+    transport_df = load_fba_w_standardized_units(datasource=tbl,
                                                  year=df['Year'][0])
-    activity_list = ['Mobile AC', 'Comfort Cooling for Trains and Buses',
-                     'Refrigerated Transport'] # Total of all sub categories
+    activity_list = parameter_dict.get('transport_activities')
     transport_df = transport_df[transport_df['ActivityProducedBy'].isin(activity_list)]
-    df.loc[df['ActivityProducedBy'] == 'Refrigeration/Air Conditioning',
+    df.loc[df['ActivityProducedBy'] == parameter_dict.get('ods_activity'),
            'FlowAmount'] = df['FlowAmount'] - transport_df['FlowAmount'].sum()
     return df
 
 
-def allocate_HFC_to_residential(df):
+def allocate_HFC_to_residential(df, parameter_dict):
     """Split HFC emissions into two buckets to be further allocated.
 
     Calculate the portion of Refrigerants applied to households based on production of
     household: 335222
     industry: 333415
     """
-    make_df = load_fba_w_standardized_units(datasource='BEA_Make_Detail_BeforeRedef',
-                                            year=2012)
-    household = make_df[(make_df['ActivityProducedBy'] == '335222') &
-                        (make_df['ActivityConsumedBy'] == '335222')
+    make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
+                                            year=parameter_dict.get('make_year'))
+    h_sec = parameter_dict.get('household_make')
+    i_sec = parameter_dict.get('industry_make')
+    household = make_df[(make_df['ActivityProducedBy'] == h_sec) &
+                        (make_df['ActivityConsumedBy'] == h_sec)
                         ].reset_index()['FlowAmount'][0]
-    industry = make_df[(make_df['ActivityProducedBy'] == '333415') &
-                       (make_df['ActivityConsumedBy'] == '333415')
+    industry = make_df[(make_df['ActivityProducedBy'] == i_sec) &
+                       (make_df['ActivityConsumedBy'] == i_sec)
                        ].reset_index()['FlowAmount'][0]
 
-    activity = 'Refrigeration/Air Conditioning'
+    activity = parameter_dict.get('ods_activity')
     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
     df_subset['FlowAmount'] = df_subset[
         'FlowAmount'] * (household / (industry + household))
@@ -844,23 +843,25 @@ def allocate_HFC_to_residential(df):
     return df
 
 
-def split_HFC_foams(df):
+def split_HFC_foams(df, parameter_dict):
     """Split HFC emissions from foams into two buckets to be allocated separately.
 
     Calculate the portion for
     Polystyrene: 326140
     Urethane: 326150
     """
-    make_df = load_fba_w_standardized_units(datasource='BEA_Make_Detail_BeforeRedef',
-                                            year=2012)
-    polystyrene = make_df[(make_df['ActivityProducedBy'] == '326140') &
-                          (make_df['ActivityConsumedBy'] == '326140')
+    make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
+                                            year=parameter_dict.get('make_year'))
+    polys_sec = parameter_dict.get('polystyrene_make')
+    ure_sec = parameter_dict.get('urethane_make')
+    polystyrene = make_df[(make_df['ActivityProducedBy'] == polys_sec) &
+                          (make_df['ActivityConsumedBy'] == polys_sec)
                           ].reset_index()['FlowAmount'][0]
-    urethane = make_df[(make_df['ActivityProducedBy'] == '326150') &
-                       (make_df['ActivityConsumedBy'] == '326150')
+    urethane = make_df[(make_df['ActivityProducedBy'] == ure_sec) &
+                       (make_df['ActivityConsumedBy'] == ure_sec)
                        ].reset_index()['FlowAmount'][0]
 
-    activity = 'Foams'
+    activity = parameter_dict.get('foam_activity')
     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
     df_subset['FlowAmount'] = df_subset[
         'FlowAmount'] * (polystyrene / (urethane + polystyrene))
@@ -874,13 +875,14 @@ def split_HFC_foams(df):
     return df
 
 
-def clean_HFC_fba(fba, **_):
+def clean_HFC_fba(fba, source_dict, **_):
     """Adjust HFC emissions for improved parsing.
     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_102."""
-    df = subtract_HFC_transport_emissions(fba)
-    df = allocate_HFC_to_residential(df)
-    df = split_HFC_foams(df)
-    df = split_HFCs_by_type(df)
+    parameter_dict = source_dict['clean_parameter']
+    df = subtract_HFC_transport_emissions(fba, parameter_dict)
+    df = allocate_HFC_to_residential(df, parameter_dict)
+    df = split_HFC_foams(df, parameter_dict)
+    df = split_HFCs_by_type(df, source_dict)
     return df
 
 
@@ -895,7 +897,7 @@ def adjust_transport_activities(df, **_):
     clean_allocation_fba used in EPA_GHGI_T_A_14"""
     activities = {'Gasoline': ['Light-Duty Trucks',
                                'Passenger Cars'],
-                  'Distillate Fuel Oil (Diesel Fuel)':
+                  'Distillate Fuel Oil':
                       ['Medium- and Heavy-Duty Trucks',
                        'Buses'],
                  }
