@@ -277,7 +277,8 @@ def is_consumption(source_name, config):
     :param source_name: df
     :return: True or False
     """
-    if 'consum' in get_table_meta(source_name, config)['desc'].lower():
+    if ('consum' in get_table_meta(source_name, config)['desc'].lower() and
+        get_table_meta(source_name, config)['class']!='Chemicals'):
         return True
     return False
 
@@ -392,8 +393,6 @@ def ghg_parse(*, df_list, year, config, **_):
             df = df.melt(id_vars=id_vars,
                          var_name=meta.get('melt_var'),
                          value_name="FlowAmount")
-            df = df.rename(columns={"ActivityConsumedBy": "ActivityProducedBy",
-                                    "ActivityProducedBy": "ActivityConsumedBy"})
             name_unit = series_separate_name_and_units(df['FlowName'],
                                                        meta['activity'],
                                                        meta['unit'])

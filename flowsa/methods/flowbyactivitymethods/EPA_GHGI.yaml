@@ -108,6 +108,13 @@ Tables:
         "flow": "CO2"
         "desc": "Table 3-22b:  Adjusted Non-Energy Use Fossil Fuel Emissions"
 
+      "3-108":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "flow": "CO2"
+        "desc": "CO2 Emissions from Wood Consumption by End-Use Sector (MMT CO2 Eq.)"
+
 # Petroleum Systems
       "3-42":
         "class": "Chemicals"

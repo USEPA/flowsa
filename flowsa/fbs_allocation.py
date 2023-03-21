@@ -501,9 +501,6 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
     modified_fba_allocation = modified_fba_allocation[
             modified_fba_allocation['FlowAmount'] != 0].reset_index(drop=True)
 
-    # run sector aggregation
-    modified_fba_allocation = sector_aggregation(modified_fba_allocation)
-
     modified_fba_allocation.loc[
         modified_fba_allocation['Unit'] == 'gal/employee', 'Unit'] = 'gal'
 
@@ -515,6 +512,10 @@ def allocation_helper(df_w_sector, attr, method, v, download_FBA_if_missing):
                 attr,
                 download_FBA_if_missing=download_FBA_if_missing
             )
+
+    # run sector aggregation
+    modified_fba_allocation = sector_aggregation(modified_fba_allocation)
+
     return modified_fba_allocation
 
 
