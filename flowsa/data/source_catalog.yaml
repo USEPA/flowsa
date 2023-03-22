@@ -141,7 +141,7 @@ EIA_MECS_Land:
   class:
   - Land
   sector-like_activities: True
-  activity_schema:
+  activity_schema: NAICS_2012_Code
   sector_hierarchy: "parent-completeChild"
 EIA_MER:
   data_format: FBA
