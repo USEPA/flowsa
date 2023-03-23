@@ -38,7 +38,6 @@ source_names:
           default: NAICS_6
           '111150': { default: NAICS_7 }
           '111199': { default: NAICS_7 }
-          '111940': { default: NAICS_7 }
         selection_fields:
           PrimaryActivity:
             - "Irrigation Crop"
@@ -46,31 +45,32 @@ source_names:
         attribution_source:
           USDA_CoA_Cropland:
             year: 2017
+            selection_fields:
+              Class: "Land"
+              FlowName:
+                - "AREA HARVESTED, IRRIGATED"
+                - "AREA IN PRODUCTION, IRRIGATED"
+                - "AREA, IRRIGATED"
+                - 'AREA BEARING & NON-BEARING, IRRIGATED'
+                - 'AREA GROWN, IRRIGATED'
             activity_sets:
               cropland_attribution-pastureland:
                 selection_fields:
-                  Class: "Land"
-                  FlowName:
-                    - "AREA HARVESTED, IRRIGATED"
-                    - "AREA IN PRODUCTION, IRRIGATED"
-                    - "AREA, IRRIGATED"
-                    - 'AREA BEARING & NON-BEARING, IRRIGATED'
-                    - 'AREA GROWN, IRRIGATED'
                   PrimaryActivity: 'AG LAND, (EXCL HARVESTED CROPLAND)'
                 attribution_method: proportional
                 attribution_source:
                   USDA_CoA_Cropland_NAICS:
-                    # todo: estimate suppressed data
                     year: 2017
                     selection_fields:
                       Class: Land
                       FlowName:
                         - "FARM OPERATIONS"
+                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                    selection_fields_after_data_suppression_estimation:
                       PrimaryActivity: ["112111", "112112", "11212", "1122",
                                         "11231", "11232", "11233", "11234",
                                         "11239", "11241", "11242", "11291",
                                         "11292", "11293", "11299"]
-                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
                     attribution_method: multiplication
                     attribution_source:
                       USDA_IWMS: &usda_iwms
@@ -78,22 +78,8 @@ source_names:
                         selection_fields:
                           Class: Water
                         estimate_suppressed: !script_function:USDA_IWMS estimate_suppressed_iwms
-#                        attribution_method: proportional
-#                        attribution_source:
-#                          USDA_IWMS:
-#                            year: 2018
-#                            selection_fields:
-#                              Class: Land
-#                              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
               cropland_attribution-cropland:
                 selection_fields:
-                  Class: "Land"
-                  FlowName:
-                    - "AREA HARVESTED, IRRIGATED"
-                    - "AREA IN PRODUCTION, IRRIGATED"
-                    - "AREA, IRRIGATED"
-                    - 'AREA BEARING & NON-BEARING, IRRIGATED'
-                    - 'AREA GROWN, IRRIGATED'
                   PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
                                     'MUSTARD, SEED', 'RAPESEED',
                                     'SAFFLOWER', 'SESAME', 'SUNFLOWER',
@@ -117,7 +103,6 @@ source_names:
                 attribution_method: proportional
                 attribution_source:
                   USDA_CoA_Cropland_NAICS:
-                    # todo: estimate suppressed NAICS
                     year: 2017
                     selection_fields:
                       Class: Land
@@ -135,7 +120,39 @@ source_names:
                     attribution_method: multiplication
                     attribution_source:
                       USDA_IWMS:
+                        industry_spec:
+                          default: NAICS_6
+                          '111150': { default: NAICS_7 }
+                          '111199': { default: NAICS_7 }
+                          '111940': { default: NAICS_7 } # hay and haylage set to NAICS7 - will update to NAICS6
                         <<: *usda_iwms
+                        activity_sets:
+                          cropland_attribution-cropland-nonhay:
+                            selection_fields:
+                              PrimaryActivity: ['BEANS, DRY EDIBLE, INCL CHICKPEAS',
+                                                'BERRY TOTALS', 'CORN, GRAIN',
+                                'CORN, SILAGE', 'COTTON',  'CROPS, OTHER',
+                                'HORTICULTURE TOTALS', 'ORCHARDS',
+                                'PASTURELAND', 'PEANUTS', 'POTATOES', 'RICE',
+                                'SMALL GRAINS, OTHER', 'SORGHUM, GRAIN',
+                                'SOYBEANS', 'SWEET CORN', 'TOMATOES',
+                                'VEGETABLE TOTALS', 'WHEAT']
+                          cropland_attribution-cropland-hay:
+                            selection_fields:
+                              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)',
+                                                'HAY & HAYLAGE, ALFALFA']
+                            attribution_method: weighted_average
+                            replacement_dictionary: {'HAY & HAYLAGE, (EXCL ALFALFA)': 'HAY & HAYLAGE',
+                                                      'HAY & HAYLAGE, ALFALFA': 'HAY & HAYLAGE',
+                                                     '111940A': '111940',
+                                                     '111940B': '111940'}
+                            attribution_source:
+                              USDA_IWMS:
+                                year: 2018
+                                selection_fields:
+                                  Class: Land
+                                  PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
+                                estimate_suppressed: !script_function:USDA_IWMS estimate_suppressed_iwms
       livestock_attribution:
         industry_spec:
           default: NAICS_6
