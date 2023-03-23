@@ -1086,6 +1086,7 @@ class FlowByActivity(_FlowBy):
         # if the attribution method is not multiplication, check that new df
         # values equal original df values
         if attribution_method != 'multiplication':
+            # todo: add results from this if statement to validation log
             validation_fba = attributed_fba.assign(
                 validation_total=(attributed_fba.groupby('group_id')
                                   ['FlowAmount'].transform('sum'))
@@ -1440,20 +1441,13 @@ class FlowByActivity(_FlowBy):
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
-    def proportionally_attribute(
+    def harmonize_geoscale(
         self: 'FlowByActivity',
         other: 'FlowBySector'
     ) -> 'FlowByActivity':
-        '''
-        This method takes flows from the calling FBA which are mapped to
-        multiple sectors and attributes them to those sectors proportionally to
-        flows from other (an FBS).
-        '''
+
         fba_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
-
-        log.info('Attributing flows in %s using %s.',
-                 self.full_name, other.full_name)
 
         if other_geoscale < fba_geoscale:
             log.info('Aggregating %s from %s to %s', other.full_name,
@@ -1483,6 +1477,23 @@ class FlowByActivity(_FlowBy):
             .agg('sum')
             .reset_index()
         )
+
+        return fba_geoscale, other_geoscale, fba, other
+
+    def proportionally_attribute(
+        self: 'FlowByActivity',
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+        '''
+        This method takes flows from the calling FBA which are mapped to
+        multiple sectors and attributes them to those sectors proportionally to
+        flows from other (an FBS).
+        '''
+
+        log.info('Attributing flows in %s using %s.',
+                 self.full_name, other.full_name)
+
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(other)
 
         groupby_cols = ['group_id']
         for rank in ['Primary', 'Secondary']:
@@ -1571,40 +1582,11 @@ class FlowByActivity(_FlowBy):
         multiple sectors and multiplies them by flows from other (an FBS).
         """
 
-        fba_geoscale = geo.scale.from_string(self.config['geoscale'])
-        other_geoscale = geo.scale.from_string(other.config['geoscale'])
-
         log.info('Multiplying flows in %s by %s.',
                  self.full_name, other.full_name)
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
+            other)
 
-        if other_geoscale < fba_geoscale:
-            log.info('Aggregating %s from %s to %s', other.full_name,
-                     other_geoscale, fba_geoscale)
-            other = (
-                other
-                .convert_fips_to_geoscale(fba_geoscale)
-                .aggregate_flowby()
-            )
-        elif other_geoscale > fba_geoscale:
-            log.info('%s is %s, while %s is %s, so attributing %s to '
-                     '%s', other.full_name, other_geoscale, self.full_name,
-                     fba_geoscale, other_geoscale, fba_geoscale)
-            self = (
-                self
-                .assign(temp_location=self.Location)
-                .convert_fips_to_geoscale(other_geoscale,
-                                          column='temp_location')
-            )
-
-        fba = self.add_primary_secondary_columns('Sector')
-        other = (
-            other
-            .add_primary_secondary_columns('Sector')
-            [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
-            .groupby(['PrimarySector', 'Location', 'Unit'])
-            .agg('sum')
-            .reset_index()
-        )
         # todo: update units after multiplying
 
         # multiply using each dfs primary sector col
