@@ -1062,6 +1062,10 @@ class FlowByActivity(_FlowBy):
             attribution_fbs = fba.load_prepare_attribution_source()
             attributed_fba = fba.multiplication_attribution(attribution_fbs)
 
+        elif attribution_method == 'weighted_average':
+            attribution_fbs = fba.load_prepare_attribution_source()
+            attributed_fba = fba.weighted_average_attribution(attribution_fbs)
+
         else:
             if all(fba.groupby('group_id')['group_id'].agg('count') == 1):
                 log.info('No attribution needed for %s at the given industry '
@@ -1643,8 +1647,69 @@ class FlowByActivity(_FlowBy):
             .reset_index(drop=True)
         )
 
-    # def flagged_proportionally_attribute(self: 'FlowByActivity'):
-    #     raise NotImplementedError
+    def weighted_average_attribution(
+            self: 'FlowByActivity',
+            other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+        """
+        This method determines weighted average
+        """
+
+        log.info('Taking weighted average of %s by %s.',
+                 self.full_name, other.full_name)
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
+            other)
+
+        # merge dfs
+        merged = (fba
+                  .merge(other,
+                         how='left',
+                         left_on=['PrimarySector', 'temp_location'
+                         if 'temp_location' in fba
+                         else 'Location'],
+                         right_on=['PrimarySector', 'Location'],
+                         suffixes=[None, '_other'])
+                  .fillna({'FlowAmount_other': 0})
+                  )
+        # drop rows where flow is 0
+        merged = merged[merged['FlowAmount'] != 0]
+        # replace terms
+        for original, replacement in self.config.get(
+                'replacement_dictionary').items():
+            merged = merged.replace({original: replacement})
+
+        wt_flow = (merged
+                   .groupby(['Class', 'MetaSources', 'Flowable', 'Unit',
+                             'FlowType', 'ActivityProducedBy',
+                             'ActivityConsumedBy', 'Context', 'Location',
+                             'LocationSystem', 'Year', 'MeasureofSpread',
+                             'Spread', 'DistributionType', 'Min', 'Max',
+                             'DataReliability', 'DataCollection',
+                             'SectorProducedBy', 'ProducedBySectorType',
+                             'SectorConsumedBy', 'ConsumedBySectorType',
+                             'SectorSourceName'],
+                            dropna=False)
+                   .apply(lambda x: np.average(x['FlowAmount'],
+                                               weights=x['FlowAmount_other']))
+                   .drop(columns='FlowAmount')  # original flowamounts
+                   .reset_index(name='FlowAmount')  # new, weighted flows
+                   )
+        # set attributes todo: revise above code so don't lose attributes
+        attributes_to_save = {
+            attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+        }
+        for attr in attributes_to_save:
+            setattr(wt_flow, attr, attributes_to_save[attr])
+
+        # reset dropped information
+        wt_flow = (wt_flow
+                   .reset_index(drop=True).reset_index()
+                   .rename(columns={'index': 'group_id'})
+                   .assign(group_total=wt_flow.FlowAmount)
+                   )
+
+        return wt_flow
+
 
     def prepare_fbs(self: 'FlowByActivity') -> 'FlowBySector':
         if 'activity_sets' in self.config:
