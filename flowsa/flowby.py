@@ -1472,8 +1472,8 @@ class FlowByActivity(_FlowBy):
         other = (
             other
             .add_primary_secondary_columns('Sector')
-            [['PrimarySector', 'Location', 'FlowAmount']]
-            .groupby(['PrimarySector', 'Location'])
+            [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
+            .groupby(['PrimarySector', 'Location', 'Unit'])
             .agg('sum')
             .reset_index()
         )
@@ -1559,10 +1559,12 @@ class FlowByActivity(_FlowBy):
                                               * x.FlowAmount_other
                                               / x.denominator))
                 .drop(columns=['PrimarySector_other', 'Location_other',
-                               'FlowAmount_other', 'denominator'],
+                               'FlowAmount_other', 'denominator',
+                               'Unit_other'],
                       errors='ignore')
             )
-            fba = pd.concat([directly_attributed, proportionally_attributed])
+            fba = pd.concat([directly_attributed,
+                             proportionally_attributed], ignore_index=True)
             groupby_cols.append(f'{rank}Sector')
 
         return (
@@ -1757,7 +1759,7 @@ class FlowByActivity(_FlowBy):
                 .add_full_name(
                     f'{parent_fba.full_name}{NAME_SEP_CHAR}{activity_set}')
                 .select_by_fields(
-                    selection_fields=activity_config['selection_fields'])
+                    selection_fields=activity_config.get('selection_fields'))
             )
 
             child_fba.config = {**parent_config, **activity_config}
