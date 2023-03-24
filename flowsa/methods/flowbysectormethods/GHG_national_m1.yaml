@@ -320,50 +320,69 @@ source_names:
 
 
 ## Mobile Sources
-  "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
-    # year: # override this
-    fedefl_mapping: 'GHGI'
+  EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
+    fedefl_mapping: GHGI
     activity_sets:
-      direct:  #this set is direct
-        names:
-            - "Passenger Cars Gasoline On-Road"
-            - "Passenger Cars Diesel On-Road"
-            - "Light-Duty Trucks Gasoline On-Road"
-            - "Rail Non-Road"
-            - "Ships and Boats Non-Road"
-            - "Aircraft Non-Road"
-            - "Light-Duty Trucks Diesel On-Road"
-            - "Medium- and Heavy-Duty Trucks Diesel On-Road"
-            - "Medium- and Heavy-Duty Buses Diesel On-Road"
-            - "Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road"
-            - "Motorcycles Gasoline On-Road"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-      construction: #this set is allocated by purchases of construction equipment
-        <<: *use_allocation
-        names:
-          - "Construction/Mining Equipment Non-Road"
-        clean_parameter: {"333120": 'ActivityProducedBy'} # purchases of construction equipment
-      ag: #this set is allocated by purchases of farm machinery
-        <<: *use_allocation
-        names:
-          - "Agricultural Equipment Non-Road"
-        clean_parameter: {"333111": 'ActivityProducedBy'} # purchases of farm machinery
+      direct_attribution:
+        selection_fields:
+          PrimaryActivity:
+            - Passenger Cars Gasoline On-Road
+            - Passenger Cars Diesel On-Road
+            - Light-Duty Trucks Gasoline On-Road
+            - Light-Duty Trucks Diesel On-Road
+            - Rail Non-Road
+            - Ships and Boats Non-Road
+            - Aircraft Non-Road
+            - Medium- and Heavy-Duty Trucks and Buses Diesel On-Road
+            - Medium- and Heavy-Duty Buses Diesel On-Road
+            - Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road
+            - Motorcycles Gasoline On-Road
+        attribution_method: direct
+
+      construction_and_mining: #this set is allocated by purchases of construction equipment
+        selection_fields:
+          PrimaryActivity: Construction/Mining Equipment Non-Road
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'333120': ''} # purchases of construction/mining equipment
+
+      farm_non_road: #this set is allocated by purchases of farm machinery
+        selection_fields:
+          PrimaryActivity: Agricultural Equipment Non-Road
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'333111': ''} # purchases of farm machinery
+
       other_non_road: #this set is allocated by purchases of petroleum refining
-        <<: *use_allocation
-        names:
-          - "Other Non-Road"
-        clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery products
-      alternatives: #this set is allocated by purchases of natural gas
-        <<: *use_allocation
-        names:
-          - "Alternative Fuel On-Road"
-        clean_parameter: {"221200": 'ActivityProducedBy'} # purchases of natural gas
-  "EPA_GHGI_T_3_15": *mobile #N2O from mobile combustion duplicates method for CH4
+        selection_fields:
+          PrimaryActivity: Other Non-Road
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products
+
+      alt_fuel_on_road: #this set is allocated by purchases of natural gas
+        selection_fields:
+          PrimaryActivity:
+            - Alternative Fuel On-Road
+            - All activities Alternative Fuel On-Road  # corrected from "Alternative Fuel On-Road", which isn't in the source FBA.
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'221200': ''} # purchases of natural gas
+
+  EPA_GHGI_T_3_15: *mobile #N2O from mobile combustion duplicates method for CH4
+
 
 ## Major CO2 Sources
   "GHGI_CO2_stationary_combustion_and_transport": # CO2 emissions from stationary combustion and transportation
