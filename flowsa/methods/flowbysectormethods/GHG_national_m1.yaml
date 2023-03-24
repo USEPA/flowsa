@@ -216,44 +216,35 @@ source_names:
               ActivityProducedBy: {'325120': ''} # Industrial gases
 
 ## Fossil Fuels
-  "EPA_GHGI_T_3_68": &natgas #CH4 from Natural Gas Systems
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
+  EPA_GHGI_T_3_68: &natgas #CH4 from Natural Gas Systems
     # year: # override this
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      nat_gas:
-        names:
-          - "Distribution"
-          - "Distribution - Post-Meter"
-          - "Exploration"
-          - "Processing"
-          - "Production"
-          - "Transmission and Storage"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-  "EPA_GHGI_T_3_70": *natgas #CO2 from Natural Gas Systems mimics CH4
-  "EPA_GHGI_T_3_72": *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
-  "EPA_GHGI_T_3_42": &petroleum #CH4 from Petroleum Systems
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity:
+        - Distribution
+        - Distribution - Post-Meter
+        - Exploration
+        - Processing
+        - Production
+        - Transmission and Storage
+    attribution_method: direct
+  EPA_GHGI_T_3_70: *natgas #CO2 from Natural Gas Systems mimics CH4
+  EPA_GHGI_T_3_72: *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
+
+  EPA_GHGI_T_3_42: &petroleum #CH4 from Petroleum Systems
     # year: # override this
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      petroleum:
-        names:
-          - "Crude Oil Transportation"
-          - "Exploration"
-          - "Production"
-          - "Refining"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-  "EPA_GHGI_T_3_44": *petroleum #CO2 from Petroleum Systems mimics CH4
-  "EPA_GHGI_T_3_46": *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity:
+        - Crude Oil Transportation
+        - Transportation
+        - Exploration
+        - Production
+        - Refining
+        - Crude Refining
+    attribution_method: direct
+  EPA_GHGI_T_3_44: *petroleum #CO2 from Petroleum Systems mimics CH4
+  EPA_GHGI_T_3_46: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
 
 ## Agriculture
   "EPA_GHGI_T_5_28": #CH4, N2O, CO and NOx from field burning of residues
