@@ -247,46 +247,34 @@ source_names:
   EPA_GHGI_T_3_46: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
 
 ## Agriculture
-  "EPA_GHGI_T_5_28": #CH4, N2O, CO and NOx from field burning of residues
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override this
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        crops:
-          names:
-            - "Chickpeas"
-            - "Cotton"
-            - "Maize"
-            - "Rice"
-            - "Soybeans"
-            - "Wheat"
-          allocation_method: direct
-          allocation_source: None
-          allocation_from_scale: national
-  "EPA_GHGI_T_5_3":  &animals #CH4 from Enteric Fermentation
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
+  EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
     # year: # override this
-    fedefl_mapping: 'GHGI'
-    activity_sets:
-      animals:
-        names:
-          - "American Bison"
-          - "Beef Cattle"
-          - "Dairy Cattle"
-          - "Goats"
-          - "Horses"
-          - "Mules and Asses"
-          - "Sheep"
-          - "Swine"
-          - "Poultry"
-        allocation_method: direct
-        allocation_source: None
-        allocation_from_scale: national
-  "EPA_GHGI_T_5_6": *animals #CH4 and N2O from manure, mimics enteric fermentation
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity:
+        - Chickpeas
+        - Cotton
+        - Maize
+        - Rice
+        - Soybeans
+        - Wheat
+    attribution_method: direct
+  EPA_GHGI_T_5_3:  &animals #CH4 from Enteric Fermentation
+    # year: # override this
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity:
+        - American Bison
+        - Beef Cattle
+        - Dairy Cattle
+        - Goats
+        - Horses
+        - Mules and Asses
+        - Sheep
+        - Swine
+        - Poultry
+    attribution_method: direct
+  EPA_GHGI_T_5_6: *animals #CH4 and N2O from manure, mimics enteric fermentation
 
   "EPA_GHGI_T_5_17": #Direct N2O emissions from agricultural soils
     data_format: 'FBA'
