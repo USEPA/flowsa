@@ -17,6 +17,7 @@ from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
 from flowsa.common import load_yaml_dict
 from flowsa.data_source_scripts import EIA_MECS
+from flowsa.flowby import FlowByActivity
 
 
 SECTOR_DICT = {'Res.': 'Residential',
@@ -748,7 +749,7 @@ def get_manufacturing_energy_ratios(parameter_dict):
     return pct_dict
 
 
-def allocate_industrial_combustion(fba, source_dict, **_):
+def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
     """
     Split industrial combustion emissions into two buckets to be further allocated.
 
@@ -756,7 +757,7 @@ def allocate_industrial_combustion(fba, source_dict, **_):
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
-    pct_dict = get_manufacturing_energy_ratios(source_dict['clean_parameter'])
+    pct_dict = get_manufacturing_energy_ratios(fba.config.get('clean_parameter'))
 
     # activities reflect flows in A_14 and 3_8 and 3_9
     activities_to_split = {'Industrial Other Coal Industrial': 'Coal',

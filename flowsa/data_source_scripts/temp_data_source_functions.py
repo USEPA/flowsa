@@ -3,7 +3,7 @@ from flowsa import settings
 from flowsa.flowsa_log import log
 import pandas as pd
 import numpy as np
-from flowsa.data_source_scripts import EIA_MECS as mecs
+# from flowsa.data_source_scripts import EIA_MECS as mecs
 from flowsa.data_source_scripts import EPA_GHGI as ghgi
 from flowsa.data_source_scripts import USDA_CoA_Cropland as coa
 from flowsa.flowby import FlowByActivity
@@ -390,7 +390,7 @@ def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     mecs = (
         fba
         .assign(to_keep=fba.apply(
-            lambda x: not any([x.SectorConsumedBy.startswith(d)
+            lambda x: not any([str(x.SectorConsumedBy).startswith(d)
                                for d in x.descendants.split()]),
             axis='columns'
         ))

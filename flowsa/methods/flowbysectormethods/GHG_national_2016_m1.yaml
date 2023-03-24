@@ -89,10 +89,10 @@ source_names:
       !include:GHG_national_m1.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets
       petroleum:
         !include:GHG_national_m1.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:petroleum
-        allocation_source_year: *mecs_year
+        year: *mecs_year
       natural_gas:
         !include:GHG_national_m1.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:natural_gas
-        allocation_source_year: *mecs_year
+        year: *mecs_year
 
 ### Major CO2 Sources
   "EPA_GHGI_T_A_9":  # CO2 emissions from stationary combustion and transportation. This table number changes with year
@@ -103,14 +103,14 @@ source_names:
       !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets
       coal_manufacturing:
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:coal_manufacturing
-        allocation_source_year: *mecs_year
+        year: *mecs_year
       natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:natural_gas_manufacturing
-        allocation_source_year: *mecs_year
+        year: *mecs_year
     ### Transportation
       ng_transport: &transport_direct
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:ng_transport
-        allocation_source_year: *ghgi_year
+        year: *ghgi_year
       aviation_transport:
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:aviation_transport
         <<: *transport_direct
@@ -125,7 +125,7 @@ source_names:
         <<: *transport_direct
       dfo_transport: &transport_use
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:dfo_transport
-        allocation_source_year: *ghgi_year
+        year: *ghgi_year
       gasoline_transport:
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:gasoline_transport
         <<: *transport_use
@@ -138,10 +138,10 @@ source_names:
       !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_8:activity_sets
       coal_manufacturing:
         !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:coal_manufacturing
-        allocation_source_year: *mecs_year
+        year: *mecs_year
       ng_manufacturing:
         !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:ng_manufacturing
-        allocation_source_year: *mecs_year
+        year: *mecs_year
 
   "EPA_GHGI_T_3_9": # N2O emissions from stationary combustion
     !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9
@@ -151,7 +151,7 @@ source_names:
       !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9:activity_sets
       coal_manufacturing:
         !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:coal_manufacturing
-        allocation_source_year: *mecs_year
+        year: *mecs_year
       ng_manufacturing:
         !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:ng_manufacturing
-        allocation_source_year: *mecs_year
+        year: *mecs_year
