@@ -58,33 +58,30 @@ _allocation_types:
     year: 2012
     activity_to_sector_mapping: BEA_2012_Detail
 
-
   _cropland_allocation: &cropland_allocation
-    names:
-        - "Mineralization and Asymbiotic Fixation Cropland"
-        - "Drained Organic Soils Cropland"
-    allocation_source: "USDA_CoA_Cropland"
-    allocation_method: proportional
-    allocation_source_class: "Land"
-    # allocation_source_year: #override this 2017
-    allocation_flow:
-      - "AREA HARVESTED"
-      - "AREA BEARING & NON-BEARING" # Orchards
-      - "AREA GROWN" # Berry totals
-    allocation_from_scale: national
-    clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
+    USDA_CoA_Cropland:
+      year: 2017
+      selection_fields:
+        Class: Land
+        FlowName:
+          - AREA HARVESTED
+          - AREA BEARING & NON-BEARING # Orchards
+          - AREA GROWN # Berry totals
+      attribution_method: proportional
+      attribution_source:
+        USDA_CoA_Cropland_NAICS:
+          year: 2017
+          selection_fields:
+            Class: Land
+            FlowName: AG LAND, CROPLAND, HARVESTED
 
   _animal_land_allocation: &animal_land_allocation
-    names:
-        - "All activities Grassland"
-    allocation_method: proportional
-    allocation_source: "USDA_CoA_Cropland_NAICS"
-    allocation_source_class: "Land"
-    # allocation_source_year: #override this
-    allocation_flow:
-      - "FARM OPERATIONS"
-    allocation_compartment: None
-    allocation_from_scale: national
+    USDA_CoA_Cropland_NAICS:
+      year: 2017
+      selection_fields:
+        Class: Land
+        FlowName: FARM OPERATIONS
+      clean_fba: !script_function:temp_data_source_functions clean_usda_cropland_naics
 
   _transport_energy_use_allocation: &transport_energy_use_allocation
     allocation_method: proportional
@@ -276,41 +273,51 @@ source_names:
     attribution_method: direct
   EPA_GHGI_T_5_6: *animals #CH4 and N2O from manure, mimics enteric fermentation
 
-  "EPA_GHGI_T_5_17": #Direct N2O emissions from agricultural soils
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
+  EPA_GHGI_T_5_17: #Direct N2O emissions from agricultural soils
     # year: # override this
-    fedefl_mapping: 'GHGI'
+    fedefl_mapping: GHGI
     activity_sets:
-      fertilizer_use:  # allocated based on fertilizer use
-        <<: *use_allocation
-        names:
-            - "Organic Amendment Cropland"
-            - "Residue N Cropland"
-            - "Synthetic Fertilizer Cropland"
-        clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
-      land_area:
-        <<: *cropland_allocation
-        allocation_source_year: 2017
-      grassland: &grassland
-        <<: *animal_land_allocation
-        allocation_source_year: 2017
+      fertilizer_use: &fertilizer # allocated based on fertilizer use
+        selection_fields:
+          PrimaryActivity:
+            - Organic Amendment Cropland
+            - Residue N Cropland
+            - Synthetic Fertilizer Cropland
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325310': ''} # Fertilizers
 
-  "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
+      cropland: # allocated based on USDA land area harvested
+        selection_fields:
+          PrimaryActivity:
+            - Mineralization and Asymbiotic Fixation Cropland
+            - Drained Organic Soils Cropland
+        attribution_method: proportional
+        attribution_source: *cropland_allocation
+
+      pasture: &pasture # allocated based on USDA Animal operation land (acres)
+        selection_fields:
+          PrimaryActivity:
+            - All activities Grassland
+        attribution_method: proportional
+        attribution_source: *animal_land_allocation
+
+  EPA_GHGI_T_5_18: #Indirect N2O emissions from agricultural soils
     # year: # override this
-    fedefl_mapping: 'GHGI'
+    fedefl_mapping: GHGI
     activity_sets:
       fertilizer_use:  # allocated based on fertilizer use
-        <<: *use_allocation
-        names:
-            - "Volatilization & Atm. Deposition Cropland"
-            - "Surface Leaching & Run-Off Cropland"
-        clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
-      grassland: *grassland # allocated based on USDA Animal operation land (acres)
+        <<: *fertilizer
+        selection_fields:
+          PrimaryActivity:
+            - Volatilization & Atm. Deposition Cropland
+            - Surface Leaching & Run-Off Cropland
+      pasture:  # allocated based on USDA Animal operation land (acres)
+        <<: *pasture
+
 
 ## Mobile Sources
   "EPA_GHGI_T_3_14": &mobile #CH4 from mobile combustion
