@@ -113,104 +113,13 @@ EPA_GHGI,Ethylene Oxide,NAICS_2012_Code,325199,,325411 (incorrect in original?),
 EPA_GHGI,Methanol,NAICS_2012_Code,325199,,325411 (incorrect in original?),EPA_GHGI_T_4_46
 EPA_GHGI,Industry Industrial Coking Coal,NAICS_2012_Code,212210,,2122A0 (incorrect in original?),EPA_GHGI_T_3_22
 EPA_GHGI,Industry Industrial Other Coal,NAICS_2012_Code,212210,,2122A0 (incorrect in original?),EPA_GHGI_T_3_22
-EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,31,,"31, 32, 33",EPA_GHGI_T_3_22
-EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,31,,"31, 32, 33",EPA_GHGI_T_3_22
-EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry LPG,NAICS_2012_Code,31,,"31, 32, 33",EPA_GHGI_T_3_22
-EPA_GHGI,Industry LPG,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry LPG,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry LPG,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry LPG,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry LPG,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry LPG,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry HGL,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry HGL,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry HGL,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry HGL,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry HGL,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry HGL,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry HGL,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Lubricants,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Lubricants,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Lubricants,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Lubricants,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Lubricants,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Lubricants,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Lubricants,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Natural Gasoline,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Natural Gasoline,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Natural Gasoline,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Natural Gasoline,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Natural Gasoline,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Natural Gasoline,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Natural Gasoline,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Still Gas,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Still Gas,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Still Gas,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Still Gas,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Still Gas,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Still Gas,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Still Gas,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Waxes,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Waxes,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Waxes,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Waxes,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Waxes,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Waxes,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
-EPA_GHGI,Industry Waxes,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Products Non-energy,NAICS_2012_Code,31,,"31, 32, 33",EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Products Non-energy,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Products Non-energy,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Products Non-energy,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Products Non-energy,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Products Non-energy,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Products Non-energy,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
 EPA_GHGI,Industry Natural Gas to Chemical Plants,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
 EPA_GHGI,Industry Natural Gas to Chemical Plants,NAICS_2012_Code,32,,,EPA_GHGI_T_3_22
 EPA_GHGI,Industry Natural Gas to Chemical Plants,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22

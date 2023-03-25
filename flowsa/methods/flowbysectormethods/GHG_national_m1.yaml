@@ -643,23 +643,23 @@ source_names:
             - Industry Industrial Other Coal
         attribution_method: direct
 
-      petroleum_feedstocks: # consumed petroleum products
+      petroleum: # consumed petroleum products
         selection_fields:
           PrimaryActivity:
-            - Industry Asphalt & Road Oil
-            - Industry Distillate Fuel Oil
-            - Industry LPG
-            - Industry Lubricants
-            - Industry Miscellaneous Products
-            - Industry Naphtha (<401 F)
-            - Industry Other Oil (>401 F)
-            - Industry Pentanes Plus
-            - Industry Petroleum Coke
-            - Industry Special Naphtha
-            - Industry Still Gas
-            - Industry Waxes
-            - Industry Natural Gasoline #T_3_22. Also produced by nat gas plants
-            - Industry HGL #T_3_22. Also produced by nat gas plants
+            'Industry Asphalt & Road Oil': Industry Petroleum Products Non-energy
+            Industry Distillate Fuel Oil: Industry Petroleum Products Non-energy
+            Industry LPG: Industry Petroleum Products Non-energy
+            Industry Lubricants: Industry Petroleum Products Non-energy
+            Industry Miscellaneous Products: Industry Petroleum Products Non-energy
+            'Industry Naphtha (<401 F)': Industry Petroleum Products Non-energy
+            'Industry Other Oil (>401 F)': Industry Petroleum Products Non-energy
+            Industry Pentanes Plus: Industry Petroleum Products Non-energy
+            Industry Petroleum Coke: Industry Petroleum Products Non-energy
+            Industry Special Naphtha: Industry Petroleum Products Non-energy
+            Industry Still Gas: Industry Petroleum Products Non-energy
+            Industry Waxes: Industry Petroleum Products Non-energy
+            Industry Natural Gasoline: Industry Petroleum Products Non-energy #T_3_22. Also produced by nat gas plants
+            Industry HGL: Industry Petroleum Products Non-energy #T_3_22. Also produced by nat gas plants
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
