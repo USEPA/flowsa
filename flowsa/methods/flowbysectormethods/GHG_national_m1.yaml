@@ -106,7 +106,8 @@ source_names:
 
       electric_power:
         selection_fields:
-          PrimaryActivity: Electric Power Sector #CO2
+          PrimaryActivity:
+            Electric Power Sector: Electric Power #CO2
         attribution_method: proportional
         attribution_source:
           BEA_Make_Detail_BeforeRedef:
@@ -286,18 +287,29 @@ source_names:
       direct_attribution:
         selection_fields:
           PrimaryActivity:
-            - Passenger Cars Gasoline On-Road
-            - Passenger Cars Diesel On-Road
-            - Light-Duty Trucks Gasoline On-Road
-            - Light-Duty Trucks Diesel On-Road
-            - Rail Non-Road
-            - Ships and Boats Non-Road
-            - Aircraft Non-Road
-            - Medium- and Heavy-Duty Trucks and Buses Diesel On-Road
-            - Medium- and Heavy-Duty Buses Diesel On-Road
-            - Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road
-            - Motorcycles Gasoline On-Road
+            Rail Non-Road: Rail
+            Ships and Boats Non-Road: Ships and Boats
+            Aircraft Non-Road: General Aviation Aircraft
+            Motorcycles Gasoline On-Road: Motorcycles
+            Medium- and Heavy-Duty Trucks and Buses Diesel On-Road: Medium- and Heavy-Duty Trucks and Buses
+            Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road: Medium- and Heavy-Duty Trucks and Buses
         attribution_method: direct
+
+      petroleum_fuels:
+        selection_fields:
+          PrimaryActivity:
+            Passenger Cars Gasoline On-Road: Passenger Cars
+            Passenger Cars Diesel On-Road: Passenger Cars
+            Light-Duty Trucks Gasoline On-Road: Light-Duty Trucks
+            Light-Duty Trucks Diesel On-Road: Light-Duty Trucks
+            Medium- and Heavy-Duty Buses Diesel On-Road: Buses - Distillate Fuel Oil
+            Medium- and Heavy-Duty Trucks Diesel On-Road: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products
 
       construction_and_mining: #this set is allocated by purchases of construction equipment
         selection_fields:
@@ -332,8 +344,7 @@ source_names:
       alt_fuel_on_road: #this set is allocated by purchases of natural gas
         selection_fields:
           PrimaryActivity:
-            - Alternative Fuel On-Road
-            - All activities Alternative Fuel On-Road  # corrected from "Alternative Fuel On-Road", which isn't in the source FBA.
+            All activities Alternative Fuel On-Road: Alternative Fuel On-Road
         attribution_method: proportional
         attribution_source:
           BEA_Use_Detail_PRO_BeforeRedef:
@@ -750,8 +761,8 @@ source_names:
     fedefl_mapping: GHGI
     selection_fields:
       PrimaryActivity:
-        Mobile AC - Passenger Cars: Mobile AC - Passenger Cars # No name change
-        Mobile AC - Light-Duty Trucks: Mobile AC - Light-Duty Trucks # No name change
+        Mobile AC - Passenger Cars: Passenger Cars - Households
+        Mobile AC - Light-Duty Trucks: Light-Duty Trucks - Households
         Mobile AC - Heavy-Duty Vehicles: Heavy-Duty Vehicles
         Comfort Cooling for Trains and Buses - School and Tour Buses: School and Tour Buses
         # Comfort Cooling for Trains and Buses - Transit Buses: Transit Buses #excluded
