@@ -23,7 +23,7 @@ attribution_sources:
       selection_fields: &mecs_energy_default_selection
         Class: Energy # or Other (for non-energy use)
         Unit: Trillion Btu
-        # Flow: Coal # override this
+        # FlowName: Coal # override this
         Location: '00000'
         Description:
           - Table 2.2 # applies to Class Other
@@ -632,55 +632,77 @@ source_names:
         - Methanol
     attribution_method: direct
 
-  "GHGI_nonenergy_fossil_fuel_emissions": # Fossil fuel for non-energy uses
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: #override with ghgi_year
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        coal:
-          names:
-            - "Industry Industrial Coking Coal"
-            - "Industry Industrial Other Coal"
-          allocation_method: direct
-          allocation_from_scale: national
-        petroleum:
-          <<: *fuel_MECS
-          names: #Flows are from T_3_22b except where noted, as they change in T_3_22 post 2019
-            - "Industry Asphalt & Road Oil"
-            - "Industry Distillate Fuel Oil"
-            - "Industry LPG"
-            - "Industry Lubricants"
-            - "Industry Miscellaneous Products"
-            - "Industry Naphtha (<401 F)"
-            - "Industry Other Oil (>401 F)"
-            - "Industry Petroleum Coke"
-            - "Industry Special Naphtha"
-            - "Industry Still Gas"
-            - "Industry Waxes"
-            - "Industry Pentanes Plus"
-            - "Industry Natural Gasoline" #T_3_22. Also produced by nat gas plants
-            - "Industry HGL" #T_3_22. Also produced by nat gas plants
-          allocation_source_class: "Other" # nonfuel consumption
-          allocation_flow:
-            - "Residual Fuel Oil"
-            - "Distillate Fuel Oil"
-            - "Hydrocarbon Gas Liquids, excluding natural gasoline"
-          clean_parameter: {"324110": 'ActivityProducedBy'} # use purchases of petroleum refineries
-        natural_gas: # consumed nat gas to chemical plants
-          <<: *fuel_MECS
-          names:
-            - "Industry Natural Gas to Chemical Plants"
-          allocation_source_class: "Other" # nonfuel consumption
-          allocation_flow:
-            - "Natural Gas"
-          clean_parameter: {"221200": 'ActivityProducedBy'} #use purchases of natural gas distribution
-        transport_lubricants:
-          <<: *use_allocation
-          names:
-            - "Transportation Lubricants"
-          clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
+  GHGI_nonenergy_fossil_fuel_emissions: # Fossil fuel for non-energy uses
+    # year: #override with ghgi_year
+    fedefl_mapping: GHGI
+    activity_sets:
+      coal:
+        selection_fields:
+          PrimaryActivity:
+            - Industry Industrial Coking Coal
+            - Industry Industrial Other Coal
+        attribution_method: direct
+
+      petroleum_feedstocks: # consumed petroleum products
+        selection_fields:
+          PrimaryActivity:
+            - Industry Asphalt & Road Oil
+            - Industry Distillate Fuel Oil
+            - Industry LPG
+            - Industry Lubricants
+            - Industry Miscellaneous Products
+            - Industry Naphtha (<401 F)
+            - Industry Other Oil (>401 F)
+            - Industry Pentanes Plus
+            - Industry Petroleum Coke
+            - Industry Special Naphtha
+            - Industry Still Gas
+            - Industry Waxes
+            - Industry Natural Gasoline #T_3_22. Also produced by nat gas plants
+            - Industry HGL #T_3_22. Also produced by nat gas plants
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              Unit: Trillion Btu
+              FlowName: 
+                - Residual Fuel Oil
+                - Distillate Fuel Oil
+                - Hydrocarbon Gas Liquids, excluding natural gasoline
+            attribution_source:
+              BEA_Use_Detail_PRO_BeforeRedef:
+                <<: *bea
+                selection_fields:
+                  ActivityProducedBy: {'324110': ''} # purchases of refineries
+
+      natural_gas: # consumed nat gas to chemical plants
+        selection_fields:
+          PrimaryActivity: Industry Natural Gas to Chemical Plants
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              FlowName: Natural Gas
+              Unit: Trillion Btu
+            attribution_source:
+              BEA_Use_Detail_PRO_BeforeRedef:
+                <<: *bea
+                selection_fields:
+                  ActivityProducedBy: {'221200': ''} # purchases of natural gas
+
+      transportation_lubricants:
+        selection_fields:
+          PrimaryActivity: Transportation Lubricants
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # use of petroleum products
 
 ## Other Emissions
   EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
