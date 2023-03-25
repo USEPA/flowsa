@@ -619,24 +619,19 @@ source_names:
     <<: *stationary_combustion # N2O emissions from stationary combustion
 
 ## Other sources
-  "EPA_GHGI_T_4_46": #CO2 for selected petrochemicals
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override with ghgi_year
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        direct:
-          names:
-            - "Acrylonitrile"
-            - "Carbon Black"
-            - "Ethylene"
-            - "Ethylene Dichloride"
-            - "Ethylene Oxide"
-            - "Methanol"
-          allocation_method: direct
-          allocation_source: None
-          allocation_from_scale: national
+  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity:
+        - Acrylonitrile
+        - Carbon Black
+        - Ethylene
+        - Ethylene Dichloride
+        - Ethylene Oxide
+        - Methanol
+    attribution_method: direct
+
   "GHGI_nonenergy_fossil_fuel_emissions": # Fossil fuel for non-energy uses
       data_format: 'FBA'
       class: Chemicals
@@ -688,31 +683,21 @@ source_names:
           clean_parameter: {"324110": 'ActivityProducedBy'} # purchases of refinery
 
 ## Other Emissions
-  "EPA_GHGI_T_4_50": # HFCs from HCFC-22 production
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override with ghgi_year
-      clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI remove_HFC_kt
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        direct:
-          names:
-            - "HCFC-22 Production"
-          allocation_method: direct
-          allocation_from_scale: national
-  "EPA_GHGI_T_4_96": # HFCs and other emissions from electronics manufacture
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override with ghgi_year
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        direct:
-          names:
-            - "Electronics Production"
-          allocation_method: direct
-          allocation_from_scale: national
+  EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI
+    selection_fields:
+      Unit: MMT CO2e # drop records in kt
+      PrimaryActivity: HCFC-22 Production
+    attribution_method: direct
+
+  EPA_GHGI_T_4_96: # HFCs and other emissions from electronics manufacture
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity: Electronics Production
+    attribution_method: direct
+
   "EPA_GHGI_T_4_102": # HFCs and PFCs from ODS Substitutes
       data_format: 'FBA'
       class: Chemicals
@@ -774,27 +759,22 @@ source_names:
             - "Refrigerated Transport - Ships and Boats"
           allocation_method: direct
           allocation_from_scale: national
-  "EPA_GHGI_T_4_80": # PFCs from aluminum production
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override with ghgi_year
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        aluminum:
-          names:
-            - "Aluminum Production"
-          allocation_method: direct
-          allocation_from_scale: national
-  "EPA_GHGI_T_4_86": # HFCs, SF6, CO2 from magnesium production
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override with ghgi_year
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        magnesium:
-            <<: *make_allocation # Make table allocation
-            names:
-            - "Magnesium Production and Processing"
-            clean_parameter: {"T008": 'ActivityConsumedBy'} # Gross Output
+
+  EPA_GHGI_T_4_80: # PFCs from aluminum production
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity: Aluminum Production
+    attribution_method: direct
+
+  EPA_GHGI_T_4_86: # HFCs, SF6, CO2 from magnesium production
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity: Magnesium Production and Processing
+    attribution_method: proportional
+    attribution_source:
+      BEA_Make_Detail_BeforeRedef:
+        <<: *bea
+        selection_fields:
+          ActivityConsumedBy: {T008: ''}  # Total Output

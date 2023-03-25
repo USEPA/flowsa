@@ -887,12 +887,6 @@ def clean_HFC_fba(fba, source_dict, **_):
     return df
 
 
-def remove_HFC_kt(fba, **_):
-    """Remove records of emissions in kt, data are also provided in MMT CO2e.
-    clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_50."""
-    return fba.loc[fba['Unit'] != 'kt']
-
-
 def adjust_transport_activities(df, **_):
     """Update activity names for improved transportatin parsing.
     clean_allocation_fba used in EPA_GHGI_T_A_14"""
