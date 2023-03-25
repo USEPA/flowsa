@@ -720,40 +720,57 @@ source_names:
       PrimaryActivity: Electronics Production
     attribution_method: direct
 
-  "EPA_GHGI_T_4_102": # HFCs and PFCs from ODS Substitutes
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override with ghgi_year
-      clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI split_HFCs_by_type
-      clean_parameter:
-          # Proportions of specific HFCs are assigned based on national total
-          flow_fba: 'EPA_GHGI_T_4_100'
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        households:
-          names:
-            - "Domestic Refrigeration"
-            - "Residential Stationary Air Conditioning"
-          allocation_method: direct
-          allocation_from_scale: national
-        refrigerants:
-          <<: *use_allocation
-          names:
-            - "Commercial Refrigeration"
-            - "Industrial Process Refrigeration"
-          clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
-        air_conditioning:
-          <<: *use_allocation
-          names:
-            - "Commercial Stationary Air Conditioning"
-          clean_parameter: {"333415": 'ActivityProducedBy'} # Air conditioning equipment
-        foams:
-          <<: *use_allocation
-          names:
-            - "Foams"
-          clean_parameter: {"326140": 'ActivityProducedBy', # Polystyrene foam
-                            "326150": 'ActivityProducedBy'} # Urethane and other foam
+  EPA_GHGI_T_4_102: # HFCs and PFCs from ODS Substitutes
+    clean_fba_before_activity_sets: !script_function:EPA_GHGI split_HFCs_by_type
+    clean_parameter:
+        # Proportions of specific HFCs are assigned based on national total
+        flow_fba: EPA_GHGI_T_4_100
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI
+    activity_sets:
+      households:
+        selection_fields:
+          PrimaryActivity:
+            - Domestic Refrigeration
+            - Residential Stationary Air Conditioning
+        attribution_method: direct
+
+      refrigerants:
+        selection_fields:
+          PrimaryActivity:
+            - Commercial Refrigeration
+            - Industrial Process Refrigeration
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'333415': ''} # Air conditioning equipment
+
+      air_conditioning:
+        selection_fields:
+          PrimaryActivity:
+            - Commercial Stationary Air Conditioning
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'333415': ''} # Air conditioning equipment
+
+      foams:
+        selection_fields:
+          PrimaryActivity:
+            - Foams
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy:
+                '326140': '' # Polystyrene foam
+                '326150': '' # Urethane and other foam
+
       # 'Mobile Air Conditioning' and 'Transport Refrigeration' come from
       # different table.
       # Intentionally left out 'Solvents', 'Aerosols', 'Fire Protection'

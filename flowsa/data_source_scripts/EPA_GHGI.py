@@ -780,26 +780,35 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
     return fba
 
 
-def split_HFCs_by_type(fba, source_dict, **_):
+def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
     """Speciates HFCs and PFCs for all activities based on T_4_100.
     clean_fba_before_mapping_df_fxn"""
-    tbl = source_dict['clean_parameter']['flow_fba']
+
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
+
+    tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-100
     splits = load_fba_w_standardized_units(datasource=tbl,
                                            year=fba['Year'][0])
     splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
     splits = splits[['FlowName', 'pct']]
 
     speciated_df = fba.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
-                            axis=1, result_type='expand')
+                             axis=1, result_type='expand')
     speciated_df.columns = splits['FlowName']
-    speciated_df = pd.concat([fba, speciated_df], axis=1)
-    speciated_df = speciated_df.melt(id_vars=flow_by_activity_fields.keys(),
-                                     var_name='Flow')
-    speciated_df['FlowName'] = speciated_df['Flow']
-    speciated_df['FlowAmount'] = speciated_df['value']
-    speciated_df.drop(columns=['Flow', 'value'], inplace=True)
+    fba = pd.concat([fba, speciated_df], axis=1)
+    fba = (fba
+           .melt(id_vars=[c for c in flow_by_activity_fields.keys() if c in fba],
+                 var_name='Flow')
+           .drop(columns=['FlowName', 'FlowAmount'])
+           .rename(columns={'Flow': 'FlowName',
+                            'value': 'FlowAmount'}))
+    new_fba = FlowByActivity(fba)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
 
-    return speciated_df
+    return new_fba
 
 
 def subtract_HFC_transport_emissions(df, parameter_dict):
