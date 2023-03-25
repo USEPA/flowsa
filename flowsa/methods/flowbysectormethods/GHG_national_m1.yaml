@@ -775,29 +775,25 @@ source_names:
       # different table.
       # Intentionally left out 'Solvents', 'Aerosols', 'Fire Protection'
 
-  "EPA_GHGI_T_A_97": # HFCs from Transportation
-      data_format: 'FBA'
-      class: Chemicals
-      geoscale_to_use: national
-      # year: # override with ghgi_year
-      clean_fba_before_mapping_df_fxn: !script_function:EPA_GHGI split_HFCs_by_type
-      clean_parameter:
-          # Proportions of specific HFCs are assigned based on national total
-          flow_fba: 'EPA_GHGI_T_4_100'
-      fedefl_mapping: 'GHGI'
-      activity_sets:
-        direct:
-          names:
-            - "Mobile AC - Passenger Cars"
-            - "Mobile AC - Heavy-Duty Vehicles"
-            - "Mobile AC - Light-Duty Trucks"
-            - "Comfort Cooling for Trains and Buses - School and Tour Buses"
-            - "Comfort Cooling for Trains and Buses - Rail"
-            - "Refrigerated Transport - Medium- and Heavy-Duty Trucks"
-            - "Refrigerated Transport - Rail"
-            - "Refrigerated Transport - Ships and Boats"
-          allocation_method: direct
-          allocation_from_scale: national
+  EPA_GHGI_T_A_97: # HFCs from Transportation
+    # year: # override with ghgi_year
+    clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
+    clean_parameter:
+        # Proportions of specific HFCs are assigned based on national total
+        flow_fba: EPA_GHGI_T_4_100
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity:
+        Mobile AC - Passenger Cars: Mobile AC - Passenger Cars # No name change
+        Mobile AC - Light-Duty Trucks: Mobile AC - Light-Duty Trucks # No name change
+        Mobile AC - Heavy-Duty Vehicles: Heavy-Duty Vehicles
+        Comfort Cooling for Trains and Buses - School and Tour Buses: School and Tour Buses
+        # Comfort Cooling for Trains and Buses - Transit Buses: Transit Buses #excluded
+        Comfort Cooling for Trains and Buses - Rail: Rail
+        Refrigerated Transport - Medium- and Heavy-Duty Trucks: Medium- and Heavy-Duty Trucks
+        Refrigerated Transport - Rail: Rail
+        Refrigerated Transport - Ships and Boats: Ships and Boats
+    attribution_method: direct
 
   EPA_GHGI_T_4_80: # PFCs from aluminum production
     # year: # override with ghgi_year

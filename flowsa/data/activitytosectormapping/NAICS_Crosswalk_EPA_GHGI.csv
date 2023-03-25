@@ -551,15 +551,11 @@ EPA_GHGI,Foams,NAICS_2012_Code,92,,,EPA_GHGI_T_4_101
 EPA_GHGI,Foams,NAICS_2012_Code,F01000,,,EPA_GHGI_T_4_101
 EPA_GHGI,Solvents,,,,excluded,EPA_GHGI_T_4_101
 EPA_GHGI,Fire Protection,,,,excluded,EPA_GHGI_T_4_101
-EPA_GHGI,Mobile AC - Heavy-Duty Vehicles,NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_103
-EPA_GHGI,Mobile AC - Light-Duty Trucks,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_103
-EPA_GHGI,Refrigerated Transport - Medium- and Heavy-Duty Trucks,NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_103
-EPA_GHGI,Mobile AC - Passenger Cars,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_103
-EPA_GHGI,Comfort Cooling for Trains and Buses - Rail,NAICS_2012_Code,482,,482000,EPA_GHGI_T_A_103
-EPA_GHGI,Refrigerated Transport - Rail,NAICS_2012_Code,482,,482000,EPA_GHGI_T_A_103
-EPA_GHGI,Comfort Cooling for Trains and Buses - School and Tour Buses,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_103
-EPA_GHGI,Refrigerated Transport - Ships and Boats,NAICS_2012_Code,483,,483000,EPA_GHGI_T_A_103
-EPA_GHGI,Comfort Cooling for Trains and Buses - Transit Buses,,,,excluded,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_97
+EPA_GHGI,Mobile AC - Light-Duty Trucks,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_97
+EPA_GHGI,Mobile AC - Passenger Cars,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_97
+EPA_GHGI,School and Tour Buses,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_97
+EPA_GHGI,Transit Buses,,,,excluded,EPA_GHGI_T_A_97
 EPA_GHGI,Buses,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_79
 EPA_GHGI,Buses - Distillate Fuel Oil,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_79
 EPA_GHGI,Buses - Distillate Fuel Oil,NAICS_2012_Code,487,,48A000,EPA_GHGI_T_A_79
@@ -576,7 +572,7 @@ EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79
 EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,492,,492000,EPA_GHGI_T_A_79
 EPA_GHGI,Light-Duty Trucks - Gasoline,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79
 EPA_GHGI,Light-Duty Trucks - Gasoline,NAICS_2012_Code,492,,492000,EPA_GHGI_T_A_79
-EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_79
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,484,,484000,"EPA_GHGI_T_A_79, EPA_GHGI_T_A_97"
 EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil,NAICS_2012_Code,484,,484000,EPA_GHGI_T_A_79
 EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil,NAICS_2012_Code,92212,,S00203,EPA_GHGI_T_A_79
 EPA_GHGI,Medium- and Heavy-Duty Trucks - Distillate Fuel Oil,NAICS_2012_Code,92214,,,EPA_GHGI_T_A_79
@@ -590,9 +586,8 @@ EPA_GHGI,Passenger Cars - Gasoline,NAICS_2012_Code,922,,"S00600, GSLGO",EPA_GHGI
 EPA_GHGI,Passenger Cars - Gasoline,NAICS_2012_Code,491,,491000,EPA_GHGI_T_A_79
 EPA_GHGI,Pipelines,NAICS_2012_Code,486,,486000,EPA_GHGI_T_A_79
 EPA_GHGI,Pipeline Natural Gas,NAICS_2012_Code,486,,,EPA_GHGI_T_3_13
-EPA_GHGI,Rail,NAICS_2012_Code,482,,482000,EPA_GHGI_T_A_79
+EPA_GHGI,Rail,NAICS_2012_Code,482,,482000,"EPA_GHGI_T_A_79, EPA_GHGI_T_A_97"
 EPA_GHGI,Recreational Boats,NAICS_2012_Code,F01000,,F01000,EPA_GHGI_T_A_79
-EPA_GHGI,Ships and Boats,NAICS_2012_Code,4831,,483000,EPA_GHGI_T_A_79
-EPA_GHGI,Ships and Boats,NAICS_2012_Code,4832,,4-digit to avoid data loss in BLS_QCEW,EPA_GHGI_T_A_79
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,483,,483000,"EPA_GHGI_T_A_79, EPA_GHGI_T_A_97"
 EPA_GHGI,Ships and Non-Recreational Boats,NAICS_2012_Code,483,,483000,EPA_GHGI_T_A_79
 EPA_GHGI,Ships and Non-Recreational Boats Residual Fuel Oil,NAICS_2012_Code,483,,,EPA_GHGI_T_3_13
