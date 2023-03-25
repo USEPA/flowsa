@@ -38,20 +38,6 @@ attribution_sources:
       #     selection_fields:
       #       ActivityProducedBy: {'XXXXX': ''}
 
-  _use_allocation: &use_allocation
-    # names:  # override this
-    allocation_source: "BEA_Use_Detail_PRO_BeforeRedef"
-    activity_to_sector_mapping: "BEA_2012_Detail"
-    allocation_method: proportional
-    allocation_source_class: "Money"
-    allocation_source_year: 2012
-    allocation_flow:
-      - "USD2012"
-    allocation_compartment: None
-    allocation_from_scale: national
-    clean_allocation_fba_w_sec: !script_function:BEA subset_and_equally_allocate_BEA_table
-    # clean_parameter: # override this with dictionary like {"324110": 'ActivityProducedBy'}
-
   _cropland_allocation: &cropland_allocation
     USDA_CoA_Cropland:
       year: 2017
@@ -76,26 +62,6 @@ attribution_sources:
         Class: Land
         FlowName: FARM OPERATIONS
       clean_fba: !script_function:temp_data_source_functions clean_usda_cropland_naics
-
-  _transport_energy_use_allocation: &transport_energy_use_allocation
-    allocation_method: proportional
-    allocation_source: "EPA_GHGI_T_A_73" #Energy consumption by source and transport type
-    allocation_source_class: "Energy"
-    # allocation_source_year: # override with ghgi_year
-    # allocation_flow: # override with activity name, e.g.  ['Distillate Fuel Oil']
-    allocation_compartment: None
-    allocation_from_scale: national
-    clean_allocation_fba: !script_function:EPA_GHGI adjust_transport_activities
-    clean_allocation_fba_w_sec: !script_function:EPA_GHGI keep_six_digit_naics
-    helper_source: "BEA_Use_Detail_PRO_BeforeRedef"
-    helper_activity_to_sector_mapping: "BEA_2012_Detail"
-    helper_method: proportional
-    helper_source_class: "Money"
-    helper_source_year: 2012
-    helper_flow: ["USD2012"]
-    helper_from_scale: national
-    clean_helper_fba_wsec: !script_function:BEA subset_and_equally_allocate_BEA_table
-    clean_parameter: {"324110": 'ActivityProducedBy'} # use of petroleum products
 
 source_names:
   EPA_GHGI_T_2_1: #U.S. GHG emissions
@@ -466,48 +432,48 @@ source_names:
               ActivityProducedBy: {'324110': ''} # purchases of refinery products
 
     ### Transportation
-      ng_transport: &transport_direct
-        names:
-            - "Natural Gas Transportation"
-        allocation_method: proportional
-        allocation_source: "EPA_GHGI_T_A_73"
-        allocation_source_class: "Energy"
-        # allocation_source_year: *ghgi_year
-        allocation_flow: ['Natural Gas']
-        allocation_compartment: None
-        allocation_from_scale: national
-        activity_to_sector_aggregation_level: disaggregated
-      aviation_transport:
-        <<: *transport_direct
-        names:
-            - "Aviation Gasoline Transportation"
-        allocation_flow: ['Aviation Gasoline']
-      jet_transport:
-        <<: *transport_direct
-        names:
-            - "Jet Fuel Transportation"
-        allocation_flow: ['Jet Fuel']
-      lpg_transport:
-        <<: *transport_direct
-        names:
-            - "LPG (Propane) Transportation"
-        allocation_flow: ['LPG']
-      rfo_transport:
-        <<: *transport_direct
-        names:
-            - "Residual Fuel Transportation"
-        allocation_flow: ['Residual Fuel Oil']
-      dfo_transport:
-        <<: *transport_energy_use_allocation
-        names:
-            - "Distillate Fuel Oil Transportation"
-        # allocation_source_year: # override with ghgi_year
-        allocation_flow: ['Distillate Fuel Oil']
-      gasoline_transport:
-        <<: *transport_energy_use_allocation
-        names:
-            - "Motor Gasoline Transportation"
-        allocation_flow: ['Motor Gasoline']
+  EPA_GHGI_T_3_13: #CO2 from mobile combustion
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct_attribution:
+        selection_fields:
+          PrimaryActivity:
+            General Aviation Aircraft Aviation Gasoline: General Aviation Aircraft
+            General Aviation Aircraft Jet Fuel: General Aviation Aircraft
+            Commercial Aircraft Jet Fuel: Commercial Aircraft
+            Military Aircraft Jet Fuel: Military Aircraft
+            Buses Gasoline: Buses
+            Buses LPG: Buses
+            Buses Natural Gas: Buses
+            Pipeline Natural Gas: Pipeline Natural Gas
+            Motorcycles Gasoline: Motorcycles
+            Rail Distillate Fuel Oil: Rail
+            Recreational Boats Distillate Fuel Oil: Recreational Boats
+            Recreational Boats Gasoline: Recreational Boats
+            Ships and Non-Recreational Boats Distillate Fuel Oil: Ships and Non-Recreational Boats
+            Ships and Non-Recreational Boats Residual Fuel Oil: Ships and Non-Recreational Boats
+            Medium- and Heavy-Duty Trucks Gasoline: Medium- and Heavy-Duty Trucks
+            Medium- and Heavy-Duty Trucks LPG: Medium- and Heavy-Duty Trucks
+            Light-Duty Trucks LPG: Light-Duty Trucks - Households
+            Passenger Cars LPG: Passenger Cars - Households
+        attribution_method: direct
+
+      petroleum_fuels:
+        selection_fields:
+          PrimaryActivity:
+            Medium- and Heavy-Duty Trucks Distillate Fuel Oil: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
+            Buses Distillate Fuel Oil: Buses - Distillate Fuel Oil
+            Passenger Cars Distillate Fuel Oil: Passenger Cars
+            Passenger Cars Gasoline: Passenger Cars
+            Light-Duty Trucks Distillate Fuel Oil: Light-Duty Trucks
+            Light-Duty Trucks Gasoline: Light-Duty Trucks
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products
+
 
 ## Stationary Combustion
   EPA_GHGI_T_3_8:  &stationary_combustion # CH4 emissions from stationary combustion

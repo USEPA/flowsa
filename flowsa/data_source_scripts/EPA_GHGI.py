@@ -896,30 +896,31 @@ def clean_HFC_fba(fba, source_dict, **_):
     return df
 
 
-def adjust_transport_activities(df, **_):
-    """Update activity names for improved transportatin parsing.
-    clean_allocation_fba used in EPA_GHGI_T_A_14"""
-    activities = {'Gasoline': ['Light-Duty Trucks',
-                               'Passenger Cars'],
-                  'Distillate Fuel Oil':
-                      ['Medium- and Heavy-Duty Trucks',
-                       'Buses'],
-                 }
-    for k, v in activities.items():
-        df.loc[(df['ActivityConsumedBy'].isin(v)) &
-               (df['FlowName'] == k),
-               'ActivityConsumedBy'] = df['ActivityConsumedBy'] + f" - {k}"
-    return df
+# # No longer needed
+# def adjust_transport_activities(df, **_):
+#     """Update activity names for improved transportatin parsing.
+#     clean_allocation_fba used in EPA_GHGI_T_A_14"""
+#     activities = {'Gasoline': ['Light-Duty Trucks',
+#                                'Passenger Cars'],
+#                   'Distillate Fuel Oil':
+#                       ['Medium- and Heavy-Duty Trucks',
+#                        'Buses'],
+#                  }
+#     for k, v in activities.items():
+#         df.loc[(df['ActivityConsumedBy'].isin(v)) &
+#                (df['FlowName'] == k),
+#                'ActivityConsumedBy'] = df['ActivityConsumedBy'] + f" - {k}"
+#     return df
 
-
-def keep_six_digit_naics(df_w_sec, **_):
-    """Keep only activities at the 6-digit NAICS level
-    clean_allocation_fba_w_sec used for EPA_GHGI_T_A_73"""
-    df_w_sec = replace_NoneType_with_empty_cells(df_w_sec)
-    df_w_sec = df_w_sec.loc[
-        (df_w_sec['SectorProducedBy'].apply(lambda x: len(x) == 6)) |
-        (df_w_sec['SectorConsumedBy'].apply(lambda x: len(x) == 6))]
-    return df_w_sec
+# # No longer needed
+# def keep_six_digit_naics(df_w_sec, **_):
+#     """Keep only activities at the 6-digit NAICS level
+#     clean_allocation_fba_w_sec used for EPA_GHGI_T_A_73"""
+#     df_w_sec = replace_NoneType_with_empty_cells(df_w_sec)
+#     df_w_sec = df_w_sec.loc[
+#         (df_w_sec['SectorProducedBy'].apply(lambda x: len(x) == 6)) |
+#         (df_w_sec['SectorConsumedBy'].apply(lambda x: len(x) == 6))]
+#     return df_w_sec
 
 if __name__ == "__main__":
     import flowsa

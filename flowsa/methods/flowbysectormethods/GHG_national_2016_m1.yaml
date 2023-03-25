@@ -55,6 +55,9 @@ source_names:
   "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
     !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_5_18
     year: *ghgi_year
+  "EPA_GHGI_T_3_13": #CO2 from mobile combustion
+    !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_13
+    year: *ghgi_year
   "EPA_GHGI_T_3_14": #CH4 from mobile combustion
     !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_14
     year: *ghgi_year
@@ -95,7 +98,7 @@ source_names:
         year: *mecs_year
 
 ### Major CO2 Sources
-  "EPA_GHGI_T_A_9":  # CO2 emissions from stationary combustion and transportation. This table number changes with year
+  "EPA_GHGI_T_A_9":  # CO2 emissions from stationary combustion. This table number changes with year
     !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport
     year: *ghgi_year
     clean_parameter: *industrial_dict
@@ -107,28 +110,6 @@ source_names:
       natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:natural_gas_manufacturing
         year: *mecs_year
-    ### Transportation
-      ng_transport: &transport_direct
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:ng_transport
-        year: *ghgi_year
-      aviation_transport:
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:aviation_transport
-        <<: *transport_direct
-      jet_transport:
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:jet_transport
-        <<: *transport_direct
-      lpg_transport:
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:lpg_transport
-        <<: *transport_direct
-      rfo_transport:
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:rfo_transport
-        <<: *transport_direct
-      dfo_transport: &transport_use
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:dfo_transport
-        year: *ghgi_year
-      gasoline_transport:
-        !include:GHG_national_m1.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:gasoline_transport
-        <<: *transport_use
 
   "EPA_GHGI_T_3_8": # CH4 emissions from stationary combustion
     !include:GHG_national_m1.yaml:source_names:EPA_GHGI_T_3_8
