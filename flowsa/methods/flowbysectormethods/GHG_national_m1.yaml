@@ -396,8 +396,8 @@ source_names:
       non-manufacturing_coal:
         selection_fields:
           PrimaryActivity:
-            - Commercial Coal Commercial
-            - Industrial Other Coal Industrial
+            Commercial Coal Commercial: Coal Commercial
+            Industrial Other Coal Industrial: Coal Industrial
         attribution_method: proportional
         attribution_source:
           BEA_Use_Detail_PRO_BeforeRedef:
@@ -420,7 +420,7 @@ source_names:
       coal_manufacturing: # Industrial Coal for Manufacturing
         selection_fields:
           PrimaryActivity:
-            - Industrial Other Coal Industrial - Manufacturing
+            Industrial Other Coal Industrial - Manufacturing: Coal Industrial - Manufacturing
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -531,11 +531,11 @@ source_names:
       electric_power:
         selection_fields:
           PrimaryActivity:
-            - Coal Electric Power
-            - Natural Gas Electric Power
-            - Natural gas Electric Power # note lower case
-            - Fuel Oil Electric Power
-            - Wood Electric Power
+            Coal Electric Power: Coal Electric Power
+            Natural Gas Electric Power: Natural Gas Electric Power
+            Natural gas Electric Power: Natural Gas Electric Power # fix capitalization
+            Fuel Oil Electric Power: Fuel Oil Electric Power
+            Wood Electric Power: Wood Electric Power
         attribution_method: proportional
         attribution_source:
           BEA_Make_Detail_BeforeRedef:
@@ -558,10 +558,10 @@ source_names:
       natural_gas_nonmanufacturing:  # Commercial Natural gas
         selection_fields:
           PrimaryActivity:
-            - Natural gas Commercial
-            - Natural gas Industrial
-            - Natural Gas Commercial
-            - Natural Gas Industrial
+            Natural gas Commercial: Natural Gas Commercial # fix capitalization
+            Natural gas Industrial: Natural Gas Industrial # fix capitalization
+            Natural Gas Commercial: Natural Gas Commercial
+            Natural Gas Industrial: Natural Gas Industrial
         attribution_method: proportional
         attribution_source:
           BEA_Use_Detail_PRO_BeforeRedef:
