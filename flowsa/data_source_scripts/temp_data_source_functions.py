@@ -401,24 +401,25 @@ def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     return mecs
 
 
-def clean_hfc_fba(fba: FlowByActivity, **kwargs):
-    attributes_to_save = {
-        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
-    }
+## Fxn may no longer be necessary due to updated GHGI tables
+# def clean_hfc_fba(fba: FlowByActivity, **kwargs):
+#     attributes_to_save = {
+#         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+#     }
 
-    df = (
-        fba
-        .pipe(ghgi.subtract_HFC_transport_emissions)
-        .pipe(ghgi.allocate_HFC_to_residential)
-        .pipe(ghgi.split_HFC_foams)
-        .pipe(ghgi.split_HFCs_by_type)
-    )
+#     df = (
+#         fba
+#         .pipe(ghgi.subtract_HFC_transport_emissions)
+#         .pipe(ghgi.allocate_HFC_to_residential)
+#         .pipe(ghgi.split_HFC_foams)
+#         .pipe(ghgi.split_HFCs_by_type)
+#     )
 
-    new_fba = FlowByActivity(df)
-    for attr in attributes_to_save:
-        setattr(new_fba, attr, attributes_to_save[attr])
+#     new_fba = FlowByActivity(df)
+#     for attr in attributes_to_save:
+#         setattr(new_fba, attr, attributes_to_save[attr])
 
-    return new_fba
+#     return new_fba
 
 
 def clean_hfc_fba_for_seea(fba: FlowByActivity, **kwargs):
