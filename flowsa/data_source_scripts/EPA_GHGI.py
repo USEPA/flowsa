@@ -811,89 +811,90 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
     return new_fba
 
 
-def subtract_HFC_transport_emissions(df, parameter_dict):
-    """Remove the portion of transportation emissions which are sourced elsewhere."""
-    tbl = parameter_dict.get('transport_fba')
-    transport_df = load_fba_w_standardized_units(datasource=tbl,
-                                                 year=df['Year'][0])
-    activity_list = parameter_dict.get('transport_activities')
-    transport_df = transport_df[transport_df['ActivityProducedBy'].isin(activity_list)]
-    df.loc[df['ActivityProducedBy'] == parameter_dict.get('ods_activity'),
-           'FlowAmount'] = df['FlowAmount'] - transport_df['FlowAmount'].sum()
-    return df
+# # Fxn not actively used
+# def subtract_HFC_transport_emissions(df, parameter_dict):
+#     """Remove the portion of transportation emissions which are sourced elsewhere."""
+#     tbl = parameter_dict.get('transport_fba')
+#     transport_df = load_fba_w_standardized_units(datasource=tbl,
+#                                                  year=df['Year'][0])
+#     activity_list = parameter_dict.get('transport_activities')
+#     transport_df = transport_df[transport_df['ActivityProducedBy'].isin(activity_list)]
+#     df.loc[df['ActivityProducedBy'] == parameter_dict.get('ods_activity'),
+#            'FlowAmount'] = df['FlowAmount'] - transport_df['FlowAmount'].sum()
+#     return df
 
+# # Fxn not actively used
+# def allocate_HFC_to_residential(df, parameter_dict):
+#     """Split HFC emissions into two buckets to be further allocated.
 
-def allocate_HFC_to_residential(df, parameter_dict):
-    """Split HFC emissions into two buckets to be further allocated.
+#     Calculate the portion of Refrigerants applied to households based on production of
+#     household: 335222
+#     industry: 333415
+#     """
+#     make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
+#                                             year=parameter_dict.get('make_year'))
+#     h_sec = parameter_dict.get('household_make')
+#     i_sec = parameter_dict.get('industry_make')
+#     household = make_df[(make_df['ActivityProducedBy'] == h_sec) &
+#                         (make_df['ActivityConsumedBy'] == h_sec)
+#                         ].reset_index()['FlowAmount'][0]
+#     industry = make_df[(make_df['ActivityProducedBy'] == i_sec) &
+#                        (make_df['ActivityConsumedBy'] == i_sec)
+#                        ].reset_index()['FlowAmount'][0]
 
-    Calculate the portion of Refrigerants applied to households based on production of
-    household: 335222
-    industry: 333415
-    """
-    make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
-                                            year=parameter_dict.get('make_year'))
-    h_sec = parameter_dict.get('household_make')
-    i_sec = parameter_dict.get('industry_make')
-    household = make_df[(make_df['ActivityProducedBy'] == h_sec) &
-                        (make_df['ActivityConsumedBy'] == h_sec)
-                        ].reset_index()['FlowAmount'][0]
-    industry = make_df[(make_df['ActivityProducedBy'] == i_sec) &
-                       (make_df['ActivityConsumedBy'] == i_sec)
-                       ].reset_index()['FlowAmount'][0]
+#     activity = parameter_dict.get('ods_activity')
+#     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
+#     df_subset['FlowAmount'] = df_subset[
+#         'FlowAmount'] * (household / (industry + household))
+#     df_subset['ActivityProducedBy'] = f"{activity} - Households"
+#     df.loc[df['ActivityProducedBy'] == activity,
+#            'FlowAmount'] = df['FlowAmount'] * (industry / (industry + household))
+#     df = pd.concat([df, df_subset], ignore_index=True)
 
-    activity = parameter_dict.get('ods_activity')
-    df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
-    df_subset['FlowAmount'] = df_subset[
-        'FlowAmount'] * (household / (industry + household))
-    df_subset['ActivityProducedBy'] = f"{activity} - Households"
-    df.loc[df['ActivityProducedBy'] == activity,
-           'FlowAmount'] = df['FlowAmount'] * (industry / (industry + household))
-    df = pd.concat([df, df_subset], ignore_index=True)
+#     return df
 
-    return df
+# # Fxn not actively used
+# def split_HFC_foams(df, parameter_dict):
+#     """Split HFC emissions from foams into two buckets to be allocated separately.
 
+#     Calculate the portion for
+#     Polystyrene: 326140
+#     Urethane: 326150
+#     """
+#     make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
+#                                             year=parameter_dict.get('make_year'))
+#     polys_sec = parameter_dict.get('polystyrene_make')
+#     ure_sec = parameter_dict.get('urethane_make')
+#     polystyrene = make_df[(make_df['ActivityProducedBy'] == polys_sec) &
+#                           (make_df['ActivityConsumedBy'] == polys_sec)
+#                           ].reset_index()['FlowAmount'][0]
+#     urethane = make_df[(make_df['ActivityProducedBy'] == ure_sec) &
+#                        (make_df['ActivityConsumedBy'] == ure_sec)
+#                        ].reset_index()['FlowAmount'][0]
 
-def split_HFC_foams(df, parameter_dict):
-    """Split HFC emissions from foams into two buckets to be allocated separately.
+#     activity = parameter_dict.get('foam_activity')
+#     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
+#     df_subset['FlowAmount'] = df_subset[
+#         'FlowAmount'] * (polystyrene / (urethane + polystyrene))
+#     df_subset['ActivityProducedBy'] = f"{activity} - Polystyrene"
+#     df.loc[df['ActivityProducedBy'] == activity, 'FlowAmount'] = df[
+#         'FlowAmount'] * (urethane / (urethane + polystyrene))
+#     df.loc[df['ActivityProducedBy'] == activity,
+#            'ActivityProducedBy'] = f"{activity} - Urethane"
+#     df = pd.concat([df, df_subset], ignore_index=True)
 
-    Calculate the portion for
-    Polystyrene: 326140
-    Urethane: 326150
-    """
-    make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
-                                            year=parameter_dict.get('make_year'))
-    polys_sec = parameter_dict.get('polystyrene_make')
-    ure_sec = parameter_dict.get('urethane_make')
-    polystyrene = make_df[(make_df['ActivityProducedBy'] == polys_sec) &
-                          (make_df['ActivityConsumedBy'] == polys_sec)
-                          ].reset_index()['FlowAmount'][0]
-    urethane = make_df[(make_df['ActivityProducedBy'] == ure_sec) &
-                       (make_df['ActivityConsumedBy'] == ure_sec)
-                       ].reset_index()['FlowAmount'][0]
+#     return df
 
-    activity = parameter_dict.get('foam_activity')
-    df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
-    df_subset['FlowAmount'] = df_subset[
-        'FlowAmount'] * (polystyrene / (urethane + polystyrene))
-    df_subset['ActivityProducedBy'] = f"{activity} - Polystyrene"
-    df.loc[df['ActivityProducedBy'] == activity, 'FlowAmount'] = df[
-        'FlowAmount'] * (urethane / (urethane + polystyrene))
-    df.loc[df['ActivityProducedBy'] == activity,
-           'ActivityProducedBy'] = f"{activity} - Urethane"
-    df = pd.concat([df, df_subset], ignore_index=True)
-
-    return df
-
-
-def clean_HFC_fba(fba, source_dict, **_):
-    """Adjust HFC emissions for improved parsing.
-    clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_102."""
-    parameter_dict = source_dict['clean_parameter']
-    df = subtract_HFC_transport_emissions(fba, parameter_dict)
-    df = allocate_HFC_to_residential(df, parameter_dict)
-    df = split_HFC_foams(df, parameter_dict)
-    df = split_HFCs_by_type(df, source_dict)
-    return df
+# # Fxn not actively used
+# def clean_HFC_fba(fba, source_dict, **_):
+#     """Adjust HFC emissions for improved parsing.
+#     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_102."""
+#     parameter_dict = source_dict['clean_parameter']
+#     df = subtract_HFC_transport_emissions(fba, parameter_dict)
+#     df = allocate_HFC_to_residential(df, parameter_dict)
+#     df = split_HFC_foams(df, parameter_dict)
+#     df = split_HFCs_by_type(df, source_dict)
+#     return df
 
 
 # # No longer needed
