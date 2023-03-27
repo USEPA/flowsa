@@ -1166,7 +1166,7 @@ class FlowByActivity(_FlowBy):
 
                 # load master crosswalk
                 cw = common.load_crosswalk('sector_timeseries')
-                sectors = (cw[['NAICS_2012_Code']]
+                sectors = (cw[[f'NAICS_{target_year}_Code']]
                            .drop_duplicates()
                            .dropna()
                            )
@@ -1180,7 +1180,7 @@ class FlowByActivity(_FlowBy):
                             lambda x: x[0:dig]) == i]
                     if len(n) == 1:
                         expanded_n = sectors[
-                            sectors['NAICS_2012_Code'].apply(
+                            sectors[f'NAICS_{target_year}_Code'].apply(
                                 lambda x: x[0:dig] == i)]
                         expanded_n = expanded_n.assign(Sector=i)
                         naics_df = pd.concat([naics_df, expanded_n])
@@ -1189,9 +1189,9 @@ class FlowByActivity(_FlowBy):
                     existing_sectors
                     .merge(naics_df, how='left')
                     .assign(Sector=lambda x: np.where(
-                        x['NAICS_2012_Code'].isna(), x['Sector'],
-                        x['NAICS_2012_Code']))
-                    .drop(columns=['NAICS_2012_Code'])
+                        x[f'NAICS_{target_year}_Code'].isna(), x['Sector'],
+                        x[f'NAICS_{target_year}_Code']))
+                    .drop(columns=[f'NAICS_{target_year}_Code'])
                 )
 
                 target_naics = set(
