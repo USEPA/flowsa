@@ -4,7 +4,6 @@
 """
 Inventory of US GHGs from EPA disaggregated to States
 """
-import json
 import pandas as pd
 from flowsa.settings import externaldatapath
 from flowsa.location import apply_county_FIPS
@@ -15,40 +14,38 @@ import flowsa.exceptions
 def epa_state_ghgi_parse(*, source, year, config, **_):
 
     try:
-        with open(externaldatapath + config.get('file')) as f:
-            data = json.load(f)
+        data_df = pd.read_excel(externaldatapath + config.get('file'),
+                                sheet_name='Data by Econ Sect')
     except FileNotFoundError:
         raise FileNotFoundError('State GHGI data not yet available for '
                                 'external users')
 
-    data_df = pd.DataFrame(data)
-    activity_cols = ['SECTOR', 'SOURCE', 'SUBSOURCE', 'FUEL_TYPE',
-                     'SUB_REFERENCE', 'SECSUB_REFERENCE']
+    activity_cols = ['ECON_SECTOR', 'ECON_SOURCE', 'SUBSECTOR',
+                     'CATEGORY', 'FUEL', 'SUBCATEGORY1',
+                     'SUBCATEGORY2', 'SUBCATEGORY3', 'SUBCATEGORY4']
 
     states = data_df[['STATE']].drop_duplicates()
-    flows = data_df[['GHG_NAME']].drop_duplicates()
+    flows = data_df[['GHG']].drop_duplicates()
 
-    df = data_df.melt(id_vars = activity_cols + ['STATE'] + ['GHG_NAME'],
-                      value_vars=f'EMISSION_{year}',
-                      var_name = 'Year',
-                      value_name = 'FlowAmount')
-    df['Year'] = year
-    df['Unit'] = 'MMT CO2e' # TODO confirm units
-    df['FlowType'] = 'ELEMENTARY_FLOW'
-    df['SourceName'] = source
-    df['Class'] = 'Chemicals'
-    df['Compartment'] = 'air'
+    df = (data_df.melt(id_vars = activity_cols + ['STATE'] + ['GHG'],
+                       value_vars=f'Y{year}',
+                       var_name = 'Year',
+                       value_name = 'FlowAmount')
+                .assign(Year = year)
+                .assign(Unit = 'MMT CO2e') # TODO confirm units
+                .assign(FlowType = 'ELEMENTARY_FLOW')
+                .assign(SourceName = source)
+                .assign(Class = 'Chemicals')
+                .assign(Compartment = 'air')
+                .rename(columns={'STATE': 'State',
+                                 'GHG': 'FlowName'})
+                .assign(ActivityProducedBy = lambda x: x[activity_cols]
+                        .apply(lambda row: " - ".join(
+                            row.dropna().drop_duplicates().astype(str)),
+                               axis=1))
+                .drop(columns=activity_cols)
+                )
 
-    df.rename(columns={'STATE': 'State',
-                       'GHG_NAME': 'FlowName'},
-              inplace=True)
-
-    df['ActivityProducedBy'] = (df[activity_cols]
-                                .apply(lambda row: ' - '.join(
-                                      row.values.astype(str)), axis=1))
-    df['ActivityProducedBy'] = (df['ActivityProducedBy']
-                                .str.replace(' - None', ''))
-    df.drop(columns=activity_cols, inplace=True)
     activities = df[['ActivityProducedBy']].drop_duplicates()
 
     df = apply_county_FIPS(df)
