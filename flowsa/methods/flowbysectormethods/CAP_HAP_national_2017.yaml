@@ -191,6 +191,7 @@ source_names:
         attribution_source:
           BEA_GDP_GrossOutput:
             year: 2017
+            geoscale: national
             activity_to_sector_mapping: BEA_2012_Detail
             selection_fields:
               Class: Money

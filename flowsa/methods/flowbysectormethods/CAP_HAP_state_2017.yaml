@@ -6,6 +6,8 @@
 
 
 !include:BEA_summary_target.yaml
+year: 2017
+geoscale: state
 
 sources_to_cache:
   EIA_MECS_Energy:
@@ -203,6 +205,7 @@ source_names:
         attribution_source:
           stateio_Industry_GO:
             year: 2017
+            geoscale: state
             activity_to_sector_mapping: BEA_2012_Summary
             selection_fields:
               Class: Money
