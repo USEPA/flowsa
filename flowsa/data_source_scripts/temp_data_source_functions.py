@@ -3,7 +3,6 @@ from flowsa import settings
 from flowsa.flowsa_log import log
 import pandas as pd
 import numpy as np
-from flowsa.data_source_scripts import EIA_MECS as mecs
 from flowsa.data_source_scripts import EPA_GHGI as ghgi
 from flowsa.data_source_scripts import USDA_CoA_Cropland as coa
 from flowsa.flowby import FlowByActivity
@@ -388,7 +387,7 @@ def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     mecs = (
         fba
         .assign(to_keep=fba.apply(
-            lambda x: not any([x.SectorConsumedBy.startswith(d)
+            lambda x: not any([str(x.SectorConsumedBy).startswith(d)
                                for d in x.descendants.split()]),
             axis='columns'
         ))
@@ -397,26 +396,6 @@ def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     )
 
     return mecs
-
-
-def clean_hfc_fba(fba: FlowByActivity, **kwargs):
-    attributes_to_save = {
-        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
-    }
-
-    df = (
-        fba
-        .pipe(ghgi.subtract_HFC_transport_emissions)
-        .pipe(ghgi.allocate_HFC_to_residential)
-        .pipe(ghgi.split_HFC_foams)
-        .pipe(ghgi.split_HFCs_by_type)
-    )
-
-    new_fba = FlowByActivity(df)
-    for attr in attributes_to_save:
-        setattr(new_fba, attr, attributes_to_save[attr])
-
-    return new_fba
 
 
 def clean_hfc_fba_for_seea(fba: FlowByActivity, **kwargs):

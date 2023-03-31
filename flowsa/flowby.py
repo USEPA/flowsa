@@ -1166,7 +1166,7 @@ class FlowByActivity(_FlowBy):
 
                 # load master crosswalk
                 cw = common.load_crosswalk('sector_timeseries')
-                sectors = (cw[['NAICS_2012_Code']]
+                sectors = (cw[[f'NAICS_{target_year}_Code']]
                            .drop_duplicates()
                            .dropna()
                            )
@@ -1180,7 +1180,7 @@ class FlowByActivity(_FlowBy):
                             lambda x: x[0:dig]) == i]
                     if len(n) == 1:
                         expanded_n = sectors[
-                            sectors['NAICS_2012_Code'].apply(
+                            sectors[f'NAICS_{target_year}_Code'].apply(
                                 lambda x: x[0:dig] == i)]
                         expanded_n = expanded_n.assign(Sector=i)
                         naics_df = pd.concat([naics_df, expanded_n])
@@ -1189,9 +1189,9 @@ class FlowByActivity(_FlowBy):
                     existing_sectors
                     .merge(naics_df, how='left')
                     .assign(Sector=lambda x: np.where(
-                        x['NAICS_2012_Code'].isna(), x['Sector'],
-                        x['NAICS_2012_Code']))
-                    .drop(columns=['NAICS_2012_Code'])
+                        x[f'NAICS_{target_year}_Code'].isna(), x['Sector'],
+                        x[f'NAICS_{target_year}_Code']))
+                    .drop(columns=[f'NAICS_{target_year}_Code'])
                 )
 
                 target_naics = set(
@@ -1293,24 +1293,31 @@ class FlowByActivity(_FlowBy):
                      'industry/sector aggregation structure.')
             if self.config['sector_hierarchy'] == 'parent-completeChild':
                 existing_sectors = activity_to_source_naics_crosswalk[
-                    ['Sector']]
+                    ['Activity', 'Sector']]
 
                 # create list of sectors that exist in original df, which,
                 # if created when expanding sector list cannot be added
                 naics_df = pd.DataFrame([])
-                for i in existing_sectors['Sector']:
-                    dig = len(str(i))
-                    n = existing_sectors[
-                        existing_sectors['Sector'].apply(
-                            lambda x: x[0:dig]) == i]
-                    if len(n) == 1:
-                        expanded_n = naics_key[naics_key['source_naics'] == i]
-                        naics_df = pd.concat([naics_df, expanded_n])
+                for i in existing_sectors['Activity'].unique():
+                    existing_sectors_sub = existing_sectors[
+                        existing_sectors['Activity'] == i]
+                    for j in existing_sectors_sub['Sector']:
+                        dig = len(str(j))
+                        n = existing_sectors_sub[
+                            existing_sectors_sub['Sector'].apply(
+                                lambda x: x[0:dig]) == j]
+                        if len(n) == 1:
+                            expanded_n = naics_key[naics_key['source_naics']
+                                                   == j]
+                            expanded_n = expanded_n.assign(Activity=i)
+                            naics_df = pd.concat([naics_df, expanded_n])
 
                 activity_to_target_naics_crosswalk = (
                     activity_to_source_naics_crosswalk
-                    .merge(naics_df, how='left', left_on='Sector',
-                           right_on='source_naics')
+                    .merge(naics_df,
+                           how='left',
+                           left_on=['Activity', 'Sector'],
+                           right_on=['Activity', 'source_naics'])
                     .assign(Sector=lambda x: x['target_naics'])
                     .drop(columns=['source_naics', 'target_naics'])
                 )
