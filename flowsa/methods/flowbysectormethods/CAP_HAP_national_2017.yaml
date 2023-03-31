@@ -80,7 +80,8 @@ source_names:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv cropland
         attribution_method: proportional
-        attribution_source: *cropland_allocation
+        attribution_source:
+          USDA_CoA_Cropland: *cropland_allocation
 
       industry_combustion_coal:
         selection_fields:
@@ -149,7 +150,8 @@ source_names:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv livestock
         attribution_method: proportional
-        attribution_source: *livestock_allocation
+        attribution_source:
+          USDA_CoA_Livestock: *livestock_allocation
 
       mobile_and_fuel_storage:
         selection_fields:
