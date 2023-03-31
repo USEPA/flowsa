@@ -1149,7 +1149,7 @@ class FlowByActivity(_FlowBy):
                 log.info('NAICS Activities in %s use NAICS year %s.',
                          self.full_name, source_year)
 
-            if self.config['sector_hierarchy'] == 'parent-completeChild':
+            if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 log.info('NAICS are a mix of parent-completeChild, assigning '
                          'activity columns directly to sector columns')
 
