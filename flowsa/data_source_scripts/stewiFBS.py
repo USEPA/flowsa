@@ -299,6 +299,8 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
         [x for x in config.get('inventory_dict').keys()
          if x != 'RCRAInfo'])
     config['drop_unmapped_rows'] = True
+    if 'year' not in config:
+        config['year'] = df_load['Year'][0]
 
     # update location to appropriate geoscale prior to aggregating
     df = update_geoscale(df_load, config['geoscale'])

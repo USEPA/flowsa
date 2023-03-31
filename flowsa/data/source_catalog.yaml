@@ -286,6 +286,7 @@ StatCan_LFS:
   activity_schema:
   sector_hierarchy: "flat"
 stateio:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place
