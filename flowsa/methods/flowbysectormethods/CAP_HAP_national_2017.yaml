@@ -186,7 +186,7 @@ source_names:
 
       output_allocation: # Gross Output
         selection_fields:
-          PrimaryActivity: NEI_Nonpoint_2017_asets.csv output_allocation
+          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv output_allocation
         attribution_method: proportional
         attribution_source:
           BEA_GDP_GrossOutput:
