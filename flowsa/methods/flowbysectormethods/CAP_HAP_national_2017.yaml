@@ -82,7 +82,7 @@ source_names:
         attribution_method: proportional
         attribution_source: *cropland_allocation
 
-      industry_combustion_coal: #only allocating to 3digits
+      industry_combustion_coal:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coal
         attribution_method: proportional
@@ -91,7 +91,7 @@ source_names:
             selection_fields:
               Flowable: Coal
       
-      industry_combustion_coke: #only allocating to 3digits
+      industry_combustion_coke:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coke
         attribution_method: proportional
@@ -100,7 +100,7 @@ source_names:
             selection_fields:
               Flowable: Coke and Breeze
       
-      industry_combustion_distillate: #only allocating to 3digits
+      industry_combustion_distillate:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_distillate
         attribution_method: proportional
@@ -109,7 +109,7 @@ source_names:
             selection_fields:
               Flowable: Distillate Fuel Oil
       
-      industry_combustion_hgl: #only allocating to 3digits
+      industry_combustion_hgl:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_hgl
         attribution_method: proportional
@@ -118,7 +118,7 @@ source_names:
             selection_fields:
               Flowable: Hydrocarbon Gas Liquids, excluding natural gasoline
               
-      industry_combustion_nat_gas: #only allocating to 3digits
+      industry_combustion_nat_gas:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_nat_gas
         attribution_method: proportional
@@ -127,7 +127,7 @@ source_names:
             selection_fields:
               Flowable: Natural Gas
 
-      industry_combustion_other: #only allocating to 3digits
+      industry_combustion_other:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_other
         attribution_method: proportional
@@ -136,7 +136,7 @@ source_names:
             selection_fields:
               Flowable: Other
 
-      industry_combustion_residual: #only allocating to 3digits
+      industry_combustion_residual:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_residual
         attribution_method: proportional
@@ -145,7 +145,7 @@ source_names:
             selection_fields:
               Flowable: Residual Fuel Oil
 
-      livestock: #Livestock losing NAICS 11211
+      livestock:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv livestock
         attribution_method: proportional
@@ -171,7 +171,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'325310': ''}  # Fertilizers
 
-      pesticides: # pesticides
+      pesticides:
         clean_fba_before_mapping: !script_function:EPA_NEI drop_pesticides
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
