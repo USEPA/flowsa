@@ -1291,7 +1291,7 @@ class FlowByActivity(_FlowBy):
 
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
-            if self.config['sector_hierarchy'] == 'parent-completeChild':
+            if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 existing_sectors = activity_to_source_naics_crosswalk[
                     ['Activity', 'Sector']]
 

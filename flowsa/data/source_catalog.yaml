@@ -224,7 +224,7 @@ EPA_NEI_Nonpoint:
   sector-like_activities: False
   activity_schema: SCC
   fedefl_mapping: NEI
-  # sector_hierarchy: "flat"
+  sector_hierarchy: "flat"
 EPA_NEI_Nonroad:
   data_format: FBA
   class:
