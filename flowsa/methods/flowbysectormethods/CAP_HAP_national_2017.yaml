@@ -12,7 +12,6 @@ sources_to_cache:
       Class: Energy
       Unit: Trillion Btu
       Location: '00000'
-      # NEW EIA MECS Energy FBAs show tables in description
       Description:
           - Table 2.2
           - Table 3.2
@@ -36,6 +35,32 @@ _attribution_sources:
         data_format: FBS
         year: 2012
 
+  USDA_CoA_Cropland: &cropland_allocation
+    year: 2017
+    geoscale: state
+    selection_fields:
+      Class: Land
+      FlowName: AREA HARVESTED
+    attribution_method: proportional
+    attribution_source:
+      USDA_CoA_Cropland_NAICS:
+        year: 2017
+        geoscale: state
+        selection_fields:
+          Class: Land
+          FlowName: AG LAND, CROPLAND, HARVESTED
+
+  USDA_CoA_Livestock: &livestock_allocation
+    year: 2017
+    geoscale: state
+    selection_fields:
+        Class: Other
+        FlowName:
+          - HEAD
+          - NUMBER
+          - COLONIES
+        Compartment: NOT SPECIFIED
+
 source_names:
   EPA_NEI_Nonpoint:
     geoscale: state
@@ -55,21 +80,7 @@ source_names:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv cropland
         attribution_method: proportional
-        attribution_source:
-          USDA_CoA_Cropland:
-            year: 2017
-            geoscale: state
-            selection_fields:
-              Class: Land
-              FlowName: AREA HARVESTED
-            attribution_method: proportional
-            attribution_source:
-              USDA_CoA_Cropland_NAICS:
-                year: 2017
-                geoscale: state
-                selection_fields:
-                  Class: Land
-                  FlowName: AG LAND, CROPLAND, HARVESTED
+        attribution_source: *cropland_allocation
 
       industry_combustion_coal: #only allocating to 3digits
         selection_fields:
@@ -138,17 +149,7 @@ source_names:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv livestock
         attribution_method: proportional
-        attribution_source:
-          USDA_CoA_Livestock:
-            year: 2017
-            geoscale: state
-            selection_fields:
-                Class: Other
-                FlowName:
-                  - HEAD
-                  - NUMBER
-                  - COLONIES
-                Compartment: NOT SPECIFIED
+        attribution_source: *livestock_allocation
 
       mobile_and_fuel_storage:
         selection_fields:
@@ -250,9 +251,6 @@ source_names:
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
     local_inventory_name: NEI_TRI_air_2017
-    # temporarily maintain target_sector_level for
-    # allocation.equally_allocate_parent_to_child_naics()
-    target_sector_level: NAICS_6
     clean_fbs: !script_function:EPA_NEI drop_GHGs
     compartments:
      - air
