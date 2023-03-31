@@ -209,6 +209,7 @@ source_names:
     activity_to_sector_mapping: SCC
     clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
+    drop_unmapped_rows: True
     activity_sets:
       direct_allocation:
         selection_fields:
@@ -232,6 +233,7 @@ source_names:
     activity_to_sector_mapping: SCC
     clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
+    drop_unmapped_rows: True
     activity_sets:
       direct_allocation:
         selection_fields:
