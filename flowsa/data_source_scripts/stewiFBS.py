@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 from esupy.processed_data_mgmt import read_source_metadata
 from flowsa.flowby import FlowBySector, FlowByActivity
-from flowsa.location import apply_county_FIPS
+from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import log, process_adjustmentpath
 import stewicombo
 import stewi
@@ -292,7 +292,7 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     :param df_load: a dataframe of emissions and mapped faciliites from stewi
                     or stewicombo
     :param config: dictionary, FBS method data source configuration
-    :return: df
+    :return: FlowBySector
     """
     config['sector-like_activities']=True
     config['fedefl_mapping'] = (
@@ -301,8 +301,10 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     config['drop_unmapped_rows'] = True
 
     # update location to appropriate geoscale prior to aggregating
+    df = update_geoscale(df_load, config['geoscale'])
+
     fbs = FlowByActivity(
-            df_load
+            df
             .rename(columns={"NAICS": "ActivityProducedBy",
                              'Source': 'SourceName'})
             .assign(Class='Chemicals')
