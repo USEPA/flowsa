@@ -131,7 +131,7 @@ def standardize_units(df):
     # class = money, unit = USD
     if df['Unit'].str.contains('Canadian Dollar').any():
         exchange_rate = float(get_Canadian_to_USD_exchange_rate(
-            str(df['Year'].unique()[0])))
+            df['Year'].unique()[0]))
         df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Canadian Dollar',
                                            df['FlowAmount'] / exchange_rate,
                                            df['FlowAmount'])

@@ -1,84 +1,171 @@
-%YAML 1.1
+# Attribute USGS NWIS water withdrawal to sectors.
 
----
+industry_spec:
+  default: NAICS_6
+year: 2015
+target_naics_year: 2012
+geoscale: national
 
-target_sector_level: NAICS_6
-target_sector_source: NAICS_2012_Code
-target_geoscale: national
 source_names:
   "USGS_NWIS_WU":
-    data_format: 'FBA'
-    class: Water
-    geoscale_to_use: state
-    year: 2015
-    clean_fba_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
-    clean_fba_w_sec_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
+    fedefl_mapping: USGS_NWIS_WU
+    geoscale: state
+    clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    clean_fba_w_sec: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
     activity_sets:
-      activity_set_1:
-        names:
-        - "Aquaculture"
-        - "Irrigation Golf Courses"
-        - "Public Supply"
-        - "Thermoelectric Power"
-        - "Domestic"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: state
-      activity_set_2:
-        names:
-        - "Industrial"
-        - "Mining"
-        allocation_method: proportional
-        allocation_source: "BLS_QCEW"
-        allocation_source_class: "Employment"
-        allocation_source_year: 2015
-        allocation_compartment: None
-        allocation_from_scale: national
-        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_3:
-        names:
-        - "Irrigation Crop"
-        allocation_method: proportional
-        allocation_source: "USDA_CoA_Cropland"
-        allocation_source_class: "Land"
-        allocation_source_year: 2017
-        allocation_flow:
-          - "AREA HARVESTED, IRRIGATED"
-          - "AREA IN PRODUCTION, IRRIGATED"
-          - "AREA, IRRIGATED"
-          - 'AREA BEARING & NON-BEARING, IRRIGATED'
-          - 'AREA GROWN, IRRIGATED'
-        allocation_compartment: None
-        allocation_from_scale: state
-        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
-        helper_source: "USDA_IWMS"
-        helper_method: multiplication
-        helper_source_class: "Water"
-        helper_source_year: 2018
-        helper_flow: None
-        helper_from_scale: state
-        clean_helper_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
-      activity_set_4:
-        names:
-        - "Livestock"
-        allocation_method: proportional
-        allocation_source: "USDA_CoA_Livestock"
-        allocation_source_class: "Other"
-        allocation_source_year: 2017
-        allocation_flow:
-          - "HEAD"
-          - "NUMBER"
-          - "COLONIES"
-        allocation_compartment:
-          - "NOT SPECIFIED"
-        allocation_from_scale: state
-        helper_source: "USGS_WU_Coef"
-        helper_method: multiplication
-        helper_source_class: "Water"
-        helper_source_year: 2005
-        helper_flow: None
-        helper_from_scale: national
+      direct_attribution:
+        selection_fields:
+          PrimaryActivity:
+          - "Aquaculture"
+          - "Irrigation Golf Courses"
+          - "Public Supply"
+          - "Thermoelectric Power"
+          - "Domestic"
+        attribution_method: direct
+      employment_attribution:
+        selection_fields:
+          PrimaryActivity:
+          - "Industrial"
+          - "Mining"
+        attribution_method: proportional
+        attribution_source:
+          Employment_national_2015:
+            geoscale: national
+            data_format: FBS
+            year: 2015
+      cropland_attribution:
+        industry_spec:
+          default: NAICS_6
+          '111150': { default: NAICS_7 }
+          '111199': { default: NAICS_7 }
+          '111940': { default: NAICS_7 }
+        selection_fields:
+          PrimaryActivity:
+            - "Irrigation Crop"
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            year: 2017
+            activity_sets:
+              cropland_attribution-pastureland:
+                selection_fields:
+                  Class: "Land"
+                  FlowName:
+                    - "AREA HARVESTED, IRRIGATED"
+                    - "AREA IN PRODUCTION, IRRIGATED"
+                    - "AREA, IRRIGATED"
+                    - 'AREA BEARING & NON-BEARING, IRRIGATED'
+                    - 'AREA GROWN, IRRIGATED'
+                  PrimaryActivity: 'AG LAND, (EXCL HARVESTED CROPLAND)'
+                attribution_method: proportional
+                attribution_source:
+                  USDA_CoA_Cropland_NAICS:
+                    # todo: estimate suppressed data
+                    year: 2017
+                    selection_fields:
+                      Class: Land
+                      FlowName:
+                        - "FARM OPERATIONS"
+                      PrimaryActivity: ["112111", "112112", "11212", "1122",
+                                        "11231", "11232", "11233", "11234",
+                                        "11239", "11241", "11242", "11291",
+                                        "11292", "11293", "11299"]
+                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                    attribution_method: multiplication
+                    attribution_source:
+                      USDA_IWMS: &usda_iwms
+                        year: 2018
+                        selection_fields:
+                          Class: Water
+                        estimate_suppressed: !script_function:USDA_IWMS estimate_suppressed_iwms
+#                        attribution_method: proportional
+#                        attribution_source:
+#                          USDA_IWMS:
+#                            year: 2018
+#                            selection_fields:
+#                              Class: Land
+#                              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
+              cropland_attribution-cropland:
+                selection_fields:
+                  Class: "Land"
+                  FlowName:
+                    - "AREA HARVESTED, IRRIGATED"
+                    - "AREA IN PRODUCTION, IRRIGATED"
+                    - "AREA, IRRIGATED"
+                    - 'AREA BEARING & NON-BEARING, IRRIGATED'
+                    - 'AREA GROWN, IRRIGATED'
+                  PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
+                                    'MUSTARD, SEED', 'RAPESEED',
+                                    'SAFFLOWER', 'SESAME', 'SUNFLOWER',
+                                    'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL
+                                    LIMA), INCL CHICKPEAS', 'BEANS, DRY
+                                    EDIBLE, (EXCL CHICKPEAS & LIMA)',
+                    'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
+                    'PEAS, DRY EDIBLE', 'PEAS, DRY, SOUTHERN (COWPEAS)',
+                    'WHEAT', 'CORN', 'CORN, GRAIN', 'CORN, SILAGE',
+                    'POPCORN, SHELLED', 'RICE', 'BARLEY', 'BUCKWHEAT',
+                    'MILLET, PROSO', 'OATS', 'RYE', 'SORGHUM, GRAIN',
+                    'SORGHUM, SILAGE', 'SORGHUM, SYRUP', 'TRITICALE', 'WILD
+                    RICE', 'VEGETABLE TOTALS', 'ORCHARDS',
+                    'BERRY TOTALS', 'CUT CHRISTMAS TREES', 'SHORT TERM WOODY
+                     CROPS', 'TOBACCO', 'COTTON', 'SUGARCANE, SUGAR',
+                    'SUGARCANE, SEED', 'HAY & HAYLAGE', 'SUGARBEETS',
+                    'SUGARBEETS, SEED', 'PEANUTS', 'GRASSES &
+                    LEGUMES TOTALS, SEED', 'HERBS, DRY', 'HOPS',
+                    'MINT, OIL', 'MISCANTHUS', 'MINT, TEA LEAVES',
+                    'FIELD CROPS, OTHER']
+                attribution_method: proportional
+                attribution_source:
+                  USDA_CoA_Cropland_NAICS:
+                    # todo: estimate suppressed NAICS
+                    year: 2017
+                    selection_fields:
+                      Class: Land
+                      FlowName:
+                        - "AG LAND, CROPLAND, HARVESTED"
+                      PrimaryActivity: ["11111", "11112", "11113", "11114",
+                                        "11115", "11116", "11119", "111211",
+                                        "111219", "11131",
+                                        "11132", "111331", "111332",
+                                        "111333", "111334", "111335",
+                                        "111336", "111339", "11141",
+                                        "111421", "111422", "11191", "11192",
+                                        "11193", "11194", "11199"]
+                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                    attribution_method: multiplication
+                    attribution_source:
+                      USDA_IWMS:
+                        <<: *usda_iwms
+      livestock_attribution:
+        industry_spec:
+          default: NAICS_6
+          '112130': { default: NAICS_7 }
+          '112320': { default: NAICS_7 }
+          '112390': { default: NAICS_7 }
+          '112910': { default: NAICS_7 }
+          '112920': { default: NAICS_7 }
+          '112930': { default: NAICS_7 }
+          '112990': { default: NAICS_7 }
+        selection_fields:
+          PrimaryActivity:
+            - "Livestock"
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Livestock:
+            year: 2017
+            selection_fields:
+              Class: Other
+              FlowName:
+                - "HEAD"
+                - "NUMBER"
+                - "COLONIES"
+              Compartment:
+                - "NOT SPECIFIED"
+            attribution_method: multiplication
+            attribution_source:
+              USGS_WU_Coef:
+                industry_spec:
+                  default: NAICS_6
+                year: 2005
+                geoscale: national
+                attribution_method: direct

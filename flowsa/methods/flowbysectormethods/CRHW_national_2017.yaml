@@ -1,10 +1,12 @@
-target_sector_level: NAICS_6
-target_sector_source: NAICS_2012_Code
-target_geoscale: national
+industry_spec:
+  default: NAICS_6
+year: 2017
+geoscale: national
 source_names:
-  "stewiFBS":
-    data_format: 'FBS_outside_flowsa'
+  stewiFBS:
+    data_format: FBS_outside_flowsa
     FBS_datapull_fxn: !script_function:stewiFBS stewi_to_sector
+    # Below are arguments needed by the stewicombo_to_sector function
     inventory_dict: {"RCRAInfo":"2017"}
     compartments:
-      - 'waste'
+      - waste

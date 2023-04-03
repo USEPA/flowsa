@@ -15,7 +15,7 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import sector_level_key, \
     load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
-    fba_default_grouping_fields, check_activities_sector_like
+    fba_mapped_default_grouping_fields, check_activities_sector_like
 from flowsa.location import US_FIPS, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
 
@@ -304,10 +304,10 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     # Because code will sometimes change terminology, aggregate
     # data by context and flowable to compare df differences
     # subset df
-    dfs = df[['Flowable', 'Context', 'ActivityProducedBy',
+    dfs = df[['FlowName', 'Compartment', 'ActivityProducedBy',
               'ActivityConsumedBy', 'FlowAmount_Original',
               'FlowAmount_Modified', 'Unit', 'geoscale']]
-    agg_cols = ['Flowable', 'Context', 'ActivityProducedBy',
+    agg_cols = ['FlowName', 'Compartment', 'ActivityProducedBy',
                 'ActivityConsumedBy', 'Unit', 'geoscale']
     dfagg = dfs.groupby(
         agg_cols, dropna=False, as_index=False).agg(
@@ -328,7 +328,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
             columns=['ActivityProducedBy', 'ActivityConsumedBy',
                      'FlowAmount_Difference', 'Percent_Difference'])
         dfagg4 = dfagg3.groupby(
-            ['Flowable', 'Context', 'Unit', 'geoscale'],
+            ['FlowName', 'Compartment', 'Unit', 'geoscale'],
             dropna=False, as_index=False).agg(
             {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
         # column calculating difference
@@ -969,10 +969,14 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     # load second file
     if compare_to_remote:
         # Generate the FBS locally and then immediately load
-        flowsa.flowbysector.main(method=fbs2,
-                                 download_FBAs_if_missing=True)
-    df2 = flowsa.getFlowBySector(fbs2).rename(
-        columns={'FlowAmount': 'FlowAmount_fbs2'})
+        df2 = (flowsa.flowby.FlowBySector.generateFlowBySector(
+            method=fbs2, download_sources_ok=True)
+            .rename(columns={'FlowAmount': 'FlowAmount_fbs2'}))
+        # flowsa.flowbysector.main(method=fbs2,
+        #                           download_FBAs_if_missing=True)
+    else:
+        df2 = flowsa.getFlowBySector(fbs2).rename(
+            columns={'FlowAmount': 'FlowAmount_fbs2'})
     df2 = replace_strings_with_NoneType(df2)
     # compare df
     merge_cols = list(df2.select_dtypes(include=[
@@ -991,19 +995,16 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
 
     # aggregate dfs before merge - might have duplicate sectors due to
     # dropping metasources/attribution sources
-    df1 = aggregator(df1[merge_cols + ['FlowAmount_fbs1']],
-                     groupbycols=list(df1.select_dtypes(include=[
-                         'object', 'int']).columns),
-                     flowcolname='FlowAmount_fbs1')
-    df2 = aggregator(df2[merge_cols + ['FlowAmount_fbs2']],
-                     groupbycols=list(df2.select_dtypes(include=[
-                         'object', 'int']).columns),
-                     flowcolname='FlowAmount_fbs2')
+    df1 = (df1.groupby(merge_cols, dropna=False)
+           .agg({'FlowAmount_fbs1': 'sum'}).reset_index())
+    df2 = (df2.groupby(merge_cols, dropna=False)
+           .agg({'FlowAmount_fbs2': 'sum'}).reset_index())
     # check units
     compare_df_units(df1, df2)
-    df_m = pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
-                    df2[merge_cols + ['FlowAmount_fbs2']],
-                    how='outer')
+    df_m = pd.DataFrame(
+        pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
+                 df2[merge_cols + ['FlowAmount_fbs2']],
+                 how='outer'))
     df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2']
                        .fillna(0) - df_m['FlowAmount_fbs1'].fillna(0))
     df_m = df_m.assign(
@@ -1023,7 +1024,9 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
 
 
 def compare_geographic_totals(
-        df_subset, df_load, sourcename, attr, activity_set, activity_names):
+    df_subset, df_load, sourcename, attr, activity_set, activity_names,
+    df_type='FBA', subnational_geoscale=None
+):
     """
     Check for any data loss between the geoscale used and published
     national data
@@ -1033,7 +1036,11 @@ def compare_geographic_totals(
     :param attr: dictionary, attributes
     :param activity_set: str, activity set
     :param activity_names: list of names in the activity set by which
-           to subset national level data
+        to subset national level data
+    :param type: str, 'FBA' or 'FBS'
+    :param subnational_geoscale: geoscale being compared against the
+        national geoscale. Only necessary if df_subset is a FlowBy object
+        rather than a DataFrame.
     :return: df, comparing published national level data to df subset
     """
 
@@ -1052,14 +1059,21 @@ def compare_geographic_totals(
         # depending on the datasource, might need to rename some
         # strings for national comparison
         sub = rename_column_values_for_comparison(sub, sourcename)
-        sub2 = aggregator(sub, fba_default_grouping_fields).rename(
-            columns={'FlowAmount': 'FlowAmount_sub'})
 
         # compare df
-        merge_cols = ['Class', 'SourceName', 'FlowName', 'Unit',
-                      'FlowType', 'ActivityProducedBy', 'ActivityConsumedBy',
-                      'Compartment', 'Location', 'LocationSystem', 'Year']
-        # comapare units
+        merge_cols = ['Class', 'SourceName', 'Unit', 'FlowType',
+                      'ActivityProducedBy', 'ActivityConsumedBy',
+                      'Location', 'LocationSystem', 'Year']
+
+        if df_type == 'FBA':
+            merge_cols.extend(['FlowName', 'Compartment'])
+        else:
+             merge_cols.extend(['Flowable', 'Context'])
+
+        sub2 = aggregator(sub, merge_cols).rename(
+            columns={'FlowAmount': 'FlowAmount_sub'})
+
+        # compare units
         compare_df_units(nat, sub2)
         df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
                         sub2[merge_cols + ['FlowAmount_sub']],
@@ -1074,14 +1088,16 @@ def compare_geographic_totals(
         df_m_sub = df_m[(df_m['Percent_Diff'] > 1) |
                         (df_m['Percent_Diff'].isna())].reset_index(drop=True)
 
+        subnational_geoscale = (subnational_geoscale
+                                or attr['allocation_from_scale'])
         if len(df_m_sub) == 0:
             vLog.info('No data loss greater than 1%% between national '
                       'level data and %s subset',
-                      attr['allocation_from_scale'])
+                      subnational_geoscale)
         else:
             vLog.info('There are data differences between published national'
                       ' values and %s subset, saving to validation log',
-                      attr['allocation_from_scale'])
+                      subnational_geoscale)
 
             vLogDetailed.info(
                 'Comparison of National FlowAmounts to aggregated data '
@@ -1103,12 +1119,10 @@ def rename_column_values_for_comparison(df, sourcename):
     # for fresh/saline and ground/surface water. Therefore, to compare
     # subset data to national level, rename to match national values.
     if sourcename == 'USGS_NWIS_WU':
-        df['FlowName'] = np.where(
-            df['ActivityConsumedBy'] != 'Livestock', 'total', df['FlowName'])
-        df['Compartment'] = df['Compartment'].str.replace(
-            'ground', 'total', regex=True)
-        df['Compartment'] = df['Compartment'].str.replace(
-            'surface', 'total', regex=True)
+        df['Flowable'] = np.where(
+            df['ActivityConsumedBy'] != 'Livestock', 'Water', df['Flowable'])
+        df['Context'] = np.where(df['Context'].str.contains('resource/water/'),
+                                 'resource/water', df['Context'])
 
     return df
 

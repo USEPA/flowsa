@@ -27,7 +27,8 @@ class FlowsaLoader(yaml.SafeLoader):
         for folder in [
             *loader.external_paths_to_search,
             flowsa.settings.sourceconfigpath,
-            flowsa.settings.flowbysectormethodpath
+            flowsa.settings.flowbysectormethodpath,
+            flowsa.settings.datapath
         ]:
             if path.exists(path.join(folder, file)):
                 file = path.join(folder, file)
