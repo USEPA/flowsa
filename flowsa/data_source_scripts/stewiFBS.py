@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 from esupy.processed_data_mgmt import read_source_metadata
 from flowsa.flowby import FlowBySector, FlowByActivity
+from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import log, process_adjustmentpath
 import stewicombo
@@ -315,6 +316,7 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
                     'WASTE_FLOW',
                     'ELEMENTARY_FLOW')
                 )
+            .pipe(assign_fips_location_system, config['year'])
             .drop(columns=['FacilityID','FRS_ID','State','County'],
                   errors='ignore')
             .dropna(subset=['Location'])
