@@ -2020,7 +2020,7 @@ class FlowBySector(_FlowBy):
                 },
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
-            ).prepare_fbs(external_config_path=external_config_path)
+            ).prepare_fbs()
             for source_name, config in sources.items()
         ])
 
