@@ -799,7 +799,7 @@ class FlowByActivity(_FlowBy):
         # Check for use of multiple mapping files
         # TODO this was handled in esupy originally - can we go back to that fxn?
         if isinstance(mapping_subset, list):
-            fba_merge_keys.append('Source')
+            fba_merge_keys.append('SourceName')
             mapping_merge_keys.append('SourceListName')
 
         fba = (
