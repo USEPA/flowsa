@@ -31,15 +31,17 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
 
     # if FBS method file loaded from outside the flowsa directory, check if
     # there is also a crosswalk
-    external_mappingpath = f"{fbsconfigpath}activitytosectormapping/"
-    if os.path.exists(external_mappingpath):
-        activity_mapping_source_name = get_flowsa_base_name(
-            external_mappingpath, mapfn, 'csv')
-        if os.path.isfile(f"{external_mappingpath}"
-                          f"{activity_mapping_source_name}.csv"):
-            log.info(f"Loading {activity_mapping_source_name}.csv "
-                     f"from {external_mappingpath}")
-            crosswalkpath = external_mappingpath
+    if fbsconfigpath is not None:
+        external_mappingpath = (f"{os.path.dirname(fbsconfigpath)}"
+                                "/activitytosectormapping/")
+        if os.path.exists(external_mappingpath):
+            activity_mapping_source_name = get_flowsa_base_name(
+                external_mappingpath, mapfn, 'csv')
+            if os.path.isfile(f"{external_mappingpath}"
+                              f"{activity_mapping_source_name}.csv"):
+                log.info(f"Loading {activity_mapping_source_name}.csv "
+                         f"from {external_mappingpath}")
+                crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
     mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',

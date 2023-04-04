@@ -140,7 +140,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
                 folder = flowbysectormethodpath
             else:
                 raise KeyError('Must specify either \'FBA\' or \'FBS\'')
-    yaml_path = folder + filename + '.yaml'
+    yaml_path = f'{folder}/{filename}.yaml'
 
     try:
         with open(yaml_path, 'r', encoding='utf-8') as f:

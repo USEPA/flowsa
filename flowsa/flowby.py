@@ -1362,6 +1362,10 @@ class FlowByActivity(_FlowBy):
                                        'Activity'],
                               errors='ignore')
                     )
+                if(fba_w_naics['group_id'].duplicated().any()):
+                    log.warning('Duplicate assignment of activities to sectors '
+                                f'for direct attribution of {self.full_name}. '
+                                'Review mapping file for duplicates.')
 
             if source_year != target_year:
                 log.info('Using NAICS time series/crosswalk to map NAICS '
@@ -1653,12 +1657,15 @@ class FlowByActivity(_FlowBy):
     # def flagged_proportionally_attribute(self: 'FlowByActivity'):
     #     raise NotImplementedError
 
-    def prepare_fbs(self: 'FlowByActivity') -> 'FlowBySector':
+    def prepare_fbs(
+            self: 'FlowByActivity',
+            external_config_path: str = None
+            ) -> 'FlowBySector':
         if 'activity_sets' in self.config:
             try:
                 return (
                     pd.concat([
-                        fba.prepare_fbs()
+                        fba.prepare_fbs(external_config_path=external_config_path)
                         for fba in (
                             self
                             .select_by_fields()
@@ -1680,7 +1687,7 @@ class FlowByActivity(_FlowBy):
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()
-            .attribute_flows_to_sectors()  # recursive call to prepare_fbs
+            .attribute_flows_to_sectors(external_config_path=external_config_path)  # recursive call to prepare_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
         )
@@ -1937,7 +1944,7 @@ class FlowBySector(_FlowBy):
                     },
                     external_config_path=external_config_path,
                     download_sources_ok=download_sources_ok
-                ).prepare_fbs()
+                ).prepare_fbs(external_config_path=external_config_path)
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
             #     so that later entries in method_config['sources_to_cache']
@@ -1957,7 +1964,7 @@ class FlowBySector(_FlowBy):
                 },
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
-            ).prepare_fbs()
+            ).prepare_fbs(external_config_path=external_config_path)
             for source_name, config in sources.items()
         ])
 
