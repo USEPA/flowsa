@@ -1362,10 +1362,6 @@ class FlowByActivity(_FlowBy):
                                        'Activity'],
                               errors='ignore')
                     )
-                if(fba_w_naics['group_id'].duplicated().any()):
-                    log.warning('Duplicate assignment of activities to sectors '
-                                f'for direct attribution of {self.full_name}. '
-                                'Review mapping file for duplicates.')
 
             if source_year != target_year:
                 log.info('Using NAICS time series/crosswalk to map NAICS '
@@ -1493,6 +1489,9 @@ class FlowByActivity(_FlowBy):
 
         groupby_cols = ['group_id']
         for rank in ['Primary', 'Secondary']:
+            # skip over Secondary if not relevant
+            if fba[f'{rank}Sector'].isna().all():
+                continue
             counted = fba.assign(group_count=(fba.groupby(groupby_cols)
                                               ['group_id']
                                               .transform('count')))
@@ -1538,15 +1537,15 @@ class FlowByActivity(_FlowBy):
 
             if not unattributable.empty:
                 log.warning(
-                    'Could not attribute activities %s in %s due to lack of '
+                    'Could not attribute activities in %s due to lack of '
                     'flows in attribution source %s for mapped %s sectors %s',
-                    set(zip(unattributable.ActivityProducedBy,
-                            unattributable.ActivityConsumedBy,
-                            unattributable.Location)),
+                    # set(zip(unattributable.ActivityProducedBy,
+                    #         unattributable.ActivityConsumedBy,
+                    #         unattributable.Location)),
                     unattributable.full_name,
                     other.full_name,
                     rank,
-                    set(unattributable[f'{rank}Sector'])
+                    sorted(set(unattributable[f'{rank}Sector']))
                 )
 
             proportionally_attributed = (
@@ -1996,6 +1995,10 @@ class FlowBySector(_FlowBy):
         :return:
         """
         naics_key = naics.industry_spec_key(self.config['industry_spec'])
+        # TODO fix error here causing special sectors (e.g. F010) to drop
+        # when doing a summary model because lenght does not align (target_naics)
+        # does not have the right number of digits
+
         # subset naics to those where the source_naics string length is longer
         # than target_naics
         naics_key_sub = naics_key.query(
@@ -2020,7 +2023,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs')
             .select_by_fields()
-            # TODO: Add a method to convert to proper industry spec.
+            .sector_aggregation() # convert to proper industry spec.
             .convert_fips_to_geoscale()
             .aggregate_flowby()  # necessary after consolidating geoscale
         )
