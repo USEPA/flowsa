@@ -87,7 +87,7 @@ def load_source_dataframe(method, sourcename, source_dict,
         repo
     :return: df of identified parquet
     """
-    if source_dict['data_format'] == 'FBA':
+    if source_dict.get('data_format') == 'FBA':
         # if yaml specifies a geoscale to load, use parameter
         # to filter dataframe
         if 'source_fba_load_scale' in source_dict:
@@ -102,14 +102,14 @@ def load_source_dataframe(method, sourcename, source_dict,
             flowclass=source_dict['class'],
             geographic_level=geo_level,
             download_FBA_if_missing=download_FBA_if_missing)
-    elif source_dict['data_format'] == 'FBS':
+    elif source_dict.get('data_format') == 'FBS':
         vLog.info("Retrieving flowbysector for datasource %s", sourcename)
         flows_df = flowsa.getFlowBySector(sourcename)
         selection_fields = source_dict.get('selection_fields')
         if selection_fields is not None:
             for k, v in selection_fields.items():
                 flows_df = flows_df[flows_df[k].isin(v)].reset_index(drop=True)
-    elif source_dict['data_format'] == 'FBS_outside_flowsa':
+    elif source_dict.get('data_format') == 'FBS_outside_flowsa':
         vLog.info("Retrieving flowbysector for datasource %s", sourcename)
         fxn = source_dict.get("FBS_datapull_fxn")
         if callable(fxn):

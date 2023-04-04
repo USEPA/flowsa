@@ -304,11 +304,15 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     # Because code will sometimes change terminology, aggregate
     # data by context and flowable to compare df differences
     # subset df
-    dfs = df[['FlowName', 'Compartment', 'ActivityProducedBy',
-              'ActivityConsumedBy', 'FlowAmount_Original',
-              'FlowAmount_Modified', 'Unit', 'geoscale']]
-    agg_cols = ['FlowName', 'Compartment', 'ActivityProducedBy',
-                'ActivityConsumedBy', 'Unit', 'geoscale']
+    flowcols = ['FlowName', 'Compartment']
+    if 'Flowable' in df.columns:
+        flowcols = ['Flowable', 'Context']
+    dfs_cols = flowcols + ['ActivityProducedBy', 'ActivityConsumedBy',
+              'FlowAmount_Original', 'FlowAmount_Modified', 'Unit',
+              'geoscale']
+    dfs = df[dfs_cols]
+    agg_cols = flowcols + ['ActivityProducedBy', 'ActivityConsumedBy',
+                           'Unit', 'geoscale']
     dfagg = dfs.groupby(
         agg_cols, dropna=False, as_index=False).agg(
         {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
@@ -327,8 +331,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
         dfagg3 = replace_strings_with_NoneType(dfagg).drop(
             columns=['ActivityProducedBy', 'ActivityConsumedBy',
                      'FlowAmount_Difference', 'Percent_Difference'])
-        dfagg4 = dfagg3.groupby(
-            ['FlowName', 'Compartment', 'Unit', 'geoscale'],
+        dfagg4 = dfagg3.groupby(flowcols + ['Unit', 'geoscale'],
             dropna=False, as_index=False).agg(
             {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
         # column calculating difference

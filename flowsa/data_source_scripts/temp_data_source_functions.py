@@ -181,8 +181,6 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     # concatenate dataframe list into single dataframe
     df = pd.concat(df_list, sort=True)
 
-    print(df['Table Name'].unique())
-
     # rename columns to match standard flowbyactivity format
     df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
                             'Table Name': 'Description'})

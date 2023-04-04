@@ -141,7 +141,7 @@ EIA_MECS_Land:
   class:
   - Land
   sector-like_activities: True
-  activity_schema:
+  activity_schema: NAICS_2012_Code
   sector_hierarchy: "parent-completeChild"
 EIA_MER:
   data_format: FBA
@@ -225,7 +225,7 @@ EPA_NEI_Nonpoint:
   sector-like_activities: False
   activity_schema: SCC
   fedefl_mapping: NEI
-  # sector_hierarchy: "flat"
+  sector_hierarchy: "flat"
 EPA_NEI_Nonroad:
   data_format: FBA
   class:
@@ -294,6 +294,7 @@ StateGHGI:
   activity_schema:
   sector_hierarchy: "flat"
 stateio:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place

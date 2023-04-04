@@ -1062,6 +1062,10 @@ class FlowByActivity(_FlowBy):
             attribution_fbs = fba.load_prepare_attribution_source()
             attributed_fba = fba.multiplication_attribution(attribution_fbs)
 
+        elif attribution_method == 'weighted_average':
+            attribution_fbs = fba.load_prepare_attribution_source()
+            attributed_fba = fba.weighted_average_attribution(attribution_fbs)
+
         else:
             if all(fba.groupby('group_id')['group_id'].agg('count') == 1):
                 log.info('No attribution needed for %s at the given industry '
@@ -1082,6 +1086,7 @@ class FlowByActivity(_FlowBy):
         # if the attribution method is not multiplication, check that new df
         # values equal original df values
         if attribution_method != 'multiplication':
+            # todo: add results from this if statement to validation log
             validation_fba = attributed_fba.assign(
                 validation_total=(attributed_fba.groupby('group_id')
                                   ['FlowAmount'].transform('sum'))
@@ -1144,7 +1149,7 @@ class FlowByActivity(_FlowBy):
                 log.info('NAICS Activities in %s use NAICS year %s.',
                          self.full_name, source_year)
 
-            if self.config['sector_hierarchy'] == 'parent-completeChild':
+            if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 log.info('NAICS are a mix of parent-completeChild, assigning '
                          'activity columns directly to sector columns')
 
@@ -1286,7 +1291,7 @@ class FlowByActivity(_FlowBy):
 
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
-            if self.config['sector_hierarchy'] == 'parent-completeChild':
+            if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 existing_sectors = activity_to_source_naics_crosswalk[
                     ['Activity', 'Sector']]
 
@@ -1443,20 +1448,13 @@ class FlowByActivity(_FlowBy):
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
-    def proportionally_attribute(
+    def harmonize_geoscale(
         self: 'FlowByActivity',
         other: 'FlowBySector'
     ) -> 'FlowByActivity':
-        '''
-        This method takes flows from the calling FBA which are mapped to
-        multiple sectors and attributes them to those sectors proportionally to
-        flows from other (an FBS).
-        '''
+
         fba_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
-
-        log.info('Attributing flows in %s using %s.',
-                 self.full_name, other.full_name)
 
         if other_geoscale < fba_geoscale:
             log.info('Aggregating %s from %s to %s', other.full_name,
@@ -1481,11 +1479,28 @@ class FlowByActivity(_FlowBy):
         other = (
             other
             .add_primary_secondary_columns('Sector')
-            [['PrimarySector', 'Location', 'FlowAmount']]
-            .groupby(['PrimarySector', 'Location'])
+            [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
+            .groupby(['PrimarySector', 'Location', 'Unit'])
             .agg('sum')
             .reset_index()
         )
+
+        return fba_geoscale, other_geoscale, fba, other
+
+    def proportionally_attribute(
+        self: 'FlowByActivity',
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+        '''
+        This method takes flows from the calling FBA which are mapped to
+        multiple sectors and attributes them to those sectors proportionally to
+        flows from other (an FBS).
+        '''
+
+        log.info('Attributing flows in %s using %s.',
+                 self.full_name, other.full_name)
+
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(other)
 
         groupby_cols = ['group_id']
         for rank in ['Primary', 'Secondary']:
@@ -1554,10 +1569,12 @@ class FlowByActivity(_FlowBy):
                                               * x.FlowAmount_other
                                               / x.denominator))
                 .drop(columns=['PrimarySector_other', 'Location_other',
-                               'FlowAmount_other', 'denominator'],
+                               'FlowAmount_other', 'denominator',
+                               'Unit_other'],
                       errors='ignore')
             )
-            fba = pd.concat([directly_attributed, proportionally_attributed])
+            fba = pd.concat([directly_attributed,
+                             proportionally_attributed], ignore_index=True)
             groupby_cols.append(f'{rank}Sector')
 
         return (
@@ -1577,40 +1594,11 @@ class FlowByActivity(_FlowBy):
         multiple sectors and multiplies them by flows from other (an FBS).
         """
 
-        fba_geoscale = geo.scale.from_string(self.config['geoscale'])
-        other_geoscale = geo.scale.from_string(other.config['geoscale'])
-
         log.info('Multiplying flows in %s by %s.',
                  self.full_name, other.full_name)
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
+            other)
 
-        if other_geoscale < fba_geoscale:
-            log.info('Aggregating %s from %s to %s', other.full_name,
-                     other_geoscale, fba_geoscale)
-            other = (
-                other
-                .convert_fips_to_geoscale(fba_geoscale)
-                .aggregate_flowby()
-            )
-        elif other_geoscale > fba_geoscale:
-            log.info('%s is %s, while %s is %s, so attributing %s to '
-                     '%s', other.full_name, other_geoscale, self.full_name,
-                     fba_geoscale, other_geoscale, fba_geoscale)
-            self = (
-                self
-                .assign(temp_location=self.Location)
-                .convert_fips_to_geoscale(other_geoscale,
-                                          column='temp_location')
-            )
-
-        fba = self.add_primary_secondary_columns('Sector')
-        other = (
-            other
-            .add_primary_secondary_columns('Sector')
-            [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
-            .groupby(['PrimarySector', 'Location', 'Unit'])
-            .agg('sum')
-            .reset_index()
-        )
         # todo: update units after multiplying
 
         # multiply using each dfs primary sector col
@@ -1653,8 +1641,69 @@ class FlowByActivity(_FlowBy):
             .reset_index(drop=True)
         )
 
-    # def flagged_proportionally_attribute(self: 'FlowByActivity'):
-    #     raise NotImplementedError
+    def weighted_average_attribution(
+            self: 'FlowByActivity',
+            other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+        """
+        This method determines weighted average
+        """
+
+        log.info('Taking weighted average of %s by %s.',
+                 self.full_name, other.full_name)
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
+            other)
+
+        # merge dfs
+        merged = (fba
+                  .merge(other,
+                         how='left',
+                         left_on=['PrimarySector', 'temp_location'
+                         if 'temp_location' in fba
+                         else 'Location'],
+                         right_on=['PrimarySector', 'Location'],
+                         suffixes=[None, '_other'])
+                  .fillna({'FlowAmount_other': 0})
+                  )
+        # drop rows where flow is 0
+        merged = merged[merged['FlowAmount'] != 0]
+        # replace terms
+        for original, replacement in self.config.get(
+                'replacement_dictionary').items():
+            merged = merged.replace({original: replacement})
+
+        wt_flow = (merged
+                   .groupby(['Class', 'MetaSources', 'Flowable', 'Unit',
+                             'FlowType', 'ActivityProducedBy',
+                             'ActivityConsumedBy', 'Context', 'Location',
+                             'LocationSystem', 'Year', 'MeasureofSpread',
+                             'Spread', 'DistributionType', 'Min', 'Max',
+                             'DataReliability', 'DataCollection',
+                             'SectorProducedBy', 'ProducedBySectorType',
+                             'SectorConsumedBy', 'ConsumedBySectorType',
+                             'SectorSourceName'],
+                            dropna=False)
+                   .apply(lambda x: np.average(x['FlowAmount'],
+                                               weights=x['FlowAmount_other']))
+                   .drop(columns='FlowAmount')  # original flowamounts
+                   .reset_index(name='FlowAmount')  # new, weighted flows
+                   )
+        # set attributes todo: revise above code so don't lose attributes
+        attributes_to_save = {
+            attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+        }
+        for attr in attributes_to_save:
+            setattr(wt_flow, attr, attributes_to_save[attr])
+
+        # reset dropped information
+        wt_flow = (wt_flow
+                   .reset_index(drop=True).reset_index()
+                   .rename(columns={'index': 'group_id'})
+                   .assign(group_total=wt_flow.FlowAmount)
+                   )
+
+        return wt_flow
+
 
     def prepare_fbs(
             self: 'FlowByActivity',
@@ -1683,6 +1732,8 @@ class FlowByActivity(_FlowBy):
             .function_socket('clean_fba_before_mapping')
             .select_by_fields()
             .function_socket('estimate_suppressed')
+            .select_by_fields(selection_fields=self.config.get(
+                'selection_fields_after_data_suppression_estimation'))
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()
@@ -1723,7 +1774,7 @@ class FlowByActivity(_FlowBy):
                 .add_full_name(
                     f'{parent_fba.full_name}{NAME_SEP_CHAR}{activity_set}')
                 .select_by_fields(
-                    selection_fields=activity_config['selection_fields'])
+                    selection_fields=activity_config.get('selection_fields'))
             )
 
             child_fba.config = {**parent_config, **activity_config}
