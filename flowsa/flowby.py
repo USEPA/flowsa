@@ -796,6 +796,12 @@ class FlowByActivity(_FlowBy):
         log.info(f'Mapping flows in {self.full_name} to '
                  f'{mapping_subset} in federal elementary flow list')
 
+        # Check for use of multiple mapping files
+        # TODO this was handled in esupy originally - can we go back to that fxn?
+        if isinstance(mapping_subset, list):
+            fba_merge_keys.append('Source')
+            mapping_merge_keys.append('SourceListName')
+
         fba = (
             self
             .assign(Flowable=self.FlowName,
