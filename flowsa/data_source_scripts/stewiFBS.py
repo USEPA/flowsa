@@ -74,8 +74,9 @@ def stewicombo_to_sector(
 
     # merge dataframes to assign facility information based on facility IDs
     df = (df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'])
-          .merge(facility_mapping.loc[:, facility_mapping.columns != 'NAICS'],
-                 how='left', on='FacilityID')
+            .merge(facility_mapping.loc[:, facility_mapping.columns != 'NAICS'],
+                   how='inner',
+                   on='FacilityID')
           )
 
     all_NAICS = obtain_NAICS_from_facility_matcher(
@@ -349,5 +350,5 @@ def add_stewicombo_metadata(inventory_name):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowby.FlowBySector.generateFlowBySector('CRHW_national_2017')
-    #flowsa.flowby.FlowBySector.generateFlowBySector('TRI_DMR_state_2017')
+    fbs = flowsa.flowby.FlowBySector.generateFlowBySector('CRHW_national_2017')
+    fbs = flowsa.flowby.FlowBySector.generateFlowBySector('TRI_DMR_state_2017')

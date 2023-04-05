@@ -122,13 +122,14 @@ def update_geoscale(df, to_scale):
     """
     # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
-        # pad zeros
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x:
-                                                     x.ljust(3 + len(x), '0')
-                                                     if len(x) < 5 else x)
+        df = df.assign(Location = (df['Location']
+                                   .apply(lambda x: str(x[0:2]))
+                                   .apply(lambda x:
+                                          x.ljust(3 + len(x), '0')
+                                          if len(x) < 5 else x))
+                      )
     elif to_scale == 'national':
-        df.loc[:, 'Location'] = US_FIPS
+        df = df.assign(Location = US_FIPS)
     return df
 
 
