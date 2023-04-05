@@ -1229,10 +1229,11 @@ class FlowByActivity(_FlowBy):
                 # sectors to target sector level
                 log.info('Converting NAICS codes to desired industry/sector '
                          'aggregation structure.')
-                fba_w_naics = self.assign(
-                    ActivitySourceName=self.source_name,
-                    SectorType=np.nan
-                )
+                fba_w_naics = self.copy()
+                # fba_w_naics = self.assign(
+                #     ActivitySourceName=self.source_name,
+                #     SectorType=np.nan
+                # ) ^^ I don't think these fields are necessary in this case
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
                         fba_w_naics
