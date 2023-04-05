@@ -2021,7 +2021,7 @@ class FlowBySector(_FlowBy):
                 },
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
-            ).prepare_fbs()
+            ).prepare_fbs(external_config_path=external_config_path)
             for source_name, config in sources.items()
         ])
 
@@ -2076,7 +2076,10 @@ class FlowBySector(_FlowBy):
 
         return fbs
 
-    def prepare_fbs(self: 'FlowBySector') -> 'FlowBySector':
+    def prepare_fbs(
+        self: 'FlowBySector',
+        external_config_path: str = None
+    ) -> 'FlowBySector':
         return (
             self
             .function_socket('clean_fbs')
