@@ -5,13 +5,13 @@
 # emissions
 
 
-!include:BEA_summary_target.yaml
+!include:USEEIO_summary_target.yaml
 year: 2017
 geoscale: state
 
 sources_to_cache:
   EIA_MECS_Energy:
-    year: 2014
+    year: 2018
     geoscale: national
     selection_fields:
       Class: Energy
@@ -25,10 +25,10 @@ sources_to_cache:
     clean_fba_w_sec: !script_function:temp_data_source_functions clean_mapped_mecs_energy_fba
     attribution_method: proportional
     attribution_source:
-      Employment_state_2014:
+      Employment_state_2018:
         data_format: FBS
         geoscale: state
-        year: 2014
+        year: 2018
 
 _attribution_sources:
   stateio: &stateio
