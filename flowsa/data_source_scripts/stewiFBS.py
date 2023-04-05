@@ -20,6 +20,7 @@ from flowsa.flowby import FlowBySector, FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import log, process_adjustmentpath
+from flowsa.validation import replace_naics_w_naics_from_another_year
 import stewicombo
 import stewi
 from stewicombo.overlaphandler import remove_default_flow_overlaps
@@ -303,20 +304,22 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     if 'year' not in config:
         config['year'] = df_load['Year'][0]
 
-    # update location to appropriate geoscale prior to aggregating
-    df = update_geoscale(df_load, config['geoscale'])
-
     fbs = FlowByActivity(
-            df
+            df_load
+            .pipe(update_geoscale, config['geoscale'])
+            # ^^ update location to appropriate geoscale prior to aggregating
             .rename(columns={"NAICS": "ActivityProducedBy",
                              'Source': 'SourceName'})
             .assign(Class='Chemicals')
+            .assign(ActivityConsumedBy='')
+            .pipe(replace_naics_w_naics_from_another_year,
+                  f"NAICS_{config['target_naics_year']}_Code")
+            # ^^ Consider upating this old function
             .assign(FlowType=lambda x: np.where(
                 x['SourceName']=='RCRAInfo',
-                    'WASTE_FLOW',
-                    'ELEMENTARY_FLOW')
-                )
+                    'WASTE_FLOW', 'ELEMENTARY_FLOW'))
             .pipe(assign_fips_location_system, config['year'])
+            # ^^ Consider upating this old function
             .drop(columns=['FacilityID','FRS_ID','State','County'],
                   errors='ignore')
             .dropna(subset=['Location'])
@@ -324,14 +327,6 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
             full_name=config.get('full_name'),
             config=config,
             ).prepare_fbs()
-
-    ## TODO replace_naics_w_naics_from_another_year
-    # df = replace_naics_w_naics_from_another_year(df, 'NAICS_2012_Code')
-    # df = equally_allocate_parent_to_child_naics(df, config)
-    # df_subset = aggregate_and_subset_for_target_sectors(df, config)
-
-    # fbs_mapped = assign_fips_location_system(
-    #     fbs_mapped, list(inventory_dict.values())[0])
 
     return fbs
 
@@ -354,5 +349,5 @@ def add_stewicombo_metadata(inventory_name):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowbysector.main(method='CRHW_state_2017')
-    #flowsa.flowbysector.main(method='TRI_DMR_state_2017')
+    flowsa.flowby.FlowBySector.generateFlowBySector('CRHW_national_2017')
+    #flowsa.flowby.FlowBySector.generateFlowBySector('TRI_DMR_state_2017')
