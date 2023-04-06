@@ -1388,6 +1388,21 @@ class FlowByActivity(_FlowBy):
                         .drop(columns=['source_naics', 'target_naics'])
                     )
 
+        # warn if any activities are not mapped to sectors
+        not_mapped = fba_w_naics[fba_w_naics[['SectorProducedBy',
+                                              'SectorConsumedBy']].isna().all(1)]
+        if len(not_mapped) > 0:
+            not_mapped = (not_mapped
+                          [['ActivityProducedBy', 'ActivityConsumedBy']]
+                          .drop_duplicates())
+            log.warning('Activities in %s are not mapped to sectors: %s',
+                        not_mapped.full_name,
+                        set(zip(not_mapped.ActivityProducedBy,
+                                not_mapped.ActivityConsumedBy))
+                        )
+            fba_w_naics = fba_w_naics.dropna(subset=[
+                'SectorProducedBy', 'SectorConsumedBy'], how='all')
+
         return (
             fba_w_naics
             .assign(SectorSourceName=f'NAICS_{target_year}_Code')
