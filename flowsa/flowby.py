@@ -425,9 +425,19 @@ class _FlowBy(pd.DataFrame):
         added using _FlowBy.add_primary_secondary_columns(), and the selection
         made based on 'PrimaryActivity' or 'PrimarySector', as specified.
         Selecting on secondary activities or sectors is not supported.
+
+        Similarly, can use 'exclusion_fields' to remove particular data in the
+        same manner.
         '''
+        exclusion_fields = self.config.get('exclusion_fields', {})
+        exclusion_fields = {k: [v] if not isinstance(v, (list, dict)) else v
+                            for k, v in exclusion_fields.items()}
+        for field, values in exclusion_fields.items():
+            self = self.query(f'{field} not in @values')
+
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
+
         if selection_fields is None:
             return self
 
