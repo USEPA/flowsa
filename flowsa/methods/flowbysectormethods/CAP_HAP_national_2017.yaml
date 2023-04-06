@@ -67,6 +67,14 @@ source_names:
     year: 2017
     primary_action_type: Produced
     activity_to_sector_mapping: SCC
+    exclusion_fields:
+        FlowName:
+          - PM10-Primary from certain diesel engines
+          - PM25-Primary from certain diesel engines
+          - Carbon Dioxide
+          - Methane
+          - Nitrous Oxide
+          - Sulfur Hexafluoride
     clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
     drop_unmapped_rows: True
@@ -208,6 +216,14 @@ source_names:
     year: 2017
     primary_action_type: Produced
     activity_to_sector_mapping: SCC
+    exclusion_fields:
+        FlowName:
+          - PM10-Primary from certain diesel engines
+          - PM25-Primary from certain diesel engines
+          - Carbon Dioxide
+          - Methane
+          - Nitrous Oxide
+          - Sulfur Hexafluoride
     clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
     drop_unmapped_rows: True
@@ -232,6 +248,14 @@ source_names:
     year: 2017
     primary_action_type: Produced
     activity_to_sector_mapping: SCC
+    exclusion_fields:
+        FlowName:
+          - PM10-Primary from certain diesel engines
+          - PM25-Primary from certain diesel engines
+          - Carbon Dioxide
+          - Methane
+          - Nitrous Oxide
+          - Sulfur Hexafluoride
     clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
     fedefl_mapping: NEI
     drop_unmapped_rows: True
@@ -256,8 +280,13 @@ source_names:
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     inventory_dict: {"NEI":"2017", "TRI":"2017"}
     local_inventory_name: NEI_TRI_air_2017
-    clean_fbs: !script_function:EPA_NEI drop_GHGs
     compartments:
      - air
     reassign_process_to_sectors:
      - airplane_emissions
+    exclusion_fields:
+        FlowName:
+          - Carbon Dioxide
+          - Methane
+          - Nitrous Oxide
+          - Sulfur Hexafluoride
