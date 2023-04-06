@@ -1089,7 +1089,8 @@ class FlowByActivity(_FlowBy):
 
         # if the attribution method is not multiplication, check that new df
         # values equal original df values
-        if attribution_method != 'multiplication':
+        if attribution_method not in ['multiplication', 'weighted_average',
+                                      'substitute_nonexistent_values']:
             # todo: add results from this if statement to validation log
             validation_fba = attributed_fba.assign(
                 validation_total=(attributed_fba.groupby('group_id')
