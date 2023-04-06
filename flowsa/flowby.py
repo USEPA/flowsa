@@ -1808,6 +1808,7 @@ class FlowByActivity(_FlowBy):
         if set(parent_fba.row) - assigned_rows:
             log.warning('Some rows from %s not assigned to an activity '
                         'set. Is this intentional?', parent_fba.full_name)
+            unassigned = parent_fba.query('row not in @assigned_rows')
 
         return child_fba_list
 
