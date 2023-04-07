@@ -905,6 +905,8 @@ class FlowByActivity(_FlowBy):
         :return: FlowBy data set, with rows filtered or aggregated to the
             target geoscale.
         '''
+        if self.LocationSystem.eq('Census_Region').all():
+            return self
         target_geoscale = target_geoscale or self.config.get('geoscale')
         if type(target_geoscale) == str:
             target_geoscale = geo.scale.from_string(target_geoscale)

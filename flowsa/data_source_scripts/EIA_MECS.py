@@ -15,6 +15,7 @@ import flowsa
 from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD, load_crosswalk
 from flowsa.settings import vLogDetailed, log
+from flowsa.flowby import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
@@ -458,25 +459,27 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     return df
 
 
-def eia_mecs_energy_clean_allocation_fba_w_sec_to_state(
-        df_w_sec, attr, method, **kwargs):
+def clean_mapped_mecs_energy_fba_to_state(
+        fba: FlowByActivity, **_
+    ) -> FlowByActivity:
     """clean_fba_w_sec fxn that replicates
-    eia_mecs_energy_clean_allocation_fba_w_sec but also updates regions to
+    clean_mapped_mecs_energy_fba but also updates regions to
     states for state models"""
-    df_w_sec = eia_mecs_energy_clean_allocation_fba_w_sec(
-        df_w_sec, attr, method, **kwargs)
-    df_w_sec = update_regions_to_states(df_w_sec, attr)
+    from flowsa.data_source_scripts.temp_data_source_functions import clean_mapped_mecs_energy_fba
+    fba = clean_mapped_mecs_energy_fba(fba)
+    fba = update_regions_to_states(fba)
+    return fba
 
-    return df_w_sec
 
-
-def update_regions_to_states(fba_load, attr, **_):
+def update_regions_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
     """
     Propogates regions to all states to enable for use in state methods.
     Allocates sectors across states based on employment.
     clean_allocation_fba_w_sec fxn
     """
+    fba_load = fba.copy()
     log.info('Updating census regions to states')
+
     region_map = get_region_and_division_codes()
     region_map = region_map[['Region','State_FIPS']].drop_duplicates()
     region_map.loc[:, 'State_FIPS'] = (
@@ -485,7 +488,7 @@ def update_regions_to_states(fba_load, attr, **_):
                                        if len(x) < 5 else x))
 
     # Allocate MECS based on employment FBS
-    year = attr.get('allocation_source_year')
+    year = fba.config.get('year')
     hlp = flowsa.getFlowBySector(methodname=f'Employment_state_{year}',
                                  download_FBS_if_missing=True)
 
@@ -498,10 +501,10 @@ def update_regions_to_states(fba_load, attr, **_):
                     right_on = 'State_FIPS')
     hlp['Allocation'] = hlp['FlowAmount']/hlp.groupby(
         ['Region', 'SectorProducedBy']).FlowAmount.transform('sum')
-
-    fba = pd.merge(fba_load.rename(columns={'Location':'Region'}),
-                   (hlp[['Region','Location','SectorProducedBy','Allocation']]
-                    .rename(columns={'SectorProducedBy':'SectorConsumedBy'})),
+    ## TODO NEED TO ALSO ADJUST GROUP/GROUP TOTALS
+    fba = pd.merge(fba.rename(columns={'Location':'Region'}),
+                  (hlp[['Region','Location','SectorProducedBy','Allocation']]
+                   .rename(columns={'SectorProducedBy':'SectorConsumedBy'})),
                    how='left', on=['Region','SectorConsumedBy'])
     fba['FlowAmount'] = fba['FlowAmount'] * fba['Allocation']
     fba = fba.drop(columns=['Allocation','Region'])

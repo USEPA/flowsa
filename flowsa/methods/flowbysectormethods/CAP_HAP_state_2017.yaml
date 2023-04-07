@@ -12,17 +12,18 @@ geoscale: state
 sources_to_cache:
   EIA_MECS_Energy:
     year: 2018
-    geoscale: national
+    geoscale: state
     selection_fields:
       Class: Energy
       Unit: Trillion Btu
-      Location: '00000'
       Description:
           - Table 2.2
           - Table 3.2
+    exclusion_fields:
+      Location: '00000'
     estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_mecs_energy
     clean_fba: !script_function:temp_data_source_functions clean_mecs_energy_fba
-    clean_fba_w_sec: !script_function:temp_data_source_functions clean_mapped_mecs_energy_fba
+    clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
     attribution_method: proportional
     attribution_source:
       Employment_state_2018:
