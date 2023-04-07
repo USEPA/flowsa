@@ -76,6 +76,7 @@ CalRecycle_WasteCharacterization:
   activity_schema:
   sector_hierarchy: "flat"
 Census_ASM:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: True
@@ -249,6 +250,7 @@ EPA_WARMer:
   activity_schema: None
   sector_hierarchy: "flat"
 EPA_WFR:
+  data_format: FBA
   class:
     - Other
   sector-like_activities: False
