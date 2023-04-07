@@ -9,6 +9,7 @@ data directory. Parses EPA SIT data to flowbyactivity format.
 import pandas as pd
 import os
 from flowsa.settings import externaldatapath, log
+from flowsa.flowby import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
 from flowsa.location import apply_county_FIPS
@@ -123,17 +124,19 @@ def epa_sit_parse(*, source, year, config, **_):
 
     return df0
 
-def disaggregate_emissions(fba, source_dict, **_):
+def disaggregate_emissions(fba: FlowByActivity, **_) -> FlowByActivity:
     """
     clean_fba_before_mapping_df_fxn to assign specific flow names to flows
     that are an amalgamation of multiple different GHGs
     (e.g., "HFC, PFC, SF6, and NF3 emissions")
     
     """
-    
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
     # dictionary of activities where GHG emissions need to be disaggregated
-    activity_dict = source_dict['clean_activity_dict']
-
+    activity_dict = fba.config.get('clean_activity_dict')
+    year = fba.config.get('year')
     # for all activities included in the dictionary...
     for activity_name, activity_properties in activity_dict.items():
         disaggregation_method = activity_properties.get('disaggregation_method')
@@ -145,7 +148,7 @@ def disaggregate_emissions(fba, source_dict, **_):
             table_name = activity_properties.get('disaggregation_data_source')
             # load percentages to be used for proportional split
             splits = load_fba_w_standardized_units(datasource=table_name,
-                year=source_dict['year'])
+                                                   year=year)
             drop_rows = activity_properties.get('drop_rows')
             # there are certain circumstances where one or more rows need to be 
             # excluded from the table
@@ -161,8 +164,10 @@ def disaggregate_emissions(fba, source_dict, **_):
                             axis=1, result_type='expand')
             speciated_df.columns = splits['FlowName']
             speciated_df = pd.concat([fba_activity, speciated_df], axis=1)
-            speciated_df = speciated_df.melt(id_vars=flow_by_activity_fields.keys(),
-                                             var_name='Flow')
+            speciated_df = speciated_df.melt(
+                id_vars=[c for c in flow_by_activity_fields.keys()
+                         if c in speciated_df.columns],
+                var_name='Flow')
             speciated_df['FlowName'] = speciated_df['Flow']
             speciated_df['FlowAmount'] = speciated_df['value']
             speciated_df.drop(columns=['Flow', 'value'], inplace=True)
@@ -175,7 +180,11 @@ def disaggregate_emissions(fba, source_dict, **_):
             species_name = activity_properties.get('disaggregation_data_source')
             fba.loc[fba.ActivityProducedBy == activity_name, 'FlowName'] = species_name
 
-    return fba
+    new_fba = FlowByActivity(fba)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
+
+    return new_fba
 
 def clean_up_state_data(fba, source_dict, method, **_):
     """

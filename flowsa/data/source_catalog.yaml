@@ -213,6 +213,7 @@ EPA_StateGHGI:
   activity_schema:
   sector_hierarchy: "flat"
 EPA_SIT:
+  data_format: FBA
   class:
     - Chemicals
   sector-like_activities: False
