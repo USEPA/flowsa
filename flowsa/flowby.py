@@ -20,10 +20,16 @@ NAME_SEP_CHAR = '.'
 
 with open(settings.datapath + 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
+    # ^^^ Replaces schema.py
 
 
 # TODO: Move this to common.py
 def get_catalog_info(source_name: str) -> dict:
+    '''
+    Retrieves the information on a given source from source_catalog.yaml.
+    Replaces (when used appropriately), common.check_activities_sector_like()
+    as well as various pieces of code that load the source_catalog yaml.
+    '''
     source_catalog = common.load_yaml_dict('source_catalog')
     source_name = common.return_true_source_catalog_name(source_name)
     return source_catalog.get(source_name, {})
@@ -37,7 +43,8 @@ def get_flowby_from_config(
     download_sources_ok: bool = True
 ) -> FB:
     """
-    Loads FBA or FBS dataframe
+    Loads FBA or FBS dataframe from a config dictionary and attaches that
+    dictionary to the FBA or FBS. Exists for convenience.
 
     :return: a FlowByActivity dataframe
     """
@@ -91,6 +98,15 @@ class _FlowBy(pd.DataFrame):
         string_null: 'np.nan' or None = np.nan,
         **kwargs
     ) -> None:
+        '''
+        Extends pandas DataFrame. Attaches metadata if provided as kwargs and
+        ensures that all columns described in  flowby_config.yaml are present
+        and of the correct datatype.
+
+        All args and kwargs not specified above or in FBA/FBS metadata are
+        passed to the DataFrame constructor.
+        '''
+
         # Assign values to metadata attributes, checking the following sources,
         # in order: self, data, kwargs; then defaulting to an empty version of
         # the type specified in the type hints, or None.
@@ -927,6 +943,15 @@ class FlowByActivity(_FlowBy):
             if scale.has_fips_level and scale <= target_geoscale
         ]
 
+        # if an activity column is a mix of string and np.nan values but
+        # after subsetting, the column is all np.nan, then the column dtype is
+        # converted to float which causes an error when merging float col back
+        # with the original object dtype. So convert float cols back to object
+        for df in highest_reporting_level_by_geoscale:
+            for c in ['ActivityProducedBy', 'ActivityConsumedBy']:
+                if df[c].dtype == float:
+                    df[c] = df[c].astype(object)
+
         fba_with_reporting_levels = reduce(
             lambda x, y: x.merge(y, how='left'),
             [self, geoscale_by_fips, *highest_reporting_level_by_geoscale]
@@ -1138,22 +1163,48 @@ class FlowByActivity(_FlowBy):
                 log.info('NAICS Activities in %s use NAICS year %s.',
                          self.full_name, source_year)
 
-            log.info('Converting NAICS codes to desired industry/sector '
-                     'aggregation structure.')
-            fba_w_naics = self.assign(
-                ActivitySourceName=self.source_name,
-                SectorType=np.nan
-            )
-            for direction in ['ProducedBy', 'ConsumedBy']:
+            # todo: expand on this start. There will be cases where although data is disaggregated,
+            #  there might not be all mappings (might stop at NAICS5 in df because NAICS6 is just NAICS5 with added 0)
+            if self.config['sector_aggregation_level'] == 'disaggregated':
+                log.info('NAICS are already disaggregated, assigning activity '
+                         'columns directly to sector columns')
+                target_naics = set(
+                    naics.industry_spec_key(self.config['industry_spec'])
+                    .target_naics)
+                fba_w_naics = self
+                for direction in ['ProducedBy', 'ConsumedBy']:
+                    fba_w_naics = (
+                        fba_w_naics
+                        .assign(**{f'Sector{direction}': fba_w_naics[f'Activity{direction}'].mask(
+                                (fba_w_naics[f'Activity{direction}']).isin(target_naics),
+                                fba_w_naics[f'Activity{direction}']
+                    )}))
                 fba_w_naics = (
                     fba_w_naics
-                    .merge(naics_key,
-                           how='left',
-                           left_on=f'Activity{direction}',
-                           right_on='source_naics')
-                    .rename(columns={'target_naics': f'Sector{direction}'})
-                    .drop(columns='source_naics')
+                    .assign(ActivitySourceName=fba_w_naics.source_name,
+                            SectorType=np.nan)
+                    .query('SectorProducedBy  in @target_naics '
+                           '| SectorConsumedBy in @target_naics')
                 )
+            else:
+                # if sector-like activities are aggregated, then map all
+                # sectors to target sector level
+                log.info('Converting NAICS codes to desired industry/sector '
+                         'aggregation structure.')
+                fba_w_naics = self.assign(
+                    ActivitySourceName=self.source_name,
+                    SectorType=np.nan
+                )
+                for direction in ['ProducedBy', 'ConsumedBy']:
+                    fba_w_naics = (
+                        fba_w_naics
+                        .merge(naics_key,
+                               how='left',
+                               left_on=f'Activity{direction}',
+                               right_on='source_naics')
+                        .rename(columns={'target_naics': f'Sector{direction}'})
+                        .drop(columns='source_naics')
+                    )
 
         else:
             log.info('Getting crosswalk between activities in %s and '
@@ -1315,12 +1366,17 @@ class FlowByActivity(_FlowBy):
                  self.full_name, other.full_name)
 
         if other_geoscale < fba_geoscale:
+            log.info('Aggregating %s from %s to %s', other.full_name,
+                     other_geoscale, fba_geoscale)
             other = (
                 other
                 .convert_fips_to_geoscale(fba_geoscale)
                 .aggregate_flowby()
             )
         elif other_geoscale > fba_geoscale:
+            log.info('%s is %s, while %s is %s, so attributing %s to '
+                     '%s', other.full_name, other_geoscale, self.full_name,
+                     fba_geoscale, other_geoscale, fba_geoscale)
             self = (
                 self
                 .assign(temp_location=self.Location)
@@ -1431,12 +1487,17 @@ class FlowByActivity(_FlowBy):
                  self.full_name, other.full_name)
 
         if other_geoscale < fba_geoscale:
+            log.info('Aggregating %s from %s to %s', other.full_name,
+                     other_geoscale, fba_geoscale)
             other = (
                 other
                 .convert_fips_to_geoscale(fba_geoscale)
                 .aggregate_flowby()
             )
         elif other_geoscale > fba_geoscale:
+            log.info('%s is %s, while %s is %s, so attributing %s to '
+                     '%s', other.full_name, other_geoscale, self.full_name,
+                     fba_geoscale, other_geoscale, fba_geoscale)
             self = (
                 self
                 .assign(temp_location=self.Location)
@@ -1493,6 +1554,7 @@ class FlowByActivity(_FlowBy):
                         fba.prepare_fbs()
                         for fba in (
                             self
+                            .select_by_fields()
                             .function_socket('clean_fba_before_activity_sets')
                             .activity_sets()
                         )
@@ -1795,8 +1857,42 @@ class FlowBySector(_FlowBy):
         fbs.full_name = method
         fbs.config = method_config
 
+        # aggregate to target geoscale
+        fbs = (
+            fbs
+            .convert_fips_to_geoscale(
+                geo.scale.from_string(fbs.config.get('geoscale')))
+            .aggregate_flowby()
+        )
+        # aggregate to target sector
+        fbs = fbs.sector_aggregation()
+
         fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
         # TODO: Needs refinement + saving metadata
+
+        return fbs
+
+    def sector_aggregation(self):
+        """
+        In the event activity sets in an FBS are at a less aggregated target
+        sector level than the overall target level, aggregate the sectors to
+        the FBS target scale
+        :return:
+        """
+
+        naics_key = naics.industry_spec_key(self.config['industry_spec'])
+
+        fbs = self
+        for direction in ['ProducedBy', 'ConsumedBy']:
+            fbs = (
+                fbs
+                .rename(columns={f'Sector{direction}': 'source_naics'})
+                .merge(naics_key,
+                       how='left')
+                .rename(columns={'target_naics': f'Sector{direction}'})
+                .drop(columns='source_naics')
+                .aggregate_flowby()
+            )
 
         return fbs
 

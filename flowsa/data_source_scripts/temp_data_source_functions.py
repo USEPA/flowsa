@@ -62,17 +62,8 @@ def clean_qcew_for_fbs(fba: FlowByActivity, **kwargs):
     dictionary of FBA method yaml parameters
     :return: df, BLS QCEW FBA with estimated suppressed data
     """
-    df = clean_qcew(fba, **kwargs)
-
-    # for purposes of allocation, we do not need to differentiate between
-    # federal government, state government, local government, or private
-    # sectors. So after estimating the suppressed data (above), modify the
-    # flow names and aggregate data
-    df['Flowable'] = (df['Flowable'].str.split(',').str[0]
-                      .str.replace('Number of employees', 'Jobs'))
-    df2 = df.aggregate_flowby()
-
-    return df2
+    fba['Flowable'] = 'Jobs'
+    return fba
 
 
 def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
@@ -190,6 +181,8 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
 
     # concatenate dataframe list into single dataframe
     df = pd.concat(df_list, sort=True)
+
+    print(df['Table Name'].unique())
 
     # rename columns to match standard flowbyactivity format
     df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',

@@ -30,6 +30,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           Employment_national_2015:
+            geoscale: national
             data_format: FBS
             year: 2015
       cropland_attribution:
@@ -39,8 +40,17 @@ source_names:
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Cropland:
+            industry_spec:
+              default: NAICS_6
+              '111120': { default: NAICS_7 }
+              '111130': { default: NAICS_7 }
+              '111150': { default: NAICS_7 }
+              '111199': { default: NAICS_7 }
+              '111421': { default: NAICS_7 }
+              '111930': { default: NAICS_7 }
+              '111991': { default: NAICS_7 }
+              '111998': { default: NAICS_7 }
             year: 2017
-            geoscale: state
             selection_fields:
               Class: "Land"
               FlowName:
@@ -53,8 +63,12 @@ source_names:
             attribution_method: multiplication
             attribution_source:
               USDA_IWMS:
+                industry_spec:
+                  default: NAICS_6
+                  '111150': { default: NAICS_7 }
+                  '111199': { default: NAICS_7 }
+                  '111940': { default: NAICS_7 }
                 year: 2018
-                geoscale: state
                 selection_fields:
                     Class: Water
                 clean_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
@@ -65,8 +79,16 @@ source_names:
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Livestock:
+            industry_spec:
+              default: NAICS_6
+              '112130': { default: NAICS_7 }
+              '112320': { default: NAICS_7 }
+              '112390': { default: NAICS_7 }
+              '112910': { default: NAICS_7 }
+              '112920': { default: NAICS_7 }
+              '112930': { default: NAICS_7 }
+              '112990': { default: NAICS_7 }
             year: 2017
-            geoscale: state
             selection_fields:
               Class: Other
               FlowName:
@@ -78,5 +100,7 @@ source_names:
             attribution_method: multiplication
             attribution_source:
               USGS_WU_Coef:
+                industry_spec:
+                  default: NAICS_6
                 year: 2005
                 geoscale: national
