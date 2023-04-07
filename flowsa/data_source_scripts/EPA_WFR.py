@@ -10,9 +10,9 @@ import pandas as pd
 import numpy as np
 from string import ascii_uppercase
 from tabula.io import read_pdf
-from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
+from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS
-from flowsa.schema import flow_by_activity_mapped_fields
+from flowsa.flowby import FlowByActivity
 
 
 def epa_wfr_call(*, resp, **_):
@@ -373,21 +373,20 @@ def return_REI_fraction_foodwaste_treated_commodities():
     return pathway_attribution
 
 
-def foodwaste_use(fba, source_dict):
+def foodwaste_use(fba: FlowByActivity) -> FlowByActivity:
     """
-    clean_fba_df_fxn
+    clean_fba_before_activity_sets
 
     Attribute food waste to how waste is used
     :param fba:
     :param source_dict:
     :return:
     """
-    use = source_dict.get('activity_parameters')
+    use = fba.config.get('activity_parameters')
     outputs = fba.loc[fba['ActivityConsumedBy'].isin(use)].reset_index(drop=True)
     outputs['ActivityProducedBy'] = outputs['ActivityConsumedBy']
     outputs = outputs.drop(columns='ActivityConsumedBy')
-    groupcols = list(outputs.select_dtypes(include=['object', 'int']).columns)
-    outputs2 = aggregator(outputs, groupcols)
+    outputs2 = outputs.aggregate_flowby()
 
     # load fw treatment dictoinary
     fw_tmt = return_REI_fraction_foodwaste_treated_commodities()
@@ -403,22 +402,22 @@ def foodwaste_use(fba, source_dict):
               .reset_index())
     outputs3 = outputs2.merge(fw_tmt, how='left')
 
-    outputs3['Flowable'] = outputs3["Flowable"].apply(lambda x:
+    outputs3['FlowName'] = outputs3['FlowName'].apply(lambda x:
                                                       f"{x} Treated")
     # update flowamount with multiplier fractions
     outputs3['FlowAmount'] = outputs3['FlowAmount'] * outputs3['Multiplier']
     outputs3 = outputs3.drop(columns='Multiplier')
 
     # also in wasted food report - APB "food banks" are the output from the ACB "Food Donation"
-    fba['Flowable'] = np.where(fba['ActivityProducedBy'] == 'Food Banks',
-                               fba["Flowable"].apply(lambda x: f"{x} Treated"), fba["Flowable"])
+    fba['FlowName'] = np.where(fba['ActivityProducedBy'] == 'Food Banks',
+                               fba["FlowName"].apply(
+                                   lambda x: f"{x} Treated"),
+                               fba["FlowName"])
 
     df1 = pd.concat([fba, outputs3], ignore_index=True)
-    cols = flow_by_activity_mapped_fields.copy()
-    cols.pop('FlowAmount')
-    df1 = aggregator(df1, cols)
+    df2 = df1.aggregate_flowby()
 
-    return df1
+    return df2
 
 def reset_wfr_APB(fba, **_):
     """
