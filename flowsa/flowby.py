@@ -1059,6 +1059,9 @@ class FlowByActivity(_FlowBy):
             .rename(columns={'index': 'group_id'})
             .assign(group_total=self.FlowAmount)
         )
+        if len(grouped)==0:
+            log.warning(f'No data remaining in {self.full_name}.')
+            return self
         fba: 'FlowByActivity' = (
             grouped
             .map_to_sectors(external_config_path=external_config_path)
