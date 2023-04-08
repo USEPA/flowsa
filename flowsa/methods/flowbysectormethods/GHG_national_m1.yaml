@@ -281,6 +281,49 @@ source_names:
 
 
 ## Mobile Sources
+  EPA_GHGI_T_3_13: #CO2 from mobile combustion
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct_attribution:
+        selection_fields:
+          PrimaryActivity:
+            General Aviation Aircraft Aviation Gasoline: General Aviation Aircraft
+            General Aviation Aircraft Jet Fuel: General Aviation Aircraft
+            Commercial Aircraft Jet Fuel: Commercial Aircraft
+            Military Aircraft Jet Fuel: Military Aircraft
+            Buses Gasoline: Buses
+            Buses LPG: Buses
+            Buses Natural Gas: Buses
+            Pipeline Natural Gas: Pipeline Natural Gas
+            Motorcycles Gasoline: Motorcycles
+            Rail Distillate Fuel Oil: Rail
+            Recreational Boats Distillate Fuel Oil: Recreational Boats
+            Recreational Boats Gasoline: Recreational Boats
+            Ships and Non-Recreational Boats Distillate Fuel Oil: Ships and Non-Recreational Boats
+            Ships and Non-Recreational Boats Residual Fuel Oil: Ships and Non-Recreational Boats
+            Medium- and Heavy-Duty Trucks Gasoline: Medium- and Heavy-Duty Trucks
+            Medium- and Heavy-Duty Trucks LPG: Medium- and Heavy-Duty Trucks
+            Light-Duty Trucks LPG: Light-Duty Trucks - Households
+            Passenger Cars LPG: Passenger Cars - Households
+        attribution_method: direct
+
+      petroleum_fuels:
+        selection_fields:
+          PrimaryActivity:
+            Medium- and Heavy-Duty Trucks Distillate Fuel Oil: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
+            Buses Distillate Fuel Oil: Buses - Distillate Fuel Oil
+            Passenger Cars Distillate Fuel Oil: Passenger Cars
+            Passenger Cars Gasoline: Passenger Cars
+            Light-Duty Trucks Distillate Fuel Oil: Light-Duty Trucks
+            Light-Duty Trucks Gasoline: Light-Duty Trucks
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products
+
+
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
     fedefl_mapping: GHGI
     activity_sets:
@@ -355,8 +398,8 @@ source_names:
   EPA_GHGI_T_3_15: *mobile #N2O from mobile combustion duplicates method for CH4
 
 
-## Major CO2 Sources
-  GHGI_CO2_stationary_combustion_and_transport: # CO2 emissions from stationary combustion and transportation
+## Stationary Combustion
+  GHGI_CO2_stationary_combustion_and_transport: # CO2 emissions from stationary combustion
     fedefl_mapping: GHGI
     # year: # override this
     clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
@@ -442,51 +485,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324110': ''} # purchases of refinery products
 
-    ### Transportation
-  EPA_GHGI_T_3_13: #CO2 from mobile combustion
-    fedefl_mapping: GHGI
-    activity_sets:
-      direct_attribution:
-        selection_fields:
-          PrimaryActivity:
-            General Aviation Aircraft Aviation Gasoline: General Aviation Aircraft
-            General Aviation Aircraft Jet Fuel: General Aviation Aircraft
-            Commercial Aircraft Jet Fuel: Commercial Aircraft
-            Military Aircraft Jet Fuel: Military Aircraft
-            Buses Gasoline: Buses
-            Buses LPG: Buses
-            Buses Natural Gas: Buses
-            Pipeline Natural Gas: Pipeline Natural Gas
-            Motorcycles Gasoline: Motorcycles
-            Rail Distillate Fuel Oil: Rail
-            Recreational Boats Distillate Fuel Oil: Recreational Boats
-            Recreational Boats Gasoline: Recreational Boats
-            Ships and Non-Recreational Boats Distillate Fuel Oil: Ships and Non-Recreational Boats
-            Ships and Non-Recreational Boats Residual Fuel Oil: Ships and Non-Recreational Boats
-            Medium- and Heavy-Duty Trucks Gasoline: Medium- and Heavy-Duty Trucks
-            Medium- and Heavy-Duty Trucks LPG: Medium- and Heavy-Duty Trucks
-            Light-Duty Trucks LPG: Light-Duty Trucks - Households
-            Passenger Cars LPG: Passenger Cars - Households
-        attribution_method: direct
 
-      petroleum_fuels:
-        selection_fields:
-          PrimaryActivity:
-            Medium- and Heavy-Duty Trucks Distillate Fuel Oil: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
-            Buses Distillate Fuel Oil: Buses - Distillate Fuel Oil
-            Passenger Cars Distillate Fuel Oil: Passenger Cars
-            Passenger Cars Gasoline: Passenger Cars
-            Light-Duty Trucks Distillate Fuel Oil: Light-Duty Trucks
-            Light-Duty Trucks Gasoline: Light-Duty Trucks
-        attribution_method: proportional
-        attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
-            <<: *bea
-            selection_fields:
-              ActivityProducedBy: {'324110': ''} # purchases of refinery products
-
-
-## Stationary Combustion
   EPA_GHGI_T_3_8:  &stationary_combustion # CH4 emissions from stationary combustion
     # year: #override this with ghgi_year
     clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion

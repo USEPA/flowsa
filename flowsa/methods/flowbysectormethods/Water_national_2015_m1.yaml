@@ -11,7 +11,6 @@ source_names:
     fedefl_mapping: USGS_NWIS_WU
     geoscale: state
     clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
-    clean_fba_w_sec: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
     activity_sets:
       direct_attribution:
         selection_fields:
@@ -77,16 +76,20 @@ source_names:
                         year: 2018
                         selection_fields:
                           Class: Water
-                        estimate_suppressed: !script_function:USDA_IWMS estimate_suppressed_iwms
+                        attribution_method: substitute_nonexistent_values
+                        attribution_source:
+                          USDA_IWMS:
+                            geoscale: national
+                            year: 2018
+                            selection_fields:
+                              Class: Water
               cropland_attribution-cropland:
                 selection_fields:
                   PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
-                                    'MUSTARD, SEED', 'RAPESEED',
-                                    'SAFFLOWER', 'SESAME', 'SUNFLOWER',
-                                    'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL
-                                    LIMA), INCL CHICKPEAS', 'BEANS, DRY
-                                    EDIBLE, (EXCL CHICKPEAS & LIMA)',
-                    'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
+                    'MUSTARD, SEED', 'RAPESEED', 'SAFFLOWER', 'SESAME',
+                    'SUNFLOWER', 'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL LIMA), 
+                    INCL CHICKPEAS', 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS & 
+                    LIMA)', 'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
                     'PEAS, DRY EDIBLE', 'PEAS, DRY, SOUTHERN (COWPEAS)',
                     'WHEAT', 'CORN', 'CORN, GRAIN', 'CORN, SILAGE',
                     'POPCORN, SHELLED', 'RICE', 'BARLEY', 'BUCKWHEAT',
@@ -129,9 +132,9 @@ source_names:
                         activity_sets:
                           cropland_attribution-cropland-nonhay:
                             selection_fields:
-                              PrimaryActivity: ['BEANS, DRY EDIBLE, INCL CHICKPEAS',
-                                                'BERRY TOTALS', 'CORN, GRAIN',
-                                'CORN, SILAGE', 'COTTON',  'CROPS, OTHER',
+                              PrimaryActivity: ['BEANS, DRY EDIBLE, INCL 
+                                CHICKPEAS', 'BERRY TOTALS', 'CORN, GRAIN',
+                                'CORN, SILAGE', 'COTTON', 'CROPS, OTHER',
                                 'HORTICULTURE TOTALS', 'ORCHARDS',
                                 'PASTURELAND', 'PEANUTS', 'POTATOES', 'RICE',
                                 'SMALL GRAINS, OTHER', 'SORGHUM, GRAIN',
@@ -181,8 +184,6 @@ source_names:
             attribution_method: multiplication
             attribution_source:
               USGS_WU_Coef:
-                industry_spec:
-                  default: NAICS_6
                 year: 2005
                 geoscale: national
                 attribution_method: direct
