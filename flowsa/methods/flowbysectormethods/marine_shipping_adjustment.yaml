@@ -38,7 +38,7 @@ source_names:
           Description: Exports
         adjustment_factor: -1
 
-  GHGI2020_3_104:
+  EPA_GHGI_T_3_104:
     selection_fields:
       ActivityProducedBy: Marine
     # fedefl_mapping: GHGI
