@@ -164,30 +164,6 @@ def load_values_from_literature_citations_config():
     return config
 
 
-def load_fbs_methods_additional_fbas_config():
-    """
-    Load the config file that contains information on where the
-    values from the literature come from
-    :return: dictionary of the values from the literature information
-    """
-    sfile = f'{datapath}bibliographyinfo/fbs_methods_additional_fbas.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_functions_loading_fbas_config():
-    """
-    Load the config file that contains information on where the
-    values from the literature come from
-    :return: dictionary of the values from the literature information
-    """
-    sfile = datapath + 'bibliographyinfo/functions_loading_fbas.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
 def create_fill_na_dict(flow_by_fields):
     """
     Dictionary for how to fill nan in different column types
