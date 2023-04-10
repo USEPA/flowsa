@@ -118,7 +118,7 @@ def return_fbs_method_data(source_name, config):
                 meta['primary_source_meta'][k] = add_stewi_metadata(
                     v['inventory_dict'])
             continue
-        if v['data_format'] in ('FBS', 'FBS_outside_flowsa'):
+        if v.get('data_format') in ('FBS', 'FBS_outside_flowsa'):
             meta['primary_source_meta'][k] = \
                 getMetadata(k, category='FlowBySector')
             continue
@@ -130,17 +130,12 @@ def return_fbs_method_data(source_name, config):
         meta['primary_source_meta'][k]['allocation_source_meta'] = {}
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
-            if attr['allocation_method'] not in \
-                    (['direct', 'allocation_function']):
+            if attr.get('attribution_source'):
                 # append fba meta
+                source = list(attr['attribution_source'].keys())[0]
                 meta['primary_source_meta'][k]['allocation_source_meta'][
-                    attr['allocation_source']] = getMetadata(
-                    attr['allocation_source'], attr['allocation_source_year'])
-            if 'helper_source' in attr:
-                meta['primary_source_meta'][k][
-                    'allocation_source_meta'][attr['helper_source']] = \
-                    getMetadata(attr['helper_source'],
-                                attr['helper_source_year'])
+                    source] = getMetadata(
+                        source, attr['attribution_source'][source].get('year'))
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 for s, y in lit.items():

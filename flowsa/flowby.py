@@ -2100,8 +2100,14 @@ class FlowBySector(_FlowBy):
         # aggregate to target sector
         fbs = fbs.sector_aggregation()
 
-        fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
-        # TODO: Needs refinement + saving metadata
+        # Save fbs and metadata
+        log.info(f'FBS generation complete, saving {method} to file')
+        meta = metadata.set_fb_meta(method, 'FlowBySector')
+        esupy.processed_data_mgmt.write_df_to_file(fbs, settings.paths, meta)
+        metadata.write_metadata(source_name=method,
+                                config={'source_names': sources},
+                                fb_meta=meta,
+                                category='FlowBySector')
 
         return fbs
 
