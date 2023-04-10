@@ -1053,6 +1053,11 @@ class FlowByActivity(_FlowBy):
         )
 
         attribution_method = fba.config.get('attribution_method')
+        if attribution_method == 'direct' or attribution_method is None:
+            fba = fba.assign(AttributionSources='Direct')
+        else:
+            fba = fba.assign(AttributionSources=','.join(
+                [k for k in fba.config.get('attribution_source').keys()]))
 
         if attribution_method == 'proportional':
             attribution_fbs = fba.load_prepare_attribution_source()
