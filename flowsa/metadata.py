@@ -9,8 +9,7 @@ FlowByActivity (FBA) and FlowBySector (FBS) datasets
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, \
     read_source_metadata
-from flowsa.common import load_functions_loading_fbas_config, \
-    load_fbs_methods_additional_fbas_config, return_true_source_catalog_name
+from flowsa.common import return_true_source_catalog_name
 from flowsa.settings import paths, PKG, PKG_VERSION_NUMBER, WRITE_FORMAT, \
     GIT_HASH, GIT_HASH_LONG, log
 
@@ -94,13 +93,6 @@ def return_fbs_method_data(source_name, config):
     """
     from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata,\
         add_stewicombo_metadata
-
-    # load the yaml that lists what additional fbas are
-    # used in creating the fbs
-    try:
-        add_fbas = load_fbs_methods_additional_fbas_config()[source_name]
-    except KeyError:
-        add_fbas = None
 
     # Create empty dictionary for storing meta data
     meta = {}
