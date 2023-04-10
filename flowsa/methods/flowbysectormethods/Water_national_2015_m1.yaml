@@ -76,8 +76,8 @@ source_names:
                         year: 2018
                         selection_fields:
                           Class: Water
-                        attribution_method: substitute_nonexistent_values
-                        attribution_source:
+                        clean_fba_w_sec: !clean_function:flowbyclean substitute_nonexistent_values
+                        clean_source:
                           USDA_IWMS:
                             geoscale: national
                             year: 2018
@@ -87,8 +87,8 @@ source_names:
                 selection_fields:
                   PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
                     'MUSTARD, SEED', 'RAPESEED', 'SAFFLOWER', 'SESAME',
-                    'SUNFLOWER', 'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL LIMA), 
-                    INCL CHICKPEAS', 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS & 
+                    'SUNFLOWER', 'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL LIMA),
+                    INCL CHICKPEAS', 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS &
                     LIMA)', 'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
                     'PEAS, DRY EDIBLE', 'PEAS, DRY, SOUTHERN (COWPEAS)',
                     'WHEAT', 'CORN', 'CORN, GRAIN', 'CORN, SILAGE',
@@ -132,7 +132,7 @@ source_names:
                         activity_sets:
                           cropland_attribution-cropland-nonhay:
                             selection_fields:
-                              PrimaryActivity: ['BEANS, DRY EDIBLE, INCL 
+                              PrimaryActivity: ['BEANS, DRY EDIBLE, INCL
                                 CHICKPEAS', 'BERRY TOTALS', 'CORN, GRAIN',
                                 'CORN, SILAGE', 'COTTON', 'CROPS, OTHER',
                                 'HORTICULTURE TOTALS', 'ORCHARDS',
@@ -144,12 +144,12 @@ source_names:
                             selection_fields:
                               PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)',
                                                 'HAY & HAYLAGE, ALFALFA']
-                            attribution_method: weighted_average
+                            clean_fba_w_sec: !clean_function:flowbyclean weighted_average
                             replacement_dictionary: {'HAY & HAYLAGE, (EXCL ALFALFA)': 'HAY & HAYLAGE',
                                                       'HAY & HAYLAGE, ALFALFA': 'HAY & HAYLAGE',
                                                      '111940A': '111940',
                                                      '111940B': '111940'}
-                            attribution_source:
+                            clean_source:
                               USDA_IWMS:
                                 year: 2018
                                 selection_fields:
