@@ -125,7 +125,9 @@ def return_fbs_method_data(source_name, config):
         # append source and year
         meta['primary_source_meta'][k] = getMetadata(k, v["year"])
         # create dictionary of allocation datasets for different activities
-        activities = v['activity_sets']
+        activities = v.get('activity_sets')
+        if activities is None:
+            continue
         # initiate nested dictionary
         meta['primary_source_meta'][k]['allocation_source_meta'] = {}
         # subset activity data and allocate to sector
