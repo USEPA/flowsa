@@ -110,6 +110,8 @@ Census_VIP:
   sector-like_activities: False
   activity_schema:
   sector_hierarchy: "flat"
+CNHW_national_2018:
+  data_format: FBS
 EIA_CBECS_Land:
   data_format: FBA
   class: Land
@@ -190,6 +192,7 @@ EPA_GHGI:
   activity_schema:
   sector_hierarchy: "flat"
 EPA_REI:
+  data_format: FBA
   class:
     - Employment
     - Money
