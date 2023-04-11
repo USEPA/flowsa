@@ -122,13 +122,13 @@ def return_fbs_method_data(source_name, config):
         if activities is None:
             continue
         # initiate nested dictionary
-        meta['primary_source_meta'][k]['allocation_source_meta'] = {}
+        meta['primary_source_meta'][k]['attribution_source_meta'] = {}
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
             if attr.get('attribution_source'):
                 # append fba meta
                 source = list(attr['attribution_source'].keys())[0]
-                meta['primary_source_meta'][k]['allocation_source_meta'][
+                meta['primary_source_meta'][k]['attribution_source_meta'][
                     source] = getMetadata(
                         source, attr['attribution_source'][source].get('year'))
             if 'literature_sources' in attr:
@@ -137,23 +137,9 @@ def return_fbs_method_data(source_name, config):
                     lit_meta = return_fba_method_meta(s, year=y)
                     # append fba meta
                     meta['primary_source_meta'][k][
-                        'allocation_source_meta'][s] = lit_meta
+                        'attribution_source_meta'][s] = lit_meta
                     # subset the additional fbas to the source and
                     # activity set, if exists
-        if add_fbas is not None:
-            try:
-                fbas = add_fbas[k]
-                for acts, fxn_info in fbas.items():
-                    for fxn, fba_info in fxn_info.items():
-                        for fba, y in fba_info.items():
-                            fxn_config = \
-                                load_functions_loading_fbas_config()[fxn][fba]
-                            meta['primary_source_meta'][k][
-                                'allocation_source_meta'][
-                                fxn_config['source']] = getMetadata(
-                                fxn_config['source'], y)
-            except KeyError:
-                pass
 
     return meta
 
