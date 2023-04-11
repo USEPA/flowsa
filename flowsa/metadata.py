@@ -115,7 +115,8 @@ def return_fbs_method_data(source_name, config):
                 getMetadata(k, category='FlowBySector')
             continue
         # append source and year
-        meta['primary_source_meta'][k] = getMetadata(k, v["year"])
+        year = config['year'] if v.get('year') is None else v.get('year')
+        meta['primary_source_meta'][k] = getMetadata(k, year)
         # create dictionary of allocation datasets for different activities
         activities = v.get('activity_sets')
         if activities is None:

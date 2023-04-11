@@ -2110,7 +2110,8 @@ class FlowBySector(_FlowBy):
         meta = metadata.set_fb_meta(method, 'FlowBySector')
         esupy.processed_data_mgmt.write_df_to_file(fbs, settings.paths, meta)
         metadata.write_metadata(source_name=method,
-                                config={'source_names': sources},
+                                config=common.load_yaml_dict(
+                                    method, 'FBS', external_config_path),
                                 fb_meta=meta,
                                 category='FlowBySector')
 
