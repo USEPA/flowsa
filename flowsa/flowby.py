@@ -2121,7 +2121,7 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             # TODO: Add a method to convert to proper industry spec.
             .convert_fips_to_geoscale()
-            .attribute_flows_to_sectors()  # used to attribute activity sets
+            # .attribute_flows_to_sectors()  # used to attribute activity sets
             .aggregate_flowby()  # necessary after consolidating geoscale
         )
 
