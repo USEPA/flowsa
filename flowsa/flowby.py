@@ -1063,6 +1063,11 @@ class FlowByActivity(_FlowBy):
         )
 
         attribution_method = fba.config.get('attribution_method')
+        if attribution_method == 'direct' or attribution_method is None:
+            fba = fba.assign(AttributionSources='Direct')
+        else:
+            fba = fba.assign(AttributionSources=','.join(
+                [k for k in fba.config.get('attribution_source').keys()]))
 
         if attribution_method == 'proportional':
             attribution_fbs = fba.load_prepare_attribution_source()
@@ -1986,8 +1991,15 @@ class FlowBySector(_FlowBy):
         # aggregate to target sector
         fbs = fbs.sector_aggregation()
 
-        fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
-        # TODO: Needs refinement + saving metadata
+        # Save fbs and metadata
+        log.info(f'FBS generation complete, saving {method} to file')
+        meta = metadata.set_fb_meta(method, 'FlowBySector')
+        esupy.processed_data_mgmt.write_df_to_file(fbs, settings.paths, meta)
+        metadata.write_metadata(source_name=method,
+                                config=common.load_yaml_dict(
+                                    method, 'FBS', external_config_path),
+                                fb_meta=meta,
+                                category='FlowBySector')
 
         return fbs
 
