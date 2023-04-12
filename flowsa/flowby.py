@@ -1629,8 +1629,8 @@ class FlowByActivity(_FlowBy):
 
             #todo: move this equal attribution into FBS method once
             # refactored to allow multiple attribution methods
-            fba2 = fba.equally_attribute()
-            fba3 = (fba2.add_primary_secondary_columns('Sector'))
+            fba = fba.equally_attribute()
+            fba = (fba.add_primary_secondary_columns('Sector'))
 
             groupby_cols = [self.config.get('attribute_on'), 'Unit']
             attribute_cols = self.config.get('attribute_on')
