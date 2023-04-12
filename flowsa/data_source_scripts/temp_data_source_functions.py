@@ -167,53 +167,6 @@ def clean_usda_cropland_naics(fba: FlowByActivity, **kwargs):
     return filtered
 
 
-def eia_mecs_energy_parse(*, df_list, source, year, **_):
-    """
-    Combine, parse, and format the provided dataframes
-    :param df_list: list of dataframes to concat and format
-    :param year: year
-    :param source: source
-    :return: df, parsed and partially formatted to flowbyactivity
-        specifications
-    """
-    from flowsa.location import assign_census_regions
-
-    # concatenate dataframe list into single dataframe
-    df = pd.concat(df_list, sort=True)
-
-    # rename columns to match standard flowbyactivity format
-    df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
-                            'Table Name': 'Description'})
-    df.loc[df['Subsector and Industry'] == 'Total', 'ActivityConsumedBy'] = '31-33'
-    df = df.drop(columns='Subsector and Industry')
-    df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
-    # add hardcoded data
-    df["SourceName"] = source
-    df["Compartment"] = None
-    df['FlowType'] = 'TECHNOSPHERE_FLOWS'
-    df['Year'] = year
-    df['MeasureofSpread'] = "RSE"
-    # assign location codes and location system
-    df.loc[df['Location'] == 'Total United States', 'Location'] = US_FIPS
-    df = assign_fips_location_system(df, year)
-    df = assign_census_regions(df)
-    df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  # tmp
-
-    # drop rows that reflect subtotals (only necessary in 2014)
-    df.dropna(subset=['ActivityConsumedBy'], inplace=True)
-
-    suppressed = df.assign(
-        FlowAmount=df.FlowAmount.mask(df.FlowAmount.str.isnumeric() == False,
-                                      np.nan),
-        Suppressed=df.FlowAmount.where(df.FlowAmount.str.isnumeric() == False,
-                                       np.nan),
-        Spread=df.Spread.mask(df.Spread.str.isnumeric() == False, np.nan)
-    )
-
-    return suppressed
-
-
 def estimate_suppressed_mecs_energy(
     fba: FlowByActivity,
     **kwargs

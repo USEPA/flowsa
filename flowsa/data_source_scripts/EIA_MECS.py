@@ -404,10 +404,10 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df = pd.concat(df_list, sort=True)
 
     # rename columns to match standard flowbyactivity format
-    df['Description'] = df["Table Name"]
-    df.loc[df['Subsector and Industry'] == 'Total', 'NAICS Code'] = '31-33'
-    df = df.drop(columns=['Table Name', 'Subsector and Industry'])
-    df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy'})
+    df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
+                            'Table Name': 'Description'})
+    df.loc[df['Subsector and Industry'] == 'Total', 'ActivityConsumedBy'] = '31-33'
+    df = df.drop(columns='Subsector and Industry')
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
     # add hardcoded data
     df["SourceName"] = source
@@ -423,38 +423,15 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df['DataCollection'] = 5  # tmp
 
     # drop rows that reflect subtotals (only necessary in 2014)
-    df.dropna(subset=['ActivityConsumedBy'], inplace=True)
+    df = df.dropna(subset=['ActivityConsumedBy'])
 
-    # replace withheld/unavailable data
-    # * = estimate is less than 0.5
-    # W = withheld to avoid disclosing data for individual establishments
-    # Q = withheld because relative standard error is greater than 50 percent
-    # NA = not available
-    df.loc[df['FlowAmount'] == '*', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = WITHDRAWN_KEYWORD
-    df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = WITHDRAWN_KEYWORD
-    df.loc[df['FlowAmount'] == 'S', 'FlowAmount'] = WITHDRAWN_KEYWORD
-    df.loc[df['FlowAmount'] == 'D', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == 'NA', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == '-', 'FlowAmount'] = None
-    # * = estimate is less than 0.5
-    # W = withheld to avoid disclosing data for individual establishments
-    # Q = withheld because relative standard error is greater than 50 percent
-    # NA = not available
-    # X = not defined because relative standard error corresponds
-    # to a value of zero
-    # at least one 'empty' cell appears to contain a space
-    df.loc[df['Spread'] == '*', 'Spread'] = None
-    df.loc[df['Spread'] == 'W', 'Spread'] = WITHDRAWN_KEYWORD
-    df.loc[df['Spread'] == 'Q', 'Spread'] = WITHDRAWN_KEYWORD
-    df.loc[df['Spread'] == 'NA', 'Spread'] = None
-    df.loc[df['Spread'] == 'X', 'Spread'] = None
-    df.loc[df['Spread'] == ' ', 'Spread'] = None
-    df.loc[df['Spread'] == 'D', 'Spread'] = None
-    df.loc[df['Spread'] == '-', 'Spread'] = None
-
-    # resolve issue of misprinted RSE
-    df['Spread'] = pd.to_numeric(df['Spread'], errors='coerce')
+    df = df.assign(
+        FlowAmount=df.FlowAmount.mask(df.FlowAmount.str.isnumeric() == False,
+                                      np.nan),
+        Suppressed=df.FlowAmount.where(df.FlowAmount.str.isnumeric() == False,
+                                       np.nan),
+        Spread=df.Spread.mask(df.Spread.str.isnumeric() == False, np.nan)
+    )
 
     return df
 
