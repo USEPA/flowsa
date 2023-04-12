@@ -3,7 +3,6 @@ from flowsa import settings
 from flowsa.flowsa_log import log
 import pandas as pd
 import numpy as np
-from flowsa.data_source_scripts import EIA_MECS as mecs
 from flowsa.data_source_scripts import EPA_GHGI as ghgi
 from flowsa.data_source_scripts import USDA_CoA_Cropland as coa
 from flowsa.flowby import FlowByActivity
@@ -181,8 +180,6 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
 
     # concatenate dataframe list into single dataframe
     df = pd.concat(df_list, sort=True)
-
-    print(df['Table Name'].unique())
 
     # rename columns to match standard flowbyactivity format
     df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
@@ -390,7 +387,7 @@ def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     mecs = (
         fba
         .assign(to_keep=fba.apply(
-            lambda x: not any([x.SectorConsumedBy.startswith(d)
+            lambda x: not any([str(x.SectorConsumedBy).startswith(d)
                                for d in x.descendants.split()]),
             axis='columns'
         ))
@@ -399,26 +396,6 @@ def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     )
 
     return mecs
-
-
-def clean_hfc_fba(fba: FlowByActivity, **kwargs):
-    attributes_to_save = {
-        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
-    }
-
-    df = (
-        fba
-        .pipe(ghgi.subtract_HFC_transport_emissions)
-        .pipe(ghgi.allocate_HFC_to_residential)
-        .pipe(ghgi.split_HFC_foams)
-        .pipe(ghgi.split_HFCs_by_type)
-    )
-
-    new_fba = FlowByActivity(df)
-    for attr in attributes_to_save:
-        setattr(new_fba, attr, attributes_to_save[attr])
-
-    return new_fba
 
 
 def clean_hfc_fba_for_seea(fba: FlowByActivity, **kwargs):
@@ -476,3 +453,92 @@ def disaggregate_coa_cropland_to_6_digit_naics(fba: FlowByActivity):
         setattr(new_fba, attr, attributes_to_save[attr])
 
     return new_fba
+
+def return_primary_activity_column(fba: FlowByActivity) -> \
+        FlowByActivity:
+    """
+    Determine activitiy column with values
+    :param fba: fbs df with two sector columns
+    :return: string, primary sector column
+    """
+    if fba['ActivityProducedBy'].isnull().all():
+        primary_column = 'ActivityConsumedBy'
+    elif fba['ActivityConsumedBy'].isnull().all():
+        primary_column = 'ActivityProducedBy'
+    else:
+        log.error('Could not determine primary activity column as there '
+                  'are values in both ActivityProducedBy and '
+                  'ActivityConsumedBy')
+    return primary_column
+
+def estimate_suppressed_sectors_equal_attribution(fba: FlowByActivity) -> \
+        FlowByActivity:
+
+    col = return_primary_activity_column(fba)
+    indexed = (
+        fba
+        .assign(n2=fba[col].str.slice(stop=2),
+                n3=fba[col].str.slice(stop=3),
+                n4=fba[col].str.slice(stop=4),
+                n5=fba[col].str.slice(stop=5),
+                n6=fba[col].str.slice(stop=6),
+                n7=fba[col].str.slice(stop=7),
+                location=fba.Location,
+                category=fba.FlowName)
+        .replace({'FlowAmount': {0: np.nan}})
+        .set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'location',
+                    'category'], verify_integrity=True)
+    )
+
+    def fill_suppressed(
+        flows: pd.Series,
+        level: int,
+        full_naics: pd.Series
+    ) -> pd.Series:
+        parent = flows[full_naics.str.len() == level]
+        children = flows[full_naics.str.len() == level + 1]
+        null_children = children[children.isna()]
+
+        if null_children.empty or parent.empty:
+            return flows
+        else:
+            value = max((parent[0] - children.sum()) / null_children.size, 0)
+            return flows.fillna(pd.Series(value, index=null_children.index))
+
+    unsuppressed = (
+        indexed
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 2, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 3, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 4, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4', 'n5',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 5, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4', 'n5', 'n6',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 6, x.ActivityProducedBy)))
+        .fillna({'FlowAmount': 0})
+        .reset_index(drop=True)
+    )
+
+    aggregated = (
+        unsuppressed
+        .aggregate_flowby()
+    )
+
+    return aggregated

@@ -21,7 +21,7 @@ display_tables:
     replace_dict:
       Industry: {'31': '31-33', '32': '31-33', '33': '31-33',
                   '44': '44-45', '45': '44-45',
-                  '48': '48-49', '49': '48-49'},
+                  '48': '48-49', '49': '48-49'}
       Pollutant: {C2F6: F-GHGs, C3F8: F-GHGs, CF4: F-GHGs,
                   'HFC, PFC and SF6 F-HTFs': F-GHGs,
                   HFC-134a: F-GHGs, HFC-23: F-GHGs,

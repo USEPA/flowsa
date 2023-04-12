@@ -9,21 +9,35 @@ import pandas as pd
 import flowsa
 
 
-def unique_activity_names(datasource, year):
+def unique_activity_names(datasource, year, **_):
     """
-    read in the ers parquet files, select the unique activity names, return df with one column
+    read in the ers parquet files, select the unique activity names, return
+    df with one column
     :param datasource: str, FBA datasource
     :param year: str, year of data to lead
-    :return: df, with single Activity column of unique activity names
+    :parm **_: optional parameter of "match_cols", defining a list of
+    additional column names by which to return unique activity names. See
+    "write_crosswalk_EPA_FactsAndFigures.py" for example
+    :return: df, with Activity column of unique activity names
     """
 
     # create single df representing all selected years
     df = flowsa.getFlowByActivity(datasource, year)
 
-    column_activities = df[["ActivityConsumedBy", "ActivityProducedBy"]].values.ravel()
-    unique_activities = pd.unique(column_activities)
-    df_unique = unique_activities.reshape((-1, 1))
-    df_unique = pd.DataFrame({'Activity': df_unique[:, 0]})
+    # return additional columns used to return unique activity names,
+    # if specified
+    match_cols = _.get("match_cols")
+    if match_cols is None:
+        match_cols = []
+
+    # define columns used to subset df
+    subset_cols = match_cols + ["ActivityConsumedBy", "ActivityProducedBy"]
+
+    df_subset = df[subset_cols].drop_duplicates()
+    df_unique = df_subset.melt(id_vars=match_cols, var_name="Cols",
+                               value_name="Activity").drop(
+        columns="Cols").drop_duplicates()
+
     df_unique = df_unique.loc[df_unique['Activity'].notnull()]
     df_unique = df_unique.loc[df_unique['Activity'] != 'None']
     df_unique = df_unique.assign(ActivitySourceName=datasource)
@@ -34,14 +48,24 @@ def unique_activity_names(datasource, year):
     return df_unique
 
 
-def order_crosswalk(df):
+def order_crosswalk(df, **_):
     """
     Set column order and sort crosswalks
     :param df: crosswalk
-    :return: df, ordered croosswalk
+    :param **_: optional parameter of "match_cols", defining a list of
+    additional column names by which to return unique activity names. See
+    "write_crosswalk_EPA_FactsAndFigures.py" for example
+    :return: df, ordered crosswalk
     """
+    # return additional columns used to return unique activity names,
+    # if specified
+    match_cols = _.get("match_cols")
+    if match_cols is None:
+        match_cols = []
     # set column order
-    df = df[['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector', 'SectorType']]
+    col_order = ['ActivitySourceName'] + match_cols + \
+                ['Activity', 'SectorSourceName', 'Sector', 'SectorType']
+    df = df[col_order]
     # sort df
     df = df.sort_values(['Sector', 'Activity']).reset_index(drop=True)
 

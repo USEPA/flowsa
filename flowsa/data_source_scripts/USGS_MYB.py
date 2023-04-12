@@ -1,11 +1,12 @@
+import io
+import math
+import numpy as np
+import pandas as pd
+from string import digits
+from flowsa.settings import log
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS
-import math
-import pandas as pd
-import io
-from flowsa.settings import log
-from string import digits
 
 YEARS_COVERED = {
     "asbestos": "2014-2018",
@@ -113,7 +114,7 @@ def usgs_myb_static_variables():
     """
     data = {}
     data["Class"] = "Geological"
-    data['FlowType'] = "ELEMENTARY_FLOWS"
+    data['FlowType'] = "ELEMENTARY_FLOW"
     data["Location"] = US_FIPS
     data["Compartment"] = "ground"
     data["Context"] = None
@@ -1976,16 +1977,12 @@ def usgs_lead_url_helper(*, year, **_):
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
-    if int(year) < 2013:
-        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
-                     'palladium/production/atoms/files/myb1-2016-lead.xls')
-    elif int(year) < 2014:
-        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
-                     'palladium/production/atoms/files/myb1-2017-lead.xls')
-    else:
-        build_url = ('https://d9-wret.s3.us-west-2.amazonaws.com/assets/'
-                     'palladium/production/s3fs-public/media/files/myb1-2018-lead-advrel.xlsx')
-    url = build_url
+    # return file name based on data year
+    filename = _['config']['filename_replacement'].get(int(year))
+
+    # complete url
+    url = _['build_url'].replace('__filename__', filename)
+
     return [url]
 
 
@@ -1998,36 +1995,15 @@ def usgs_lead_call(*, resp, year, **_):
     :param year: year
     :return: pandas dataframe of original source data
     """
-    df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
-                                         sheet_name='T1')
-    df_data = pd.DataFrame(df_raw_data.loc[8:15]).reindex()
-    df_data = df_data.reset_index()
-    del df_data["index"]
+    df = pd.read_excel(io.BytesIO(resp.content),
+                       sheet_name='T1', header=[3])
+    df.columns = df.columns.astype(str).str.strip()
+    df = df.rename(columns={df.columns[0]: 'Production',
+                            df.columns[1]: 'Units',
+                            year: 'FlowAmount'})
+    df = df[['Production', 'Units', 'FlowAmount']]
 
-    if len(df_data.columns) > 12:
-        for x in range(12, len(df_data.columns)):
-            col_name = "Unnamed: " + str(x)
-            del df_data[col_name]
-
-    if len(df_data. columns) == 12:
-        df_data.columns = ["Production", "Units", "space_1", "year_1",
-                           "space_2", "year_2", "space_3", "year_3",
-                           "space_4", "year_4", "space_5", "year_5"]
-
-    col_to_use = ["Production", "Units"]
-    if int(year) == 2013:
-        modified_sy = "2013-2018"
-        col_to_use.append(usgs_myb_year(modified_sy, year))
-    elif int(year) > 2013:
-        modified_sy = "2014-2018"
-        col_to_use.append(usgs_myb_year(modified_sy, year))
-    else:
-        col_to_use.append(usgs_myb_year(YEARS_COVERED['lead'], year))
-    for col in df_data.columns:
-        if col not in col_to_use:
-            del df_data[col]
-
-    return df_data
+    return df
 
 
 def usgs_lead_parse(*, df_list, source, year, **_):
@@ -2045,7 +2021,8 @@ def usgs_lead_parse(*, df_list, source, year, **_):
     row_to_use = ["Primary lead, refined content, "
                   "domestic ores and base bullion",
                   "Secondary lead, lead content",
-                  "Lead ore and concentrates", "Lead in base bullion"]
+                  "Lead ore and concentrates", "Lead in base bullion",
+                  "Base bullion"]
     import_export = ["Exports, lead content:",
                      "Imports for consumption, lead content:"]
     dataframe = pd.DataFrame()
@@ -2066,23 +2043,19 @@ def usgs_lead_parse(*, df_list, source, year, **_):
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = name + " " + product
                 data["ActivityProducedBy"] = df.iloc[index]["Production"]
-
-                if int(year) == 2013:
-                    modified_sy = "2013-2018"
-                    col_name = usgs_myb_year(modified_sy, year)
-                elif int(year) > 2013:
-                    modified_sy = "2014-2018"
-                    col_name = usgs_myb_year(modified_sy, year)
+                if str(df.iloc[index]["FlowAmount"]) == "--":
+                    data["FlowAmount"] = 0
                 else:
-                    col_name = usgs_myb_year(YEARS_COVERED['lead'], year)
-
-                if str(df.iloc[index][col_name]) == "--":
-                    data["FlowAmount"] = str(0)
-                else:
-                    data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                    data["FlowAmount"] = df.iloc[index]["FlowAmount"]
+                dataframe = pd.concat([dataframe, pd.DataFrame([data])],
+                                      ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
+    # standardize activityproducedby naming
+    dataframe['ActivityProducedBy'] = np.where(
+        dataframe['ActivityProducedBy'] == "Base bullion",
+        "Lead in base bullion", dataframe['ActivityProducedBy'])
+
     return dataframe
 
 

@@ -312,12 +312,12 @@ def calculate_floorspace_based_on_number_of_floors(fba_load):
     calculate_flowamount_diff_between_dfs(fba2, fba3)
     # rename the FlowAmounts and sum so total floorspace, rather than have
     # multiple rows based on floors
-    fba3 = fba3.assign(FlowName=fba3['FlowName'].apply(
+    fba3 = fba3.assign(FlowName=fba3['Flowable'].apply(
         lambda x: ','.join(x.split(',')[:-1])))
     # modify the description
     fba3 = fba3.assign(Description='Building Footprint')
     groupbycols = fba_mapped_default_grouping_fields
-    fba4 = aggregator(fba3, groupbycols)
+    fba4 = fba3.aggregate_flowby()
 
     return fba4
 
@@ -359,8 +359,8 @@ def disaggregate_eia_cbecs_mercentile(df_load):
     df_mall3['FlowAmount'] = df_mall3['FlowAmount'] * df_mall3['Mercantile']
     df_mall3 = df_mall3.drop(columns='Mercantile')
     # update flownames
-    df_mall3['FlowName'] = \
-        df_mall3['FlowName'] + ', ' + df_mall3['Description']
+    df_mall3['Flowable'] = \
+        df_mall3['Flowable'] + ', ' + df_mall3['Description']
 
     # repeat with non mall categories
     df_nonmall = df_load[
@@ -376,8 +376,8 @@ def disaggregate_eia_cbecs_mercentile(df_load):
         df_nonmall3['FlowAmount'] * df_nonmall3['Mercantile']
     df_nonmall3 = df_nonmall3.drop(columns='Mercantile')
     # update flownames
-    df_nonmall3['FlowName'] = \
-        df_nonmall3['FlowName'] + ', ' + df_nonmall3['Description']
+    df_nonmall3['Flowable'] = \
+        df_nonmall3['Flowable'] + ', ' + df_nonmall3['Description']
 
     # concat dfs
     df = pd.concat(
@@ -434,7 +434,7 @@ def disaggregate_eia_cbecs_vacant_and_other(df_load):
                                  'Remainder', 'Description']])
     df_vo2['FlowAmount'] = df_vo2['FlowAmount'] * df_vo2['Remainder']
     df_vo2 = df_vo2.drop(columns='Remainder')
-    df_vo2['FlowName'] = df_vo2['FlowName'] + ', ' + df_vo2['Description']
+    df_vo2['Flowable'] = df_vo2['Flowable'] + ', ' + df_vo2['Description']
 
     # concat with original df
     df = pd.concat([df_load, df_vo2], ignore_index=True, sort=False)

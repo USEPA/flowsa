@@ -37,7 +37,7 @@ sector_level_key = {"NAICS_2": 2,
 WITHDRAWN_KEYWORD = np.nan
 
 
-def load_api_key(api_source):
+def load_env_file_key(env_file, key):
     """
     Loads an API Key from "API_Keys.env" file using the
     'api_name' defined in the FBA source config file. The '.env' file contains
@@ -47,14 +47,23 @@ def load_api_key(api_source):
     See wiki for how to get an api:
     https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys
 
-    :param api_source: str, name of source, like 'BEA' or 'Census'
-    :return: the users API key as a string
+    :param env_file: str, name of env to load, either 'API_Key'
+    or 'external_path'
+    :param key: str, name of source/key defined in env file, like 'BEA' or
+    'Census'
+    :return: str, value of the key stored in the env
     """
-    load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
-    key = os.getenv(api_source)
-    if key is None:
-        raise flowsa.exceptions.APIError(api_source=api_source)
-    return key
+    if env_file == 'API_Key':
+        load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
+        value = os.getenv(key)
+        if value is None:
+            raise flowsa.exceptions.APIError(api_source=key)
+    else:
+        load_dotenv(f'{MODULEPATH}external_paths.env', verbose=True)
+        value = os.getenv(key)
+        if value is None:
+            raise flowsa.exceptions.EnvError(key=key)
+    return value
 
 
 def load_crosswalk(crosswalk_name):
@@ -65,7 +74,7 @@ def load_crosswalk(crosswalk_name):
 
     cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
                'sector_length': 'NAICS_2012_Crosswalk',
-               'sector_name': 'NAICS_2012_Names',
+               'sector_name': 'Sector_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
                'BEA': 'NAICS_to_BEA_Crosswalk'
@@ -112,7 +121,7 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     or FBS files
     :return: dictionary containing all information in yaml
     """
-    if filename == 'source_catalog':
+    if filename in ['source_catalog']:
         folder = datapath
     else:
         # first check if a filepath for the yaml is specified, as is the
@@ -150,30 +159,6 @@ def load_values_from_literature_citations_config():
     """
     sfile = (f'{datapath}bibliographyinfo/'
              f'values_from_literature_source_citations.yaml')
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_fbs_methods_additional_fbas_config():
-    """
-    Load the config file that contains information on where the
-    values from the literature come from
-    :return: dictionary of the values from the literature information
-    """
-    sfile = f'{datapath}bibliographyinfo/fbs_methods_additional_fbas.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_functions_loading_fbas_config():
-    """
-    Load the config file that contains information on where the
-    values from the literature come from
-    :return: dictionary of the values from the literature information
-    """
-    sfile = datapath + 'bibliographyinfo/functions_loading_fbas.yaml'
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config

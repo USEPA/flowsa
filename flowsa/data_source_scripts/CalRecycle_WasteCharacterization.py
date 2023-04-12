@@ -111,42 +111,72 @@ def calR_parse(*, year, **_):
     return output
 
 
-def apply_tons_per_employee_per_year_to_states(fbs, **kwargs):
+def keep_generated_quantity(fba, **_):
+    """
+    Function to clean CalRecycles FBA to remove quantities not
+    assigned as Generated
+    :param fba: df, FBA format
+    :return: df, modified CalRecycles FBA
+    """
+    fba = fba[fba['Description'] == 'Generated'].reset_index(drop=True)
+    # if no mapping performed, still update units
+    if 'tons' in fba['Unit'].values:
+        fba = standardize_units(fba)
+    return fba
+
+
+def load_and_clean_employment_data_for_cnhw(fbs, year, method,
+                                            geographic_level='state'):
+    from flowsa.data_source_scripts.BLS_QCEW import \
+        bls_clean_allocation_fba_w_sec
+    bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
+                                        year=year,
+                                        flowclass='Employment',
+                                        geographic_level=geographic_level)
+    bls = add_sectors_to_flowbyactivity(bls)
+    # estimate suppressed employment data
+    bls = bls_clean_allocation_fba_w_sec(bls, method=method)
+
+    # Subset BLS dataset
+    fbs_sectors = fbs['SectorProducedBy'].unique()
+    sector_list = list(filter(None, fbs_sectors))
+    bls = get_fba_allocation_subset(bls, 'BLS_QCEW', sector_list)
+    bls = bls.rename(columns={'FlowAmount': 'Employees'})
+    bls = bls[['Employees', 'Location', 'Year', 'SectorProducedBy']]
+    return bls
+
+
+def apply_tons_per_employee_per_year_to_states(fbs, **_):
     """
     Calculates tons per employee per year based on BLS_QCEW employees
     by sector and applies that quantity to employees in all states
     clean_fbs_df_fxn
     """
-    ### TODO replace the below with the employment FBS
-
-    bls = load_fba_w_standardized_units(datasource='BLS_QCEW',
-                                        year=fbs.config['year'],
-                                        flowclass='Employment',
-                                        geographic_level='state')
-    bls = add_sectors_to_flowbyactivity(bls)
-
-    # Subset BLS dataset
-    sector_list = list(filter(None, fbs['SectorProducedBy'].unique()))
-    bls = get_fba_allocation_subset(bls, 'BLS_QCEW', sector_list)
-    bls = bls.rename(columns={'FlowAmount': 'Employees'})
-    bls = bls[['Employees', 'Location', 'Year', 'SectorProducedBy']]
-
+    # load bls employment data for the year of CalRecycle data
+    bls = load_and_clean_employment_data_for_cnhw(
+        fbs, year=fbs['Year'].unique()[0], method=fbs.config)
     # Calculate tons per employee per year per material and sector in CA
     bls_CA = bls[bls['Location'] == '06000']  # California
     # aggregate all employment prior to generating tpepy
-    bls_CA = (bls_CA.groupby(['Location','Year','SectorProducedBy'])
-              .agg({'Employees':'sum'})
+    bls_CA = (bls_CA.groupby(['Location', 'Year', 'SectorProducedBy'])
+              .agg({'Employees': 'sum'})
               .reset_index())
     tpepy = fbs.merge(bls_CA, how='inner')
     tpepy['TPEPY'] = np.divide(tpepy['FlowAmount'], tpepy['Employees'],
                                out=np.zeros_like(tpepy['Employees']),
                                where=tpepy['Employees'] != 0)
-    tpepy = tpepy.drop(columns=['Employees', 'FlowAmount', 'Location'])
+    tpepy = tpepy.drop(columns=['Employees', 'FlowAmount', 'Location', 'Year'])
 
-    # Apply TPEPY back to all employees in all states
-    national_waste = tpepy.merge(bls, how='outer')
+    # Apply TPEPY back to all employees in all states for year identified in
+    # method, overwrite geoscale based on target geoscale identified in method
+    bls2 = load_and_clean_employment_data_for_cnhw(
+        fbs, year=fbs.config['year'], method=fbs.config,
+        geographic_level=fbs.config['geoscale'])
+    national_waste = tpepy.merge(bls2, how='left')
+    national_waste['Year'] = fbs.config['year']
     national_waste['FlowAmount'] = \
         national_waste['Employees'] * national_waste['TPEPY']
+    national_waste = national_waste.drop(columns=['TPEPY', 'Employees'])
 
     df = aggregate_and_subset_for_target_sectors(national_waste,
                                                  national_waste.config)

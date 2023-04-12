@@ -16,6 +16,7 @@ class FlowsaLoader(yaml.SafeLoader):
         self.add_multi_constructor('!include:', self.include)
         self.add_multi_constructor('!from_index:', self.from_index)
         self.add_multi_constructor('!script_function:', self.script_function)
+        self.add_multi_constructor('!clean_function:', self.clean_function)
         self.add_constructor('!external_config', self.external_config)
         self.external_paths_to_search = []
         self.external_path_to_pass = None
@@ -95,7 +96,7 @@ class FlowsaLoader(yaml.SafeLoader):
 
         activity_set = loader.construct_scalar(node)
 
-        with open(file, 'r', newline='') as f:
+        with open(file, 'r', encoding='utf-8-sig', newline='') as f:
             index = csv.DictReader(f)
             return [
                 row['name'] for row in index
@@ -116,6 +117,22 @@ class FlowsaLoader(yaml.SafeLoader):
         # it is safe to change this behavior, then go ahead.
         module = importlib.import_module(f'flowsa.data_source_scripts'
                                          f'.{module_name}')
+        return getattr(module, loader.construct_scalar(node))
+
+
+    @staticmethod
+    def clean_function(
+        loader: 'FlowsaLoader',
+        module_name: str,
+        node: yaml.ScalarNode
+    ) -> Callable:
+        if not isinstance(node, yaml.ScalarNode):
+            raise TypeError('Can only tag scalar node with !clean_function:')
+
+        # For security, this constructor does NOT search external config paths.
+        # If someone who understands security concerns better than I do feels
+        # it is safe to change this behavior, then go ahead.
+        module = importlib.import_module(f'flowsa.{module_name}')
         return getattr(module, loader.construct_scalar(node))
 
 
