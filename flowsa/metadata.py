@@ -9,8 +9,7 @@ FlowByActivity (FBA) and FlowBySector (FBS) datasets
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, \
     read_source_metadata
-from flowsa.common import load_functions_loading_fbas_config, \
-    load_fbs_methods_additional_fbas_config, return_true_source_catalog_name
+from flowsa.common import return_true_source_catalog_name
 from flowsa.settings import paths, PKG, PKG_VERSION_NUMBER, WRITE_FORMAT, \
     GIT_HASH, GIT_HASH_LONG, log
 
@@ -95,13 +94,6 @@ def return_fbs_method_data(source_name, config):
     from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata,\
         add_stewicombo_metadata
 
-    # load the yaml that lists what additional fbas are
-    # used in creating the fbs
-    try:
-        add_fbas = load_fbs_methods_additional_fbas_config()[source_name]
-    except KeyError:
-        add_fbas = None
-
     # Create empty dictionary for storing meta data
     meta = {}
     # subset the FBS dictionary into a dictionary of source names
@@ -118,52 +110,36 @@ def return_fbs_method_data(source_name, config):
                 meta['primary_source_meta'][k] = add_stewi_metadata(
                     v['inventory_dict'])
             continue
-        if v['data_format'] in ('FBS', 'FBS_outside_flowsa'):
+        if v.get('data_format') in ('FBS', 'FBS_outside_flowsa'):
             meta['primary_source_meta'][k] = \
                 getMetadata(k, category='FlowBySector')
             continue
         # append source and year
-        meta['primary_source_meta'][k] = getMetadata(k, v["year"])
+        year = config['year'] if v.get('year') is None else v.get('year')
+        meta['primary_source_meta'][k] = getMetadata(k, year)
         # create dictionary of allocation datasets for different activities
-        activities = v['activity_sets']
+        activities = v.get('activity_sets')
+        if activities is None:
+            continue
         # initiate nested dictionary
-        meta['primary_source_meta'][k]['allocation_source_meta'] = {}
+        meta['primary_source_meta'][k]['attribution_source_meta'] = {}
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
-            if attr['allocation_method'] not in \
-                    (['direct', 'allocation_function']):
+            if attr.get('attribution_source'):
                 # append fba meta
-                meta['primary_source_meta'][k]['allocation_source_meta'][
-                    attr['allocation_source']] = getMetadata(
-                    attr['allocation_source'], attr['allocation_source_year'])
-            if 'helper_source' in attr:
-                meta['primary_source_meta'][k][
-                    'allocation_source_meta'][attr['helper_source']] = \
-                    getMetadata(attr['helper_source'],
-                                attr['helper_source_year'])
+                source = list(attr['attribution_source'].keys())[0]
+                meta['primary_source_meta'][k]['attribution_source_meta'][
+                    source] = getMetadata(
+                        source, attr['attribution_source'][source].get('year'))
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 for s, y in lit.items():
                     lit_meta = return_fba_method_meta(s, year=y)
                     # append fba meta
                     meta['primary_source_meta'][k][
-                        'allocation_source_meta'][s] = lit_meta
+                        'attribution_source_meta'][s] = lit_meta
                     # subset the additional fbas to the source and
                     # activity set, if exists
-        if add_fbas is not None:
-            try:
-                fbas = add_fbas[k]
-                for acts, fxn_info in fbas.items():
-                    for fxn, fba_info in fxn_info.items():
-                        for fba, y in fba_info.items():
-                            fxn_config = \
-                                load_functions_loading_fbas_config()[fxn][fba]
-                            meta['primary_source_meta'][k][
-                                'allocation_source_meta'][
-                                fxn_config['source']] = getMetadata(
-                                fxn_config['source'], y)
-            except KeyError:
-                pass
 
     return meta
 

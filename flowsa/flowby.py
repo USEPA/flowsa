@@ -1074,6 +1074,11 @@ class FlowByActivity(_FlowBy):
         )
 
         attribution_method = fba.config.get('attribution_method')
+        if attribution_method == 'direct' or attribution_method is None:
+            fba = fba.assign(AttributionSources='Direct')
+        else:
+            fba = fba.assign(AttributionSources=','.join(
+                [k for k in fba.config.get('attribution_source').keys()]))
 
         if attribution_method == 'proportional':
             attribution_fbs = fba.load_prepare_attribution_source()
@@ -1082,14 +1087,6 @@ class FlowByActivity(_FlowBy):
         elif attribution_method == 'multiplication':
             attribution_fbs = fba.load_prepare_attribution_source()
             attributed_fba = fba.multiplication_attribution(attribution_fbs)
-
-        elif attribution_method == 'weighted_average':
-            attribution_fbs = fba.load_prepare_attribution_source()
-            attributed_fba = fba.weighted_average_attribution(attribution_fbs)
-
-        elif attribution_method == 'substitute_nonexistent_values':
-            attribution_fbs = fba.load_prepare_attribution_source()
-            attributed_fba = fba.substitute_nonexistent_values(attribution_fbs)
 
         else:
             if all(fba.groupby('group_id')['group_id'].agg('count') == 1):
@@ -1683,122 +1680,6 @@ class FlowByActivity(_FlowBy):
             .reset_index(drop=True)
         )
 
-    def weighted_average_attribution(
-            self: 'FlowByActivity',
-            other: 'FlowBySector'
-    ) -> 'FlowByActivity':
-        """
-        This method determines weighted average
-        """
-
-        log.info('Taking weighted average of %s by %s.',
-                 self.full_name, other.full_name)
-        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
-            other)
-
-        # merge dfs
-        merged = (fba
-                  .merge(other,
-                         how='left',
-                         left_on=['PrimarySector', 'temp_location'
-                         if 'temp_location' in fba
-                         else 'Location'],
-                         right_on=['PrimarySector', 'Location'],
-                         suffixes=[None, '_other'])
-                  .fillna({'FlowAmount_other': 0})
-                  )
-        # drop rows where flow is 0
-        merged = merged[merged['FlowAmount'] != 0]
-        # replace terms
-        for original, replacement in self.config.get(
-                'replacement_dictionary').items():
-            merged = merged.replace({original: replacement})
-
-        wt_flow = (merged
-                   .groupby(['Class', 'MetaSources', 'Flowable', 'Unit',
-                             'FlowType', 'ActivityProducedBy',
-                             'ActivityConsumedBy', 'Context', 'Location',
-                             'LocationSystem', 'Year', 'MeasureofSpread',
-                             'Spread', 'DistributionType', 'Min', 'Max',
-                             'DataReliability', 'DataCollection',
-                             'SectorProducedBy', 'ProducedBySectorType',
-                             'SectorConsumedBy', 'ConsumedBySectorType',
-                             'SectorSourceName'],
-                            dropna=False)
-                   .apply(lambda x: np.average(x['FlowAmount'],
-                                               weights=x['FlowAmount_other']))
-                   .drop(columns='FlowAmount')  # original flowamounts
-                   .reset_index(name='FlowAmount')  # new, weighted flows
-                   )
-        # set attributes todo: revise above code so don't lose attributes
-        attributes_to_save = {
-            attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
-        }
-        for attr in attributes_to_save:
-            setattr(wt_flow, attr, attributes_to_save[attr])
-
-        # reset dropped information
-        wt_flow = (wt_flow
-                   .reset_index(drop=True).reset_index()
-                   .rename(columns={'index': 'group_id'})
-                   .assign(group_total=wt_flow.FlowAmount)
-                   )
-
-        return wt_flow
-
-
-    def substitute_nonexistent_values(
-            self: 'FlowByActivity',
-            other: 'FlowBySector'
-    ) -> 'FlowByActivity':
-        """
-        This method determines weighted average
-        """
-        log.info('Substituting nonexistent values in %s with %s.',
-                 self.full_name, other.full_name)
-
-        fba = (self
-               .add_primary_secondary_columns('Sector')
-               .drop(columns=['group_id', 'group_total'])
-               )
-
-        other = other.add_primary_secondary_columns('Sector')
-
-        # merge all possible national data with each state
-        state_geo = pd.concat([
-            (geo.filtered_fips(self.config['geoscale'])[['FIPS']]
-             .assign(Location=location.US_FIPS))
-        ])
-
-        other = (other
-                 .merge(state_geo)
-                 .drop(columns=['Location', 'FlowUUID'])
-                 .rename(columns={'FIPS': 'Location',
-                                  'FlowAmount': 'FlowAmount_other'})
-                 )
-
-        merged = (fba
-                  .merge(other,
-                         on=list(other.select_dtypes(
-                             include=['object', 'int']).columns),
-                         how='outer')
-                  .assign(FlowAmount=lambda x: x.FlowAmount.
-                          fillna(x.FlowAmount_other))
-                  .drop(columns=['PrimarySector', 'SecondarySector',
-                                 'FlowAmount_other', 'group_id'],
-                        errors='ignore')
-                  .reset_index(drop=True).reset_index()
-                  .rename(columns={'index': 'group_id'})
-                  )
-        # replace float dtypes with new data
-        merged = (merged
-                  .drop(merged.filter(regex='_x').columns, axis=1)
-                  .rename(columns=lambda x: x.replace('_y', ''))
-                  .assign(group_total=merged.FlowAmount)
-                  )
-
-        return merged
-
 
     def prepare_fbs(
             self: 'FlowByActivity',
@@ -2129,8 +2010,15 @@ class FlowBySector(_FlowBy):
         # aggregate to target sector
         fbs = fbs.sector_aggregation()
 
-        fbs.to_parquet(f'{settings.fbsoutputpath}{method}.parquet')
-        # TODO: Needs refinement + saving metadata
+        # Save fbs and metadata
+        log.info(f'FBS generation complete, saving {method} to file')
+        meta = metadata.set_fb_meta(method, 'FlowBySector')
+        esupy.processed_data_mgmt.write_df_to_file(fbs, settings.paths, meta)
+        metadata.write_metadata(source_name=method,
+                                config=common.load_yaml_dict(
+                                    method, 'FBS', external_config_path),
+                                fb_meta=meta,
+                                category='FlowBySector')
 
         return fbs
 
