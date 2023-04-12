@@ -1519,11 +1519,19 @@ class FlowByActivity(_FlowBy):
             )
 
         fba = self.add_primary_secondary_columns('Sector')
+
+        subset_cols = ['PrimarySector', 'Location', 'FlowAmount', 'Unit']
+        groupby_cols = ['PrimarySector', 'Location', 'Unit']
+        if self.config.get('attribute_on') is not None:
+            subset_cols = ['PrimarySector', 'Location', 'FlowAmount', 'Unit',
+                           self.config.get('attribute_on')]
+            groupby_cols = ['PrimarySector', 'Location', 'Unit',
+                            self.config.get('attribute_on')]
         other = (
             other
             .add_primary_secondary_columns('Sector')
-            [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
-            .groupby(['PrimarySector', 'Location', 'Unit'])
+            [subset_cols]
+            .groupby(groupby_cols)
             .agg('sum')
             .reset_index()
         )
@@ -1545,46 +1553,106 @@ class FlowByActivity(_FlowBy):
 
         fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(other)
 
-        groupby_cols = ['group_id']
-        for rank in ['Primary', 'Secondary']:
-            counted = fba.assign(group_count=(fba.groupby(groupby_cols)
-                                              ['group_id']
-                                              .transform('count')))
-            directly_attributed = (
-                counted
-                .query('group_count == 1')
-                .drop(columns='group_count')
-            )
-            needs_attribution = (
-                counted
-                .query('group_count > 1')
-                .drop(columns='group_count')
+        # attribute on sector columns
+        if self.config.get('attribute_on') is None:
+            groupby_cols = ['group_id']
+            for rank in ['Primary', 'Secondary']:
+                counted = fba.assign(group_count=(fba.groupby(groupby_cols)
+                                                  ['group_id']
+                                                  .transform('count')))
+                directly_attributed = (
+                    counted
+                    .query('group_count == 1')
+                    .drop(columns='group_count')
+                )
+                needs_attribution = (
+                    counted
+                    .query('group_count > 1')
+                    .drop(columns='group_count')
+                )
+
+                merged = (
+                    needs_attribution
+                    .merge(other,
+                           how='left',
+                           left_on=[f'{rank}Sector',
+                                    'temp_location'
+                                    if 'temp_location' in needs_attribution
+                                    else 'Location'],
+                           right_on=['PrimarySector', 'Location'],
+                           suffixes=[None, '_other'])
+                    .fillna({'FlowAmount_other': 0})
+                )
+
+                denominator_flag = ~merged.duplicated(subset=[*groupby_cols,
+                                                      f'{rank}Sector'])
+                with_denominator = (
+                    merged
+                    .assign(denominator=(
+                        merged
+                        .assign(FlowAmount_other=(merged.FlowAmount_other
+                                                  * denominator_flag))
+                        .groupby(groupby_cols)
+                        ['FlowAmount_other']
+                        .transform('sum')))
+                )
+
+                non_zero_denominator = with_denominator.query(f'denominator != 0 ')
+                unattributable = with_denominator.query(f'denominator == 0 ')
+
+                if not unattributable.empty:
+                    log.warning(
+                        'Could not attribute activities %s in %s due to lack of '
+                        'flows in attribution source %s for mapped %s sectors %s',
+                        set(zip(unattributable.ActivityProducedBy,
+                                unattributable.ActivityConsumedBy,
+                                unattributable.Location)),
+                        unattributable.full_name,
+                        other.full_name,
+                        rank,
+                        set(unattributable[f'{rank}Sector'])
+                    )
+
+                proportionally_attributed = (
+                    non_zero_denominator
+                    .assign(FlowAmount=lambda x: (x.FlowAmount
+                                                  * x.FlowAmount_other
+                                                  / x.denominator))
+                )
+
+            fba = pd.concat([directly_attributed,
+                             proportionally_attributed], ignore_index=True)
+            # groupby_cols.append(rank)
+
+        # else attribute on column specified in the FBS yaml
+        else:
+
+            #todo: move this equal attribution into FBS method once
+            # refactored to allow multiple attribution methods
+            fba2 = fba.equally_attribute()
+            fba3 = (fba2.add_primary_secondary_columns('Sector'))
+
+            groupby_cols = [self.config.get('attribute_on'), 'Unit']
+            attribute_cols = self.config.get('attribute_on')
+
+            other_with_denominator = (
+                other
+                .assign(denominator=(other
+                        .groupby(groupby_cols)['FlowAmount']
+                        .transform('sum')))
             )
 
-            merged = (
-                needs_attribution
-                .merge(other,
+            with_denominator = (
+                fba
+                .merge(other_with_denominator,
                        how='left',
-                       left_on=[f'{rank}Sector',
+                       left_on=[attribute_cols,
                                 'temp_location'
-                                if 'temp_location' in needs_attribution
+                                if 'temp_location' in fba
                                 else 'Location'],
-                       right_on=['PrimarySector', 'Location'],
+                       right_on=[attribute_cols, 'Location'],
                        suffixes=[None, '_other'])
                 .fillna({'FlowAmount_other': 0})
-            )
-
-            denominator_flag = ~merged.duplicated(subset=[*groupby_cols,
-                                                  f'{rank}Sector'])
-            with_denominator = (
-                merged
-                .assign(denominator=(
-                    merged
-                    .assign(FlowAmount_other=(merged.FlowAmount_other
-                                              * denominator_flag))
-                    .groupby(groupby_cols)
-                    ['FlowAmount_other']
-                    .transform('sum')))
             )
 
             non_zero_denominator = with_denominator.query(f'denominator != 0 ')
@@ -1600,27 +1668,27 @@ class FlowByActivity(_FlowBy):
                     unattributable.full_name,
                     other.full_name,
                     rank,
-                    set(unattributable[f'{rank}Sector'])
+                    set(unattributable[rank])
                 )
 
-            proportionally_attributed = (
+            fba = (
                 non_zero_denominator
                 .assign(FlowAmount=lambda x: (x.FlowAmount
                                               * x.FlowAmount_other
                                               / x.denominator))
-                .drop(columns=['PrimarySector_other', 'Location_other',
-                               'FlowAmount_other', 'denominator',
-                               'Unit_other'],
-                      errors='ignore')
             )
-            fba = pd.concat([directly_attributed,
-                             proportionally_attributed], ignore_index=True)
-            groupby_cols.append(f'{rank}Sector')
+
+            if self.config.get('fill_sector_column') is not None:
+                sector_col = self.config.get('fill_sector_column')
+                fba[sector_col] =  fba['PrimarySector_other']
+
 
         return (
             fba
             .drop(columns=['PrimarySector', 'SecondarySector',
-                           'temp_location'],
+                           'temp_location', 'PrimarySector_other',
+                           'Location_other', 'FlowAmount_other', 'denominator',
+                           'Unit_other'],
                   errors='ignore')
             .reset_index(drop=True)
         )
@@ -2053,6 +2121,7 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             # TODO: Add a method to convert to proper industry spec.
             .convert_fips_to_geoscale()
+            .attribute_flows_to_sectors()  # used to attribute activity sets
             .aggregate_flowby()  # necessary after consolidating geoscale
         )
 
