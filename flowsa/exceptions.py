@@ -34,6 +34,14 @@ class APIError(Exception):
         super().__init__(self.message)
 
 
+class EnvError(Exception):
+    def __init__(self, key):
+        message = (f"The key {key} was not found in external_paths.env. "
+                   f"Create key or see examples folder for help.")
+        self.message = message
+        super().__init__(self.message)
+
+
 class FBSMethodConstructionError(Exception):
     """Errors in FBS methods which result in incompatible models"""
     def __init__(self, message=None, error_type=None):

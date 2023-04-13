@@ -9,7 +9,7 @@ Inclues helper functions for calling and parsing data
 import json
 import pandas as pd
 from flowsa.location import US_FIPS, get_all_state_FIPS_2
-from flowsa.common import load_api_key
+from flowsa.common import load_env_file_key
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -90,7 +90,7 @@ def Census_pop_URL_helper(*, build_url, year, config, **_):
                 url = url.replace("&in=state:__stateFIPS__", '')
                 if c == "us":
                     url = url.replace("*", "1")
-                userAPIKey = load_api_key(config['api_name'])
+                userAPIKey = load_env_file_key('API_Key', config['api_name'])
                 url = url.replace("__apiKey__", userAPIKey)
                 urls.append(url)
     return urls

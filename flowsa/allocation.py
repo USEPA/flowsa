@@ -11,7 +11,7 @@ from flowsa.common import fbs_activity_fields, sector_level_key, \
 from flowsa.settings import log, vLogDetailed
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType
-from flowsa.flowbyfunctions import sector_aggregation, \
+from flowsa.flowbyfunctions import sector_aggregation, aggregator, \
     sector_disaggregation, subset_and_merge_df_by_sector_lengths
 
 
@@ -343,43 +343,63 @@ def equal_allocation(fba_load):
     """
     from flowsa.flowbyfunctions import assign_columns_of_sector_levels
 
+    # aggregate df
+    aggcols = list(fba_load.select_dtypes(include=['object', 'int']).columns)
+    fba = aggregator(fba_load, aggcols)
+
     # first check that all sector lengths are the same
-    dfc = assign_columns_of_sector_levels(fba_load)
+    dfc = assign_columns_of_sector_levels(fba)
     # if duplicated rows, keep assignment to most specific sectors because
     # data should already be at final assignment lengths if equally
     # allocating and because not manipulating the loaded dataset, but rather
     # just checking that all sector lengths match for an activity
     duplicate_cols = [e for e in dfc.columns if e not in [
         'SectorProducedByLength', 'SectorConsumedByLength']]
-    duplicate_df = dfc[dfc.duplicated(duplicate_cols)]
+    duplicate_df = dfc[dfc.duplicated(duplicate_cols, keep=False)]
     if len(duplicate_df) > 0:
         log.info('Dropping rows duplicated due to assigning sector lengths '
                  'for ambiguous sectors. Keeping sector length assignments '
                  'to most specific sectors.')
-        dfc = dfc[dfc.duplicated(duplicate_cols, keep='first')]
+        sort_cols = ['Location', 'ActivityProducedBy',
+                     'ActivityConsumedBy', 'SectorProducedByLength',
+                     'SectorConsumedByLength', 'Class',
+                     'FlowName', 'Flowable',
+                     'SectorProducedBy', 'SectorConsumedBy'
+                     ]
+        dfc = dfc.sort_values([e for e in sort_cols if e in dfc.columns])
+        dfc = dfc.drop_duplicates(subset=duplicate_cols, keep="last")
 
     # Before equally allocating, check that each activity is being allocated
     # to sectors of the same length
-    dfsub = dfc[['ActivityProducedBy', 'ActivityConsumedBy',
-                 'SectorProducedByLength',
-                 'SectorConsumedByLength']].drop_duplicates()
-    df_dup = dfsub[dfsub.duplicated(['ActivityProducedBy', 'ActivityConsumedBy'])]
+    possible_headers = ['Class', 'FlowName', 'Flowable', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Compartment', 'Context',
+                        'Location', 'SectorProducedByLength',
+                        'SectorConsumedByLength']
+    dfsub = dfc[dfc.columns.intersection(possible_headers)].drop_duplicates()
+
+    # create column list based on if df is FBA or FBS
+    duplicated_cols = [e for e in dfsub.columns if e in
+                       ['FlowName', 'Flowable', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Compartment', 'Context',
+                        'Location']]
+    df_dup = dfsub[dfsub.duplicated(duplicated_cols)]
     if len(df_dup) > 1:
         log.error('Cannot equally allocate because sector lengths vary. All '
                   'sectors must be the same sector level.')
+        return fba
 
     # create groupby cols by which to determine allocation
-    fba_cols = fba_load.select_dtypes([object]).columns.to_list()
+    fba_cols = fba.select_dtypes([object]).columns.to_list()
     groupcols = [e for e in fba_cols if e not in
                  ['SectorProducedBy', 'SectorConsumedBy', 'Description']]
     # create counts of rows
-    df_count = fba_load.groupby(
+    df_count = fba.groupby(
         groupcols, as_index=False, dropna=False).size()
     df_count = replace_NoneType_with_empty_cells(df_count)
 
     # merge dfs, replace cells with empty strings to ensure merge occurs
     # correctly
-    fba = replace_NoneType_with_empty_cells(fba_load)
+    fba = replace_NoneType_with_empty_cells(fba)
     dfm = fba.merge(df_count, how='outer', on=groupcols)
     # calc new flowamounts
     dfm['FlowAmount'] = dfm['FlowAmount'] / dfm['size']

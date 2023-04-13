@@ -17,7 +17,7 @@ sources_to_cache:
     selection_fields:
       Class: Employment
     clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
-    clean_fba: !script_function:temp_data_source_functions clean_qcew
+    clean_fba: !script_function:temp_data_source_functions clean_qcew # todo: evaluate if necessary because already estimated suppressed data
 
 source_names:
   BEA_Marine_Bunker_Fuel:
@@ -38,7 +38,7 @@ source_names:
           Description: Exports
         adjustment_factor: -1
 
-  GHGI2020_3_104:
+  EPA_GHGI_T_3_104:
     selection_fields:
       ActivityProducedBy: Marine
     # fedefl_mapping: GHGI

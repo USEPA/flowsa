@@ -21,7 +21,7 @@ display_tables:
     replace_dict:
       Industry: {'31': '31-33', '32': '31-33', '33': '31-33',
                   '44': '44-45', '45': '44-45',
-                  '48': '48-49', '49': '48-49'},
+                  '48': '48-49', '49': '48-49'}
       Pollutant: {C2F6: F-GHGs, C3F8: F-GHGs, CF4: F-GHGs,
                   'HFC, PFC and SF6 F-HTFs': F-GHGs,
                   HFC-134a: F-GHGs, HFC-23: F-GHGs,
@@ -806,7 +806,7 @@ source_names:
 
   EPA_GHGI_T_A_103: # HFCs from Transportation
     <<: *ghgi_parameters
-    # clean_fba_before_activity_sets: !script_function:temp_data_source_functions split_hfcs_by_type
+    # clean_fba_before_activity_sets: !script_function:EPA_GHGI split_hfcs_by_type
     activity_sets:
       passenger_cars:
         selection_fields:

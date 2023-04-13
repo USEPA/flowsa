@@ -94,6 +94,8 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
         df['State'] = df['State'].map(abbrev_us_state).fillna(df['State'])
     df['State'] = df.apply(lambda x: clean_str_and_capitalize(x.State),
                            axis=1)
+    if 'County' not in df:
+        df['County'] = ''
     df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County),
                             axis=1)
 
@@ -103,10 +105,10 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
 
     # Where no county match occurs, assign state FIPS instead
     mapping_FIPS = get_state_FIPS()
-    mapping_FIPS.drop(columns=['County'], inplace=True)
+    mapping_FIPS = mapping_FIPS.drop(columns=['County'])
     df = df.merge(mapping_FIPS, left_on='State', right_on='State', how='left')
     df['Location'] = df['FIPS_x'].where(df['FIPS_x'].notnull(), df['FIPS_y'])
-    df.drop(columns=['FIPS_x', 'FIPS_y'], inplace=True)
+    df = df.drop(columns=['FIPS_x', 'FIPS_y'])
 
     return df
 
@@ -120,17 +122,18 @@ def update_geoscale(df, to_scale):
     """
     # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
-        # pad zeros
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x:
-                                                     x.ljust(3 + len(x), '0')
-                                                     if len(x) < 5 else x)
+        df = df.assign(Location = (df['Location']
+                                   .apply(lambda x: str(x[0:2]))
+                                   .apply(lambda x:
+                                          x.ljust(3 + len(x), '0')
+                                          if len(x) < 5 else x))
+                      )
     elif to_scale == 'national':
-        df.loc[:, 'Location'] = US_FIPS
+        df = df.assign(Location = US_FIPS)
     return df
 
 
-def get_state_FIPS(year='2015'):
+def get_state_FIPS(year='2015', abbrev=False):
     """
     Filters FIPS df for state codes only
     :param year: str, year of FIPS, defaults to 2015
@@ -140,6 +143,8 @@ def get_state_FIPS(year='2015'):
     fips = read_stored_FIPS(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
+    if abbrev:
+        fips['State'] = fips['State'].str.title().replace(us_state_abbrev)
     return fips
 
 

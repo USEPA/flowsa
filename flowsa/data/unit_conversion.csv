@@ -19,4 +19,5 @@ Quadrillion Btu,MJ,1.05506E+12
 Trillion Btu,MJ,1055055900
 Tbtu,MJ,1055055900
 MT CO2e,MMT CO2e,0.000001
-p,employees,1
+employees,p,1
+Thousand USD,USD,1000

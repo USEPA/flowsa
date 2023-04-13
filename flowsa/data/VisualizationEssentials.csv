@@ -1,0 +1,57 @@
+Sector,AttributionSource,Color,Abrv_Name
+11,,#33A02C,Ag
+115112,,#228B22,Land App
+21,,#000000,Mining
+22,,#696969,Utilities
+2212,,#00EEEE,Nat Gas
+221320,,#3090C7,Sewer
+23,,#C0C0C0,Construction
+236115,,#a45a52,Single-Family Housing Const
+236116,,#7fffd4,Multifamily Housing Const
+236117,,#dd8888,Housing For-Sale Builders
+236118,,#657065,Res. Remodelers
+236210,,#FF7F00,Industrial Bldg Const
+236220,,#7D9EC0,Commercial/Institutional Bldg Const
+237110,,#8B0000,Water/Sewer Const
+237130,,#71C671,Power/Com. Const
+237310,,#4876FF,Road/Bridge Const
+237990,,#912CEE,Other Const
+238910,,#FF1493,Site Prep
+31,,#E31A1C,Mfg - 31
+311111,,#C1FFC1,Dog/Cat Food Mfg
+311119,,#954535,Animal Feed
+32,,#E31A1C,Mfg - 32
+324110,,#00688B,Biochem Proc
+327310,,#16645f,Concrete Mfg
+33,,#E31A1C,Mfg - 33
+42,,#1F78B4,Wholesale Trade
+44,,#A6CEE3,Retail Trade - 44
+45,,#ECC5C0,Retail Trade - 45
+48,,#FF6F00,Transp & Whs - 48
+49,,#E56717,Transp & Whs - 49
+51,,#FDBF6F,Info
+52,,#6A3D9A,Finance and Ins
+53,,#99C68E,Real Estate
+54,,#CAB2D6,Prof and Tech Sev
+55,,#583759,Mngmt
+56,,#6667AB,Admin & Waste Serv
+5622121,,#FFF380,MSW Landfill
+562213,,#654A8B,Solid Waste
+5622191,,#C88141,Anaerobic Digestion
+5622192,,#F67280,Composting
+5629201,,#FFA15A,MSW Recycling
+5629202,,#91a3b0,Mixed CDD Proc.
+5629203,,#9999ff,Concrete Proc.
+61,,#800000,Educ
+62,,#7E354D,Health Care
+624210,,#CCCCFF,Food Bank
+71,,#BAB86C,Arts & Rec
+72,,#D2691E,Acc & Food Serv
+81,,#FF007F,Other Serv
+92,,#9F000F,Pub Admin
+F010,,#D58A94,Residential
+S00201,,#B2DF8A,Gov Loc Psg Transit
+S00101,,B5EAAA,Gov Fed Elec Util
+S00202,,#98FF98,Gov Loc Elec Util
+,Direct,#4C61AD,Direct
+,Allocated,#6CDF97,Allocated

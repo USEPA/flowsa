@@ -36,7 +36,11 @@ def parse_statior(*, source, year, config, **_):
     # uses rpy2
     # this .rds is stored as a list of named dataframes by state
     for state in us_state_abbrev.keys():
-         df = states.rx2(state)
+         matrix = states.rx2(state)
+         df = pd.DataFrame(matrix).transpose()
+         df.columns = list(matrix.colnames)
+         df['col'] = list(matrix.rownames)
+         df = df.set_index('col')
          df2 = df.melt(ignore_index=False, value_name = 'FlowAmount',
                        var_name = 'ActivityConsumedBy')
          df2['ActivityProducedBy'] = df2.index
@@ -44,22 +48,21 @@ def parse_statior(*, source, year, config, **_):
              # Adjust the index by removing the state: STATE.SECTOR
              df2['ActivityProducedBy'] = df2[
                  'ActivityProducedBy'].str.split(".", expand=True)[1]
-         df2.reset_index(drop=True, inplace=True)
+         df2 = df2.reset_index(drop=True)
          df2['State'] = state
          data_dict[state] = df2
 
     fba = pd.concat(data_dict, ignore_index=True)
-    fba.dropna(subset=['FlowAmount'], inplace=True)
+    fba = fba.dropna(subset=['FlowAmount'])
 
     # Gross Output
     if 'GO' in source and 'ActivityConsumedBy' in fba.columns:
         fba = fba.drop(columns=['ActivityConsumedBy'])
 
     # Assign location
-    fba['County'] = ''
     fba = apply_county_FIPS(fba)
     fba = assign_fips_location_system(fba, '2015')
-    fba.drop(columns=['County'], inplace=True)
+    fba = fba.drop(columns=['County'])
 
     # Hardcoded data
     fba['Year'] = year
@@ -75,6 +78,8 @@ def parse_statior(*, source, year, config, **_):
 
 if __name__ == "__main__":
     import flowsa
-    source = 'stateio_Industry_GO'
+    # source = 'stateio_Industry_GO'
+    # source = 'stateio_Make_Summary'
+    source = 'stateio_Use_Summary'
     flowsa.flowbyactivity.main(year=2017, source=source)
     fba = flowsa.getFlowByActivity(source, 2017)

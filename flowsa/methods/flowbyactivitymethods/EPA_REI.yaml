@@ -1,0 +1,19 @@
+author: US Environmental Protection Agency
+source_name: EPA_REI
+source_url: 'https://raw.githubusercontent.com/USEPA/HIO/main/data/REI_sourcedata/'
+original_data_download_date: '2022-08-17'
+bib_id: EPA_REI
+api_name: None
+api_key_required: false
+format: csv
+url:
+  base_url: 'https://raw.githubusercontent.com/USEPA/HIO/main/data/REI_sourcedata/REI___filename__.csv'
+url_replace_fxn: !script_function:EPA_REI rei_url_helper
+call_response_fxn: !script_function:EPA_REI rei_call
+parse_response_fxn: !script_function:EPA_REI primary_factors_parse
+years:
+  - 2012
+files:
+  - primaryfactors
+  - useintersection
+  - makecol
