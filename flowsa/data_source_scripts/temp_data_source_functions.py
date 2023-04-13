@@ -370,20 +370,6 @@ def clean_hfc_fba_for_seea(fba: FlowByActivity, **kwargs):
     return new_fba
 
 
-def split_hfcs_by_type(fba: FlowByActivity, **kwargs):
-    attributes_to_save = {
-        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
-    }
-
-    df = ghgi.split_HFCs_by_type(fba)
-
-    new_fba = FlowByActivity(df)
-    for attr in attributes_to_save:
-        setattr(new_fba, attr, attributes_to_save[attr])
-
-    return new_fba
-
-
 def disaggregate_coa_cropland_to_6_digit_naics(fba: FlowByActivity):
     """
     Disaggregate usda coa cropland to naics 6. Fragile implementation, should
