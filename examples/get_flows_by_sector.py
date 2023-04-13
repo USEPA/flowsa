@@ -19,6 +19,12 @@ flowsa.seeAvailableFlowByModels('FBS')
 fbs_water = flowsa.getFlowBySector('Water_national_2015_m1',
                                    download_FBAs_if_missing=True)
 
+fbs_TRI_DMR = flowsa.getFlowBySector('TRI_DMR_state_2017',
+                                     download_FBAs_if_missing=True)
+
+fbs_GHG = flowsa.getFlowBySector('GHG_national_2016_m1',
+                                 download_FBAs_if_missing=True)
+
 # collapse the FBS - output has 'Sector' column instead of
 # 'SectorProducedBy' and 'SectorConsumedBy' columns
 fbs_water_collapsed = flowsa.collapse_FlowBySector('Water_national_2015_m1')
