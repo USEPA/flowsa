@@ -16,7 +16,6 @@ from flowsa.dataclean import standardize_units
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
 from flowsa.schema import activity_fields, dq_fields
 from flowsa.settings import log
-from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
 def get_activitytosector_mapping(source, fbsconfigpath=None):
@@ -79,6 +78,7 @@ def add_sectors_to_flowbyactivity(
         repo
     :return: a df with activity fields mapped to 'sectors'
     """
+    from flowsa.naics import replace_naics_w_naics_from_another_year
     # First check if source activities are NAICS like -
     # if so make it into a mapping file
     s = pd.unique(flowbyactivity_df['SourceName'])[0]

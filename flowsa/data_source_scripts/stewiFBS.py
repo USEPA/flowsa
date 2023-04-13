@@ -17,7 +17,7 @@ from flowsa.flowby import FlowBySector, FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import log, process_adjustmentpath
-from flowsa.validation import replace_naics_w_naics_from_another_year
+from flowsa.naics import replace_naics_w_naics_from_another_year
 import stewicombo
 import stewi
 from stewicombo.overlaphandler import remove_default_flow_overlaps
