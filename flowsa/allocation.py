@@ -360,16 +360,29 @@ def equal_allocation(fba_load):
         log.info('Dropping rows duplicated due to assigning sector lengths '
                  'for ambiguous sectors. Keeping sector length assignments '
                  'to most specific sectors.')
-        dfc = dfc.sort_values(['SectorProducedByLength',
-                               'SectorConsumedByLength'])
-        dfc = dfc[~dfc.duplicated(duplicate_cols, keep='last')]
+        sort_cols = ['Location', 'ActivityProducedBy',
+                     'ActivityConsumedBy', 'SectorProducedByLength',
+                     'SectorConsumedByLength', 'Class',
+                     'FlowName', 'Flowable',
+                     'SectorProducedBy', 'SectorConsumedBy'
+                     ]
+        dfc = dfc.sort_values([e for e in sort_cols if e in dfc.columns])
+        dfc = dfc.drop_duplicates(subset=duplicate_cols, keep="last")
 
     # Before equally allocating, check that each activity is being allocated
     # to sectors of the same length
-    dfsub = dfc[['ActivityProducedBy', 'ActivityConsumedBy',
-                 'SectorProducedByLength',
-                 'SectorConsumedByLength']].drop_duplicates()
-    df_dup = dfsub[dfsub.duplicated(['ActivityProducedBy', 'ActivityConsumedBy'])]
+    possible_headers = ['Class', 'FlowName', 'Flowable', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Compartment', 'Context',
+                        'Location', 'SectorProducedByLength',
+                        'SectorConsumedByLength']
+    dfsub = dfc[dfc.columns.intersection(possible_headers)].drop_duplicates()
+
+    # create column list based on if df is FBA or FBS
+    duplicated_cols = [e for e in dfsub.columns if e in
+                       ['FlowName', 'Flowable', 'ActivityProducedBy',
+                        'ActivityConsumedBy', 'Compartment', 'Context',
+                        'Location']]
+    df_dup = dfsub[dfsub.duplicated(duplicated_cols)]
     if len(df_dup) > 1:
         log.error('Cannot equally allocate because sector lengths vary. All '
                   'sectors must be the same sector level.')

@@ -806,7 +806,7 @@ source_names:
 
   EPA_GHGI_T_A_103: # HFCs from Transportation
     <<: *ghgi_parameters
-    # clean_fba_before_activity_sets: !script_function:temp_data_source_functions split_hfcs_by_type
+    # clean_fba_before_activity_sets: !script_function:EPA_GHGI split_hfcs_by_type
     activity_sets:
       passenger_cars:
         selection_fields:

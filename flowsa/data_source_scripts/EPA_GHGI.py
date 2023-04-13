@@ -12,11 +12,8 @@ import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
-from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.settings import log, externaldatapath
 from flowsa.schema import flow_by_activity_fields
-from flowsa.common import load_yaml_dict
-from flowsa.data_source_scripts import EIA_MECS
 from flowsa.flowby import FlowByActivity
 
 
@@ -278,7 +275,8 @@ def is_consumption(source_name, config):
     :param source_name: df
     :return: True or False
     """
-    if 'consum' in get_table_meta(source_name, config)['desc'].lower():
+    if ('consum' in get_table_meta(source_name, config)['desc'].lower() and
+        get_table_meta(source_name, config)['class']!='Chemicals'):
         return True
     return False
 
@@ -393,8 +391,6 @@ def ghg_parse(*, df_list, year, config, **_):
             df = df.melt(id_vars=id_vars,
                          var_name=meta.get('melt_var'),
                          value_name="FlowAmount")
-            df = df.rename(columns={"ActivityConsumedBy": "ActivityProducedBy",
-                                    "ActivityProducedBy": "ActivityConsumedBy"})
             name_unit = series_separate_name_and_units(df['FlowName'],
                                                        meta['activity'],
                                                        meta['unit'])
@@ -810,118 +806,6 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
 
     return new_fba
 
-
-# # Fxn not actively used
-# def subtract_HFC_transport_emissions(df, parameter_dict):
-#     """Remove the portion of transportation emissions which are sourced elsewhere."""
-#     tbl = parameter_dict.get('transport_fba')
-#     transport_df = load_fba_w_standardized_units(datasource=tbl,
-#                                                  year=df['Year'][0])
-#     activity_list = parameter_dict.get('transport_activities')
-#     transport_df = transport_df[transport_df['ActivityProducedBy'].isin(activity_list)]
-#     df.loc[df['ActivityProducedBy'] == parameter_dict.get('ods_activity'),
-#            'FlowAmount'] = df['FlowAmount'] - transport_df['FlowAmount'].sum()
-#     return df
-
-# # Fxn not actively used
-# def allocate_HFC_to_residential(df, parameter_dict):
-#     """Split HFC emissions into two buckets to be further allocated.
-
-#     Calculate the portion of Refrigerants applied to households based on production of
-#     household: 335222
-#     industry: 333415
-#     """
-#     make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
-#                                             year=parameter_dict.get('make_year'))
-#     h_sec = parameter_dict.get('household_make')
-#     i_sec = parameter_dict.get('industry_make')
-#     household = make_df[(make_df['ActivityProducedBy'] == h_sec) &
-#                         (make_df['ActivityConsumedBy'] == h_sec)
-#                         ].reset_index()['FlowAmount'][0]
-#     industry = make_df[(make_df['ActivityProducedBy'] == i_sec) &
-#                        (make_df['ActivityConsumedBy'] == i_sec)
-#                        ].reset_index()['FlowAmount'][0]
-
-#     activity = parameter_dict.get('ods_activity')
-#     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
-#     df_subset['FlowAmount'] = df_subset[
-#         'FlowAmount'] * (household / (industry + household))
-#     df_subset['ActivityProducedBy'] = f"{activity} - Households"
-#     df.loc[df['ActivityProducedBy'] == activity,
-#            'FlowAmount'] = df['FlowAmount'] * (industry / (industry + household))
-#     df = pd.concat([df, df_subset], ignore_index=True)
-
-#     return df
-
-# # Fxn not actively used
-# def split_HFC_foams(df, parameter_dict):
-#     """Split HFC emissions from foams into two buckets to be allocated separately.
-
-#     Calculate the portion for
-#     Polystyrene: 326140
-#     Urethane: 326150
-#     """
-#     make_df = load_fba_w_standardized_units(datasource=parameter_dict.get('make_fba'),
-#                                             year=parameter_dict.get('make_year'))
-#     polys_sec = parameter_dict.get('polystyrene_make')
-#     ure_sec = parameter_dict.get('urethane_make')
-#     polystyrene = make_df[(make_df['ActivityProducedBy'] == polys_sec) &
-#                           (make_df['ActivityConsumedBy'] == polys_sec)
-#                           ].reset_index()['FlowAmount'][0]
-#     urethane = make_df[(make_df['ActivityProducedBy'] == ure_sec) &
-#                        (make_df['ActivityConsumedBy'] == ure_sec)
-#                        ].reset_index()['FlowAmount'][0]
-
-#     activity = parameter_dict.get('foam_activity')
-#     df_subset = df.loc[df['ActivityProducedBy'] == activity].reset_index(drop=True)
-#     df_subset['FlowAmount'] = df_subset[
-#         'FlowAmount'] * (polystyrene / (urethane + polystyrene))
-#     df_subset['ActivityProducedBy'] = f"{activity} - Polystyrene"
-#     df.loc[df['ActivityProducedBy'] == activity, 'FlowAmount'] = df[
-#         'FlowAmount'] * (urethane / (urethane + polystyrene))
-#     df.loc[df['ActivityProducedBy'] == activity,
-#            'ActivityProducedBy'] = f"{activity} - Urethane"
-#     df = pd.concat([df, df_subset], ignore_index=True)
-
-#     return df
-
-# # Fxn not actively used
-# def clean_HFC_fba(fba, source_dict, **_):
-#     """Adjust HFC emissions for improved parsing.
-#     clean_fba_before_mapping_df_fxn used in EPA_GHGI_T_4_102."""
-#     parameter_dict = source_dict['clean_parameter']
-#     df = subtract_HFC_transport_emissions(fba, parameter_dict)
-#     df = allocate_HFC_to_residential(df, parameter_dict)
-#     df = split_HFC_foams(df, parameter_dict)
-#     df = split_HFCs_by_type(df, source_dict)
-#     return df
-
-
-# # No longer needed
-# def adjust_transport_activities(df, **_):
-#     """Update activity names for improved transportatin parsing.
-#     clean_allocation_fba used in EPA_GHGI_T_A_14"""
-#     activities = {'Gasoline': ['Light-Duty Trucks',
-#                                'Passenger Cars'],
-#                   'Distillate Fuel Oil':
-#                       ['Medium- and Heavy-Duty Trucks',
-#                        'Buses'],
-#                  }
-#     for k, v in activities.items():
-#         df.loc[(df['ActivityConsumedBy'].isin(v)) &
-#                (df['FlowName'] == k),
-#                'ActivityConsumedBy'] = df['ActivityConsumedBy'] + f" - {k}"
-#     return df
-
-# # No longer needed
-# def keep_six_digit_naics(df_w_sec, **_):
-#     """Keep only activities at the 6-digit NAICS level
-#     clean_allocation_fba_w_sec used for EPA_GHGI_T_A_73"""
-#     df_w_sec = replace_NoneType_with_empty_cells(df_w_sec)
-#     df_w_sec = df_w_sec.loc[
-#         (df_w_sec['SectorProducedBy'].apply(lambda x: len(x) == 6)) |
-#         (df_w_sec['SectorConsumedBy'].apply(lambda x: len(x) == 6))]
-#     return df_w_sec
 
 if __name__ == "__main__":
     import flowsa

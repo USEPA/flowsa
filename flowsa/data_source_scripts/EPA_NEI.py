@@ -162,8 +162,6 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     :param fba: df, FBA format
     :return: modified FBA
     """
-    fba = remove_duplicate_NEI_flows(fba)
-    fba = drop_GHGs(fba)
     # Remove the portion of PM10 that is PM2.5 to eliminate double counting,
     # rename FlowName and Flowable, and update UUID
     fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)',
@@ -183,40 +181,6 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     fba = fba.query('FlowAmount != 0').reset_index(drop=True)
 
     return fba
-
-
-def remove_duplicate_NEI_flows(df):
-    """
-    These flows for PM will get mapped to the primary PM flowable in FEDEFL
-    resulting in duplicate emissions
-    :param df: df, FBA format
-    :return: df, FBA format with duplicate flows dropped
-    """
-    flowlist = [
-        'PM10-Primary from certain diesel engines',
-        'PM25-Primary from certain diesel engines',
-    ]
-
-    df = df.loc[~df['FlowName'].isin(flowlist)]
-    return df
-
-
-def drop_GHGs(df, method=None, **_):
-    """
-    GHGs are included in some NEI datasets. If these data are not
-    compiled together with GHGRP, need to remove them as they will be
-    tracked from a different source
-    :param df: df, FBA format
-    :return: df
-    """""
-    flowlist = [
-        'Carbon Dioxide', 'Carbon dioxide',
-        'Methane',
-        'Nitrous Oxide', 'Nitrous oxide',
-        'Sulfur Hexafluoride', 'Sulfur hexafluoride',
-    ]
-    flow_var = 'Flowable' if 'Flowable' in df.columns else 'FlowName'
-    return df.query(f'{flow_var} not in @flowlist')
 
 
 def drop_pesticides(df):
