@@ -20,7 +20,12 @@ def test_generate_fbs():
                      'Electricity_gen_emissions_national_2016',
                      'Employment_common',
                      'GHG_national_m1',
-                     'USEEIO_summary_target'
+                     'USEEIO_summary_target',
+                     'Water_national_2010_m1', # todo: add water tests after modify to recursive method
+                     'Water_national_2010_m2',
+                     'Water_national_2015_m2',
+                     'Water_national_2015_m3',
+                     'Water_state_2015_m1'
                      ]:
             print("--------------------------------\n"
                   f"Method: {m}\n"
