@@ -15,9 +15,9 @@ sources_to_cache:
       Description:
           - Table 2.2
           - Table 3.2
-    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_mecs_energy
-    clean_fba: !script_function:temp_data_source_functions clean_mecs_energy_fba
-    clean_fba_w_sec: !script_function:temp_data_source_functions clean_mapped_mecs_energy_fba
+    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+    clean_fba: !script_function:EIA_MECS clean_mecs_energy_fba
+    clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba
     attribution_method: proportional
     attribution_source:
       Employment_national_2014:
