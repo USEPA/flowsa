@@ -822,6 +822,12 @@ class FlowByActivity(_FlowBy):
         log.info(f'Mapping flows in {self.full_name} to '
                  f'{mapping_subset} in federal elementary flow list')
 
+        # Check for use of multiple mapping files
+        # TODO this was handled in esupy originally - can we go back to that fxn?
+        if isinstance(mapping_subset, list):
+            fba_merge_keys.append('SourceName')
+            mapping_merge_keys.append('SourceListName')
+
         fba = (
             self
             .assign(Flowable=self.FlowName,
@@ -915,6 +921,8 @@ class FlowByActivity(_FlowBy):
         :return: FlowBy data set, with rows filtered or aggregated to the
             target geoscale.
         '''
+        if self.LocationSystem.eq('Census_Region').all():
+            return self
         target_geoscale = target_geoscale or self.config.get('geoscale')
         if type(target_geoscale) == str:
             target_geoscale = geo.scale.from_string(target_geoscale)
@@ -1069,6 +1077,9 @@ class FlowByActivity(_FlowBy):
             .rename(columns={'index': 'group_id'})
             .assign(group_total=self.FlowAmount)
         )
+        if len(grouped)==0:
+            log.warning(f'No data remaining in {self.full_name}.')
+            return self
         fba: 'FlowByActivity' = (
             grouped
             .map_to_sectors(external_config_path=external_config_path)
@@ -1177,7 +1188,7 @@ class FlowByActivity(_FlowBy):
                 log.info('NAICS Activities in %s use NAICS year %s.',
                          self.full_name, source_year)
 
-            if self.config['sector_hierarchy'] == 'parent-completeChild':
+            if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 log.info('NAICS are a mix of parent-completeChild, assigning '
                          'activity columns directly to sector columns')
 
@@ -1251,10 +1262,11 @@ class FlowByActivity(_FlowBy):
                 # sectors to target sector level
                 log.info('Converting NAICS codes to desired industry/sector '
                          'aggregation structure.')
-                fba_w_naics = self.assign(
-                    ActivitySourceName=self.source_name,
-                    SectorType=np.nan
-                )
+                fba_w_naics = self.copy()
+                # fba_w_naics = self.assign(
+                #     ActivitySourceName=self.source_name,
+                #     SectorType=np.nan
+                # ) ^^ I don't think these fields are necessary in this case
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
                         fba_w_naics
@@ -1319,7 +1331,7 @@ class FlowByActivity(_FlowBy):
 
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
-            if self.config['sector_hierarchy'] == 'parent-completeChild':
+            if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 existing_sectors = activity_to_source_naics_crosswalk[
                     ['Activity', 'Sector']]
 
@@ -1557,9 +1569,14 @@ class FlowByActivity(_FlowBy):
         if self.config.get('attribute_on') is None:
             groupby_cols = ['group_id']
             for rank in ['Primary', 'Secondary']:
-                counted = fba.assign(group_count=(fba.groupby(groupby_cols)
-                                                  ['group_id']
-                                                  .transform('count')))
+                # skip over Secondary if not relevant
+                if fba[f'{rank}Sector'].isna().all():
+                    continue
+                groupby_cols = ['group_id']
+                for rank in ['Primary', 'Secondary']:
+                    counted = fba.assign(group_count=(fba.groupby(groupby_cols)
+                                                      ['group_id']
+                                                      .transform('count')))
                 directly_attributed = (
                     counted
                     .query('group_count == 1')
@@ -1602,15 +1619,15 @@ class FlowByActivity(_FlowBy):
 
                 if not unattributable.empty:
                     log.warning(
-                        'Could not attribute activities %s in %s due to lack of '
+                        'Could not attribute activities  in %s due to lack of '
                         'flows in attribution source %s for mapped %s sectors %s',
-                        set(zip(unattributable.ActivityProducedBy,
-                                unattributable.ActivityConsumedBy,
-                                unattributable.Location)),
+                        #set(zip(unattributable.ActivityProducedBy,
+                        #        unattributable.ActivityConsumedBy,
+                        #        unattributable.Location)),
                         unattributable.full_name,
                         other.full_name,
                         rank,
-                        set(unattributable[f'{rank}Sector'])
+                        sorted(set(unattributable[f'{rank}Sector']))
                     )
 
                 proportionally_attributed = (
@@ -1750,12 +1767,15 @@ class FlowByActivity(_FlowBy):
         )
 
 
-    def prepare_fbs(self: 'FlowByActivity') -> 'FlowBySector':
+    def prepare_fbs(
+            self: 'FlowByActivity',
+            external_config_path: str = None
+            ) -> 'FlowBySector':
         if 'activity_sets' in self.config:
             try:
                 return (
                     pd.concat([
-                        fba.prepare_fbs()
+                        fba.prepare_fbs(external_config_path=external_config_path)
                         for fba in (
                             self
                             .select_by_fields()
@@ -1779,7 +1799,7 @@ class FlowByActivity(_FlowBy):
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()
-            .attribute_flows_to_sectors()  # recursive call to prepare_fbs
+            .attribute_flows_to_sectors(external_config_path=external_config_path)  # recursive call to prepare_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
         )
@@ -1843,6 +1863,7 @@ class FlowByActivity(_FlowBy):
         if set(parent_fba.row) - assigned_rows:
             log.warning('Some rows from %s not assigned to an activity '
                         'set. Is this intentional?', parent_fba.full_name)
+            unassigned = parent_fba.query('row not in @assigned_rows')
 
         return child_fba_list
 
@@ -2036,7 +2057,7 @@ class FlowBySector(_FlowBy):
                     },
                     external_config_path=external_config_path,
                     download_sources_ok=download_sources_ok
-                ).prepare_fbs()
+                ).prepare_fbs(external_config_path=external_config_path)
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
             #     so that later entries in method_config['sources_to_cache']
@@ -2056,7 +2077,7 @@ class FlowBySector(_FlowBy):
                 },
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
-            ).prepare_fbs()
+            ).prepare_fbs(external_config_path=external_config_path)
             for source_name, config in sources.items()
         ])
 
@@ -2095,6 +2116,10 @@ class FlowBySector(_FlowBy):
         :return:
         """
         naics_key = naics.industry_spec_key(self.config['industry_spec'])
+        # TODO fix error here causing special sectors (e.g. F010) to drop
+        # when doing a summary model because lenght does not align (target_naics)
+        # does not have the right number of digits
+
         # subset naics to those where the source_naics string length is longer
         # than target_naics
         naics_key_sub = naics_key.query(
@@ -2114,12 +2139,15 @@ class FlowBySector(_FlowBy):
 
         return fbs
 
-    def prepare_fbs(self: 'FlowBySector') -> 'FlowBySector':
+    def prepare_fbs(
+        self: 'FlowBySector',
+        external_config_path: str = None
+    ) -> 'FlowBySector':
         return (
             self
             .function_socket('clean_fbs')
             .select_by_fields()
-            # TODO: Add a method to convert to proper industry spec.
+            .sector_aggregation() # convert to proper industry spec.
             .convert_fips_to_geoscale()
             # .attribute_flows_to_sectors()  # used to attribute activity sets
             .aggregate_flowby()  # necessary after consolidating geoscale

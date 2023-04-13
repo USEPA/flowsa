@@ -11,12 +11,12 @@ import io
 
 import pandas as pd
 import numpy as np
-from flowsa.location import US_FIPS
+import flowsa
+from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
-from flowsa.settings import vLogDetailed
-from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.dataclean import replace_strings_with_NoneType, \
-    replace_NoneType_with_empty_cells
+from flowsa.settings import log
+from flowsa.flowby import FlowByActivity
+from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation
 from flowsa.data_source_scripts.EIA_CBECS_Land import \
     calculate_total_facility_land_area
 
@@ -402,10 +402,10 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df = pd.concat(df_list, sort=True)
 
     # rename columns to match standard flowbyactivity format
-    df['Description'] = df["Table Name"]
-    df.loc[df['Subsector and Industry'] == 'Total', 'NAICS Code'] = '31-33'
-    df = df.drop(columns=['Table Name', 'Subsector and Industry'])
-    df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy'})
+    df = df.rename(columns={'NAICS Code': 'ActivityConsumedBy',
+                            'Table Name': 'Description'})
+    df.loc[df['Subsector and Industry'] == 'Total', 'ActivityConsumedBy'] = '31-33'
+    df = df.drop(columns='Subsector and Industry')
     df['ActivityConsumedBy'] = df['ActivityConsumedBy'].str.strip()
     # add hardcoded data
     df["SourceName"] = source
@@ -421,40 +421,225 @@ def eia_mecs_energy_parse(*, df_list, source, year, **_):
     df['DataCollection'] = 5  # tmp
 
     # drop rows that reflect subtotals (only necessary in 2014)
-    df.dropna(subset=['ActivityConsumedBy'], inplace=True)
+    df = df.dropna(subset=['ActivityConsumedBy'])
 
-    # replace withheld/unavailable data
-    # * = estimate is less than 0.5
-    # W = withheld to avoid disclosing data for individual establishments
-    # Q = withheld because relative standard error is greater than 50 percent
-    # NA = not available
-    df.loc[df['FlowAmount'] == '*', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == 'W', 'FlowAmount'] = WITHDRAWN_KEYWORD
-    df.loc[df['FlowAmount'] == 'Q', 'FlowAmount'] = WITHDRAWN_KEYWORD
-    df.loc[df['FlowAmount'] == 'S', 'FlowAmount'] = WITHDRAWN_KEYWORD
-    df.loc[df['FlowAmount'] == 'D', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == 'NA', 'FlowAmount'] = None
-    df.loc[df['FlowAmount'] == '-', 'FlowAmount'] = None
-    # * = estimate is less than 0.5
-    # W = withheld to avoid disclosing data for individual establishments
-    # Q = withheld because relative standard error is greater than 50 percent
-    # NA = not available
-    # X = not defined because relative standard error corresponds
-    # to a value of zero
-    # at least one 'empty' cell appears to contain a space
-    df.loc[df['Spread'] == '*', 'Spread'] = None
-    df.loc[df['Spread'] == 'W', 'Spread'] = WITHDRAWN_KEYWORD
-    df.loc[df['Spread'] == 'Q', 'Spread'] = WITHDRAWN_KEYWORD
-    df.loc[df['Spread'] == 'NA', 'Spread'] = None
-    df.loc[df['Spread'] == 'X', 'Spread'] = None
-    df.loc[df['Spread'] == ' ', 'Spread'] = None
-    df.loc[df['Spread'] == 'D', 'Spread'] = None
-    df.loc[df['Spread'] == '-', 'Spread'] = None
-
-    # resolve issue of misprinted RSE
-    df['Spread'] = pd.to_numeric(df['Spread'], errors='coerce')
+    df = df.assign(
+        FlowAmount=df.FlowAmount.mask(df.FlowAmount.str.isnumeric() == False,
+                                      np.nan),
+        Suppressed=df.FlowAmount.where(df.FlowAmount.str.isnumeric() == False,
+                                       np.nan),
+        Spread=df.Spread.mask(df.Spread.str.isnumeric() == False, np.nan)
+    )
 
     return df
+
+
+def estimate_suppressed_mecs_energy(
+        fba: FlowByActivity,
+        **kwargs
+    ) -> FlowByActivity:
+    '''
+    Rough first pass at an estimation method, for testing purposes. This
+    will drop rows with 'D' or 'Q' values, on the grounds that as far as I can
+    tell we don't have any more information for them than we do for any
+    industry without its own line item in the MECS anyway. '*' is for value
+    less than 0.5 Trillion Btu and will be assumed to be 0.25 Trillion Btu
+    '''
+    if 'Suppressed' not in fba.columns:
+        log.warning('The current MECS dataframe does not contain data '
+                    'on estimation method and so suppressed data will '
+                    'not be assessed.')
+        return fba
+    dropped = fba.query('Suppressed not in ["D", "Q"]')
+    unsuppressed = dropped.assign(
+        FlowAmount=dropped.FlowAmount.mask(dropped.Suppressed == '*', 0.25)
+    )
+
+    return unsuppressed.drop(columns='Suppressed')
+
+def clean_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
+    '''
+    This function helps address the unique structure of the EIA MECS dataset.
+    The MECS dataset contains rows at various levels of aggregation between
+    NAICS-3 and NAICS-6 (inclusive). Each aggregated row contains the total
+    for that level of aggregation, even if data are also reported for a less
+    aggregated subset of those industries. For example:
+
+    ActivityConsumedBy | FlowAmount | ...
+    -------------------------------------
+    311                | 110        |
+    3112               |  65        |
+    311221             |  55        |
+
+    where the 110 reported for 311 includes the 65 reported for 3112, which
+    includes the 55 reported for 211221. If we do not address this issue, there
+    will be double counting. Additionally, if we are trying to disaggregate
+    to the NAICS-6 level, all three rows shown above will be mapped to NAICS-6
+    311221 (with the first wo rows also being mapped to several other NAICS-6
+    codes as well). We will then over attribute the (double-counted) flows to
+    those industries and groups of industries for which more specific detail
+    is provided.
+
+    This function addresses the double counting issue. For each aggregated
+    industry group, all descendant (less aggregated) industries or industry
+    groups for which detailed information is given are subtracted from the
+    aggregated total. Using the example from above:
+
+    ActivityConsumedBy | FlowAmount | ...
+    -------------------------------------
+    311                |  45        |
+    3112               |  10        |
+    311221             |  55        |
+
+    Additionally, this function adds a column called "descendants", which for
+    each industry holds all the descendant industries or industry groups that
+    have detailed information provided in the dataset. After mapping to
+    industries, but before attribution is performed, this column is used by the
+    clean_mapped_mecs_energy_fba function to drop any row that is mapped
+    from an aggregated industry group to a less aggregated industry or industry
+    group THAT HAS DETAILED INFORMATION GIVEN IN THE MECS (and therefore has
+    its own row already) to avoid the over-attribution issue.
+    Again using the previous example:
+
+    ActivityConsumedBy | FlowAmount | descendants | ...
+    ---------------------------------------------------
+    311                |  45        | 3112 311221 |
+    3112               |  10        | 311221      |
+    311221             |  55        |             |
+
+    Note that this function is not useful if the desired aggregation level is
+    NAICS-2. In such a case, the MECS dataset can be filtered to include only
+    the rows with ActivityConsumedBy == "31-33", then disaggregated to 31, 32,
+    33 using another dataset (such as the QCEW).
+    '''
+    mecs = (
+        fba
+        .query('ActivityConsumedBy != "31-33"')
+        .assign(descendants='')
+    )
+
+    for level in [5, 4, 3]:
+        descendants = (
+            mecs
+            .drop(columns='descendants')
+            .query(f'ActivityConsumedBy.str.len() > {level}')
+            .assign(
+                parent=lambda x: x.ActivityConsumedBy.str.slice(stop=level)
+            )
+            .groupby(['Flowable', 'Location', 'parent'])
+            .agg({'FlowAmount': 'sum', 'ActivityConsumedBy': ' '.join})
+            .reset_index()
+            .rename(columns={'ActivityConsumedBy': 'descendants',
+                             'FlowAmount': 'descendant_flows',
+                             'parent': 'ActivityConsumedBy'})
+        )
+
+        mecs = (
+            mecs
+            .merge(descendants,
+                   how='left',
+                   on=['Flowable', 'Location', 'ActivityConsumedBy'],
+                   suffixes=(None, '_y'))
+            .fillna({'descendant_flows': 0, 'descendants_y': ''})
+            .assign(
+                descendants=lambda x: x.descendants.mask(x.descendants == '',
+                                                         x.descendants_y),
+                FlowAmount=lambda x: (x.FlowAmount - x.descendant_flows).mask(
+                    x.FlowAmount - x.descendant_flows < 0, 0)
+            )
+            .drop(columns=['descendant_flows', 'descendants_y'])
+        )
+
+    return mecs
+
+
+def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
+    '''
+    This function finishes handling the over-attribution issue described in
+    the documentation for clean_mecs_energy_fba by dropping any row in the
+    MECS dataset which has been mapped to an industry or industry group which
+    is a subset (strict or otherwise) of an industry group listed in the
+    descendants columns. So, if 311 and 3112 both appear in the MECS datset,
+    3112 will be listed as a descendant of 311 and this function will therefore
+    drop a row mapping 311 to 311221 (since more detailed information on 3112,
+    which contains 311221, is provided). If 31122 and 311221 do not appear in
+    the dataset, a row mapping 3112 to 311221 will not be dropped, since no
+    more detailed information on 311221 is given. Further attribution/
+    disaggregation should be done using another datatset such as the QCEW.
+    '''
+    mecs = (
+        fba
+        .assign(to_keep=fba.apply(
+            lambda x: not any([str(x.SectorConsumedBy).startswith(d)
+                               for d in x.descendants.split()]),
+            axis='columns'
+        ))
+        .query('to_keep')
+        .drop(columns=['descendants', 'to_keep'])
+    )
+
+    return mecs
+
+
+
+
+def clean_mapped_mecs_energy_fba_to_state(
+        fba: FlowByActivity, **_
+    ) -> FlowByActivity:
+    """
+    clean_fba_w_sec fxn that replicates clean_mapped_mecs_energy_fba but
+    also updates regions to states for state models.
+    """
+    fba = clean_mapped_mecs_energy_fba(fba)
+    fba = update_regions_to_states(fba)
+    return fba
+
+
+def update_regions_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
+    """
+    Propogates regions to all states to enable for use in state methods.
+    Allocates sectors across states based on employment.
+    clean_allocation_fba_w_sec fxn
+    """
+    fba_load = fba.copy()
+    log.info('Updating census regions to states')
+
+    region_map = get_region_and_division_codes()
+    region_map = region_map[['Region','State_FIPS']].drop_duplicates()
+    region_map.loc[:, 'State_FIPS'] = (
+        region_map['State_FIPS'].apply(lambda x:
+                                       x.ljust(3 + len(x), '0')
+                                       if len(x) < 5 else x))
+
+    # Allocate MECS based on employment FBS
+    year = fba.config.get('year')
+    hlp = flowsa.getFlowBySector(methodname=f'Employment_state_{year}',
+                                 download_FBS_if_missing=True)
+
+    # To match the various sector resolution of MECS, generate employment
+    # dataset for all NAICS resolution by aggregating
+    hlp = sector_aggregation(hlp)
+
+    # For each region, generate ratios across states for a given sector
+    hlp = hlp.merge(region_map, how = 'left', left_on = 'Location',
+                    right_on = 'State_FIPS')
+    hlp['Allocation'] = hlp['FlowAmount']/hlp.groupby(
+        ['Region', 'SectorProducedBy']).FlowAmount.transform('sum')
+    ## TODO NEED TO ALSO ADJUST GROUP/GROUP TOTALS
+    fba = pd.merge(fba.rename(columns={'Location':'Region'}),
+                  (hlp[['Region','Location','SectorProducedBy','Allocation']]
+                   .rename(columns={'SectorProducedBy':'SectorConsumedBy'})),
+                   how='left', on=['Region','SectorConsumedBy'])
+    fba['FlowAmount'] = fba['FlowAmount'] * fba['Allocation']
+    fba = fba.drop(columns=['Allocation','Region'])
+    fba['LocationSystem'] = 'FIPS_2015'
+
+    # Check for data loss
+    if (abs(1-(sum(fba['FlowAmount']) /
+               sum(fba_load['FlowAmount'])))) > 0.0005:
+        log.warning('Data loss upon census region mapping')
+
+    return fba
 
 
 def mecs_land_fba_cleanup(fba, **_):
@@ -463,209 +648,9 @@ def mecs_land_fba_cleanup(fba, **_):
     :param fba: df, EIA MECS Land FBA format
     :return: df, EA MECS Land FBA
     """
-    from flowsa.data_source_scripts.temp_data_source_functions import \
-        clean_mecs_energy_fba
-
     fba2 = clean_mecs_energy_fba(fba)
 
     # calculate the land area in addition to building footprint
     fba3 = calculate_total_facility_land_area(fba2)
 
     return fba3
-
-# todo: delete next fxn
-# def mecs_land_fba_cleanup_for_land_2012_fbs(fba, **_):
-#     """
-#     The 'land_national_2012' FlowBySector uses MECS 2014 data, set
-#     MECS year to 2012
-#     :param fba: df, EIA MECS Land, FBA format
-#     :return: df, EIA MECS Land FBA modified
-#     """
-#
-#     fba = mecs_land_fba_cleanup(fba=fba)
-#
-#     # reset the EIA MECS Land year from 2014 to 2012 to match
-#     # the USDA ERS MLU year
-#     vLogDetailed.info('Resetting year from 2014 to 2012')
-#     fba['Year'] = 2012
-#
-#     return fba
-
-# todo: delete
-# def mecs_land_clean_allocation_mapped_fba_w_sec(df, attr, method):
-#     """
-#     The mecs land dataset has varying levels of information for naics3-6.
-#     Iteratively determine which activities need allocated
-#
-#     :param df: The mecs df with sectors after mapped to FEDEFL
-#     :param attr: dictionary, attribute data from method yaml for activity set
-#     :param method: string, methodname
-#     :return: df, with additional column flagging rows where sectors should
-#         be disaggregated
-#     """
-#
-#     sector_column = 'SectorConsumedBy'
-#     df = determine_flows_requiring_disaggregation(
-#         df, attr, method, sector_column)
-#
-#     return df
-
-
-# TODO confirm this function can be dropped and replaced
-# def determine_flows_requiring_disaggregation(
-#         df_load, attr, method, sector_column):
-#     """
-#     The MECS Land data provides FlowAmounts for NAICS3-6. We use BLS QCEW
-#     employment data to determine land use for different industries. To
-#     accurately estimate land use per industry, existing FlowAmounts for a
-#     particular NAICS level (NAICS6) for example, should be subtracted from
-#     the possible FlowAmounts for other NAICS6 that share the first 5 digits.
-#     For Example, there is data for '311', '3112', and '311221' in the 2014
-#     dataset. FlowAmounts for allocation by employment for NAICS6 are based
-#     on the provided '3112' FlowAmounts. However, since there is data at one
-#     NAICS6 (311221), the FlowAmount for that NAICS6 should be subtracted
-#     from other NAICS6 to accurately depict the remaining 'FlowAmount' that
-#     requires a secondary source (Employment data) for allocation.
-#     :param df_load: df, EIA MECS Land FBA
-#     :param attr: dictionary, attribute data from method yaml for activity set
-#     :param method: dictionary, FBS method yaml
-#     :param sector_column: str, sector column to flag ('SectorProducedBy',
-#         'SectorConsumedBy')
-#     :return: A dataframe with a column 'disaggregate_flag', if '1',
-#              row requires secondary source to calculate
-#              FlowAmount, if '0' FlowAmount does not require modifications
-#     """
-#
-#     from flowsa.sectormapping import add_sectors_to_flowbyactivity
-#
-#     df_load = replace_NoneType_with_empty_cells(df_load)
-#     # drop rows where there is no value in sector column, which might occur if
-#     # sector-like activities have a "-" in them
-#     df_load = df_load[df_load[sector_column] != '']
-#
-#     # determine activity column
-#     if sector_column == 'SectorConsumedBy':
-#         activity_column = 'ActivityConsumedBy'
-#     else:
-#         activity_column = 'ActivityProducedBy'
-#
-#     # original df - subset
-#     # subset cols of original df
-#     dfo = df_load[['FlowName', 'FlowAmount', 'Location', sector_column]]
-#     # min and max length
-#     min_length = min(df_load[sector_column].apply(
-#         lambda x: len(str(x))).unique())
-#     max_length = max(df_load[sector_column].apply(
-#         lambda x: len(str(x))).unique())
-#     # subset by sector length, creating a df
-#     for s in range(min_length, max_length + 1):
-#         df_name = 'dfo_naics' + str(s)
-#         vars()[df_name] = dfo[dfo[sector_column].apply(
-#             lambda x: len(x) == s)].reset_index(drop=True)
-#         vars()[df_name] = vars()[df_name].assign(
-#             SectorMatch=vars()[df_name][sector_column].apply(
-#                 lambda x: x[:len(x) - 1]))
-#     # loop through the dfs, merging by sector match. If there is a match,
-#     # subtract the value, if there is not a match, drop last digit in
-#     # sectormatch, add row to the next df, and repeat
-#     df_merged = pd.DataFrame()
-#     df_not_merged = pd.DataFrame()
-#     for s in range(max_length, min_length, -1):
-#         df_name_1 = 'dfo_naics' + str(s - 1)
-#         df_name_2 = 'dfo_naics' + str(s)
-#         # concat df 1 with df_not_merged
-#         df2 = pd.concat([vars()[df_name_2], df_not_merged])
-#         df2 = df2.rename(
-#             columns={'FlowAmount': 'SubtractFlow', sector_column: 'Sector'})
-#         df_m = pd.merge(
-#             vars()[df_name_1][['FlowName', 'FlowAmount', 'Location',
-#                                sector_column]],
-#             df2, left_on=['FlowName', 'Location', sector_column],
-#             right_on=['FlowName', 'Location', 'SectorMatch'],
-#             indicator=True, how='outer')
-#         # subset by merge and append to appropriate df
-#         df_both = df_m[df_m['_merge'] == 'both']
-#         if len(df_both) != 0:
-#             # drop columns
-#             df_both1 = df_both.drop(
-#                 columns=['Sector', 'SectorMatch', '_merge'])
-#             # aggregate before subtracting
-#             df_both2 = df_both1.groupby(
-#                 ['FlowName', 'FlowAmount', 'Location', sector_column],
-#                 as_index=False).agg({"SubtractFlow": sum})
-#             df_both3 = df_both2.assign(
-#                 FlowAmount=df_both2['FlowAmount'] - df_both2['SubtractFlow'])
-#             df_both3 = df_both3.drop(columns=['SubtractFlow'])
-#             # drop rows where 0
-#             # df_both = df_both[df_both['FlowAmount'] != 0]
-#             df_merged = pd.concat([df_merged, df_both3], ignore_index=True)
-#         df_right = df_m[df_m['_merge'] == 'right_only']
-#         if len(df_right) != 0:
-#             df_right = df_right.drop(
-#                 columns=['FlowAmount', sector_column, '_merge'])
-#             df_right = df_right.rename(columns={'SubtractFlow': 'FlowAmount',
-#                                                 'Sector': sector_column})
-#             # remove another digit from Sectormatch
-#             df_right = df_right.assign(SectorMatch=df_right[
-#                 sector_column].apply(lambda x: x[:(s - 2)]))
-#             # reorder
-#             df_right = df_right[['FlowName', 'FlowAmount', 'Location',
-#                                  sector_column, 'SectorMatch']]
-#             df_not_merged = pd.concat([df_not_merged, df_right],
-#                                       ignore_index=True)
-#     # rename the flowamount column
-#     df_merged = df_merged.rename(columns={'FlowAmount': 'FlowAmountNew',
-#                                           sector_column: activity_column})
-#     # In the original EIA MECS df, some of the NAICS 6-digit codes sum
-#     # to a value greater than published NAICS3, due to rounding. In these
-#     # cases, the new FlowAmount is a negative number. Reset neg numbers to 0
-#     df_merged.loc[df_merged['FlowAmountNew'] < 0, 'FlowAmountNew'] = 0
-#     # in the original df, drop sector columns re-add sectors, this time with
-#     # sectors = 'aggregated'
-#     dfn = df_load.drop(columns=['SectorProducedBy', 'ProducedBySectorType',
-#                                 'SectorConsumedBy', 'ConsumedBySectorType',
-#                                 'SectorSourceName'])
-#     dfn = add_sectors_to_flowbyactivity(
-#         dfn, sectorsourcename=method['target_sector_source'],
-#         overwrite_sectorlevel='aggregated')
-#     # add column noting that these columns require an allocation ratio
-#     dfn = dfn.assign(disaggregate_flag=1)
-#     # create lists of sectors to drop
-#     list_original = df_load[activity_column].drop_duplicates().tolist()
-#     # drop values in original df
-#     dfn2 = dfn[~dfn[sector_column].isin(list_original)].sort_values(
-#         [activity_column, sector_column]).reset_index(drop=True)
-#     # drop the sectors that are duplicated by different naics being
-#     # mapped to naics6
-#     if len(dfn2[dfn2.duplicated(subset=['FlowName', 'Location', sector_column],
-#                                 keep=False)]) > 0:
-#         dfn2.drop_duplicates(subset=['FlowName', 'Location', sector_column],
-#                              keep='last', inplace=True)
-#     # want to allocate at NAICS6, so drop all other sectors
-#     dfn2 = \
-#         dfn2[dfn2[sector_column].apply(lambda x: len(x) == 6)].reset_index(
-#             drop=True).sort_values([sector_column])
-#
-#     # merge revised flowamounts back with modified original df
-#     df_to_allocate = dfn2.merge(df_merged, how='left')
-#     # replace FlowAmount with newly calculated FlowAmount,
-#     # which represents Flows that are currently unaccounted for at NAICS6
-#     df_to_allocate['FlowAmount'] = np.where(
-#         df_to_allocate['FlowAmountNew'].notnull(),
-#         df_to_allocate['FlowAmountNew'], df_to_allocate['FlowAmount'])
-#     # drop rows where flow amount = 0 - flows are captured through other NAICS6
-#     df_to_allocate2 = df_to_allocate[df_to_allocate['FlowAmount'] != 0].drop(
-#         columns='FlowAmountNew').reset_index(drop=True)
-#
-#     # merge the original df with modified
-#     # add column to original df for disaggregate_flag
-#     df_load = df_load.assign(disaggregate_flag=0)
-#
-#     # concat the two dfs and sort
-#     df_c = pd.concat(
-#         [df_load, df_to_allocate2], ignore_index=True).sort_values(
-#         [sector_column]).reset_index(drop=True)
-#
-#     df_c = replace_strings_with_NoneType(df_c).sort_values([sector_column])
-#
-#     return df_c

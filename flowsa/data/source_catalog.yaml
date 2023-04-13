@@ -202,12 +202,14 @@ EPA_REI:
   activity_schema: None
   sector_hierarchy: "parent-completeChild"
 EPA_StateGHGI:
+  data_format: FBA
   class:
     - Chemicals
   sector-like_activities: False
   activity_schema:
   sector_hierarchy: "flat"
 EPA_SIT:
+  data_format: FBA
   class:
     - Chemicals
   sector-like_activities: False
@@ -220,7 +222,7 @@ EPA_NEI_Nonpoint:
   sector-like_activities: False
   activity_schema: SCC
   fedefl_mapping: NEI
-  # sector_hierarchy: "flat"
+  sector_hierarchy: "flat"
 EPA_NEI_Nonroad:
   data_format: FBA
   class:
@@ -288,7 +290,15 @@ StatCan_LFS:
   sector-like_activities: False
   activity_schema:
   sector_hierarchy: "flat"
+StateGHGI:
+  data_format: FBA
+  class:
+    - Chemicals
+  sector-like_activities: False
+  activity_schema:
+  sector_hierarchy: "flat"
 stateio:
+  data_format: FBA
   class:
     - Money
   sector-like_activities: False #update to true once alternate activity_schema in place

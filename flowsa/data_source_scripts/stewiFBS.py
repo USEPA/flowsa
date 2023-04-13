@@ -6,9 +6,6 @@ Functions to access data from stewi and stewicombo for use in flowbysector
 
 These functions are called if referenced in flowbysectormethods as
 data_format FBS_outside_flowsa with the function specified in FBS_datapull_fxn
-
-Requires StEWI >= 0.9.5. https://github.com/USEPA/standardizedinventories
-
 """
 
 import sys
@@ -17,8 +14,10 @@ import pandas as pd
 import numpy as np
 from esupy.processed_data_mgmt import read_source_metadata
 from flowsa.flowby import FlowBySector, FlowByActivity
-from flowsa.location import apply_county_FIPS
+from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import log, process_adjustmentpath
+from flowsa.validation import replace_naics_w_naics_from_another_year
 import stewicombo
 import stewi
 from stewicombo.overlaphandler import remove_default_flow_overlaps
@@ -72,8 +71,9 @@ def stewicombo_to_sector(
 
     # merge dataframes to assign facility information based on facility IDs
     df = (df.drop(columns=['SRS_CAS', 'SRS_ID', 'FacilityIDs_Combined'])
-          .merge(facility_mapping.loc[:, facility_mapping.columns != 'NAICS'],
-                 how='left', on='FacilityID')
+            .merge(facility_mapping.loc[:, facility_mapping.columns != 'NAICS'],
+                   how='inner',
+                   on='FacilityID')
           )
 
     all_NAICS = obtain_NAICS_from_facility_matcher(
@@ -132,9 +132,7 @@ def stewi_to_sector(
         facility_mapping['NAICS'].astype(int).astype(str)
 
     # merge dataframes to assign facility information based on facility IDs
-    df = pd.merge(df, facility_mapping, how='left',
-                  on='FacilityID')
-
+    df = df.merge(facility_mapping, how='left', on='FacilityID')
     fbs = prepare_stewi_fbs(df, config)
 
     for function in functions:
@@ -168,27 +166,28 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
         df_adj = pd.concat([df_adj, df_adj0], ignore_index=True)
 
     # Eliminate duplicate adjustments
-    df_adj.drop_duplicates(inplace=True)
+    df_adj = df_adj.drop_duplicates()
     if sum(df_adj.duplicated(subset=['source_naics', 'source_process'],
-                                  keep=False)) > 0:
+                             keep=False)) > 0:
         log.warning('duplicate process adjustments')
-        df_adj.drop_duplicates(subset=['source_naics', 'source_process'],
-                               inplace=True)
+        df_adj = df_adj.drop_duplicates(subset=['source_naics',
+                                                'source_process'])
 
     # obtain and prepare SCC dataset
     df_fbp = stewi.getInventory('NEI', year,
                                 stewiformat='flowbyprocess',
                                 download_if_missing=True)
     df_fbp = df_fbp[df_fbp['Process'].isin(df_adj['source_process'])]
-    df_fbp['Source'] = 'NEI'
-    df_fbp = addChemicalMatches(df_fbp)
-    df_fbp = remove_default_flow_overlaps(df_fbp, SCC=True)
+    df_fbp = (df_fbp.assign(Source = 'NEI')
+                    .pipe(addChemicalMatches)
+                    .pipe(remove_default_flow_overlaps, SCC=True)
+                    )
 
     # merge in NAICS data
-    facility_df = df[['FacilityID', 'NAICS', 'Location']].reset_index(drop=True)
-    facility_df.drop_duplicates(keep='first', inplace=True)
+    facility_df = (df.filter(['FacilityID', 'NAICS', 'Location'])
+                     .reset_index(drop=True)
+                     .drop_duplicates(keep='first'))
     df_fbp = df_fbp.merge(facility_df, how='left', on='FacilityID')
-
     df_fbp['Year'] = year
 
     #TODO: expand naics list in scc file to include child naics automatically
@@ -197,20 +196,24 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
                           right_on=['source_naics', 'source_process'])
 
     # subtract emissions by SCC from specific facilities
-    df_emissions = df_fbp.groupby(['FacilityID', 'FlowName']).agg(
-        {'FlowAmount': 'sum'})
-    df_emissions.rename(columns={'FlowAmount': 'Emissions'}, inplace=True)
-    df = df.merge(df_emissions, how='left',
-                  on=['FacilityID', 'FlowName'])
-    df[['Emissions']] = df[['Emissions']].fillna(value=0)
-    df['FlowAmount'] = df['FlowAmount'] - df['Emissions']
-    df.drop(columns=['Emissions'], inplace=True)
+    df_emissions = (
+        df_fbp.groupby(['FacilityID', 'FlowName'])
+              .agg({'FlowAmount': 'sum'})
+              .rename(columns={'FlowAmount': 'Emissions'})
+              )
+    df = (df.merge(df_emissions, how='left',
+                   on=['FacilityID', 'FlowName'])
+            .assign(Emissions = lambda x: x['Emissions'].fillna(value=0))
+            .assign(FlowAmount = lambda x: x['FlowAmount'] - x['Emissions'])
+            .drop(columns=['Emissions'])
+            )
 
     # add back in emissions under the correct target NAICS
-    df_fbp.drop(columns=['Process', 'NAICS', 'source_naics', 'source_process',
-                         'ProcessType', 'SRS_CAS', 'SRS_ID'],
-                inplace=True)
-    df_fbp.rename(columns={'target_naics': 'NAICS'}, inplace=True)
+    df_fbp = (
+        df_fbp.drop(columns=['Process', 'NAICS', 'source_naics', 'source_process',
+                             'ProcessType', 'SRS_CAS', 'SRS_ID'])
+              .rename(columns={'target_naics': 'NAICS'})
+              )
     df = pd.concat([df, df_fbp], ignore_index=True)
     return df
 
@@ -234,15 +237,12 @@ def extract_facility_data(inventory_dict):
                 subset='FacilityID', keep=False)]) > 0:
             log.debug(f'Duplicate facilities in {database}_{year} - '
                       'keeping first listed')
-            facilities.drop_duplicates(subset='FacilityID',
-                                       keep='first', inplace=True)
+            facilities = facilities.drop_duplicates(subset='FacilityID',
+                                                    keep='first')
         facilities_list.append(facilities)
 
     facility_mapping = pd.concat(facilities_list, ignore_index=True)
-    # Apply FIPS to facility locations
-    facility_mapping = apply_county_FIPS(facility_mapping)
-
-    return facility_mapping
+    return facility_mapping.pipe(apply_county_FIPS)
 
 
 def obtain_NAICS_from_facility_matcher(inventory_list):
@@ -257,8 +257,9 @@ def obtain_NAICS_from_facility_matcher(inventory_list):
         facilitymatcher.get_FRS_NAICSInfo_for_facility_list(
             frs_id_list=None, inventories_of_interest_list=inventory_list,
             download_if_missing=True)
-    all_NAICS = all_NAICS.loc[all_NAICS['PRIMARY_INDICATOR'] == 'PRIMARY']
-    all_NAICS.drop(columns=['PRIMARY_INDICATOR'], inplace=True)
+    all_NAICS = (all_NAICS
+                 .query('PRIMARY_INDICATOR == "PRIMARY"')
+                 .drop(columns=['PRIMARY_INDICATOR']))
     return all_NAICS
 
 
@@ -272,17 +273,20 @@ def assign_naics_to_stewicombo(df, all_NAICS, facility_mapping):
     :param facility_mapping: df of NAICS by Facility_ID
     """
     # first merge in NAICS by FRS, but only where the FRS has a single NAICS
-    df = pd.merge(df, all_NAICS[~all_NAICS.duplicated(
-        subset=['FRS_ID', 'Source'], keep=False)],
-        how='left', on=['FRS_ID', 'Source'])
+    df = df.merge(all_NAICS[~all_NAICS.duplicated(subset=['FRS_ID', 'Source'],
+                                                  keep=False)],
+                  how='left',
+                  on=['FRS_ID', 'Source'])
 
     # next use NAICS from inventory sources
-    df = pd.merge(df, facility_mapping[['FacilityID', 'NAICS']], how='left',
-                  on='FacilityID', suffixes=(None, "_y"))
-    df['NAICS'].fillna(df['NAICS_y'], inplace=True)
-    df.drop(columns=['NAICS_y'], inplace=True)
-    # Drop records where sector can not be assigned
-    df = df.loc[df['NAICS']!='None']
+    df = (df.merge(facility_mapping[['FacilityID', 'NAICS']],
+                   how='left',
+                   on='FacilityID',
+                   suffixes=(None, "_y"))
+            .assign(NAICS = lambda x: x['NAICS'].fillna(x['NAICS_y']))
+            .drop(columns=['NAICS_y'])
+            .query('NAICS != "None"')
+            )
     return df
 
 
@@ -292,25 +296,31 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     :param df_load: a dataframe of emissions and mapped faciliites from stewi
                     or stewicombo
     :param config: dictionary, FBS method data source configuration
-    :return: df
+    :return: FlowBySector
     """
-    config['sector-like_activities']=True
-    config['fedefl_mapping'] = (
-        [x for x in config.get('inventory_dict').keys()
-         if x != 'RCRAInfo'])
+    config['sector-like_activities'] = True
+    config['fedefl_mapping'] = ([x for x in config.get('inventory_dict').keys()
+                                 if x != 'RCRAInfo'])
     config['drop_unmapped_rows'] = True
+    if 'year' not in config:
+        config['year'] = df_load['Year'][0]
 
-    # update location to appropriate geoscale prior to aggregating
     fbs = FlowByActivity(
             df_load
+            .pipe(update_geoscale, config['geoscale'])
+            # ^^ update location to appropriate geoscale prior to aggregating
             .rename(columns={"NAICS": "ActivityProducedBy",
                              'Source': 'SourceName'})
             .assign(Class='Chemicals')
+            .assign(ActivityConsumedBy='')
+            .pipe(replace_naics_w_naics_from_another_year,
+                  f"NAICS_{config['target_naics_year']}_Code")
+            # ^^ Consider upating this old function
             .assign(FlowType=lambda x: np.where(
                 x['SourceName']=='RCRAInfo',
-                    'WASTE_FLOW',
-                    'ELEMENTARY_FLOW')
-                )
+                    'WASTE_FLOW', 'ELEMENTARY_FLOW'))
+            .pipe(assign_fips_location_system, config['year'])
+            # ^^ Consider upating this old function
             .drop(columns=['FacilityID','FRS_ID','State','County'],
                   errors='ignore')
             .dropna(subset=['Location'])
@@ -318,14 +328,6 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
             full_name=config.get('full_name'),
             config=config,
             ).prepare_fbs()
-
-    ## TODO replace_naics_w_naics_from_another_year
-    # df = replace_naics_w_naics_from_another_year(df, 'NAICS_2012_Code')
-    # df = equally_allocate_parent_to_child_naics(df, config)
-    # df_subset = aggregate_and_subset_for_target_sectors(df, config)
-
-    # fbs_mapped = assign_fips_location_system(
-    #     fbs_mapped, list(inventory_dict.values())[0])
 
     return fbs
 
@@ -348,5 +350,5 @@ def add_stewicombo_metadata(inventory_name):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowbysector.main(method='CRHW_state_2017')
-    #flowsa.flowbysector.main(method='TRI_DMR_state_2017')
+    fbs = flowsa.flowby.FlowBySector.generateFlowBySector('CRHW_national_2017')
+    fbs = flowsa.flowby.FlowBySector.generateFlowBySector('TRI_DMR_state_2017')
