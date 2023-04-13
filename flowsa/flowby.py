@@ -1572,11 +1572,9 @@ class FlowByActivity(_FlowBy):
                 # skip over Secondary if not relevant
                 if fba[f'{rank}Sector'].isna().all():
                     continue
-                groupby_cols = ['group_id']
-                for rank in ['Primary', 'Secondary']:
-                    counted = fba.assign(group_count=(fba.groupby(groupby_cols)
-                                                      ['group_id']
-                                                      .transform('count')))
+                counted = fba.assign(group_count=(fba.groupby(groupby_cols)
+                                                  ['group_id']
+                                                  .transform('count')))
                 directly_attributed = (
                     counted
                     .query('group_count == 1')
@@ -1619,7 +1617,7 @@ class FlowByActivity(_FlowBy):
 
                 if not unattributable.empty:
                     log.warning(
-                        'Could not attribute activities  in %s due to lack of '
+                        'Could not attribute activities in %s due to lack of '
                         'flows in attribution source %s for mapped %s sectors %s',
                         #set(zip(unattributable.ActivityProducedBy,
                         #        unattributable.ActivityConsumedBy,
