@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
+from flowsa.flowby import FlowByActivity, FlowBySector
 from flowsa.flowsa_log import log
 from flowsa import (flowby, geo, location)
+
 
 
 def load_prepare_clean_source(
