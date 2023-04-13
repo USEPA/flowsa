@@ -101,7 +101,7 @@ def substitute_nonexistent_values(
     other = load_prepare_clean_source(fba)
     other = (other
              .add_primary_secondary_columns('Sector')
-             .drop(columns='MetaSources'))
+             .drop(columns=['MetaSources', 'AttributionSources']))
 
     log.info('Substituting nonexistent values in %s with %s.',
              fba.full_name, other.full_name)
