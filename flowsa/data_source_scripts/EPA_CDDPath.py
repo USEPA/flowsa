@@ -244,5 +244,4 @@ if __name__ == "__main__":
     flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2018)
     fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
 
-    # flowsa.flowbysector.main(method='CDD_concrete_national_2014')
     # fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')

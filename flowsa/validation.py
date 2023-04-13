@@ -8,57 +8,16 @@ Functions to check data is loaded and transformed correctly
 import pandas as pd
 import numpy as np
 import flowsa
+from flowsa.flowby import FlowBySector
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
     subset_df_by_geoscale, sector_aggregation, collapse_fbs_sectors,\
     subset_df_by_sector_lengths
 from flowsa.dataclean import replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells
 from flowsa.common import sector_level_key, \
-    load_crosswalk, SECTOR_SOURCE_NAME, fba_activity_fields, \
-    fba_mapped_default_grouping_fields, check_activities_sector_like
+    load_crosswalk, fba_activity_fields, check_activities_sector_like
 from flowsa.location import US_FIPS, fips_number_key
 from flowsa.settings import log, vLog, vLogDetailed
-
-
-def check_flow_by_fields(flowby_df, flowbyfields):
-    """
-    Add in missing fields to have a complete and ordered
-    :param flowby_df: Either flowbyactivity or flowbysector df
-    :param flowbyfields: Either flow_by_activity_fields or
-        flow_by_sector_fields
-    :return: printout, column datatypes
-    """
-    for k, v in flowbyfields.items():
-        try:
-            vLog.debug("fba activity %s data type is %s",
-                       k, str(flowby_df[k].values.dtype))
-            vLog.debug("standard %s data type is %s", k, str(v[0]['dtype']))
-        except:
-            vLog.debug("Failed to find field %s in fba", k)
-
-
-def check_if_activities_match_sectors(fba):
-    """
-    Checks if activities in flowbyactivity that appear to be like sectors
-    are actually sectors
-    :param fba: a flow by activity dataset
-    :return: A list of activities not marching the default sector list or
-        text indicating 100% match
-    """
-    # Get list of activities in a flowbyactivity file
-    activities = []
-    for f in fba_activity_fields:
-        activities.extend(fba[f])
-
-    # Get list of module default sectors
-    flowsa_sector_list = list(load_crosswalk('sector_timeseries')[
-                                  SECTOR_SOURCE_NAME])
-    activities_missing_sectors = set(activities) - set(flowsa_sector_list)
-
-    if len(activities_missing_sectors) > 0:
-        vLog.debug("%s activities not matching sectors in default %s list",
-                   str(len(activities_missing_sectors)), SECTOR_SOURCE_NAME)
-        return activities_missing_sectors
 
 
 def check_if_data_exists_at_geoscale(df_load, geoscale):
@@ -115,143 +74,6 @@ def check_if_data_exists_at_geoscale(df_load, geoscale):
         vLogDetailed.info("There are %s, activity combos that do not have "
                           "data in %s %s: \n {}".format(df2.to_string()),
                           geoscale, sn, y)
-
-
-def check_if_data_exists_at_less_aggregated_geoscale(
-        df, geoscale, activityname):
-    """
-    In the event data does not exist at specified geoscale,
-    check if data exists at less aggregated level
-    :param df: Either flowbyactivity or flowbysector dataframe
-    :param geoscale: national, state, or county
-    :param activityname: str, activity col names to check
-    :return: str, geoscale to use
-    """
-
-    if geoscale == 'national':
-        df = df[(df[fba_activity_fields[0]] == activityname) | (
-                df[fba_activity_fields[1]] == activityname)]
-        fips = create_geoscale_list(df, 'state')
-        df = df[df['Location'].isin(fips)]
-        if len(df) == 0:
-            vLog.info("No flows found for %s at the state scale", activityname)
-            fips = create_geoscale_list(df, 'county')
-            df = df[df['Location'].isin(fips)]
-            if len(df) == 0:
-                vLog.info("No flows found for %s at the county scale",
-                          activityname)
-            else:
-                vLog.info("Flow-By-Activity data exists for %s at "
-                          "the county level", activityname)
-                new_geoscale_to_use = 'county'
-                return new_geoscale_to_use
-        else:
-            vLog.info("Flow-By-Activity data exists for %s at "
-                      "the state level", activityname)
-            new_geoscale_to_use = 'state'
-            return new_geoscale_to_use
-    if geoscale == 'state':
-        df = df[(df[fba_activity_fields[0]] == activityname) | (
-                df[fba_activity_fields[1]] == activityname)]
-        fips = create_geoscale_list(df, 'county')
-        df = df[df['Location'].isin(fips)]
-        if len(df) == 0:
-            vLog.info("No flows found for %s at the "
-                      "county scale", activityname)
-        else:
-            vLog.info("Flow-By-Activity data exists for %s "
-                      "at the county level", activityname)
-            new_geoscale_to_use = 'county'
-            return new_geoscale_to_use
-
-
-def check_if_location_systems_match(df1, df2):
-    """
-    Check if two dataframes share the same location system
-    :param df1: fba or fbs df
-    :param df2: fba or fbs df
-    :return: warning if Location Systems do not match between dfs
-    """
-
-    if df1["LocationSystem"].all() != df2["LocationSystem"].all():
-        vLog.warning("LocationSystems do not match, "
-                     "might lose county level data")
-
-
-def check_allocation_ratios(flow_alloc_df_load, activity_set, config, attr):
-    """
-    Check for issues with the flow allocation ratios
-    :param flow_alloc_df_load: df, includes 'FlowAmountRatio' column
-    :param activity_set: str, activity set
-    :param config: dictionary, method yaml
-    :param attr: dictionary, activity set info
-    :return: print out information regarding allocation ratios,
-             save csv of results to local directory
-    """
-    # if in the attr dictionary, merge columns are identified,
-    # the merge columns need to be accounted for in the grouping/checking of
-    # allocation ratios
-    subset_cols = ['FBA_Activity', 'Location', 'SectorLength', 'FlowAmountRatio']
-    groupcols = ['FBA_Activity', 'Location', 'SectorLength']
-    if 'allocation_merge_columns' in attr:
-        subset_cols = subset_cols + attr['allocation_merge_columns']
-        groupcols = groupcols + attr['allocation_merge_columns']
-
-    # create column of sector lengths
-    flow_alloc_df =\
-        flow_alloc_df_load.assign(
-            SectorLength=flow_alloc_df_load['Sector'].str.len())
-    # subset df
-    flow_alloc_df2 = flow_alloc_df[subset_cols]
-    # sum the flow amount ratios by location and sector length
-    flow_alloc_df3 = \
-        flow_alloc_df2.groupby(
-            groupcols, dropna=False, as_index=False).agg(
-            {"FlowAmountRatio": sum})
-
-    # keep only rows of specified sector length
-
-    # return sector level specified in method yaml
-    sector_level_list = [config.get('target_sector_level')]
-    # if secondary sector levels are identified, add to list of sectors to keep
-    if 'target_subset_sector_level' in config:
-        sector_level_dict = config.get('target_subset_sector_level')
-        for k, v in sector_level_dict.items():
-            sector_level_list = sector_level_list + [k]
-        sector_subset_dict = dict((k, sector_level_key[k]) for k in
-                                  sector_level_list if k in sector_level_key)
-        sector_level_list = list(sector_subset_dict.values())
-
-    # subset df, necessary because not all of the sectors are
-    # NAICS and can get duplicate rows
-    flow_alloc_df4 = flow_alloc_df3[
-        flow_alloc_df3['SectorLength'].isin(sector_level_list)].reset_index(drop=True)
-    # keep data where the flowamountratio is greater than or
-    # less than 1 by 0.005
-    tolerance = 0.01
-    flow_alloc_df5 = flow_alloc_df4[
-        (flow_alloc_df4['FlowAmountRatio'] < 1 - tolerance) |
-        (flow_alloc_df4['FlowAmountRatio'] > 1 + tolerance)]
-
-    if len(flow_alloc_df5) > 0:
-        vLog.info('There are %s instances within %s '
-                  'where the allocation ratio for a location is greater '
-                  'than or less than 1 by at least %s. See Validation Log',
-                  len(flow_alloc_df5), sector_level_list,
-                  str(tolerance))
-
-    # add to validation log
-    log.info('Save the summary table of flow allocation ratios for each '
-             'sector length for %s in validation log', activity_set)
-    # if df not empty, print, if empty, print string
-    if flow_alloc_df5.empty:
-        vLogDetailed.info('Flow allocation ratios for %s '
-                          'all round to 1', activity_set)
-
-    else:
-        vLogDetailed.info('Flow allocation ratios for %s: '
-                          '\n {}'.format(flow_alloc_df5.to_string()),
-                          activity_set)
 
 
 def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
@@ -691,8 +513,7 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
     :param df_load: df, contains sector columns
     :return: comparison of flow values
     """
-    from flowsa.flowbyfunctions import return_primary_sector_column, \
-        assign_sector_match_column
+    from flowsa.flowbyfunctions import assign_sector_match_column
 
     merge_cols = [e for e in df_load.columns if e in [
         'Class', 'SourceName', 'MetaSources', 'FlowName', 'Unit',
@@ -715,7 +536,7 @@ def compare_child_to_parent_sectors_flowamounts(df_load):
             df = df.fillna('')
         df2 = df.groupby(agg_cols).agg(
             {'FlowAmount': 'sum'}).rename(columns={
-            'FlowAmount': f'ChildNAICSSum'}).reset_index()
+            'FlowAmount': 'ChildNAICSSum'}).reset_index()
         dfagg = pd.concat([dfagg, df2], ignore_index=True)
 
     # merge new df with summed child naics to original df
@@ -972,11 +793,9 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     # load second file
     if compare_to_remote:
         # Generate the FBS locally and then immediately load
-        df2 = (flowsa.flowby.FlowBySector.generateFlowBySector(
-            method=fbs2, download_sources_ok=True)
-            .rename(columns={'FlowAmount': 'FlowAmount_fbs2'}))
-        # flowsa.flowbysector.main(method=fbs2,
-        #                           download_FBAs_if_missing=True)
+        df2 = (FlowBySector.generateFlowBySector(
+                method=fbs2, download_sources_ok=True)
+               .rename(columns={'FlowAmount': 'FlowAmount_fbs2'}))
     else:
         df2 = flowsa.getFlowBySector(fbs2).rename(
             columns={'FlowAmount': 'FlowAmount_fbs2'})

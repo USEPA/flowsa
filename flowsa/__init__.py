@@ -28,7 +28,6 @@ from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.validation import check_for_nonetypes_in_sector_col, \
     check_for_negative_flowamounts
 import flowsa.flowbyactivity
-import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
 from flowsa.datavisualization import FBSscatterplot
 from .flowby import FlowByActivity, FlowBySector
