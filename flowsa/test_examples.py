@@ -18,6 +18,13 @@ def test_get_flows_by_sector():
                            download_FBAs_if_missing=True)
 
 
+    flowsa.getFlowBySector('TRI_DMR_state_2017',
+                           download_FBAs_if_missing=True)
+
+    flowsa.getFlowBySector('GHG_national_2016_m1',
+                           download_FBAs_if_missing=True)
+
+
 def test_write_bibliography():
     flowsa.writeFlowBySectorBibliography('Water_national_2015_m1')
 
