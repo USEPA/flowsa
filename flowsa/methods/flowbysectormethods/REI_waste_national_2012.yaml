@@ -16,15 +16,16 @@ source_names:
       Description: makecol
     activity_sets:
       waste_flows:
+        exclusion_fields:
+          ActivityConsumedBy: ['Exports of goods and services',
+                               'Imports of goods and services']
         attribution_method: proportional #todo: want to use direct attribution before proportional
         attribute_on: Flowable # FBA is mapped to FBS at this point, so FlowName is mapped to Flowable
         fill_sector_column: SectorConsumedBy
+        clean_fba_after_attribution: !script_function:EPA_REI rei_waste_national_cleanup
         attribution_source:
           "EPA_REI":
             selection_fields:
               PrimaryActivity: !from_index:EPA_REI_waste_2012_asets.csv waste
               Class: Other
               Description: useintersection
-#            exclusion_fields:
-#              ActivityConsumedBy: ['Exports of goods and services',
-#                                   'Imports of goods and services']
