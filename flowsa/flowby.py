@@ -1800,6 +1800,7 @@ class FlowByActivity(_FlowBy):
             .function_socket('clean_fba')
             .convert_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path)  # recursive call to prepare_fbs
+            .function_socket('clean_fba_after_attribution')
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
         )
