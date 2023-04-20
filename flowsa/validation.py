@@ -68,6 +68,8 @@ def check_if_data_exists_at_geoscale(df_load, geoscale):
     :param geoscale: national, state, or county
     """
 
+    df_load = replace_NoneType_with_empty_cells(df_load)
+
     # filter by geoscale depends on Location System
     fips_list = create_geoscale_list(df_load, geoscale)
     fips = pd.DataFrame(fips_list, columns=['FIPS'])
@@ -287,6 +289,8 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
             replace_strings_with_NoneType(vars()[df_name+'2'])
         df_list.append(vars()[df_name+'2'])
     # merge the two dataframes
+    for df in df_list:
+        replace_NoneType_with_empty_cells(df)
     df = df_list[0].merge(df_list[1], how='outer')
 
     # determine if any new data is negative

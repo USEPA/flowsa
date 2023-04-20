@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='1.3.0',
+    version='1.3.1',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
@@ -18,7 +18,7 @@ setup(
         'appdirs>=1.4.3',
         'bibtexparser>=1.2.0',
         "kaleido==0.1.0.post1;platform_system=='Windows'",
-        "kaleido==0.1.0;platform_system=='Linux' or platform_system=='Darwin'",
+        "kaleido==0.2.0;platform_system=='Linux' or platform_system=='Darwin'",
         'matplotlib>=3.4.3',
         'numpy>=1.20.1',
         'openpyxl>=3.0.7',
