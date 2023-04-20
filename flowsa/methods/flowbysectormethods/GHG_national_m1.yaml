@@ -67,8 +67,6 @@ _allocation_types:
     # clean_parameter: # over ride this with dictionary, like {"221100": 'ActivityConsumedBy'} # Electricity
 
   _lead_allocation: &lead_allocation
-    names:
-    - "Lead Production" #CO2
     allocation_method: proportional
     allocation_source: "USGS_MYB_Lead"
     allocation_source_class: "Geological"
@@ -77,9 +75,6 @@ _allocation_types:
     allocation_from_scale: national
 
   _cropland_allocation: &cropland_allocation
-    names:
-        - "Mineralization and Asymbiotic Fixation Cropland"
-        - "Drained Organic Soils Cropland"
     allocation_source: "USDA_CoA_Cropland"
     allocation_method: proportional
     allocation_source_class: "Land"
@@ -92,8 +87,6 @@ _allocation_types:
     clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics
 
   _animal_land_allocation: &animal_land_allocation
-    names:
-        - "All activities Grassland"
     allocation_method: proportional
     allocation_source: "USDA_CoA_Cropland_NAICS"
     allocation_source_class: "Land"
@@ -191,6 +184,8 @@ source_names:
         clean_parameter: {"325180": 'ActivityProducedBy'} # Other Basic Inorganic Chemicals
       lead:
         <<: *lead_allocation
+        names:
+        - "Lead Production" #CO2
       N2O_products:
         <<: *use_allocation
         names:
@@ -295,9 +290,14 @@ source_names:
         clean_parameter: {"325310": 'ActivityProducedBy'} # Fertilizers
       land_area:
         <<: *cropland_allocation
+        names:
+            - "Mineralization and Asymbiotic Fixation Cropland"
+            - "Drained Organic Soils Cropland"
         allocation_source_year: 2017
       grassland: &grassland
         <<: *animal_land_allocation
+        names:
+            - "All activities Grassland"
         allocation_source_year: 2017
 
   "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
