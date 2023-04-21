@@ -13,7 +13,6 @@ source_names:
   "CNHW_national_2018":
     selection_fields:
       Flowable: Food
-#    clean_fbs_df_fxn: !script_function:EPA_WFR attribute_cnhw_food
     activity_sets:
       wasted_food_report:
         selection_fields:
