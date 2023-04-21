@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pandas as pd
 from string import digits
-from flowsa.settings import log
+from flowsa.flowsa_log import log
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS

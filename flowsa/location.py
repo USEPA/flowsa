@@ -9,7 +9,8 @@ import pandas as pd
 import numpy as np
 import pycountry
 import urllib.error
-from flowsa.settings import datapath, log
+from flowsa.flowsa_log import log
+from flowsa.settings import datapath
 from flowsa.common import clean_str_and_capitalize
 
 

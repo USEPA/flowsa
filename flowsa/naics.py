@@ -2,6 +2,7 @@ from typing import Literal
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator
+from flowsa.flowsa_log import vlog
 from . import (common, dataclean, settings)
 
 naics_crosswalk = pd.read_csv(
@@ -176,10 +177,10 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         ns_list = pd.concat(non_sectors_list, sort=False, ignore_index=True)
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
-        settings.vLog.debug('There are sectors that are not NAICS 2012 Codes')
-        settings.vLog.debug(non_sectors)
+        vlog.debug('There are sectors that are not NAICS 2012 Codes')
+        vlog.debug(non_sectors)
     else:
-        settings.vLog.debug('All sectors are NAICS 2012 Codes')
+        vlog.debug('All sectors are NAICS 2012 Codes')
 
     return non_sectors
 
@@ -254,8 +255,8 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     # loop through the df headers and determine if value is
     # not in crosswalk list
     if len(non_naics) != 0:
-        settings.vLog.debug('Checking if sectors represent a different '
-                            f'NAICS year, if so, replace with {sectorsourcename}')
+        vlog.debug('Checking if sectors represent a different '
+                   f'NAICS year, if so, replace with {sectorsourcename}')
         for c in column_headers:
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
@@ -271,14 +272,14 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
             # drop columns
             df = df.drop(
                 columns=[sectorsourcename, 'NAICS', 'allocation_ratio'])
-        settings.vLog.debug(f'Replaced NAICS with {sectorsourcename}')
+        vlog.debug(f'Replaced NAICS with {sectorsourcename}')
 
         # check if there are any sectors that are not in
         # the naics 2012 crosswalk
-        settings.vLog.debug('Check again for non NAICS 2012 Codes')
+        vlog.debug('Check again for non NAICS 2012 Codes')
         nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
-            settings.vLog.debug('Dropping non-NAICS from dataframe')
+            vlog.debug('Dropping non-NAICS from dataframe')
             for c in column_headers:
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
@@ -303,8 +304,8 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
                          'ActivityProducedBy']].values.ravel('K'))
             activities_dropped = list(filter(
                 lambda x: x is not None, activities_dropped))
-            settings.vLog.debug('Dropping rows where the Activity columns '
-                                f'contain {", ".join(activities_dropped)}')
+            vlog.debug('Dropping rows where the Activity columns '
+                       f'contain {", ".join(activities_dropped)}')
         df = df[~((df['SectorConsumedBy'].isnull()) &
                   (df['SectorProducedBy'].isnull()))].reset_index(drop=True)
     else:

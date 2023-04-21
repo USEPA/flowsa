@@ -17,11 +17,11 @@ from flowsa.common import fbs_activity_fields, sector_level_key, \
     fba_mapped_default_grouping_fields
 from flowsa.dataclean import clean_df, replace_strings_with_NoneType, \
     replace_NoneType_with_empty_cells, standardize_units
+from flowsa.flowsa_log import log, vlog
 from flowsa.location import US_FIPS, get_state_FIPS, \
     get_county_FIPS, update_geoscale, fips_number_key
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields
-from flowsa.settings import log, vLogDetailed, vLog
 
 
 def create_geoscale_list(df, geoscale, year='2015'):
@@ -748,8 +748,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
         compare_child_to_parent_sectors_flowamounts, \
         compare_summation_at_sector_lengths_between_two_dfs
 
-    vLogDetailed.info('Estimating suppressed data by equally allocating '
-                      'parent to child sectors.')
+    vlog.info('Estimating suppressed data by equally allocating '
+              'parent to child sectors.')
     df = sector_disaggregation(df_load)
 
     # equally allocate parent to child naics where child naics are not
@@ -757,8 +757,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
     # calculate the flow that has already been allocated. Must allocate to
     # NAICS_6 for suppressed data function to work correctly.
     if equally_allocate_parent_to_child:
-        vLogDetailed.info('Before estimating suppressed data, equally '
-                          'allocate parent sectors to child sectors.')
+        vlog.info('Before estimating suppressed data, equally '
+                  'allocate parent sectors to child sectors.')
         df = equally_allocate_parent_to_child_naics(
             df, method, overwritetargetsectorlevel='NAICS_6')
 
@@ -927,16 +927,15 @@ def equally_allocate_suppressed_parent_to_child_naics(
                                'SectorConsumedMatch', 'sector_allocated',
                                'FlowRemainder']]
                 negv = negv[col_subset].reset_index(drop=True)
-                vLog.info(
+                vlog.info(
                     'There are negative values when allocating suppressed '
                     'parent data to child sector. The values are more than '
                     '%s%% of the total parent sector with a negative flow '
                     'amount being allocated more than %s. Resetting flow '
                     'values to be allocated to 0. See validation log for '
                     'details.', str(percenttolerance), str(flowtolerance))
-                vLogDetailed.info('Values where flow remainders are '
-                                  'negative, resetting to 0: '
-                                  '\n {}'.format(negv.to_string()))
+                vlog.info('Values where flow remainders are negative, '
+                          'resetting to 0: \n {}'.format(negv.to_string()))
             df_sup3['FlowRemainder'] = np.where(df_sup3["FlowRemainder"] < 0,
                                                 0, df_sup3['FlowRemainder'])
             df_sup3 = df_sup3.drop(columns=[
@@ -969,8 +968,8 @@ def equally_allocate_suppressed_parent_to_child_naics(
         # reindex columns
         dff = dff.reindex(df_load.columns, axis=1)
 
-    vLogDetailed.info('Checking results of allocating suppressed parent to '
-                      'child sectors. ')
+    vlog.info('Checking results of allocating suppressed parent to '
+              'child sectors. ')
     compare_summation_at_sector_lengths_between_two_dfs(df_load, dff)
     compare_child_to_parent_sectors_flowamounts(dff)
     # todo: add third check comparing smallest child naics (6) to largest (2)
@@ -1283,10 +1282,10 @@ def assign_columns_of_sector_levels_without_ambiguous_sectors(
             ['SectorProducedBy', 'SectorConsumedBy',
              'SectorProducedByLength', 'SectorConsumedByLength'
              ]].drop_duplicates().reset_index(drop=True)
-        vLogDetailed.info('After assigning a column of sector lengths, '
-                          'dropped data with the following sector '
-                          'assignments due to ambiguous sector lengths '
-                          '%s: \n {}'.format(df_dropped.to_string()))
+        vlog.info('After assigning a column of sector lengths, '
+                  'dropped data with the following sector '
+                  'assignments due to ambiguous sector lengths '
+                  '%s: \n {}'.format(df_dropped.to_string()))
     dfc = dfc.sort_values(['SectorProducedByLength',
                            'SectorConsumedByLength']).reset_index(drop=True)
     return dfc

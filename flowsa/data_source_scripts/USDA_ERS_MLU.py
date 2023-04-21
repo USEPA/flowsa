@@ -12,7 +12,7 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.location import get_all_state_FIPS_2, US_FIPS
-from flowsa.settings import vLogDetailed
+from flowsa.flowsa_log import vlog
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.common import load_crosswalk
 from flowsa.literature_values import \
@@ -111,9 +111,9 @@ def allocate_usda_ers_mlu_land_in_urban_areas(*, flow_subset_mapped,
     # define sector column to base calculations
     sector_col = 'SectorConsumedBy'
 
-    vLogDetailed.info('Assuming total land use from MECS and CBECS included '
-                      'in urban land area, so subtracting out calculated '
-                      'MECS and CBECS land from MLU urban land area')
+    vlog.info('Assuming total land use from MECS and CBECS included '
+              'in urban land area, so subtracting out calculated '
+              'MECS and CBECS land from MLU urban land area')
     # read in the cbecs and mecs df from df_list
     for df_i in fbs_list:
         if (df_i['MetaSources'] == 'EIA_CBECS_Land').all():
@@ -314,10 +314,9 @@ def allocate_usda_ers_mlu_other_land(*, flow_subset_mapped, **_):
 
     # in df, where sector is a personal expenditure value, and
     # location = 00000, replace with rural res value
-    vLogDetailed.info('The only category for MLU other land use is rural land '
-                      'occupation. All other land area in this category is '
-                      'unassigned to sectors, resulting in unaccounted land '
-                      'area.')
+    vlog.info('The only category for MLU other land use is rural land '
+              'occupation. All other land area in this category is '
+              'unassigned to sectors, resulting in unaccounted land area.')
     df['FlowAmount'] = np.where(df['SectorConsumedBy'].isin(household),
                                 rural_res, df['FlowAmount'])
 

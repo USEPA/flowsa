@@ -14,8 +14,8 @@ from flowsa.common import get_flowsa_base_name, load_env_file_key, \
     load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
 from flowsa.dataclean import standardize_units
 from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
+from flowsa.flowsa_log import log
 from flowsa.schema import activity_fields, dq_fields
-from flowsa.settings import log
 
 
 def get_activitytosector_mapping(source, fbsconfigpath=None):
