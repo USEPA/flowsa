@@ -449,7 +449,12 @@ class _FlowBy(pd.DataFrame):
         exclusion_fields = {k: [v] if not isinstance(v, (list, dict)) else v
                             for k, v in exclusion_fields.items()}
         for field, values in exclusion_fields.items():
-            self = self.query(f'{field} not in @values')
+            if field == 'conditional':
+                qry = ' and '.join(["{} == '{}'".format(k, v) for k, v in
+                                    exclusion_fields['conditional'].items()])
+                self = self.query(f'~({qry})')
+            else:
+                self = self.query(f'{field} not in @values')
 
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
