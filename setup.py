@@ -33,7 +33,8 @@ setup(
         'seaborn>=0.11.2',
         'setuptools>=41',
         'tabula-py>=2.1.1',
-        'xlrd>=2.0.1'
+        'xlrd>=2.0.1',
+        'importlib_resources>=5.2.0'
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='MIT',
