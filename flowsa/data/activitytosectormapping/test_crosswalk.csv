@@ -1,0 +1,6 @@
+﻿ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Notes,Table
+EPA_GHGI,Abandoned Oil and Gas Wells,NAICS_2012_Code,211,,211000,EPA_GHGI_T_2_1
+EPA_GHGI,Abandoned Underground Coal Mines,NAICS_2012_Code,2121,,212100,EPA_GHGI_T_2_1
+EPA_GHGI,Adipic Acid Production,NAICS_2012_Code,32519,,325190,EPA_GHGI_T_2_1
+EPA_GHGI,Agricultural Soil Management,NAICS_2012_Code,1111,,111190,EPA_GHGI_T_2_1
+EPA_GHGI,Agricultural Soil Management,NAICS_2012_Code,1112,,111290,EPA_GHGI_T_2_1
