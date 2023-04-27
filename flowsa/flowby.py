@@ -406,7 +406,11 @@ class _FlowBy(pd.DataFrame):
         else:
             log.error(f'No FIPS level corresponds to {target_geoscale}')
 
-    def select_by_fields(self: FB, selection_fields: dict = None) -> FB:
+    def select_by_fields(
+        self: FB,
+        selection_fields: dict = None,
+        exclusion_fields: dict = None
+    ) -> FB:
         '''
         Filter the calling FlowBy dataset according to the 'selection_fields'
         dictionary from the calling datasets config dictionary. If such a
@@ -447,11 +451,20 @@ class _FlowBy(pd.DataFrame):
         Similarly, can use 'exclusion_fields' to remove particular data in the
         same manner.
         '''
-        exclusion_fields = self.config.get('exclusion_fields', {})
+        exclusion_fields = (exclusion_fields or
+                            self.config.get('exclusion_fields', {}))
         exclusion_fields = {k: [v] if not isinstance(v, (list, dict)) else v
                             for k, v in exclusion_fields.items()}
         for field, values in exclusion_fields.items():
-            self = self.query(f'{field} not in @values')
+            if field == 'conditional':
+                qry = ' & '.join(
+                    ["({} in {})".format(
+                        k, [v] if not isinstance(v, (list,dict)) else v)
+                        for k, v in exclusion_fields['conditional'].items()]
+                    )
+                self = self.query(f'~({qry})')
+            else:
+                self = self.query(f'{field} not in @values')
 
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
@@ -848,7 +861,8 @@ class _FlowBy(pd.DataFrame):
                 .add_full_name(
                     f'{parent_fba.full_name}{NAME_SEP_CHAR}{activity_set}')
                 .select_by_fields(
-                    selection_fields=activity_config.get('selection_fields'))
+                    selection_fields=activity_config.get('selection_fields'),
+                    exclusion_fields=activity_config.get('exclusion_fields'))
             )
 
             child_fba.config = {**parent_config, **activity_config}
@@ -2191,21 +2205,13 @@ class FlowBySector(_FlowBy):
         :return:
         """
         naics_key = naics.industry_spec_key(self.config['industry_spec'])
-        # TODO fix error here causing special sectors (e.g. F010) to drop
-        # when doing a summary model because lenght does not align (target_naics)
-        # does not have the right number of digits
-
-        # subset naics to those where the source_naics string length is longer
-        # than target_naics
-        naics_key_sub = naics_key.query(
-            'source_naics.str.len() >= target_naics.str.len()')
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
             fbs = (
                 fbs
                 .rename(columns={f'Sector{direction}': 'source_naics'})
-                .merge(naics_key_sub,
+                .merge(naics_key,
                        how='left')
                 .rename(columns={'target_naics': f'Sector{direction}'})
                 .drop(columns='source_naics')

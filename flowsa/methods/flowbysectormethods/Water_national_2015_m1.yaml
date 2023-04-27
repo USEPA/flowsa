@@ -35,8 +35,7 @@ source_names:
       cropland_attribution:
         industry_spec:
           default: NAICS_6
-          '111150': { default: NAICS_7 }
-          '111199': { default: NAICS_7 }
+          NAICS_7: ['111150', '111199']
         selection_fields:
           PrimaryActivity:
             - "Irrigation Crop"
@@ -125,9 +124,7 @@ source_names:
                       USDA_IWMS:
                         industry_spec:
                           default: NAICS_6
-                          '111150': { default: NAICS_7 }
-                          '111199': { default: NAICS_7 }
-                          '111940': { default: NAICS_7 } # hay and haylage set to NAICS7 - will update to NAICS6
+                          NAICS_7: ['111150', '111199', '111940'] # hay and haylage set to NAICS7 - will update to NAICS6
                         <<: *usda_iwms
                         activity_sets:
                           cropland_attribution-cropland-nonhay:
@@ -159,13 +156,8 @@ source_names:
       livestock_attribution:
         industry_spec:
           default: NAICS_6
-          '112130': { default: NAICS_7 }
-          '112320': { default: NAICS_7 }
-          '112390': { default: NAICS_7 }
-          '112910': { default: NAICS_7 }
-          '112920': { default: NAICS_7 }
-          '112930': { default: NAICS_7 }
-          '112990': { default: NAICS_7 }
+          NAICS_7: ['112130', '112320', '112390', '112910',
+                    '112920', '112930', '112990']
         selection_fields:
           PrimaryActivity:
             - "Livestock"

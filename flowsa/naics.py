@@ -1,9 +1,10 @@
 from typing import Literal
+import numpy as np
 import pandas as pd
 from . import settings
 
 naics_crosswalk = pd.read_csv(
-    f'{settings.datapath}NAICS_Crosswalk_TimeSeries.csv', dtype='object'
+    f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
 )
 
 
@@ -11,7 +12,7 @@ def industry_spec_key(
     industry_spec: dict,
     year: Literal[2002, 2007, 2012, 2017] = 2012
 ) -> pd.DataFrame:
-    '''
+    """
     Provides a key for mapping any set of NAICS codes to a given industry
     breakdown, specified in industry_spec. The key is a DataFrame with columns
     'source_naics' and 'target_naics'; it is 1-to-many for any NAICS codes
@@ -22,9 +23,8 @@ def industry_spec_key(
     example:
 
     industry_spec = {'default': 'NAICS_3',
-                     '112': {'default': 'NAICS_4',
-                             '1129': {'default': 'NAICS_6'}},
-                     '113': {'default': 'NAICS_4'}}
+                     'NAICS_4': ['112', '113'],
+                     'NAICS_6': ['1129']
 
     This example specification would map any set of NAICS codes to the 3-digit
     level, except that codes in 112 and 113 would be mapped to the 4-digit
@@ -44,77 +44,34 @@ def industry_spec_key(
         then any non-default keys must be NAICS codes with exactly 3 digits).
     3.  Each dictionary is applied only to those codes matching its parent
         key (with the root dictionary being applied to all codes).
-    '''
-    naics_list = (naics_crosswalk
-                  [[f'NAICS_{year}_Code']]
-                  .rename(columns={f'NAICS_{year}_Code': 'source_naics'}))
+    """
 
-    def _truncate(
-        _naics_list: pd.DataFrame,
-        _industry_spec: dict
-    ) -> pd.DataFrame:
-        '''
-        Find target NAICS by truncating any source_naics longer than the target
-        _naics_level unless industry_spec specifies a longer level for it, in
-        which case send it (recursively) into this function to be truncated to
-        the correct length.
-        '''
-        _naics_level = int(_industry_spec['default'][-1:])
-        return pd.concat([
-            (_naics_list
-             .query('source_naics.str.len() >= @_naics_level'
-                    '& source_naics.str.slice(stop=@_naics_level) '
-                    'not in @_industry_spec')
-             .assign(target_naics=lambda x: x.source_naics.str[:_naics_level])
-             ),
-            *[
-                _truncate(
-                    (_naics_list
-                     .query('source_naics.str.startswith(@naics)')),
-                    _industry_spec[naics]
-                )
-                for naics in _industry_spec if naics not in ['default',
-                                                             'non_naics']
-            ]
-        ])
+    naics = naics_crosswalk.assign(
+        target_naics=naics_crosswalk[industry_spec['default']])
+    for level, industries in industry_spec.items():
+        if level not in ['default', 'non_naics']:
+            naics['target_naics'] = naics['target_naics'].mask(
+                naics.drop(columns='target_naics').isin(industries).any(axis='columns'),
+                naics[level]
+            )
+    # melt the dataframe to include source naics
+    naics_key = naics.melt(id_vars="target_naics", value_name="source_naics")
+    # add user-specified non-naics
+    if 'non_naics' in industry_spec:
+        non_naics = industry_spec['non_naics']
+        if isinstance(non_naics, str):
+            non_naics = [non_naics]
+        naics_key = pd.concat([naics_key,
+                               pd.DataFrame({'source_naics': non_naics,
+                                             'target_naics': non_naics})])
 
-    truncated_naics_list = _truncate(naics_list, industry_spec)
-
-    naics_list = naics_list.merge(truncated_naics_list, how='left')
-    _non_naics = industry_spec.get('non_naics', [])
-
-    naics_key = pd.concat([
-        naics_list.query('target_naics.notna()'),
-        *[
-            (naics_list
-             .query('target_naics.isna()'
-                    '& source_naics.str.len() == @length')
-             .drop(columns='target_naics')
-             .merge(
-                 truncated_naics_list
-                 .assign(
-                     merge_key=truncated_naics_list.target_naics.str[:length])
-                 [['merge_key', 'target_naics']],
-                 how='left',
-                 left_on='source_naics',
-                 right_on='merge_key')
-             .drop(columns='merge_key')
-             )
-            for length in (naics_list.query('target_naics.isna()')
-                           .source_naics.str.len().unique())
-        ],
-        pd.DataFrame(
-            {'source_naics': _non_naics, 'target_naics': _non_naics},
-            index=[0] if isinstance(_non_naics, str) else None
-        )
-    ])
-
-    naics_key = (
-        naics_key
-        .drop_duplicates()
-        .sort_values(by=['source_naics', 'target_naics'])
-        .reset_index(drop=True)
-    )
+    # drop source_naics that are more aggregated than target_naics, reorder
+    naics_key = (naics_key[['source_naics', 'target_naics']]
+                 .dropna()
+                 .drop_duplicates()
+                 .sort_values(by=['source_naics', 'target_naics'])
+                 .reset_index(drop=True)
+                 )
 
     return naics_key
 

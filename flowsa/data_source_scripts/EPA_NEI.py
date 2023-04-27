@@ -183,37 +183,6 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     return fba
 
 
-def drop_pesticides(df):
-    """
-    To avoid overlap with other datasets, emissions of pesticides
-    from pesticide application are removed.
-    :param df: df, FBA format
-    :return: df
-    """
-    # Flow names reflect source data prior to FEDEFL mapping, using 'FlowName'
-    # instead of 'Flowable'
-    flowlist = [
-        '2,4-Dichlorophenoxy Acetic Acid',
-        'Captan',
-        'Carbaryl',
-        'Methyl Bromide',
-        'Methyl Iodide',
-        'Parathion',
-        'Trifluralin',
-    ]
-
-    activity_list = [
-        '2461800001',
-        '2461800002',
-        '2461850000',
-    ]
-
-    df = df.loc[~(df['FlowName'].isin(flowlist) &
-                  df['ActivityProducedBy'].isin(activity_list))]
-
-    return df
-
-
 def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     """
     Quantity of contributing flows is subtracted from aggregate flow and the

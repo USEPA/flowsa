@@ -88,7 +88,10 @@ source_names:
                 - 'AREA BEARING & NON-BEARING'
                 - 'AREA GROWN'
               Location: !include:Location_common.yaml:_state_location
-            clean_fba: !script_function:USDA_CoA_Cropland coa_nonirrigated_cropland_fba_cleanup
+            exclusion_fields:
+              conditional: {FlowName: 'AREA IN PRODUCTION',
+                            ActivityConsumedBy: 'VEGETABLE TOTALS'}
+              ActivityConsumedBy: ['AG LAND', 'AG LAND, CROPLAND, HARVESTED']
             attribution_method: proportional
             attribution_source:
               USDA_CoA_Cropland_NAICS:
