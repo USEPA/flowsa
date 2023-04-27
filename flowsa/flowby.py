@@ -767,8 +767,10 @@ class _FlowBy(pd.DataFrame):
                 .query('factor.notna()')
                 .assign(FlowAmount=lambda x: x.FlowAmount * x.factor)
             )
-            self = disaggregated
-        return disaggregated
+            self = disaggregated.drop(columns=['group_id', 'group_total', 'group_count',
+                                               'FlowAmount_ds', '_merge', 'factor'])
+
+        return self
 
     def prepare(
         self: FB,
