@@ -2010,24 +2010,24 @@ class FlowBySector(_FlowBy):
         # Generate FBS from method_config
         sources = method_config.pop('source_names')
 
-        # create empty list to store the fbs data, necessary as at times need
-        # to access already attributed FBA data
         fbs_list = []
         for source_name, config in sources.items():
-            fbs_source = get_flowby_from_config(
-                name=source_name,
-                config={
-                    **method_config,
-                    'method_config_keys': method_config.keys(),
-                    **get_catalog_info(source_name),
-                    **config,
-                    'attributed_sources': fbs_list
-                },
-                external_config_path=external_config_path,
-                download_sources_ok=download_sources_ok
-            ).prepare_fbs(external_config_path=external_config_path)
+            if source_name in method_config['cache']:
+                fbs_source = method_config['cache'][source_name].copy()
+            else:
+                fbs_source = get_flowby_from_config(
+                    name=source_name,
+                    config={
+                        **method_config,
+                        'method_config_keys': method_config.keys(),
+                        **get_catalog_info(source_name),
+                        **config
+                    },
+                    external_config_path=external_config_path,
+                    download_sources_ok=download_sources_ok
+                ).prepare_fbs(external_config_path=external_config_path)
             fbs_list.append(fbs_source)
-        fbs = pd.concat(fbs_list, ignore_index=True, sort=False)
+        fbs = pd.concat(fbs_list)
 
         fbs.full_name = method
         fbs.config = method_config
