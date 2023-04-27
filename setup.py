@@ -12,9 +12,9 @@ setup(
     include_package_data=True,
     python_requires=">=3.8",
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@path_refactor#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy.git@refactor_pathlib#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@urban_rural_classify#egg=StEWI',
         'appdirs>=1.4.3',
         'bibtexparser>=1.2.0',
         "kaleido==0.1.0.post1;platform_system=='Windows'",

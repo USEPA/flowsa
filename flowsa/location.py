@@ -28,7 +28,7 @@ def read_stored_FIPS(year='2015'):
     :return: df, FIPS for specified year
     """
 
-    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
+    FIPS_df = pd.read_csv(datapath / "FIPS_Crosswalk.csv", header=0, dtype=str)
     # subset columns by specified year
     df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
     # rename columns to drop data year
@@ -314,7 +314,7 @@ def merge_urb_cnty_pct(df):
         return None
 
     years_xwalk = extract_fips_years(  # from xwalk headers
-        pd.read_csv(datapath + 'FIPS_Crosswalk.csv', nrows=0).columns)
+        pd.read_csv(datapath / 'FIPS_Crosswalk.csv', nrows=0).columns)
 
     if not {year} <= set(years_xwalk):  # compare data years as sets
         log.error('LocationSystem incompatible with FIPS_Crosswalk.csv')
@@ -397,7 +397,7 @@ def shift_census_cnty_tbl(df, year):
         # i.e., join by ['FIPS_{decade}'] field ensures pct_pop_urb inheritance
     # merges identified by duplicated 'FIPS_{year}' codes (A-->C, B-->C)
         # e.g., 51019 & 51515 --> 51019
-    fips_xwalk = pd.read_csv(datapath + 'FIPS_Crosswalk.csv', dtype=str,
+    fips_xwalk = pd.read_csv(datapath / 'FIPS_Crosswalk.csv', dtype=str,
                              usecols=[f'FIPS_{decade}', f'FIPS_{year}'])
     df = pd.merge(df, fips_xwalk, how='left', on=f'FIPS_{decade}')
 
