@@ -47,13 +47,11 @@ def industry_spec_key(
 
     naics = naics_crosswalk.assign(
         target_naics=naics_crosswalk[industry_spec['default']])
-    for k, v in industry_spec.items():
-        if k not in ['default', 'non_naics']:
-            naics = naics.assign(
-                target_naics=naics.target_naics.mask(
-                    naics.drop(columns='target_naics').isin(v).any(axis='columns'),
-                    naics[k]
-                )
+    for level, industries in industry_spec.items():
+        if level not in ['default', 'non_naics']:
+            naics['target_naics'] = naics['target_naics'].mask(
+                naics.drop(columns='target_naics').isin(industries).any(axis='columns'),
+                naics[level]
             )
     # melt the dataframe to include source naics
     naics_key = naics.melt(id_vars="target_naics", value_name="source_naics")
