@@ -3,6 +3,10 @@ import numpy as np
 import pandas as pd
 from . import settings
 
+naics_crosswalk = pd.read_csv(
+    f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
+)
+
 
 def industry_spec_key(
     industry_spec: dict,
@@ -41,9 +45,6 @@ def industry_spec_key(
     3.  Each dictionary is applied only to those codes matching its parent
         key (with the root dictionary being applied to all codes).
     """
-    naics_crosswalk = pd.read_csv(
-        f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
-    )
 
     naics = naics_crosswalk.assign(
         target_naics=naics_crosswalk[industry_spec['default']])
