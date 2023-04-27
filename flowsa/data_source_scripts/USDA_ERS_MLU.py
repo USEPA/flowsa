@@ -114,11 +114,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
                       'in urban land area, so subtracting out calculated '
                       'MECS and CBECS land from MLU urban land area')
     # read in the cbecs and mecs df from df_list
-    for df_i in _['attr']['attributed_sources']:
-        if (df_i['MetaSources'].str.startswith('EIA_CBECS_Land')).all():
-            cbecs = df_i
-        elif (df_i['MetaSources'].str.startswith('EIA_MECS_Land')).all():
-            mecs = df_i
+    cbecs = _['attr']['cache']['EIA_CBECS_Land']
+    mecs = _['attr']['cache']['EIA_MECS_Land']
 
     # load the federal highway administration fees dictionary
     fha_dict = get_transportation_sectors_based_on_FHA_fees()
