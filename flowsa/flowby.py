@@ -689,7 +689,7 @@ class _FlowBy(pd.DataFrame):
 
         for step_config in disagg_config:
             # Step 1: Add group id, group_total, merge with crosswalk(s)
-            grouped = with_factor.reset_index(drop=True)
+            grouped = self.reset_index(drop=True)
 
             for crosswalk_name, crosswalk_config in step_config['crosswalk'].items():
                 crosswalk = data.crosswalk(crosswalk_name, crosswalk_config)
@@ -744,15 +744,15 @@ class _FlowBy(pd.DataFrame):
             # Step 3: Calculate disaggregation factor and multiply
             method = step_config['method']
             if method == 'proportional':
-                with_factor = merged.assign(factor=(merged.groupby('group_id').FlowAmount_ds
-                                                    .transform(lambda x: x / x.sum())))
+                with_factor: FB = merged.assign(factor=(merged.groupby('group_id').FlowAmount_ds
+                                                        .transform(lambda x: x / x.sum())))
                 # .mask(merged.group_count == 1, 1)))
                 # ^^^ Adding this after .transform(...) returns to the behavior of attributing
                 #     singleton rows without regard to the attribution source data set.
             elif method == 'multiplication':
-                with_factor = merged.assign(factor=merged.FlowAmount_ds)
+                with_factor: FB = merged.assign(factor=merged.FlowAmount_ds)
             elif method == 'equal':
-                with_factor = merged.assign(factor=1 / merged.group_count)
+                with_factor: FB = merged.assign(factor=1 / merged.group_count)
 
             if with_factor['factor'].isna().any():
                 log.warning(
