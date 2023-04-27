@@ -3,10 +3,6 @@ import numpy as np
 import pandas as pd
 from . import settings
 
-naics_crosswalk = pd.read_csv(
-    f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
-)
-
 
 def industry_spec_key(
     industry_spec: dict,
@@ -45,31 +41,31 @@ def industry_spec_key(
     3.  Each dictionary is applied only to those codes matching its parent
         key (with the root dictionary being applied to all codes).
     """
+    naics_crosswalk = pd.read_csv(
+        f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
+    )
 
     naics = naics_crosswalk.assign(
         target_naics=naics_crosswalk[industry_spec['default']])
     for k, v in industry_spec.items():
         if k not in ['default', 'non_naics']:
-            for sector in v:
-                # find column index where sector is located
-                col = np.where(naics == sector)[1][0]
-
-                naics['target_naics'] = np.where(
-                    naics[naics.columns[col]] == sector,
-                    naics[k],
-                    naics['target_naics'])
-
+            naics = naics.assign(
+                target_naics=naics.target_naics.mask(
+                    naics.drop(columns='target_naics').isin(v).any(axis='columns'),
+                    naics[k]
+                )
+            )
     # melt the dataframe to include source naics
     naics_key = naics.melt(id_vars="target_naics", value_name="source_naics")
     # add user-specified non-naics
-    _non_naics = industry_spec.get('non_naics', [])
-    naics_key = pd.concat([naics_key,
-                           pd.DataFrame({'source_naics': _non_naics,
-                                         'target_naics': _non_naics},
-                                        index=[0] if
-                                        isinstance(_non_naics, str)
-                                        else None)
-                           ])
+    if 'non_naics' in industry_spec:
+        non_naics = industry_spec['non_naics']
+        if isinstance(non_naics, str):
+            non_naics = [non_naics]
+        naics_key = pd.concat([naics_key,
+                               pd.DataFrame({'source_naics': non_naics,
+                                             'target_naics': non_naics})])
+
     # drop source_naics that are more aggregated than target_naics, reorder
     naics_key = (naics_key[['source_naics', 'target_naics']]
                  .dropna()
