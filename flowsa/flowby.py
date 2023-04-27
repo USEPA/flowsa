@@ -2064,21 +2064,13 @@ class FlowBySector(_FlowBy):
         :return:
         """
         naics_key = naics.industry_spec_key(self.config['industry_spec'])
-        # TODO fix error here causing special sectors (e.g. F010) to drop
-        # when doing a summary model because lenght does not align (target_naics)
-        # does not have the right number of digits
-
-        # subset naics to those where the source_naics string length is longer
-        # than target_naics
-        naics_key_sub = naics_key.query(
-            'source_naics.str.len() >= target_naics.str.len()')
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
             fbs = (
                 fbs
                 .rename(columns={f'Sector{direction}': 'source_naics'})
-                .merge(naics_key_sub,
+                .merge(naics_key,
                        how='left')
                 .rename(columns={'target_naics': f'Sector{direction}'})
                 .drop(columns='source_naics')

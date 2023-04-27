@@ -4,8 +4,7 @@
 # !include:BEA_summary_target.yaml
 industry_spec:
   default: NAICS_3
-  '336': {default: NAICS_4}
-  '541': {default: NAICS_4}
+  NAICS_4: ['336', '541']
   non_naics: ACC
 year: &year 2017
 # industry_spec:
