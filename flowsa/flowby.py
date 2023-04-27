@@ -4,9 +4,11 @@ from pandas import ExcelWriter
 import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
+from importlib_resources import files
+# ^^^ Once we upgrade to Python >= 3.9, can import from importlib.resources
 from flowsa import (common, settings, metadata, sectormapping,
                     literature_values, flowbyactivity, flowsa_yaml,
-                    validation, geo, naics, exceptions, location)
+                    validation, geo, naics, exceptions, location, data)
 from flowsa.flowsa_log import log
 import esupy.processed_data_mgmt
 import esupy.dqi
@@ -39,7 +41,7 @@ def get_catalog_info(source_name: str) -> dict:
 def get_flowby_from_config(
     name: str,
     config: dict,
-    external_config_path: str = None,
+    external_data_path: str = None,
     download_sources_ok: bool = True
 ) -> FB:
     """
@@ -48,7 +50,7 @@ def get_flowby_from_config(
 
     :return: a FlowByActivity dataframe
     """
-    external_data_path = config.get('external_data_path')
+    external_data_path = external_data_path or config.get('external_data_path')
 
     if config['data_format'] == 'FBA':
         return FlowByActivity.getFlowByActivity(
@@ -61,7 +63,7 @@ def get_flowby_from_config(
         return FlowBySector.getFlowBySector(
             method=name,
             config=config,
-            external_config_path=external_config_path,
+            external_config_path=external_data_path,
             download_sources_ok=download_sources_ok,
             download_fbs_ok=download_sources_ok,
             external_data_path=external_data_path
@@ -70,7 +72,7 @@ def get_flowby_from_config(
         return FlowBySector(
             config['FBS_datapull_fxn'](
                 config=config,
-                external_config_path=external_config_path,
+                external_config_path=external_data_path,
                 full_name=name
             ),
             full_name=name,
@@ -262,7 +264,7 @@ class _FlowBy(pd.DataFrame):
                     'Successfully loaded %s %s from %s',
                     file_metadata.name_data,
                     file_metadata.category,
-                    output_path
+                    paths.local_path
                 )
                 break
         else:
@@ -518,6 +520,362 @@ class _FlowBy(pd.DataFrame):
             .reset_index(drop=True)
         )
         return replaced_fb
+
+    def convert_to_geoscale(
+        self: FB,
+        target_geoscale: Literal['national', 'state', 'county',
+                                 geo.scale.NATIONAL, geo.scale.STATE,
+                                 geo.scale.COUNTY] = None
+    ) -> FB:
+        '''
+        Converts, by filtering or aggregating (or both), the given dataset to
+        the target geoscale.
+
+        Rows from the calling FlowBy that correspond to a higher level (more
+        aggregated) geoscale than the target are dropped. Then, for each
+        combination of 'ActivityProducedBy' and 'ActivityConsumedBy', and for
+        each level at or below (less aggregated than) the target geoscale,
+        determine the highest level at which data is reported for each unit at
+        that scale (so if the level is 'state', find the highest level at which
+        data is reported for each state, for each activity combination).
+        Finally, use this information to identify the correct source scale
+        for each activity combination and regional unit (details below), then
+        filter or aggregate (or both) to convert the dataset so all rows are
+        at the target geoscale.
+
+        For any region and activity combination, the correct source geoscale
+        is the highest (most aggregated) geoscale at or below the target
+        geoscale, for which data covering that region and activity combination
+        is reported. For example, if the target geoscale is 'national',
+        national level data should be used if available. If not, state level
+        data should be aggregated up if available. However, if some states
+        report county level data AND NOT state level data, then for those
+        states (and only those states) county level data should be aggregated
+        up. County level data from states that also report state level data
+        should, in this example, be ignored.
+
+        :param target_geoscale: str or geo.scale constant, the geoscale to
+            convert the calling FlowBy data set to. Currently, this needs to be
+            one which corresponds to a FIPS level (that is, one of national,
+            state, or county)
+        :return: FlowBy data set, with rows filtered or aggregated to the
+            target geoscale.
+        '''
+        target_geoscale = target_geoscale or self.config.get('geoscale')
+        if type(target_geoscale) == str:
+            target_geoscale = geo.scale.from_string(target_geoscale)
+        if self.LocationSystem.eq('Census_Region').all() or target_geoscale is None:
+            return self
+        fb_type, fb_fields = ('Activity', 'fba_fields') if type(self) == FlowByActivity else ('Sector', 'fbs_fields')
+
+        geoscale_by_fips = pd.concat([
+            (geo.filtered_fips(scale)
+             .assign(geoscale=scale, National='USA')
+             # ^^^ Need to have a column for each relevant scale
+             .rename(columns={'FIPS': 'Location'}))
+            # ^^^ (only FIPS for now)
+            for scale in [s for s in geo.scale if s.has_fips_level]
+        ])
+
+        geoscale_name_columns = [s.name.title() for s in geo.scale
+                                 if s.has_fips_level]
+
+        log.info('Determining appropriate source geoscale for %s; '
+                 'target geoscale is %s',
+                 self.full_name,
+                 target_geoscale.name.lower())
+
+        highest_reporting_level_by_geoscale = [
+            (self
+             .merge(geoscale_by_fips, how='inner')
+             .query('geoscale <= @scale')
+             .groupby([f'{fb_type}ProducedBy', f'{fb_type}ConsumedBy']
+                      + [s.name.title() for s in geo.scale
+                         if s.has_fips_level and s >= scale],
+                      dropna=False)
+             .agg({'geoscale': 'max'})
+             .reset_index()
+             .rename(columns={
+                 'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
+                 }))
+            for scale in geo.scale
+            if scale.has_fips_level and scale <= target_geoscale
+        ]
+
+        # if an activity column is a mix of string and np.nan values but
+        # after subsetting, the column is all np.nan, then the column dtype is
+        # converted to float which causes an error when merging float col back
+        # with the original object dtype. So convert float cols back to object
+        for df in highest_reporting_level_by_geoscale:
+            for c in [f'{fb_type}ProducedBy', f'{fb_type}ConsumedBy']:
+                if df[c].dtype == float:
+                    df[c] = df[c].astype(object)
+
+        fba_with_reporting_levels = reduce(
+            lambda x, y: x.merge(y, how='left'),
+            [self, geoscale_by_fips, *highest_reporting_level_by_geoscale]
+        )
+
+        reporting_level_columns = [
+            f'highest_reporting_level_by_{s.name.title()}'
+            for s in geo.scale if s.has_fips_level and s <= target_geoscale
+        ]
+
+        fba_at_source_geoscale = (
+            fba_with_reporting_levels
+            .assign(source_geoscale=(
+                fba_with_reporting_levels[reporting_level_columns]
+                .max(axis='columns')))
+            #   ^^^ max() with axis='columns' takes max along rows
+            .query('geoscale == source_geoscale')
+            .drop(columns=(['geoscale',
+                            *geoscale_name_columns,
+                            *reporting_level_columns]))
+        )
+
+        if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
+            log.warning('%s has multiple source geoscales: %s',
+                        fba_at_source_geoscale.full_name,
+                        ', '.join([s.name.lower() for s in
+                                   fba_at_source_geoscale
+                                   .source_geoscale.unique()]))
+        else:
+            log.info('%s source geoscale is %s',
+                     fba_at_source_geoscale.full_name,
+                     fba_at_source_geoscale
+                     .source_geoscale.unique()[0].name.lower())
+
+        fba_at_target_geoscale = (
+            fba_at_source_geoscale
+            .drop(columns='source_geoscale')
+            .convert_fips_to_geoscale(target_geoscale)
+            .aggregate_flowby()
+            .astype({column: flowby_config[fb_fields][column]
+                     for column in [f'{fb_type}ProducedBy',
+                                    f'{fb_type}ConsumedBy']})
+        )
+
+        if target_geoscale != geo.scale.NATIONAL and type(self) == FlowByActivity:
+            # TODO: This block of code can be simplified a great deal once
+            #       validation.py is rewritten to use the FB config dictionary
+            activities = list(
+                self
+                .add_primary_secondary_columns('Activity')
+                .PrimaryActivity.unique()
+            )
+
+            validation.compare_geographic_totals(
+                fba_at_target_geoscale, self,
+                self.source_name, self.config,
+                self.full_name.split('.')[-1], activities,
+                df_type='FBS', subnational_geoscale=target_geoscale
+                # ^^^ TODO: Rewrite validation to use fb metadata
+            )
+
+        return fba_at_target_geoscale
+
+    def disaggregate(self: FB, disagg_config: Union[dict, list] = None) -> FB:
+        '''
+        This method allows for disaggregation of a FlowBy dataset based on an
+        arbitrary column using a given crosswalk, method, and (depending on
+        method) secondary data source.
+        '''
+        disagg_config = disagg_config or self.config.get('disaggregate', None)
+
+        if disagg_config is None:
+            return self
+        elif isinstance(disagg_config, dict):
+            disagg_config = [disagg_config]
+
+        for step_config in disagg_config:
+            # Step 1: Add group id, group_total, merge with crosswalk(s)
+            grouped = with_factor.reset_index(drop=True)
+
+            for crosswalk_name, crosswalk_config in step_config['crosswalk'].items():
+                crosswalk = data.crosswalk(crosswalk_name, crosswalk_config)
+
+                grouped: FB = (
+                    grouped
+                    .reset_index()
+                    .rename(columns={'index': 'group_id'})
+                    .assign(group_total=grouped.FlowAmount)
+                    .merge(crosswalk, how='left',
+                           **crosswalk_config['merge_keys'],
+                           suffixes=(None, '_crosswalk'),
+                           indicator=True)
+                    .assign(**{column: lambda x, v=value: x.get(v, v)
+                               for column, value in crosswalk_config['add_columns'].items()})
+                    .drop(columns=(({*crosswalk.columns}
+                                    | {f'{c}_crosswalk' for c in crosswalk.columns})
+                                   - {*grouped.columns, *crosswalk_config['add_columns']}),
+                          errors='ignore')
+                )
+
+                unmapped = grouped.query('_merge == "left_only"')
+                if len(unmapped) > 0:
+                    log.warning(f'Some rows in {unmapped.full_name} not '
+                                f'mapped by {crosswalk_name}. Affected values are:\n'
+                                f'     {crosswalk_config["merge_keys"]["left_on"]}\n'
+                                f'{unmapped[crosswalk_config["merge_keys"]["left_on"]].drop_duplicates()}')
+
+                mapped: FB = (
+                    grouped
+                    .query('_merge == "both"')
+                    .assign(group_count=grouped.groupby('group_id')['group_id'].transform('count'))
+                )
+                # return mapped
+
+            # Step 2: Merge with secondary data source (as needed)
+            if 'source' in step_config:
+                (source_name, source_config), = step_config['source'].items()
+                source = get_flowby_from_config(source_name, source_config).prepare()
+                merged: FB = (
+                    mapped
+                    .merge(source, how='left', **source_config['merge_keys'], suffixes=(None, '_ds'))
+                    .fillna({'FlowAmount_ds': 0})
+                    .assign(**{column: lambda x, v=value: x.get(v, v)
+                               for column, value in source_config.get('add_columns', {}).items()})
+                    .drop(columns=(({*source.columns}
+                                    | {f'{c}_ds' for c in source.columns})
+                                   - {'FlowAmount_ds', *grouped.columns, *source_config.get('add_columns', {})}),
+                          errors='ignore')
+                )
+                # return merged
+            # Step 3: Calculate disaggregation factor and multiply
+            method = step_config['method']
+            if method == 'proportional':
+                with_factor = merged.assign(factor=(merged.groupby('group_id').FlowAmount_ds
+                                                    .transform(lambda x: x / x.sum())))
+                # .mask(merged.group_count == 1, 1)))
+                # ^^^ Adding this after .transform(...) returns to the behavior of attributing
+                #     singleton rows without regard to the attribution source data set.
+            elif method == 'multiplication':
+                with_factor = merged.assign(factor=merged.FlowAmount_ds)
+            elif method == 'equal':
+                with_factor = merged.assign(factor=1 / merged.group_count)
+
+            if with_factor['factor'].isna().any():
+                log.warning(
+                    f'Some rows in {with_factor.full_name} not '
+                    f'disaggregated due to lack of flows in disaggregation '
+                    f'source {source.full_name}. Affected values are:\n'
+                    f'     {source_config["merge_keys"]["left_on"]}\n'
+                    f'{with_factor.query("factor.isna()")[source_config["merge_keys"]["left_on"]].drop_duplicates()}',
+                )
+            disaggregated: FB = (
+                with_factor
+                .query('factor.notna()')
+                .assign(FlowAmount=lambda x: x.FlowAmount * x.factor)
+            )
+            self = disaggregated
+        return disaggregated
+
+    def prepare(
+        self: FB,
+        fb_type: Literal['FBA', 'FBS'] = None,
+        external_config_path: str = None
+    ) -> 'FlowBySector':
+        if fb_type is None:
+            fb_type = type(self)
+        elif fb_type == 'FBA':
+            fb_type = FlowByActivity
+        elif fb_type == 'FBS':
+            fb_type = FlowBySector
+        else:
+            raise TypeError('FlowBy type must be given as "FBA" or "FBS"')
+
+        if 'activity_sets' in self.config:
+            try:
+                return (
+                    pd.concat([
+                        activity_set.prepare(external_config_path=external_config_path)
+                        for activity_set in (
+                            self
+                            .select_by_fields()
+                            .function_socket('clean_fba_before_activity_sets')
+                            .activity_sets()
+                        )
+                    ])
+                    .reset_index(drop=True)
+                )
+            except ValueError:
+                return fb_type(pd.DataFrame())
+
+        return fb_type(
+            self
+            .function_socket('clean_fba_before_mapping')
+            .select_by_fields()
+            .function_socket('estimate_suppressed')
+            .select_by_fields(selection_fields=self.config.get('selection_fields_after_data_suppression_estimation'))
+            .convert_units_and_flows()
+            .function_socket('clean_fba')
+            .convert_to_geoscale()
+            .disaggregate()  # recursive call to prepare_fbs
+            .aggregate_flowby()
+        )
+
+    def activity_sets(self) -> List['FlowByActivity']:
+        '''
+        This function breaks up an FB dataset into its activity sets, if its
+        config dictionary specifies activity sets, and returns a list of the
+        resulting FBs. Otherwise, it returns a list containing the calling
+        FB.
+
+        Activity sets are determined by the selection_field key under each
+        activity set name. An error will be logged if any rows from the calling
+        FB are assigned to multiple activity sets.
+        '''
+        if 'activity_sets' not in self.config:
+            return [self]
+
+        log.info('Splitting %s into activity sets', self.full_name)
+        activities = self.config['activity_sets']
+        parent_config = {k: v for k, v in self.config.items()
+                         if k not in ['activity_sets',
+                                      'clean_fba_before_activity_sets']
+                         and not k.startswith('_')}
+        parent_fba: '_FlowBy' = self.reset_index().rename(columns={'index': 'row'})
+
+        child_fba_list = []
+        assigned_rows = set()
+        for activity_set, activity_config in activities.items():
+            log.info('Creating FlowByActivity for %s', activity_set)
+
+            child_fba = (
+                parent_fba
+                .add_full_name(
+                    f'{parent_fba.full_name}{NAME_SEP_CHAR}{activity_set}')
+                .select_by_fields(
+                    selection_fields=activity_config.get('selection_fields'))
+            )
+
+            child_fba.config = {**parent_config, **activity_config}
+            child_fba = child_fba.assign(SourceName=child_fba.full_name)
+
+            if set(child_fba.row) & assigned_rows:
+                log.critical(
+                    'Some rows from %s assigned to multiple activity '
+                    'sets. This will lead to double-counting:\n%s',
+                    parent_fba.full_name,
+                    child_fba.query(
+                        f'row in {list(set(child_fba.row) & assigned_rows)}'
+                    )
+                )
+                # raise ValueError('Some rows in multiple activity sets')
+
+            assigned_rows.update(child_fba.row)
+            if not child_fba.empty:
+                child_fba_list.append(child_fba.drop(columns='row'))
+            else:
+                log.error('Activity set %s is empty. Check activity set '
+                          'definition!', child_fba.full_name)
+
+        if set(parent_fba.row) - assigned_rows:
+            log.warning('Some rows from %s not assigned to an activity '
+                        'set. Is this intentional?', parent_fba.full_name)
+            unassigned = parent_fba.query('row not in @assigned_rows')
+
+        return child_fba_list
 
     def aggregate_flowby(
             self: FB,
@@ -880,159 +1238,6 @@ class FlowByActivity(_FlowBy):
 
         return mapped_fba.drop(columns='mapped')
 
-    # TODO: Can this be generalized to a _FlowBy method?
-    def convert_to_geoscale(
-        self: 'FlowByActivity',
-        target_geoscale: Literal['national', 'state', 'county',
-                                 geo.scale.NATIONAL, geo.scale.STATE,
-                                 geo.scale.COUNTY] = None
-    ) -> 'FlowByActivity':
-        '''
-        Converts, by filtering or aggregating (or both), the given dataset to
-        the target geoscale.
-
-        Rows from the calling FlowBy that correspond to a higher level (more
-        aggregated) geoscale than the target are dropped. Then, for each
-        combination of 'ActivityProducedBy' and 'ActivityConsumedBy', and for
-        each level at or below (less aggregated than) the target geoscale,
-        determine the highest level at which data is reported for each unit at
-        that scale (so if the level is 'state', find the highest level at which
-        data is reported for each state, for each activity combination).
-        Finally, use this information to identify the correct source scale
-        for each activity combination and regional unit (details below), then
-        filter or aggregate (or both) to convert the dataset so all rows are
-        at the target geoscale.
-
-        For any region and activity combination, the correct source geoscale
-        is the highest (most aggregated) geoscale at or below the target
-        geoscale, for which data covering that region and activity combination
-        is reported. For example, if the target geoscale is 'national',
-        national level data should be used if available. If not, state level
-        data should be aggregated up if available. However, if some states
-        report county level data AND NOT state level data, then for those
-        states (and only those states) county level data should be aggregated
-        up. County level data from states that also report state level data
-        should, in this example, be ignored.
-
-        :param target_geoscale: str or geo.scale constant, the geoscale to
-            convert the calling FlowBy data set to. Currently, this needs to be
-            one which corresponds to a FIPS level (that is, one of national,
-            state, or county)
-        :return: FlowBy data set, with rows filtered or aggregated to the
-            target geoscale.
-        '''
-        if self.LocationSystem.eq('Census_Region').all():
-            return self
-        target_geoscale = target_geoscale or self.config.get('geoscale')
-        if type(target_geoscale) == str:
-            target_geoscale = geo.scale.from_string(target_geoscale)
-
-        geoscale_by_fips = pd.concat([
-            (geo.filtered_fips(scale)
-             .assign(geoscale=scale, National='USA')
-             # ^^^ Need to have a column for each relevant scale
-             .rename(columns={'FIPS': 'Location'}))
-            # ^^^ (only FIPS for now)
-            for scale in [s for s in geo.scale if s.has_fips_level]
-        ])
-
-        geoscale_name_columns = [s.name.title() for s in geo.scale
-                                 if s.has_fips_level]
-
-        log.info('Determining appropriate source geoscale for %s; '
-                 'target geoscale is %s',
-                 self.full_name,
-                 target_geoscale.name.lower())
-
-        highest_reporting_level_by_geoscale = [
-            (self
-             .merge(geoscale_by_fips, how='inner')
-             .query('geoscale <= @scale')
-             .groupby(['ActivityProducedBy', 'ActivityConsumedBy']
-                      + [s.name.title() for s in geo.scale
-                         if s.has_fips_level and s >= scale],
-                      dropna=False)
-             .agg({'geoscale': 'max'})
-             .reset_index()
-             .rename(columns={
-                 'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
-                 }))
-            for scale in geo.scale
-            if scale.has_fips_level and scale <= target_geoscale
-        ]
-
-        # if an activity column is a mix of string and np.nan values but
-        # after subsetting, the column is all np.nan, then the column dtype is
-        # converted to float which causes an error when merging float col back
-        # with the original object dtype. So convert float cols back to object
-        for df in highest_reporting_level_by_geoscale:
-            for c in ['ActivityProducedBy', 'ActivityConsumedBy']:
-                if df[c].dtype == float:
-                    df[c] = df[c].astype(object)
-
-        fba_with_reporting_levels = reduce(
-            lambda x, y: x.merge(y, how='left'),
-            [self, geoscale_by_fips, *highest_reporting_level_by_geoscale]
-        )
-
-        reporting_level_columns = [
-            f'highest_reporting_level_by_{s.name.title()}'
-            for s in geo.scale if s.has_fips_level and s <= target_geoscale
-        ]
-
-        fba_at_source_geoscale = (
-            fba_with_reporting_levels
-            .assign(source_geoscale=(
-                fba_with_reporting_levels[reporting_level_columns]
-                .max(axis='columns')))
-            #   ^^^ max() with axis='columns' takes max along rows
-            .query('geoscale == source_geoscale')
-            .drop(columns=(['geoscale',
-                            *geoscale_name_columns,
-                            *reporting_level_columns]))
-        )
-
-        if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
-            log.warning('%s has multiple source geoscales: %s',
-                        fba_at_source_geoscale.full_name,
-                        ', '.join([s.name.lower() for s in
-                                   fba_at_source_geoscale
-                                   .source_geoscale.unique()]))
-        else:
-            log.info('%s source geoscale is %s',
-                     fba_at_source_geoscale.full_name,
-                     fba_at_source_geoscale
-                     .source_geoscale.unique()[0].name.lower())
-
-        fba_at_target_geoscale = (
-            fba_at_source_geoscale
-            .drop(columns='source_geoscale')
-            .convert_fips_to_geoscale(target_geoscale)
-            .aggregate_flowby()
-            .astype({activity: flowby_config['fba_fields'][activity]
-                     for activity in ['ActivityProducedBy',
-                                      'ActivityConsumedBy']})
-        )
-
-        if target_geoscale != geo.scale.NATIONAL:
-            # TODO: This block of code can be simplified a great deal once
-            #       validation.py is rewritten to use the FB config dictionary
-            activities = list(
-                self
-                .add_primary_secondary_columns('Activity')
-                .PrimaryActivity.unique()
-            )
-
-            validation.compare_geographic_totals(
-                fba_at_target_geoscale, self,
-                self.source_name, self.config,
-                self.full_name.split('.')[-1], activities,
-                df_type='FBS', subnational_geoscale=target_geoscale
-                # ^^^ TODO: Rewrite validation to use fb metadata
-            )
-
-        return fba_at_target_geoscale
-
     def load_prepare_attribution_source(
         self: 'FlowByActivity'
     ) -> 'FlowBySector':
@@ -1077,16 +1282,21 @@ class FlowByActivity(_FlowBy):
             .rename(columns={'index': 'group_id'})
             .assign(group_total=self.FlowAmount)
         )
-        if len(grouped)==0:
+        if len(grouped) == 0:
             log.warning(f'No data remaining in {self.full_name}.')
             return self
+        # ^^^ The method hasn't deleted anything yet, so I don't think this is
+        #     where this belongs
         fba: 'FlowByActivity' = (
             grouped
             .map_to_sectors(external_config_path=external_config_path)
             .function_socket('clean_fba_w_sec',
                              attr=self.config,
                              method=self.config)
+            # ^^^ I don't think this is an ideal way to handle kwargs
             .rename(columns={'SourceName': 'MetaSources'})
+            # ^^^ This sort of renaming is associated with the FBA -> FBS
+            #     transition, not the disaggregation per se
         )
 
         attribution_method = fba.config.get('attribution_method')
@@ -1317,17 +1527,11 @@ class FlowByActivity(_FlowBy):
             # to child relationships that do not exist in the FBA subset and
             # if those parent-child relationships are kept in the crosswalk,
             # the FBA could be mapped incorrectly
-            activities_in_fba = (pd.Series(self[['ActivityProducedBy',
-                                                 'ActivityConsumedBy']]
-                                           .values.ravel('F'))
-                                 .dropna()
-                                 .drop_duplicates()
-                                 .values.tolist()
-                                 )
-            activity_to_source_naics_crosswalk = \
-                activity_to_source_naics_crosswalk[
-                    activity_to_source_naics_crosswalk['Activity'].isin(
-                        activities_in_fba)]
+            activities_in_fba = {*self.ActivityProducedBy, *self.ActivityConsumedBy}
+            activity_to_source_naics_crosswalk = (
+                activity_to_source_naics_crosswalk
+                .query('Activity in @activities_in_fba')
+            )
 
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
@@ -1537,6 +1741,7 @@ class FlowByActivity(_FlowBy):
             [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
             .groupby(['PrimarySector', 'Location', 'Unit'])
             .agg('sum')
+            # ^^^ This is not correct if other's units are rates
             .reset_index()
         )
 
@@ -1696,7 +1901,6 @@ class FlowByActivity(_FlowBy):
             .reset_index(drop=True)
         )
 
-
     def prepare_fbs(
             self: 'FlowByActivity',
             external_config_path: str = None
@@ -1734,84 +1938,23 @@ class FlowByActivity(_FlowBy):
             .aggregate_flowby()
         )
 
-    def activity_sets(self) -> List['FlowByActivity']:
-        '''
-        This function breaks up an FBA dataset into its activity sets, if its
-        config dictionary specifies activity sets, and returns a list of the
-        resulting FBAs. Otherwise, it returns a list containing the calling
-        FBA.
-
-        Activity sets are determined by the selection_field key under each
-        activity set name. An error will be logged if any rows from the calling
-        FBA are assigned to multiple activity sets.
-        '''
-        if 'activity_sets' not in self.config:
-            return [self]
-
-        log.info('Splitting %s into activity sets', self.full_name)
-        activities = self.config['activity_sets']
-        parent_config = {k: v for k, v in self.config.items()
-                         if k not in ['activity_sets',
-                                      'clean_fba_before_activity_sets']
-                         and not k.startswith('_')}
-        parent_fba = self.reset_index().rename(columns={'index': 'row'})
-
-        child_fba_list = []
-        assigned_rows = set()
-        for activity_set, activity_config in activities.items():
-            log.info('Creating FlowByActivity for %s', activity_set)
-
-            child_fba = (
-                parent_fba
-                .add_full_name(
-                    f'{parent_fba.full_name}{NAME_SEP_CHAR}{activity_set}')
-                .select_by_fields(
-                    selection_fields=activity_config.get('selection_fields'))
-            )
-
-            child_fba.config = {**parent_config, **activity_config}
-            child_fba = child_fba.assign(SourceName=child_fba.full_name)
-
-            if set(child_fba.row) & assigned_rows:
-                log.critical(
-                    'Some rows from %s assigned to multiple activity '
-                    'sets. This will lead to double-counting:\n%s',
-                    parent_fba.full_name,
-                    child_fba.query(
-                        f'row in {list(set(child_fba.row) & assigned_rows)}'
-                    )
-                )
-                # raise ValueError('Some rows in multiple activity sets')
-
-            assigned_rows.update(child_fba.row)
-            if not child_fba.empty:
-                child_fba_list.append(child_fba.drop(columns='row'))
-            else:
-                log.error('Activity set %s is empty. Check activity set '
-                          'definition!', child_fba.full_name)
-
-        if set(parent_fba.row) - assigned_rows:
-            log.warning('Some rows from %s not assigned to an activity '
-                        'set. Is this intentional?', parent_fba.full_name)
-            unassigned = parent_fba.query('row not in @assigned_rows')
-
-        return child_fba_list
-
     def convert_units_and_flows(
         self: 'FlowByActivity'
     ) -> 'FlowByActivity':
         if 'emissions_factors' in self.config:
             self = self.convert_activity_to_emissions()
         if 'adjustment_factor' in self.config:
-            # ^^^ TODO: There has to be a better way to do this.
-            self = self.assign(FlowAmount=self.FlowAmount
-                               * self.config['adjustment_factor'])
+            if callable(self.config['adjustment_factor']):
+                adjustment_factor = self.config['adjustment_factor'](self)
+            else:
+                adjustment_factor = self.config['adjustment_factor']
+            self = self.assign(FlowAmount=self.FlowAmount * adjustment_factor)
 
         self = self.convert_daily_to_annual()
         if self.config.get('fedefl_mapping'):
             mapped = self.map_to_fedefl_list(
                 drop_unmapped_rows=self.config.get('drop_unmapped_rows', False)
-                )
+            )
         else:
             mapped = self.rename(columns={'FlowName': 'Flowable',
                                           'Compartment': 'Context'})
@@ -1985,7 +2128,7 @@ class FlowBySector(_FlowBy):
                         **get_catalog_info(source_name),
                         **config
                     },
-                    external_config_path=external_config_path,
+                    external_data_path=external_config_path,
                     download_sources_ok=download_sources_ok
                 ).prepare_fbs(external_config_path=external_config_path)
             )
@@ -2005,7 +2148,7 @@ class FlowBySector(_FlowBy):
                     **get_catalog_info(source_name),
                     **config
                 },
-                external_config_path=external_config_path,
+                external_data_path=external_config_path,
                 download_sources_ok=download_sources_ok
             ).prepare_fbs(external_config_path=external_config_path)
             for source_name, config in sources.items()
@@ -2069,6 +2212,25 @@ class FlowBySector(_FlowBy):
 
         return fbs
 
+    def convert_units_and_flows(
+        self: 'FlowBySector'
+    ) -> 'FlowBySector':
+        if 'emissions_factors' in self.config:
+            log.error('Converting flows to emissions not yet implemented for FlowBySector.')
+            raise NotImplementedError
+        if 'adjustment_factor' in self.config:
+            if callable(self.config['adjustment_factor']):
+                adjustment_factor = self.config['adjustment_factor'](self)
+            else:
+                adjustment_factor = self.config['adjustment_factor']
+            self = self.assign(FlowAmount=self.FlowAmount * adjustment_factor)
+
+        self = self.convert_daily_to_annual()
+        if self.config.get('fedefl_mapping'):
+            log.error('Mapping to Federal Elementary Flow list not yet implemented for FlowBySector.')
+            raise NotImplementedError
+        return (self.standardize_units())
+
     def prepare_fbs(
         self: 'FlowBySector',
         external_config_path: str = None
@@ -2077,7 +2239,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs')
             .select_by_fields()
-            .sector_aggregation() # convert to proper industry spec.
+            .sector_aggregation()  # convert to proper industry spec.
             .convert_fips_to_geoscale()
             .aggregate_flowby()  # necessary after consolidating geoscale
         )

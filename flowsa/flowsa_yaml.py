@@ -119,7 +119,6 @@ class FlowsaLoader(yaml.SafeLoader):
                                          f'.{module_name}')
         return getattr(module, loader.construct_scalar(node))
 
-
     @staticmethod
     def clean_function(
         loader: 'FlowsaLoader',
