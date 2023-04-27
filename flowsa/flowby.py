@@ -4,7 +4,10 @@ from pandas import ExcelWriter
 import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
-from importlib_resources import files
+try:
+    from importlib_resources import files
+except ModuleNotFoundError:
+    from importlib.resources import files
 # ^^^ Once we upgrade to Python >= 3.9, can import from importlib.resources
 from flowsa import (common, settings, metadata, sectormapping,
                     literature_values, flowbyactivity, flowsa_yaml,
@@ -459,7 +462,7 @@ class _FlowBy(pd.DataFrame):
             if field == 'conditional':
                 qry = ' & '.join(
                     ["({} in {})".format(
-                        k, [v] if not isinstance(v, (list,dict)) else v)
+                        k, [v] if not isinstance(v, (list, dict)) else v)
                         for k, v in exclusion_fields['conditional'].items()]
                     )
                 self = self.query(f'~({qry})')
