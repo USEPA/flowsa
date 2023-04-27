@@ -97,6 +97,7 @@ def return_fbs_method_data(source_name, config):
     # Create empty dictionary for storing meta data
     meta = {}
     # subset the FBS dictionary into a dictionary of source names
+    # todo: need to modify to read cached sources (see land_national fbs)
     fb = config['source_names']
     # initiate nested dictionary
     meta['primary_source_meta'] = {}
@@ -110,9 +111,13 @@ def return_fbs_method_data(source_name, config):
                 meta['primary_source_meta'][k] = add_stewi_metadata(
                     v['inventory_dict'])
             continue
-        if v.get('data_format') in ('FBS', 'FBS_outside_flowsa'):
-            meta['primary_source_meta'][k] = \
-                getMetadata(k, category='FlowBySector')
+        try:
+            if v.get('data_format') in ('FBS', 'FBS_outside_flowsa'):
+                meta['primary_source_meta'][k] = \
+                    getMetadata(k, category='FlowBySector')
+                continue
+        except AttributeError:
+            log.warning(f'Missing config info for {k}')
             continue
         # append source and year
         year = config['year'] if v.get('year') is None else v.get('year')
