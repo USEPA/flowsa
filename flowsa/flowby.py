@@ -1186,13 +1186,16 @@ class FlowByActivity(_FlowBy):
         """
         naics_key = naics.industry_spec_key(self.config['industry_spec'])
 
-        if self.config['sector-like_activities']:
+        activity_schema = self.config['activity_schema'] if isinstance(
+            self.config['activity_schema'], str) else self.config.get(
+            'activity_schema', {}).get(self.config['year'])
+
+        if "NAICS" in activity_schema:
             log.info('Activities in %s are NAICS codes.',
                      self.full_name)
 
             try:
-                source_year = int(self.config
-                                  .get('activity_schema', '')[6:10])
+                source_year = int(activity_schema[6:10])
             except ValueError:
                 source_year = 2012
                 log.warning('No NAICS year given for NAICS activities in %s. '
