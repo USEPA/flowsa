@@ -82,10 +82,10 @@ def get_all_fips(year: Literal[2010, 2013, 2015] = 2015) -> pd.DataFrame:
 
 
 def filtered_fips(
-    geoscale: Literal['national', 'state', 'county',
-                      scale.NATIONAL, scale.STATE, scale.COUNTY],
-    year: Literal[2010, 2013, 2015] = 2015
-) -> pd.DataFrame:
+        geoscale: Literal['national', 'state', 'county',
+                          scale.NATIONAL, scale.STATE, scale.COUNTY],
+        year: Literal[2010, 2013, 2015] = 2015
+    ) -> pd.DataFrame:
     if geoscale == 'national' or geoscale == scale.NATIONAL:
         return (get_all_fips(year).query('State.isnull()'))
     elif geoscale == 'state' or geoscale == scale.STATE:

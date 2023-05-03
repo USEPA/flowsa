@@ -10,6 +10,7 @@ import numpy as np
 import pycountry
 import urllib.error
 from flowsa.flowsa_log import log
+from flowsa.get import get_all_fips
 from flowsa.settings import datapath
 from flowsa.common import clean_str_and_capitalize
 
@@ -39,44 +40,6 @@ def read_stored_FIPS(year='2015'):
 
     return df
 
-
-def getFIPS(state=None, county=None, year='2015'):
-    """
-    Pass a state or state and county name to get the FIPS.
-
-    :param state: str. A US State Name or Puerto Rico, any case accepted
-    :param county: str. A US county
-    :param year: str. '2010', '2013', '2015', default year is 2015
-    :return: str. A five digit FIPS code
-    """
-    FIPS_df = read_stored_FIPS(year)
-
-    # default code
-    code = None
-
-    if county is None:
-        if state is not None:
-            state = clean_str_and_capitalize(state)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"].isna()), "FIPS"]
-        else:
-            log.error("To get state FIPS, state name must be passed in "
-                      "'state' param")
-    else:
-        if state is None:
-            log.error("To get county FIPS, state name must be passed in "
-                      "'state' param")
-        else:
-            state = clean_str_and_capitalize(state)
-            county = clean_str_and_capitalize(county)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"] == county), "FIPS"]
-    if code.empty:
-        log.error("No FIPS code found")
-    else:
-        code = code.values[0]
-
-    return code
 
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
@@ -114,26 +77,6 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     return df
 
 
-def update_geoscale(df, to_scale):
-    """
-    Updates df['Location'] based on specified to_scale
-    :param df: df, requires Location column
-    :param to_scale: str, target geoscale
-    :return: df, with 5 digit fips
-    """
-    # code for when the "Location" is a FIPS based system
-    if to_scale == 'state':
-        df = df.assign(Location = (df['Location']
-                                   .apply(lambda x: str(x[0:2]))
-                                   .apply(lambda x:
-                                          x.ljust(3 + len(x), '0')
-                                          if len(x) < 5 else x))
-                      )
-    elif to_scale == 'national':
-        df = df.assign(Location = US_FIPS)
-    return df
-
-
 def get_state_FIPS(year='2015', abbrev=False):
     """
     Filters FIPS df for state codes only
@@ -141,7 +84,7 @@ def get_state_FIPS(year='2015', abbrev=False):
     :return: FIPS df with only state level records
     """
 
-    fips = read_stored_FIPS(year)
+    fips = get_all_fips(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
     if abbrev:
@@ -155,7 +98,7 @@ def get_county_FIPS(year='2015'):
     :param year: str, year of FIPS, defaults to 2015
     :return: FIPS df with only county level records
     """
-    fips = read_stored_FIPS(year)
+    fips = get_all_fips(year)
     fips = fips.drop_duplicates(subset='FIPS')
     fips = fips[fips['County'].notnull()]
     return fips
