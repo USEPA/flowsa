@@ -95,14 +95,12 @@ def rename_log_file(filename, fb_meta):
     # already exists)
     shutil.copy(log_file, new_log_name)
     # original log file name - validation
-    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
+    log_file = f'{logoutputpath}{"flowsa_validation.log"}'
     # generate new log name
     new_log_name = (f'{logoutputpath}{filename}_v'
                     f'{fb_meta.tool_version}'
                     f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
                     f'_validation.log')
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file
     # already exists)
     shutil.copy(log_file, new_log_name)

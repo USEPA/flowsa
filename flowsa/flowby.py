@@ -7,7 +7,7 @@ from copy import deepcopy
 from flowsa import (common, settings, metadata, sectormapping,
                     literature_values, flowbyactivity, flowsa_yaml,
                     validation, geo, naics, exceptions, location)
-from flowsa.flowsa_log import log
+from flowsa.flowsa_log import log, rename_log_file
 import esupy.processed_data_mgmt
 import esupy.dqi
 import fedelemflowlist
@@ -2044,6 +2044,7 @@ class FlowBySector(_FlowBy):
         log.info(f'FBS generation complete, saving {method} to file')
         meta = metadata.set_fb_meta(method, 'FlowBySector')
         esupy.processed_data_mgmt.write_df_to_file(fbs, settings.paths, meta)
+        rename_log_file(method, meta)
         metadata.write_metadata(source_name=method,
                                 config=common.load_yaml_dict(
                                     method, 'FBS', external_config_path),
