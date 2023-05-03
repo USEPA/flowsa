@@ -1,19 +1,19 @@
-%YAML 1.2
 # Cache 'EIA_CBECS_Land' and 'EIA_MECS_Land' because the results of the
 # two allocated datasets are used within USDA_ERS_MLU sector attribution
 ---
-industry_spec:
-  default: NAICS_6
-target_naics_year: 2012
-geoscale: national
+
+!include:USEEIO_summary_target.yaml
 year: 2012
+geoscale: state
 
 sources_to_cache:
+  # todo: need to attribute census regions to states
   EIA_CBECS_Land: &_eia_cbecs_land # commercial land use
     fedefl_mapping: EIA_CBECS_Land
+    year: 2012
     selection_fields:
       Class: Land
-      Location: !include:Location_common.yaml:_national_location
+      Location: !include:Location_common.yaml:_state_location
     clean_fba: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
     activity_sets:
       cbecs_land: # all activities in eia cbecs land crosswalk
@@ -21,14 +21,16 @@ sources_to_cache:
          PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
         attribution_method: proportional
         attribution_source:
-          Employment_national_2012:
+          Employment_state_2012:
             data_format: FBS
+            year: 2012
+  # todo: need to attribute national mecs data to states
   "EIA_MECS_Land": &_eia_mecs_land  # manufacturing land use
     fedefl_mapping: EIA_MECS_Land
     year: 2014
     selection_fields:
       Class: Land
-      Location: !include:Location_common.yaml:_national_location
+      Location: !include:Location_common.yaml:_state_location
       FlowName: "Approximate Enclosed Floorspace of All Buildings Onsite"
       Year: {2014: 2012} # replace year to align with method year
     clean_fba: !script_function:EIA_MECS mecs_land_fba_cleanup
@@ -47,11 +49,11 @@ source_names:
     <<: *_eia_cbecs_land
   EIA_MECS_Land:
     <<: *_eia_mecs_land
-  "BLM_PLS":
+  BLM_PLS:
     fedefl_mapping: BLM_PLS
     selection_fields:
       Class: Land
-      Location: !include:Location_common.yaml:_national_location
+      Location: !include:Location_common.yaml:_state_location
     activity_sets:
       general_mining: # all blm pls activities other than hardrock
         selection_fields:
@@ -62,9 +64,9 @@ source_names:
          PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         attribution_method: proportional
         attribution_source:
-          Employment_national_2012:
+          Employment_state_2012:
             data_format: FBS
-  "USDA_ERS_MLU":
+  USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
     selection_fields:
       Class: Land
@@ -78,6 +80,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           "USDA_CoA_Cropland":
+            year: 2012
             selection_fields:
               Class: "Land"
               FlowName:
@@ -114,6 +117,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           "USDA_CoA_Cropland_NAICS":
+            year: 2012
             selection_fields:
               Class: "Land"
               FlowName: "FARM OPERATIONS"

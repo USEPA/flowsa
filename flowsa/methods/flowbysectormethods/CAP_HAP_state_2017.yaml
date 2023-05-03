@@ -197,9 +197,19 @@ source_names:
               ActivityProducedBy: {'325': ''}  # Fertilizers 325310
 
       pesticides:
-        clean_fba_before_mapping: !script_function:EPA_NEI drop_pesticides
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
+        exclusion_fields:
+        # To avoid overlap with other datasets, emissions of pesticides
+        # from pesticide application are removed.
+          FlowName:
+            - 2,4-Dichlorophenoxy Acetic Acid
+            - Captan
+            - Carbaryl
+            - Methyl Bromide
+            - Methyl Iodide
+            - Parathion
+            - Trifluralin
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:
