@@ -94,6 +94,10 @@ def rename_log_file(filename, fb_meta):
     # rename the standard log file name (os.rename throws error if file
     # already exists)
     shutil.copy(log_file, new_log_name)
+
+    if fb_meta.category == 'FlowByActivity':
+        return
+
     # original log file name - validation
     log_file = f'{logoutputpath}{"flowsa_validation.log"}'
     # generate new log name
