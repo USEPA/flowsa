@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
-from flowsa.common import fbs_activity_fields, sector_level_key, \
+from flowsa.common import \
     load_crosswalk, fbs_fill_na_dict, check_activities_sector_like, \
     fbs_collapsed_default_grouping_fields, fbs_collapsed_fill_na_dict, \
     fba_activity_fields, fba_default_grouping_fields, \
@@ -472,33 +472,6 @@ def assign_fips_location_system(df, year_of_data):
         df['LocationSystem'] = 'FIPS_2010'
 
     return df
-
-
-def return_primary_sector_column(df_load):
-    """
-    Determine sector column with values
-    :param fbs: fbs df with two sector columns
-    :return: string, primary sector column
-    """
-    # determine the df_w_sector column to merge on
-    if 'Sector' in df_load.columns:
-        primary_sec_column = 'Sector'
-    else:
-        df = replace_strings_with_NoneType(df_load)
-        sec_consumed_list = \
-            df['SectorConsumedBy'].drop_duplicates().values.tolist()
-        sec_produced_list = \
-            df['SectorProducedBy'].drop_duplicates().values.tolist()
-        # if a sector field column is not all 'none', that is the column to
-        # merge
-        if all(v is None for v in sec_consumed_list):
-            primary_sec_column = 'SectorProducedBy'
-        elif all(v is None for v in sec_produced_list):
-            primary_sec_column = 'SectorConsumedBy'
-        else:
-            log.error('There are values in both SectorProducedBy and '
-                      'SectorConsumedBy, cannot isolate Sector column')
-    return primary_sec_column
 
 
 def collapse_fbs_sectors(fbs):
@@ -980,41 +953,6 @@ def equally_allocate_suppressed_parent_to_child_naics(
     return dff
 
 
-def collapse_activity_fields(df):
-    """
-    The 'activityconsumedby' and 'activityproducedby' columns from the
-    allocation dataset do not always align with
-    the dataframe being allocated. Generalize the allocation activity column.
-    :param df: df, FBA used to allocate another FBA
-    :return: df, single Activity column
-    """
-
-    df = replace_strings_with_NoneType(df)
-
-    activity_consumed_list = \
-        df['ActivityConsumedBy'].drop_duplicates().values.tolist()
-    activity_produced_list = \
-        df['ActivityProducedBy'].drop_duplicates().values.tolist()
-
-    # if an activity field column is all 'none', drop the column and
-    # rename renaming activity columns to generalize
-    if all(v is None for v in activity_consumed_list):
-        df = df.drop(columns=['ActivityConsumedBy', 'SectorConsumedBy'])
-        df = df.rename(columns={'ActivityProducedBy': 'Activity',
-                                'SectorProducedBy': 'Sector'})
-    elif all(v is None for v in activity_produced_list):
-        df = df.drop(columns=['ActivityProducedBy', 'SectorProducedBy'])
-        df = df.rename(columns={'ActivityConsumedBy': 'Activity',
-                                'SectorConsumedBy': 'Sector'})
-    else:
-        log.error('Cannot generalize dataframe')
-
-    # drop other columns
-    df = df.drop(columns=['ProducedBySectorType', 'ConsumedBySectorType'])
-
-    return df
-
-
 def load_fba_w_standardized_units(datasource, year, **kwargs):
     """
     Standardize how a FBA is loaded for allocation purposes when
@@ -1228,69 +1166,6 @@ def assign_columns_of_sector_levels(df_load):
     return dfc
 
 
-def assign_columns_of_sector_levels_without_ambiguous_sectors(
-        df_load, ambiguous_sector_assignment=None):
-
-    dfc = assign_columns_of_sector_levels(df_load)
-
-    # check for duplicates. Rows might be duplicated if a sector is the same
-    # for multiple sector lengths
-    duplicate_cols = [e for e in dfc.columns if e not in [
-        'SectorProducedByLength', 'SectorConsumedByLength']]
-    duplicate_df = dfc[dfc.duplicated(subset=duplicate_cols,
-                                      keep=False)].reset_index(drop=True)
-
-    if (len(duplicate_df) > 0) % (ambiguous_sector_assignment is not None):
-        log.info('Retaining data for %s and dropping remaining '
-                 'rows. See validation log for data dropped',
-                 ambiguous_sector_assignment)
-        # first drop all data in the duplicate_df from dfc
-        dfs1 = pd.concat([dfc, duplicate_df]).drop_duplicates(keep=False)
-        # drop sector length cols, drop duplicates, aggregate df to ensure
-        # keep the intended data, and then reassign column sectors,
-        # formatted this way because would like to avoid sector aggreggation
-        # on large dfs
-        dfs2 = duplicate_df.drop(
-            columns=['SectorProducedByLength',
-                     'SectorConsumedByLength']).drop_duplicates()
-        dfs2 = sector_aggregation(dfs2)
-        dfs2 = assign_columns_of_sector_levels(dfs2)
-        # then in the duplicate df, only keep the rows that match the
-        # parameter indicated in the function call
-        sectorlength = sector_level_key[ambiguous_sector_assignment]
-        dfs2 = dfs2[
-            ((dfs2['SectorProducedByLength'] == sectorlength) &
-             (dfs2['SectorConsumedByLength'] == 0))
-            |
-            ((dfs2['SectorProducedByLength'] == 0) &
-             (dfs2['SectorConsumedByLength'] == sectorlength))
-            |
-            ((dfs2['SectorProducedByLength'] == sectorlength) &
-             (dfs2['SectorConsumedByLength'] == sectorlength))
-        ].reset_index(drop=True)
-        if len(dfs2) == 0:
-            log.warning('Data is lost from dataframe because none of the '
-                        'ambiguous sectors match %s',
-                        ambiguous_sector_assignment)
-        # merge the two dfs
-        dfc = pd.concat([dfs1, dfs2])
-        # print out what data was dropped
-        df_dropped = pd.merge(
-            duplicate_df, dfs2, how='left', indicator=True).query(
-            '_merge=="left_only"').drop('_merge', axis=1)
-        df_dropped = df_dropped[
-            ['SectorProducedBy', 'SectorConsumedBy',
-             'SectorProducedByLength', 'SectorConsumedByLength'
-             ]].drop_duplicates().reset_index(drop=True)
-        vlog.info('After assigning a column of sector lengths, '
-                  'dropped data with the following sector '
-                  'assignments due to ambiguous sector lengths '
-                  '%s: \n {}'.format(df_dropped.to_string()))
-    dfc = dfc.sort_values(['SectorProducedByLength',
-                           'SectorConsumedByLength']).reset_index(drop=True)
-    return dfc
-
-
 def assign_sector_match_column(df_load, sectorcolumn, sectorlength,
                                sectorlengthmatch):
 
@@ -1327,31 +1202,3 @@ def aggregate_and_subset_for_target_sectors(df, method):
     df_subset = subset_df_by_sector_list(df_agg, sector_list)
 
     return df_subset
-
-
-def add_attribution_sources_col(df, attr):
-    """
-    Add new column to FBS with the primary data source used for attribution
-    :param df:
-    :param attr:
-    :return:
-    """
-    # first assume method is direct - replace with attribution source if not
-    # direct
-    df = df.assign(AttributionSources='Direct')
-
-    # if allocation method is not direct, add data sources
-    if attr['allocation_method'] != 'direct':
-        sources = []
-        key_list = ['allocation_source']  # , 'helper_source']
-        for k in key_list:
-            s = attr.get(k)
-            if (s is not None) & (callable(s) is False):
-                sources.append(s)
-        if 'literature_sources' in attr:
-            sources.append('literature values')
-        # concat sources into single string
-        allocation_sources = ', '.join(sources)
-        # update data sources column with additional sources
-        df = df.assign(AttributionSources=allocation_sources)
-    return df
