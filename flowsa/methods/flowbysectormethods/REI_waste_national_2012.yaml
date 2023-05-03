@@ -18,5 +18,5 @@ source_names:
       waste_flows:
         names: !from_index:EPA_REI_waste_2012_asets.csv waste
         allocation_method: allocation_function
-        allocation_source: !script_function:EPA_REI rei_waste_flows_attribution
+        allocation_source: !script_function:EPA_REI rei_waste_national_cleanup
         allocation_from_scale: national
