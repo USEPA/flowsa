@@ -10,7 +10,7 @@ import numpy as np
 import pycountry
 import urllib.error
 from flowsa.flowsa_log import log
-from flowsa.get import get_all_fips
+from flowsa.geo import get_all_fips
 from flowsa.settings import datapath
 from flowsa.common import clean_str_and_capitalize
 
