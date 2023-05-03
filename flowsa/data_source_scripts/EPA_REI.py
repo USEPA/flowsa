@@ -184,7 +184,9 @@ def rei_waste_flows_attribution(*, flow_subset_mapped, k, names, method, **_):
 
     # first directly attribute/equally attribute APB to sectors and drop ACB
     # data
-    p2 = direct_allocation_method(p, k, names, method)
+    # p2 = direct_allocation_method(p, k, names, method)
+    p2 = p.copy()
+    ## TODO ^^ dropped direct_allocation_method - deprecated, temporary until REI method updated
     p2 = p2.drop(columns=['ActivityConsumedBy', 'SectorConsumedBy'])
 
     # then create attribution ratios to activityconsumedby based on flowable
