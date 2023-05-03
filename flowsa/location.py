@@ -22,26 +22,6 @@ fips_number_key = {"national": 0,
                    "county": 5}
 
 
-def read_stored_FIPS(year='2015'):
-    """
-    Read fips based on year specified, year defaults to 2015
-    :param year: str, '2010', '2013', or '2015', default year is 2015
-        because most recent year of FIPS available
-    :return: df, FIPS for specified year
-    """
-
-    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
-    # subset columns by specified year
-    df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
-    # rename columns to drop data year
-    df.columns = ['State', 'FIPS', 'County']
-    # sort df
-    df = df.sort_values(['FIPS']).reset_index(drop=True)
-
-    return df
-
-
-
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     """
     Applies FIPS codes by county to dataframe containing columns with State
@@ -74,6 +54,26 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
     df['Location'] = df['FIPS_x'].where(df['FIPS_x'].notnull(), df['FIPS_y'])
     df = df.drop(columns=['FIPS_x', 'FIPS_y'])
 
+    return df
+
+
+def update_geoscale(df, to_scale):
+    """
+    Updates df['Location'] based on specified to_scale
+    :param df: df, requires Location column
+    :param to_scale: str, target geoscale
+    :return: df, with 5 digit fips
+    """
+    # code for when the "Location" is a FIPS based system
+    if to_scale == 'state':
+        df = df.assign(Location = (df['Location']
+                                   .apply(lambda x: str(x[0:2]))
+                                   .apply(lambda x:
+                                          x.ljust(3 + len(x), '0')
+                                          if len(x) < 5 else x))
+                      )
+    elif to_scale == 'national':
+        df = df.assign(Location = US_FIPS)
     return df
 
 
