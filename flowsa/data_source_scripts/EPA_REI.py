@@ -133,7 +133,7 @@ def primary_factors_parse(*, df_list, year, **_):
             df['FlowAmount'] = (df['FlowAmount'].str.replace(
                 ',', '').astype('float'))
             df['Unit'] = 'MT'
-            df['Unit'] = np.where(df['FlowName'].str.contains('\$'), 'USD',
+            df['Unit'] = np.where(df['FlowName'].str.contains(r'\$'), 'USD',
                                   df['Unit'])
             df['FlowName'] = df['FlowName'].apply(
                 lambda x: x.split('(', 1)[0])
@@ -179,8 +179,7 @@ def rei_waste_flows_attribution(*, flow_subset_mapped, k, names, method, **_):
 
     # subset data into activityproducedby and activityconsumedby datafarames
     p = flow_subset_mapped[flow_subset_mapped['Description'] == 'makecol']
-    c = flow_subset_mapped[flow_subset_mapped['Description'] ==
-                           'useintersection']
+    c = flow_subset_mapped[flow_subset_mapped['Description'] == 'useintersection']
 
     # first directly attribute/equally attribute APB to sectors and drop ACB
     # data
@@ -190,7 +189,7 @@ def rei_waste_flows_attribution(*, flow_subset_mapped, k, names, method, **_):
     # then create attribution ratios to activityconsumedby based on flowable
     c2 = c[['Flowable', 'FlowAmount', 'Unit', 'ActivityConsumedBy',
             'SectorConsumedBy']].assign(Denominator=c.groupby(
-        ['Flowable', 'Unit'])['FlowAmount'].transform('sum'))
+                ['Flowable', 'Unit'])['FlowAmount'].transform('sum'))
     c2 = c2.assign(AttributionRatio=c2['FlowAmount']/c2['Denominator'])
     c2 = c2.sort_values(['Flowable', 'ActivityConsumedBy'])
     # Drop imports and exports so that the quantity is not allocated to SCB

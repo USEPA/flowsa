@@ -19,8 +19,7 @@ def industry_spec_key(
     shorter than the relevant level given in industry-spec, and many-to-1 for
     any NAICS codes longer than the relevant level.
 
-    The industry_spec is a (possibly nested) dictionary formatted as in this
-    example:
+    The industry_spec is a dictionary formatted as in this example:
 
     industry_spec = {'default': 'NAICS_3',
                      'NAICS_4': ['112', '113'],
@@ -35,15 +34,6 @@ def industry_spec_key(
     that should be included in the set of industries that can be mapped to.
     In this case, the user will need to supply their own crosswalk which maps
     activities to that industry.
-
-    Some important points in formatting an industry specification:
-    1.  Every dictionary in the spec must have a 'default' key, whose value is
-        used for any relevant codes not specifically named in the dictionary.
-    2.  Each non-default key in a dictionary must be at the length given
-        by the default value for the dictionary (so if 'default': 'NAICS_3',
-        then any non-default keys must be NAICS codes with exactly 3 digits).
-    3.  Each dictionary is applied only to those codes matching its parent
-        key (with the root dictionary being applied to all codes).
     """
 
     naics = naics_crosswalk.assign(

@@ -704,48 +704,72 @@ class _FlowBy(pd.DataFrame):
             disagg_config = [disagg_config]
 
         for step_config in disagg_config:
-            # Step 1: Add group id, group_total, merge with crosswalk(s)
-            grouped = self.reset_index(drop=True)
+            # Step 0: Add group id, group_total,
+            grouped: FB = (
+                self
+                .reset_index(drop=True)
+                .reset_index()
+                .rename(columns={'index': 'group_id'})
+                .assign(group_total=lambda x: x.FlowAmount,  # Unsure if this is really needed.
+                        mapped=True)
+            )
 
+            # Step 1: Merge with crosswalk(s)
             for crosswalk_name, crosswalk_config in step_config['crosswalk'].items():
-                crosswalk = data.crosswalk(crosswalk_name, crosswalk_config)
-
+                if crosswalk_config.get('is_FlowBy'):
+                    crosswalk = get_flowby_from_config(
+                        crosswalk_name,
+                        {**{k: v for k, v in self.config.items()
+                            if k in self.config['method_config_keys']
+                            or k == 'method_config_keys'},
+                         **get_catalog_info(crosswalk_name),
+                         **crosswalk_config}
+                    ).prepare()
+                else:
+                    crosswalk = data.crosswalk(crosswalk_name, crosswalk_config)
+                print(grouped.columns)
+                print(crosswalk.columns)
                 grouped: FB = (
                     grouped
-                    .reset_index()
-                    .rename(columns={'index': 'group_id'})
-                    .assign(group_total=grouped.FlowAmount)
                     .merge(crosswalk, how='left',
                            **crosswalk_config['merge_keys'],
                            suffixes=(None, '_crosswalk'),
                            indicator=True)
-                    .assign(**{column: lambda x, v=value: x.get(v, v)
+                    .assign(mapped=lambda x: x.mapped & (x._merge == 'both'),
+                            **{column: lambda x, v=value: x.get(v, v)
                                for column, value in crosswalk_config['add_columns'].items()})
-                    .drop(columns=(({*crosswalk.columns}
+                    .drop(columns=(({'_merge', *crosswalk.columns}
                                     | {f'{c}_crosswalk' for c in crosswalk.columns})
                                    - {*grouped.columns, *crosswalk_config['add_columns']}),
                           errors='ignore')
                 )
 
-                unmapped = grouped.query('_merge == "left_only"')
-                if len(unmapped) > 0:
-                    log.warning(f'Some rows in {unmapped.full_name} not '
-                                f'mapped by {crosswalk_name}. Affected values are:\n'
-                                f'     {crosswalk_config["merge_keys"]["left_on"]}\n'
-                                f'{unmapped[crosswalk_config["merge_keys"]["left_on"]].drop_duplicates()}')
+            unmapped = grouped.query('not mapped')
+            if len(unmapped) > 0:
+                log.warning(f'Some rows in {unmapped.full_name} not '
+                            f'mapped by {crosswalk_name}. Affected values are:\n'
+                            f'     {crosswalk_config["merge_keys"]["left_on"]}\n'
+                            f'{unmapped[crosswalk_config["merge_keys"]["left_on"]].drop_duplicates()}')
 
-                mapped: FB = (
-                    grouped
-                    .query('_merge == "both"')
-                    .assign(group_count=grouped.groupby('group_id')['group_id'].transform('count'))
-                )
-                # return mapped
+            mapped: FB = (
+                grouped
+                .query('mapped')
+                .drop(columns='mapped')
+                .assign(group_count=grouped.groupby('group_id')['group_id'].transform('count'))
+            )
 
             # Step 2: Merge with secondary data source (as needed)
             if 'source' in step_config:
                 (source_name, source_config), = step_config['source'].items()
-                source = get_flowby_from_config(source_name, source_config).prepare()
-                merged: FB = (
+                source = get_flowby_from_config(
+                    source_name,
+                    {**{k: v for k, v in self.config.items()
+                        if k in self.config['method_config_keys']
+                        or k == 'method_config_keys'},
+                     **get_catalog_info(source_name),
+                     **source_config}
+                ).prepare()
+                mapped: FB = (
                     mapped
                     .merge(source, how='left', **source_config['merge_keys'], suffixes=(None, '_ds'))
                     .fillna({'FlowAmount_ds': 0})
@@ -758,19 +782,23 @@ class _FlowBy(pd.DataFrame):
                 )
                 # return merged
             # Step 3: Calculate disaggregation factor and multiply
-            method = step_config['method']
+            method = step_config['attribution_method']
             if method == 'proportional':
-                with_factor: FB = merged.assign(factor=(merged.groupby('group_id').FlowAmount_ds
+                with_factor: FB = mapped.assign(factor=(mapped.groupby('group_id').FlowAmount_ds
                                                         .transform(lambda x: x / x.sum())))
                 # .mask(merged.group_count == 1, 1)))
                 # ^^^ Adding this after .transform(...) returns to the behavior of attributing
                 #     singleton rows without regard to the attribution source data set.
             elif method == 'multiplication':
-                with_factor: FB = merged.assign(factor=merged.FlowAmount_ds)
+                with_factor: FB = mapped.assign(factor=mapped.FlowAmount_ds)
             elif method == 'equal':
-                with_factor: FB = merged.assign(factor=1 / merged.group_count)
+                with_factor: FB = mapped.assign(factor=1 / mapped.group_count)
+                # ^^^ Doing what the equal/direct method did before, where flows were attributed equally among
+                #     same-NAICS-level industries, and then equally divided up within each such industry, etc.
+                #     can be accomplished by means of multiple disaggregation steps, with each one disaggregating
+                #     down one level using the "equal" disaggregation method.
 
-            if with_factor['factor'].isna().any():
+            if with_factor.factor.isna().any():
                 log.warning(
                     f'Some rows in {with_factor.full_name} not '
                     f'disaggregated due to lack of flows in disaggregation '
@@ -783,8 +811,13 @@ class _FlowBy(pd.DataFrame):
                 .query('factor.notna()')
                 .assign(FlowAmount=lambda x: x.FlowAmount * x.factor)
             )
-            self = disaggregated.drop(columns=['group_id', 'group_total', 'group_count',
-                                               'FlowAmount_ds', '_merge', 'factor'])
+
+            # Step 4: Drop columns created for disaggregation, plus any specified in the config file
+            self = (
+                disaggregated
+                .drop(columns=['group_id', 'group_total', 'group_count', 'FlowAmount_ds', 'factor'], errors='ignore')
+                .drop(columns=step_config.get('drop_columns', []))
+            )
 
         return self
 
@@ -2149,7 +2182,7 @@ class FlowBySector(_FlowBy):
                     },
                     external_data_path=external_config_path,
                     download_sources_ok=download_sources_ok
-                ).prepare_fbs(external_config_path=external_config_path)
+                ).prepare(external_config_path=external_config_path)
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
             #     so that later entries in method_config['sources_to_cache']
@@ -2158,20 +2191,24 @@ class FlowBySector(_FlowBy):
         # Generate FBS from method_config
         sources = method_config.pop('source_names')
 
-        fbs = pd.concat([
-            get_flowby_from_config(
-                name=source_name,
-                config={
-                    **method_config,
-                    'method_config_keys': method_config.keys(),
-                    **get_catalog_info(source_name),
-                    **config
-                },
-                external_data_path=external_config_path,
-                download_sources_ok=download_sources_ok
-            ).prepare_fbs(external_config_path=external_config_path)
-            for source_name, config in sources.items()
-        ])
+        fbs = FlowBySector(
+            pd.concat([
+                get_flowby_from_config(
+                    name=source_name,
+                    config={
+                        **method_config,
+                        'method_config_keys': method_config.keys(),
+                        **get_catalog_info(source_name),
+                        **config
+                    },
+                    external_data_path=external_config_path,
+                    download_sources_ok=download_sources_ok
+                ).prepare(external_config_path=external_config_path)
+                for source_name, config in sources.items()
+            ])
+            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'], errors='ignore')
+            .rename(columns={'FlowName': 'Flowable', 'Compartment': 'Context', 'SourceName': 'MetaSources'})
+        )
 
         fbs.full_name = method
         fbs.config = method_config
