@@ -19,6 +19,9 @@ import numpy as np
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     aggregator, equally_allocate_suppressed_parent_to_child_naics
+from flowsa.flowby import FlowByActivity
+from flowsa.flowsa_log import log
+from flowsa.naics import industry_spec_key
 
 
 def BLS_QCEW_URL_helper(*, build_url, year, **_):
@@ -136,23 +139,6 @@ def bls_qcew_parse(*, df_list, year, **_):
     return df2
 
 
-def clean_bls_qcew_fba_for_employment_sat_table(fba, **_):
-    """
-    When creating the employment satellite table for use in useeior,
-    modify the flow name to match prior methodology for mapping/impact factors.
-    clean_fba_df_fxn
-
-    :param fba: df, flowbyactivity
-    :return: df, flowbyactivity, with modified flow names
-    """
-
-    # rename flowname value
-    for c in ['FlowName', 'Flowable']:
-        fba[c] = fba[c].str.replace('Number of employees', 'Jobs')
-
-    return fba
-
-
 def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     """
     clean up bls df with sectors by estimating suppresed data
@@ -176,3 +162,137 @@ def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
     df2 = aggregator(df, groupcols)
 
     return df2
+
+
+def clean_qcew(fba: FlowByActivity, **kwargs):
+    #todo: check function method for state
+    if fba.config.get('geoscale') == 'national':
+        fba = fba.query('Location == "00000"')
+
+    totals = (
+        fba
+        .query('ActivityProducedBy.str.len() == 3')
+        [['Location', 'ActivityProducedBy', 'FlowAmount']]
+        .assign(ActivityProducedBy=lambda x: (x.ActivityProducedBy
+                                              .str.slice(stop=2)))
+        .groupby(['Location', 'ActivityProducedBy']).agg('sum')
+        .reset_index()
+        .rename(columns={'FlowAmount': 'new_total'})
+    )
+
+    merged = fba.merge(totals, how='left')
+
+    fixed = (
+        merged
+        .assign(FlowAmount=merged.FlowAmount.mask(
+            (merged.ActivityProducedBy.str.len() == 2)
+            & (merged.FlowAmount == 0),
+            merged.new_total
+        ))
+        .drop(columns='new_total')
+        .reset_index(drop=True)
+    )
+
+    target_naics = set(industry_spec_key(fba.config['industry_spec'])
+                       .target_naics)
+    filtered = (
+        fixed
+        .assign(ActivityProducedBy=fixed.ActivityProducedBy.mask(
+            (fixed.ActivityProducedBy + '0').isin(target_naics),
+            fixed.ActivityProducedBy + '0'
+        ))
+        .query('ActivityProducedBy in @target_naics')
+    )
+
+    return filtered
+
+
+def clean_qcew_for_fbs(fba: FlowByActivity, **kwargs):
+    """
+    clean up bls df with sectors by estimating suppresed data
+    :param df_w_sec: df, FBA format BLS QCEW data
+    :param kwargs: additional arguments can include 'attr', a
+    dictionary of FBA method yaml parameters
+    :return: df, BLS QCEW FBA with estimated suppressed data
+    """
+    fba['Flowable'] = 'Jobs'
+    return fba
+
+
+def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
+    if fba.config.get('geoscale') == 'national':
+        fba = fba.query('Location == "00000"')
+    else:
+        log.critical('At a subnational scale, this will take a long time.')
+
+    indexed = (
+        fba
+        .assign(n2=fba.ActivityProducedBy.str.slice(stop=2),
+                n3=fba.ActivityProducedBy.str.slice(stop=3),
+                n4=fba.ActivityProducedBy.str.slice(stop=4),
+                n5=fba.ActivityProducedBy.str.slice(stop=5),
+                n6=fba.ActivityProducedBy.str.slice(stop=6),
+                location=fba.Location,
+                category=fba.FlowName)
+        .replace({'FlowAmount': {0: np.nan},
+                  'ActivityProducedBy': {'31-33': '3X',
+                                         '44-45': '4X',
+                                         '48-49': '4Y'},
+                  'n2': {'31': '3X', '32': '3X', '33': '3X',
+                         '44': '4X', '45': '4X',
+                         '48': '4Y', '49': '4Y'}})
+        .set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'location', 'category'],
+                   verify_integrity=True)
+    )
+
+    def fill_suppressed(
+        flows: pd.Series,
+        level: int,
+        full_naics: pd.Series
+    ) -> pd.Series:
+        parent = flows[full_naics.str.len() == level]
+        children = flows[full_naics.str.len() == level + 1]
+        null_children = children[children.isna()]
+
+        if null_children.empty or parent.empty:
+            return flows
+        else:
+            value = max((parent[0] - children.sum()) / null_children.size, 0)
+            return flows.fillna(pd.Series(value, index=null_children.index))
+
+    unsuppressed = (
+        indexed
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 2, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 3, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 4, x.ActivityProducedBy)))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4', 'n5',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 5, x.ActivityProducedBy)))
+        .fillna({'FlowAmount': 0})
+        .reset_index(drop=True)
+    )
+
+    aggregated = (
+        unsuppressed
+        .assign(FlowName='Number of employees')
+        .replace({'ActivityProducedBy': {'3X': '31-33',
+                                         '4X': '44-45',
+                                         '4Y': '48-49'}})
+        .aggregate_flowby()
+    )
+
+    return aggregated

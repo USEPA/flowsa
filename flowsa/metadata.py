@@ -10,8 +10,9 @@ import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, \
     read_source_metadata
 from flowsa.common import return_true_source_catalog_name
+from flowsa.flowsa_log import log
 from flowsa.settings import paths, PKG, PKG_VERSION_NUMBER, WRITE_FORMAT, \
-    GIT_HASH, GIT_HASH_LONG, log
+    GIT_HASH, GIT_HASH_LONG
 
 
 def set_fb_meta(name_data, category):

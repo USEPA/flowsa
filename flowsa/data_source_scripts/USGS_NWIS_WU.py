@@ -11,8 +11,8 @@ import pandas as pd
 import numpy as np
 from flowsa.location import abbrev_us_state, US_FIPS
 from flowsa.common import fba_activity_fields, capitalize_first_letter
-from flowsa.settings import vLogDetailed
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
+from flowsa.flowsa_log import vlog
 from flowsa.validation import compare_df_units, \
     calculate_flowamount_diff_between_dfs
 from flowsa.flowby import FlowByActivity
@@ -361,7 +361,7 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     :param fba: df, FBA format
     :return: df, modified FBA
     """
-    vLogDetailed.info('Converting Bgal/d to Mgal/d')
+    vlog.info('Converting Bgal/d to Mgal/d')
     fba['FlowAmount'] = np.where(fba['Unit'] == 'Bgal/d',
                  fba['FlowAmount'] * 1000, fba['FlowAmount'])
     fba['Unit'] = np.where(fba['Unit'] == 'Bgal/d', 'Mgal/d', fba['Unit'])
@@ -369,23 +369,22 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     # causes issues because linked with public supply
     # also drop closed-loop or once-through cooling (thermoelectric power)
     # to avoid double counting
-    vLogDetailed.info('Removing all rows for Commercial Data because does not '
-                      'exist for all states and causes issues as information '
-                      'on Public Supply deliveries.')
+    vlog.info('Removing all rows for Commercial Data because does not '
+              'exist for all states and causes issues as information '
+              'on Public Supply deliveries.')
     dfa = fba[~fba['Description'].str.lower().str.contains(
         'commercial|closed-loop cooling|once-through')]
     calculate_flowamount_diff_between_dfs(fba, dfa)
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
-    vLogDetailed.info('Modify the public supply values to generate '
-                      'NET public supply by subtracting out deliveries '
-                      'to domestic')
+    vlog.info('Modify the public supply values to generate '
+              'NET public supply by subtracting out deliveries to domestic')
     dfb = calculate_net_public_supply(dfa)
 
     # check that golf + crop = total irrigation, if not,
     # assign all of total irrigation to crop
-    vLogDetailed.info('If states do not distinguish between golf and crop '
-                      'irrigation as a subset of total irrigation, assign '
-                      'all of total irrigation to crop')
+    vlog.info('If states do not distinguish between golf and crop '
+              'irrigation as a subset of total irrigation, assign '
+              'all of total irrigation to crop')
     dfc = check_golf_and_crop_irrigation_totals(dfb)
 
     # national
@@ -393,9 +392,9 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
 
     # drop flowname = 'total' rows when possible to prevent double counting
     # subset data where flowname = total and where it does not
-    vLogDetailed.info('Drop rows where the FlowName is total to prevent'
-                      'double counting at the state and county levels. '
-                      'Retain rows at national level')
+    vlog.info('Drop rows where the FlowName is total to prevent'
+              'double counting at the state and county levels. '
+              'Retain rows at national level')
     df2 = dfc[dfc['FlowName'] == 'total']
     # set conditions for data to keep when flowname = 'total
     c1 = df2['Location'] != US_FIPS
@@ -455,16 +454,16 @@ def calculate_net_public_supply(df_load: FlowByActivity):
         "deliveries from public supply")]
 
     # calculate data drop
-    vLogDetailed.info('Dropping rows that contain "deliveries from public '
-                      'supply" to avoid double counting with rows of "Public '
-                      'Supply deliveries to"')
+    vlog.info('Dropping rows that contain "deliveries from public '
+              'supply" to avoid double counting with rows of "Public '
+              'Supply deliveries to"')
     calculate_flowamount_diff_between_dfs(df1, df1_sub)
 
     # drop county level values because cannot use county data
-    vLogDetailed.info('Dropping county level public supply withdrawals '
-                      'because will end up with negative values due to '
-                      'instances of water deliveries coming from surrounding '
-                      'counties')
+    vlog.info('Dropping county level public supply withdrawals '
+              'because will end up with negative values due to '
+              'instances of water deliveries coming from surrounding '
+              'counties')
     df1_sub = df1_sub[df1_sub['Location'].apply(
         lambda x: x[2:6] == '000')].reset_index(drop=True)
 
@@ -579,11 +578,11 @@ def check_golf_and_crop_irrigation_totals(df_load: FlowByActivity):
         df_check['Diff'] = df_check['Diff'].apply(lambda x: round(x, 2))
         df_check2 = df_check[df_check['Diff'] != 0]
         if len(df_check2) > 0:
-            vLogDetailed.info('The golf and crop irrigation do not add up to '
-                              'total irrigation.')
+            vlog.info('The golf and crop irrigation do not add up to '
+                      'total irrigation.')
         else:
-            vLogDetailed.info('The golf and crop irrigation add up to total '
-                              'irrigation.')
+            vlog.info('The golf and crop irrigation add up to total '
+                      'irrigation.')
         return df_w_missing_crop2
     else:
         return df_load
