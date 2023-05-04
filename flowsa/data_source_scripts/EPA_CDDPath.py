@@ -14,7 +14,8 @@ from tabula.io import read_pdf
 import re
 import os
 from flowsa.location import US_FIPS
-from flowsa.settings import externaldatapath, log
+from flowsa.flowsa_log import log
+from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.dataclean import standardize_units
 from flowsa.schema import flow_by_activity_mapped_fields
@@ -244,5 +245,4 @@ if __name__ == "__main__":
     flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2018)
     fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
 
-    # flowsa.flowbysector.main(method='CDD_concrete_national_2014')
     # fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')

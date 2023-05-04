@@ -4,22 +4,21 @@
 
 """Common variables and functions used across flowsa"""
 
-import shutil
 import os
 from os import path
 import yaml
 import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
-from esupy.processed_data_mgmt import create_paths_if_missing
 import flowsa.flowsa_yaml as flowsa_yaml
 import flowsa.exceptions
+from flowsa.flowsa_log import log
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
     activity_fields
-from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
-    sourceconfigpath, log, flowbysectormethodpath, methodpath
+from flowsa.settings import datapath, MODULEPATH, \
+    sourceconfigpath, flowbysectormethodpath, methodpath
 
 
 # Sets default Sector Source Name
@@ -269,39 +268,6 @@ def get_flowsa_base_name(filedirectory, filename, extension):
         filename, _ = filename.rsplit('_', 1)
 
     return filename
-
-
-def rename_log_file(filename, fb_meta):
-    """
-    Rename the log file saved to local directory using df meta for df
-    :param filename: str, name of dataset
-    :param fb_meta: metadata for parquet
-    :return: modified log file name
-    """
-    # original log file name - all log statements
-    log_file = f'{logoutputpath}{"flowsa.log"}'
-    # generate new log name
-    new_log_name = (f'{logoutputpath}{filename}_v'
-                    f'{fb_meta.tool_version}'
-                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
-                    f'.log')
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file
-    # already exists)
-    shutil.copy(log_file, new_log_name)
-    # original log file name - validation
-    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
-    # generate new log name
-    new_log_name = (f'{logoutputpath}{filename}_v'
-                    f'{fb_meta.tool_version}'
-                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
-                    f'_validation.log')
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file
-    # already exists)
-    shutil.copy(log_file, new_log_name)
 
 
 def return_true_source_catalog_name(sourcename):

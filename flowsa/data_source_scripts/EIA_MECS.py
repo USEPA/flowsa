@@ -14,7 +14,7 @@ import numpy as np
 import flowsa
 from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
-from flowsa.settings import log
+from flowsa.flowsa_log import log
 from flowsa.flowby import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation
 from flowsa.data_source_scripts.EIA_CBECS_Land import \

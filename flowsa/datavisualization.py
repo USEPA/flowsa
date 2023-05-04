@@ -15,8 +15,9 @@ import flowsa
 from flowsa.common import load_crosswalk, load_yaml_dict
 from flowsa.dataclean import replace_NoneType_with_empty_cells
 from flowsa.flowbyfunctions import sector_aggregation
+from flowsa.flowsa_log import log
 from flowsa.sectormapping import get_sector_list
-from flowsa.settings import log, datapath, plotoutputpath
+from flowsa.settings import datapath, plotoutputpath
 import textwrap
 
 

@@ -9,8 +9,8 @@ _bls_selection_fields_state: &bls_selection_fields_state
     Location: !include:Location_common.yaml:_state_location
 
 _bls_load_and_clean: &bls_load_and_clean
-  clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
-  clean_fba: !script_function:temp_data_source_functions clean_qcew_for_fbs
+  clean_fba_before_mapping: !script_function:BLS_QCEW estimate_suppressed_qcew
+  clean_fba: !script_function:BLS_QCEW clean_qcew_for_fbs
 
 bls_load_and_clean_national:
   <<: *bls_selection_fields_national
