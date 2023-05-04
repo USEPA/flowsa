@@ -725,10 +725,11 @@ class _FlowBy(pd.DataFrame):
                          **get_catalog_info(crosswalk_name),
                          **crosswalk_config}
                     ).prepare()
+                elif callable(crosswalk_name):
+                    crosswalk = crosswalk_name(grouped, **crosswalk_config)
                 else:
-                    crosswalk = data.crosswalk(crosswalk_name, crosswalk_config)
-                print(grouped.columns)
-                print(crosswalk.columns)
+                    crosswalk = data.crosswalk(crosswalk_name)
+
                 grouped: FB = (
                     grouped
                     .merge(crosswalk, how='left',
@@ -1501,7 +1502,7 @@ class FlowByActivity(_FlowBy):
 
                 activity_to_target_naics_crosswalk = (
                     activity_to_source_naics_crosswalk
-                    .query('Sector  in @target_naics')
+                    .query('Sector in @target_naics')
                 )
 
                 fba_w_naics = self

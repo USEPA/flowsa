@@ -1,7 +1,7 @@
-from typing import Literal
+from typing import Literal, Union
 import numpy as np
 import pandas as pd
-from . import settings
+from . import settings, flowby
 
 naics_crosswalk = pd.read_csv(
     f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
@@ -64,6 +64,42 @@ def industry_spec_key(
                  )
 
     return naics_key
+
+
+def explode(
+    fb: flowby._FlowBy,
+    column: str,
+    group_on: Union[str, list] = None,
+    **_
+) -> pd.DataFrame:
+    if fb.config.get('sector_hierarchy') == 'parent-completeChild':
+        if group_on:
+            flagged = fb.assign(
+                explode=(fb.groupby(group_columns)[column]
+                         .transform(lambda y: y.apply(lambda x: not any(y.str.startswith(x)
+                                                                        & (y.str.len() > len(x))))))
+            )
+        else:
+            flagged = fb.assign(
+                explode=(fb[column].apply(lambda x: not any(fb[column].str.startswith(x)
+                                                            & (fb[column].str.len() > len(x)))))
+            )
+    else:
+        flagged = fb.assign(explode=True)
+
+    naics_key = industry_spec_key(fb.config['industry_spec'], fb.config.get('year'))
+
+    exploded = pd.concat([
+        (flagged
+         .query('explode')
+         .merge(naics_key, how='left', left_on=column, right_on='source_naics')
+         .drop(columns='source_naics')),
+        (flagged
+         .query('not explode')
+         .assign(target_naics=lambda x: x[column]))
+    ])
+
+    return exploded
 
 
 def year_crosswalk(

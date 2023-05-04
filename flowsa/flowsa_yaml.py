@@ -115,8 +115,11 @@ class FlowsaLoader(yaml.SafeLoader):
         # For security, this constructor does NOT search external config paths.
         # If someone who understands security concerns better than I do feels
         # it is safe to change this behavior, then go ahead.
-        module = importlib.import_module(f'flowsa.data_source_scripts'
-                                         f'.{module_name}')
+        try:
+            module = importlib.import_module(f'flowsa.data_source_scripts'
+                                             f'.{module_name}')
+        except ModuleNotFoundError:
+            module = importlib.import_module(f'flowsa.{module_name}')
         return getattr(module, loader.construct_scalar(node))
 
     @staticmethod
