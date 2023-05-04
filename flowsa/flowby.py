@@ -2040,6 +2040,14 @@ class FlowBySector(_FlowBy):
         # aggregate to target sector
         fbs = fbs.sector_aggregation()
 
+        # set all data quality fields to none until implemented fully
+        log.info('Reset all data quality fields to None')
+        dq_cols = ['Spread', 'Min', 'Max',
+                   'DataReliability', 'TemporalCorrelation',
+                   'GeographicalCorrelation', 'TechnologicalCorrelation',
+                   'DataCollection']
+        fbs = fbs.assign(**dict.fromkeys(dq_cols, None))
+
         # Save fbs and metadata
         log.info(f'FBS generation complete, saving {method} to file')
         meta = metadata.set_fb_meta(method, 'FlowBySector')
