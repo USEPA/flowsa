@@ -727,6 +727,60 @@ class _FlowBy(pd.DataFrame):
                     ).prepare()
                 else:
                     crosswalk = data.crosswalk(crosswalk_name, crosswalk_config)
+
+                    naics_key = naics.industry_spec_key(self.config['industry_spec'])
+                    # only retain the activities in the crosswalk that exist in
+                    # the FB. Necessary because the crosswalk could contain parent
+                    # to child relationships that do not exist in the FB subset and
+                    # if those parent-child relationships are kept in the crosswalk,
+                    # the FB could be mapped incorrectly
+                    activities_in_fb = {*self[crosswalk_config['merge_keys']['left_on']]}
+                    crosswalk = crosswalk.query('Activity in @activities_in_fb')
+
+                    log.info('Converting NAICS codes in crosswalk to desired '
+                             'industry/sector aggregation structure.')
+                    if self.config.get('sector_hierarchy') == 'parent-completeChild':
+                        existing_sectors = crosswalk[['Activity', 'Sector']]
+
+                        # create list of sectors that exist in original df, which,
+                        # if created when expanding sector list cannot be added
+                        naics_df = pd.DataFrame([])
+                        for i in existing_sectors['Activity'].unique():
+                            existing_sectors_sub = existing_sectors[
+                                existing_sectors['Activity'] == i]
+                            for j in existing_sectors_sub['Sector']:
+                                dig = len(str(j))
+                                n = existing_sectors_sub[
+                                    existing_sectors_sub['Sector'].apply(
+                                        lambda x: x[0:dig]) == j]
+                                if len(n) == 1:
+                                    expanded_n = naics_key[naics_key['source_naics']
+                                                           == j]
+                                    expanded_n = expanded_n.assign(Activity=i)
+                                    naics_df = pd.concat([naics_df, expanded_n])
+
+                        crosswalk = (
+                            crosswalk
+                            .merge(naics_df,
+                                   how='left',
+                                   left_on=['Activity', 'Sector'],
+                                   right_on=['Activity', 'source_naics'])
+                            .assign(Sector=lambda x: x['target_naics'])
+                            .drop(columns=['source_naics', 'target_naics'])
+                        )
+
+                    else:
+                        crosswalk = (
+                            crosswalk
+                            .merge(naics_key,
+                                   how='left',
+                                   left_on='Sector',
+                                   right_on='source_naics')
+                            .assign(Sector=lambda x: x.target_naics)
+                            .drop(columns=['source_naics', 'target_naics'])
+                            .drop_duplicates()
+                        )
+
                 print(grouped.columns)
                 print(crosswalk.columns)
                 grouped: FB = (
