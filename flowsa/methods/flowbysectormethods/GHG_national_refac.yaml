@@ -56,6 +56,12 @@ source_names:
         disaggregate:
           crosswalk:
             NAICS_Crosswalk_EPA_GHGI: *cw_ghgi
+            !script_function:naics explode:
+              column: SectorProducedBy
+              merge_keys:
+                'on': SectorProducedBy
+              add_columns:
+                SectorProducedBy: target_naics
           drop_columns: ActivityConsumedBy # FBA column not needed
           attribution_method: proportional
           source:
@@ -80,7 +86,7 @@ source_names:
               merge_keys:
                 left_on: SectorProducedBy
                 right_on: SectorConsumedBy
- 
+
       electric_power:
         selection_fields:
           PrimaryActivity:

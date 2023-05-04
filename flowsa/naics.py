@@ -1,7 +1,7 @@
 from typing import Literal, Union
 import numpy as np
 import pandas as pd
-from . import settings, flowby
+from . import settings
 
 naics_crosswalk = pd.read_csv(
     f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
@@ -67,9 +67,9 @@ def industry_spec_key(
 
 
 def explode(
-    fb: flowby._FlowBy,
+    fb: 'flowby._FlowBy',
     column: str,
-    group_on: Union[str, list] = None,
+    group_on: Union[str, list] = (),
     **_
 ) -> pd.DataFrame:
     if fb.config.get('sector_hierarchy') == 'parent-completeChild':
@@ -92,14 +92,18 @@ def explode(
     exploded = pd.concat([
         (flagged
          .query('explode')
-         .merge(naics_key, how='left', left_on=column, right_on='source_naics')
-         .drop(columns='source_naics')),
+         .merge(naics_key, how='left', left_on=column, right_on='source_naics')),
         (flagged
          .query('not explode')
          .assign(target_naics=lambda x: x[column]))
     ])
 
-    return exploded
+    if isinstance(group_on, str):
+        crosswalk_columns = [column, 'target_naics', group_on]
+    else:
+        crosswalk_columns = [column, 'target_naics', *group_on]
+
+    return exploded[crosswalk_columns]
 
 
 def year_crosswalk(
