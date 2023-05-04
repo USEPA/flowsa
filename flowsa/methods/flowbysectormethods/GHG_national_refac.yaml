@@ -1,0 +1,114 @@
+# GHG 2016 refac for attribution_disaggregation
+industry_spec:
+  default: NAICS_6
+year: &ghgi_year 2016
+target_naics_year: 2012
+geoscale: national
+
+
+source_names:
+  EPA_GHGI_T_2_1: #U.S. GHG emissions
+    year: 2016 # override this
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct:
+        selection_fields:
+          PrimaryActivity:
+            - Abandoned Oil and Gas Wells #CH4
+            - Abandoned Underground Coal Mines #CH4
+            - Adipic Acid Production #N2O
+            - Aluminum Production #CO2
+            - Ammonia Production #CO2
+            - Anaerobic Digestion at Biogas Facilities #CH4 new activity
+            - Caprolactam, Glyoxal, and Glyoxylic Acid Production #N2O
+            - Carbide Production and Consumption #CO2, CH4
+            - Cement Production #CO2
+            - Coal Mining #CO2, CH4
+            - Composting #CH4, N2O
+            - Ferroalloy Production #CO2, CH4
+            - Glass Production #CO2
+            - Landfills #CH4
+            - Lime Production #CO2
+            - Incineration of Waste #CO2, #N2O
+            - Iron and Steel Production & Metallurgical Coke Production #CO2, CH4
+            - Nitric Acid Production #N2O
+            - Phosphoric Acid Production #CO2
+            - Rice Cultivation #CH4
+            - Soda Ash Production #CO2
+            - Titanium Dioxide Production #CO2
+            - Wastewater Treatment #CH4, N2O
+            - Zinc Production #CO2
+          FlowName: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
+        disaggregate:
+          crosswalk:
+            NAICS_Crosswalk_EPA_GHGI: &cw_ghgi
+              merge_keys:
+                left_on: ActivityProducedBy # FBA column
+                right_on: Activity # Crosswalk column
+              add_columns:
+                SectorProducedBy: Sector # New column from crosswalk
+          drop_columns: ActivityConsumedBy # FBA column not needed
+          attribution_method: equal
+
+      liming:
+        selection_fields:
+          PrimaryActivity: Liming  #CO2
+        disaggregate:
+          crosswalk:
+            NAICS_Crosswalk_EPA_GHGI: *cw_ghgi
+          drop_columns: ActivityConsumedBy # FBA column not needed
+          attribution_method: proportional
+          source:
+            ## This attribution is failing because the crosswalk is using
+            ##    a general mapping to 3-digit NAICS while the BEA sector
+            ##    codes are mapped to 6 digit. Need to implement the NAICS
+            ##    explosion on the crosswalk.
+            BEA_Use_Detail_PRO_BeforeRedef:
+              year: 2012
+              selection_fields:
+                ActivityProducedBy: {'327400': ''} # Lime
+              disaggregate:
+                crosswalk:
+                  NAICS_Crosswalk_BEA_2012_Detail:
+                    merge_keys:
+                      left_on: ActivityConsumedBy # FBA column
+                      right_on: Activity # Crosswalk column
+                    add_columns:
+                      SectorConsumedBy: Sector # New column from crosswalk
+                drop_columns: ActivityProducedBy # FBA column not needed
+                attribution_method: equal
+              merge_keys:
+                left_on: SectorProducedBy
+                right_on: SectorConsumedBy
+ 
+      electric_power:
+        selection_fields:
+          PrimaryActivity:
+            Electric Power Sector: Electric Power #CO2
+        disaggregate:
+           crosswalk:
+             NAICS_Crosswalk_EPA_GHGI: *cw_ghgi
+           drop_columns: ActivityConsumedBy # FBA column not needed
+           attribution_method: proportional
+           source:
+             ## This attribution is failing because the crosswalk is using
+             ##    a general mapping to 3-digit NAICS while the BEA sector
+             ##    codes are mapped to 6 digit. Need to implement the NAICS
+             ##    explosion on the crosswalk.
+             BEA_Make_Detail_BeforeRedef:
+               year: 2012
+               selection_fields:
+                 ActivityConsumedBy: {'221100': ''} # Electricity
+               disaggregate:
+                 crosswalk:
+                   NAICS_Crosswalk_BEA_2012_Detail:
+                     merge_keys:
+                       left_on: ActivityProducedBy # FBA column
+                       right_on: Activity # Crosswalk column
+                     add_columns:
+                       SectorProducedBy: Sector # New column from crosswalk
+                 drop_columns: ActivityConsumedBy # FBA column not needed
+                 attribution_method: equal
+               merge_keys:
+                 left_on: SectorProducedBy
+                 right_on: SectorProducedBy
