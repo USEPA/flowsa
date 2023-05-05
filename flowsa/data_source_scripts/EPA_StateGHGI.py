@@ -5,20 +5,35 @@
 Inventory of US GHGs from EPA disaggregated to States
 """
 import pandas as pd
-from flowsa.settings import externaldatapath
+import io
+from zipfile import ZipFile
 from flowsa.location import apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 import flowsa.exceptions
 
 
-def epa_state_ghgi_parse(*, source, year, config, **_):
+def epa_state_ghgi_call(*, resp, config, **_):
+    """
+    Convert response for calling url to pandas dataframe
+    :param resp: response from url call
+    :param config: dictionary, items in FBA method yaml
+    :return: pandas dataframe of original source data
+    """
+    with ZipFile(io.BytesIO(resp.content)) as z:
+        df = pd.read_excel(z.open(config['file']),
+                           sheet_name=config['sheet'])
+    return df
 
-    try:
-        data_df = pd.read_excel(externaldatapath + config.get('file'),
-                                sheet_name='Data by Econ Sect')
-    except FileNotFoundError:
-        raise FileNotFoundError('State GHGI data not yet available for '
-                                'external users')
+def epa_state_ghgi_parse(*, df_list, source, year, config, **_):
+    """
+    Combine, parse, and format the provided dataframes
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
+    """
+    data_df = pd.concat(df_list)
 
     activity_cols = ['ECON_SECTOR', 'ECON_SOURCE', 'SUBSECTOR',
                      'CATEGORY', 'FUEL', 'SUBCATEGORY1',
