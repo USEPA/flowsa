@@ -715,7 +715,7 @@ class _FlowBy(pd.DataFrame):
             )
 
             # Step 1: Merge with crosswalk(s)
-            for crosswalk_name, crosswalk_config in step_config['crosswalk'].items():
+            for crosswalk_name, crosswalk_config in step_config.get('crosswalk', {}).items():
                 if crosswalk_config.get('is_FlowBy'):
                     crosswalk = get_flowby_from_config(
                         crosswalk_name,
@@ -756,6 +756,7 @@ class _FlowBy(pd.DataFrame):
                 grouped
                 .query('mapped')
                 .drop(columns='mapped')
+                .function_socket('clean_fba_w_sec')
                 .assign(group_count=grouped.groupby('group_id')['group_id'].transform('count'))
             )
 
@@ -800,12 +801,14 @@ class _FlowBy(pd.DataFrame):
                 #     down one level using the "equal" disaggregation method.
 
             if with_factor.factor.isna().any():
+                merge_col = source_config['merge_keys'].get(
+                    'left_on', source_config['merge_keys']['on'])
                 log.warning(
                     f'Some rows in {with_factor.full_name} not '
                     f'disaggregated due to lack of flows in disaggregation '
                     f'source {source.full_name}. Affected values are:\n'
-                    f'     {source_config["merge_keys"]["left_on"]}\n'
-                    f'{with_factor.query("factor.isna()")[source_config["merge_keys"]["left_on"]].drop_duplicates()}',
+                    f'     {merge_col}\n'
+                    f'{with_factor.query("factor.isna()")[merge_col].drop_duplicates()}',
                 )
             disaggregated: FB = (
                 with_factor

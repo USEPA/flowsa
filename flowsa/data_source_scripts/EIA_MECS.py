@@ -472,10 +472,10 @@ def clean_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     311221             |  55        |
 
     where the 110 reported for 311 includes the 65 reported for 3112, which
-    includes the 55 reported for 211221. If we do not address this issue, there
+    includes the 55 reported for 311221. If we do not address this issue, there
     will be double counting. Additionally, if we are trying to disaggregate
     to the NAICS-6 level, all three rows shown above will be mapped to NAICS-6
-    311221 (with the first wo rows also being mapped to several other NAICS-6
+    311221 (with the first two rows also being mapped to several other NAICS-6
     codes as well). We will then over attribute the (double-counted) flows to
     those industries and groups of industries for which more specific detail
     is provided.
