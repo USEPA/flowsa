@@ -89,19 +89,19 @@ source_names:
     activity_sets:
       direct_allocation:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv direct_allocation
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv direct_allocation
         attribution_method: direct
 
       cropland:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv cropland
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv cropland
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Cropland: *cropland_allocation
 
       industry_combustion_coal:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coal
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_coal
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -111,7 +111,7 @@ source_names:
 
       industry_combustion_coke:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_coke
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_coke
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -121,7 +121,7 @@ source_names:
 
       industry_combustion_distillate:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_distillate
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_distillate
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -131,7 +131,7 @@ source_names:
 
       industry_combustion_hgl:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_hgl
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_hgl
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -141,7 +141,7 @@ source_names:
 
       industry_combustion_nat_gas:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_nat_gas
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_nat_gas
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -151,7 +151,7 @@ source_names:
 
       industry_combustion_other:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_other
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_other
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -161,7 +161,7 @@ source_names:
 
       industry_combustion_residual:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv industry_combustion_residual
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_residual
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -171,14 +171,14 @@ source_names:
 
       livestock:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv livestock
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv livestock
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Livestock: *livestock_allocation
 
       mobile_and_fuel_storage:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv mobile_and_fuel_storage
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv mobile_and_fuel_storage
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:
@@ -188,7 +188,7 @@ source_names:
 
       fertilizers:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv fertilizers
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv fertilizers
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:
@@ -198,7 +198,7 @@ source_names:
 
       pesticides:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv pesticides
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv pesticides
         exclusion_fields:
         # To avoid overlap with other datasets, emissions of pesticides
         # from pesticide application are removed.
@@ -219,7 +219,7 @@ source_names:
 
       output_allocation: # Gross Output
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_2017_asets.csv output_allocation
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv output_allocation
         attribution_method: proportional
         attribution_source:
           stateio_Industry_GO:
@@ -255,12 +255,12 @@ source_names:
     activity_sets:
       direct_allocation:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonroad_2017_asets.csv direct_allocation
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv direct_allocation
         attribution_method: direct
 
       offroad_vehicles_equipment:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonroad_2017_asets.csv offroad_vehicles_equipment
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:
@@ -287,12 +287,12 @@ source_names:
     activity_sets:
       direct_allocation:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Onroad_2017_asets.csv direct_allocation
+          PrimaryActivity: !from_index:NEI_Onroad_asets.csv direct_allocation
         attribution_method: direct
 
       onroad_vehicles_gas_stations:
         selection_fields:
-          PrimaryActivity: !from_index:NEI_Onroad_2017_asets.csv onroad_vehicles_gas_stations
+          PrimaryActivity: !from_index:NEI_Onroad_asets.csv onroad_vehicles_gas_stations
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:
