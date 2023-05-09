@@ -30,8 +30,14 @@ def epa_nei_url_helper(*, build_url, year, config, **_):
     version_dict = config['version_dict']
     url = (build_url
            .replace('__year__', year)
-           .replace('__version__', version_dict[year]))
-
+           .replace('__version__', version_dict[year])
+           .replace('__suffix__', config['url']
+                    .get('suffix', {})
+                    .get(year, config['url']
+                         .get('suffix', {})
+                         .get('base', ''))
+                    )
+           )
     return [url]
 
 
@@ -214,3 +220,8 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     df.loc[((df.FlowName == aggregate_flow) & (df.FlowAmount <= 0)),
            "FlowAmount"] = 0
     return df
+
+if __name__ == '__main__':
+    import flowsa
+    flowsa.flowbyactivity.main(source='EPA_NEI_Onroad', year='2020')
+    fba = flowsa.getFlowByActivity('EPA_NEI_Onroad', '2020')
