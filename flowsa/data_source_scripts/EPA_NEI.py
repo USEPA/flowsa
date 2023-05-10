@@ -9,6 +9,7 @@ import io
 from zipfile import ZipFile
 from os import path
 import pandas as pd
+import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import standardize_units
 from flowsa.flowby import FlowByActivity
@@ -172,17 +173,19 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     # rename FlowName and Flowable, and update UUID
     fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)',
                               ['PM2.5 Primary (Filt + Cond)'])
-    # # link to FEDEFL
-    # import fedelemflowlist
-    # mapping = fedelemflowlist.get_flowmapping('NEI')
-    # PM_df = mapping[['TargetFlowName',
-    #                  'TargetFlowUUID']][mapping['SourceFlowName']=='PM10-PM2.5']
-    # PM_list = PM_df.values.flatten().tolist()
-    PM_list = ['Particulate matter, > 2.5μm and ≤ 10μm',
-               'a320e284-d276-3167-89b3-19d790081c08']
+
+    # Obtain UUIDs for new PM flows
+    import fedelemflowlist
+    mapping = fedelemflowlist.get_flowmapping('NEI')
+    PM_df = (mapping.query('SourceFlowName == "PM10-PM2.5"')
+             [['TargetFlowContext', 'TargetFlowUUID', 'TargetFlowName']]
+             .set_index('TargetFlowContext'))
+    PM_dict = PM_df.to_dict()['TargetFlowUUID']
+    fba['FlowUUID'] = np.where(fba['FlowName'] == 'PM10 Primary (Filt + Cond)',
+                               fba['Context'].map(PM_dict),
+                               fba['FlowUUID'])
     fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
-            ['FlowName', 'Flowable', 'FlowUUID']] = ['PM10-PM2.5',
-                                                     PM_list[0], PM_list[1]]
+            ['FlowName', 'Flowable']] = ['PM10-PM2.5', PM_df['TargetFlowName'][0]]
     # Drop zero values to reduce size
     fba = fba.query('FlowAmount != 0').reset_index(drop=True)
 
