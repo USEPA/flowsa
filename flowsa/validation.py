@@ -794,8 +794,8 @@ def calculate_industry_coefficients(fbs_load, year,region,
     :param year: year for industry output dataset
     :param region: str, 'state' or 'national'
     :param io_level: str, 'summary' or 'detail'
-    :param impacts: bool, True to apply and aggregate on impacts
-        False to compare flow/contexts
+    :param impacts: bool or str, True to apply and aggregate on impacts using TRACI,
+        False to compare flow/contexts, str to pass alternate method
     """
     from flowsa.sectormapping import map_to_BEA_sectors,\
         get_BEA_industry_output
@@ -806,9 +806,11 @@ def calculate_industry_coefficients(fbs_load, year,region,
 
     inventory = not(impacts)
     if impacts:
+        if isinstance(impacts, bool):
+            impacts = 'TRACI2.1'
         try:
             import lciafmt
-            fbs_summary = (lciafmt.apply_lcia_method(fbs, 'TRACI2.1')
+            fbs_summary = (lciafmt.apply_lcia_method(fbs, impacts)
                            .rename(columns={'FlowAmount': 'InvAmount',
                                             'Impact': 'FlowAmount'}))
             groupby_cols = ['Location', 'Sector',
