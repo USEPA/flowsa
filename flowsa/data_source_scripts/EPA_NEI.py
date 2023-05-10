@@ -170,22 +170,13 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     :return: modified FBA
     """
     # Remove the portion of PM10 that is PM2.5 to eliminate double counting,
-    # rename FlowName and Flowable, and update UUID
+    # rename resulting FlowName
     fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)',
                               ['PM2.5 Primary (Filt + Cond)'])
 
-    # Obtain UUIDs for new PM flows
-    import fedelemflowlist
-    mapping = fedelemflowlist.get_flowmapping('NEI')
-    PM_df = (mapping.query('SourceFlowName == "PM10-PM2.5"')
-             [['TargetFlowContext', 'TargetFlowUUID', 'TargetFlowName']]
-             .set_index('TargetFlowContext'))
-    PM_dict = PM_df.to_dict()['TargetFlowUUID']
-    fba['FlowUUID'] = np.where(fba['FlowName'] == 'PM10 Primary (Filt + Cond)',
-                               fba['Context'].map(PM_dict),
-                               fba['FlowUUID'])
-    fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
-            ['FlowName', 'Flowable']] = ['PM10-PM2.5', PM_df['TargetFlowName'][0]]
+    fba['FlowName'] = np.where(fba['FlowName'] == 'PM10 Primary (Filt + Cond)',
+                               "PM10-PM2.5",
+                               fba['FlowName'])
     # Drop zero values to reduce size
     fba = fba.query('FlowAmount != 0').reset_index(drop=True)
 
