@@ -462,7 +462,11 @@ class _FlowBy(pd.DataFrame):
                     )
                 self = self.query(f'~({qry})')
             else:
-                self = self.query(f'{field} not in @values')
+                if field not in self:
+                    log.warning(f'{field} not found, can not apply '
+                                'exclusion_fields')
+                else:
+                    self = self.query(f'{field} not in @values')
 
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
