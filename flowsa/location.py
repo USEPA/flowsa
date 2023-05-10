@@ -270,7 +270,7 @@ def merge_urb_cnty_pct(df):
     # find unmerged nan pct_pop_urb values
     pct_na = sum(df['pct_pop_urb'].isna())
     if pct_na != 0:
-        log.error(f'WARNING {pct_na} FIPS codes did not merge successfully.\n'
+        log.error(f'WARNING {pct_na} records did not merge successfully.\n'
                   'In pct_pop_urb, "nan" values are not equal to 0%.')
 
     df = reshape_urb_rur_df(df)

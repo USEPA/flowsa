@@ -13,6 +13,8 @@ import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import standardize_units
 from flowsa.flowby import FlowByActivity
+from flowsa.flowsa_log import log
+from flowsa.location import merge_urb_cnty_pct
 
 
 def epa_nei_url_helper(*, build_url, year, config, **_):
@@ -169,6 +171,10 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     :param fba: df, FBA format
     :return: modified FBA
     """
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
+
     # Remove the portion of PM10 that is PM2.5 to eliminate double counting,
     # rename resulting FlowName
     fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)',
@@ -180,7 +186,17 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     # Drop zero values to reduce size
     fba = fba.query('FlowAmount != 0').reset_index(drop=True)
 
-    return fba
+    apply_urban_rural = fba.config.get('apply_urban_rural', False)
+    if apply_urban_rural:
+        log.info(f'Splitting {fba.full_name} into urban and rural '
+                 'quantities by FIPS.')
+        fba = merge_urb_cnty_pct(fba)
+
+    new_fba = FlowByActivity(fba)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
+
+    return new_fba
 
 
 def remove_flow_overlap(df, aggregate_flow, contributing_flows):
