@@ -25,12 +25,7 @@ sources_to_cache:
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
     clean_fba: !script_function:EIA_MECS clean_mecs_energy_fba
     clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
-    attribution_method: proportional
-    attribution_source:
-      Employment_state_2018:
-        data_format: FBS
-        geoscale: state
-        year: 2018
+    attribution_source: Employment_state_2018
 
 _attribution_sources:
   stateio: &stateio
