@@ -139,8 +139,8 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum 324110
 
-
-  stewiFBS: !include:stewiFBS_common.yaml:CAP_HAP
+  stewiFBS:
+    !include:CAP_HAP_common.yaml:source_names:stewiFBS
     inventory_dict:
       NEI: *year
       TRI: *year
