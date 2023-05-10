@@ -18,6 +18,7 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
 from flowsa.common import sector_level_key, \
     fba_activity_fields, check_activities_sector_like
 from flowsa.location import US_FIPS, fips_number_key
+from flowsa.schema import dq_fields
 
 
 def check_if_data_exists_at_geoscale(df_load, geoscale):
@@ -620,8 +621,8 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
             columns={'FlowAmount': 'FlowAmount_fbs2'})
     df2 = replace_strings_with_NoneType(df2)
     # compare df
-    merge_cols = list(df2.select_dtypes(include=[
-        'object', 'int']).columns)
+    merge_cols = [c for c in df2.select_dtypes(include=[
+        'object', 'int']).columns if c not in dq_fields]
     if ignore_metasources:
         for e in ['MetaSources', 'AttributionSources']:
             try:
