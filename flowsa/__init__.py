@@ -100,7 +100,7 @@ def writeFlowBySectorBibliography(methodname):
     """
     # Generate a single .bib file for a list of Flow-By-Sector method names
     # and save file to local directory
-    log.info(f'Write bibliography to {biboutputpath}{methodname}.bib')
+    log.info(f'Write bibliography to {biboutputpath / methodname}.bib')
     generate_fbs_bibliography(methodname)
 
 

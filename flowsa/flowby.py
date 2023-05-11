@@ -2157,7 +2157,7 @@ class FlowBySector(_FlowBy):
             for table_name, table_config in display_tables.items()
         }
 
-        tables_path = (f'{settings.tableoutputpath}{self.full_name}'
+        tables_path = (settings.tableoutputpath / f'{self.full_name}'
                        f'_Display_Tables.xlsx')
         try:
             with ExcelWriter(tables_path) as writer:

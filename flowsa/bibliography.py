@@ -5,10 +5,10 @@
 Functions to generate .bib file for a FlowBySector method
 """
 
-import os
 import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
+from esupy.processed_data_mgmt import mkdir_if_missing
 from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, get_flowsa_base_name, \
     sourceconfigpath, load_yaml_dict
@@ -148,8 +148,8 @@ def generate_fbs_bibliography(methodname):
     # write out bibliography
     writer = BibTexWriter()
     # create directory if missing
-    os.makedirs(outputpath + '/Bibliography', exist_ok=True)
-    with open(f'{biboutputpath}{methodname}.bib', 'w') as bibfile:
+    mkdir_if_missing(outputpath / 'Bibliography')
+    with open(biboutputpath / f'{methodname}.bib', 'w') as bibfile:
         # loop through all entries in bib_list
         for b in bib_list:
             bibfile.write(writer.write(b))
