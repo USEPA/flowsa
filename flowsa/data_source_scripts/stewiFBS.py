@@ -15,9 +15,10 @@ import numpy as np
 from esupy.processed_data_mgmt import read_source_metadata
 from flowsa.flowby import FlowBySector, FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS, update_geoscale
-from flowsa.settings import log, process_adjustmentpath
-from flowsa.validation import replace_naics_w_naics_from_another_year
+from flowsa.settings import process_adjustmentpath
+from flowsa.naics import replace_naics_w_naics_from_another_year
 import stewicombo
 import stewi
 from stewicombo.overlaphandler import remove_default_flow_overlaps
@@ -174,9 +175,11 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
                                                 'source_process'])
 
     # obtain and prepare SCC dataset
+    keep_sec_cntx = True if any('/' in s for s in df.Compartment.unique()) else False
     df_fbp = stewi.getInventory('NEI', year,
                                 stewiformat='flowbyprocess',
-                                download_if_missing=True)
+                                download_if_missing=True,
+                                keep_sec_cntx=keep_sec_cntx)
     df_fbp = df_fbp[df_fbp['Process'].isin(df_adj['source_process'])]
     df_fbp = (df_fbp.assign(Source = 'NEI')
                     .pipe(addChemicalMatches)
@@ -196,13 +199,12 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
                           right_on=['source_naics', 'source_process'])
 
     # subtract emissions by SCC from specific facilities
-    df_emissions = (
-        df_fbp.groupby(['FacilityID', 'FlowName'])
-              .agg({'FlowAmount': 'sum'})
-              .rename(columns={'FlowAmount': 'Emissions'})
-              )
+    df_emissions = (df_fbp
+                    .groupby(['FacilityID', 'FlowName', 'Compartment'])
+                    .agg({'FlowAmount': 'sum'})
+                    .rename(columns={'FlowAmount': 'Emissions'}))
     df = (df.merge(df_emissions, how='left',
-                   on=['FacilityID', 'FlowName'])
+                   on=['FacilityID', 'FlowName', 'Compartment'])
             .assign(Emissions = lambda x: x['Emissions'].fillna(value=0))
             .assign(FlowAmount = lambda x: x['FlowAmount'] - x['Emissions'])
             .drop(columns=['Emissions'])

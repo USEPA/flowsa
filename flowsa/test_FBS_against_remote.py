@@ -5,17 +5,17 @@ import sys
 
 import pytest
 import os
-import flowsa
 from flowsa import seeAvailableFlowByModels
-from flowsa.settings import diffpath, memory_limit
 from flowsa.common import check_method_status
+from flowsa.flowby import FlowBySector
+from flowsa.settings import diffpath
 from flowsa.test_single_FBS import compare_single_FBS_against_remote
 
 
 @pytest.mark.generate_fbs
 def test_generate_fbs():
     """Generate all FBS from methods in repo."""
-    for m in flowsa.seeAvailableFlowByModels("FBS", print_method=False):
+    for m in seeAvailableFlowByModels("FBS", print_method=False):
         if m not in ['BEA_summary_target',
                      'Electricity_gen_emissions_national_2016',
                      'Employment_common',
@@ -30,7 +30,8 @@ def test_generate_fbs():
             print("--------------------------------\n"
                   f"Method: {m}\n"
                   "--------------------------------")
-            flowsa.flowbysector.main(method=m, download_FBAs_if_missing=True)
+            FlowBySector.genereateFlowBySector(
+                method=m, download_sources_ok=True)
 
 
 @pytest.mark.skip(reason="Perform targeted test for compare_FBS on PR")

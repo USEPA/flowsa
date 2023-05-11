@@ -1,5 +1,7 @@
 import logging
+import shutil
 import sys
+from esupy.processed_data_mgmt import create_paths_if_missing
 from .settings import logoutputpath
 
 try:
@@ -71,3 +73,38 @@ log.propagate = False
 vlog = logging.getLogger('flowsa.validation')
 vlog.setLevel(logging.DEBUG)
 vlog.addHandler(validation_file_handler)
+
+
+def rename_log_file(filename, fb_meta):
+    """
+    Rename the log file saved to local directory using df meta for df
+    :param filename: str, name of dataset
+    :param fb_meta: metadata for parquet
+    :return: modified log file name
+    """
+    # original log file name - all log statements
+    log_file = f'{logoutputpath}{"flowsa.log"}'
+    # generate new log name
+    new_log_name = (f'{logoutputpath}{filename}_v'
+                    f'{fb_meta.tool_version}'
+                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
+                    f'.log')
+    # create log directory if missing
+    create_paths_if_missing(logoutputpath)
+    # rename the standard log file name (os.rename throws error if file
+    # already exists)
+    shutil.copy(log_file, new_log_name)
+
+    if fb_meta.category == 'FlowByActivity':
+        return
+
+    # original log file name - validation
+    log_file = f'{logoutputpath}{"flowsa_validation.log"}'
+    # generate new log name
+    new_log_name = (f'{logoutputpath}{filename}_v'
+                    f'{fb_meta.tool_version}'
+                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
+                    f'_validation.log')
+    # rename the standard log file name (os.rename throws error if file
+    # already exists)
+    shutil.copy(log_file, new_log_name)

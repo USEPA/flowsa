@@ -20,7 +20,8 @@ import pprint
 from esupy.processed_data_mgmt import load_preprocessed_output, \
     download_from_remote
 from flowsa.common import load_yaml_dict
-from flowsa.settings import log, sourceconfigpath, flowbysectormethodpath, \
+from flowsa.flowsa_log import log
+from flowsa.settings import sourceconfigpath, flowbysectormethodpath, \
     paths, fbaoutputpath, fbsoutputpath, \
     biboutputpath, DEFAULT_DOWNLOAD_IF_MISSING
 from flowsa.metadata import set_fb_meta
@@ -28,7 +29,6 @@ from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.validation import check_for_nonetypes_in_sector_col, \
     check_for_negative_flowamounts
 import flowsa.flowbyactivity
-import flowsa.flowbysector
 from flowsa.bibliography import generate_fbs_bibliography
 from flowsa.datavisualization import FBSscatterplot
 from .flowby import FlowByActivity, FlowBySector
@@ -100,7 +100,7 @@ def writeFlowBySectorBibliography(methodname):
     """
     # Generate a single .bib file for a list of Flow-By-Sector method names
     # and save file to local directory
-    log.info('Write bibliography to %s%s.bib', biboutputpath, methodname)
+    log.info(f'Write bibliography to {biboutputpath}{methodname}.bib')
     generate_fbs_bibliography(methodname)
 
 
