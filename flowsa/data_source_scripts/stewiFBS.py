@@ -21,7 +21,6 @@ from flowsa.settings import process_adjustmentpath
 from flowsa.naics import replace_naics_w_naics_from_another_year
 import stewicombo
 import stewi
-from stewicombo.overlaphandler import remove_default_flow_overlaps
 from stewicombo.globals import addChemicalMatches, compile_metadata,\
     set_stewicombo_meta
 import facilitymatcher
@@ -183,7 +182,8 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
     df_fbp = df_fbp[df_fbp['Process'].isin(df_adj['source_process'])]
     df_fbp = (df_fbp.assign(Source = 'NEI')
                     .pipe(addChemicalMatches)
-                    .pipe(remove_default_flow_overlaps, SCC=True)
+                    .pipe(stewicombo.overlaphandler.remove_NEI_overlaps,
+                          SCC=True)
                     )
 
     # merge in NAICS data
