@@ -15,14 +15,14 @@ from flowsa.location import apply_county_FIPS
 from flowsa.common import load_yaml_dict
 
 
-data_path = f"{externaldatapath}/StateGHGI_data"
+data_path = externaldatapath / "StateGHGI_data"
 
 def ME_biogenic_parse(*, source, year, config, **_):
     
     df0 = pd.DataFrame()
     
     filename = config['filename']
-    filepath = f"{data_path}/{filename}"
+    filepath = data_path / filename
     
     # dictionary containing Excel sheet-specific information
     table_dicts = config['table_dict']

@@ -26,7 +26,7 @@ def netl_eia_parse(*, source, year, **_):
     # load the csv file
     DATA_FILE = f"NETL-EIA_powerplants_water_withdraw_consume_data_" \
                 f"{year}.csv"
-    df_load = pd.read_csv(f"{externaldatapath}{DATA_FILE}",
+    df_load = pd.read_csv(externaldatapath / DATA_FILE,
                           index_col=0, low_memory=False)
 
     # subset df

@@ -92,7 +92,7 @@ def year_crosswalk(
         corresponding to NAICS codes for the source and target specifications.
     '''
     return (
-        pd.read_csv(f'{settings.datapath}NAICS_Crosswalk_TimeSeries.csv',
+        pd.read_csv(settings.datapath / 'NAICS_Crosswalk_TimeSeries.csv',
                     dtype='object')
         .assign(source_naics=lambda x: x[f'NAICS_{source_year}_Code'],
                 target_naics=lambda x: x[f'NAICS_{target_year}_Code'])
