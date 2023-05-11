@@ -1,7 +1,7 @@
 import logging
 import shutil
 import sys
-from esupy.processed_data_mgmt import create_paths_if_missing
+from esupy.processed_data_mgmt import mkdir_if_missing
 from .settings import logoutputpath
 
 try:
@@ -49,13 +49,13 @@ file_formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
                                    datefmt='%Y-%m-%d %H:%M:%S')
 
 log_file_handler = logging.FileHandler(
-    logoutputpath + 'flowsa.log',
+    logoutputpath / 'flowsa.log',
     mode='w', encoding='utf-8')
 log_file_handler.setLevel(logging.DEBUG)
 log_file_handler.setFormatter(file_formatter)
 
 validation_file_handler = logging.FileHandler(
-    logoutputpath + 'flowsa_validation.log',
+    logoutputpath / 'flowsa_validation.log',
     mode='w', encoding='utf-8')
 validation_file_handler.setLevel(logging.DEBUG)
 validation_file_handler.setFormatter(file_formatter)
@@ -83,14 +83,14 @@ def rename_log_file(filename, fb_meta):
     :return: modified log file name
     """
     # original log file name - all log statements
-    log_file = f'{logoutputpath}{"flowsa.log"}'
+    log_file = logoutputpath / "flowsa.log"
     # generate new log name
-    new_log_name = (f'{logoutputpath}{filename}_v'
+    new_log_name = (logoutputpath / f'{filename}_v'
                     f'{fb_meta.tool_version}'
                     f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
                     f'.log')
     # create log directory if missing
-    create_paths_if_missing(logoutputpath)
+    mkdir_if_missing(logoutputpath)
     # rename the standard log file name (os.rename throws error if file
     # already exists)
     shutil.copy(log_file, new_log_name)
@@ -99,9 +99,9 @@ def rename_log_file(filename, fb_meta):
         return
 
     # original log file name - validation
-    log_file = f'{logoutputpath}{"flowsa_validation.log"}'
+    log_file = logoutputpath / "flowsa_validation.log"
     # generate new log name
-    new_log_name = (f'{logoutputpath}{filename}_v'
+    new_log_name = (logoutputpath / f'{filename}_v'
                     f'{fb_meta.tool_version}'
                     f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
                     f'_validation.log')

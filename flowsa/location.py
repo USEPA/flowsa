@@ -182,7 +182,7 @@ def get_region_and_division_codes():
     Load the Census Regions csv
     :return: pandas df of census regions
     """
-    df = pd.read_csv(f"{datapath}Census_Regions_and_Divisions.csv",
+    df = pd.read_csv(datapath / "Census_Regions_and_Divisions.csv",
                      dtype="str")
     return df
 

@@ -285,7 +285,7 @@ def stackedBarChart(df,
     # create list of n colors based on number of allocation sources
     colors = df2[[stacking_col]].drop_duplicates()
     # add colors
-    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv').rename(
+    vis = pd.read_csv(datapath / 'VisualizationEssentials.csv').rename(
         columns={'AttributionSource': stacking_col})
     colors = colors.merge(vis[[stacking_col, 'Color']], how='left')
 
@@ -502,7 +502,7 @@ def generateSankeyData(methodname,
                 df = df[df[f'Sector{s}By'].isin(sector_list)]
 
     # add sector names
-    sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
+    sankeymappingfile = datapath / 'VisualizationEssentials.csv'
     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
 
     # subset df and aggregate flows by sectors
@@ -537,7 +537,7 @@ def generateSankeyData(methodname,
          })
 
     # add colors
-    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv')
+    vis = pd.read_csv(datapath / 'VisualizationEssentials.csv')
     nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
     # fill in any colors missing from the color dictionary with random colors
     nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else

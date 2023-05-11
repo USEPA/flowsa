@@ -33,7 +33,7 @@ def bh_parse(*, df_list, **_):
     pages = range(5, 13)
     bh_df_list = []
     for x in pages:
-        bh_df = read_pdf(f'{externaldatapath}Blackhurst_WatWithdrawalsforUSIndustrialSectorsSI.pdf',
+        bh_df = read_pdf(externaldatapath / 'Blackhurst_WatWithdrawalsforUSIndustrialSectorsSI.pdf',
                          pages=x, stream=True)[0]
         bh_df_list.append(bh_df)
 

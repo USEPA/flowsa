@@ -7,7 +7,7 @@ from flowsa.flowsa_log import vlog
 from . import (common, dataclean, settings)
 
 naics_crosswalk = pd.read_csv(
-    f'{settings.datapath}NAICS_2012_Crosswalk.csv', dtype='object'
+    settings.datapath / 'NAICS_2012_Crosswalk.csv', dtype='object'
 )
 
 
