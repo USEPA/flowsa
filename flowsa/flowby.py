@@ -715,7 +715,8 @@ class _FlowBy(pd.DataFrame):
             )
 
             # Step 1: Merge with crosswalk(s)
-            for crosswalk_name, crosswalk_config in step_config.get('crosswalk', {}).items():
+            for crosswalk_name, crosswalk_config in step_config.get(
+                    'crosswalk', {}).items():
                 if crosswalk_config.get('is_FlowBy'):
                     crosswalk = get_flowby_from_config(
                         crosswalk_name,
@@ -726,6 +727,7 @@ class _FlowBy(pd.DataFrame):
                          **crosswalk_config}
                     ).prepare()
                 elif callable(crosswalk_name):
+                    # explode crosswalk if in yaml
                     crosswalk = crosswalk_name(grouped, **crosswalk_config)
                 else:
                     crosswalk = data.crosswalk(crosswalk_name)
@@ -786,14 +788,21 @@ class _FlowBy(pd.DataFrame):
             # Step 3: Calculate disaggregation factor and multiply
             method = step_config['attribution_method']
             if method == 'proportional':
+                log.info(f"Proportionally attributing "
+                         f"{mapped['SourceName'][0]} to target sectors with "
+                         f"{source['SourceName'][0]}")
                 with_factor: FB = mapped.assign(factor=(mapped.groupby('group_id').FlowAmount_ds
                                                         .transform(lambda x: x / x.sum())))
                 # .mask(merged.group_count == 1, 1)))
                 # ^^^ Adding this after .transform(...) returns to the behavior of attributing
                 #     singleton rows without regard to the attribution source data set.
             elif method == 'multiplication':
+                log.info(f"Multiplying {mapped['SourceName'][0]} by"
+                         f" {source['SourceName'][0]}")
                 with_factor: FB = mapped.assign(factor=mapped.FlowAmount_ds)
             elif method == 'equal':
+                log.info(f"Equally attributing {mapped['SourceName'][0]} to "
+                         f"target sectors")
                 with_factor: FB = mapped.assign(factor=1 / mapped.group_count)
                 # ^^^ Doing what the equal/direct method did before, where flows were attributed equally among
                 #     same-NAICS-level industries, and then equally divided up within each such industry, etc.
