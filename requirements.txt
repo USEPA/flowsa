@@ -20,3 +20,4 @@ seaborn >= 0.11.2              # Plotting
 setuptools>=41                 # Fully-featured library designed to facilitate packaging Python projects.
 tabula-py >= 2.1.1             # PDF reader
 xlrd >= 2.0.1                  # Extract data from xls files
+importlib_resources >= 5.2.0   # Paths
