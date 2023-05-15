@@ -7,12 +7,12 @@ target_naics_year: 2012
 geoscale: national
 
 source_names:
-  "USGS_NWIS_WU":
+  USGS_NWIS_WU:
     fedefl_mapping: USGS_NWIS_WU
     geoscale: state
     clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
     activity_sets:
-      direct_attribution:
+      direct:
         selection_fields:
           PrimaryActivity:
           - "Aquaculture"
@@ -20,162 +20,270 @@ source_names:
           - "Public Supply"
           - "Thermoelectric Power"
           - "Domestic"
-        attribution_method: direct
-      employment_attribution:
-        selection_fields:
-          PrimaryActivity:
-          - "Industrial"
-          - "Mining"
-        attribution_method: proportional
-        attribution_source:
-          Employment_national_2015:
-            geoscale: national
-            data_format: FBS
-            year: 2015
-      cropland_attribution:
+        disaggregate:
+          crosswalk:
+            NAICS_Crosswalk_USGS_NWIS_WU: &cw_usgs
+              merge_keys:
+                left_on: ActivityConsumedBy # FBA column
+                right_on: Activity # Crosswalk column
+              add_columns:
+                SectorConsumedBy: Sector # New column from crosswalk
+            !script_function:naics explode: &cw_usgs_explode
+              column: SectorConsumedBy
+              merge_keys:
+                'on': SectorConsumedBy
+              add_columns:
+                SectorConsumedBy: target_naics
+          drop_columns: ActivityProducedBy # FBA column not needed
+          attribution_method: equal
+
+#      employment:
+#        selection_fields:
+#          PrimaryActivity:
+#          - "Industrial"
+#          - "Mining"
+#        disaggregate:
+#          crosswalk:
+#            NAICS_Crosswalk_USGS_NWIS_WU: *cw_usgs
+#            !script_function:naics explode: *cw_usgs_explode
+#          attribution_method: proportional
+#          source:
+#            Employment_national_2015:
+#              geoscale: national
+#              year: 2015
+#              disaggregate:
+#                attribution_method: equal
+#              merge_keys:
+#                left_on: SectorConsumedBy
+#                right_on: SectorProducedBy
+#
+      cropland:
         industry_spec:
           default: NAICS_6
           NAICS_7: ['111150', '111199']
         selection_fields:
           PrimaryActivity:
             - "Irrigation Crop"
-        attribution_method: proportional
-        attribution_source:
-          USDA_CoA_Cropland:
-            year: 2017
-            selection_fields:
-              Class: "Land"
-              FlowName:
-                - "AREA HARVESTED, IRRIGATED"
-                - "AREA IN PRODUCTION, IRRIGATED"
-                - "AREA, IRRIGATED"
-                - 'AREA BEARING & NON-BEARING, IRRIGATED'
-                - 'AREA GROWN, IRRIGATED'
-            activity_sets:
-              cropland_attribution-pastureland:
+        disaggregate:
+          - crosswalk:
+              NAICS_Crosswalk_USGS_NWIS_WU: *cw_usgs
+              !script_function:naics explode: *cw_usgs_explode
+            drop_columns: ActivityProducedBy # FBA column not needed
+            attribution_method: proportional
+            source:
+              USDA_CoA_Cropland:
+                year: 2017
                 selection_fields:
-                  PrimaryActivity: 'AG LAND, (EXCL HARVESTED CROPLAND)'
-                attribution_method: proportional
-                attribution_source:
-                  USDA_CoA_Cropland_NAICS:
-                    year: 2017
+                  Class: Land
+                  FlowName:
+                    - "AREA HARVESTED, IRRIGATED"
+                    - "AREA IN PRODUCTION, IRRIGATED"
+                    - "AREA, IRRIGATED"
+                    - 'AREA BEARING & NON-BEARING, IRRIGATED'
+                    - 'AREA GROWN, IRRIGATED'
+                activity_sets:
+                  cropland_attribution-pastureland:
                     selection_fields:
-                      Class: Land
-                      FlowName:
-                        - "FARM OPERATIONS"
-                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
-                    selection_fields_after_data_suppression_estimation:
-                      PrimaryActivity: ["112111", "112112", "11212", "1122",
-                                        "11231", "11232", "11233", "11234",
-                                        "11239", "11241", "11242", "11291",
-                                        "11292", "11293", "11299"]
-                    attribution_method: multiplication
-                    attribution_source:
-                      USDA_IWMS: &usda_iwms
-                        year: 2018
-                        selection_fields:
-                          Class: Water
-                        clean_fba_w_sec: !clean_function:flowbyclean substitute_nonexistent_values
-                        clean_source:
-                          USDA_IWMS:
-                            geoscale: national
-                            year: 2018
-                            selection_fields:
-                              Class: Water
-              cropland_attribution-cropland:
-                selection_fields:
-                  PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
-                    'MUSTARD, SEED', 'RAPESEED', 'SAFFLOWER', 'SESAME',
-                    'SUNFLOWER', 'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL LIMA),
-                    INCL CHICKPEAS', 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS &
-                    LIMA)', 'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
-                    'PEAS, DRY EDIBLE', 'PEAS, DRY, SOUTHERN (COWPEAS)',
-                    'WHEAT', 'CORN', 'CORN, GRAIN', 'CORN, SILAGE',
-                    'POPCORN, SHELLED', 'RICE', 'BARLEY', 'BUCKWHEAT',
-                    'MILLET, PROSO', 'OATS', 'RYE', 'SORGHUM, GRAIN',
-                    'SORGHUM, SILAGE', 'SORGHUM, SYRUP', 'TRITICALE', 'WILD
-                    RICE', 'VEGETABLE TOTALS', 'ORCHARDS',
-                    'BERRY TOTALS', 'CUT CHRISTMAS TREES', 'SHORT TERM WOODY
-                     CROPS', 'TOBACCO', 'COTTON', 'SUGARCANE, SUGAR',
-                    'SUGARCANE, SEED', 'HAY & HAYLAGE', 'SUGARBEETS',
-                    'SUGARBEETS, SEED', 'PEANUTS', 'GRASSES &
-                    LEGUMES TOTALS, SEED', 'HERBS, DRY', 'HOPS',
-                    'MINT, OIL', 'MISCANTHUS', 'MINT, TEA LEAVES',
-                    'FIELD CROPS, OTHER']
-                attribution_method: proportional
-                attribution_source:
-                  USDA_CoA_Cropland_NAICS:
-                    year: 2017
-                    selection_fields:
-                      Class: Land
-                      FlowName:
-                        - "AG LAND, CROPLAND, HARVESTED"
-                      PrimaryActivity: ["11111", "11112", "11113", "11114",
-                                        "11115", "11116", "11119", "111211",
-                                        "111219", "11131",
-                                        "11132", "111331", "111332",
-                                        "111333", "111334", "111335",
-                                        "111336", "111339", "11141",
-                                        "111421", "111422", "11191", "11192",
-                                        "11193", "11194", "11199"]
-                    estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
-                    attribution_method: multiplication
-                    attribution_source:
-                      USDA_IWMS:
-                        industry_spec:
-                          default: NAICS_6
-                          NAICS_7: ['111150', '111199', '111940'] # hay and haylage set to NAICS7 - will update to NAICS6
-                        <<: *usda_iwms
-                        activity_sets:
-                          cropland_attribution-cropland-nonhay:
-                            selection_fields:
-                              PrimaryActivity: ['BEANS, DRY EDIBLE, INCL
-                                CHICKPEAS', 'BERRY TOTALS', 'CORN, GRAIN',
-                                'CORN, SILAGE', 'COTTON', 'CROPS, OTHER',
-                                'HORTICULTURE TOTALS', 'ORCHARDS',
-                                'PASTURELAND', 'PEANUTS', 'POTATOES', 'RICE',
-                                'SMALL GRAINS, OTHER', 'SORGHUM, GRAIN',
-                                'SOYBEANS', 'SWEET CORN', 'TOMATOES',
-                                'VEGETABLE TOTALS', 'WHEAT']
-                          cropland_attribution-cropland-hay:
-                            selection_fields:
-                              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)',
-                                                'HAY & HAYLAGE, ALFALFA']
-                            clean_fba_w_sec: !clean_function:flowbyclean weighted_average
-                            replacement_dictionary: {'HAY & HAYLAGE, (EXCL ALFALFA)': 'HAY & HAYLAGE',
-                                                      'HAY & HAYLAGE, ALFALFA': 'HAY & HAYLAGE',
-                                                     '111940A': '111940',
-                                                     '111940B': '111940'}
-                            clean_source:
-                              USDA_IWMS:
-                                year: 2018
-                                selection_fields:
-                                  Class: Land
-                                  PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
-                                estimate_suppressed: !script_function:USDA_IWMS estimate_suppressed_iwms
-      livestock_attribution:
-        industry_spec:
-          default: NAICS_6
-          NAICS_7: ['112130', '112320', '112390', '112910',
-                    '112920', '112930', '112990']
-        selection_fields:
-          PrimaryActivity:
-            - "Livestock"
-        attribution_method: proportional
-        attribution_source:
-          USDA_CoA_Livestock:
-            year: 2017
-            selection_fields:
-              Class: Other
-              FlowName:
-                - "HEAD"
-                - "NUMBER"
-                - "COLONIES"
-              Compartment:
-                - "NOT SPECIFIED"
-            attribution_method: multiplication
-            attribution_source:
-              USGS_WU_Coef:
-                year: 2005
-                geoscale: national
-                attribution_method: direct
+                      PrimaryActivity: 'AG LAND, (EXCL HARVESTED CROPLAND)'
+                    merge_keys:
+                      'on': SectorConsumedBy
+                    disaggregate:
+                      crosswalk:
+                        NAICS_Crosswalk_USDA_CoA_Cropland:
+                          merge_keys:
+                            left_on: ActivityConsumedBy # FBA column
+                            right_on: Activity # Crosswalk column
+                          add_columns:
+                            SectorConsumedBy: Sector # New column from crosswalk
+                        !script_function:naics explode:
+                          column: SectorConsumedBy
+                          merge_keys:
+                            'on': SectorConsumedBy
+                          add_columns:
+                            SectorProducedBy: target_naics
+                      drop_columns: ActivityProducedBy # FBA column not needed
+                      attribution_method: equal #proportional
+#                      source:
+#                        USDA_CoA_Cropland_NAICS:
+#                          year: 2017
+#                          selection_fields:
+#                            Class: Land
+#                            FlowName:
+#                              - "FARM OPERATIONS"
+#                          estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+#                          selection_fields_after_data_suppression_estimation:
+#                            PrimaryActivity: ["112111", "112112", "11212", "1122",
+#                                              "11231", "11232", "11233", "11234",
+#                                              "11239", "11241", "11242", "11291",
+#                                              "11292", "11293", "11299"]
+#                          merge_keys:
+#                            on: SectorConsumedBy
+#                          disaggregate:
+#                            crosswalk:
+#                              NAICS_Crosswalk_USDA_CoA_Cropland_NAICS:
+#                                merge_keys:
+#                                  left_on: ActivityConsumedBy # FBA column
+#                                  right_on: Activity # Crosswalk column
+#                                add_columns:
+#                                  SectorConsumedBy: Sector # New column from crosswalk
+#                              !script_function:naics explode:
+#                                column: SectorConsumedBy
+#                                merge_keys:
+#                                  'on': SectorConsumedBy
+#                                add_columns:
+#                                  SectorConsumedBy: target_naics
+#                            drop_columns: ActivityProducedBy # FBA column not needed
+#                            attribution_method: equal #multiplication
+#                          attribution_source:
+#                            USDA_IWMS: &usda_iwms
+#                              year: 2018
+#                              selection_fields:
+#                                Class: Water
+#                              clean_fba_w_sec: !clean_function:flowbyclean substitute_nonexistent_values
+#                              clean_source:
+#                                USDA_IWMS:
+#                                  geoscale: national
+#                                  year: 2018
+#                                  selection_fields:
+#                                    Class: Water
+#                cropland_attribution-cropland:
+#                  selection_fields:
+#                    PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
+#                      'MUSTARD, SEED', 'RAPESEED', 'SAFFLOWER', 'SESAME',
+#                      'SUNFLOWER', 'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL LIMA),
+#                      INCL CHICKPEAS', 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS &
+#                      LIMA)', 'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
+#                      'PEAS, DRY EDIBLE', 'PEAS, DRY, SOUTHERN (COWPEAS)',
+#                      'WHEAT', 'CORN', 'CORN, GRAIN', 'CORN, SILAGE',
+#                      'POPCORN, SHELLED', 'RICE', 'BARLEY', 'BUCKWHEAT',
+#                      'MILLET, PROSO', 'OATS', 'RYE', 'SORGHUM, GRAIN',
+#                      'SORGHUM, SILAGE', 'SORGHUM, SYRUP', 'TRITICALE', 'WILD
+#                      RICE', 'VEGETABLE TOTALS', 'ORCHARDS',
+#                      'BERRY TOTALS', 'CUT CHRISTMAS TREES', 'SHORT TERM WOODY
+#                       CROPS', 'TOBACCO', 'COTTON', 'SUGARCANE, SUGAR',
+#                      'SUGARCANE, SEED', 'HAY & HAYLAGE', 'SUGARBEETS',
+#                      'SUGARBEETS, SEED', 'PEANUTS', 'GRASSES &
+#                      LEGUMES TOTALS, SEED', 'HERBS, DRY', 'HOPS',
+#                      'MINT, OIL', 'MISCANTHUS', 'MINT, TEA LEAVES',
+#                      'FIELD CROPS, OTHER']
+#                  attribution_method: proportional
+#                  attribution_source:
+#                    USDA_CoA_Cropland_NAICS:
+#                      year: 2017
+#                      selection_fields:
+#                        Class: Land
+#                        FlowName:
+#                          - "AG LAND, CROPLAND, HARVESTED"
+#                        PrimaryActivity: ["11111", "11112", "11113", "11114",
+#                                          "11115", "11116", "11119", "111211",
+#                                          "111219", "11131",
+#                                          "11132", "111331", "111332",
+#                                          "111333", "111334", "111335",
+#                                          "111336", "111339", "11141",
+#                                          "111421", "111422", "11191", "11192",
+#                                          "11193", "11194", "11199"]
+#                      estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+#          - crosswalk:
+#            attribution_method: multiplication
+#            source:
+#              USDA_IWMS:
+#                industry_spec:
+#                  default: NAICS_6
+#                  NAICS_7: ['111150', '111199', '111940'] # hay and haylage set to NAICS7 - will update to NAICS6
+#                <<: *usda_iwms
+#                activity_sets:
+#                  cropland_attribution-cropland-nonhay:
+#                    selection_fields:
+#                      PrimaryActivity: ['BEANS, DRY EDIBLE, INCL
+#                        CHICKPEAS', 'BERRY TOTALS', 'CORN, GRAIN',
+#                        'CORN, SILAGE', 'COTTON', 'CROPS, OTHER',
+#                        'HORTICULTURE TOTALS', 'ORCHARDS',
+#                        'PASTURELAND', 'PEANUTS', 'POTATOES', 'RICE',
+#                        'SMALL GRAINS, OTHER', 'SORGHUM, GRAIN',
+#                        'SOYBEANS', 'SWEET CORN', 'TOMATOES',
+#                        'VEGETABLE TOTALS', 'WHEAT']
+#                  cropland_attribution-cropland-hay:
+#                    selection_fields:
+#                      PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)',
+#                                        'HAY & HAYLAGE, ALFALFA']
+#                    clean_fba_w_sec: !clean_function:flowbyclean weighted_average
+#                    replacement_dictionary: {'HAY & HAYLAGE, (EXCL ALFALFA)': 'HAY & HAYLAGE',
+#                                              'HAY & HAYLAGE, ALFALFA': 'HAY & HAYLAGE',
+#                                             '111940A': '111940',
+#                                             '111940B': '111940'}
+#                    clean_source:
+#                      USDA_IWMS:
+#                        year: 2018
+#                        selection_fields:
+#                          Class: Land
+#                          PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
+#                        estimate_suppressed: !script_function:USDA_IWMS estimate_suppressed_iwms
+
+#      livestock:
+#        industry_spec:
+#          default: NAICS_6
+#          NAICS_7: ['112130', '112320', '112390', '112910',
+#                    '112920', '112930', '112990']
+#        selection_fields:
+#          PrimaryActivity:
+#            - "Livestock"
+#        disaggregate:
+#          crosswalk:
+#            NAICS_Crosswalk_USGS_NWIS_WU: *cw_usgs
+#            !script_function:naics explode: *cw_usgs_explode
+#          drop_columns: ActivityProducedBy # FBA column not needed
+#          attribution_method: proportional
+#          source:
+#            USDA_CoA_Livestock:
+#              year: 2017
+#              selection_fields:
+#                Class: Other
+#                FlowName:
+#                  - "HEAD"
+#                  - "NUMBER"
+#                  - "COLONIES"
+#                Compartment:
+#                  - "NOT SPECIFIED"
+#              merge_keys:
+#                left_on: SectorConsumedBy
+#                right_on: SectorProducedBy
+#              disaggregate:
+#                crosswalk:
+#                  NAICS_Crosswalk_USDA_CoA_Livestock:
+#                    merge_keys:
+#                      left_on: ActivityProducedBy # FBA column
+#                      right_on: Activity # Crosswalk column
+#                    add_columns:
+#                      SectorProducedBy: Sector # New column from crosswalk
+#                  !script_function:naics explode:
+#                    column: SectorProducedBy
+#                    merge_keys:
+#                      'on': SectorProducedBy
+#                    add_columns:
+#                      SectorProducedBy: target_naics
+#                drop_columns: ActivityConsumedBy # FBA column not needed
+#                attribution_method: multiplication
+#                source:
+#                  USGS_WU_Coef:
+#                    year: 2005
+#                    geoscale: national
+#                    merge_keys:
+#                      left_on: SectorProducedBy
+#                      right_on: SectorConsumedBy
+#                    disaggregate:
+#                      crosswalk:
+#                        NAICS_Crosswalk_USGS_WU_Coef:
+#                          merge_keys:
+#                            left_on: ActivityConsumedBy # FBA column
+#                            right_on: Activity # Crosswalk column
+#                          add_columns:
+#                            SectorConsumedBy: Sector # New column from crosswalk
+#                        !script_function:naics explode:
+#                          column: SectorConsumedBy
+#                          merge_keys:
+#                            'on': SectorConsumedBy
+#                          add_columns:
+#                            SectorConsumedBy: target_naics
+#                      drop_columns: ActivityProducedBy # FBA column not needed
+#                      attribution_method: equal
+
