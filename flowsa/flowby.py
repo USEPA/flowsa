@@ -749,10 +749,12 @@ class _FlowBy(pd.DataFrame):
 
             unmapped = grouped.query('not mapped')
             if len(unmapped) > 0:
+                col = crosswalk_config['merge_keys'].get(
+                        'left_on', crosswalk_config['merge_keys'].get('on'))
                 log.warning(f'Some rows in {unmapped.full_name} not '
                             f'mapped by {crosswalk_name}. Affected values are:\n'
-                            f'     {crosswalk_config["merge_keys"]["left_on"]}\n'
-                            f'{unmapped[crosswalk_config["merge_keys"]["left_on"]].drop_duplicates()}')
+                            f'     {col}\n'
+                            f'{unmapped[col].drop_duplicates()}')
 
             mapped: FB = (
                 grouped
@@ -811,7 +813,7 @@ class _FlowBy(pd.DataFrame):
 
             if with_factor.factor.isna().any():
                 merge_col = source_config['merge_keys'].get(
-                    'left_on', source_config['merge_keys']['on'])
+                    'left_on', source_config['merge_keys'].get('on'))
                 log.warning(
                     f'Some rows in {with_factor.full_name} not '
                     f'disaggregated due to lack of flows in disaggregation '
