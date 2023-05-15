@@ -74,15 +74,20 @@ def explode(
 ) -> pd.DataFrame:
     if fb.config.get('sector_hierarchy') == 'parent-completeChild':
         if group_on:
+            # apply requires if statement to prevent errors if nan
             flagged = fb.assign(
                 explode=(fb.groupby(group_columns)[column]
-                         .transform(lambda y: y.apply(lambda x: not any(y.str.startswith(x)
-                                                                        & (y.str.len() > len(x))))))
+                         .transform(lambda y: y.apply(lambda x: not any(
+                    y.str.startswith(x) & (y.str.len() > len(x)))) if
+                         y == y else False))
             )
         else:
+            # apply requires if statement to prevent errors if nan
             flagged = fb.assign(
-                explode=(fb[column].apply(lambda x: not any(fb[column].str.startswith(x)
-                                                            & (fb[column].str.len() > len(x)))))
+                explode=(fb[column].apply(lambda x: not any(
+                    fb[column].str.startswith(x) & (
+                            fb[column].str.len() > len(x))) if
+                         x == x else False))
             )
     else:
         flagged = fb.assign(explode=True)
