@@ -599,6 +599,380 @@ class _FlowBy(pd.DataFrame):
         #     otherwise, columns of NaN will become float dtype.
         return aggregated
 
+    def attribute_flows_to_sectors(
+        self: FB,
+        external_config_path: str = None
+    ) -> FB:
+        """
+        The calling FBA has its activities mapped to sectors, then its flows
+        attributed to those sectors, by the methods specified in the calling
+        FBA's configuration dictionary.
+        """
+        grouped: 'FB' = (
+            self
+            .reset_index(drop=True).reset_index()
+            .rename(columns={'index': 'group_id'})
+            .assign(group_total=self.FlowAmount)
+        )
+        if len(grouped)==0:
+            log.warning(f'No data remaining in {self.full_name}.')
+            return self
+        if self.config['data_format'] == 'FBA':
+            fb: 'FlowByActivity' = (
+                grouped
+                .map_to_sectors(external_config_path=external_config_path)
+                .function_socket('clean_fba_w_sec',
+                                 attr=self.config,
+                                 method=self.config)
+                .rename(columns={'SourceName': 'MetaSources'})
+            )
+        elif self.config['data_format'] == 'FBS':
+            fb = grouped.copy()
+
+        attribution_method = fb.config.get('attribution_method')
+        if attribution_method == 'direct' or attribution_method is None:
+            fb = fb.assign(AttributionSources='Direct')
+        else:
+            fb = fb.assign(AttributionSources=','.join(
+                [k for k in fb.config.get('attribution_source').keys()]))
+
+        if attribution_method == 'proportional':
+            attribution_fbs = fb.load_prepare_attribution_source()
+            attributed_fb = fb.proportionally_attribute(attribution_fbs)
+
+        elif attribution_method == 'multiplication':
+            attribution_fbs = fb.load_prepare_attribution_source()
+            attributed_fb = fb.multiplication_attribution(attribution_fbs)
+
+        else:
+            if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
+                log.info('No attribution needed for %s at the given industry '
+                         'aggregation level', fb.full_name)
+                return fb.drop(columns=['group_id', 'group_total'])
+
+            if attribution_method is None:
+                log.warning('No attribution method specified for %s. '
+                            'Using equal attribution as default.',
+                            fb.full_name)
+            elif attribution_method != 'direct':
+                log.error('Attribution method for %s not recognized: %s',
+                          fb.full_name, attribution_method)
+                raise ValueError('Attribution method not recognized')
+
+            attributed_fb = fb.equally_attribute()
+
+        # if the attribution method is not multiplication, check that new df
+        # values equal original df values
+        if attribution_method not in ['multiplication', 'weighted_average',
+                                      'substitute_nonexistent_values']:
+            # todo: add results from this if statement to validation log
+            validation_fb = attributed_fb.assign(
+                validation_total=(attributed_fb.groupby('group_id')
+                                  ['FlowAmount'].transform('sum'))
+            )
+            if not np.allclose(validation_fb.group_total,
+                               validation_fb.validation_total,
+                               equal_nan=True):
+                errors = (validation_fb
+                          .query('validation_total != group_total')
+                          [['group_id',
+                            'ActivityProducedBy', 'ActivityConsumedBy',
+                            'SectorProducedBy', 'SectorConsumedBy',
+                            'FlowAmount', 'group_total', 'validation_total']])
+                log.error('Errors in attributing flows from %s:\n%s',
+                          self.full_name, errors)
+
+        return attributed_fb.drop(columns=['group_id', 'group_total'])
+
+
+    def activity_sets(self) -> List['FB']:
+        '''
+        This function breaks up an FBA dataset into its activity sets, if its
+        config dictionary specifies activity sets, and returns a list of the
+        resulting FBAs. Otherwise, it returns a list containing the calling
+        FBA.
+
+        Activity sets are determined by the selection_field key under each
+        activity set name. An error will be logged if any rows from the calling
+        FBA are assigned to multiple activity sets.
+        '''
+        if 'activity_sets' not in self.config:
+            return [self]
+
+        log.info('Splitting %s into activity sets', self.full_name)
+        activities = self.config['activity_sets']
+        parent_config = {k: v for k, v in self.config.items()
+                         if k not in ['activity_sets',
+                                      'clean_fba_before_activity_sets']
+                         and not k.startswith('_')}
+        parent_df = self.reset_index().rename(columns={'index': 'row'})
+
+        child_df_list = []
+        assigned_rows = set()
+        for activity_set, activity_config in activities.items():
+            log.info('Creating subset for %s', activity_set)
+
+            child_df = (
+                parent_df
+                .add_full_name(
+                    f'{parent_df.full_name}{NAME_SEP_CHAR}{activity_set}')
+                .select_by_fields(
+                    selection_fields=activity_config.get('selection_fields'),
+                    exclusion_fields=activity_config.get('exclusion_fields'))
+            )
+
+            child_df.config = {**parent_config, **activity_config}
+            child_df = child_df.assign(SourceName=child_df.full_name)
+
+            if set(child_df.row) & assigned_rows:
+                log.critical(
+                    'Some rows from %s assigned to multiple activity '
+                    'sets. This will lead to double-counting:\n%s',
+                    parent_df.full_name,
+                    child_df.query(
+                        f'row in {list(set(child_df.row) & assigned_rows)}'
+                    )
+                )
+                # raise ValueError('Some rows in multiple activity sets')
+
+            assigned_rows.update(child_df.row)
+            if not child_df.empty:
+                child_df_list.append(child_df.drop(columns='row'))
+            else:
+                log.error('Activity set %s is empty. Check activity set '
+                          'definition!', child_df.full_name)
+
+        if set(parent_df.row) - assigned_rows:
+            log.warning('Some rows from %s not assigned to an activity '
+                        'set. Is this intentional?', parent_df.full_name)
+            unassigned = parent_df.query('row not in @assigned_rows')
+
+        return child_df_list
+
+    def load_prepare_attribution_source(
+        self: 'FlowByActivity'
+    ) -> 'FlowBySector':
+        attribution_source = self.config['attribution_source']
+
+        if isinstance(attribution_source, str):
+            name, config = attribution_source, {}
+        else:
+            (name, config), = attribution_source.items()
+
+        if name in self.config['cache']:
+            attribution_fbs = self.config['cache'][name].copy()
+            attribution_fbs.config = {
+                **{k: attribution_fbs.config[k]
+                   for k in attribution_fbs.config['method_config_keys']},
+                **config
+            }
+            attribution_fbs = attribution_fbs.prepare_fbs()
+        else:
+            attribution_fbs = get_flowby_from_config(
+                name=name,
+                config={**{k: v for k, v in self.config.items()
+                           if k in self.config['method_config_keys']
+                           or k == 'method_config_keys'},
+                        **get_catalog_info(name),
+                        **config}
+            ).prepare_fbs()
+        return attribution_fbs
+
+
+    def proportionally_attribute(
+        self: 'FB',  # flowbyactivity or flowbysector
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+        '''
+        This method takes flows from the calling FBA which are mapped to
+        multiple sectors and attributes them to those sectors proportionally to
+        flows from other (an FBS).
+        '''
+
+        log.info('Attributing flows in %s using %s.',
+                 self.full_name, other.full_name)
+
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(other)
+
+        groupby_cols = ['group_id']
+        for rank in ['Primary', 'Secondary']:
+            # skip over Secondary if not relevant
+            if fba[f'{rank}Sector'].isna().all():
+                continue
+            counted = fba.assign(group_count=(fba.groupby(groupby_cols)
+                                              ['group_id']
+                                              .transform('count')))
+            directly_attributed = (
+                counted
+                .query('group_count == 1')
+                .drop(columns='group_count')
+            )
+            needs_attribution = (
+                counted
+                .query('group_count > 1')
+                .drop(columns='group_count')
+            )
+
+            merged = (
+                needs_attribution
+                .merge(other,
+                       how='left',
+                       left_on=[f'{rank}Sector',
+                                'temp_location'
+                                if 'temp_location' in needs_attribution
+                                else 'Location'],
+                       right_on=['PrimarySector', 'Location'],
+                       suffixes=[None, '_other'])
+                .fillna({'FlowAmount_other': 0})
+            )
+
+            denominator_flag = ~merged.duplicated(subset=[*groupby_cols,
+                                                  f'{rank}Sector'])
+            with_denominator = (
+                merged
+                .assign(denominator=(
+                    merged
+                    .assign(FlowAmount_other=(merged.FlowAmount_other
+                                              * denominator_flag))
+                    .groupby(groupby_cols)
+                    ['FlowAmount_other']
+                    .transform('sum')))
+            )
+
+            non_zero_denominator = with_denominator.query(f'denominator != 0 ')
+            unattributable = with_denominator.query(f'denominator == 0 ')
+
+            if not unattributable.empty:
+                log.warning(
+                    'Could not attribute activities in %s due to lack of '
+                    'flows in attribution source %s for mapped %s sectors %s',
+                    # set(zip(unattributable.ActivityProducedBy,
+                    #         unattributable.ActivityConsumedBy,
+                    #         unattributable.Location)),
+                    unattributable.full_name,
+                    other.full_name,
+                    rank,
+                    sorted(set(unattributable[f'{rank}Sector']))
+                )
+
+            proportionally_attributed = (
+                non_zero_denominator
+                .assign(FlowAmount=lambda x: (x.FlowAmount
+                                              * x.FlowAmount_other
+                                              / x.denominator))
+                .drop(columns=['PrimarySector_other', 'Location_other',
+                               'FlowAmount_other', 'denominator',
+                               'Unit_other'],
+                      errors='ignore')
+            )
+            fba = pd.concat([directly_attributed,
+                             proportionally_attributed], ignore_index=True)
+            groupby_cols.append(f'{rank}Sector')
+
+        return (
+            fba
+            .drop(columns=['PrimarySector', 'SecondarySector',
+                           'temp_location'],
+                  errors='ignore')
+            .reset_index(drop=True)
+        )
+
+    def harmonize_geoscale(
+        self: 'FB',
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+
+        fba_geoscale = geo.scale.from_string(self.config['geoscale'])
+        other_geoscale = geo.scale.from_string(other.config['geoscale'])
+
+        if other_geoscale < fba_geoscale:
+            log.info('Aggregating %s from %s to %s', other.full_name,
+                     other_geoscale, fba_geoscale)
+            other = (
+                other
+                .convert_fips_to_geoscale(fba_geoscale)
+                .aggregate_flowby()
+            )
+        elif other_geoscale > fba_geoscale:
+            log.info('%s is %s, while %s is %s, so attributing %s to '
+                     '%s', other.full_name, other_geoscale, self.full_name,
+                     fba_geoscale, other_geoscale, fba_geoscale)
+            self = (
+                self
+                .assign(temp_location=self.Location)
+                .convert_fips_to_geoscale(other_geoscale,
+                                          column='temp_location')
+            )
+
+        fba = self.add_primary_secondary_columns('Sector')
+        other = (
+            other
+            .add_primary_secondary_columns('Sector')
+            [['PrimarySector', 'Location', 'FlowAmount', 'Unit']]
+            .groupby(['PrimarySector', 'Location', 'Unit'])
+            .agg('sum')
+            .reset_index()
+        )
+
+        return fba_geoscale, other_geoscale, fba, other
+
+
+    def multiplication_attribution(
+        self: 'FB',
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+        """
+        This method takes flows from the calling FBA which are mapped to
+        multiple sectors and multiplies them by flows from other (an FBS).
+        """
+
+        log.info('Multiplying flows in %s by %s.',
+                 self.full_name, other.full_name)
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
+            other)
+
+        # todo: update units after multiplying
+
+        # multiply using each dfs primary sector col
+        merged = (fba
+                  .merge(other,
+                         how='left',
+                         left_on=['PrimarySector', 'temp_location'
+                                  if 'temp_location' in fba
+                                  else 'Location'],
+                         right_on=['PrimarySector', 'Location'],
+                         suffixes=[None, '_other'])
+                  .fillna({'FlowAmount_other': 0})
+                  )
+
+        fba = (merged
+               .assign(FlowAmount=lambda x: (x.FlowAmount
+                                             * x.FlowAmount_other))
+               .drop(columns=['PrimarySector_other', 'Location_other',
+                              'FlowAmount_other', 'denominator'],
+                     errors='ignore')
+               )
+
+        # determine if any flows are lost because multiplied by 0
+        fba_null = fba[fba['FlowAmount'] == 0]
+        if len(fba_null) > 0:
+            log.warning('FlowAmounts in %s are reset to 0 due to lack of '
+                        'flows in attribution source %s for '
+                        'ActivityProducedBy/ActivityConsumedBy/Location: %s',
+                        fba.full_name, other.full_name,
+                        set(zip(fba_null.ActivityProducedBy,
+                                fba_null.ActivityConsumedBy,
+                                fba_null.Location))
+                        )
+
+        return (
+            fba
+            .drop(columns=['PrimarySector', 'SecondarySector',
+                           'temp_location'],
+                  errors='ignore')
+            .reset_index(drop=True)
+        )
+
     def add_primary_secondary_columns(
         self: FB,
         col_type: Literal['Activity', 'Sector']
@@ -1049,117 +1423,6 @@ class FlowByActivity(_FlowBy):
             )
 
         return fba_at_target_geoscale
-
-    def load_prepare_attribution_source(
-        self: 'FlowByActivity'
-    ) -> 'FlowBySector':
-        attribution_source = self.config['attribution_source']
-
-        if isinstance(attribution_source, str):
-            name, config = attribution_source, {}
-        else:
-            (name, config), = attribution_source.items()
-
-        if name in self.config['cache']:
-            attribution_fbs = self.config['cache'][name].copy()
-            attribution_fbs.config = {
-                **{k: attribution_fbs.config[k]
-                   for k in attribution_fbs.config['method_config_keys']},
-                **config
-            }
-            attribution_fbs = attribution_fbs.prepare_fbs()
-        else:
-            attribution_fbs = get_flowby_from_config(
-                name=name,
-                config={**{k: v for k, v in self.config.items()
-                           if k in self.config['method_config_keys']
-                           or k == 'method_config_keys'},
-                        **get_catalog_info(name),
-                        **config}
-            ).prepare_fbs()
-        return attribution_fbs
-
-    def attribute_flows_to_sectors(
-        self: 'FlowByActivity',
-        external_config_path: str = None
-    ) -> 'FlowByActivity':
-        """
-        The calling FBA has its activities mapped to sectors, then its flows
-        attributed to those sectors, by the methods specified in the calling
-        FBA's configuration dictionary.
-        """
-        grouped: 'FlowByActivity' = (
-            self
-            .reset_index(drop=True).reset_index()
-            .rename(columns={'index': 'group_id'})
-            .assign(group_total=self.FlowAmount)
-        )
-        if len(grouped)==0:
-            log.warning(f'No data remaining in {self.full_name}.')
-            return self
-        fba: 'FlowByActivity' = (
-            grouped
-            .map_to_sectors(external_config_path=external_config_path)
-            .function_socket('clean_fba_w_sec',
-                             attr=self.config,
-                             method=self.config)
-            .rename(columns={'SourceName': 'MetaSources'})
-        )
-
-        attribution_method = fba.config.get('attribution_method')
-        if attribution_method == 'direct' or attribution_method is None:
-            fba = fba.assign(AttributionSources='Direct')
-        else:
-            fba = fba.assign(AttributionSources=','.join(
-                [k for k in fba.config.get('attribution_source').keys()]))
-
-        if attribution_method == 'proportional':
-            attribution_fbs = fba.load_prepare_attribution_source()
-            attributed_fba = fba.proportionally_attribute(attribution_fbs)
-
-        elif attribution_method == 'multiplication':
-            attribution_fbs = fba.load_prepare_attribution_source()
-            attributed_fba = fba.multiplication_attribution(attribution_fbs)
-
-        else:
-            if all(fba.groupby('group_id')['group_id'].agg('count') == 1):
-                log.info('No attribution needed for %s at the given industry '
-                         'aggregation level', fba.full_name)
-                return fba.drop(columns=['group_id', 'group_total'])
-
-            if attribution_method is None:
-                log.warning('No attribution method specified for %s. '
-                            'Using equal attribution as default.',
-                            fba.full_name)
-            elif attribution_method != 'direct':
-                log.error('Attribution method for %s not recognized: %s',
-                          fba.full_name, attribution_method)
-                raise ValueError('Attribution method not recognized')
-
-            attributed_fba = fba.equally_attribute()
-
-        # if the attribution method is not multiplication, check that new df
-        # values equal original df values
-        if attribution_method not in ['multiplication', 'weighted_average',
-                                      'substitute_nonexistent_values']:
-            # todo: add results from this if statement to validation log
-            validation_fba = attributed_fba.assign(
-                validation_total=(attributed_fba.groupby('group_id')
-                                  ['FlowAmount'].transform('sum'))
-            )
-            if not np.allclose(validation_fba.group_total,
-                               validation_fba.validation_total,
-                               equal_nan=True):
-                errors = (validation_fba
-                          .query('validation_total != group_total')
-                          [['group_id',
-                            'ActivityProducedBy', 'ActivityConsumedBy',
-                            'SectorProducedBy', 'SectorConsumedBy',
-                            'FlowAmount', 'group_total', 'validation_total']])
-                log.error('Errors in attributing flows from %s:\n%s',
-                          self.full_name, errors)
-
-        return attributed_fba.drop(columns=['group_id', 'group_total'])
 
     def map_to_sectors(
             self: 'FlowByActivity',
@@ -2161,15 +2424,31 @@ class FlowBySector(_FlowBy):
         self: 'FlowBySector',
         external_config_path: str = None
     ) -> 'FlowBySector':
+        if 'activity_sets' in self.config:
+            try:
+                return (
+                    pd.concat([
+                        fbs.prepare_fbs()
+                        for fbs in (
+                            self
+                            .select_by_fields()
+                            .activity_sets()
+                        )
+                    ])
+                    .reset_index(drop=True)
+                )
+            except ValueError:
+                return FlowBySector(pd.DataFrame())
         return (
             self
             .function_socket('clean_fbs')
             .select_by_fields()
-            .sector_aggregation() # convert to proper industry spec.
+            .sector_aggregation()  # convert to proper industry spec.
             .convert_fips_to_geoscale()
-            # .attribute_flows_to_sectors()  # used to attribute activity sets
+            .attribute_flows_to_sectors()
             .aggregate_flowby()  # necessary after consolidating geoscale
         )
+
 
     def display_tables(
         self: 'FlowBySector',
