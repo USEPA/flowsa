@@ -28,21 +28,3 @@ CRHW:
       RCRAInfo: 2017
     compartments:
       - waste
-
-CAP_HAP:
-    data_format: FBS_outside_flowsa
-    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
-    inventory_dict:
-      NEI: 2017
-      TRI: 2017
-    local_inventory_name: NEI_TRI_air_2017
-    compartments:
-      - air
-    reassign_process_to_sectors:
-      - airplane_emissions
-    exclusion_fields:
-      FlowName:
-        - Carbon Dioxide
-        - Methane
-        - Nitrous Oxide
-        - Sulfur Hexafluoride
