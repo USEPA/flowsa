@@ -81,6 +81,8 @@ source_names:
                     - "AREA, IRRIGATED"
                     - 'AREA BEARING & NON-BEARING, IRRIGATED'
                     - 'AREA GROWN, IRRIGATED'
+                merge_keys:
+                  'on': SectorConsumedBy
                 activity_sets:
                   cropland_attribution-pastureland:
                     selection_fields:
@@ -102,50 +104,66 @@ source_names:
                           add_columns:
                             SectorProducedBy: target_naics
                       drop_columns: ActivityProducedBy # FBA column not needed
-                      attribution_method: equal #proportional
-#                      source:
-#                        USDA_CoA_Cropland_NAICS:
-#                          year: 2017
-#                          selection_fields:
-#                            Class: Land
-#                            FlowName:
-#                              - "FARM OPERATIONS"
-#                          estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
-#                          selection_fields_after_data_suppression_estimation:
-#                            PrimaryActivity: ["112111", "112112", "11212", "1122",
-#                                              "11231", "11232", "11233", "11234",
-#                                              "11239", "11241", "11242", "11291",
-#                                              "11292", "11293", "11299"]
-#                          merge_keys:
-#                            on: SectorConsumedBy
-#                          disaggregate:
-#                            crosswalk:
-#                              NAICS_Crosswalk_USDA_CoA_Cropland_NAICS:
-#                                merge_keys:
-#                                  left_on: ActivityConsumedBy # FBA column
-#                                  right_on: Activity # Crosswalk column
-#                                add_columns:
-#                                  SectorConsumedBy: Sector # New column from crosswalk
-#                              !script_function:naics explode:
-#                                column: SectorConsumedBy
-#                                merge_keys:
-#                                  'on': SectorConsumedBy
-#                                add_columns:
-#                                  SectorConsumedBy: target_naics
-#                            drop_columns: ActivityProducedBy # FBA column not needed
-#                            attribution_method: equal #multiplication
-#                          attribution_source:
-#                            USDA_IWMS: &usda_iwms
-#                              year: 2018
-#                              selection_fields:
-#                                Class: Water
-#                              clean_fba_w_sec: !clean_function:flowbyclean substitute_nonexistent_values
-#                              clean_source:
-#                                USDA_IWMS:
-#                                  geoscale: national
-#                                  year: 2018
-#                                  selection_fields:
-#                                    Class: Water
+                      attribution_method: proportional
+                      source:
+                        USDA_CoA_Cropland_NAICS:
+                          year: 2017
+                          selection_fields:
+                            Class: Land
+                            FlowName:
+                              - "FARM OPERATIONS"
+                          estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                          selection_fields_after_data_suppression_estimation:
+                            PrimaryActivity: ["112111", "112112", "11212", "1122",
+                                              "11231", "11232", "11233", "11234",
+                                              "11239", "11241", "11242", "11291",
+                                              "11292", "11293", "11299"]
+                          merge_keys:
+                            'on': SectorConsumedBy
+                          disaggregate:
+                            crosswalk:
+                              NAICS_Crosswalk_USDA_CoA_Cropland_NAICS:
+                                merge_keys:
+                                  left_on: ActivityConsumedBy # FBA column
+                                  right_on: Activity # Crosswalk column
+                                add_columns:
+                                  SectorConsumedBy: Sector # New column from crosswalk
+                              !script_function:naics explode:
+                                column: SectorConsumedBy
+                                merge_keys:
+                                  'on': SectorConsumedBy
+                                add_columns:
+                                  SectorConsumedBy: target_naics
+                            drop_columns: ActivityProducedBy # FBA column not needed
+                            attribution_method: multiplication
+                            source:
+                              USDA_IWMS: &usda_iwms
+                                year: 2018
+                                selection_fields:
+                                  Class: Water
+                                clean_fba_w_sec: !clean_function:flowbyclean substitute_nonexistent_values
+                                clean_source:
+                                  USDA_IWMS:
+                                    geoscale: national
+                                    year: 2018
+                                    selection_fields:
+                                      Class: Water
+                                merge_keys:
+                                  'on': SectorConsumedBy
+                                disaggregate:
+                                  crosswalk:
+                                    NAICS_Crosswalk_USDA_CoA_Cropland_NAICS:
+                                      merge_keys:
+                                        left_on: ActivityConsumedBy # FBA column
+                                        right_on: Activity # Crosswalk column
+                                      add_columns:
+                                        SectorConsumedBy: Sector # New column from crosswalk
+                                    !script_function:naics explode:
+                                      column: SectorConsumedBy
+                                      merge_keys:
+                                        'on': SectorConsumedBy
+                                      add_columns:
+                                        SectorConsumedBy: target_naics
 #                cropland_attribution-cropland:
 #                  selection_fields:
 #                    PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
@@ -167,7 +185,7 @@ source_names:
 #                      'MINT, OIL', 'MISCANTHUS', 'MINT, TEA LEAVES',
 #                      'FIELD CROPS, OTHER']
 #                  attribution_method: proportional
-#                  attribution_source:
+#                  source:
 #                    USDA_CoA_Cropland_NAICS:
 #                      year: 2017
 #                      selection_fields:
