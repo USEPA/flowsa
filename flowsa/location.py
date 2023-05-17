@@ -9,7 +9,9 @@ import pandas as pd
 import numpy as np
 import pycountry
 import urllib.error
-from flowsa.settings import datapath, log
+from flowsa.flowsa_log import log
+from flowsa.geo import get_all_fips
+from flowsa.settings import datapath
 from flowsa.common import clean_str_and_capitalize
 
 
@@ -18,64 +20,6 @@ US_FIPS = "00000"
 fips_number_key = {"national": 0,
                    "state": 2,
                    "county": 5}
-
-
-def read_stored_FIPS(year='2015'):
-    """
-    Read fips based on year specified, year defaults to 2015
-    :param year: str, '2010', '2013', or '2015', default year is 2015
-        because most recent year of FIPS available
-    :return: df, FIPS for specified year
-    """
-
-    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
-    # subset columns by specified year
-    df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
-    # rename columns to drop data year
-    df.columns = ['State', 'FIPS', 'County']
-    # sort df
-    df = df.sort_values(['FIPS']).reset_index(drop=True)
-
-    return df
-
-
-def getFIPS(state=None, county=None, year='2015'):
-    """
-    Pass a state or state and county name to get the FIPS.
-
-    :param state: str. A US State Name or Puerto Rico, any case accepted
-    :param county: str. A US county
-    :param year: str. '2010', '2013', '2015', default year is 2015
-    :return: str. A five digit FIPS code
-    """
-    FIPS_df = read_stored_FIPS(year)
-
-    # default code
-    code = None
-
-    if county is None:
-        if state is not None:
-            state = clean_str_and_capitalize(state)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"].isna()), "FIPS"]
-        else:
-            log.error("To get state FIPS, state name must be passed in "
-                      "'state' param")
-    else:
-        if state is None:
-            log.error("To get county FIPS, state name must be passed in "
-                      "'state' param")
-        else:
-            state = clean_str_and_capitalize(state)
-            county = clean_str_and_capitalize(county)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"] == county), "FIPS"]
-    if code.empty:
-        log.error("No FIPS code found")
-    else:
-        code = code.values[0]
-
-    return code
 
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
@@ -140,7 +84,7 @@ def get_state_FIPS(year='2015', abbrev=False):
     :return: FIPS df with only state level records
     """
 
-    fips = read_stored_FIPS(year)
+    fips = get_all_fips(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
     if abbrev:
@@ -154,7 +98,7 @@ def get_county_FIPS(year='2015'):
     :param year: str, year of FIPS, defaults to 2015
     :return: FIPS df with only county level records
     """
-    fips = read_stored_FIPS(year)
+    fips = get_all_fips(year)
     fips = fips.drop_duplicates(subset='FIPS')
     fips = fips[fips['County'].notnull()]
     return fips
@@ -326,7 +270,7 @@ def merge_urb_cnty_pct(df):
     # find unmerged nan pct_pop_urb values
     pct_na = sum(df['pct_pop_urb'].isna())
     if pct_na != 0:
-        log.error(f'WARNING {pct_na} FIPS codes did not merge successfully.\n'
+        log.error(f'WARNING {pct_na} records did not merge successfully.\n'
                   'In pct_pop_urb, "nan" values are not equal to 0%.')
 
     df = reshape_urb_rur_df(df)

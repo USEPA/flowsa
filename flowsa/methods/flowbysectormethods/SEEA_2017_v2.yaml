@@ -4,8 +4,7 @@
 # !include:BEA_summary_target.yaml
 industry_spec:
   default: NAICS_3
-  '336': {default: NAICS_4}
-  '541': {default: NAICS_4}
+  NAICS_4: ['336', '541']
   non_naics: ACC
 year: &year 2017
 # industry_spec:
@@ -230,7 +229,7 @@ sources_to_cache:
     selection_fields:
       Class: Employment
     year: 2012
-    clean_fba: !script_function:temp_data_source_functions clean_qcew
+    clean_fba: !script_function:BLS_QCEW clean_qcew
 
 source_names:
   # stewiFBS:

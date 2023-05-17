@@ -3,8 +3,7 @@
 
 industry_spec:
   default: NAICS_6
-  '562212': { default: NAICS_7 }
-  '562219': { default: NAICS_7 }
+  NAICS_7: ['562212', '562219']
 year: 2018
 target_naics_year: 2012
 geoscale: national
@@ -13,7 +12,6 @@ source_names:
   "CNHW_national_2018":
     selection_fields:
       Flowable: Food
-#    clean_fbs_df_fxn: !script_function:EPA_WFR attribute_cnhw_food
     activity_sets:
       wasted_food_report:
         selection_fields:

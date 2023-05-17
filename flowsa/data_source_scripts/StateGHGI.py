@@ -7,9 +7,10 @@ Loads state specific GHGI data to supplement EPA State Inventory Tool (SIT).
 
 import pandas as pd
 import os
-from flowsa.settings import externaldatapath, log
+from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
+from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS
 from flowsa.common import load_yaml_dict
 

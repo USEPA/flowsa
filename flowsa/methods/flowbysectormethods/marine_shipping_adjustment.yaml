@@ -16,8 +16,8 @@ sources_to_cache:
     year: 2012
     selection_fields:
       Class: Employment
-    clean_fba_before_mapping: !script_function:temp_data_source_functions estimate_suppressed_qcew
-    clean_fba: !script_function:temp_data_source_functions clean_qcew # todo: evaluate if necessary because already estimated suppressed data
+    clean_fba_before_mapping: !script_function:BLS_QCEW estimate_suppressed_qcew
+    clean_fba: !script_function:BLS_QCEW clean_qcew # todo: evaluate if necessary because already estimated suppressed data
 
 source_names:
   BEA_Marine_Bunker_Fuel:

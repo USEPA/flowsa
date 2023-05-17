@@ -12,7 +12,8 @@ from bibtexparser.bibdatabase import BibDatabase
 from flowsa.common import load_yaml_dict, \
     load_values_from_literature_citations_config, get_flowsa_base_name, \
     sourceconfigpath, load_yaml_dict
-from flowsa.settings import outputpath, biboutputpath, log
+from flowsa.flowsa_log import log
+from flowsa.settings import outputpath, biboutputpath
 
 
 def generate_list_of_sources_in_fbs_method(methodname):

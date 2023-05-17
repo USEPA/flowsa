@@ -13,7 +13,7 @@ from tabula.io import read_pdf
 import pandas as pd
 from flowsa.location import get_all_state_FIPS_2
 from flowsa.common import WITHDRAWN_KEYWORD
-from flowsa.settings import log
+from flowsa.flowsa_log import log
 
 
 def split(row, header, sub_header, next_line):

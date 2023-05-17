@@ -8,7 +8,7 @@ Methods of allocating datasets
 import pandas as pd
 from flowsa.common import fbs_activity_fields, sector_level_key, \
     load_crosswalk, check_activities_sector_like
-from flowsa.settings import log, vLogDetailed
+from flowsa.flowsa_log import log, vlog
 from flowsa.dataclean import replace_NoneType_with_empty_cells, \
     replace_strings_with_NoneType
 from flowsa.flowbyfunctions import sector_aggregation, aggregator, \
@@ -303,16 +303,16 @@ def equally_allocate_parent_to_child_naics(
 
         # append to df
         if len(rl) != 0:
-            vLogDetailed.warning('Data found at %s digit sectors not '
-                                 'represented in current data subset: '
-                                 '{}'.format(' '.join(map(str, rl_list))),
-                                 str(i))
+            vlog.warning('Data found at %s digit sectors not '
+                         'represented in current data subset: '
+                         '{}'.format(' '.join(map(str, rl_list))),
+                         str(i))
             rows_lost = pd.concat([rows_lost, rl], ignore_index=True)
 
     if len(rows_lost) != 0:
-        vLogDetailed.info('Allocating FlowAmounts equally to '
-                          'each %s associated with the sectors previously '
-                          'dropped', sector_level)
+        vlog.info('Allocating FlowAmounts equally to each '
+                  f'{sector_level} associated with the sectors previously '
+                  'dropped')
         # if activities are source-like, set col values as copies
         # of the sector columns
         if sector_like_activities:

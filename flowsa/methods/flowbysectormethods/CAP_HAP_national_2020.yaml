@@ -1,4 +1,4 @@
-# This is the 2017 target year method for CAP_HAP which builds off the generic
+# This is the 2020 target year method for CAP_HAP which builds off the generic
 # method in CAP_HAP_common
 
 industry_spec:
@@ -6,7 +6,7 @@ industry_spec:
 target_naics_year: 2012
 geoscale: national
 
-_emission_year: &year 2017
+_emission_year: &year 2020
 
 sources_to_cache:
   EIA_MECS_Energy:
@@ -29,7 +29,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_GDP_GrossOutput:
-            year: 2017
+            year: 2020
             geoscale: national
             activity_to_sector_mapping: BEA_2012_Detail
             selection_fields:
@@ -37,9 +37,10 @@ source_names:
               FlowName: Gross Output
             attribution_method: proportional
             attribution_source:
-              Employment_national_2017:
+              Employment_national_2020:
                 data_format: FBS
-                year: 2017
+                year: 2020
+
 
   EPA_NEI_Nonroad:
     !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad
@@ -54,4 +55,4 @@ source_names:
     inventory_dict:
       NEI: *year
       TRI: *year
-    local_inventory_name: NEI_TRI_air_2017
+    local_inventory_name: NEI_TRI_air_2020

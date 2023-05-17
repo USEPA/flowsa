@@ -247,30 +247,6 @@ def coa_cropland_parse(*, df_list, year, **_):
     return df
 
 
-def coa_nonirrigated_cropland_fba_cleanup(fba, **kwargs):
-    """
-    Cleanup coa cropland data for nonirrigated crops
-    :param fba: df, COA when using non-irrigated data
-    :return: df, COA nonirrigated data, modified
-    """
-
-    # when include 'area harvested' and 'area in production' in
-    # single dataframe, which is necessary to include woody crops,
-    # 'vegetable totals' are double counted
-    fba = fba[~((fba['Flowable'] == 'AREA IN PRODUCTION') &
-                (fba['ActivityConsumedBy'] == 'VEGETABLE TOTALS'))]
-
-    # When using a mix of flow names, drop activities for ag land (naics 11)
-    # and ag land, cropland, harvested (naics 111),because published values
-    # for harvested cropland do not include data for vegetables, woody crops,
-    # berries. Values for sectors 11 and 111 will be aggregated from the
-    # dataframe later
-    fba = fba[~fba['ActivityConsumedBy'].isin(
-        ['AG LAND', 'AG LAND, CROPLAND, HARVESTED'])].reset_index(drop=True)
-
-    return fba
-
-
 def disaggregate_coa_cropland_to_6_digit_naics(
         fba_w_sector, attr, method, **kwargs):
     """
