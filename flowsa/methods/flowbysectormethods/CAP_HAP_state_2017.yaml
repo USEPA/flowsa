@@ -29,15 +29,15 @@ sources_to_cache:
 
 _attribution_sources:
   stateio: &stateio
-    year: 2012
+    year: *year
     geoscale: state
     activity_to_sector_mapping: BEA_2012_Summary
     attribution_method: proportional
     attribution_source:
-      Employment_state_2012:
+      Employment_state_2017:
         data_format: FBS
         geoscale: state
-        year: 2012
+        year: *year
 
 source_names:
   EPA_NEI_Nonpoint:
