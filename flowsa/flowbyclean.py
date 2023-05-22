@@ -110,7 +110,6 @@ def substitute_nonexistent_values(
 
     fba = (fba
            .add_primary_secondary_columns('Sector')
-           .drop(columns=['group_id', 'group_total'])
            )
 
     # merge all possible national data with each state
