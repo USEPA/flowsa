@@ -656,7 +656,9 @@ class _FlowBy(pd.DataFrame):
                 attribution_fbs = fb.load_prepare_attribution_source(
                     attribution_config=step_config
                 )
-                attributed_fb = fb.proportionally_attribute(attribution_fbs)
+                attributed_fb = fb.proportionally_attribute(
+                    attribution_fbs, other_config=step_config
+                )
 
             elif attribution_method == 'multiplication':
                 log.info(f"Multiplying {self.full_name} by {attribution_name}")
@@ -1811,7 +1813,8 @@ class FlowByActivity(_FlowBy):
 
     def harmonize_geoscale(
         self: 'FlowByActivity',
-        other: 'FlowBySector'
+        other: 'FlowBySector',
+        other_config: None
     ) -> 'FlowByActivity':
 
         fba_geoscale = geo.scale.from_string(self.config['geoscale'])
@@ -1840,11 +1843,13 @@ class FlowByActivity(_FlowBy):
 
         subset_cols = ['PrimarySector', 'Location', 'FlowAmount', 'Unit']
         groupby_cols = ['PrimarySector', 'Location', 'Unit']
-        if self.config.get('attribute_on') is not None:
+        attribution_cols = other_config.get('attribute_on', self.config.get(
+            'attribute_on'))
+        if attribution_cols is not None:
             subset_cols = ['PrimarySector', 'Location', 'FlowAmount', 'Unit',
-                           self.config.get('attribute_on')]
+                           attribution_cols]
             groupby_cols = ['PrimarySector', 'Location', 'Unit',
-                            self.config.get('attribute_on')]
+                            attribution_cols]
         other = (
             other
             .add_primary_secondary_columns('Sector')
@@ -1858,7 +1863,8 @@ class FlowByActivity(_FlowBy):
 
     def proportionally_attribute(
         self: 'FlowByActivity',
-        other: 'FlowBySector'
+        other: 'FlowBySector',
+        other_config=None
     ) -> 'FlowByActivity':
         '''
         This method takes flows from the calling FBA which are mapped to
@@ -1870,10 +1876,11 @@ class FlowByActivity(_FlowBy):
                  self.full_name, other.full_name)
 
         fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
-            other)
+            other, other_config=other_config)
 
         # attribute on sector columns
-        if self.config.get('attribute_on') is None:
+        if other_config.get('attribute_on',
+                            self.config.get('attribute_on')) is None:
             groupby_cols = ['group_id']
             for rank in ['Primary', 'Secondary']:
                 # skip over Secondary if not relevant
@@ -1947,12 +1954,12 @@ class FlowByActivity(_FlowBy):
 
         # else attribute on column specified in the FBS yaml
         else:
+            attribute_cols = other_config.get('attribute_on',
+                                              self.config.get('attribute_on'))
 
             log.info(f'Proportionally attributing on {attribute_cols}')
             fba = (fba.add_primary_secondary_columns('Sector'))
-
-            groupby_cols = [self.config.get('attribute_on'), 'Unit']
-            attribute_cols = self.config.get('attribute_on')
+            groupby_cols = [attribute_cols, 'Unit']
 
             other_with_denominator = (
                 other
