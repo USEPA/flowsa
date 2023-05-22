@@ -608,79 +608,93 @@ class _FlowBy(pd.DataFrame):
         attributed to those sectors, by the methods specified in the calling
         FBA's configuration dictionary.
         """
-        grouped: 'FB' = (
-            self
-            .reset_index(drop=True).reset_index()
-            .rename(columns={'index': 'group_id'})
-            .assign(group_total=self.FlowAmount)
-        )
-        if len(grouped)==0:
-            log.warning(f'No data remaining in {self.full_name}.')
-            return self
-        if self.config['data_format'] == 'FBA':
-            fb: 'FlowByActivity' = (
-                grouped
-                .map_to_sectors(external_config_path=external_config_path)
-                .function_socket('clean_fba_w_sec',
-                                 attr=self.config,
-                                 method=self.config)
-                .rename(columns={'SourceName': 'MetaSources'})
+        attribute_config = self.config.get('attribute', None)
+
+        if isinstance(attribute_config, dict):
+            attribute_config = [attribute_config]
+        if attribute_config is None:
+            log.error('Attribution method is missing')
+
+        for step_config in attribute_config:
+            grouped: 'FB' = (
+                self
+                .reset_index(drop=True).reset_index()
+                .rename(columns={'index': 'group_id'})
+                .assign(group_total=self.FlowAmount)
             )
-        elif self.config['data_format'] == 'FBS':
-            fb = grouped.copy()
+            if len(grouped)==0:
+                log.warning(f'No data remaining in {self.full_name}.')
+                return self
+            if self.config['data_format'] == 'FBA':
+                fb: 'FlowByActivity' = (
+                    grouped
+                    .map_to_sectors(external_config_path=external_config_path)
+                    .function_socket('clean_fba_w_sec',
+                                     attr=self.config,
+                                     method=self.config)
+                    .rename(columns={'SourceName': 'MetaSources'})
+                )
+            elif self.config['data_format'] == 'FBS':
+                fb = grouped.copy()
 
-        attribution_method = fb.config.get('attribution_method')
-        if attribution_method == 'direct' or attribution_method is None:
-            fb = fb.assign(AttributionSources='Direct')
-        else:
-            fb = fb.assign(AttributionSources=','.join(
-                [k for k in fb.config.get('attribution_source').keys()]))
+            attribution_method = step_config.get('attribution_method')
+            if attribution_method == 'direct':
+                fb = fb.assign(AttributionSources='Direct')
+            else:
+                fb = fb.assign(AttributionSources=','.join(
+                    [k for k in step_config.get('attribution_source').keys()]))
 
-        if attribution_method == 'proportional':
-            attribution_fbs = fb.load_prepare_attribution_source()
-            attributed_fb = fb.proportionally_attribute(attribution_fbs)
+            if attribution_method == 'proportional':
+                log.info(f'attributing {self.full_name} with '
+                         f'{attribute_config[0]["attribution_source"]}')
+                attribution_fbs = fb.load_prepare_attribution_source(
+                    attribution_config=step_config
+                )
+                attributed_fb = fb.proportionally_attribute(attribution_fbs)
 
-        elif attribution_method == 'multiplication':
-            attribution_fbs = fb.load_prepare_attribution_source()
-            attributed_fb = fb.multiplication_attribution(attribution_fbs)
+            elif attribution_method == 'multiplication':
+                attribution_fbs = fb.load_prepare_attribution_source(
+                    attribution_config=step_config
+                )
+                attributed_fb = fb.multiplication_attribution(attribution_fbs)
 
-        else:
-            if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
-                log.info('No attribution needed for %s at the given industry '
-                         'aggregation level', fb.full_name)
-                return fb.drop(columns=['group_id', 'group_total'])
+            else:
+                if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
+                    log.info('No attribution needed for %s at the given industry '
+                             'aggregation level', fb.full_name)
+                    return fb.drop(columns=['group_id', 'group_total'])
 
-            if attribution_method is None:
-                log.warning('No attribution method specified for %s. '
-                            'Using equal attribution as default.',
-                            fb.full_name)
-            elif attribution_method != 'direct':
-                log.error('Attribution method for %s not recognized: %s',
-                          fb.full_name, attribution_method)
-                raise ValueError('Attribution method not recognized')
+                if attribution_method is None:
+                    log.warning('No attribution method specified for %s. '
+                                'Using equal attribution as default.',
+                                fb.full_name)
+                elif attribution_method != 'direct':
+                    log.error('Attribution method for %s not recognized: %s',
+                              fb.full_name, attribution_method)
+                    raise ValueError('Attribution method not recognized')
 
-            attributed_fb = fb.equally_attribute()
+                attributed_fb = fb.equally_attribute()
 
-        # if the attribution method is not multiplication, check that new df
-        # values equal original df values
-        if attribution_method not in ['multiplication', 'weighted_average',
-                                      'substitute_nonexistent_values']:
-            # todo: add results from this if statement to validation log
-            validation_fb = attributed_fb.assign(
-                validation_total=(attributed_fb.groupby('group_id')
-                                  ['FlowAmount'].transform('sum'))
-            )
-            if not np.allclose(validation_fb.group_total,
-                               validation_fb.validation_total,
-                               equal_nan=True):
-                errors = (validation_fb
-                          .query('validation_total != group_total')
-                          [['group_id',
-                            'ActivityProducedBy', 'ActivityConsumedBy',
-                            'SectorProducedBy', 'SectorConsumedBy',
-                            'FlowAmount', 'group_total', 'validation_total']])
-                log.error('Errors in attributing flows from %s:\n%s',
-                          self.full_name, errors)
+            # if the attribution method is not multiplication, check that new df
+            # values equal original df values
+            if attribution_method not in ['multiplication', 'weighted_average',
+                                          'substitute_nonexistent_values']:
+                # todo: add results from this if statement to validation log
+                validation_fb = attributed_fb.assign(
+                    validation_total=(attributed_fb.groupby('group_id')
+                                      ['FlowAmount'].transform('sum'))
+                )
+                if not np.allclose(validation_fb.group_total,
+                                   validation_fb.validation_total,
+                                   equal_nan=True):
+                    errors = (validation_fb
+                              .query('validation_total != group_total')
+                              [['group_id',
+                                'ActivityProducedBy', 'ActivityConsumedBy',
+                                'SectorProducedBy', 'SectorConsumedBy',
+                                'FlowAmount', 'group_total', 'validation_total']])
+                    log.error('Errors in attributing flows from %s:\n%s',
+                              self.full_name, errors)
 
         return attributed_fb.drop(columns=['group_id', 'group_total'])
 
@@ -750,9 +764,14 @@ class _FlowBy(pd.DataFrame):
         return child_df_list
 
     def load_prepare_attribution_source(
-        self: 'FlowByActivity'
+        self: 'FlowByActivity',
+        attribution_config=None
     ) -> 'FlowBySector':
-        attribution_source = self.config['attribution_source']
+
+        if attribution_config is None:
+            attribution_source = self.config['attribute']['attribution_source']
+        else:
+            attribution_source = attribution_config['attribution_source']
 
         if isinstance(attribution_source, str):
             name, config = attribution_source, {}
@@ -1843,7 +1862,8 @@ class FlowByActivity(_FlowBy):
         log.info('Attributing flows in %s using %s.',
                  self.full_name, other.full_name)
 
-        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(other)
+        fba_geoscale, other_geoscale, fba, other = self.harmonize_geoscale(
+            other)
 
         # attribute on sector columns
         if self.config.get('attribute_on') is None:
@@ -1975,8 +1995,7 @@ class FlowByActivity(_FlowBy):
 
             if self.config.get('fill_sector_column') is not None:
                 sector_col = self.config.get('fill_sector_column')
-                fba[sector_col] =  fba['PrimarySector_other']
-
+                fba[sector_col] = fba['PrimarySector_other']
 
         return (
             fba
