@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.fbs_allocation import direct_allocation_method
 from flowsa.flowby import FlowBySector
 
 
