@@ -638,21 +638,28 @@ class _FlowBy(pd.DataFrame):
                 fb = grouped.copy()
 
             attribution_method = step_config.get('attribution_method')
+            if 'attribution_source' in step_config:
+                for k, v in step_config['attribution_source'].items():
+                    attribution_name = k
+
             if attribution_method == 'direct':
+                log.info(f"Directly attributing {self.full_name} to "
+                         f"target sectors.")
                 fb = fb.assign(AttributionSources='Direct')
             else:
                 fb = fb.assign(AttributionSources=','.join(
                     [k for k in step_config.get('attribution_source').keys()]))
 
             if attribution_method == 'proportional':
-                log.info(f'attributing {self.full_name} with '
-                         f'{attribute_config[0]["attribution_source"]}')
+                log.info(f"Proportionally attributing {self.full_name} to "
+                         f"target sectors with {attribution_name}")
                 attribution_fbs = fb.load_prepare_attribution_source(
                     attribution_config=step_config
                 )
                 attributed_fb = fb.proportionally_attribute(attribution_fbs)
 
             elif attribution_method == 'multiplication':
+                log.info(f"Multiplying {self.full_name} by {attribution_name}")
                 attribution_fbs = fb.load_prepare_attribution_source(
                     attribution_config=step_config
                 )
@@ -1937,14 +1944,11 @@ class FlowByActivity(_FlowBy):
 
             fba = pd.concat([directly_attributed,
                              proportionally_attributed], ignore_index=True)
-            # groupby_cols.append(rank)
 
         # else attribute on column specified in the FBS yaml
         else:
 
-            #todo: move this equal attribution into FBS method once
-            # refactored to allow multiple attribution methods
-            fba = fba.equally_attribute()
+            log.info(f'Proportionally attributing on {attribute_cols}')
             fba = (fba.add_primary_secondary_columns('Sector'))
 
             groupby_cols = [self.config.get('attribute_on'), 'Unit']
