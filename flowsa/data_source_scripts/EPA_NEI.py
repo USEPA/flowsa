@@ -74,18 +74,22 @@ def epa_nei_global_parse(*, df_list, source, year, config, **_):
     # rename columns to match flowbyactivity format
     col_dict = {value: key for (key, value) in config['col_dict'][year].items()}
     df = df.rename(columns=col_dict)
+    # drop all other columns
+    df = df.drop(columns=df.columns.difference(
+                 list(config['col_dict'][year].keys())))
 
     # make sure FIPS are string and 5 digits
-    df['Location'] = df['Location'].astype('str').apply('{:0>5}'.format)
+    df = (df.assign(Location=lambda x:
+                    x['Location'].fillna(0)
+                                 .astype('int')
+                                 .astype('str')
+                                 .str.zfill(5))
+            )
     # remove records from certain FIPS
     excluded_fips = ['78', '85', '88']
     df = df[~df['Location'].str[0:2].isin(excluded_fips)]
     excluded_fips2 = ['777']
     df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
-
-    # drop all other columns
-    df.drop(columns=df.columns.difference(
-        list(config['col_dict'][year].keys())), inplace=True)
 
     # to align with other processed NEI data (Point from StEWI), units are
     # converted during FBA creation instead of maintained
