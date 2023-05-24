@@ -705,7 +705,19 @@ class _FlowBy(pd.DataFrame):
                     log.error('Errors in attributing flows from %s:\n%s',
                               self.full_name, errors)
 
-        return attributed_fb.drop(columns=['group_id', 'group_total'])
+            # Drop columns created for disaggregation, plus any
+            # specified in the config file
+            self = (
+                attributed_fb
+                .drop(columns=['group_id', 'group_total', 'group_count', 'FlowAmount_ds', 'factor'], errors='ignore')
+                .drop(columns=step_config.get('drop_columns', []))
+            )
+            # reset datatype to FBS because otherwise when we loop through
+            # to the next attribution method, the FBA will be re-cleaned and
+            # have additional sector columns appended
+            self.config['data_format'] = 'FBS'
+
+        return self
 
 
     def activity_sets(self) -> List['FB']:
