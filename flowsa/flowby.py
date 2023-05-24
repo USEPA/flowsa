@@ -2016,8 +2016,9 @@ class FlowByActivity(_FlowBy):
                                               / x.denominator))
             )
 
-            if self.config.get('fill_sector_column') is not None:
-                sector_col = self.config.get('fill_sector_column')
+            sector_col = other_config.get('fill_sector_column',
+                                self.config.get('fill_sector_column'))
+            if sector_col is not None:
                 fba[sector_col] = fba['PrimarySector_other']
 
         return (
