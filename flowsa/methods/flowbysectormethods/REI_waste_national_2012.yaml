@@ -13,9 +13,6 @@ source_names:
       PrimaryActivity: !from_index:EPA_REI_waste_2012_asets.csv waste
       Class: Other
       Description: makecol
-    exclusion_fields:
-      ActivityConsumedBy: ['Exports of goods and services',
-                           'Imports of goods and services']
     activity_sets:
       waste_flows:
         attribute:
@@ -23,7 +20,6 @@ source_names:
           - attribution_method: proportional
             attribute_on: Flowable # FBA is mapped to FBS at this point, so FlowName is mapped to Flowable
             fill_sector_column: SectorConsumedBy
-            clean_fba_after_attribution: !script_function:EPA_REI rei_waste_national_cleanup
             attribution_source:
               "EPA_REI":
                 selection_fields:
@@ -32,3 +28,4 @@ source_names:
                   Description: useintersection
                 attribute:
                   attribution_method: direct
+        clean_fba_after_attribution: !script_function:EPA_REI rei_waste_national_cleanup
