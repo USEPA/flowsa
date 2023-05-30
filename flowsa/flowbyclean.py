@@ -145,4 +145,8 @@ def substitute_nonexistent_values(
               .assign(group_total=merged.FlowAmount)
               )
 
+    merged_null = merged[merged['FlowAmount'] == 0]
+    if len(merged_null) > 0:
+        log.warning('Not all null values were substituted')
+
     return merged
