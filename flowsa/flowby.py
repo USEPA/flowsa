@@ -2004,7 +2004,7 @@ class FlowByActivity(_FlowBy):
             if not unattributable.empty:
                 log.warning(
                     'Could not attribute activities %s in %s due to lack of '
-                    'flows in attribution source %s for mapped %s sectors %s',
+                    'flows in attribution source %s for mapped sectors',
                     set(zip(unattributable.ActivityProducedBy,
                             unattributable.ActivityConsumedBy,
                             unattributable.Location)),
