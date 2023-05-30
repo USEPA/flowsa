@@ -2022,6 +2022,16 @@ class FlowByActivity(_FlowBy):
             if sector_col is not None:
                 fba[sector_col] = fba['PrimarySector_other']
 
+        # drop rows where 'FlowAmount_other' is 0 because the primary
+        # activities are not attributed to those sectors. The values are 0
+        # because the primary activities are initially assigned to all
+        # possible sectors and there is no data for those sectors in the
+        # attribution data set. We want to drop those rows here because
+        # otherwise if the data is further attributed (such as multiplied),
+        # it could appear that data is dropped elsewhere when the dataset is
+        # checked for null values
+        fba = fba[fba['FlowAmount_other'] != 0].reset_index(drop=True)
+
         return (
             fba
             .drop(columns=['PrimarySector', 'SecondarySector',
