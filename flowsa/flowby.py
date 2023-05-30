@@ -613,7 +613,9 @@ class _FlowBy(pd.DataFrame):
         if isinstance(attribute_config, dict):
             attribute_config = [attribute_config]
         if attribute_config is None:
-            log.error('Attribution method is missing')
+            log.warning('Attribution method is missing, assuming equal '
+                        'attribution')
+            attribute_config = [{'attribution_method': 'direct'}]
 
         for step_config in attribute_config:
             grouped: 'FB' = (
