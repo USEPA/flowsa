@@ -276,6 +276,9 @@ stateio:
     - Money
   activity_schema: BEA_2012_Summary_Code
   sector_hierarchy: "parent-completeChild"
+stewiFBS:
+  data_format: FBS
+  activity_schema: NAICS_2012_Code
 USDA_CoA_Cropland:
   data_format: FBA
   class:
