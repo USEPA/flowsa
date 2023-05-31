@@ -47,16 +47,15 @@ industry_spec:
 
 
 ### Source specifications
-- _source_names_: The name of the dataset (FBA or FBS) to serve as primary data
-
 All sources are treated recursively. That is, there can be an unlimited number
 of embedded sources. The source parameters below can be applied to sources at
 any level, and are inherited from higher-level sources.
 
+- _source_names_: The name of the dataset (FBA or FBS) to serve as primary data
 - _year_: year of dataset (`2015`)
 - _geoscale_: level of geographic aggregation in output parquet
   (`national`, `state`, or `county`).
-- _data_format: default is `FBA`, specify `FBS` or `FBS_outside_flowsa`.
+- _data_format_: default is `FBA`, specify `FBS` or `FBS_outside_flowsa`.
   `FBS_outside_flowsa` requires a second parameter, `FBS_datapull_fxn` which 
   supplies the name of the function to generate the FBS using the`!script_function:` tag.
 - _activity_sets_: A subset of the FBA dataset and the method and
@@ -65,7 +64,7 @@ any level, and are inherited from higher-level sources.
   See description in `flowby.select_by_fields()`. To use a list of data points not
   supplied in the method, use the `!from_index:` tag, then give
   the name (e.g., `activity_set_1`) of the activity set as found in the csv file.
-- _exclusion_fielsd: A dictionary that allows subsetting source data by column.
+- _exclusion_fields_: A dictionary that allows subsetting source data by column.
   See description in `flowby.select_by_fields()`. 
 - _attribution_method_: currently written for `direct`, `proportional`, 
   `multiplication`.
@@ -94,7 +93,7 @@ Some functions allow for extra named parameters.
 - _fedefl_mapping_: name of mapping file in FEDEFL. If not
   supplied will use the source name
 - _mfl_mapping_: name of mapping file for Material Flow List. Should not be
-  used if fedefl_mapping is used)
+  used if fedefl_mapping is used
 - _keep_unmapped_rows_: (bool) default is False, if True will maintain any
   flows not found in mapping files.
 
