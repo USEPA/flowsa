@@ -48,24 +48,22 @@ else:
 file_formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s',
                                    datefmt='%Y-%m-%d %H:%M:%S')
 
-log_file_handler = logging.FileHandler(
-    logoutputpath + 'flowsa.log',
-    mode='w', encoding='utf-8')
-log_file_handler.setLevel(logging.DEBUG)
-log_file_handler.setFormatter(file_formatter)
+def get_log_file_handler(name, level=logging.DEBUG):
+    h = logging.FileHandler(
+        logoutputpath + name,
+        mode='w', encoding='utf-8')
+    h.setLevel(level)
+    h.setFormatter(file_formatter)
+    return h
 
-validation_file_handler = logging.FileHandler(
-    logoutputpath + 'flowsa_validation.log',
-    mode='w', encoding='utf-8')
-validation_file_handler.setLevel(logging.DEBUG)
-validation_file_handler.setFormatter(file_formatter)
+log_file_handler = get_log_file_handler('flowsa.log', logging.INFO)
+validation_file_handler = get_log_file_handler('flowsa_validation.log')
 
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setLevel(logging.INFO)
 console_handler.setFormatter(console_formatter)
 
 log = logging.getLogger('flowsa')
-log.setLevel(logging.DEBUG)
 log.addHandler(console_handler)
 log.addHandler(log_file_handler)
 log.propagate = False
@@ -75,12 +73,12 @@ vlog.setLevel(logging.DEBUG)
 vlog.addHandler(validation_file_handler)
 
 
-def rename_log_file(filename, fb_meta):
+def reset_log_file(filename, fb_meta):
     """
-    Rename the log file saved to local directory using df meta for df
+    Rename the log file saved to local directory using df meta and
+        reset the log
     :param filename: str, name of dataset
     :param fb_meta: metadata for parquet
-    :return: modified log file name
     """
     # original log file name - all log statements
     log_file = f'{logoutputpath}{"flowsa.log"}'
@@ -95,6 +93,12 @@ def rename_log_file(filename, fb_meta):
     # already exists)
     shutil.copy(log_file, new_log_name)
 
+    # Reset log file
+    for h in log.handlers:
+        if isinstance(h, logging.FileHandler):
+            log.removeHandler(h)
+    log.addHandler(get_log_file_handler('flowsa.log', logging.INFO))
+
     if fb_meta.category == 'FlowByActivity':
         return
 
@@ -108,3 +112,9 @@ def rename_log_file(filename, fb_meta):
     # rename the standard log file name (os.rename throws error if file
     # already exists)
     shutil.copy(log_file, new_log_name)
+
+    # Reset validation log file
+    for h in vlog.handlers:
+        if isinstance(h, logging.FileHandler):
+            vlog.removeHandler(h)
+    vlog.addHandler(get_log_file_handler('flowsa_validation.log'))

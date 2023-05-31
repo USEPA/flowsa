@@ -5,20 +5,37 @@
 Inventory of US GHGs from EPA disaggregated to States
 """
 import pandas as pd
-from flowsa.settings import externaldatapath
+import io
+from zipfile import ZipFile
+from flowsa.flowby import FlowByActivity
+from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 import flowsa.exceptions
 
 
-def epa_state_ghgi_parse(*, source, year, config, **_):
+def epa_state_ghgi_call(*, resp, config, **_):
+    """
+    Convert response for calling url to pandas dataframe
+    :param resp: response from url call
+    :param config: dictionary, items in FBA method yaml
+    :return: pandas dataframe of original source data
+    """
+    with ZipFile(io.BytesIO(resp.content)) as z:
+        df = pd.read_excel(z.open(config['file']),
+                           sheet_name=config['sheet'])
+    return df
 
-    try:
-        data_df = pd.read_excel(externaldatapath + config.get('file'),
-                                sheet_name='Data by Econ Sect')
-    except FileNotFoundError:
-        raise FileNotFoundError('State GHGI data not yet available for '
-                                'external users')
+def epa_state_ghgi_parse(*, df_list, source, year, config, **_):
+    """
+    Combine, parse, and format the provided dataframes
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :param config: dictionary, items in FBA method yaml
+    :return: df, parsed and partially formatted to flowbyactivity
+        specifications
+    """
+    data_df = pd.concat(df_list)
 
     activity_cols = ['ECON_SECTOR', 'ECON_SOURCE', 'SUBSECTOR',
                      'CATEGORY', 'FUEL', 'SUBCATEGORY1',
@@ -69,6 +86,96 @@ def tag_biogenic_activities(fba, source_dict, **_):
             'FlowName'] = fba['FlowName'] + ' - biogenic'
 
     return fba
+
+
+def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
+    """
+    clean_fba_before_activity_sets fxn to estimate CH4 and N2O emissions by
+    fuel type, using ratios derived from the national inventory as proxy
+
+    returns a FBA that has increased in length x-times based on the number of
+    fuels; Fuel is added to "Description" field; total FlowAmount remains
+    unchanged.
+    """
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
+
+    year = fba.config.get('year')
+    # combine lists of activities from CO2 activity set
+    activity_list = [a for a in 
+                     fba.config['clean_parameter']['flow_ratio_source']
+                     for a in a]
+    source_fba = pd.concat([
+        flowsa.getFlowByActivity(x, year) for x in 
+        fba.config['clean_parameter']['fba_source']
+        ], ignore_index=True)
+
+    # align fuel names from National GHGI (keys) with StateGHGI (values)
+    fuels = {'Natural Gas': 'Natural Gas',
+             'Coal': 'Coal',
+             'Fuel Oil': 'Petroleum'}
+
+    df_list = []
+    for f in fuels.keys():
+        df = (source_fba.query(f'ActivityProducedBy == "{f} Industrial"')
+              [['FlowName', 'FlowAmount']]
+              .assign(Fuel=f)
+              )
+        df_list.append(df)
+    # calculate ratio of flow to CO2 for each fuel (in CO2e)
+    ratios = (pd.concat(df_list, ignore_index=True)
+              .pivot_table(columns='FlowName',
+                           index='Fuel',
+                           values='FlowAmount')
+              .assign(CH4=lambda x: x['CH4'] / x['CO2'])
+              .assign(N2O=lambda x: x['N2O'] / x['CO2'])
+              .drop(columns='CO2')
+              )
+
+    # prepare dataframe from StateGHGI including CO2 flows by fuel type
+    fba1 = (pd.concat([(flowsa.getFlowByActivity('EPA_StateGHGI', year)
+                       .query('ActivityProducedBy in @activity_list')),
+                      fba.copy()],
+                     ignore_index=True)
+           .assign(Fuel=lambda x: x['ActivityProducedBy']
+                   .str.rsplit(' - ', n=1, expand=True)[1])
+           )
+
+    # Derive state CH4 and N2O emissions by fuel type using fuel specific ratios
+    fba2 = (fba1.query('FlowName == "CO2"')
+                .assign(Fuel=lambda x: x['Fuel'].replace(
+                    dict((v,k) for k,v in fuels.items())))
+                .merge(ratios.reset_index())
+                .assign(CH4=lambda x: x['CH4'] * x['FlowAmount'])
+                .assign(N2O=lambda x: x['N2O'] * x['FlowAmount'])
+                .melt(id_vars=['Location', 'Fuel'],
+                      value_vars=['CH4', 'N2O'],
+                      var_name='FlowName')
+                .pivot_table(columns='Fuel',
+                             index=['Location', 'FlowName'],
+                             values='value')
+                )
+    fba2 = pd.DataFrame(fba2).div(fba2.sum(axis=1), axis=0)
+
+    # Maintain source flow amount, merge in state ratios by fuel type
+    fba3 = (fba1.merge(fba2.reset_index())
+                .melt(id_vars=[c for c in fba1 if c not in fuels.keys()],
+                      value_vars=fuels.keys())
+                .assign(Description=lambda x: x['variable'].replace(fuels))
+                .assign(FlowAmount=lambda x: x['FlowAmount'] * x['value'])
+                .drop(columns=['Fuel', 'variable', 'value'])
+                )
+
+    if fba3.FlowAmount.sum() != fba.FlowAmount.sum():
+        log.warning('Error: totals do not match when splitting CH4 and N2O by '
+                    'fuel type')
+
+    new_fba = FlowByActivity(fba3)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
+
+    return new_fba
 
 
 if __name__ == '__main__':

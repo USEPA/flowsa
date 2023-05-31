@@ -18,7 +18,7 @@ def compare_single_FBS_against_remote(m, outdir=diffpath,
     if not downloaded:
         if run_single:
             # Run a single file even if no comparison available
-            FlowBySector.genereateFlowBySector(
+            FlowBySector.generateFlowBySector(
                 method=m, download_sources_ok=True)
         else:
             print(f"{m} not found in remote server. Skipping...")

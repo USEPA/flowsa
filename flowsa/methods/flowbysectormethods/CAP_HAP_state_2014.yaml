@@ -8,11 +8,11 @@
 !include:USEEIO_summary_target.yaml
 target_naics_year: 2012
 geoscale: state
-_emission_year: &year 2017
+_emission_year: &year 2014
 
 sources_to_cache:
   EIA_MECS_Energy:
-    year: 2018
+    year: 2014
     geoscale: state
     selection_fields:
       Class: Energy
@@ -25,7 +25,7 @@ sources_to_cache:
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
     clean_fba: !script_function:EIA_MECS clean_mecs_energy_fba
     clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
-    attribution_source: Employment_state_2018
+    attribution_source: Employment_state_2014
 
 _attribution_sources:
   stateio: &stateio
@@ -34,7 +34,7 @@ _attribution_sources:
     activity_to_sector_mapping: BEA_2012_Summary
     attribution_method: proportional
     attribution_source:
-      Employment_state_2017:
+      Employment_state_2014:
         data_format: FBS
         geoscale: state
         year: *year
@@ -101,7 +101,7 @@ source_names:
               Class: Money
             attribution_method: proportional
             attribution_source:
-              Employment_state_2017:
+              Employment_state_2014:
                 data_format: FBS
                 geoscale: state
                 year: *year
@@ -143,4 +143,4 @@ source_names:
     inventory_dict:
       NEI: *year
       TRI: *year
-    local_inventory_name: NEI_TRI_air_2017
+    local_inventory_name: NEI_TRI_air_2014

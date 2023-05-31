@@ -18,6 +18,7 @@ from flowsa.dataclean import replace_strings_with_NoneType, \
 from flowsa.common import sector_level_key, \
     fba_activity_fields, check_activities_sector_like
 from flowsa.location import US_FIPS, fips_number_key
+from flowsa.schema import dq_fields
 
 
 def check_if_data_exists_at_geoscale(df_load, geoscale):
@@ -620,8 +621,8 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
             columns={'FlowAmount': 'FlowAmount_fbs2'})
     df2 = replace_strings_with_NoneType(df2)
     # compare df
-    merge_cols = list(df2.select_dtypes(include=[
-        'object', 'int']).columns)
+    merge_cols = [c for c in df2.select_dtypes(include=[
+        'object', 'int']).columns if c not in dq_fields]
     if ignore_metasources:
         for e in ['MetaSources', 'AttributionSources']:
             try:
@@ -793,8 +794,8 @@ def calculate_industry_coefficients(fbs_load, year,region,
     :param year: year for industry output dataset
     :param region: str, 'state' or 'national'
     :param io_level: str, 'summary' or 'detail'
-    :param impacts: bool, True to apply and aggregate on impacts
-        False to compare flow/contexts
+    :param impacts: bool or str, True to apply and aggregate on impacts using TRACI,
+        False to compare flow/contexts, str to pass alternate method
     """
     from flowsa.sectormapping import map_to_BEA_sectors,\
         get_BEA_industry_output
@@ -805,9 +806,11 @@ def calculate_industry_coefficients(fbs_load, year,region,
 
     inventory = not(impacts)
     if impacts:
+        if isinstance(impacts, bool):
+            impacts = 'TRACI2.1'
         try:
             import lciafmt
-            fbs_summary = (lciafmt.apply_lcia_method(fbs, 'TRACI2.1')
+            fbs_summary = (lciafmt.apply_lcia_method(fbs, impacts)
                            .rename(columns={'FlowAmount': 'InvAmount',
                                             'Impact': 'FlowAmount'}))
             groupby_cols = ['Location', 'Sector',

@@ -17,7 +17,7 @@ from esupy.remote import make_url_request
 from flowsa.common import load_env_file_key, sourceconfigpath, \
     load_yaml_dict, get_flowsa_base_name
 from flowsa.settings import paths
-from flowsa.flowsa_log import log, rename_log_file
+from flowsa.flowsa_log import log, reset_log_file
 from flowsa.metadata import set_fb_meta, write_metadata
 from flowsa.flowbyfunctions import fba_fill_na_dict
 from flowsa.schema import flow_by_activity_fields
@@ -179,7 +179,7 @@ def process_data_frame(*, df, source, year, config):
     write_metadata(source, config, meta, "FlowByActivity", year=year)
     log.info("FBA generated and saved for %s", name_data)
     # rename the log file saved to local directory
-    rename_log_file(name_data, meta)
+    reset_log_file(name_data, meta)
 
 
 def main(**kwargs):

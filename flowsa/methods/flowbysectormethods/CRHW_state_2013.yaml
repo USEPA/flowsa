@@ -1,0 +1,9 @@
+industry_spec:
+  default: NAICS_6
+target_naics_year: 2012
+year: 2013
+geoscale: state
+source_names:
+  stewiFBS: !include:stewiFBS_common.yaml:CRHW
+    inventory_dict:
+      RCRAInfo: 2013
