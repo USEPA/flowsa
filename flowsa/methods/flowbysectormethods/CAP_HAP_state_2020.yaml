@@ -8,7 +8,7 @@
 !include:USEEIO_summary_target.yaml
 target_naics_year: 2012
 geoscale: state
-_emission_year: &year 2017
+_emission_year: &year 2020
 
 sources_to_cache:
   EIA_MECS_Energy:
@@ -34,7 +34,7 @@ _attribution_sources:
     activity_to_sector_mapping: BEA_2012_Summary
     attribution_method: proportional
     attribution_source:
-      Employment_state_2017:
+      Employment_state_2020:
         data_format: FBS
         geoscale: state
         year: *year
@@ -101,7 +101,7 @@ source_names:
               Class: Money
             attribution_method: proportional
             attribution_source:
-              Employment_state_2017:
+              Employment_state_2020:
                 data_format: FBS
                 geoscale: state
                 year: *year
@@ -143,4 +143,4 @@ source_names:
     inventory_dict:
       NEI: *year
       TRI: *year
-    local_inventory_name: NEI_TRI_air_2017
+    local_inventory_name: NEI_TRI_air_2020
