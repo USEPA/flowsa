@@ -636,7 +636,7 @@ class _FlowBy(pd.DataFrame):
                                      method=self.config)
                     .rename(columns={'SourceName': 'MetaSources'})
                 )
-            elif self.config['data_format'] == 'FBS':
+            elif self.config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
                 fb = grouped.copy()
 
             # subset the fb configuration so it only includes the
