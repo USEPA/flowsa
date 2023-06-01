@@ -18,8 +18,8 @@ source_names:
         attribute:
           - attribution_method: direct
           - attribution_method: proportional
-            attribute_on: [Flowable, Unit, Location] # FBA is mapped to FBS at this point, so FlowName is mapped to Flowable
-            fill_sector_column: SectorConsumedBy
+            attribute_on: [Flowable] # FBA is mapped to FBS at this point, so FlowName is mapped to Flowable
+            fill_columns: SectorConsumedBy
             attribution_source:
               EPA_REI:
                 selection_fields:
