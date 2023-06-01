@@ -18,14 +18,12 @@ source_names:
         attribute:
           - attribution_method: direct
           - attribution_method: proportional
-            attribute_on: Flowable # FBA is mapped to FBS at this point, so FlowName is mapped to Flowable
+            attribute_on: [Flowable, Unit, Location] # FBA is mapped to FBS at this point, so FlowName is mapped to Flowable
             fill_sector_column: SectorConsumedBy
             attribution_source:
-              "EPA_REI":
+              EPA_REI:
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_REI_waste_2012_asets.csv waste
                   Class: Other
                   Description: useintersection
-                attribute:
-                  attribution_method: direct
         clean_fba_after_attribution: !script_function:EPA_REI rei_waste_national_cleanup
