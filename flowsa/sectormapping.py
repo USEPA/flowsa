@@ -78,7 +78,7 @@ def add_sectors_to_flowbyactivity(
         repo
     :return: a df with activity fields mapped to 'sectors'
     """
-    from flowsa.naics import replace_naics_w_naics_from_another_year
+    from flowsa.naics import convert_naics_year
     # First check if source activities are NAICS like -
     # if so make it into a mapping file
     s = pd.unique(flowbyactivity_df['SourceName'])[0]
@@ -158,9 +158,8 @@ def add_sectors_to_flowbyactivity(
 
     # if activities are sector-like check that the sectors are in the crosswalk
     if src_info['sector-like_activities']:
-        flowbyactivity_wsector_df =\
-            replace_naics_w_naics_from_another_year(flowbyactivity_wsector_df,
-                                                    sectorsourcename)
+        flowbyactivity_wsector_df = convert_naics_year(
+            flowbyactivity_wsector_df, sectorsourcename)
 
     return flowbyactivity_wsector_df
 

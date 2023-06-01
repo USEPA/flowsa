@@ -18,7 +18,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import process_adjustmentpath
-from flowsa.naics import replace_naics_w_naics_from_another_year
+from flowsa.naics import convert_naics_year
 import stewicombo
 import stewi
 from stewicombo.overlaphandler import remove_default_flow_overlaps
@@ -300,7 +300,6 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     :param config: dictionary, FBS method data source configuration
     :return: FlowBySector
     """
-    config['sector-like_activities'] = True
     config['fedefl_mapping'] = ([x for x in config.get('inventory_dict').keys()
                                  if x != 'RCRAInfo'])
     config['drop_unmapped_rows'] = True
@@ -315,7 +314,7 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
                              'Source': 'SourceName'})
             .assign(Class='Chemicals')
             .assign(ActivityConsumedBy='')
-            .pipe(replace_naics_w_naics_from_another_year,
+            .pipe(convert_naics_year,
                   f"NAICS_{config['target_naics_year']}_Code")
             # ^^ Consider upating this old function
             .assign(FlowType=lambda x: np.where(

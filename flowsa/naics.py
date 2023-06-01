@@ -180,7 +180,8 @@ def melt_naics_crosswalk():
 
     return cw_replacement_2
 
-def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
+
+def convert_naics_year(df_load, sectorsourcename):
     """
     Replace any non sectors with sectors.
     :param df_load: df with sector columns or sector-like activities
