@@ -820,9 +820,10 @@ class _FlowBy(pd.DataFrame):
             attribution_fbs.config = {
                 **{k: attribution_fbs.config[k]
                    for k in attribution_fbs.config['method_config_keys']},
+                **get_catalog_info(name),
                 **config
             }
-            attribution_fbs = attribution_fbs.prepare_fbs()
+            # attribution_fbs = attribution_fbs.prepare_fbs()
         else:
             attribution_fbs = get_flowby_from_config(
                 name=name,
