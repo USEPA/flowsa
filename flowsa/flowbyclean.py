@@ -49,7 +49,7 @@ def weighted_average(
                      else 'Location'],
                      right_on=['PrimarySector', 'Location'],
                      suffixes=[None, '_other'])
-              .fillna({'FlowAmount_other': 0})
+              .fillna({'FlowAmount_other': fba['FlowAmount']})
               )
     # drop rows where flow is 0
     merged = merged[merged['FlowAmount'] != 0]
