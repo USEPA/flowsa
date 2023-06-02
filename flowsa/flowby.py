@@ -624,7 +624,7 @@ class _FlowBy(pd.DataFrame):
                 .rename(columns={'index': 'group_id'})
                 .assign(group_total=self.FlowAmount)
             )
-            if len(grouped)==0:
+            if len(grouped) == 0:
                 log.warning(f'No data remaining in {self.full_name}.')
                 return self
             if self.config['data_format'] == 'FBA':
@@ -651,16 +651,18 @@ class _FlowBy(pd.DataFrame):
 
             attribution_method = step_config.get('attribution_method')
             if 'attribution_source' in step_config:
-                for k, v in step_config['attribution_source'].items():
-                    attribution_name = k
+                if isinstance(step_config['attribution_source'], str):
+                     attribution_name = step_config['attribution_source']
+                else:
+                    for k, v in step_config['attribution_source'].items():
+                        attribution_name = k
 
             if attribution_method in ['direct', 'inheritance']:
                 log.info(f"Directly attributing {self.full_name} to "
                          f"target sectors.")
                 fb = fb.assign(AttributionSources='Direct')
             else:
-                fb = fb.assign(AttributionSources=','.join(
-                    [k for k in step_config.get('attribution_source').keys()]))
+                fb = fb.assign(AttributionSources=attribution_name)
 
             if attribution_method == 'proportional':
                 log.info(f"Proportionally attributing {self.full_name} to "
