@@ -654,7 +654,7 @@ class _FlowBy(pd.DataFrame):
                 for k, v in step_config['attribution_source'].items():
                     attribution_name = k
 
-            if attribution_method == 'direct':
+            if attribution_method in ['direct', 'inheritance']:
                 log.info(f"Directly attributing {self.full_name} to "
                          f"target sectors.")
                 fb = fb.assign(AttributionSources='Direct')
@@ -677,6 +677,11 @@ class _FlowBy(pd.DataFrame):
                 )
                 attributed_fb = fb.multiplication_attribution(attribution_fbs)
 
+            elif attribution_method == 'inheritance':
+                log.info(f'Directly attributing {self.full_name} to sectors, child '
+                         'sectors inherent parent values.')
+                attributed_fb = fb.copy()
+
             else:
                 if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
                     log.info('No attribution needed for %s at the given industry '
@@ -696,8 +701,7 @@ class _FlowBy(pd.DataFrame):
 
             # if the attribution method is not multiplication, check that new df
             # values equal original df values
-            if attribution_method not in ['multiplication', 'weighted_average',
-                                          'substitute_nonexistent_values']:
+            if attribution_method not in ['multiplication', 'inheritance']:
                 # todo: add results from this if statement to validation log
                 validation_fb = attributed_fb.assign(
                     validation_total=(attributed_fb.groupby('group_id')
@@ -980,7 +984,6 @@ class _FlowBy(pd.DataFrame):
         # otherwise if the data is further attributed (such as multiplied),
         # it could appear that data is dropped elsewhere when the dataset is
         # checked for null values
-        t = pd.DataFrame(fb)
         fb = fb[fb['FlowAmount_other'] != 0].reset_index(drop=True)
 
         return (
