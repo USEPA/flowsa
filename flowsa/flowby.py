@@ -1762,9 +1762,8 @@ class FlowByActivity(_FlowBy):
                         existing_sectors['Activity'] == i]
                     for j in existing_sectors_sub['Sector']:
                         dig = len(str(j))
-                        n = existing_sectors_sub[
-                            existing_sectors_sub['Sector'].apply(
-                                lambda x: x[0:dig]) == j]
+                        n = existing_sectors[
+                            existing_sectors['Sector'].str.startswith(j)]
                         if len(n) == 1:
                             expanded_n = naics_key[naics_key['source_naics']
                                                    == j]
@@ -1781,7 +1780,7 @@ class FlowByActivity(_FlowBy):
                     .drop(columns=['source_naics', 'target_naics'])
                 )
 
-                fba_w_naics = self
+                fba_w_naics = self.copy()
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
                         fba_w_naics
