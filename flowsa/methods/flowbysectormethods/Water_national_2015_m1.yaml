@@ -183,4 +183,4 @@ source_names:
                     year: 2005
                     geoscale: national
                     attribute:
-                      attribution_method: direct
+                      attribution_method: inheritance
