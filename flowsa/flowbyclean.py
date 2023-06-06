@@ -118,16 +118,9 @@ def substitute_nonexistent_values(
 
     # load secondary FBS
     other = load_prepare_clean_source(fb)
-    other = (other
-             .add_primary_secondary_columns('Sector')
-             .drop(columns=['MetaSources', 'AttributionSources']))
 
     log.info('Substituting nonexistent values in %s with %s.',
              fb.full_name, other.full_name)
-
-    fb = (fb
-           .add_primary_secondary_columns('Sector')
-           )
 
     # merge all possible national data with each state
     state_geo = pd.concat([
@@ -138,27 +131,29 @@ def substitute_nonexistent_values(
     other = (other
              .merge(state_geo)
              .drop(columns=['Location', 'FlowUUID'])
-             .rename(columns={'FIPS': 'Location',
-                              'FlowAmount': 'FlowAmount_other'})
+             .rename(columns={'FIPS': 'Location'})
              )
 
     merged = (fb
               .merge(other,
                      on=list(other.select_dtypes(
                          include=['object', 'int']).columns),
-                     how='outer')
-              .assign(FlowAmount=lambda x: x.FlowAmount.
-                      fillna(x.FlowAmount_other))
-              .drop(columns=['PrimarySector', 'SecondarySector',
-                             'FlowAmount_other', 'group_id'],
-                    errors='ignore')
+                     how='outer',
+                     suffixes=(None, '_y'))
+              )
+    # fill in missing data
+    new_col_data = [col for col in merged if col.endswith('_y')]
+    for c in new_col_data:
+        original_col = c.replace('_y', '')
+        merged[original_col] = merged[original_col].fillna(
+            merged[c])
+
+    # reset grop id and group total, drop columns
+    merged = (merged
+              .drop(merged.filter(regex='_y').columns, axis=1)
+              .drop(columns=['group_id'])
               .reset_index(drop=True).reset_index()
               .rename(columns={'index': 'group_id'})
-              )
-    # replace float dtypes with new data
-    merged = (merged
-              .drop(merged.filter(regex='_x').columns, axis=1)
-              .rename(columns=lambda x: x.replace('_y', ''))
               .assign(group_total=merged.FlowAmount)
               )
 
