@@ -699,7 +699,12 @@ class _FlowBy(pd.DataFrame):
                               fb.full_name, attribution_method)
                     raise ValueError('Attribution method not recognized')
 
-                attributed_fb = fb.equally_attribute()
+                if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
+                    log.info('No attribution needed for %s at the given industry '
+                             'aggregation level', fb.full_name)
+                    attributed_fb = fb.copy()
+                else:
+                    attributed_fb = fb.equally_attribute()
 
             # if the attribution method is not multiplication, check that new df
             # values equal original df values
