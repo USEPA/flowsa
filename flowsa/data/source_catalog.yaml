@@ -186,7 +186,7 @@ EPA_REI:
     - Money
     - Other
   activity_schema: None
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 EPA_StateGHGI:
   data_format: FBA
   class:
