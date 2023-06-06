@@ -87,6 +87,10 @@ source_names:
                   - "AREA, IRRIGATED"
                   - 'AREA BEARING & NON-BEARING, IRRIGATED'
                   - 'AREA GROWN, IRRIGATED'
+              exclusion_fields:
+                ActivityConsumedBy:
+                  - 'AG LAND'
+                  - 'AG LAND, CROPLAND, HARVESTED'
               activity_sets:
                 cropland_attribution-pastureland:
                   selection_fields:
@@ -100,33 +104,21 @@ source_names:
                             Class: Land
                             FlowName:
                               - "FARM OPERATIONS"
-                          estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                          estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
                           selection_fields_after_data_suppression_estimation:
-                            PrimaryActivity: ["112111", "112112", "11212", "1122",
-                                              "11231", "11232", "11233", "11234",
-                                              "11239", "11241", "11242", "11291",
-                                              "11292", "11293", "11299"]
+                            PrimaryActivity: [
+                              '112', '1121', '11211', '112111', '112112',
+                              '11212', '1122', '1123', '11231', '11232',
+                              '11233', '11234', '11239', '1124', '11241',
+                              '11242', '1129', '11291', '11292', '11293',
+                              '11299']
                     - attribution_method: multiplication
                       attribution_source: USDA_IWMS
                 cropland_attribution-cropland:
-                  selection_fields:
-                    PrimaryActivity: ['SOYBEANS', 'CANOLA', 'FLAXSEED',
-                      'MUSTARD, SEED', 'RAPESEED', 'SAFFLOWER', 'SESAME',
-                      'SUNFLOWER', 'CAMELINA', 'BEANS, DRY EDIBLE, (EXCL LIMA),
-                      INCL CHICKPEAS', 'BEANS, DRY EDIBLE, (EXCL CHICKPEAS &
-                      LIMA)', 'BEANS, DRY EDIBLE, LIMA', 'CHICKPEAS', 'LENTILS',
-                      'PEAS, DRY EDIBLE', 'PEAS, DRY, SOUTHERN (COWPEAS)',
-                      'WHEAT', 'CORN', 'CORN, GRAIN', 'CORN, SILAGE',
-                      'POPCORN, SHELLED', 'RICE', 'BARLEY', 'BUCKWHEAT',
-                      'MILLET, PROSO', 'OATS', 'RYE', 'SORGHUM, GRAIN',
-                      'SORGHUM, SILAGE', 'SORGHUM, SYRUP', 'TRITICALE', 'WILD
-                      RICE', 'VEGETABLE TOTALS', 'BERRY TOTALS', 'CUT
-                      CHRISTMAS TREES', 'SHORT TERM WOODY CROPS', 'TOBACCO',
-                      'COTTON', 'SUGARCANE, SUGAR', 'SUGARCANE, SEED', 'HAY
-                      & HAYLAGE', 'SUGARBEETS', 'SUGARBEETS, SEED',
-                      'PEANUTS', 'GRASSES & LEGUMES TOTALS, SEED', 'HERBS,
-                      DRY', 'HOPS', 'MINT, OIL', 'MISCANTHUS', 'MINT, TEA
-                      LEAVES', 'FIELD CROPS, OTHER']
+                  exclusion_fields:
+                    ActivityConsumedBy:
+                      - 'AG LAND, (EXCL HARVESTED CROPLAND)'
+                      - 'ORCHARDS'
                   attribute:
                     - attribution_method: proportional
                       attribution_source:
@@ -136,15 +128,7 @@ source_names:
                             Class: Land
                             FlowName:
                               - "AG LAND, CROPLAND, HARVESTED"
-                            PrimaryActivity: ["11111", "11112", "11113", "11114",
-                                              "11115", "11116", "11119", "111211",
-                                              "111219", "11131",
-                                              "11132", "111331", "111332",
-                                              "111333", "111334", "111335",
-                                              "111336", "111339", "11141",
-                                              "111421", "111422", "11191", "11192",
-                                              "11193", "11194", "11199"]
-                          estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                          estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
                     - attribution_method: multiplication
                       attribution_source: USDA_IWMS
                 cropland_attribution-orchards:
