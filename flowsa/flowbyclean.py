@@ -92,29 +92,29 @@ def weighted_average(
 
 
 def substitute_nonexistent_values(
-        fba: 'FlowByActivity',
+        fb: 'FlowBy',
         **kwargs
-) -> 'FlowByActivity':
+) -> 'FlowBy':
     """
-    This method determines weighted average
+    Fill missing values with data from another geoscale
     """
 
     # load secondary FBS
-    other = load_prepare_clean_source(fba)
+    other = load_prepare_clean_source(fb)
     other = (other
              .add_primary_secondary_columns('Sector')
              .drop(columns=['MetaSources', 'AttributionSources']))
 
     log.info('Substituting nonexistent values in %s with %s.',
-             fba.full_name, other.full_name)
+             fb.full_name, other.full_name)
 
-    fba = (fba
+    fb = (fb
            .add_primary_secondary_columns('Sector')
            )
 
     # merge all possible national data with each state
     state_geo = pd.concat([
-        (geo.filtered_fips(fba.config['geoscale'])[['FIPS']]
+        (geo.filtered_fips(fb.config['geoscale'])[['FIPS']]
          .assign(Location=location.US_FIPS))
     ])
 
@@ -125,7 +125,7 @@ def substitute_nonexistent_values(
                               'FlowAmount': 'FlowAmount_other'})
              )
 
-    merged = (fba
+    merged = (fb
               .merge(other,
                      on=list(other.select_dtypes(
                          include=['object', 'int']).columns),
