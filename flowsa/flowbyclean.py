@@ -5,6 +5,23 @@ from flowsa.flowsa_log import log
 from flowsa import (flowby, geo, location)
 
 
+def return_primary_activity_column(fba: FlowByActivity) -> \
+        FlowByActivity:
+    """
+    Determine activitiy column with values
+    :param fba: fbs df with two sector columns
+    :return: string, primary sector column
+    """
+    if fba['ActivityProducedBy'].isnull().all():
+        primary_column = 'ActivityConsumedBy'
+    elif fba['ActivityConsumedBy'].isnull().all():
+        primary_column = 'ActivityProducedBy'
+    else:
+        log.error('Could not determine primary activity column as there '
+                  'are values in both ActivityProducedBy and '
+                  'ActivityConsumedBy')
+    return primary_column
+
 
 def load_prepare_clean_source(
         self: 'FlowByActivity'
@@ -150,3 +167,86 @@ def substitute_nonexistent_values(
         log.warning('Not all null values were substituted')
 
     return merged
+
+
+def estimate_suppressed_sectors_equal_attribution(
+        fba: FlowByActivity) -> FlowByActivity:
+    """
+
+    :param fba:
+    :return:
+    """
+
+    col = return_primary_activity_column(fba)
+    indexed = (
+        fba
+        .assign(n2=fba[col].str.slice(stop=2),
+                n3=fba[col].str.slice(stop=3),
+                n4=fba[col].str.slice(stop=4),
+                n5=fba[col].str.slice(stop=5),
+                n6=fba[col].str.slice(stop=6),
+                n7=fba[col].str.slice(stop=7),
+                location=fba.Location,
+                category=fba.FlowName)
+        .replace({'FlowAmount': {0: np.nan},
+                  col: {'31-33': '3X',
+                        '44-45': '4X',
+                        '48-49': '4Y'},
+                  'n2': {'31': '3X', '32': '3X', '33': '3X',
+                         '44': '4X', '45': '4X',
+                         '48': '4Y', '49': '4Y'}})
+        .set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'location', 'category'],
+                   verify_integrity=True)
+    )
+
+    def fill_suppressed(
+        flows: pd.Series,
+        level: int,
+        full_naics: pd.Series
+    ) -> pd.Series:
+        parent = flows[full_naics.str.len() == level]
+        children = flows[full_naics.str.len() == level + 1]
+        null_children = children[children.isna()]
+
+        if null_children.empty or parent.empty:
+            return flows
+        else:
+            value = max((parent[0] - children.sum()) / null_children.size, 0)
+            return flows.fillna(pd.Series(value, index=null_children.index))
+
+    unsuppressed = (
+        indexed
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 2, x[col])))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 3, x[col])))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 4, x[col])))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4', 'n5',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 5, x[col])))
+        .fillna({'FlowAmount': 0})
+        .reset_index(drop=True)
+    )
+
+    aggregated = (
+        unsuppressed
+        .replace({col: {'3X': '31-33',
+                        '4X': '44-45',
+                        '4Y': '48-49'}})
+        .aggregate_flowby()
+    )
+
+
+    return aggregated
