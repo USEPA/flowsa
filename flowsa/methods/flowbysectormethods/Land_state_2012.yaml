@@ -102,7 +102,7 @@ source_names:
                   Class: Land
                   FlowName:
                     - "FARM OPERATIONS"
-                estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
                 selection_fields_after_data_suppression_estimation:
                   PrimaryActivity: [ "112111", "112112", "11212", "1122",
                                      "11231", "11232", "11233", "11234",
@@ -121,7 +121,7 @@ source_names:
             selection_fields:
               Class: "Land"
               FlowName: "FARM OPERATIONS"
-            estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
       forest:
         selection_fields:
          PrimaryActivity:
