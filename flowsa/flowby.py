@@ -685,11 +685,6 @@ class _FlowBy(pd.DataFrame):
                 attributed_fb = fb.copy()
 
             else:
-                if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
-                    log.info('No attribution needed for %s at the given industry '
-                             'aggregation level', fb.full_name)
-                    return fb.drop(columns=['group_id', 'group_total'])
-
                 if attribution_method is None:
                     log.warning('No attribution method specified for %s. '
                                 'Using equal attribution as default.',
@@ -725,6 +720,10 @@ class _FlowBy(pd.DataFrame):
                                 'FlowAmount', 'group_total', 'validation_total']])
                     log.error('Errors in attributing flows from %s:\n%s',
                               self.full_name, errors)
+
+            # run function to clean fbs after attribution
+            attributed_fb = attributed_fb.function_socket(
+                'clean_fba_after_attribution')
 
             # Drop columns created for disaggregation, plus any
             # specified in the config file
@@ -1960,7 +1959,6 @@ class FlowByActivity(_FlowBy):
             .function_socket('clean_fba')
             .convert_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path)  # recursive call to prepare_fbs
-            .function_socket('clean_fba_after_attribution')
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
         )
