@@ -26,6 +26,22 @@ sources_to_cache:
     #     data_format: FBS
     #     year: 2018
 
+  EIA_MECS_Energy_state: ## Version to use in state models
+    # year: 2018 # Specify target MECS year
+    geoscale: state
+    selection_fields:
+      Class: Energy
+      Unit: Trillion Btu
+      Description:
+          - Table 2.2
+          - Table 3.2
+    exclusion_fields:
+      Location: '00000'
+    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+    clean_fba: !script_function:EIA_MECS clean_mecs_energy_fba
+    clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
+    attribution_source: Employment_state_2018 ## Update to MECS year
+
 _attribution_sources:
   BEA: &bea
     year: 2012

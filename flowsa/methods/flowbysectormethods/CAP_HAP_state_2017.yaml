@@ -12,19 +12,8 @@ _emission_year: &year 2017
 
 sources_to_cache:
   EIA_MECS_Energy:
+    !include:CAP_HAP_common.yaml:sources_to_cache:EIA_MECS_Energy_state
     year: 2018
-    geoscale: state
-    selection_fields:
-      Class: Energy
-      Unit: Trillion Btu
-      Description:
-          - Table 2.2
-          - Table 3.2
-    exclusion_fields:
-      Location: '00000'
-    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
-    clean_fba: !script_function:EIA_MECS clean_mecs_energy_fba
-    clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
     attribution_source: Employment_state_2018
 
 _attribution_sources:
@@ -68,20 +57,7 @@ source_names:
               ActivityProducedBy: {'325': ''}  # Fertilizers 325310
 
       pesticides:
-        selection_fields:
-          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv pesticides
-        exclusion_fields:
-        # To avoid overlap with other datasets, emissions of pesticides
-        # from pesticide application are removed.
-          FlowName:
-            - 2,4-Dichlorophenoxy Acetic Acid
-            - Captan
-            - Carbaryl
-            - Methyl Bromide
-            - Methyl Iodide
-            - Parathion
-            - Trifluralin
-        attribution_method: proportional
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:pesticides
         attribution_source:
           stateio_Use_Summary:
             <<: *stateio
