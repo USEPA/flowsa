@@ -191,7 +191,7 @@ def ghg_call(*, resp, url, year, config, **_):
                         # Skip 3-22b for current year (use 3-22 instead)
                         continue
                     else:
-                        df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
+                        df = pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
                                          skiprows=2, encoding="ISO-8859-1", thousands=",")
                 else:
                     try:

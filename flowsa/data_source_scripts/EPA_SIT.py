@@ -28,7 +28,7 @@ def epa_sit_parse(*, source, year, config, **_):
         # for each Excel data file listed in the .yaml...
         for file in config['files']:
             log.info(f'Loading data from {file}...')
-            filepath = f"{externaldatapath}/SIT_data/{state}/{file}"
+            filepath = externaldatapath / f"SIT_data/{state}/{file}"
             # dictionary containing Excel sheet-specific information
             file_dict = config['files'][file]['file_dict']
     

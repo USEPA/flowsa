@@ -26,7 +26,7 @@ def bea_gdp_parse(*, year, **_):
         specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "BEA_GDP_GrossOutput_IO.csv")
+    df_raw = pd.read_csv(externaldatapath / "BEA_GDP_GrossOutput_IO.csv")
 
     df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
 
@@ -61,8 +61,8 @@ def bea_use_detail_br_parse(*, year, **_):
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    csv_load = f'{externaldatapath}BEA_{str(year)}' \
-               f'_Detail_Use_PRO_BeforeRedef.csv'
+    csv_load = (externaldatapath / f'BEA_{str(year)}'
+                f'_Detail_Use_PRO_BeforeRedef.csv')
     df_raw = pd.read_csv(csv_load)
 
     df = bea_detail_parse(df_raw, year)
@@ -79,8 +79,8 @@ def bea_make_detail_br_parse(*, year, **_):
         flowbyactivity specifications
     """
     # Read directly into a pandas df
-    csv_load = f'{externaldatapath}BEA_{str(year)}' \
-               f'_Detail_Make_BeforeRedef.csv'
+    csv_load = (externaldatapath / f'BEA_{str(year)}'
+                f'_Detail_Make_BeforeRedef.csv')
     df_raw = pd.read_csv(csv_load)
 
     df = bea_detail_parse(df_raw, year)

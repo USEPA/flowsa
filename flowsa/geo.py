@@ -72,7 +72,7 @@ def get_all_fips(year: Literal[2010, 2013, 2015] = 2015) -> pd.DataFrame:
         is Nan for national and each state level FIPS.
     '''
     return (pd
-            .read_csv(settings.datapath + 'FIPS_Crosswalk.csv',
+            .read_csv(settings.datapath / 'FIPS_Crosswalk.csv',
                       header=0, dtype=object)
             [['State', f'FIPS_{year}', f'County_{year}']]
             .rename(columns={f'FIPS_{year}': 'FIPS',

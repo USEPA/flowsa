@@ -18,7 +18,7 @@ NAME_SEP_CHAR = '.'
 # ^^^ Used to separate source/activity set names as part of 'full_name' attr
 
 
-with open(settings.datapath + 'flowby_config.yaml') as f:
+with open(settings.datapath / 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
     # ^^^ Replaces schema.py
 
@@ -294,7 +294,7 @@ class _FlowBy(pd.DataFrame):
         )
 
         conversion_table = pd.concat([
-            pd.read_csv(f'{settings.datapath}unit_conversion.csv'),
+            pd.read_csv(settings.datapath / 'unit_conversion.csv'),
             pd.Series({'old_unit': 'Canadian Dollar',
                        'new_unit': 'USD',
                        'conversion_factor': 1 / exchange_rate}).to_frame().T
@@ -1849,7 +1849,7 @@ class FlowByActivity(_FlowBy):
         '''
         emissions_factors = (
             pd.read_csv(
-                f'{settings.datapath}{self.config["emissions_factors"]}.csv')
+                settings.datapath / f'{self.config["emissions_factors"]}.csv')
             .drop(columns='source')
         )
 
@@ -2157,7 +2157,7 @@ class FlowBySector(_FlowBy):
             for table_name, table_config in display_tables.items()
         }
 
-        tables_path = (f'{settings.tableoutputpath}{self.full_name}'
+        tables_path = (settings.tableoutputpath / f'{self.full_name}'
                        f'_Display_Tables.xlsx')
         try:
             with ExcelWriter(tables_path) as writer:

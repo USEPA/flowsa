@@ -33,4 +33,4 @@ fba_usgs = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
 
 # save output to csv, maintain leading 0s in location col
 fba_usgs.Location = fba_usgs.Location.apply('="{}"'.format)
-fba_usgs.to_csv(f"{fbaoutputpath}USGS_NWIS_WU_2015.csv", index=False)
+fba_usgs.to_csv(fbaoutputpath / "USGS_NWIS_WU_2015.csv", index=False)
