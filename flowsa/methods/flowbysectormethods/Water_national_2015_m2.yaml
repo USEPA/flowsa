@@ -1,81 +1,73 @@
-#%YAML 1.1
-#
-#---
-#
-#target_sector_level: NAICS_6
-#target_sector_source: NAICS_2012_Code
-#target_geoscale: national
-#source_names:
-#  "USGS_NWIS_WU":
-#    data_format: 'FBA'
-#    class: Water
-#    geoscale_to_use: state
-#    year: 2015
-#    clean_fba_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
-#    clean_fba_w_sec_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
-#    activity_sets:
-#      activity_set_1:
-#        names:
-#          - "Aquaculture"
-#          - "Irrigation Golf Courses"
-#          - "Public Supply"
-#          - "Thermoelectric Power"
-#          - "Domestic"
-#        allocation_method: direct
-#        allocation_source: None
-#        allocation_source_class: None
-#        allocation_source_year: None
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: state
-#      activity_set_2:
-#        names:
-#          - "Industrial"
-#        allocation_method: proportional
-#        allocation_source: "StatCan_IWS_MI"
-#        allocation_source_class: "Water"
-#        allocation_source_year: 2015
-#        allocation_flow:
-#          - "Water intake"
-#        allocation_compartment: None
-#        allocation_from_scale: national
-#        clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
-#        helper_source: "BLS_QCEW"
-#        helper_method: proportional
-#        helper_source_class: "Employment"
-#        helper_source_year: 2015
-#        helper_flow:
-#          - "Number of employees, Federal Government"
-#          - "Number of employees, State Government"
-#          - "Number of employees, Local Government"
-#          - "Number of employees, Private"
-#        helper_from_scale: national
-#        clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-#      activity_set_3:
-#        names:
-#          - "Mining"
-#        allocation_method: proportional
-#        allocation_source: "Blackhurst_IO"
-#        allocation_source_class: "Water"
-#        allocation_source_year: 2002
-#        allocation_flow:
-#          - 'Water Withdrawals IO Vector'
-#        allocation_compartment: None
-#        allocation_from_scale: national
-#        clean_allocation_fba: !script_function:Blackhurst_IO convert_blackhurst_data_to_kg_per_year
-#        clean_allocation_fba_w_sec: !script_function:Blackhurst_IO convert_blackhurst_data_to_kg_per_employee
-#        helper_source: "BLS_QCEW"
-#        helper_method: "multiplication and scaled"
-#        helper_source_class: "Employment"
-#        helper_source_year: 2015
-#        helper_flow:
-#          - "Number of employees, Federal Government"
-#          - "Number of employees, State Government"
-#          - "Number of employees, Local Government"
-#          - "Number of employees, Private"
-#        helper_from_scale: national
-#        clean_helper_fba_wsec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-#        scale_helper_results: !script_function:Blackhurst_IO scale_blackhurst_results_to_usgs_values
+industry_spec:
+  default: NAICS_6
+year: 2015
+target_naics_year: 2012
+geoscale: national
+
+source_names:
+  USGS_NWIS_WU:
+    fedefl_mapping: USGS_NWIS_WU
+    geoscale: state
+    selection_fields:
+      Class: Water # not necessary to define
+    clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    activity_sets:
+#      direct_attribution:
+#        selection_fields:
+#          PrimaryActivity:
+#            - "Aquaculture"
+#            - "Irrigation Golf Courses"
+#            - "Public Supply"
+#            - "Thermoelectric Power"
+#            - "Domestic"
+#        attribute:
+#          attribution_method: direct
+      industrial:
+        selection_fields:
+          PrimaryActivity:
+            - "Industrial"
+        attribute:
+          attribution_method: proportional
+          attribution_source:
+            StatCan_IWS_MI: #todo: convert canadian data to to US FIPS
+              geoscale: national
+              selection_fields:
+                Class: Water
+                FlowName: "Water intake"
+              # todo: convert clean fba fxn into this yaml
+              clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
+              attribute:
+                attribution_method: proportional
+                attribution_source:
+                  Employment_national_2015:
+                    geoscale: national
+#      mining:
+#        selection_fields:
+#          PrimaryActivity:
+#            - "Mining"
+#        attribtute:
+#          attribution_method: proportional
+#          attribution_source:
+#            Blackhurst_IO:
+#              year: 2002
+#              geoscale: national
+#              selection_fields:
+#                Class: Water
+#                FlowName: "Water Withdrawals IO Vector"
+#              attribute:
+#                attribution_method: multiplication
+#                attribution_source:
+#                  BEA_Make_AR:
+#                    year: 2002
+#                    selection_fields:
+#                      Class: Money
+#                    attribute:
+#                      # todo: make sure attributing on location and activity
+#                      attribution_method: proportional
+#                      attribution_source:
+#                        Employment_national_2002:
+#                          geoscale: national
+#                          clean_fba_after_attribution: !script_function:Blackhurst_IO scale_blackhurst_results_to_usgs_values
 #      activity_set_4:
 #        names:
 #          - "Irrigation Crop"
