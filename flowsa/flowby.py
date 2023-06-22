@@ -1632,12 +1632,14 @@ class FlowByActivity(_FlowBy):
 
                 # load master crosswalk
                 cw = common.load_crosswalk('sector_timeseries')
-                sectors = (cw[[f'NAICS_{target_year}_Code']]
+                sectors = (cw[[activity_schema]]
                            .drop_duplicates()
                            .dropna()
                            )
                 # create list of sectors that exist in original df, which,
                 # if created when expanding sector list cannot be added
+                # todo: note, both naics6 and naics7 get mapped to naics6 -
+                #  which could result in double counting...
                 naics_df = pd.DataFrame([])
                 for i in existing_sectors['Sector']:
                     dig = len(str(i))
@@ -1646,7 +1648,7 @@ class FlowByActivity(_FlowBy):
                             lambda x: x[0:dig]) == i]
                     if len(n) == 1:
                         expanded_n = sectors[
-                            sectors[f'NAICS_{target_year}_Code'].apply(
+                            sectors[activity_schema].apply(
                                 lambda x: x[0:dig] == i)]
                         expanded_n = expanded_n.assign(Sector=i)
                         naics_df = pd.concat([naics_df, expanded_n])
@@ -1655,9 +1657,9 @@ class FlowByActivity(_FlowBy):
                     existing_sectors
                     .merge(naics_df, how='left')
                     .assign(Sector=lambda x: np.where(
-                        x[f'NAICS_{target_year}_Code'].isna(), x['Sector'],
-                        x[f'NAICS_{target_year}_Code']))
-                    .drop(columns=[f'NAICS_{target_year}_Code'])
+                        x[activity_schema].isna(), x['Sector'],
+                        x[activity_schema]))
+                    .drop(columns=[activity_schema])
                 )
 
                 target_naics = set(
@@ -1666,7 +1668,7 @@ class FlowByActivity(_FlowBy):
 
                 activity_to_target_naics_crosswalk = (
                     activity_to_source_naics_crosswalk
-                    .query('Sector  in @target_naics')
+                    .query('Sector in @target_naics')
                 )
 
                 fba_w_naics = self
@@ -1700,7 +1702,15 @@ class FlowByActivity(_FlowBy):
                         .rename(columns={'target_naics': f'Sector{direction}'})
                         .drop(columns='source_naics')
                     )
-
+            # if activity schema does not match target naics year,
+            # convert sectors to target sectors
+            if activity_schema != f"NAICS_{self.config['target_naics_year']}_Code":
+                log.info(f"Converting {activity_schema} to NAICS"
+                         f"_{self.config['target_naics_year']}_Code")
+                fba_w_naics = naics.convert_naics_year(
+                    fba_w_naics,
+                    f"NAICS_{self.config['target_naics_year']}_Code",
+                    activity_schema)
         else:
             log.info('Getting crosswalk between activities in %s and '
                      'NAICS codes.', self.full_name)
@@ -1895,6 +1905,9 @@ class FlowByActivity(_FlowBy):
         '''
         fba = self.add_primary_secondary_columns('Sector')
 
+        # todo: update to use the sector length crosswalk instead of string
+        #  length, or else will have issues with household/government
+        #  attribution
         groupby_cols = ['group_id']
         for rank in ['Primary', 'Secondary']:
             fba = (

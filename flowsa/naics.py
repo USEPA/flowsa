@@ -1,9 +1,8 @@
 from typing import Literal
-import numpy as np
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator
-from flowsa.flowsa_log import vlog
+from flowsa.flowsa_log import vlog, log
 from . import (common, dataclean, settings)
 
 naics_crosswalk = pd.read_csv(
@@ -122,7 +121,7 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         # create df where sectors do not exist in master crosswalk
         non_sectors = df_load[~df_load[c].isin(crosswalk_list)]
         # drop rows where c is empty
-        non_sectors = non_sectors[non_sectors[c] != '']
+        non_sectors = non_sectors[~non_sectors[c].isna()]
         # subset to just the sector column
         if len(non_sectors) != 0:
             sectors = non_sectors[[c]].rename(columns={c: 'NonSectors'})
@@ -137,7 +136,7 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         vlog.debug('There are sectors that are not NAICS 2012 Codes')
         vlog.debug(non_sectors)
     else:
-        vlog.debug('All sectors are NAICS 2012 Codes')
+        log.info('Sectors do not require conversion')
 
     return non_sectors
 
@@ -181,20 +180,18 @@ def melt_naics_crosswalk():
     return cw_replacement_2
 
 
-def convert_naics_year(df_load, sectorsourcename):
+def convert_naics_year(df, targetsectorsourcename, sectorsourcename):
     """
     Replace any non sectors with sectors.
     :param df_load: df with sector columns or sector-like activities
     :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
     :return: df, with non-sectors replaced with sectors
     """
-    # drop NoneType
-    df = dataclean.replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
-
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('sector_timeseries')
-    cw = cw_load[sectorsourcename].drop_duplicates().tolist()
+    cw_load = common.load_crosswalk('sector_timeseries')[[
+        targetsectorsourcename, sectorsourcename]]
+    cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
     cw_melt = melt_naics_crosswalk()
@@ -214,7 +211,7 @@ def convert_naics_year(df_load, sectorsourcename):
     # not in crosswalk list
     if len(non_naics) != 0:
         vlog.debug('Checking if sectors represent a different '
-                   f'NAICS year, if so, replace with {sectorsourcename}')
+                   f'NAICS year, if so, replace with {targetsectorsourcename}')
         for c in column_headers:
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
@@ -223,18 +220,18 @@ def convert_naics_year(df_load, sectorsourcename):
             # column c is in the non_naics list
             df[c] = np.where(
                 (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
-                df[sectorsourcename], df[c])
+                df[targetsectorsourcename], df[c])
             # multiply the FlowAmount col by allocation_ratio
-            df.loc[df[c] == df[sectorsourcename],
+            df.loc[df[c] == df[targetsectorsourcename],
                    'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
             # drop columns
             df = df.drop(
-                columns=[sectorsourcename, 'NAICS', 'allocation_ratio'])
-        vlog.debug(f'Replaced NAICS with {sectorsourcename}')
+                columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
+        vlog.debug(f'Replaced NAICS with {targetsectorsourcename}')
 
         # check if there are any sectors that are not in
-        # the naics 2012 crosswalk
-        vlog.debug('Check again for non NAICS 2012 Codes')
+        # the target sector crosswalk
+        vlog.debug(f'Check again for non {targetsectorsourcename}')
         nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
             vlog.debug('Dropping non-NAICS from dataframe')
@@ -250,24 +247,5 @@ def convert_naics_year(df_load, sectorsourcename):
         groupby_cols = [e for e in df.columns.values.tolist()
                         if e not in possible_column_headers]
         df = aggregator(df, groupby_cols)
-
-    df = dataclean.replace_strings_with_NoneType(df)
-    # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
-    if 'SectorConsumedBy' in df:
-        df_drop = df[(df['SectorConsumedBy'].isnull()) &
-                     (df['SectorProducedBy'].isnull())]
-        if len(df_drop) != 0:
-            activities_dropped = pd.unique(
-                df_drop[['ActivityConsumedBy',
-                         'ActivityProducedBy']].values.ravel('K'))
-            activities_dropped = list(filter(
-                lambda x: x is not None, activities_dropped))
-            vlog.debug('Dropping rows where the Activity columns '
-                       f'contain {", ".join(activities_dropped)}')
-        df = df[~((df['SectorConsumedBy'].isnull()) &
-                  (df['SectorProducedBy'].isnull()))].reset_index(drop=True)
-    else:
-        df = df[~((df['ActivityConsumedBy'].isnull()) &
-                  (df['ActivityProducedBy'].isnull()))].reset_index(drop=True)
 
     return df
