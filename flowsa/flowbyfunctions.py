@@ -225,8 +225,7 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
     for SectorProducedBy and SectorConsumedBy
     :return: df, with aggregated sector values
     """
-    # ensure None values are not strings
-    df = replace_NoneType_with_empty_cells(df_load)
+    df = df_load.copy()
 
     # determine grouping columns - based on datatype
     group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
@@ -290,10 +289,7 @@ def sector_aggregation(df_load, return_all_possible_sector_combos=False,
             df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
             df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
 
-    # replace null values
-    df = replace_strings_with_NoneType(df).reset_index(drop=True)
-
-    return df
+    return df.reset_index(drop=True)
 
 
 def append_new_sectors(df, i, j, cw_load, group_cols):
