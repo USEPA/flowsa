@@ -691,59 +691,64 @@ def compare_geographic_totals(
         drop=True).rename(columns={'FlowAmount': 'FlowAmount_nat'})
     # if df len is not 0, continue with comparison
     if len(nat) != 0:
-        # subset national level data by activity set names
-        nat = nat[(nat[fba_activity_fields[0]].isin(activity_names)) |
-                  (nat[fba_activity_fields[1]].isin(activity_names)
-                   )].reset_index(drop=True)
-        nat = replace_strings_with_NoneType(nat)
-        # drop the geoscale in df_subset and sum
-        sub = df_subset.assign(Location=US_FIPS)
-        # depending on the datasource, might need to rename some
-        # strings for national comparison
-        sub = rename_column_values_for_comparison(sub, sourcename)
-
-        # compare df
-        merge_cols = ['Class', 'SourceName', 'Unit', 'FlowType',
-                      'ActivityProducedBy', 'ActivityConsumedBy',
-                      'Location', 'LocationSystem', 'Year']
-
-        if df_type == 'FBA':
-            merge_cols.extend(['FlowName', 'Compartment'])
+        # if the unit is a rate, do not compare
+        if '/' in nat['Unit'][0]:
+            log.info(f"Skipping geoscale comparison because {nat['Unit'][0]} "
+                     f"is a rate.")
         else:
-             merge_cols.extend(['Flowable', 'Context'])
+            # subset national level data by activity set names
+            nat = nat[(nat[fba_activity_fields[0]].isin(activity_names)) |
+                      (nat[fba_activity_fields[1]].isin(activity_names)
+                       )].reset_index(drop=True)
+            nat = replace_strings_with_NoneType(nat)
+            # drop the geoscale in df_subset and sum
+            sub = df_subset.assign(Location=US_FIPS)
+            # depending on the datasource, might need to rename some
+            # strings for national comparison
+            sub = rename_column_values_for_comparison(sub, sourcename)
 
-        sub2 = aggregator(sub, merge_cols).rename(
-            columns={'FlowAmount': 'FlowAmount_sub'})
+            # compare df
+            merge_cols = ['Class', 'SourceName', 'Unit', 'FlowType',
+                          'ActivityProducedBy', 'ActivityConsumedBy',
+                          'Location', 'LocationSystem', 'Year']
 
-        # compare units
-        compare_df_units(nat, sub2)
-        df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
-                        sub2[merge_cols + ['FlowAmount_sub']],
-                        how='outer')
-        df_m = df_m.assign(
-            FlowAmount_diff=df_m['FlowAmount_nat'] - df_m['FlowAmount_sub'])
-        df_m = df_m.assign(Percent_Diff=(abs(df_m['FlowAmount_diff'] /
-                                             df_m['FlowAmount_nat']) * 100))
-        df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
-        # subset the merged df to what to include in the validation df
-        # include data where percent difference is > 1 or where value is nan
-        df_m_sub = df_m[(df_m['Percent_Diff'] > 1) |
-                        (df_m['Percent_Diff'].isna())].reset_index(drop=True)
+            if df_type == 'FBA':
+                merge_cols.extend(['FlowName', 'Compartment'])
+            else:
+                 merge_cols.extend(['Flowable', 'Context'])
 
-        subnational_geoscale = (subnational_geoscale
-                                or attr['allocation_from_scale'])
-        if len(df_m_sub) == 0:
-            vlog.info(f'No data loss greater than 1%% between national '
-                      f'level data and {subnational_geoscale} subset')
-        else:
-            vlog.info(f'There are data differences between published national '
-                      f'values and {subnational_geoscale} subset, '
-                      f'saving to validation log')
+            sub2 = aggregator(sub, merge_cols).rename(
+                columns={'FlowAmount': 'FlowAmount_sub'})
 
-            vlog.info(
-                'Comparison of National FlowAmounts to aggregated data '
-                'subset for %s: \n {}'.format(
-                    df_m_sub.to_string()), activity_set)
+            # compare units
+            compare_df_units(nat, sub2)
+            df_m = pd.merge(nat[merge_cols + ['FlowAmount_nat']],
+                            sub2[merge_cols + ['FlowAmount_sub']],
+                            how='outer')
+            df_m = df_m.assign(
+                FlowAmount_diff=df_m['FlowAmount_nat'] - df_m['FlowAmount_sub'])
+            df_m = df_m.assign(Percent_Diff=(abs(df_m['FlowAmount_diff'] /
+                                                 df_m['FlowAmount_nat']) * 100))
+            df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
+            # subset the merged df to what to include in the validation df
+            # include data where percent difference is > 1 or where value is nan
+            df_m_sub = df_m[(df_m['Percent_Diff'] > 1) |
+                            (df_m['Percent_Diff'].isna())].reset_index(drop=True)
+
+            subnational_geoscale = (subnational_geoscale
+                                    or attr['allocation_from_scale'])
+            if len(df_m_sub) == 0:
+                vlog.info(f'No data loss greater than 1%% between national '
+                          f'level data and {subnational_geoscale} subset')
+            else:
+                vlog.info(f'There are data differences between published national '
+                          f'values and {subnational_geoscale} subset, '
+                          f'saving to validation log')
+
+                vlog.info(
+                    'Comparison of National FlowAmounts to aggregated data '
+                    'subset for %s: \n {}'.format(
+                        df_m_sub.to_string()), activity_set)
 
 
 def rename_column_values_for_comparison(df, sourcename):
