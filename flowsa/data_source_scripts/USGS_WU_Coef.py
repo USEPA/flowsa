@@ -24,7 +24,7 @@ def usgs_coef_parse(*, year, **_):
         specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "USGS_WU_Coef_Raw.csv")
+    df_raw = pd.read_csv(externaldatapath / "USGS_WU_Coef_Raw.csv")
 
     # rename columns to match flowbyactivity format
     df = df_raw.rename(columns={"Animal Type": "ActivityConsumedBy",

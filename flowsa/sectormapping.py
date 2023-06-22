@@ -43,7 +43,7 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
                 crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
-    mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',
+    mapping = pd.read_csv(crosswalkpath / f'{activity_mapping_source_name}.csv',
                           dtype={'Activity': 'str', 'Sector': 'str'})
     # some mapping tables will have data for multiple sources, while other
     # mapping tables are used for multiple sources (like EPA_NEI or BEA

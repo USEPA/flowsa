@@ -81,7 +81,7 @@ def load_crosswalk(crosswalk_name):
 
     fn = cw_dict.get(crosswalk_name)
 
-    cw = pd.read_csv(f'{datapath}{fn}.csv', dtype="str")
+    cw = pd.read_csv(datapath / f'{fn}.csv', dtype="str")
     return cw
 
 
@@ -156,8 +156,8 @@ def load_values_from_literature_citations_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = (f'{datapath}bibliographyinfo/'
-             f'values_from_literature_source_citations.yaml')
+    sfile = (datapath / 'bibliographyinfo' /
+             'values_from_literature_source_citations.yaml')
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
@@ -254,7 +254,7 @@ def get_flowsa_base_name(filedirectory, filename, extension):
     If filename does not match filename within flowsa due to added extensions
     onto the filename, cycle through
     name, dropping strings after each underscore until the name is found
-    :param filedirectory: string, path to directory
+    :param filedirectory: Path object, path to directory
     :param filename: string, name of original file searching for
     :param extension: string, type of file, such as "yaml" or "py"
     :return: string, corrected file path name
@@ -263,7 +263,7 @@ def get_flowsa_base_name(filedirectory, filename, extension):
     # underscore. Repeat this process until the file name exists or no
     # underscores are left.
     while '_' in filename:
-        if os.path.exists(f"{filedirectory}{filename}.{extension}"):
+        if (filedirectory / f"{filename}.{extension}").is_file():
             break
         filename, _ = filename.rsplit('_', 1)
 
@@ -326,7 +326,7 @@ def str2bool(v):
 
 def check_method_status():
     """Read the current method status"""
-    yaml_path = methodpath + 'method_status.yaml'
+    yaml_path = methodpath / 'method_status.yaml'
     with open(yaml_path, 'r') as f:
         method_status = yaml.safe_load(f)
     return method_status

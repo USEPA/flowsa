@@ -90,7 +90,7 @@ def calR_parse(*, year, **_):
             if "California_Commercial_bySector_2014" in entry and \
                     "Map" not in entry:
                 data["ActivityProducedBy"] = produced_by(entry)
-                dataframe = pd.read_csv(externaldatapath + "/" + entry,
+                dataframe = pd.read_csv(externaldatapath / entry,
                                         header=0, dtype=str)
                 for col in dataframe.columns:
                     if "Percent" in str(col):

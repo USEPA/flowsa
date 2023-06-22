@@ -182,7 +182,7 @@ def get_region_and_division_codes():
     Load the Census Regions csv
     :return: pandas df of census regions
     """
-    df = pd.read_csv(f"{datapath}Census_Regions_and_Divisions.csv",
+    df = pd.read_csv(datapath / "Census_Regions_and_Divisions.csv",
                      dtype="str")
     return df
 
@@ -258,7 +258,7 @@ def merge_urb_cnty_pct(df):
         return None
 
     years_xwalk = extract_fips_years(  # from xwalk headers
-        pd.read_csv(datapath + 'FIPS_Crosswalk.csv', nrows=0).columns)
+        pd.read_csv(datapath / 'FIPS_Crosswalk.csv', nrows=0).columns)
 
     if not {year} <= set(years_xwalk):  # compare data years as sets
         log.error('LocationSystem incompatible with FIPS_Crosswalk.csv')
@@ -341,7 +341,7 @@ def shift_census_cnty_tbl(df, year):
         # i.e., join by ['FIPS_{decade}'] field ensures pct_pop_urb inheritance
     # merges identified by duplicated 'FIPS_{year}' codes (A-->C, B-->C)
         # e.g., 51019 & 51515 --> 51019
-    fips_xwalk = pd.read_csv(datapath + 'FIPS_Crosswalk.csv', dtype=str,
+    fips_xwalk = pd.read_csv(datapath / 'FIPS_Crosswalk.csv', dtype=str,
                              usecols=[f'FIPS_{decade}', f'FIPS_{year}'])
     df = pd.merge(df, fips_xwalk, how='left', on=f'FIPS_{decade}')
 

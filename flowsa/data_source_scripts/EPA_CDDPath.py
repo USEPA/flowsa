@@ -41,7 +41,7 @@ def call_cddpath_model(*, resp, year, config, **_):
         except KeyError:
             log.error('CDDPath filepath not provided in FBA method')
             raise
-        source_data = externaldatapath + file
+        source_data = externaldatapath / file
         if os.path.isfile(source_data):
             log.info(f"Reading from local file {file}")
         else:
@@ -121,7 +121,7 @@ def combine_cdd_path(*, resp, year, config, **_):
     if df_csv is None:
         # if not available, default to 2014 ratios
         file = config['generation_by_source'].get('2014')
-        df_csv = pd.read_csv(externaldatapath + file, header=0,
+        df_csv = pd.read_csv(externaldatapath / file, header=0,
                              names=['FlowName', 'ActivityProducedBy',
                                     'FlowAmount'])
     df_csv['pct'] = (df_csv['FlowAmount']/

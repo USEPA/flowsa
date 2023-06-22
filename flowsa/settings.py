@@ -1,51 +1,47 @@
 import os
 import subprocess
 from importlib.metadata import version
-from esupy.processed_data_mgmt import Paths, create_paths_if_missing
+from pathlib import Path
+from esupy.processed_data_mgmt import Paths, mkdir_if_missing
 from esupy.util import get_git_hash
 
-try:
-    MODULEPATH = \
-        os.path.dirname(os.path.realpath(__file__)).replace('\\', '/') + '/'
-except NameError:
-    MODULEPATH = 'flowsa/'
 
-datapath = MODULEPATH + 'data/'
-crosswalkpath = datapath + 'activitytosectormapping/'
-externaldatapath = datapath + 'external_data/'
-process_adjustmentpath = datapath + 'process_adjustments/'
+MODULEPATH = Path(__file__).resolve().parent
 
-methodpath = MODULEPATH + 'methods/'
-sourceconfigpath = methodpath + 'flowbyactivitymethods/'
-flowbysectormethodpath = methodpath + 'flowbysectormethods/'
-flowbysectoractivitysetspath = methodpath + 'flowbysectoractivitysets/'
+datapath = MODULEPATH / 'data'
+crosswalkpath = datapath / 'activitytosectormapping'
+externaldatapath = datapath / 'external_data'
+process_adjustmentpath = datapath / 'process_adjustments'
 
-datasourcescriptspath = MODULEPATH + 'data_source_scripts/'
+methodpath = MODULEPATH / 'methods'
+sourceconfigpath = methodpath / 'flowbyactivitymethods'
+flowbysectormethodpath = methodpath / 'flowbysectormethods'
+flowbysectoractivitysetspath = methodpath / 'flowbysectoractivitysets'
+
+datasourcescriptspath = MODULEPATH / 'data_source_scripts'
 
 # "Paths()" are a class defined in esupy
 paths = Paths()
-paths.local_path = os.path.realpath(paths.local_path + "/flowsa")
-outputpath = paths.local_path.replace('\\', '/') + '/'
-fbaoutputpath = outputpath + 'FlowByActivity/'
-fbsoutputpath = outputpath + 'FlowBySector/'
-biboutputpath = outputpath + 'Bibliography/'
-logoutputpath = outputpath + 'Log/'
-diffpath = outputpath + 'FBSComparisons/'
-plotoutputpath = outputpath + 'Plots/'
-tableoutputpath = outputpath + 'DisplayTables/'
+paths.local_path = paths.local_path / 'flowsa'
+outputpath = paths.local_path
+fbaoutputpath = outputpath / 'FlowByActivity'
+fbsoutputpath = outputpath / 'FlowBySector'
+biboutputpath = outputpath / 'Bibliography'
+logoutputpath = outputpath / 'Log'
+diffpath = outputpath / 'FBSComparisons'
+plotoutputpath = outputpath / 'Plots'
+tableoutputpath = outputpath / 'DisplayTables'
 
 # ensure directories exist
-create_paths_if_missing(logoutputpath)
-create_paths_if_missing(plotoutputpath)
-create_paths_if_missing(tableoutputpath)
+mkdir_if_missing(logoutputpath)
+mkdir_if_missing(plotoutputpath)
+mkdir_if_missing(tableoutputpath)
 
 DEFAULT_DOWNLOAD_IF_MISSING = False
 
 # paths to scripts
-scriptpath = \
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))
-                    ).replace('\\', '/') + '/scripts/'
-scriptsFBApath = scriptpath + 'FlowByActivity_Datasets/'
+scriptpath = MODULEPATH.parent / 'scripts'
+scriptsFBApath = scriptpath / 'FlowByActivity_Datasets'
 
 
 def return_pkg_version():
