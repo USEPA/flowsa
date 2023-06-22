@@ -72,7 +72,7 @@ def get_all_fips(year: Literal[2010, 2013, 2015] = 2015) -> pd.DataFrame:
         is Nan for national and each state level FIPS.
     '''
     return (pd
-            .read_csv(settings.datapath + 'FIPS_Crosswalk.csv',
+            .read_csv(settings.datapath / 'FIPS_Crosswalk.csv',
                       header=0, dtype=object)
             [['State', f'FIPS_{year}', f'County_{year}']]
             .rename(columns={f'FIPS_{year}': 'FIPS',
@@ -82,10 +82,10 @@ def get_all_fips(year: Literal[2010, 2013, 2015] = 2015) -> pd.DataFrame:
 
 
 def filtered_fips(
-    geoscale: Literal['national', 'state', 'county',
-                      scale.NATIONAL, scale.STATE, scale.COUNTY],
-    year: Literal[2010, 2013, 2015] = 2015
-) -> pd.DataFrame:
+        geoscale: Literal['national', 'state', 'county',
+                          scale.NATIONAL, scale.STATE, scale.COUNTY],
+        year: Literal[2010, 2013, 2015] = 2015
+    ) -> pd.DataFrame:
     if geoscale == 'national' or geoscale == scale.NATIONAL:
         return (get_all_fips(year).query('State.isnull()'))
     elif geoscale == 'state' or geoscale == scale.STATE:

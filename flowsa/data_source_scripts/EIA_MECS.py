@@ -14,7 +14,7 @@ import numpy as np
 import flowsa
 from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
-from flowsa.settings import log
+from flowsa.flowsa_log import log
 from flowsa.flowby import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation
 from flowsa.data_source_scripts.EIA_CBECS_Land import \
@@ -612,9 +612,9 @@ def update_regions_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
                                        if len(x) < 5 else x))
 
     # Allocate MECS based on employment FBS
-    year = fba.config.get('year')
-    hlp = flowsa.getFlowBySector(methodname=f'Employment_state_{year}',
-                                 download_FBS_if_missing=True)
+    hlp = flowsa.getFlowBySector(
+        methodname=fba.config.get('attribution_source'),
+        download_FBS_if_missing=True)
 
     # To match the various sector resolution of MECS, generate employment
     # dataset for all NAICS resolution by aggregating
@@ -625,14 +625,25 @@ def update_regions_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
                     right_on = 'State_FIPS')
     hlp['Allocation'] = hlp['FlowAmount']/hlp.groupby(
         ['Region', 'SectorProducedBy']).FlowAmount.transform('sum')
-    ## TODO NEED TO ALSO ADJUST GROUP/GROUP TOTALS
-    fba = pd.merge(fba.rename(columns={'Location':'Region'}),
-                  (hlp[['Region','Location','SectorProducedBy','Allocation']]
-                   .rename(columns={'SectorProducedBy':'SectorConsumedBy'})),
-                   how='left', on=['Region','SectorConsumedBy'])
-    fba['FlowAmount'] = fba['FlowAmount'] * fba['Allocation']
-    fba = fba.drop(columns=['Allocation','Region'])
-    fba['LocationSystem'] = 'FIPS_2015'
+
+    fba = pd.merge(
+        fba.rename(columns={'Location': 'Region'}),
+        (hlp[['Region', 'Location', 'SectorProducedBy', 'Allocation']]
+         .rename(columns={'SectorProducedBy': 'SectorConsumedBy'})),
+        how='left', on=['Region', 'SectorConsumedBy'])
+    fba = (fba.assign(FlowAmount = lambda x: x['FlowAmount'] * x['Allocation'])
+              .assign(LocationSystem = 'FIPS_2015')
+              .drop(columns=['Allocation', 'Region'])
+              )
+
+    # Rest group_id and group_total
+    fba = (
+        fba
+        .drop(columns=['group_id', 'group_total'])
+        .reset_index(drop=True).reset_index()
+        .rename(columns={'index': 'group_id'})
+        .assign(group_total=fba.FlowAmount)
+    )
 
     # Check for data loss
     if (abs(1-(sum(fba['FlowAmount']) /

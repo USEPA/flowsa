@@ -7,21 +7,22 @@ Loads state specific GHGI data to supplement EPA State Inventory Tool (SIT).
 
 import pandas as pd
 import os
-from flowsa.settings import externaldatapath, log
+from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
+from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS
 from flowsa.common import load_yaml_dict
 
 
-data_path = f"{externaldatapath}/StateGHGI_data"
+data_path = externaldatapath / "StateGHGI_data"
 
 def ME_biogenic_parse(*, source, year, config, **_):
     
     df0 = pd.DataFrame()
     
     filename = config['filename']
-    filepath = f"{data_path}/{filename}"
+    filepath = data_path / filename
     
     # dictionary containing Excel sheet-specific information
     table_dicts = config['table_dict']

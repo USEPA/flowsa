@@ -27,7 +27,7 @@ dv.FBSscatterplot(method_dict, plottype,
                   plot_title='Direct Resource Use for Livestock'
                   )
 # Can manually adjust the figure pop up before saving
-plt.savefig(f"{plotoutputpath}livestock_resource_use.png", dpi=300)
+plt.savefig(plotoutputpath / "livestock_resource_use.png", dpi=300)
 
 
 ########## Compare the results between water method 1 and method 2 ##########
@@ -45,7 +45,7 @@ flowsa.generateFBSplot(method_dict, plottype,
                                   'Mining Sectors'
                        )
 # Can manually adjust the figure pop up before saving
-plt.savefig(f"{plotoutputpath}mining_water_comp.png", dpi=300)
+plt.savefig(plotoutputpath / "mining_water_comp.png", dpi=300)
 
 
 ########## Compare food waste flows via Sankey ##########

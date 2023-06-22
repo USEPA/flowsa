@@ -12,7 +12,8 @@ import numpy as np
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
-from flowsa.settings import log, externaldatapath
+from flowsa.flowsa_log import log
+from flowsa.settings import externaldatapath
 from flowsa.schema import flow_by_activity_fields
 from flowsa.flowby import FlowByActivity
 
@@ -190,7 +191,7 @@ def ghg_call(*, resp, url, year, config, **_):
                         # Skip 3-22b for current year (use 3-22 instead)
                         continue
                     else:
-                        df = pd.read_csv(f"{externaldatapath}/GHGI_Table_{table}.csv",
+                        df = pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
                                          skiprows=2, encoding="ISO-8859-1", thousands=",")
                 else:
                     try:

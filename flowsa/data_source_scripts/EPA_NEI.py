@@ -9,9 +9,12 @@ import io
 from zipfile import ZipFile
 from os import path
 import pandas as pd
+import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import standardize_units
 from flowsa.flowby import FlowByActivity
+from flowsa.flowsa_log import log
+from flowsa.location import merge_urb_cnty_pct
 
 
 def epa_nei_url_helper(*, build_url, year, config, **_):
@@ -30,8 +33,14 @@ def epa_nei_url_helper(*, build_url, year, config, **_):
     version_dict = config['version_dict']
     url = (build_url
            .replace('__year__', year)
-           .replace('__version__', version_dict[year]))
-
+           .replace('__version__', version_dict[year])
+           .replace('__suffix__', config['url']
+                    .get('suffix', {})
+                    .get(year, config['url']
+                         .get('suffix', {})
+                         .get('base', ''))
+                    )
+           )
     return [url]
 
 
@@ -65,18 +74,22 @@ def epa_nei_global_parse(*, df_list, source, year, config, **_):
     # rename columns to match flowbyactivity format
     col_dict = {value: key for (key, value) in config['col_dict'][year].items()}
     df = df.rename(columns=col_dict)
+    # drop all other columns
+    df = df.drop(columns=df.columns.difference(
+                 list(config['col_dict'][year].keys())))
 
     # make sure FIPS are string and 5 digits
-    df['Location'] = df['Location'].astype('str').apply('{:0>5}'.format)
+    df = (df.assign(Location=lambda x:
+                    x['Location'].fillna(0)
+                                 .astype('int')
+                                 .astype('str')
+                                 .str.zfill(5))
+            )
     # remove records from certain FIPS
     excluded_fips = ['78', '85', '88']
     df = df[~df['Location'].str[0:2].isin(excluded_fips)]
     excluded_fips2 = ['777']
     df = df[~df['Location'].str[-3:].isin(excluded_fips2)]
-
-    # drop all other columns
-    df.drop(columns=df.columns.difference(
-        list(config['col_dict'][year].keys())), inplace=True)
 
     # to align with other processed NEI data (Point from StEWI), units are
     # converted during FBA creation instead of maintained
@@ -162,25 +175,32 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     :param fba: df, FBA format
     :return: modified FBA
     """
+    attributes_to_save = {
+        attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
+    }
+
     # Remove the portion of PM10 that is PM2.5 to eliminate double counting,
-    # rename FlowName and Flowable, and update UUID
+    # rename resulting FlowName
     fba = remove_flow_overlap(fba, 'PM10 Primary (Filt + Cond)',
                               ['PM2.5 Primary (Filt + Cond)'])
-    # # link to FEDEFL
-    # import fedelemflowlist
-    # mapping = fedelemflowlist.get_flowmapping('NEI')
-    # PM_df = mapping[['TargetFlowName',
-    #                  'TargetFlowUUID']][mapping['SourceFlowName']=='PM10-PM2.5']
-    # PM_list = PM_df.values.flatten().tolist()
-    PM_list = ['Particulate matter, > 2.5μm and ≤ 10μm',
-               'a320e284-d276-3167-89b3-19d790081c08']
-    fba.loc[(fba['FlowName'] == 'PM10 Primary (Filt + Cond)'),
-            ['FlowName', 'Flowable', 'FlowUUID']] = ['PM10-PM2.5',
-                                                     PM_list[0], PM_list[1]]
+
+    fba['FlowName'] = np.where(fba['FlowName'] == 'PM10 Primary (Filt + Cond)',
+                               "PM10-PM2.5",
+                               fba['FlowName'])
     # Drop zero values to reduce size
     fba = fba.query('FlowAmount != 0').reset_index(drop=True)
 
-    return fba
+    apply_urban_rural = fba.config.get('apply_urban_rural', False)
+    if apply_urban_rural:
+        log.info(f'Splitting {fba.full_name} into urban and rural '
+                 'quantities by FIPS.')
+        fba = merge_urb_cnty_pct(fba)
+
+    new_fba = FlowByActivity(fba)
+    for attr in attributes_to_save:
+        setattr(new_fba, attr, attributes_to_save[attr])
+
+    return new_fba
 
 
 def remove_flow_overlap(df, aggregate_flow, contributing_flows):
@@ -214,3 +234,8 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
     df.loc[((df.FlowName == aggregate_flow) & (df.FlowAmount <= 0)),
            "FlowAmount"] = 0
     return df
+
+if __name__ == '__main__':
+    import flowsa
+    flowsa.flowbyactivity.main(source='EPA_NEI_Onroad', year='2020')
+    fba = flowsa.getFlowByActivity('EPA_NEI_Onroad', '2020')

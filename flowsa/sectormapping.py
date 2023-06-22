@@ -11,12 +11,11 @@ from esupy.mapping import apply_flow_mapping
 import flowsa
 from flowsa.common import get_flowsa_base_name, load_env_file_key, \
     return_true_source_catalog_name, check_activities_sector_like, \
-    load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME
+    load_yaml_dict, fba_activity_fields, SECTOR_SOURCE_NAME, fbs_activity_fields
 from flowsa.dataclean import standardize_units
-from flowsa.flowbyfunctions import fbs_activity_fields, load_crosswalk
+from flowsa.flowbyfunctions import load_crosswalk
+from flowsa.flowsa_log import log
 from flowsa.schema import activity_fields, dq_fields
-from flowsa.settings import log
-from flowsa.validation import replace_naics_w_naics_from_another_year
 
 
 def get_activitytosector_mapping(source, fbsconfigpath=None):
@@ -44,7 +43,7 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
                 crosswalkpath = external_mappingpath
     activity_mapping_source_name = get_flowsa_base_name(
         crosswalkpath, mapfn, 'csv')
-    mapping = pd.read_csv(f'{crosswalkpath}{activity_mapping_source_name}.csv',
+    mapping = pd.read_csv(crosswalkpath / f'{activity_mapping_source_name}.csv',
                           dtype={'Activity': 'str', 'Sector': 'str'})
     # some mapping tables will have data for multiple sources, while other
     # mapping tables are used for multiple sources (like EPA_NEI or BEA
@@ -79,6 +78,7 @@ def add_sectors_to_flowbyactivity(
         repo
     :return: a df with activity fields mapped to 'sectors'
     """
+    from flowsa.naics import replace_naics_w_naics_from_another_year
     # First check if source activities are NAICS like -
     # if so make it into a mapping file
     s = pd.unique(flowbyactivity_df['SourceName'])[0]

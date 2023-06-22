@@ -7,7 +7,7 @@ from copy import deepcopy
 from flowsa import (common, settings, metadata, sectormapping,
                     literature_values, flowbyactivity, flowsa_yaml,
                     validation, geo, naics, exceptions, location)
-from flowsa.flowsa_log import log
+from flowsa.flowsa_log import log, reset_log_file
 import esupy.processed_data_mgmt
 import esupy.dqi
 import fedelemflowlist
@@ -18,7 +18,7 @@ NAME_SEP_CHAR = '.'
 # ^^^ Used to separate source/activity set names as part of 'full_name' attr
 
 
-with open(settings.datapath + 'flowby_config.yaml') as f:
+with open(settings.datapath / 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
     # ^^^ Replaces schema.py
 
@@ -294,7 +294,7 @@ class _FlowBy(pd.DataFrame):
         )
 
         conversion_table = pd.concat([
-            pd.read_csv(f'{settings.datapath}unit_conversion.csv'),
+            pd.read_csv(settings.datapath / 'unit_conversion.csv'),
             pd.Series({'old_unit': 'Canadian Dollar',
                        'new_unit': 'USD',
                        'conversion_factor': 1 / exchange_rate}).to_frame().T
@@ -462,7 +462,11 @@ class _FlowBy(pd.DataFrame):
                     )
                 self = self.query(f'~({qry})')
             else:
-                self = self.query(f'{field} not in @values')
+                if field not in self:
+                    log.warning(f'{field} not found, can not apply '
+                                'exclusion_fields')
+                else:
+                    self = self.query(f'{field} not in @values')
 
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
@@ -1845,7 +1849,7 @@ class FlowByActivity(_FlowBy):
         '''
         emissions_factors = (
             pd.read_csv(
-                f'{settings.datapath}{self.config["emissions_factors"]}.csv')
+                settings.datapath / f'{self.config["emissions_factors"]}.csv')
             .drop(columns='source')
         )
 
@@ -2040,10 +2044,19 @@ class FlowBySector(_FlowBy):
         # aggregate to target sector
         fbs = fbs.sector_aggregation()
 
+        # set all data quality fields to none until implemented fully
+        log.info('Reset all data quality fields to None')
+        dq_cols = ['Spread', 'Min', 'Max',
+                   'DataReliability', 'TemporalCorrelation',
+                   'GeographicalCorrelation', 'TechnologicalCorrelation',
+                   'DataCollection']
+        fbs = fbs.assign(**dict.fromkeys(dq_cols, None))
+
         # Save fbs and metadata
         log.info(f'FBS generation complete, saving {method} to file')
         meta = metadata.set_fb_meta(method, 'FlowBySector')
         esupy.processed_data_mgmt.write_df_to_file(fbs, settings.paths, meta)
+        reset_log_file(method, meta)
         metadata.write_metadata(source_name=method,
                                 config=common.load_yaml_dict(
                                     method, 'FBS', external_config_path),
@@ -2144,7 +2157,7 @@ class FlowBySector(_FlowBy):
             for table_name, table_config in display_tables.items()
         }
 
-        tables_path = (f'{settings.tableoutputpath}{self.full_name}'
+        tables_path = (settings.tableoutputpath / f'{self.full_name}'
                        f'_Display_Tables.xlsx')
         try:
             with ExcelWriter(tables_path) as writer:

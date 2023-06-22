@@ -8,10 +8,11 @@ data directory. Parses EPA SIT data to flowbyactivity format.
 
 import pandas as pd
 import os
-from flowsa.settings import externaldatapath, log
+from flowsa.settings import externaldatapath
 from flowsa.flowby import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
+from flowsa.flowsa_log import log    
 from flowsa.location import apply_county_FIPS
 from flowsa.schema import flow_by_activity_fields
 
@@ -27,7 +28,7 @@ def epa_sit_parse(*, source, year, config, **_):
         # for each Excel data file listed in the .yaml...
         for file in config['files']:
             log.info(f'Loading data from {file}...')
-            filepath = f"{externaldatapath}/SIT_data/{state}/{file}"
+            filepath = externaldatapath / f"SIT_data/{state}/{file}"
             # dictionary containing Excel sheet-specific information
             file_dict = config['files'][file]['file_dict']
     

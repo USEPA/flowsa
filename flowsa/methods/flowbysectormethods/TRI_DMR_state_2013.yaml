@@ -1,0 +1,11 @@
+industry_spec:
+  default: NAICS_6
+target_naics_year: 2012
+year: 2013
+geoscale: state
+source_names:
+  stewiFBS: !include:stewiFBS_common.yaml:TRI_DMR
+    inventory_dict:
+      TRI: 2013
+      DMR: 2013
+    local_inventory_name: TRI_DMR_2013

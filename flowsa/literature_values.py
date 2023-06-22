@@ -28,7 +28,7 @@ def get_US_urban_green_space_and_public_parks_ratio():
     """
 
     # load Larson's saved SI data
-    df = pd.read_csv(datapath + "Larson_UrbanPublicParks_SI.csv")
+    df = pd.read_csv(datapath / "Larson_UrbanPublicParks_SI.csv")
 
     # calculate a weighted value for ratio of urban land
     # that belongs to parks based on city populations
