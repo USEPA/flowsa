@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from flowsa.flowby import FlowByActivity, FlowBySector
 from flowsa.flowsa_log import log
-from flowsa import (flowby, geo, location)
+from flowsa import (flowby, geo, location, getFlowBySector, flowbyfunctions)
 
 
 def return_primary_activity_column(fba: FlowByActivity) -> \
@@ -247,5 +247,58 @@ def estimate_suppressed_sectors_equal_attribution(
         .aggregate_flowby()
     )
 
-
     return aggregated
+
+
+def attribute_national_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
+    """
+    Propogates national data to all states to enable for use in state methods.
+    Allocates sectors across states based on employment.
+    clean_allocation_fba_w_sec fxn
+    """
+    fba_load = fba.copy()
+    log.info('Attributing national data to states')
+
+    # Attribute data source based on attribution source
+    # todo: generalize so works for FBA or FBS
+    hlp = getFlowBySector(
+        methodname=fba.config.get('clean_source'),
+        download_FBS_if_missing=True)
+
+    # To match the sector resolution of source data, generate employment
+    # dataset for all NAICS resolution by aggregating
+    hlp = flowbyfunctions.sector_aggregation(hlp)
+
+    # For each region, generate ratios across states for a given sector
+    hlp['Allocation'] = hlp['FlowAmount']/hlp.groupby(
+        ['SectorProducedBy', 'SectorConsumedBy'],
+        dropna=False).FlowAmount.transform('sum')
+
+    # add column to merge on
+    hlp = hlp.assign(Location_merge='00000')
+
+    # todo: generalize so works for data sources other than employment FBS
+    fba = pd.merge(
+        fba.rename(columns={'Location': 'Location_merge'}),
+        (hlp[['Location_merge', 'Location', 'SectorProducedBy', 'Allocation']]
+         .rename(columns={'SectorProducedBy': 'SectorConsumedBy'})),
+        how='left', on=['Location_merge', 'SectorConsumedBy'])
+    fba = (fba.assign(FlowAmount=lambda x: x['FlowAmount'] * x['Allocation'])
+           .drop(columns=['Allocation', 'Location_merge'])
+           )
+
+    # Rest group_id and group_total
+    fba = (
+        fba
+        .drop(columns=['group_id', 'group_total'])
+        .reset_index(drop=True).reset_index()
+        .rename(columns={'index': 'group_id'})
+        .assign(group_total=fba.FlowAmount)
+    )
+
+    # Check for data loss
+    if (abs(1-(sum(fba['FlowAmount']) /
+               sum(fba_load['FlowAmount'])))) > 0.0005:
+        log.warning('Data loss upon census region mapping')
+
+    return fba
