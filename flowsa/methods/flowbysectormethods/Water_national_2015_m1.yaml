@@ -40,7 +40,7 @@ sources_to_cache:
               PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
 
 source_names:
-  "USGS_NWIS_WU":
+  USGS_NWIS_WU:
     fedefl_mapping: USGS_NWIS_WU
     geoscale: state
     clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
@@ -48,11 +48,11 @@ source_names:
       direct_attribution:
         selection_fields:
           PrimaryActivity:
-          - "Aquaculture"
-          - "Irrigation Golf Courses"
-          - "Public Supply"
-          - "Thermoelectric Power"
-          - "Domestic"
+            - "Aquaculture"
+            - "Irrigation Golf Courses"
+            - "Public Supply"
+            - "Thermoelectric Power"
+            - "Domestic"
         attribute:
           attribution_method: direct
       employment_attribution:
