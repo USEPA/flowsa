@@ -24,7 +24,8 @@ def return_primary_activity_column(fba: FlowByActivity) -> \
 
 
 def load_prepare_clean_source(
-        self: 'FlowByActivity'
+        self: 'FlowByActivity',
+        download_sources_ok: bool = True
 ) -> 'FlowBySector':
 
     (name, config), = self.config['clean_source'].items()
@@ -35,13 +36,15 @@ def load_prepare_clean_source(
                    if k in self.config['method_config_keys']
                    or k == 'method_config_keys'},
                 **flowby.get_catalog_info(name),
-                **config}
-        ).prepare_fbs()
+                **config},
+        download_sources_ok=download_sources_ok
+        ).prepare_fbs(download_sources_ok=download_sources_ok)
     return clean_fbs
 
 
 def weighted_average(
         fba: 'FlowByActivity',
+        download_sources_ok: bool = True,
         **kwargs
 ) -> 'FlowByActivity':
     """
@@ -49,7 +52,7 @@ def weighted_average(
     """
 
     # load secondary FBS
-    other = load_prepare_clean_source(fba)
+    other = load_prepare_clean_source(fba, download_sources_ok=download_sources_ok)
 
     log.info('Taking weighted average of %s by %s.',
              fba.full_name, other.full_name)
@@ -110,6 +113,7 @@ def weighted_average(
 
 def substitute_nonexistent_values(
         fb: 'FlowBy',
+        download_sources_ok: bool = True,
         **kwargs
 ) -> 'FlowBy':
     """
@@ -117,7 +121,7 @@ def substitute_nonexistent_values(
     """
 
     # load secondary FBS
-    other = load_prepare_clean_source(fb)
+    other = load_prepare_clean_source(fb, download_sources_ok)
 
     log.info('Substituting nonexistent values in %s with %s.',
              fb.full_name, other.full_name)

@@ -601,7 +601,8 @@ class _FlowBy(pd.DataFrame):
 
     def attribute_flows_to_sectors(
         self: FB,
-        external_config_path: str = None
+        external_config_path: str = None,
+        download_sources_ok: bool = True
     ) -> FB:
         """
         The calling FBA has its activities mapped to sectors, then its flows
@@ -668,14 +669,16 @@ class _FlowBy(pd.DataFrame):
                 log.info(f"Proportionally attributing {self.full_name} to "
                          f"target sectors with {attribution_name}")
                 attribution_fbs = fb.load_prepare_attribution_source(
-                    attribution_config=step_config
+                    attribution_config=step_config,
+                    download_sources_ok=download_sources_ok
                 )
                 attributed_fb = fb.proportionally_attribute(attribution_fbs)
 
             elif attribution_method == 'multiplication':
                 log.info(f"Multiplying {self.full_name} by {attribution_name}")
                 attribution_fbs = fb.load_prepare_attribution_source(
-                    attribution_config=step_config
+                    attribution_config=step_config,
+                    download_sources_ok=download_sources_ok
                 )
                 attributed_fb = fb.multiplication_attribution(attribution_fbs)
 
@@ -806,7 +809,8 @@ class _FlowBy(pd.DataFrame):
 
     def load_prepare_attribution_source(
         self: 'FlowByActivity',
-        attribution_config=None
+        attribution_config=None,
+        download_sources_ok: bool = True
     ) -> 'FlowBySector':
 
         if attribution_config is None:
@@ -827,7 +831,6 @@ class _FlowBy(pd.DataFrame):
                 **get_catalog_info(name),
                 **config
             }
-            # attribution_fbs = attribution_fbs.prepare_fbs()
         else:
             attribution_fbs = get_flowby_from_config(
                 name=name,
@@ -835,8 +838,9 @@ class _FlowBy(pd.DataFrame):
                            if k in self.config['method_config_keys']
                            or k == 'method_config_keys'},
                         **get_catalog_info(name),
-                        **config}
-            ).prepare_fbs()
+                        **config},
+                download_sources_ok=download_sources_ok
+            ).prepare_fbs(download_sources_ok=download_sources_ok)
         return attribution_fbs
 
 
@@ -1686,10 +1690,6 @@ class FlowByActivity(_FlowBy):
                 log.info('Converting NAICS codes to desired industry/sector '
                          'aggregation structure.')
                 fba_w_naics = self.copy()
-                # fba_w_naics = self.assign(
-                #     ActivitySourceName=self.source_name,
-                #     SectorType=np.nan
-                # ) ^^ I don't think these fields are necessary in this case
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
                         fba_w_naics
@@ -1928,13 +1928,15 @@ class FlowByActivity(_FlowBy):
 
     def prepare_fbs(
             self: 'FlowByActivity',
-            external_config_path: str = None
+            external_config_path: str = None,
+            download_sources_ok: bool = True
             ) -> 'FlowBySector':
         if 'activity_sets' in self.config:
             try:
                 return (
                     pd.concat([
-                        fba.prepare_fbs(external_config_path=external_config_path)
+                        fba.prepare_fbs(
+                            external_config_path=external_config_path, download_sources_ok=download_sources_ok)
                         for fba in (
                             self
                             .select_by_fields()
@@ -1958,7 +1960,8 @@ class FlowByActivity(_FlowBy):
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()
-            .attribute_flows_to_sectors(external_config_path=external_config_path)  # recursive call to prepare_fbs
+            .attribute_flows_to_sectors(external_config_path=external_config_path,
+                                        download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
         )
@@ -2217,7 +2220,7 @@ class FlowBySector(_FlowBy):
                     },
                     external_config_path=external_config_path,
                     download_sources_ok=download_sources_ok
-                ).prepare_fbs(external_config_path=external_config_path)
+                ).prepare_fbs(external_config_path=external_config_path, download_sources_ok=download_sources_ok)
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
             #     so that later entries in method_config['sources_to_cache']
@@ -2237,7 +2240,7 @@ class FlowBySector(_FlowBy):
                 },
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
-            ).prepare_fbs(external_config_path=external_config_path)
+            ).prepare_fbs(external_config_path=external_config_path, download_sources_ok=download_sources_ok)
             for source_name, config in sources.items()
         ])
 
@@ -2302,7 +2305,8 @@ class FlowBySector(_FlowBy):
 
     def prepare_fbs(
         self: 'FlowBySector',
-        external_config_path: str = None
+        external_config_path: str = None,
+        download_sources_ok: bool = True
     ) -> 'FlowBySector':
         if 'activity_sets' in self.config:
             try:
@@ -2325,7 +2329,8 @@ class FlowBySector(_FlowBy):
             .select_by_fields()
             .sector_aggregation()  # convert to proper industry spec.
             .convert_fips_to_geoscale()
-            .attribute_flows_to_sectors()
+            .attribute_flows_to_sectors(external_config_path=external_config_path,
+                                        download_sources_ok=download_sources_ok)
             .aggregate_flowby()  # necessary after consolidating geoscale
         )
 
