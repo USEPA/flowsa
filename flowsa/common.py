@@ -53,12 +53,12 @@ def load_env_file_key(env_file, key):
     :return: str, value of the key stored in the env
     """
     if env_file == 'API_Key':
-        load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
+        load_dotenv(f'{MODULEPATH}/API_Keys.env', verbose=True)
         value = os.getenv(key)
         if value is None:
             raise flowsa.exceptions.APIError(api_source=key)
     else:
-        load_dotenv(f'{MODULEPATH}external_paths.env', verbose=True)
+        load_dotenv(f'{MODULEPATH}/external_paths.env', verbose=True)
         value = os.getenv(key)
         if value is None:
             raise flowsa.exceptions.EnvError(key=key)
