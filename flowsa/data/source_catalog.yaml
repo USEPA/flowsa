@@ -153,10 +153,12 @@ EIA_SEDS:
   sector_hierarchy: "flat"
 Employment_national:
   data_format: FBS
-  class:
-    - Employment
-    - Money
-    - Other
+  class: Employment
+  activity_schema: NAICS_2012_Code
+  sector_hierarchy: "parent-completeChild"
+Employment_state:
+  data_format: FBS
+  class: Employment
   activity_schema: NAICS_2012_Code
   sector_hierarchy: "parent-completeChild"
 EPA_CDDPath:
