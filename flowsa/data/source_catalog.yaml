@@ -107,6 +107,8 @@ Census_VIP:
   class: Money
   activity_schema: None
   sector_hierarchy: "flat"
+CNHW_CA:
+  data_format: FBS
 CNHW_national:
   data_format: FBS
 EIA_AEO:
