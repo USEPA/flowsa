@@ -115,10 +115,10 @@ def weighted_average(
 
 
 def substitute_nonexistent_values(
-        fb: 'FlowBy',
+        fb: 'FB',
         download_sources_ok: bool = True,
         **kwargs
-) -> 'FlowBy':
+) -> 'FB':
     """
     Fill missing values with data from another geoscale
     """
