@@ -20,22 +20,19 @@ source_names:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:direct_attribution
       employment_attribution:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:employment_attribution
-        attribute:
-          attribution_method: proportional
-          attribution_source: Employment_national_2010
+        attribution_method: proportional
+        attribution_source: Employment_national_2010
       cropland_attribution:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            USDA_CoA_Cropland:
-              !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution:attribute:attribution_source:USDA_CoA_Cropland
-              year: 2012
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution:attribution_source:USDA_CoA_Cropland
+            year: 2012
       livestock_attribution:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:livestock_attribution
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            USDA_CoA_Livestock:
-              !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:livestock_attribution:attribute:attribution_source:USDA_CoA_Livestock
-              year: 2012
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Livestock:
+            !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:livestock_attribution:attribution_source:USDA_CoA_Livestock
+            year: 2012

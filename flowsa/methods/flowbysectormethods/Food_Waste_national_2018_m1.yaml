@@ -30,8 +30,7 @@ source_names:
             - "Military Installations"
             - "Residential"
             - "Sports Venues"
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
       employment:
         selection_fields:
           PrimaryActivity:
@@ -42,46 +41,41 @@ source_names:
             - "Office Buildings"
             - "Restaurants/Food Services"
             - "Retail"
-        attribute:
-          attribution_method: proportional
-          # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
-          attribute_on: [SectorProducedBy]
-          attribution_source:
-            Employment_national_2018:
-              year: 2018
+        attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [SectorProducedBy]
+        attribution_source: Employment_national_2018
       establishments:
         selection_fields:
           PrimaryActivity:
             - "Wholesale"
-        attribute:
-          attribution_method: proportional
-          # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
-          attribute_on: [SectorProducedBy]
-          attribution_source:
-            BLS_QCEW:
-              selection_fields:
-                Class: "Other"
-                Location: !include:Location_common.yaml:_national_location
-              estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
-              selection_fields_after_data_suppression_estimation:
-                FlowName: {
-                  'Number of establishments, Federal Government': 'Number of establishments',
-                  'Number of establishments, Local Government': 'Number of establishments',
-                  'Number of establishments, Private': 'Number of establishments',
-                  'Number of establishments, State Government': 'Number of establishments'
-                }  # standardize after estimating suppressed
+        attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [SectorProducedBy]
+        attribution_source:
+          BLS_QCEW:
+            selection_fields:
+              Class: "Other"
+              Location: !include:Location_common.yaml:_national_location
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+            selection_fields_after_data_suppression_estimation:
+              FlowName: {
+                'Number of establishments, Federal Government': 'Number of establishments',
+                'Number of establishments, Local Government': 'Number of establishments',
+                'Number of establishments, Private': 'Number of establishments',
+                'Number of establishments, State Government': 'Number of establishments'
+              }  # standardize after estimating suppressed
       manufacturing:
         selection_fields:
           PrimaryActivity:
             - "Manufacturing/Processing"
-        attribute:
-          attribution_method: proportional
-          # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
-          attribute_on: [SectorProducedBy]
-          attribution_source:
-            Census_ASM:
-              selection_fields:
-                Class: Money
+        attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [SectorProducedBy]
+        attribution_source:
+          Census_ASM:
+            selection_fields:
+              Class: Money
       treated_waste_direct:
         primary_action_type: Consumed
         selection_fields:
@@ -96,8 +90,7 @@ source_names:
             - 'Gasoline'
             - 'Natural gas'
             - 'Pesticide and other agricultural chemical manufacturing'
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
       treated_waste_proportional:
         primary_action_type: Consumed
         selection_fields:
@@ -109,11 +102,10 @@ source_names:
             - 'Wholesale Trade'
             - 'Services to buildings and dwellings'
             - 'Museums, historical sites, zoos, and parks'
-        attribute:
-          attribution_method: proportional
-          # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
-          attribute_on: [SectorProducedBy]
-          attribution_source:
-            Employment_national_2018:
-              year: 2018
-              primary_action_type: Produced
+        attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [SectorProducedBy]
+        attribution_source:
+          Employment_national_2018:
+            year: 2018
+            primary_action_type: Produced

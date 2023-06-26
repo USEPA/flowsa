@@ -29,8 +29,7 @@ sources_to_cache:
             # year: 2018  # specify in year-specific yaml
             selection_fields:
               Class: Water
-            attribute:
-              attribution_method: inheritance
+            attribution_method: inheritance
       - attribution_method: direct
         clean_fba_after_attribution: !clean_function:flowbyclean weighted_average
         replacement_dictionary: {'HAY & HAYLAGE, (EXCL ALFALFA)': 'HAY & HAYLAGE',
@@ -59,68 +58,61 @@ source_names:
             - "Public Supply"
             - "Thermoelectric Power"
             - "Domestic"
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
 
 
       employment_attribution:  # use in m1
         selection_fields:
           PrimaryActivity:
-          - "Industrial"
-          - "Mining"
-        attribute:
-          attribution_method: proportional
-          # attribution_source: Employment_national_2015  # specify in year-specific yaml
+            - "Industrial"
+            - "Mining"
+        attribution_method: proportional
+#        attribution_source: Employment_national_2015  # specify in year-specific yaml
 
 
       industrial_attribution:  # use in m2 (instead of employment_attribution)
         selection_fields:
           PrimaryActivity:
             - "Industrial"
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            StatCan_IWS_MI: #todo: convert canadian data to to US FIPS
-              geoscale: national
-              selection_fields:
-                Class: Water
-                FlowName: "Water intake"
-              # todo: convert clean fba fxn into this yaml
-              clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
-              attribute:
-                attribution_method: proportional
-                attribution_source:
-                  Employment_national_2015:
-                    geoscale: national
+        attribution_method: proportional
+        attribution_source:
+          StatCan_IWS_MI: #todo: convert canadian data to to US FIPS
+            geoscale: national
+            selection_fields:
+              Class: Water
+              FlowName: "Water intake"
+            # todo: convert clean fba fxn into this yaml
+            clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
+            attribution_method: proportional
+            attribution_source:
+              Employment_national_2015:
+                geoscale: national
 
 
       mining_attribution:  # use in m2 (instead of employment_attribution)
         selection_fields:
           PrimaryActivity:
             - "Mining"
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            Blackhurst_IO:
-              year: 2002
-              geoscale: national
-              selection_fields:
-                Class: Water
-                FlowName: "Water Withdrawals IO Vector"
-              attribute:
-                attribution_method: multiplication
+        attribution_method: proportional
+        attribution_source:
+          Blackhurst_IO:
+            year: 2002
+            geoscale: national
+            selection_fields:
+              Class: Water
+              FlowName: "Water Withdrawals IO Vector"
+            attribution_method: multiplication
+            attribution_source:
+              BEA_Make_AR:
+                year: 2002
+                selection_fields:
+                  Class: Money
+                # todo: make sure attributing on location and activity
+                attribution_method: proportional
                 attribution_source:
-                  BEA_Make_AR:
-                    year: 2002
-                    selection_fields:
-                      Class: Money
-                    attribute:
-                      # todo: make sure attributing on location and activity
-                      attribution_method: proportional
-                      attribution_source:
-                        Employment_national_2002:
-                          geoscale: national
-                          clean_fba_after_attribution: !script_function:Blackhurst_IO scale_blackhurst_results_to_usgs_values
+                  Employment_national_2002:
+                    geoscale: national
+                    clean_fba_after_attribution: !script_function:Blackhurst_IO scale_blackhurst_results_to_usgs_values
 
 
       cropland_attribution:  # use in m1, m2
@@ -130,71 +122,70 @@ source_names:
         selection_fields:
           PrimaryActivity:
             - "Irrigation Crop"
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            USDA_CoA_Cropland:
-              # year: 2017  # specify in year-specific yaml
-              selection_fields:
-                Class: "Land"
-                FlowName:
-                  - "AREA HARVESTED, IRRIGATED"
-                  - "AREA IN PRODUCTION, IRRIGATED"
-                  - "AREA, IRRIGATED"
-                  - 'AREA BEARING & NON-BEARING, IRRIGATED'
-                  - 'AREA GROWN, IRRIGATED'
-              exclusion_fields:
-                ActivityConsumedBy:
-                  - 'AG LAND'
-                  - 'AG LAND, CROPLAND, HARVESTED'
-              activity_sets:
-                cropland_attribution-pastureland:
-                  selection_fields:
-                    PrimaryActivity: 'AG LAND, (EXCL HARVESTED CROPLAND)'
-                  attribute:
-                    - attribution_method: proportional
-                      attribution_source:
-                        USDA_CoA_Cropland_NAICS:
-                          # year: 2017  # specify in year-specific yaml
-                          selection_fields:
-                            Class: Land
-                            FlowName:
-                              - "FARM OPERATIONS"
-                          estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
-                          selection_fields_after_data_suppression_estimation:
-                            PrimaryActivity: [
-                              '112', '1121', '11211', '112111', '112112',
-                              '11212', '1122', '1123', '11231', '11232',
-                              '11233', '11234', '11239', '1124', '11241',
-                              '11242', '1129', '11291', '11292', '11293',
-                              '11299']
-                    - attribution_method: multiplication
-                      attribution_source: USDA_IWMS
-                cropland_attribution-cropland:
-                  exclusion_fields:
-                    ActivityConsumedBy:
-                      - 'AG LAND, (EXCL HARVESTED CROPLAND)'
-                      - 'ORCHARDS'
-                  attribute:
-                    - attribution_method: proportional
-                      attribution_source:
-                        USDA_CoA_Cropland_NAICS:
-                          # year: 2017  # specify in year-specific yaml
-                          selection_fields:
-                            Class: Land
-                            FlowName:
-                              - "AG LAND, CROPLAND, HARVESTED"
-                          estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
-                    - attribution_method: multiplication
-                      attribution_source: USDA_IWMS
-                cropland_attribution-orchards:
-                  selection_fields:
-                    PrimaryActivity: ORCHARDS
-                  attribute:
-                    # first directly attribute so orchards are equally attributed to related sectors
-                    - attribution_method: direct
-                    - attribution_method: multiplication
-                      attribution_source: USDA_IWMS
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            # year: 2017  # specify in year-specific yaml
+            selection_fields:
+              Class: "Land"
+              FlowName:
+                - "AREA HARVESTED, IRRIGATED"
+                - "AREA IN PRODUCTION, IRRIGATED"
+                - "AREA, IRRIGATED"
+                - 'AREA BEARING & NON-BEARING, IRRIGATED'
+                - 'AREA GROWN, IRRIGATED'
+            exclusion_fields:
+              ActivityConsumedBy:
+                - 'AG LAND'
+                - 'AG LAND, CROPLAND, HARVESTED'
+            activity_sets:
+              cropland_attribution-pastureland:
+                selection_fields:
+                  PrimaryActivity: 'AG LAND, (EXCL HARVESTED CROPLAND)'
+                attribute:
+                  - attribution_method: proportional
+                    attribution_source:
+                      USDA_CoA_Cropland_NAICS:
+                        # year: 2017  # specify in year-specific yaml
+                        selection_fields:
+                          Class: Land
+                          FlowName:
+                            - "FARM OPERATIONS"
+                        estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                        selection_fields_after_data_suppression_estimation:
+                          PrimaryActivity: [
+                            '112', '1121', '11211', '112111', '112112',
+                            '11212', '1122', '1123', '11231', '11232',
+                            '11233', '11234', '11239', '1124', '11241',
+                            '11242', '1129', '11291', '11292', '11293',
+                            '11299']
+                  - attribution_method: multiplication
+                    attribution_source: USDA_IWMS
+              cropland_attribution-cropland:
+                exclusion_fields:
+                  ActivityConsumedBy:
+                    - 'AG LAND, (EXCL HARVESTED CROPLAND)'
+                    - 'ORCHARDS'
+                attribute:
+                  - attribution_method: proportional
+                    attribution_source:
+                      USDA_CoA_Cropland_NAICS:
+                        # year: 2017  # specify in year-specific yaml
+                        selection_fields:
+                          Class: Land
+                          FlowName:
+                            - "AG LAND, CROPLAND, HARVESTED"
+                        estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                  - attribution_method: multiplication
+                    attribution_source: USDA_IWMS
+              cropland_attribution-orchards:
+                selection_fields:
+                  PrimaryActivity: ORCHARDS
+                attribute:
+                  # first directly attribute so orchards are equally attributed to related sectors
+                  - attribution_method: direct
+                  - attribution_method: multiplication
+                    attribution_source: USDA_IWMS
 
 
       livestock_attribution:  # use in m1, m2
@@ -205,24 +196,21 @@ source_names:
         selection_fields:
           PrimaryActivity:
             - "Livestock"
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            USDA_CoA_Livestock:
-              # year: 2017  # specify in year-specific yaml
-              selection_fields:
-                Class: Other
-                FlowName:
-                  - "HEAD"
-                  - "NUMBER"
-                  - "COLONIES"
-                Compartment:
-                  - "NOT SPECIFIED"
-              attribute:
-                attribution_method: multiplication
-                attribution_source:
-                  USGS_WU_Coef:
-                    year: 2005
-                    geoscale: national
-                    attribute:
-                      attribution_method: inheritance
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Livestock:
+            # year: 2017  # specify in year-specific yaml
+            selection_fields:
+              Class: Other
+              FlowName:
+                - "HEAD"
+                - "NUMBER"
+                - "COLONIES"
+              Compartment:
+                - "NOT SPECIFIED"
+            attribution_method: multiplication
+            attribution_source:
+              USGS_WU_Coef:
+                year: 2005
+                geoscale: national
+                attribution_method: inheritance

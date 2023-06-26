@@ -19,10 +19,8 @@ sources_to_cache:
       cbecs_land: # all activities in eia cbecs land crosswalk
         selection_fields:
           PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
-        attribute:
-          attribution_method: proportional
-          attribution_source: Employment_national_2012
-#              data_format: FBS
+        attribution_method: proportional
+        attribution_source: Employment_national_2012
   EIA_MECS_Land: &_eia_mecs_land  # manufacturing land use
     fedefl_mapping: EIA_MECS_Land
     year: 2014
@@ -36,12 +34,8 @@ sources_to_cache:
       mecs_land: # all activities in eia mecs land crosswalk
         selection_fields:
           PrimaryActivity: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            Employment_national_2014:
-#              data_format: FBS
-              year: 2014
+        attribution_method: proportional
+        attribution_source: Employment_national_2014
 
 source_names:
   EIA_CBECS_Land:
@@ -57,15 +51,12 @@ source_names:
       general_mining: # all blm pls activities other than hardrock
         selection_fields:
           PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv general_mining
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
       hardrock_mining:
         selection_fields:
           PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
-        attribute:
-          attribution_method: proportional
-          attribution_source: Employment_national_2012
-#              data_format: FBS
+        attribution_method: proportional
+        attribution_source: Employment_national_2012
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
     selection_fields:
@@ -77,81 +68,74 @@ source_names:
          PrimaryActivity:
           - 'Cropland used for crops'
           - 'Cropland idled'
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            USDA_CoA_Cropland:
-              selection_fields:
-                Class: Land
-                FlowName:
-                  - "AREA HARVESTED"
-                  - "AREA"
-                  - "AREA IN PRODUCTION"
-                  - 'AREA BEARING & NON-BEARING'
-                  - 'AREA GROWN'
-                Location: !include:Location_common.yaml:_state_location
-              exclusion_fields:
-                conditional: {FlowName: 'AREA IN PRODUCTION',
-                              ActivityConsumedBy: 'VEGETABLE TOTALS'}
-                ActivityConsumedBy: ['AG LAND', 'AG LAND, CROPLAND, HARVESTED']
-              attribute:
-                attribution_method: proportional
-                attribution_source:
-                  USDA_CoA_Cropland_NAICS:
-                    year: 2017
-                    selection_fields:
-                      Class: Land
-                      FlowName:
-                        - "FARM OPERATIONS"
-                    estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
-                    selection_fields_after_data_suppression_estimation:
-                      PrimaryActivity: [ "112111", "112112", "11212", "1122",
-                                         "11231", "11232", "11233", "11234",
-                                         "11239", "11241", "11242", "11291",
-                                         "11292", "11293", "11299" ]
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            selection_fields:
+              Class: Land
+              FlowName:
+                - "AREA HARVESTED"
+                - "AREA"
+                - "AREA IN PRODUCTION"
+                - 'AREA BEARING & NON-BEARING'
+                - 'AREA GROWN'
+              Location: !include:Location_common.yaml:_state_location
+            exclusion_fields:
+              conditional: {FlowName: 'AREA IN PRODUCTION',
+                            ActivityConsumedBy: 'VEGETABLE TOTALS'}
+              ActivityConsumedBy: ['AG LAND', 'AG LAND, CROPLAND, HARVESTED']
+            attribution_method: proportional
+            attribution_source:
+              USDA_CoA_Cropland_NAICS:
+                year: 2017
+                selection_fields:
+                  Class: Land
+                  FlowName:
+                    - "FARM OPERATIONS"
+                estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                selection_fields_after_data_suppression_estimation:
+                  PrimaryActivity: [ "112111", "112112", "11212", "1122",
+                                     "11231", "11232", "11233", "11234",
+                                     "11239", "11241", "11242", "11291",
+                                     "11292", "11293", "11299" ]
       pastureland:
         selection_fields:
          PrimaryActivity:
           - 'Cropland used for pasture'
           - 'Forest-use land grazed'
           - 'Grassland pasture and range'
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            USDA_CoA_Cropland_NAICS:
-              selection_fields:
-                Class: Land
-                FlowName: "FARM OPERATIONS"
-              estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland_NAICS:
+            selection_fields:
+              Class: Land
+              FlowName: "FARM OPERATIONS"
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
       forest:
         selection_fields:
          PrimaryActivity:
           - 'Forest-use land not grazed'
           - 'Land in defense and industrial areas'
           - 'Land in rural parks and wildlife areas'
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
       rural_transportation:
         selection_fields:
          PrimaryActivity:
           - 'Land in rural transportation facilities'
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_rural_transportation_areas
         geoscale: national
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
       urban:
         selection_fields:
          PrimaryActivity:
           - 'Land in urban areas'
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_urban_areas
         geoscale: national
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
       other:
         selection_fields:
          PrimaryActivity:
           - 'Other land'
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_other_land
         geoscale: national
-        attribute:
-          attribution_method: direct
+        attribution_method: direct

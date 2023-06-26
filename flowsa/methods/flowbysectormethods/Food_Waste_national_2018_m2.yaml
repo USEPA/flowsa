@@ -16,27 +16,25 @@ source_names:
       wasted_food_report:
         selection_fields:
           PrimarySector: !from_index:CNHW_Food_asets.csv wasted_food_report
-        attribute:
-          attribution_method: proportional
-          primary_action_type: Produced
-          attribute_on: [SectorProducedBy]
-          fill_columns: SectorConsumedBy
-          attribution_source:
-            EPA_WFR:
-              selection_fields:
-                Class: Other
+        attribution_method: proportional
+        primary_action_type: Produced
+        attribute_on: [SectorProducedBy]
+        fill_columns: SectorConsumedBy
+        attribution_source:
+          EPA_WFR:
+            selection_fields:
+              Class: Other
       facts_and_figures:
         selection_fields:
           PrimarySector: !from_index:CNHW_Food_asets.csv facts_and_figures
-        attribute:
-          attribution_method: proportional
-          attribute_on: [Flowable]
-          fill_columns: SectorConsumedBy
-          attribution_source:
-            EPA_FactsAndFigures:
-              selection_fields:
-                Class: Other
-                FlowName: {'Food': 'Food Waste'}
+        attribution_method: proportional
+        attribute_on: [Flowable]
+        fill_columns: SectorConsumedBy
+        attribution_source:
+          EPA_FactsAndFigures:
+            selection_fields:
+              Class: Other
+              FlowName: {'Food': 'Food Waste'}
 
   # CNHW does not include residential food waste, so adding from EPA's
   # Wasted Food Report
@@ -48,5 +46,4 @@ source_names:
         selection_fields:
           PrimaryActivity: "Residential"
           FlowName: {'Food': 'Food Waste'} # rename for consistency above
-        attribute:
-          attribution_method: direct
+        attribution_method: direct
