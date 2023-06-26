@@ -609,14 +609,19 @@ class _FlowBy(pd.DataFrame):
         attributed to those sectors, by the methods specified in the calling
         FBA's configuration dictionary.
         """
-        attribute_config = self.config.get('attribute', None)
+
+        # look for the "attribute" key in the FBS yaml, which will exist if
+        # there are multiple, non-recursive attribution methods applied to a
+        # data source
+        if "attribute" in self.config:
+            attribute_config = self.config.get('attribute')
+        # if there is only a single attribution source (or if attribution is
+        # fully recursive), then load the config file as is
+        else:
+            attribute_config = self.config.copy()
 
         if isinstance(attribute_config, dict):
             attribute_config = [attribute_config]
-        if attribute_config is None:
-            log.warning('Attribution method is missing, assuming equal '
-                        'attribution')
-            attribute_config = [{'attribution_method': 'direct'}]
 
         for step_config in attribute_config:
             grouped: 'FB' = (
@@ -650,7 +655,12 @@ class _FlowBy(pd.DataFrame):
 
             fb.config = {**parent_config, **step_config}
 
-            attribution_method = step_config.get('attribution_method')
+            attribution_method = step_config.get('attribution_method', None)
+            if attribution_method is None:
+                log.warning('Attribution method is missing, assuming equal '
+                            'attribution')
+                attribution_method = 'direct'
+
             if 'attribution_source' in step_config:
                 if isinstance(step_config['attribution_source'], str):
                      attribution_name = step_config['attribution_source']
@@ -841,6 +851,7 @@ class _FlowBy(pd.DataFrame):
                         **config},
                 download_sources_ok=download_sources_ok
             ).prepare_fbs(download_sources_ok=download_sources_ok)
+
         return attribution_fbs
 
 
