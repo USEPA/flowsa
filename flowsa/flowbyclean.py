@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from flowsa.flowby import FlowByActivity, FlowBySector
+from flowsa.flowby import FlowByActivity, FlowBySector, FB
 from flowsa.flowsa_log import log
 from flowsa import (flowby, geo, location, getFlowBySector, flowbyfunctions)
 
@@ -24,11 +24,14 @@ def return_primary_activity_column(fba: FlowByActivity) -> \
 
 
 def load_prepare_clean_source(
-        self: 'FlowByActivity',
+        self: 'FB',
         download_sources_ok: bool = True
-) -> 'FlowBySector':
+) -> 'FB':
 
-    (name, config), = self.config['clean_source'].items()
+    try:
+        (name, config), = self.config['clean_source'].items()
+    except AttributeError:
+        name, config = self.config['clean_source'], {}
 
     clean_fbs = flowby.get_flowby_from_config(
         name=name,
