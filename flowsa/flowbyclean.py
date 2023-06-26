@@ -302,3 +302,33 @@ def attribute_national_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
         log.warning('Data loss upon census region mapping')
 
     return fba
+
+
+def calculate_flow_per_employee(
+        fbs: 'FlowBySector',
+        download_sources_ok: bool = True,
+        **_
+) -> 'FlowBySector':
+    """
+    Calculates FlowAmount per employee per year based on dataset name passed
+    in "clean_parameter"
+    clean_fbs function
+    """
+    bls = load_prepare_clean_source(fbs,
+                                    download_sources_ok=download_sources_ok)
+    cols = ['Location', 'Year', 'SectorProducedBy']
+    fbs = (fbs
+           .merge(bls
+                  .rename(columns={'FlowAmount': 'Employees'})
+                  .groupby(cols).agg({'Employees': 'sum'})
+                  .reset_index(),
+                  how='inner',
+                  on=cols)
+           .assign(FlowAmount=lambda x: np.divide(
+        x['FlowAmount'], x['Employees'], out=np.zeros_like(
+            x['Employees']), where=x['Employees'] != 0))
+            .assign(Unit = lambda x: x['Unit'] + '/employee')
+            .drop(columns=['Employees'])
+            )
+
+    return fbs
