@@ -109,8 +109,6 @@ def aggregator(df, groupbycols, retain_zeros=True, flowcolname='FlowAmount'):
           .drop(columns='group_id', errors='ignore')
           .reset_index(drop=True)
           )
-    # tmp replace null values with empty cells
-    df = replace_NoneType_with_empty_cells(df)
 
     # drop columns with flowamount = 0
     if retain_zeros is False:
@@ -131,7 +129,7 @@ def aggregator(df, groupbycols, retain_zeros=True, flowcolname='FlowAmount'):
     # check cols exist in df
     groupbycols = [c for c in groupbycols if c in df.columns]
 
-    df_dfg = df.groupby(groupbycols).agg({flowcolname: ['sum']})
+    df_dfg = df.groupby(groupbycols, dropna=False).agg({flowcolname: ['sum']})
 
     def is_identical(s):
         a = s.to_numpy()
