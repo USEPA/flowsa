@@ -125,18 +125,19 @@ def seeAvailableFlowByModels(flowbytype, print_method=True):
     # run through all files and append
     for file in os.listdir(fb_directory):
         if file.endswith(".yaml"):
-            # drop file extension
-            f = os.path.splitext(file)[0]
-            if flowbytype == 'FBA':
-                s = load_yaml_dict(f, 'FBA')
-                try:
-                    years = s['years']
-                except KeyError:
-                    years = 'YAML missing information on years'
-                fb_dict.update({f: years})
-            # else if FBS
-            else:
-                fb_df.append(f)
+            if all(s not in file for s in ["_common", "_summary_target"]):
+                # drop file extension
+                f = os.path.splitext(file)[0]
+                if flowbytype == 'FBA':
+                    s = load_yaml_dict(f, 'FBA')
+                    try:
+                        years = s['years']
+                    except KeyError:
+                        years = 'YAML missing information on years'
+                    fb_dict.update({f: years})
+                # else if FBS
+                else:
+                    fb_df.append(f)
 
     # determine format of data to print
     if flowbytype == 'FBA':
