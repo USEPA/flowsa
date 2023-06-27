@@ -306,6 +306,11 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     if 'year' not in config:
         config['year'] = df_load['Year'][0]
 
+    # find activity schema
+    activity_schema = config['activity_schema'] if isinstance(
+        config['activity_schema'], str) else config.get(
+        'activity_schema', {}).get(config['year'])
+
     fbs = FlowByActivity(
             df_load
             .pipe(update_geoscale, config['geoscale'])
@@ -313,10 +318,10 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
             .rename(columns={"NAICS": "ActivityProducedBy",
                              'Source': 'SourceName'})
             .assign(Class='Chemicals')
-            .assign(ActivityConsumedBy='')
+            .assign(ActivityConsumedBy=np.nan)
             .pipe(convert_naics_year,
-                  f"NAICS_{config['target_naics_year']}_Code")
-            # ^^ Consider upating this old function
+                  f"NAICS_{config['target_naics_year']}_Code",
+                  activity_schema)
             .assign(FlowType=lambda x: np.where(
                 x['SourceName']=='RCRAInfo',
                     'WASTE_FLOW', 'ELEMENTARY_FLOW'))
