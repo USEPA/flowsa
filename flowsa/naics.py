@@ -180,17 +180,23 @@ def melt_naics_crosswalk():
     return cw_replacement_2
 
 
-def convert_naics_year(df, targetsectorsourcename, sectorsourcename):
+def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
     """
     Replace any non sectors with sectors.
     :param df_load: df with sector columns or sector-like activities
     :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
     :return: df, with non-sectors replaced with sectors
     """
-    # load the mastercroswalk and subset by sectorsourcename,
+    # todo: update this function to work better with recursive method
+
+    # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('sector_timeseries')[[
-        targetsectorsourcename, sectorsourcename]]
+    if targetsectorsourcename == sectorsourcename:
+        cw_load = common.load_crosswalk('sector_timeseries')[[
+        targetsectorsourcename]]
+    else:
+        cw_load = common.load_crosswalk('sector_timeseries')[[
+            targetsectorsourcename, sectorsourcename]]
     cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
@@ -199,20 +205,22 @@ def convert_naics_year(df, targetsectorsourcename, sectorsourcename):
     cw_melt = cw_melt.drop(columns='naics_count')
 
     # determine which headers are in the df
-    if 'SectorConsumedBy' in df:
+    column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
+    if 'SectorConsumedBy' in df_load:
         column_headers = ['SectorProducedBy', 'SectorConsumedBy']
-    else:
-        column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
 
     # check if there are any sectors that are not in the naics 2012 crosswalk
-    non_naics = check_if_sectors_are_naics(df, cw, column_headers)
+    non_naics = check_if_sectors_are_naics(df_load, cw, column_headers)
 
     # loop through the df headers and determine if value is
     # not in crosswalk list
+    df = df_load.copy()
     if len(non_naics) != 0:
-        vlog.debug('Checking if sectors represent a different '
-                   f'NAICS year, if so, replace with {targetsectorsourcename}')
+        log.info('Checking if sectors represent a different '
+                 f'NAICS year, if so, replace with {targetsectorsourcename}')
         for c in column_headers:
+            if df[c].isna().all():
+                continue
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
             # if there is a value in the sectorsourcename column,
@@ -227,25 +235,33 @@ def convert_naics_year(df, targetsectorsourcename, sectorsourcename):
             # drop columns
             df = df.drop(
                 columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
-        vlog.debug(f'Replaced NAICS with {targetsectorsourcename}')
+        log.info(f'Replaced NAICS with {targetsectorsourcename}')
 
         # check if there are any sectors that are not in
-        # the target sector crosswalk
-        vlog.debug(f'Check again for non {targetsectorsourcename}')
+        # the target sector crosswalk and if so, drop those sectors
+        log.info('Checking for unconverted NAICS - determine if rows should '
+                 'be dropped.')
         nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
             vlog.debug('Dropping non-NAICS from dataframe')
             for c in column_headers:
+                if df[c].isna().all():
+                    continue
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
         # aggregate data
-        possible_column_headers = \
-            ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-             'TemporalCorrelation', 'GeographicalCorrelation',
-             'TechnologicalCorrelation', 'DataCollection', 'Description')
-        # list of column headers to group aggregation by
-        groupby_cols = [e for e in df.columns.values.tolist()
-                        if e not in possible_column_headers]
-        df = aggregator(df, groupby_cols)
+        if hasattr(df, 'aggregate_flowby'):
+            df = df.aggregate_flowby()
+        else:
+            # todo: drop except statement once all dataframes are converted
+            #  to classes
+            possible_column_headers = \
+                ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
+                 'TemporalCorrelation', 'GeographicalCorrelation',
+                 'TechnologicalCorrelation', 'DataCollection', 'Description')
+            # list of column headers to group aggregation by
+            groupby_cols = [e for e in df.columns.values.tolist()
+                            if e not in possible_column_headers]
+            df = aggregator(df, groupby_cols)
 
     return df
