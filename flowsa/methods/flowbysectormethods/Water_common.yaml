@@ -25,7 +25,7 @@ sources_to_cache:
         clean_fba_after_attribution: !clean_function:flowbyclean substitute_nonexistent_values
         clean_source:
           USDA_IWMS:
-            geoscale: national  #todo: check should be national
+            geoscale: national  #todo: check if should be default national
             # year: 2018  # specify in year-specific yaml
             selection_fields:
               Class: Water
@@ -33,7 +33,7 @@ sources_to_cache:
       - attribution_method: direct
         clean_fba_after_attribution: !clean_function:flowbyclean weighted_average
         replacement_dictionary: {'HAY & HAYLAGE, (EXCL ALFALFA)': 'HAY & HAYLAGE',
-                                  'HAY & HAYLAGE, ALFALFA': 'HAY & HAYLAGE',
+                                 'HAY & HAYLAGE, ALFALFA': 'HAY & HAYLAGE',
                                  '111940A': '111940',
                                  '111940B': '111940'}
         clean_source:
