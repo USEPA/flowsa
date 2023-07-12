@@ -27,8 +27,7 @@ with open(settings.datapath / 'flowby_config.yaml') as f:
 def get_catalog_info(source_name: str) -> dict:
     '''
     Retrieves the information on a given source from source_catalog.yaml.
-    Replaces (when used appropriately), common.check_activities_sector_like()
-    as well as various pieces of code that load the source_catalog yaml.
+    Replaces various pieces of code that load the source_catalog yaml.
     '''
     source_catalog = common.load_yaml_dict('source_catalog')
     source_name = common.return_true_source_catalog_name(source_name)
@@ -1133,13 +1132,21 @@ class _FlowBy(pd.DataFrame):
 
         # set new units, incorporating a check that units are correctly
         # converted
+        rate = None
         if fb['Unit'].str.contains('/').all():
-            fb['Denominator'] = fb['Unit'].str.split("/",1).str[1]
-            fb['Unit'] = fb['Unit'].str.split("/",1).str[0]
-            if fb['Unit_other'].equals(fb['Denominator']) is False:
+            rate = 'Unit'
+            other = 'Unit_other'
+        elif fb['Unit_other'].str.contains('/').all():
+            rate = 'Unit_other'
+            other = 'Unit'
+        if rate is not None:
+            fb['Denominator'] = fb[rate].str.split("/",1).str[1]
+            fb[rate] = fb[rate].str.split("/",1).str[0]
+            if fb[other].equals(fb['Denominator']) is False:
                 log.warning('Check units being multiplied')
             else:
-                log.info(f"Units reset to {fb['Unit'].drop_duplicates().tolist()}")
+                log.info(f"Units reset to"
+                         f" {fb[rate].drop_duplicates().tolist()}")
 
         return (
             fb
