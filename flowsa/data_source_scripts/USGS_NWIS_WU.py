@@ -365,20 +365,23 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     fba['FlowAmount'] = np.where(fba['Unit'] == 'Bgal/d',
                  fba['FlowAmount'] * 1000, fba['FlowAmount'])
     fba['Unit'] = np.where(fba['Unit'] == 'Bgal/d', 'Mgal/d', fba['Unit'])
+    # drop wastewater data
+    # fba = fba[fba['FlowName'] != 'wastewater']
     # drop rows of commercial data (because only exists for 3 states),
     # causes issues because linked with public supply
     # also drop closed-loop or once-through cooling (thermoelectric power)
     # to avoid double counting
-    vlog.info('Removing all rows for Commercial Data because does not '
-              'exist for all states and causes issues as information '
-              'on Public Supply deliveries.')
-    dfa = fba[~fba['Description'].str.lower().str.contains(
-        'commercial|closed-loop cooling|once-through')]
-    calculate_flowamount_diff_between_dfs(fba, dfa)
+    # vlog.info('Removing all rows for Commercial Data because does not '
+    #           'exist for all states and causes issues as information '
+    #           'on Public Supply deliveries.')
+    # dfa = fba[~fba['Description'].str.lower().str.contains(
+    #     'commercial|closed-loop cooling|once-through')]
+    # calculate_flowamount_diff_between_dfs(fba, dfa)
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
     vlog.info('Modify the public supply values to generate '
               'NET public supply by subtracting out deliveries to domestic')
-    dfb = calculate_net_public_supply(dfa)
+    # dfb = calculate_net_public_supply(dfa)
+    dfb = calculate_net_public_supply(fba)
 
     # check that golf + crop = total irrigation, if not,
     # assign all of total irrigation to crop
@@ -414,7 +417,7 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     # In 2015, there is data for consumptive water use for
     # thermo and crop, drop because do not calculate consumptive water loss
     # for all water categories
-    dfd = dfd[dfd['Compartment'] != 'air'].reset_index(drop=True)
+    # dfd = dfd[dfd['Compartment'] != 'air'].reset_index(drop=True)
 
     return dfd
 
@@ -448,16 +451,16 @@ def calculate_net_public_supply(df_load: FlowByActivity):
          'Thermoelectric Power Closed-loop cooling',
          'Thermoelectric Power Once-through cooling'])]
     # drop duplicate info of "Public Supply deliveries to"
-    df1_sub = df1_sub.loc[~df1_sub['Description'].str.contains(
-        "Public Supply total deliveries")]
-    df1_sub = df1_sub.loc[~df1_sub['Description'].str.contains(
-        "deliveries from public supply")]
+    # df1_sub = df1_sub.loc[~df1_sub['Description'].str.contains(
+    #     "Public Supply total deliveries")]
+    # df1_sub = df1_sub.loc[~df1_sub['Description'].str.contains(
+    #     "deliveries from public supply")]
 
     # calculate data drop
-    vlog.info('Dropping rows that contain "deliveries from public '
-              'supply" to avoid double counting with rows of "Public '
-              'Supply deliveries to"')
-    calculate_flowamount_diff_between_dfs(df1, df1_sub)
+    # vlog.info('Dropping rows that contain "deliveries from public '
+    #           'supply" to avoid double counting with rows of "Public '
+    #           'Supply deliveries to"')
+    # calculate_flowamount_diff_between_dfs(df1, df1_sub)
 
     # drop county level values because cannot use county data
     vlog.info('Dropping county level public supply withdrawals '
@@ -540,7 +543,6 @@ def check_golf_and_crop_irrigation_totals(df_load: FlowByActivity):
     :param df_load: df, USGS water use
     :return: df, FBA with reassigned irrigation water to crop and golf
     """
-
     # drop national data
     df = df_load[df_load['Location'] != '00000']
 

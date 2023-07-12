@@ -47,6 +47,15 @@ source_names:
   USGS_NWIS_WU:
     fedefl_mapping: USGS_NWIS_WU
     geoscale: state
+    exclusion_fields:
+      ActivityConsumedBy:
+        - Commercial
+        - Thermoelectric Power Closed-loop cooling
+        - Thermoelectric Power Once-through cooling
+      FlowName: wastewater
+      Compartment: air
+      Description:  # prevent double counting with "Public Supply deliveries to"
+        - Domestic deliveries from public supply, in Mgal/d
     clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
     activity_sets:
 
