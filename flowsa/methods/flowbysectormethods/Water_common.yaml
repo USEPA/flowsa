@@ -76,7 +76,9 @@ source_names:
             - "Industrial"
             - "Mining"
         attribution_method: proportional
-#        attribution_source: Employment_national_2015  # specify in year-specific yaml
+#        attribution_source:  # specify in year-specific yaml
+#          Employment_national_20XX: # specify in method
+#            geoscale:  # specify in method
 
 
 #      industrial_attribution:  # use in m2 (instead of employment_attribution)
