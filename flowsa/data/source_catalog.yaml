@@ -10,6 +10,12 @@ BEA_GDP_GrossOutput:
     - Money
   activity_schema: BEA_2012_Detail_Code
   sector_hierarchy: "parent-completeChild"
+BEA_Make_AR:
+  data_format: FBA
+  class:
+    - Money
+  activity_schema: BEA_2012_Detail_Code
+  sector_hierarchy: "parent-completeChild"
 BEA_Make_Detail_BeforeRedef:
   data_format: FBA
   class:
