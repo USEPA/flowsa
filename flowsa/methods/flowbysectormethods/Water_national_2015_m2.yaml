@@ -20,7 +20,6 @@ source_names:
 #        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:direct_attribution
       mining_attribution:
 #        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:mining_attribution
-        geoscale: national
         selection_fields:
           PrimaryActivity:
             - "Mining"
