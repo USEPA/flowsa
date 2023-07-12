@@ -692,6 +692,14 @@ class _FlowBy(pd.DataFrame):
                 )
                 attributed_fb = fb.multiplication_attribution(attribution_fbs)
 
+            elif attribution_method == 'division':
+                log.info(f"Dividing {self.full_name} by {attribution_name}")
+                attribution_fbs = fb.load_prepare_attribution_source(
+                    attribution_config=step_config,
+                    download_sources_ok=download_sources_ok
+                )
+                attributed_fb = fb.division_attribution(attribution_fbs)
+
             elif attribution_method == 'inheritance':
                 log.info(f'Directly attributing {self.full_name} to sectors, child '
                          'sectors inherent parent values.')
@@ -1080,13 +1088,14 @@ class _FlowBy(pd.DataFrame):
         This method takes flows from the calling FBA which are mapped to
         multiple sectors and multiplies them by flows from other (an FBS).
         """
+        # determine units in each dataset
+        self_units = self['Unit'].drop_duplicates().tolist()
+        other_units = other['Unit'].drop_duplicates().tolist()
 
-        log.info('Multiplying flows in %s by %s.',
-                 self.full_name, other.full_name)
+        log.info(f'Multiplying flows in {self.full_name} {self_units} by'
+                 f' {other.full_name} {other_units}')
         fb_geoscale, other_geoscale, fb, other = self.harmonize_geoscale(
             other)
-
-        # todo: update units after multiplying
 
         # multiply using each dfs primary sector col
         merged = (fb
@@ -1120,6 +1129,81 @@ class _FlowBy(pd.DataFrame):
                                 fb_null.Location))
                         )
 
+            fb = fb[fb['FlowAmount'] != 0]
+
+        # set new units, incorporating a check that units are correctly
+        # converted
+        if fb['Unit'].str.contains('/').all():
+            fb['Denominator'] = fb['Unit'].str.split("/",1).str[1]
+            fb['Unit'] = fb['Unit'].str.split("/",1).str[0]
+            if fb['Unit_other'].equals(fb['Denominator']) is False:
+                log.warning('Check units being multiplied')
+            else:
+                log.info(f"Units reset to {fb['Unit'].drop_duplicates().tolist()}")
+
+        return (
+            fb
+            .drop(columns=['PrimarySector', 'SecondarySector',
+                           'temp_location', 'group_total', 'Unit_other',
+                           'Denominator'],
+                  errors='ignore')
+            .reset_index(drop=True)
+        )
+
+
+    def division_attribution(
+        self: 'FB',
+        other: 'FlowBySector'
+    ) -> 'FlowByActivity':
+        """
+        This method takes flows from the calling FBA which are mapped to
+        multiple sectors and divides them by flows from other (an FBS).
+        """
+
+        # determine units in each dataset
+        self_units = self['Unit'].drop_duplicates().tolist()
+        other_units = other['Unit'].drop_duplicates().tolist()
+
+        log.info(f'Dividing flows in {self.full_name} {self_units} by'
+                 f' {other.full_name} {other_units}')
+        fb_geoscale, other_geoscale, fb, other = self.harmonize_geoscale(
+            other)
+
+        # divide using each dfs primary sector col
+        merged = (fb
+                  .merge(other,
+                         how='left',
+                         left_on=['PrimarySector', 'temp_location'
+                                  if 'temp_location' in fb
+                                  else 'Location'],
+                         right_on=['PrimarySector', 'Location'],
+                         suffixes=[None, '_other'])
+                  .fillna({'FlowAmount_other': 0})
+                  )
+
+        fb = (merged
+              .assign(FlowAmount=lambda x: (x.FlowAmount
+                                            / x.FlowAmount_other))
+              .drop(columns=['PrimarySector_other', 'Location_other',
+                             'FlowAmount_other', 'denominator'],
+                    errors='ignore')
+              )
+
+        # determine if any flows are lost because multiplied by 0
+        fb_null = fb[fb['FlowAmount'] == 0]
+        if len(fb_null) > 0:
+            log.warning('FlowAmounts in %s are reset to 0 due to lack of '
+                        'flows in attribution source %s for '
+                        'ActivityProducedBy/ActivityConsumedBy/Location: %s',
+                        fb.full_name, other.full_name,
+                        set(zip(fb_null.ActivityProducedBy,
+                                fb_null.ActivityConsumedBy,
+                                fb_null.Location))
+                        )
+
+        # set new units
+        fb['Unit'] = fb['Unit'] + '/' + fb['Unit_other']
+
         return (
             fb
             .drop(columns=['PrimarySector', 'SecondarySector',
@@ -1127,6 +1211,7 @@ class _FlowBy(pd.DataFrame):
                   errors='ignore')
             .reset_index(drop=True)
         )
+
 
     def add_primary_secondary_columns(
         self: FB,
