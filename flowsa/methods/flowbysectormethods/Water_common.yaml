@@ -25,7 +25,7 @@ sources_to_cache:
         clean_fba_after_attribution: !clean_function:flowbyclean substitute_nonexistent_values
         clean_source:
           USDA_IWMS:
-            geoscale: national
+            geoscale: national  #todo: check should be national
             # year: 2018  # specify in year-specific yaml
             selection_fields:
               Class: Water
@@ -79,49 +79,67 @@ source_names:
 #        attribution_source: Employment_national_2015  # specify in year-specific yaml
 
 
-      industrial_attribution:  # use in m2 (instead of employment_attribution)
-        selection_fields:
-          PrimaryActivity:
-            - "Industrial"
-        attribution_method: proportional
-        attribution_source:
-          StatCan_IWS_MI: #todo: convert canadian data to to US FIPS
-            geoscale: national
-            selection_fields:
-              Class: Water
-              FlowName: "Water intake"
-            # todo: convert clean fba fxn into this yaml
-            clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
-            attribution_method: proportional
-            attribution_source:
-              Employment_national_2015:
-                geoscale: national
+#      industrial_attribution:  # use in m2 (instead of employment_attribution)
+#        selection_fields:
+#          PrimaryActivity:
+#            - "Industrial"
+#        attribution_method: proportional
+#        attribution_source:
+#          StatCan_IWS_MI:
+##            year: # select in method
+#            geoscale: national
+#            selection_fields:
+#              Class: Water
+#              FlowName: "Water intake"
+#              Location: {'124': '00000'} # replace canadian ISO with FIPS
+#              LocationSystem: {'ISO': 'FIPS_2015'}
+#            # todo: convert clean fba fxn into this yaml
+##            clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
+#            attribution_method: division
+#            attribution_source:
+#              StatCan_GDP:
+##                year:  # select in method
+#                selection_fields:
+#                  Class: Money
+#                  Location: {'124': '00000'} # replace canadian ISO with FIPS
+#                  LocationSystem: {'ISO': 'FIPS_2015'}
+#                attribution_method: multiplication
+#                attribution_source:
+#                  BEA_GDP_GrossOutput:
+##                    year:  # select in method
+#                    selection_fields: Money
+#                  attribution_method: proportional
+#                  attribution_source:
+##                    Employment_national_2015:  # select in method
+#                      geoscale: national
 
 
-      mining_attribution:  # use in m2 (instead of employment_attribution)
-        selection_fields:
-          PrimaryActivity:
-            - "Mining"
-        attribution_method: proportional
-        attribution_source:
-          Blackhurst_IO:
-            year: 2002
-            geoscale: national
-            selection_fields:
-              Class: Water
-              FlowName: "Water Withdrawals IO Vector"
-            attribution_method: multiplication
-            attribution_source:
-              BEA_Make_AR:
-                year: 2002
-                selection_fields:
-                  Class: Money
-                # todo: make sure attributing on location and activity
-                attribution_method: proportional
-                attribution_source:
-                  Employment_national_2002:
-                    geoscale: national
-                    clean_fba_after_attribution: !script_function:Blackhurst_IO scale_blackhurst_results_to_usgs_values
+#      mining_attribution:  # use in m2 (instead of employment_attribution)
+#        geoscale: national
+#        selection_fields:
+#          PrimaryActivity:
+#            - "Mining"
+#        attribution_method: proportional
+#        attribution_source:
+#          Blackhurst_IO:
+#            year: 2002
+#            geoscale: national
+#            selection_fields:
+#              Class: Water
+#              FlowName: "Water Withdrawals IO Vector"
+#            attribute:
+#                # convert to kg/year for 2002
+#              - attribution_method: multiplication
+#                attribution_source:
+#                  BEA_Make_AR:
+#                    year: 2002
+#                    selection_fields:
+#                      Class: Money
+#                    attribution_method: proportional
+#                    attribution_source: Employment_national_2002
+#                # scale to year of USGS data
+#              - attribution_method: multiplication
+##                attribution_source: Employment_national_2015  # specify in method
 
 
       cropland_attribution:  # use in m1, m2

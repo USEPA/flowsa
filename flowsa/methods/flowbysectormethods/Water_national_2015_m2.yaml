@@ -1,107 +1,97 @@
+# This is the 2015 target year method for water m2 which builds off the generic
+# method in Water_common
+
 industry_spec:
   default: NAICS_6
-year: 2015
+year: &year 2015
 target_naics_year: 2012
 geoscale: national
 
+sources_to_cache:
+  USDA_IWMS:
+    !include:Water_common.yaml:sources_to_cache:USDA_IWMS
+    year: 2018
+
 source_names:
   USGS_NWIS_WU:
-    fedefl_mapping: USGS_NWIS_WU
-    geoscale: state
-    selection_fields:
-      Class: Water # not necessary to define
-    clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
-    activity_sets:
+    !include:Water_common.yaml:source_names:USGS_NWIS_WU
+    activity_sets: # do not import all activity sets from the common file because common file contains activity sets for multiple methods
 #      direct_attribution:
-#        selection_fields:
-#          PrimaryActivity:
-#            - "Aquaculture"
-#            - "Irrigation Golf Courses"
-#            - "Public Supply"
-#            - "Thermoelectric Power"
-#            - "Domestic"
-#        attribute:
-#          attribution_method: direct
-      industrial:
+#        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:direct_attribution
+      mining_attribution:
+#        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:mining_attribution
+        geoscale: national
+        selection_fields:
+          PrimaryActivity:
+            - "Mining"
+        attribution_method: proportional
+        attribution_source:
+          Blackhurst_IO:
+            year: 2002
+            geoscale: national
+            selection_fields:
+              Class: Water
+              FlowName: "Water Withdrawals IO Vector"
+            attribute:
+                # convert to kg/year for 2002
+              - attribution_method: multiplication
+                attribution_source:
+                  BEA_Make_AR:
+                    year: 2002
+                    selection_fields:
+                      Class: Money
+                    attribution_method: proportional
+                    attribution_source: Employment_national_2002
+                # scale to year of USGS data
+              - attribution_method: multiplication
+                attribution_source: Employment_national_2015
+      industrial_attribution:
+#        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:industrial_attribution
         selection_fields:
           PrimaryActivity:
             - "Industrial"
-        attribute:
-          attribution_method: proportional
-          attribution_source:
-            StatCan_IWS_MI: #todo: convert canadian data to to US FIPS
-              geoscale: national
-              selection_fields:
-                Class: Water
-                FlowName: "Water intake"
-              # todo: convert clean fba fxn into this yaml
-              clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
-              attribute:
-                attribution_method: proportional
+        attribution_method: proportional
+        attribution_source:
+          StatCan_IWS_MI:
+            year: 2015
+            geoscale: national
+            selection_fields:
+              Class: Water
+              FlowName: "Water intake"
+              Location: {'124': '00000'} # replace canadian ISO with FIPS
+              LocationSystem: {'ISO': 'FIPS_2015'}
+            # todo: convert clean fba fxn into this yaml
+#            clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
+            attribution_method: division
+            attribution_source:
+              StatCan_GDP:
+                year: 2015
+                selection_fields:
+                  Class: Money
+                  Location: {'124': '00000'} # replace canadian ISO with FIPS
+                  LocationSystem: {'ISO': 'FIPS_2015'}
+                attribution_method: multiplication
                 attribution_source:
-                  Employment_national_2015:
-                    geoscale: national
-#      mining:
-#        selection_fields:
-#          PrimaryActivity:
-#            - "Mining"
-#        attribtute:
-#          attribution_method: proportional
-#          attribution_source:
-#            Blackhurst_IO:
-#              year: 2002
-#              geoscale: national
-#              selection_fields:
-#                Class: Water
-#                FlowName: "Water Withdrawals IO Vector"
-#              attribute:
-#                attribution_method: multiplication
-#                attribution_source:
-#                  BEA_Make_AR:
-#                    year: 2002
-#                    selection_fields:
-#                      Class: Money
-#                    attribute:
-#                      # todo: make sure attributing on location and activity
-#                      attribution_method: proportional
-#                      attribution_source:
-#                        Employment_national_2002:
-#                          geoscale: national
-#                          clean_fba_after_attribution: !script_function:Blackhurst_IO scale_blackhurst_results_to_usgs_values
-#      activity_set_4:
-#        names:
-#          - "Irrigation Crop"
-#        allocation_method: proportional
-#        allocation_source: "USDA_IWMS"
-#        allocation_source_class: "Land"
-#        allocation_source_year: 2018
-#        allocation_flow: None
-#        allocation_compartment: None
-#        allocation_from_scale: state
-#        clean_allocation_fba_w_sec: !script_function:USDA_IWMS disaggregate_iwms_to_6_digit_naics_for_water_withdrawal
-#        helper_source: "USDA_IWMS"
-#        helper_method: multiplication
-#        helper_source_class: "Water"
-#        helper_source_year: 2018
-#        helper_flow: None
-#        helper_from_scale: state
-#      activity_set_5:
-#        names:
-#          - "Livestock"
-#        allocation_method: proportional
-#        allocation_source: "USDA_CoA_Livestock"
-#        allocation_source_class: "Other"
-#        allocation_source_year: 2017
-#        allocation_flow:
-#          - "HEAD"
-#          - "NUMBER"
-#          - "COLONIES"
-#        allocation_compartment:
-#          - "NOT SPECIFIED"
-#        allocation_from_scale: state
-#        helper_source: "USGS_WU_Coef"
-#        helper_method: multiplication
-#        helper_source_class: "Water"
-#        helper_source_year: 2005
-#        helper_flow: None
-#        helper_from_scale: national
+                  BEA_GDP_GrossOutput:
+                    year: 2015
+                    activity_to_sector_mapping: BEA_2012_Detail
+                    selection_fields:
+                      Class: Money
+                    attribution_method: proportional
+                    attribution_source:
+                      Employment_national_2015:
+                        geoscale: national
+      cropland_attribution:
+        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution:attribution_source:USDA_CoA_Cropland
+            year: 2017
+      livestock_attribution:
+        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:livestock_attribution
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Livestock:
+            !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:livestock_attribution:attribution_source:USDA_CoA_Livestock
+            year: 2017
