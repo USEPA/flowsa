@@ -4,7 +4,7 @@ Acres,m2,4046.856422
 million sq ft,m2,92903
 million square feet,m2,92903
 square feet,m2,0.092903
-gallons/animal,kg/animal,3.79
+gallons/animal,kg/p,3.79
 Mgal,kg,3790000
 Bgal,kg,3790000000
 gal,kg,3.79
@@ -17,7 +17,7 @@ MT,kg,1000
 LB,kg,0.45359
 ACRE FEET / ACRE,kg/m2,304.8000006
 gal/USD,kg/USD,3.79
-Quadrillion Btu,MJ,1.05506E+12
+Quadrillion Btu,MJ,1.06E+12
 Trillion Btu,MJ,1055055900
 Tbtu,MJ,1055055900
 MT CO2e,MMT CO2e,0.000001
