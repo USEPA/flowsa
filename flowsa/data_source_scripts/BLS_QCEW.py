@@ -17,8 +17,7 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
-from flowsa.flowbyfunctions import assign_fips_location_system, \
-    aggregator, equally_allocate_suppressed_parent_to_child_naics
+from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.flowby import FlowByActivity
 from flowsa.flowsa_log import log
 from flowsa.naics import industry_spec_key
@@ -139,29 +138,29 @@ def bls_qcew_parse(*, df_list, year, **_):
     return df2
 
 
-def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
-    """
-    clean up bls df with sectors by estimating suppresed data
-    :param df_w_sec: df, FBA format BLS QCEW data
-    :param kwargs: additional arguments can include 'attr', a
-    dictionary of FBA method yaml parameters
-    :return: df, BLS QCEW FBA with estimated suppressed data
-    """
-    groupcols = list(df_w_sec.select_dtypes(include=['object', 'int']).columns)
-    # estimate supressed data
-    df = equally_allocate_suppressed_parent_to_child_naics(
-        df_w_sec, kwargs['method'], 'SectorProducedBy', groupcols)
-
-    # for purposes of allocation, we do not need to differentiate between
-    # federal government, state government, local government, or private
-    # sectors. So after estimating the suppressed data (above), modify the
-    # flow names and aggregate data
-    col_list = [e for e in df_w_sec.columns if e in ['FlowName', 'Flowable']]
-    for c in col_list:
-        df[c] = df[c].str.split(',').str[0]
-    df2 = aggregator(df, groupcols)
-
-    return df2
+# def bls_clean_allocation_fba_w_sec(df_w_sec, **kwargs):
+#     """
+#     clean up bls df with sectors by estimating suppresed data
+#     :param df_w_sec: df, FBA format BLS QCEW data
+#     :param kwargs: additional arguments can include 'attr', a
+#     dictionary of FBA method yaml parameters
+#     :return: df, BLS QCEW FBA with estimated suppressed data
+#     """
+#     groupcols = list(df_w_sec.select_dtypes(include=['object', 'int']).columns)
+#     # estimate supressed data
+#     df = equally_allocate_suppressed_parent_to_child_naics(
+#         df_w_sec, kwargs['method'], 'SectorProducedBy', groupcols)
+#
+#     # for purposes of allocation, we do not need to differentiate between
+#     # federal government, state government, local government, or private
+#     # sectors. So after estimating the suppressed data (above), modify the
+#     # flow names and aggregate data
+#     col_list = [e for e in df_w_sec.columns if e in ['FlowName', 'Flowable']]
+#     for c in col_list:
+#         df[c] = df[c].str.split(',').str[0]
+#     df2 = aggregator(df, groupcols)
+#
+#     return df2
 
 
 def clean_qcew(fba: FlowByActivity, **kwargs):
