@@ -67,7 +67,7 @@ def industry_spec_key(
                                pd.DataFrame({'source_naics': non_naics,
                                              'target_naics': non_naics})])
 
-    # drop source_naics that are more aggregated than target_naics, reorder
+    # drop nans
     naics_key = (naics_key[['source_naics', 'target_naics']]
                  .dropna()
                  .drop_duplicates()
@@ -76,6 +76,86 @@ def industry_spec_key(
                  )
 
     return naics_key
+
+
+def map_target_sectors_to_less_aggregated_sectors(
+    industry_spec: dict,
+    year: Literal[2002, 2007, 2012, 2017] = 2012
+) -> pd.DataFrame:
+    """
+    Map target NAICS to all possible other sector lengths
+    """
+
+    naics = naics_crosswalk.assign(
+        target_naics=naics_crosswalk[industry_spec['default']])
+    for level, industries in industry_spec.items():
+        if level not in ['default', 'non_naics']:
+            naics['target_naics'] = naics['target_naics'].mask(
+                naics.drop(columns='target_naics').isin(industries).any(axis='columns'),
+                naics[level]
+            )
+
+    # todo: add user-specified non-naics
+    # if 'non_naics' in industry_spec:
+    #     non_naics = industry_spec['non_naics']
+    #     if isinstance(non_naics, str):
+    #         non_naics = [non_naics]
+    #     naics_key = pd.concat([naics_key,
+    #                            pd.DataFrame({'source_naics': non_naics,
+    #                                          'target_naics': non_naics})])
+
+    # drop source_naics that are more aggregated than target_naics, reorder
+    for n in (2, 7):
+        naics[f'NAICS_{n}'] = np.where(
+            naics[f'NAICS_{n}'].str.len() > naics['target_naics'].str.len(),
+            np.nan,
+            naics[f'NAICS_{n}'])
+
+    # rename columns to align with previous code
+    naics = naics.rename(columns={'NAICS_2': '_naics_2',
+                                  'NAICS_3': '_naics_3',
+                                  'NAICS_4': '_naics_4',
+                                  'NAICS_5': '_naics_5',
+                                  'NAICS_6': '_naics_6',
+                                  'NAICS_7': '_naics_7'}
+                         )
+
+    return naics.drop_duplicates().reset_index(drop=True)
+
+
+def map_source_sectors_to_less_aggregated_sectors(
+    year: Literal[2002, 2007, 2012, 2017] = 2012
+) -> pd.DataFrame:
+    """
+    Map target NAICS to all possible other sector lengths
+    """
+    naics = []
+    for n in naics_crosswalk.columns.values.tolist():
+        naics_sub = naics_crosswalk.assign(source_naics=naics_crosswalk[n])
+        naics.append(naics_sub)
+
+    # concat data into single dataframe
+    naics_key = pd.concat(naics, sort=False)
+    naics_key = naics_key.dropna(subset=['source_naics'])
+
+    # drop source_naics that are more aggregated than target_naics, reorder
+    for n in range(2, 8):
+        naics_key[f'NAICS_{n}'] = np.where(
+            naics_key[f'NAICS_{n}'].str.len() > naics_key[
+                'source_naics'].str.len(),
+            np.nan,
+            naics_key[f'NAICS_{n}'])
+
+    # rename columns to align with previous code
+    naics_key = naics_key.rename(columns={'NAICS_2': 'n2',
+                                          'NAICS_3': 'n3',
+                                          'NAICS_4': 'n4',
+                                          'NAICS_5': 'n5',
+                                          'NAICS_6': 'n6',
+                                          'NAICS_7': 'n7'}
+                                 )
+
+    return naics_key.drop_duplicates()
 
 
 def year_crosswalk(

@@ -3,7 +3,7 @@ import pandas as pd
 from flowsa.flowby import FlowByActivity, FlowBySector, FB
 from flowsa.flowsa_log import log
 from flowsa import (flowby, geo, location, getFlowBySector, flowbyfunctions)
-
+from flowsa.naics import map_source_sectors_to_less_aggregated_sectors
 
 def return_primary_activity_column(fba: FlowByActivity) -> \
         FlowByActivity:
@@ -178,26 +178,40 @@ def estimate_suppressed_sectors_equal_attribution(
     :param fba:
     :return:
     """
+    # todo: update function to work for any number of sector lengths
+    # todo: update to loop through both sector columns, see equally_attribute()
+
+    naics_key = map_source_sectors_to_less_aggregated_sectors()
+    # forward fill
+    naics_key = naics_key.T.ffill().T
 
     col = return_primary_activity_column(fba)
+
+    # todo: don't drop these grouped sectors, instead, incorporate into fxn
+    fba = fba[~fba[col].isin(
+        ['1125 & 1129', '11193 & 11194 & 11199'])].reset_index(drop=True)
+
     indexed = (
         fba
-        .assign(n2=fba[col].str.slice(stop=2),
-                n3=fba[col].str.slice(stop=3),
-                n4=fba[col].str.slice(stop=4),
-                n5=fba[col].str.slice(stop=5),
-                n6=fba[col].str.slice(stop=6),
-                n7=fba[col].str.slice(stop=7),
-                location=fba.Location,
+        .merge(naics_key, how='left', left_on=col,
+               right_on='source_naics')
+        .drop(columns='source_naics')
+        .assign(location=fba.Location,
                 category=fba.FlowName)
         .replace({'FlowAmount': {0: np.nan},
-                  col: {'31-33': '3X',
-                        '44-45': '4X',
-                        '48-49': '4Y'},
-                  'n2': {'31': '3X', '32': '3X', '33': '3X',
-                         '44': '4X', '45': '4X',
-                         '48': '4Y', '49': '4Y'}})
-        .set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'location', 'category'],
+                  # col: {'1125 & 1129': '112X' #,
+                  #       '11193 & 11194 & 11199': '1119X',
+                  #       '31-33': '3X',
+                  #       '44-45': '4X',
+                  #       '48-49': '4Y'},
+                  # 'n2': {'31': '3X', '32': '3X', '33': '3X',
+                  #        '44': '4X', '45': '4X',
+                  #        '48': '4Y', '49': '4Y'},
+                  # 'n4': {'1125': '112X', '1129': '112X'},
+                  # 'n5': {'11193': '1119X', '11194': '1119X', '11199': '1119X'}
+                  })
+        .set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'location',
+                    'category'],
                    verify_integrity=True)
     )
 
@@ -238,15 +252,20 @@ def estimate_suppressed_sectors_equal_attribution(
                 x.groupby(level=['n2', 'n3', 'n4', 'n5',
                                  'location', 'category'])['FlowAmount']
                 .transform(fill_suppressed, 5, x[col])))
+        .assign(
+            FlowAmount=lambda x: (
+                x.groupby(level=['n2', 'n3', 'n4', 'n5', 'n6',
+                                 'location', 'category'])['FlowAmount']
+                .transform(fill_suppressed, 6, x[col])))
         .fillna({'FlowAmount': 0})
         .reset_index(drop=True)
     )
 
     aggregated = (
         unsuppressed
-        .replace({col: {'3X': '31-33',
-                        '4X': '44-45',
-                        '4Y': '48-49'}})
+        # .replace({col: {'3X': '31-33',
+        #                 '4X': '44-45',
+        #                 '4Y': '48-49'}})
         .aggregate_flowby()
     )
 

@@ -1999,18 +1999,18 @@ class FlowByActivity(_FlowBy):
         SectorConsumedBy). If necessary, flow amounts are further (equally)
         subdivided based on the secondary sector.
         '''
+        naics_key = naics.map_target_sectors_to_less_aggregated_sectors(
+            self.config['industry_spec'])
+
         fba = self.add_primary_secondary_columns('Sector')
 
-        # todo: update to use the sector length crosswalk instead of string
-        #  length, or else will have issues with household/government
-        #  attribution
         groupby_cols = ['group_id']
         for rank in ['Primary', 'Secondary']:
             fba = (
                 fba
+                .merge(naics_key, how='left', left_on=f'{rank}Sector',
+                       right_on='target_naics')
                 .assign(
-                    **{f'_naics_{n}': fba[f'{rank}Sector'].str.slice(stop=n)
-                        for n in range(2, 8)},
                     **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
                             x.groupby(groupby_cols if i == 2
                                       else [*groupby_cols, f'_naics_{i-1}'],
@@ -2025,12 +2025,12 @@ class FlowByActivity(_FlowBy):
                                          for n in range(2, 8)]]
                     )
                 )
+                .drop(columns=naics_key.columns.values.tolist())
             )
             groupby_cols.append(f'{rank}Sector')
 
         return fba.drop(
             columns=['PrimarySector', 'SecondarySector',
-                     *[f'_naics_{n}' for n in range(2, 8)],
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
