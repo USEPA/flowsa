@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
-from . import (common, dataclean, settings)
+from . import (common, settings)
 
 naics_crosswalk = pd.read_csv(
     settings.datapath / 'NAICS_2012_Crosswalk.csv', dtype='object'
@@ -84,6 +84,7 @@ def map_target_sectors_to_less_aggregated_sectors(
 ) -> pd.DataFrame:
     """
     Map target NAICS to all possible other sector lengths
+    flat hierarchy
     """
 
     naics = naics_crosswalk.assign(
@@ -127,7 +128,8 @@ def map_source_sectors_to_less_aggregated_sectors(
     year: Literal[2002, 2007, 2012, 2017] = 2012
 ) -> pd.DataFrame:
     """
-    Map target NAICS to all possible other sector lengths
+    Map source NAICS to all possible other sector lengths
+    parent-childhierarchy
     """
     naics = []
     for n in naics_crosswalk.columns.values.tolist():
