@@ -19,6 +19,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.sectormapping import add_sectors_to_flowbyactivity
 from flowsa.settings import externaldatapath
 from flowsa.validation import compare_df_units
+from flowsa.flowby import FlowBySector
 
 
 def bh_parse(*, df_list, **_):
@@ -156,8 +157,8 @@ def convert_blackhurst_data_to_kg_per_employee(
     return df_wratio
 
 
-def scale_blackhurst_results_to_usgs_values(
-        df_load, attr,  download_FBA_if_missing):
+def scale_blackhurst_results_to_usgs_values(fbs: FlowBySector, **_) -> \
+        FlowBySector:
     """
     Scale the initial estimates for Blackhurst-based mining estimates to
     USGS values. Oil-based sectors are allocated a larger percentage of the
@@ -172,18 +173,22 @@ def scale_blackhurst_results_to_usgs_values(
         downloaded from Data Commons
     :return: scaled fba results
     """
+    from flowsa.flowbyclean import load_prepare_clean_source
     # determine national level published withdrawal data for usgs mining
     # in FBS method year
-    pv_load = load_fba_w_standardized_units(
-        datasource="USGS_NWIS_WU", year=str(attr['helper_source_year']),
-        flowclass='Water', download_FBA_if_missing=download_FBA_if_missing)
+    # pv_load = load_fba_w_standardized_units(
+    #     datasource="USGS_NWIS_WU", year=fbs.config['year'],
+    #     flowclass='Water', download_FBA_if_missing=download_FBA_if_missing)
+    #
+    # pv_sub = pv_load[(pv_load['ActivityConsumedBy'] == 'Mining') &
+    #                  (pv_load['Compartment'] == 'total') &
+    #                  (pv_load['FlowName'] == 'total')].reset_index(drop=True)
+    pv_sub = load_prepare_clean_source(fbs)
+    pv_sub_sum = pv_sub['FlowAmount'].sum()
 
-    pv_sub = pv_load[(pv_load['ActivityConsumedBy'] == 'Mining') &
-                     (pv_load['Compartment'] == 'total') &
-                     (pv_load['FlowName'] == 'total')].reset_index(drop=True)
     # rename the published value flow name and merge with Blackhurst data
     pv_sub = pv_sub.rename(columns={'FlowAmount': 'pv'})
-    df = df_load.merge(pv_sub[['Location', 'pv']], how='left')
+    df = fbs.merge(pv_sub[['SectorConsumedBy', 'Location', 'pv']], how='left')
     # calculate the difference between published value and allocated value
     # for each naics length
     df = df.assign(nLen=df['SectorConsumedBy'].apply(lambda x: len(x)))
