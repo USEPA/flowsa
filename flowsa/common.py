@@ -279,35 +279,35 @@ def return_true_source_catalog_name(sourcename):
         sourcename = sourcename.rsplit("_", 1)[0]
     return sourcename
 
-
-def check_activities_sector_like(df_load, sourcename=None):
-    """
-    Check if the activities in a df are sector-like,
-    if cannot find the sourcename in the source catalog, drop extensions on the
-    source name
-    :param df_load: df, df to determine if activities are sector-like
-    :param source: str, optionial, can identify sourcename to use
-    """
-    # identify sourcename
-    if sourcename is not None:
-        s = sourcename
-    else:
-        if 'SourceName' in df_load.columns:
-            s = pd.unique(df_load['SourceName'])[0]
-        elif 'MetaSources' in df_load.columns:
-            s = pd.unique(df_load['MetaSources'])[0]
-
-    sourcename = return_true_source_catalog_name(s)
-
-    try:
-        sectorLike = load_yaml_dict('source_catalog')[sourcename][
-            'sector-like_activities']
-    except KeyError:
-        log.info(f'%s not found in {datapath}source_catalog.yaml, assuming '
-                 f'activities are not sector-like', sourcename)
-        sectorLike = False
-
-    return sectorLike
+# todo: delete
+# def check_activities_sector_like(df_load, sourcename=None):
+#     """
+#     Check if the activities in a df are sector-like,
+#     if cannot find the sourcename in the source catalog, drop extensions on the
+#     source name
+#     :param df_load: df, df to determine if activities are sector-like
+#     :param source: str, optionial, can identify sourcename to use
+#     """
+#     # identify sourcename
+#     if sourcename is not None:
+#         s = sourcename
+#     else:
+#         if 'SourceName' in df_load.columns:
+#             s = pd.unique(df_load['SourceName'])[0]
+#         elif 'MetaSources' in df_load.columns:
+#             s = pd.unique(df_load['MetaSources'])[0]
+#
+#     sourcename = return_true_source_catalog_name(s)
+#
+#     try:
+#         sectorLike = load_yaml_dict('source_catalog')[sourcename][
+#             'sector-like_activities']
+#     except KeyError:
+#         log.info(f'%s not found in {datapath}source_catalog.yaml, assuming '
+#                  f'activities are not sector-like', sourcename)
+#         sectorLike = False
+#
+#     return sectorLike
 
 
 def str2bool(v):
