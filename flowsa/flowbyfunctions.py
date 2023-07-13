@@ -150,46 +150,46 @@ def aggregator(df, groupbycols, retain_zeros=True, flowcolname='FlowAmount'):
 
     return df_dfg
 
-
-def sector_ratios(df, sectorcolumn):
-    """
-    Determine ratios of the less aggregated sectors within a
-    more aggregated sector
-    :param df: A df with sector columns
-    :param sectorcolumn: 'SectorConsumedBy' or 'SectorProducedBy'
-    :return: df, with 'FlowAmountRatio' column
-    """
-
-    # drop any null rows (can occur when activities are ranges)
-    df = df[~df[sectorcolumn].isnull()]
-
-    # find the longest length sector
-    length = max(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
-    # for loop in reverse order longest length naics minus 1 to 2
-    # appends missing naics levels to df
-    sec_ratios = []
-    for i in range(length, 3, -1):
-        # subset df to sectors with length = i
-        df_subset = subset_df_by_sector_lengths(df, [i])
-        # create column for sector grouping
-        df_subset = assign_sector_match_column(df_subset, sectorcolumn, i, i-1)
-        # subset df to create denominator
-        df_denom = df_subset[['FlowAmount', 'Location', 'sector_group']]
-        df_denom = df_denom.groupby(['Location', 'sector_group'],
-                                    as_index=False).agg({"FlowAmount": sum})
-        df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
-        # merge the denominator column with fba_w_sector df
-        ratio_df = df_subset.merge(df_denom, how='left')
-        # calculate ratio
-        ratio_df.loc[:, 'FlowAmountRatio'] = \
-            ratio_df['FlowAmount'] / ratio_df['Denominator']
-        ratio_df = ratio_df.drop(
-            columns=['Denominator', 'sector_group'])
-        sec_ratios.append(ratio_df)
-    # concat list of dataframes (info on each page)
-    df_w_ratios = pd.concat(sec_ratios, ignore_index=True)
-
-    return df_w_ratios
+# todo: delete
+# def sector_ratios(df, sectorcolumn):
+#     """
+#     Determine ratios of the less aggregated sectors within a
+#     more aggregated sector
+#     :param df: A df with sector columns
+#     :param sectorcolumn: 'SectorConsumedBy' or 'SectorProducedBy'
+#     :return: df, with 'FlowAmountRatio' column
+#     """
+#
+#     # drop any null rows (can occur when activities are ranges)
+#     df = df[~df[sectorcolumn].isnull()]
+#
+#     # find the longest length sector
+#     length = max(df[sectorcolumn].apply(lambda x: len(str(x))).unique())
+#     # for loop in reverse order longest length naics minus 1 to 2
+#     # appends missing naics levels to df
+#     sec_ratios = []
+#     for i in range(length, 3, -1):
+#         # subset df to sectors with length = i
+#         df_subset = subset_df_by_sector_lengths(df, [i])
+#         # create column for sector grouping
+#         df_subset = assign_sector_match_column(df_subset, sectorcolumn, i, i-1)
+#         # subset df to create denominator
+#         df_denom = df_subset[['FlowAmount', 'Location', 'sector_group']]
+#         df_denom = df_denom.groupby(['Location', 'sector_group'],
+#                                     as_index=False).agg({"FlowAmount": sum})
+#         df_denom = df_denom.rename(columns={"FlowAmount": "Denominator"})
+#         # merge the denominator column with fba_w_sector df
+#         ratio_df = df_subset.merge(df_denom, how='left')
+#         # calculate ratio
+#         ratio_df.loc[:, 'FlowAmountRatio'] = \
+#             ratio_df['FlowAmount'] / ratio_df['Denominator']
+#         ratio_df = ratio_df.drop(
+#             columns=['Denominator', 'sector_group'])
+#         sec_ratios.append(ratio_df)
+#     # concat list of dataframes (info on each page)
+#     df_w_ratios = pd.concat(sec_ratios, ignore_index=True)
+#
+#     return df_w_ratios
 
 
 def remove_parent_sectors_from_crosswalk(cw_load, sector_list):
@@ -206,88 +206,88 @@ def remove_parent_sectors_from_crosswalk(cw_load, sector_list):
 
     return cw_load
 
-
-def sector_aggregation(df_load, return_all_possible_sector_combos=False,
-                       sectors_to_exclude_from_agg=None):
-    """
-    Function that checks if a sector length exists, and if not,
-    sums the less aggregated sector
-    :param df_load: Either a flowbyactivity df with sectors or
-       a flowbysector df
-    :param return_all_possible_sector_combos: bool, default false, if set to
-    true, will return all possible combinations of sectors at each sector
-    length (ex. a 4 digit SectorProducedBy will have rows for 2-6 digit
-    SectorConsumedBy). This will result in a df with double counting.
-    :param sectors_to_exclude_from_agg: list or dict, sectors that should not be
-    aggregated beyond the sector level provided. Dictionary if separate lists
-    for SectorProducedBy and SectorConsumedBy
-    :return: df, with aggregated sector values
-    """
-    df = df_load.copy()
-
-    # determine grouping columns - based on datatype
-    group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
-    sector_cols = ['SectorProducedBy', 'SectorConsumedBy']
-    if 'Sector' in df.columns:
-        sector_cols = ['Sector']
-
-    if 'ActivityProducedBy' in df_load.columns:
-        # determine if activities are sector-like, if aggregating a df with a
-        # 'SourceName'
-        sector_like_activities = check_activities_sector_like(df_load)
-        # if activities are sector like, drop columns while running ag then
-        # add back in
-        if sector_like_activities:
-            # subset df
-            df_cols = [e for e in df.columns if e not in
-                       ('ActivityProducedBy', 'ActivityConsumedBy')]
-            group_cols = [e for e in group_cols if e not in
-                          ('ActivityProducedBy', 'ActivityConsumedBy')]
-            df = df[df_cols]
-            df = df.reset_index(drop=True)
-
-    # load naics length crosswwalk
-    cw_load = load_crosswalk('sector_length')
-    # remove any parent sectors of sectors identified as those that should
-    # not be aggregated
-    if sectors_to_exclude_from_agg is not None:
-        # if sectors are in a dictionary create cw for sectorproducedby and
-        # sectorconsumedby otherwise single cr
-        if isinstance(sectors_to_exclude_from_agg, dict):
-            cws = {}
-            for s in sector_cols:
-                try:
-                    cw = remove_parent_sectors_from_crosswalk(
-                        cw_load, sectors_to_exclude_from_agg[s])
-                    cws[s] = cw
-                except KeyError:
-                    cws[s] = cw_load
-            cw_load = cws.copy()
-        else:
-            cw_load = remove_parent_sectors_from_crosswalk(
-                cw_load, sectors_to_exclude_from_agg)
-
-    # find the longest length sector
-    length = df[sector_cols].apply(lambda x: x.str.len()).max().max()
-    length = int(length)
-    # for loop in reverse order longest length NAICS minus 1 to 2
-    # appends missing naics levels to df
-    for i in range(length, 2, -1):
-        if return_all_possible_sector_combos:
-            for j in range(1, i-1):
-                df = append_new_sectors(df, i, j, cw_load, group_cols)
-        else:
-            df = append_new_sectors(df, i, 1, cw_load, group_cols)
-
-    if 'ActivityProducedBy' in df_load.columns:
-        # if activities are source-like, set col values as
-        # copies of the sector columns
-        if sector_like_activities & ('FlowAmount' in df.columns) & \
-                ('ActivityProducedBy' in df_load.columns):
-            df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
-            df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
-
-    return df.reset_index(drop=True)
+# todo: delete
+# def sector_aggregation(df_load, return_all_possible_sector_combos=False,
+#                        sectors_to_exclude_from_agg=None):
+#     """
+#     Function that checks if a sector length exists, and if not,
+#     sums the less aggregated sector
+#     :param df_load: Either a flowbyactivity df with sectors or
+#        a flowbysector df
+#     :param return_all_possible_sector_combos: bool, default false, if set to
+#     true, will return all possible combinations of sectors at each sector
+#     length (ex. a 4 digit SectorProducedBy will have rows for 2-6 digit
+#     SectorConsumedBy). This will result in a df with double counting.
+#     :param sectors_to_exclude_from_agg: list or dict, sectors that should not be
+#     aggregated beyond the sector level provided. Dictionary if separate lists
+#     for SectorProducedBy and SectorConsumedBy
+#     :return: df, with aggregated sector values
+#     """
+#     df = df_load.copy()
+#
+#     # determine grouping columns - based on datatype
+#     group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
+#     sector_cols = ['SectorProducedBy', 'SectorConsumedBy']
+#     if 'Sector' in df.columns:
+#         sector_cols = ['Sector']
+#
+#     if 'ActivityProducedBy' in df_load.columns:
+#         # determine if activities are sector-like, if aggregating a df with a
+#         # 'SourceName'
+#         sector_like_activities = check_activities_sector_like(df_load)
+#         # if activities are sector like, drop columns while running ag then
+#         # add back in
+#         if sector_like_activities:
+#             # subset df
+#             df_cols = [e for e in df.columns if e not in
+#                        ('ActivityProducedBy', 'ActivityConsumedBy')]
+#             group_cols = [e for e in group_cols if e not in
+#                           ('ActivityProducedBy', 'ActivityConsumedBy')]
+#             df = df[df_cols]
+#             df = df.reset_index(drop=True)
+#
+#     # load naics length crosswwalk
+#     cw_load = load_crosswalk('sector_length')
+#     # remove any parent sectors of sectors identified as those that should
+#     # not be aggregated
+#     if sectors_to_exclude_from_agg is not None:
+#         # if sectors are in a dictionary create cw for sectorproducedby and
+#         # sectorconsumedby otherwise single cr
+#         if isinstance(sectors_to_exclude_from_agg, dict):
+#             cws = {}
+#             for s in sector_cols:
+#                 try:
+#                     cw = remove_parent_sectors_from_crosswalk(
+#                         cw_load, sectors_to_exclude_from_agg[s])
+#                     cws[s] = cw
+#                 except KeyError:
+#                     cws[s] = cw_load
+#             cw_load = cws.copy()
+#         else:
+#             cw_load = remove_parent_sectors_from_crosswalk(
+#                 cw_load, sectors_to_exclude_from_agg)
+#
+#     # find the longest length sector
+#     length = df[sector_cols].apply(lambda x: x.str.len()).max().max()
+#     length = int(length)
+#     # for loop in reverse order longest length NAICS minus 1 to 2
+#     # appends missing naics levels to df
+#     for i in range(length, 2, -1):
+#         if return_all_possible_sector_combos:
+#             for j in range(1, i-1):
+#                 df = append_new_sectors(df, i, j, cw_load, group_cols)
+#         else:
+#             df = append_new_sectors(df, i, 1, cw_load, group_cols)
+#
+#     if 'ActivityProducedBy' in df_load.columns:
+#         # if activities are source-like, set col values as
+#         # copies of the sector columns
+#         if sector_like_activities & ('FlowAmount' in df.columns) & \
+#                 ('ActivityProducedBy' in df_load.columns):
+#             df = df.assign(ActivityProducedBy=df['SectorProducedBy'])
+#             df = df.assign(ActivityConsumedBy=df['SectorConsumedBy'])
+#
+#     return df.reset_index(drop=True)
 
 
 def append_new_sectors(df, i, j, cw_load, group_cols):
