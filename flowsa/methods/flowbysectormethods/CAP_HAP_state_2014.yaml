@@ -14,7 +14,7 @@ sources_to_cache:
   EIA_MECS_Energy:
     !include:CAP_HAP_common.yaml:sources_to_cache:EIA_MECS_Energy_state
     year: 2014
-    attribution_source: Employment_state_2014
+    clean_source: Employment_state_2014
 
 _attribution_sources:
   stateio: &stateio

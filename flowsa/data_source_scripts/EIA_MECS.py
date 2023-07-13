@@ -16,7 +16,8 @@ from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowsa_log import log
 from flowsa.flowby import FlowByActivity
-from flowsa.flowbyfunctions import assign_fips_location_system, sector_aggregation
+from flowsa.flowbyclean import load_prepare_clean_source
+from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.EIA_CBECS_Land import \
     calculate_total_facility_land_area
 
@@ -550,7 +551,7 @@ def clean_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
             .drop(columns=['descendant_flows', 'descendants_y'])
         )
 
-    return mecs.drop(columns=['descendants'])
+    return mecs
 
 
 def clean_mapped_mecs_energy_fba(fba: FlowByActivity, **_) -> FlowByActivity:
@@ -595,7 +596,8 @@ def clean_mapped_mecs_energy_fba_to_state(
     return fba
 
 
-def update_regions_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
+def update_regions_to_states(fba: FlowByActivity,
+        download_sources_ok: bool = True) -> FlowByActivity:
     """
     Propogates regions to all states to enable for use in state methods.
     Allocates sectors across states based on employment.
@@ -605,24 +607,18 @@ def update_regions_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
     log.info('Updating census regions to states')
 
     region_map = get_region_and_division_codes()
-    region_map = region_map[['Region','State_FIPS']].drop_duplicates()
+    region_map = region_map[['Region', 'State_FIPS']].drop_duplicates()
     region_map.loc[:, 'State_FIPS'] = (
         region_map['State_FIPS'].apply(lambda x:
                                        x.ljust(3 + len(x), '0')
                                        if len(x) < 5 else x))
 
     # Allocate MECS based on employment FBS
-    hlp = flowsa.getFlowBySector(
-        methodname=fba.config.get('attribution_source'),
-        download_FBS_if_missing=True)
-
-    # To match the various sector resolution of MECS, generate employment
-    # dataset for all NAICS resolution by aggregating
-    hlp = sector_aggregation(hlp)
+    hlp = load_prepare_clean_source(fba, download_sources_ok=download_sources_ok)
 
     # For each region, generate ratios across states for a given sector
-    hlp = hlp.merge(region_map, how = 'left', left_on = 'Location',
-                    right_on = 'State_FIPS')
+    hlp = hlp.merge(region_map, how='left', left_on='Location',
+                    right_on='State_FIPS')
     hlp['Allocation'] = hlp['FlowAmount']/hlp.groupby(
         ['Region', 'SectorProducedBy']).FlowAmount.transform('sum')
 
