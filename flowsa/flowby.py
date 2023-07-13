@@ -721,9 +721,10 @@ class _FlowBy(pd.DataFrame):
                 else:
                     attributed_fb = fb.equally_attribute()
 
-            # if the attribution method is not multiplication, check that new df
-            # values equal original df values
-            if attribution_method not in ['multiplication', 'inheritance']:
+            # depending on att method, check that new df values equal
+            # original df values
+            if attribution_method not in ['multiplication', 'inheritance',
+                                          'division']:
                 # todo: add results from this if statement to validation log
                 validation_fb = attributed_fb.assign(
                     validation_total=(attributed_fb.groupby('group_id')
