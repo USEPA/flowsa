@@ -288,18 +288,6 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
 #                       'FlowBySector ratios for %s: '
 #                       '\n {}'.format(df_v.to_string()), activity_set)
 
-        # merge compare 1 and compare 2
-        if v.get('data_format') == 'FBA':
-            merge_cols = ['ActivityProducedBy', 'ActivityConsumedBy',
-                          'Flowable', 'Unit', 'FlowType', 'Context',
-                          'Location', 'LocationSystem', 'Year']
-        else:
-            merge_cols = attr.get('allocation_merge_columns') + \
-                         ['Flowable', 'Unit', 'FlowType', 'Context',
-                          'Location', 'LocationSystem', 'Year']
-        df_merge = fba_agg.merge(fbs_agg, left_on=merge_cols,
-                                 right_on=merge_cols, how='left')
-        df_merge['Ratio'] = df_merge['FBS_amount'] / df_merge['FBA_amount']
 
 # def compare_fba_geo_subset_and_fbs_output_totals(
 #         fba_load, fbs_load, activity_set, source_name, source_attr,
