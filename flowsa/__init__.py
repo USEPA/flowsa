@@ -17,14 +17,11 @@ Flow-By-Sector files are loaded when running these functions
 """
 import os
 import pprint
-from esupy.processed_data_mgmt import load_preprocessed_output, \
-    download_from_remote
+import pandas as pd
 from flowsa.common import load_yaml_dict
 from flowsa.flowsa_log import log
 from flowsa.settings import sourceconfigpath, flowbysectormethodpath, \
-    paths, fbaoutputpath, fbsoutputpath, \
     biboutputpath, DEFAULT_DOWNLOAD_IF_MISSING
-from flowsa.metadata import set_fb_meta
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.validation import check_for_nonetypes_in_sector_col, \
     check_for_negative_flowamounts
@@ -34,8 +31,25 @@ from flowsa.datavisualization import FBSscatterplot
 from .flowby import FlowByActivity, FlowBySector
 
 
-def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
-                      download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
+def getFlowByActivity(
+        datasource,
+        year,
+        flowclass=None,
+        geographic_level=None,
+        download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING
+        ) -> pd.DataFrame:
+    """
+    Retrieves stored data in the FlowByActivity format
+    :param datasource: str, the code of the datasource.
+    :param year: int, a year, e.g. 2012
+    :param flowclass: str or list, a 'Class' of the flow. Optional. E.g.
+    'Water' or ['Employment', 'Chemicals']
+    :param geographic_level: str, a geographic level of the data.
+                             Optional. E.g. 'national', 'state', 'county'.
+    :param download_FBA_if_missing: bool, if True will attempt to load from
+        remote server prior to generating if file not found locally
+    :return: a pandas DataFrame in FlowByActivity format
+    """
     fba = FlowByActivity.getFlowByActivity(
         full_name=datasource,
         config={},
@@ -51,16 +65,29 @@ def getFlowByActivity(datasource, year, flowclass=None, geographic_level=None,
     # if geographic level specified, only load rows in geo level
     if geographic_level is not None:
         fba = filter_by_geoscale(fba, geographic_level)
-    return fba
+    return pd.DataFrame(fba)
 
 
 def getFlowBySector(
-    methodname,
-    fbsconfigpath=None,
-    download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
-    download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
-    **kwargs
-) -> FlowBySector:
+        methodname,
+        fbsconfigpath=None,
+        download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+        download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+        **kwargs
+        ) -> pd.DataFrame:
+    """
+    Loads stored FlowBySector output or generates it if it doesn't exist,
+    then loads
+    :param methodname: string, Name of an available method for the given class
+    :param fbsconfigpath: str, path to the FBS method file if loading a file
+        from outside the flowsa repository
+    :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
+        used in generating the FBS from remote server prior to generating if
+        file not found locally
+    :param download_FBS_if_missing: bool, if True will attempt to load from
+        remote server prior to generating if file not found locally
+    :return: dataframe in flow by sector format
+    """
     fbs = FlowBySector.getFlowBySector(
         method=methodname,
         external_config_path=fbsconfigpath,
@@ -68,12 +95,15 @@ def getFlowBySector(
         download_fbs_ok=download_FBS_if_missing,
         **kwargs
     )
-    return fbs
+    return pd.DataFrame(fbs)
 
 
-def collapse_FlowBySector(methodname, fbsconfigpath=None,
-                          download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
-                          download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING):
+def collapse_FlowBySector(
+        methodname,
+        fbsconfigpath=None,
+        download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+        download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING
+        ) -> pd.DataFrame:
     """
     Returns fbs with one sector column in place of two
     :param methodname: string, Name of an available method for the given class
