@@ -143,225 +143,225 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
 def customwrap(s, width=30):
     return "<br>".join(textwrap.wrap(s, width=width))
 
-
-def stackedBarChart(df,
-                    impact_cat=None,
-                    selection_fields=None,
-                    target_sector_level=None,
-                    target_subset_sector_level=None,
-                    stacking_col='AttributionSources',
-                    generalize_AttributionSources=False,
-                    plot_title=None,
-                    index_cols=None,
-                    orientation='h',
-                    grouping_variable=None,
-                    sector_variable='Sector',
-                    subplot=None,
-                    rows=1,
-                    cols=1,
-                    filename = 'flowsaBarChart',
-                    graphic_width = 1200,
-                    graphic_height = 1200
-                    ):
-    """
-    Create a grouped, stacked barchart by sector code. If impact=True,
-    group data by context as well as sector
-    :param df: str or df, either an FBS methodname (ex. "Water_national_m1_2015") or a df
-    :param impact_cat: str, name of impact category to apply and aggregate on
-        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
-    :return: stacked, group bar plot
-    """
-    # if the df provided is a string, load the fbs method, otherwise use the
-    # df provided
-    if (type(df)) == str:
-        df = flowsa.collapse_FlowBySector(df)
-
-    if generalize_AttributionSources:
-        df['AttributionSources'] = np.where(
-            df['AttributionSources'] != 'Direct',
-            'Allocated',
-            df['AttributionSources'])
-
-    if selection_fields is not None:
-        for k, v in selection_fields.items():
-            df = df[df[k].str.startswith(tuple(v))]
-
-    # agg sectors for data visualization
-    if any(item is not None for item in [target_sector_level,
-                                         target_subset_sector_level]):
-        sector_list = get_sector_list(
-            target_sector_level,
-            secondary_sector_level_dict=target_subset_sector_level)
-
-        # aggregate to all sector levels
-        df = sector_aggregation(df, sectors_to_exclude_from_agg=sector_list)
-        df = df[df['Sector'].isin(sector_list)]
-        df = df.reset_index(drop=True)
-
-    # determine list of subplots
-    try:
-        plot_list = df[subplot].drop_duplicates().values.tolist()
-    except KeyError:
-        plot_list = None
-
-    # convert units
-    df = convert_units_for_graphics(df)
-
-    if index_cols is None:
-        index_cols = ["Location", "Sector", "Unit"]
-    if impact_cat:
-        try:
-            import lciafmt
-            df = (lciafmt.apply_lcia_method(df, 'TRACI2.1')
-                  .rename(columns={'FlowAmount': 'InvAmount',
-                                   'Impact': 'FlowAmount'}))
-            var = 'Indicator'
-            df = df[df['Indicator'] == impact_cat]
-            df_unit = df['Indicator unit'][0]
-            sort_cols = [sector_variable, stacking_col]
-            if len(df) == 0:
-                log.exception(f'Impact category: {impact_cat} not found')
-                return
-        except ImportError:
-            log.exception('lciafmt not installed')
-            return
-        except AttributeError:
-            log.exception('check lciafmt branch')
-            return
-    else:
-        if grouping_variable is None:
-            # combine the flowable and context columns for graphing
-            df['Flow'] = df['Flowable'] + ', ' + df['Context']
-            var = 'Flow'
-        else:
-            var = grouping_variable
-        df_unit = df['Unit'][0]
-        sort_cols = [sector_variable, var, stacking_col]
-    index_cols = index_cols + [var]
-
-    # if only single var in df, do not include in the graph on axis
-    var_count = df[var].nunique()
-
-    # If 'AttributionSources' value is null, replace with 'Direct
-    try:
-        df['AttributionSources'] = df['AttributionSources'].fillna('Direct')
-    except KeyError:
-        pass
-    # aggregate by location/sector/unit and optionally 'context'
-    df2 = df.groupby(index_cols + [stacking_col],
-                     as_index=False).agg({"FlowAmount": sum})
-
-    # fill in non existent data with 0s to enable accurate sorting of sectors
-    flows = (df2[['Location', 'Unit', var, 'Sector']]
-             .drop_duplicates()
-             )
-    scv = df[stacking_col].unique().tolist()
-    flows[stacking_col] = [scv for _ in range(len(flows))]
-    flows = flows.explode(stacking_col)
-
-    df2 = df2.merge(flows, how='outer')
-    df2['FlowAmount'] = df2['FlowAmount'].fillna(0)
-    # resort df
-    if subplot is not None:
-        df2[subplot] = pd.Categorical(df2[subplot], plot_list)
-        df2 = df2.sort_values([subplot] + sort_cols).reset_index(drop=True)
-    else:
-        df2 = df2.sort_values(sort_cols).reset_index(drop=True)
-
-    # wrap the sector col
-    df2[sector_variable] = df2[sector_variable].apply(
-        lambda x: customwrap(x, width=12))
-
-    # establish subplots if necessary
-    try:
-        fig = make_subplots(rows=rows, cols=cols, subplot_titles=df2[
-            subplot].drop_duplicates().values.tolist())
-    except KeyError:
-        fig = go.Figure()
-
-    fig.update_layout(
-        template="simple_white",
-        barmode="stack",
-    )
-
-    # create list of n colors based on number of allocation sources
-    colors = df2[[stacking_col]].drop_duplicates()
-    # add colors
-    vis = pd.read_csv(datapath / 'VisualizationEssentials.csv').rename(
-        columns={'AttributionSource': stacking_col})
-    colors = colors.merge(vis[[stacking_col, 'Color']], how='left')
-
-    # fill in any colors missing from the color dictionary with random colors
-    colors['Color'] = colors['Color'].apply(lambda x: x if pd.notnull(x) else
-    "#%06x" % random.randint(0, 0xFFFFFF))
-    # merge back into df
-    df2 = df2.merge(colors, how='left')
-
-    if subplot is None:
-        for r, c in zip(df2[stacking_col].unique(), df2['Color'].unique()):
-            plot_df = df2[df2[stacking_col] == r]
-            y_axis_col = plot_df[sector_variable]
-            # if there are more than one variable category add to y-axis
-            if var_count > 1:
-                y_axis_col = [plot_df[sector_variable], plot_df[var]]
-            fig.add_trace(
-                go.Bar(x=plot_df['FlowAmount'],
-                       y=y_axis_col, name=r,
-                       orientation='h',
-                       marker_color=c
-                       ))
-        fig.update_xaxes(title_text=f"FlowAmount ({df_unit})")
-        fig.update_yaxes(title_text="Sector", tickmode='linear')
-    else:
-        s = 0
-        for row in range(1, rows + 1):
-            for col in range(1, cols + 1):
-                df3 = df2[df2[subplot] == plot_list[s]].reset_index(drop=True)
-                for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
-                    plot_df = df3[df3[stacking_col] == r].reset_index(drop=True)
-                    flow_col = plot_df['FlowAmount']
-                    sector_col = [plot_df[sector_variable], plot_df[var]]
-                    if orientation == 'h':
-                        x_data = flow_col
-                        y_data = sector_col
-                        xaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
-                        yaxis_title = ""
-                    else:
-                        x_data = sector_col
-                        y_data = flow_col
-                        xaxis_title = ""
-                        yaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
-                    fig.add_trace(
-                        go.Bar(x=x_data, y=y_data, name=r,
-                               orientation=orientation,
-                               marker_color=c,
-                               ),
-                        row=row,
-                        col=col
-                    )
-                    fig.update_xaxes(title_text=xaxis_title, row=row, col=col)
-                    fig.update_yaxes(title_text=yaxis_title, row=row, col=col)
-                s = s + 1
-
-    if orientation == 'h':
-        fig.update_yaxes(autorange="reversed")
-    fig.update_layout(title=plot_title,
-                      autosize=False,
-                      template="simple_white",
-                      font_size=10, margin_b=150
-                      )
-
-    # prevent duplicate legend entries
-    names = set()
-    fig.for_each_trace(
-        lambda trace:
-        trace.update(showlegend=False)
-        if (trace.name in names) else names.add(trace.name))
-
-    fig.show()
-    log.info(f'Saving file to {plotoutputpath / filename}.svg')
-    fig.write_image(plotoutputpath / f"{filename}.svg", width=graphic_width,
-                    height=graphic_height)
+# todo: update to work with recursive code - sector_aggregation()
+# def stackedBarChart(df,
+#                     impact_cat=None,
+#                     selection_fields=None,
+#                     target_sector_level=None,
+#                     target_subset_sector_level=None,
+#                     stacking_col='AttributionSources',
+#                     generalize_AttributionSources=False,
+#                     plot_title=None,
+#                     index_cols=None,
+#                     orientation='h',
+#                     grouping_variable=None,
+#                     sector_variable='Sector',
+#                     subplot=None,
+#                     rows=1,
+#                     cols=1,
+#                     filename = 'flowsaBarChart',
+#                     graphic_width = 1200,
+#                     graphic_height = 1200
+#                     ):
+#     """
+#     Create a grouped, stacked barchart by sector code. If impact=True,
+#     group data by context as well as sector
+#     :param df: str or df, either an FBS methodname (ex. "Water_national_m1_2015") or a df
+#     :param impact_cat: str, name of impact category to apply and aggregate on
+#         impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+#     :return: stacked, group bar plot
+#     """
+#     # if the df provided is a string, load the fbs method, otherwise use the
+#     # df provided
+#     if (type(df)) == str:
+#         df = flowsa.collapse_FlowBySector(df)
+#
+#     if generalize_AttributionSources:
+#         df['AttributionSources'] = np.where(
+#             df['AttributionSources'] != 'Direct',
+#             'Allocated',
+#             df['AttributionSources'])
+#
+#     if selection_fields is not None:
+#         for k, v in selection_fields.items():
+#             df = df[df[k].str.startswith(tuple(v))]
+#
+#     # agg sectors for data visualization
+#     if any(item is not None for item in [target_sector_level,
+#                                          target_subset_sector_level]):
+#         sector_list = get_sector_list(
+#             target_sector_level,
+#             secondary_sector_level_dict=target_subset_sector_level)
+#
+#         # aggregate to all sector levels
+#         df = sector_aggregation(df, sectors_to_exclude_from_agg=sector_list)
+#         df = df[df['Sector'].isin(sector_list)]
+#         df = df.reset_index(drop=True)
+#
+#     # determine list of subplots
+#     try:
+#         plot_list = df[subplot].drop_duplicates().values.tolist()
+#     except KeyError:
+#         plot_list = None
+#
+#     # convert units
+#     df = convert_units_for_graphics(df)
+#
+#     if index_cols is None:
+#         index_cols = ["Location", "Sector", "Unit"]
+#     if impact_cat:
+#         try:
+#             import lciafmt
+#             df = (lciafmt.apply_lcia_method(df, 'TRACI2.1')
+#                   .rename(columns={'FlowAmount': 'InvAmount',
+#                                    'Impact': 'FlowAmount'}))
+#             var = 'Indicator'
+#             df = df[df['Indicator'] == impact_cat]
+#             df_unit = df['Indicator unit'][0]
+#             sort_cols = [sector_variable, stacking_col]
+#             if len(df) == 0:
+#                 log.exception(f'Impact category: {impact_cat} not found')
+#                 return
+#         except ImportError:
+#             log.exception('lciafmt not installed')
+#             return
+#         except AttributeError:
+#             log.exception('check lciafmt branch')
+#             return
+#     else:
+#         if grouping_variable is None:
+#             # combine the flowable and context columns for graphing
+#             df['Flow'] = df['Flowable'] + ', ' + df['Context']
+#             var = 'Flow'
+#         else:
+#             var = grouping_variable
+#         df_unit = df['Unit'][0]
+#         sort_cols = [sector_variable, var, stacking_col]
+#     index_cols = index_cols + [var]
+#
+#     # if only single var in df, do not include in the graph on axis
+#     var_count = df[var].nunique()
+#
+#     # If 'AttributionSources' value is null, replace with 'Direct
+#     try:
+#         df['AttributionSources'] = df['AttributionSources'].fillna('Direct')
+#     except KeyError:
+#         pass
+#     # aggregate by location/sector/unit and optionally 'context'
+#     df2 = df.groupby(index_cols + [stacking_col],
+#                      as_index=False).agg({"FlowAmount": sum})
+#
+#     # fill in non existent data with 0s to enable accurate sorting of sectors
+#     flows = (df2[['Location', 'Unit', var, 'Sector']]
+#              .drop_duplicates()
+#              )
+#     scv = df[stacking_col].unique().tolist()
+#     flows[stacking_col] = [scv for _ in range(len(flows))]
+#     flows = flows.explode(stacking_col)
+#
+#     df2 = df2.merge(flows, how='outer')
+#     df2['FlowAmount'] = df2['FlowAmount'].fillna(0)
+#     # resort df
+#     if subplot is not None:
+#         df2[subplot] = pd.Categorical(df2[subplot], plot_list)
+#         df2 = df2.sort_values([subplot] + sort_cols).reset_index(drop=True)
+#     else:
+#         df2 = df2.sort_values(sort_cols).reset_index(drop=True)
+#
+#     # wrap the sector col
+#     df2[sector_variable] = df2[sector_variable].apply(
+#         lambda x: customwrap(x, width=12))
+#
+#     # establish subplots if necessary
+#     try:
+#         fig = make_subplots(rows=rows, cols=cols, subplot_titles=df2[
+#             subplot].drop_duplicates().values.tolist())
+#     except KeyError:
+#         fig = go.Figure()
+#
+#     fig.update_layout(
+#         template="simple_white",
+#         barmode="stack",
+#     )
+#
+#     # create list of n colors based on number of allocation sources
+#     colors = df2[[stacking_col]].drop_duplicates()
+#     # add colors
+#     vis = pd.read_csv(datapath / 'VisualizationEssentials.csv').rename(
+#         columns={'AttributionSource': stacking_col})
+#     colors = colors.merge(vis[[stacking_col, 'Color']], how='left')
+#
+#     # fill in any colors missing from the color dictionary with random colors
+#     colors['Color'] = colors['Color'].apply(lambda x: x if pd.notnull(x) else
+#     "#%06x" % random.randint(0, 0xFFFFFF))
+#     # merge back into df
+#     df2 = df2.merge(colors, how='left')
+#
+#     if subplot is None:
+#         for r, c in zip(df2[stacking_col].unique(), df2['Color'].unique()):
+#             plot_df = df2[df2[stacking_col] == r]
+#             y_axis_col = plot_df[sector_variable]
+#             # if there are more than one variable category add to y-axis
+#             if var_count > 1:
+#                 y_axis_col = [plot_df[sector_variable], plot_df[var]]
+#             fig.add_trace(
+#                 go.Bar(x=plot_df['FlowAmount'],
+#                        y=y_axis_col, name=r,
+#                        orientation='h',
+#                        marker_color=c
+#                        ))
+#         fig.update_xaxes(title_text=f"FlowAmount ({df_unit})")
+#         fig.update_yaxes(title_text="Sector", tickmode='linear')
+#     else:
+#         s = 0
+#         for row in range(1, rows + 1):
+#             for col in range(1, cols + 1):
+#                 df3 = df2[df2[subplot] == plot_list[s]].reset_index(drop=True)
+#                 for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
+#                     plot_df = df3[df3[stacking_col] == r].reset_index(drop=True)
+#                     flow_col = plot_df['FlowAmount']
+#                     sector_col = [plot_df[sector_variable], plot_df[var]]
+#                     if orientation == 'h':
+#                         x_data = flow_col
+#                         y_data = sector_col
+#                         xaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+#                         yaxis_title = ""
+#                     else:
+#                         x_data = sector_col
+#                         y_data = flow_col
+#                         xaxis_title = ""
+#                         yaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+#                     fig.add_trace(
+#                         go.Bar(x=x_data, y=y_data, name=r,
+#                                orientation=orientation,
+#                                marker_color=c,
+#                                ),
+#                         row=row,
+#                         col=col
+#                     )
+#                     fig.update_xaxes(title_text=xaxis_title, row=row, col=col)
+#                     fig.update_yaxes(title_text=yaxis_title, row=row, col=col)
+#                 s = s + 1
+#
+#     if orientation == 'h':
+#         fig.update_yaxes(autorange="reversed")
+#     fig.update_layout(title=plot_title,
+#                       autosize=False,
+#                       template="simple_white",
+#                       font_size=10, margin_b=150
+#                       )
+#
+#     # prevent duplicate legend entries
+#     names = set()
+#     fig.for_each_trace(
+#         lambda trace:
+#         trace.update(showlegend=False)
+#         if (trace.name in names) else names.add(trace.name))
+#
+#     fig.show()
+#     log.info(f'Saving file to {plotoutputpath / filename}.svg')
+#     fig.write_image(plotoutputpath / f"{filename}.svg", width=graphic_width,
+#                     height=graphic_height)
 
 
 def plot_state_coefficients(fbs_coeff, indicator=None,
@@ -424,165 +424,165 @@ def convert_units_for_graphics(df):
 
     return df
 
-
-def generateSankeyData(methodname,
-                       target_sector_level=None,
-                       target_subset_sector_level=None,
-                       use_sectordefinition=False,
-                       sectors_to_include=None,
-                       fbsconfigpath=None,
-                       value_label_format='line_break'):
-    """
-    Generate data used to create a sankey
-    :param methodname: str, FBS methodname
-    :param target_sector_level: numeric, sector length by which to
-    aggregate, default is 'None' which returns the max sector length in a
-    dataframe
-    :param target_subset_sector_level: numeric, sector length by which to
-    aggregate, default is 'None' which returns the max sector length in a
-    dataframe
-    :param sectors_to_include: list, sectors to include in output. Sectors
-    are subset by all sectors that "start with" the values in this list
-    :param fbsconfigpath, str, optional path to FBS method yaml
-    :return: csv file for use in generating sankey diagram
-    """
-
-    df = flowsa.FlowBySector.getFlowBySector(
-        methodname, external_config_path=fbsconfigpath, download_sources_ok=True)
-
-    df = convert_units_for_graphics(df)
-
-    # subset df
-    if sectors_to_include is not None:
-        df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
-
-    method_dict = load_yaml_dict(methodname, flowbytype='FBS',
-                                 filepath=fbsconfigpath)
-
-    if any(item is not None for item in [target_sector_level,
-                                         target_subset_sector_level]):
-        # subset by target sector levels, either those defined in
-        # function call or in method_dict
-        primary_sector_level = target_sector_level
-        if primary_sector_level is None:
-            primary_sector_level = method_dict['target_sector_level']
-        # pull secondary sector level by methodname if specified, otherwise
-        # use singular sector level
-        try:
-            secondary_sector_level = target_subset_sector_level[methodname]
-        except KeyError:
-            secondary_sector_level = target_subset_sector_level
-        if secondary_sector_level is None:
-            secondary_sector_level = method_dict.get(
-                'target_subset_sector_level')
-        # check if different rules for sector columns
-        if any([s in secondary_sector_level for s in
-                ['SectorProducedBy', 'SectorConsumedBy']]):
-            sector_list = {}
-            for s in ['Produced', 'Consumed']:
-                try:
-                    sectors = get_sector_list(
-                        primary_sector_level,
-                        secondary_sector_level_dict=secondary_sector_level[f'Sector{s}By'])
-                    sector_list[f'Sector{s}By'] = sectors
-                except KeyError:
-                    sectors = get_sector_list(
-                        primary_sector_level,
-                        secondary_sector_level_dict=None)
-                    sector_list[f'Sector{s}By'] = sectors
-        else:
-            sector_list = get_sector_list(
-                primary_sector_level,
-                secondary_sector_level_dict=secondary_sector_level)
-
-        # aggregate to all sector levels
-        df = sector_aggregation(df, return_all_possible_sector_combos=True,
-                                sectors_to_exclude_from_agg=sector_list)
-        df = replace_NoneType_with_empty_cells(df)
-        for s in ['Produced', 'Consumed']:
-            if isinstance(sector_list, dict):
-                df = df[df[f'Sector{s}By'].isin(sector_list[f'Sector{s}By'])]
-            else:
-                df = df[df[f'Sector{s}By'].isin(sector_list)]
-
-    # add sector names
-    sankeymappingfile = datapath / 'VisualizationEssentials.csv'
-    df2 = addSectorNames(df, mappingfile=sankeymappingfile)
-
-    # subset df and aggregate flows by sectors
-    df2 = df2[['SectorProducedBy', 'SectorConsumedBy', 'FlowAmount', 'Unit',
-               'SectorProducedByName', 'SectorConsumedByName']]
-    df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy', 'Unit',
-                       'SectorProducedByName', 'SectorConsumedByName']
-                      )['FlowAmount'].agg('sum').reset_index()
-
-    # define which columns to use as source and target
-    if use_sectordefinition:
-        categories = ['SectorProducedByName', 'SectorConsumedByName']
-        sources = 'SectorProducedByName'
-        targets = 'SectorConsumedByName'
-        sector_col = 'SectorName'
-    else:
-        categories = ['SectorProducedBy', 'SectorConsumedBy']
-        sources = 'SectorProducedBy'
-        targets = 'SectorConsumedBy'
-        sector_col = 'Sector'
-
-    # sort df by categories to help order how sectors appear in sankey
-    df3 = df3.sort_values(categories).reset_index(drop=True)
-
-    # create new df with node information
-    nodes = pd.DataFrame(
-        {'Sector': list(pd.unique(
-            df3[['SectorProducedBy', 'SectorConsumedBy']].values.ravel('K'))),
-         'SectorName': list(
-             pd.unique(df3[['SectorProducedByName',
-                            'SectorConsumedByName']].values.ravel('K')))
-         })
-
-    # add colors
-    vis = pd.read_csv(datapath / 'VisualizationEssentials.csv')
-    nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
-    # fill in any colors missing from the color dictionary with random colors
-    nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
-    "#%06x" % random.randint(0, 0xFFFFFF))
-    nodes = nodes.rename(columns={sector_col: 'node'})
-    # add label
-    # determine flow amount labels - sum incoming and outgoing flow amounts,
-    # use outgoing flow values when exist, otherwise incoming flow totals
-    outgoing = df3[[sources, 'FlowAmount']]
-    outgoing = outgoing.groupby([sources]).agg(
-        {'FlowAmount': 'sum'}).reset_index()
-    outgoing = outgoing.rename(columns={sources: 'node',
-                                        'FlowAmount': 'outgoing'})
-    incoming = df3[[targets, 'FlowAmount']]
-    incoming = incoming.groupby([targets]).agg(
-        {'FlowAmount': 'sum'}).reset_index()
-    incoming = incoming.rename(columns={targets: 'node',
-                                        'FlowAmount': 'incoming'})
-    flow_labels = outgoing.merge(incoming, how='outer')
-    flow_labels = (flow_labels.fillna(0)
-                   .assign(flow=np.where(flow_labels['outgoing'] > 0,
-                                         flow_labels['outgoing'],
-                                         flow_labels['incoming'])))
-    if value_label_format == 'line_break':
-        flow_labels['Label'] = flow_labels['node'] + '<br>' + \
-                               flow_labels['flow'].round(2).astype(str)
-    elif value_label_format == 'brackets':
-        flow_labels['Label'] = flow_labels['node'] + ' (' + \
-                               flow_labels['flow'].round(2).astype(str) + ')'
-    nodes = nodes.merge(flow_labels[['node', 'Label']], how='left')
-
-    # create flow dataframe where source and target are converted to numeric
-    # indices
-    flows = pd.DataFrame()
-    label_list = list(pd.unique(df3[categories].values.ravel('K')))
-    flows['source'] = df3[sources].apply(lambda x: label_list.index(x))
-    flows['target'] = df3[targets].apply(lambda x: label_list.index(x))
-    flows['value'] = df3['FlowAmount']
-    flows['Unit'] = df3['Unit']
-
-    return nodes, flows
+# todo: Need to update to work for recursive method - sector_aggregation()
+# def generateSankeyData(methodname,
+#                        target_sector_level=None,
+#                        target_subset_sector_level=None,
+#                        use_sectordefinition=False,
+#                        sectors_to_include=None,
+#                        fbsconfigpath=None,
+#                        value_label_format='line_break'):
+#     """
+#     Generate data used to create a sankey
+#     :param methodname: str, FBS methodname
+#     :param target_sector_level: numeric, sector length by which to
+#     aggregate, default is 'None' which returns the max sector length in a
+#     dataframe
+#     :param target_subset_sector_level: numeric, sector length by which to
+#     aggregate, default is 'None' which returns the max sector length in a
+#     dataframe
+#     :param sectors_to_include: list, sectors to include in output. Sectors
+#     are subset by all sectors that "start with" the values in this list
+#     :param fbsconfigpath, str, optional path to FBS method yaml
+#     :return: csv file for use in generating sankey diagram
+#     """
+#
+#     df = flowsa.FlowBySector.getFlowBySector(
+#         methodname, external_config_path=fbsconfigpath, download_sources_ok=True)
+#
+#     df = convert_units_for_graphics(df)
+#
+#     # subset df
+#     if sectors_to_include is not None:
+#         df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
+#
+#     method_dict = load_yaml_dict(methodname, flowbytype='FBS',
+#                                  filepath=fbsconfigpath)
+#
+#     if any(item is not None for item in [target_sector_level,
+#                                          target_subset_sector_level]):
+#         # subset by target sector levels, either those defined in
+#         # function call or in method_dict
+#         primary_sector_level = target_sector_level
+#         if primary_sector_level is None:
+#             primary_sector_level = method_dict['target_sector_level']
+#         # pull secondary sector level by methodname if specified, otherwise
+#         # use singular sector level
+#         try:
+#             secondary_sector_level = target_subset_sector_level[methodname]
+#         except KeyError:
+#             secondary_sector_level = target_subset_sector_level
+#         if secondary_sector_level is None:
+#             secondary_sector_level = method_dict.get(
+#                 'target_subset_sector_level')
+#         # check if different rules for sector columns
+#         if any([s in secondary_sector_level for s in
+#                 ['SectorProducedBy', 'SectorConsumedBy']]):
+#             sector_list = {}
+#             for s in ['Produced', 'Consumed']:
+#                 try:
+#                     sectors = get_sector_list(
+#                         primary_sector_level,
+#                         secondary_sector_level_dict=secondary_sector_level[f'Sector{s}By'])
+#                     sector_list[f'Sector{s}By'] = sectors
+#                 except KeyError:
+#                     sectors = get_sector_list(
+#                         primary_sector_level,
+#                         secondary_sector_level_dict=None)
+#                     sector_list[f'Sector{s}By'] = sectors
+#         else:
+#             sector_list = get_sector_list(
+#                 primary_sector_level,
+#                 secondary_sector_level_dict=secondary_sector_level)
+#
+#         # aggregate to all sector levels
+#         df = sector_aggregation(df, return_all_possible_sector_combos=True,
+#                                 sectors_to_exclude_from_agg=sector_list)
+#         df = replace_NoneType_with_empty_cells(df)
+#         for s in ['Produced', 'Consumed']:
+#             if isinstance(sector_list, dict):
+#                 df = df[df[f'Sector{s}By'].isin(sector_list[f'Sector{s}By'])]
+#             else:
+#                 df = df[df[f'Sector{s}By'].isin(sector_list)]
+#
+#     # add sector names
+#     sankeymappingfile = datapath / 'VisualizationEssentials.csv'
+#     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
+#
+#     # subset df and aggregate flows by sectors
+#     df2 = df2[['SectorProducedBy', 'SectorConsumedBy', 'FlowAmount', 'Unit',
+#                'SectorProducedByName', 'SectorConsumedByName']]
+#     df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy', 'Unit',
+#                        'SectorProducedByName', 'SectorConsumedByName']
+#                       )['FlowAmount'].agg('sum').reset_index()
+#
+#     # define which columns to use as source and target
+#     if use_sectordefinition:
+#         categories = ['SectorProducedByName', 'SectorConsumedByName']
+#         sources = 'SectorProducedByName'
+#         targets = 'SectorConsumedByName'
+#         sector_col = 'SectorName'
+#     else:
+#         categories = ['SectorProducedBy', 'SectorConsumedBy']
+#         sources = 'SectorProducedBy'
+#         targets = 'SectorConsumedBy'
+#         sector_col = 'Sector'
+#
+#     # sort df by categories to help order how sectors appear in sankey
+#     df3 = df3.sort_values(categories).reset_index(drop=True)
+#
+#     # create new df with node information
+#     nodes = pd.DataFrame(
+#         {'Sector': list(pd.unique(
+#             df3[['SectorProducedBy', 'SectorConsumedBy']].values.ravel('K'))),
+#          'SectorName': list(
+#              pd.unique(df3[['SectorProducedByName',
+#                             'SectorConsumedByName']].values.ravel('K')))
+#          })
+#
+#     # add colors
+#     vis = pd.read_csv(datapath / 'VisualizationEssentials.csv')
+#     nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
+#     # fill in any colors missing from the color dictionary with random colors
+#     nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
+#     "#%06x" % random.randint(0, 0xFFFFFF))
+#     nodes = nodes.rename(columns={sector_col: 'node'})
+#     # add label
+#     # determine flow amount labels - sum incoming and outgoing flow amounts,
+#     # use outgoing flow values when exist, otherwise incoming flow totals
+#     outgoing = df3[[sources, 'FlowAmount']]
+#     outgoing = outgoing.groupby([sources]).agg(
+#         {'FlowAmount': 'sum'}).reset_index()
+#     outgoing = outgoing.rename(columns={sources: 'node',
+#                                         'FlowAmount': 'outgoing'})
+#     incoming = df3[[targets, 'FlowAmount']]
+#     incoming = incoming.groupby([targets]).agg(
+#         {'FlowAmount': 'sum'}).reset_index()
+#     incoming = incoming.rename(columns={targets: 'node',
+#                                         'FlowAmount': 'incoming'})
+#     flow_labels = outgoing.merge(incoming, how='outer')
+#     flow_labels = (flow_labels.fillna(0)
+#                    .assign(flow=np.where(flow_labels['outgoing'] > 0,
+#                                          flow_labels['outgoing'],
+#                                          flow_labels['incoming'])))
+#     if value_label_format == 'line_break':
+#         flow_labels['Label'] = flow_labels['node'] + '<br>' + \
+#                                flow_labels['flow'].round(2).astype(str)
+#     elif value_label_format == 'brackets':
+#         flow_labels['Label'] = flow_labels['node'] + ' (' + \
+#                                flow_labels['flow'].round(2).astype(str) + ')'
+#     nodes = nodes.merge(flow_labels[['node', 'Label']], how='left')
+#
+#     # create flow dataframe where source and target are converted to numeric
+#     # indices
+#     flows = pd.DataFrame()
+#     label_list = list(pd.unique(df3[categories].values.ravel('K')))
+#     flows['source'] = df3[sources].apply(lambda x: label_list.index(x))
+#     flows['target'] = df3[targets].apply(lambda x: label_list.index(x))
+#     flows['value'] = df3['FlowAmount']
+#     flows['Unit'] = df3['Unit']
+#
+#     return nodes, flows
 
 
 def generateSankeyDiagram(methodnames,
