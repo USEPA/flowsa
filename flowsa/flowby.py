@@ -957,20 +957,10 @@ class _FlowBy(pd.DataFrame):
 
             log.info(f'Proportionally attributing on {attribute_cols}')
             fb = (fb.add_primary_secondary_columns('Sector'))
-            # todo: move these cols out of here and instead need to specify
-            #  all columns in the FBS method
-            groupby_cols = attribute_cols + ['Unit', 'Location']
 
-            other_with_denominator = (
-                other
-                .assign(denominator=(other
-                        .groupby(groupby_cols)['FlowAmount']
-                        .transform('sum')))
-            )
-
-            with_denominator = (
+            merged = (
                 fb
-                .merge(other_with_denominator,
+                .merge(other,
                        how='left',
                        left_on=attribute_cols + ['temp_location' if
                                                  'temp_location' in fb else
@@ -980,15 +970,22 @@ class _FlowBy(pd.DataFrame):
                 .fillna({'FlowAmount_other': 0})
             )
 
-            non_zero_denominator = with_denominator.query(f'denominator != 0 ')
-            unattributable = with_denominator.query(f'denominator == 0 ')
+            merged_with_denominator = (
+                merged
+                .assign(denominator=(merged
+                        .groupby('group_id')['FlowAmount_other']
+                        .transform('sum')))
+            )
+
+            non_zero_denominator = merged_with_denominator.query(f'denominator != 0 ')
+            unattributable = merged_with_denominator.query(f'denominator == 0 ')
 
             if not unattributable.empty:
                 log.warning(
                     'Could not attribute activities %s in %s due to lack of '
                     'flows in attribution source %s for mapped sectors',
-                    set(zip(unattributable.ActivityProducedBy,
-                            unattributable.ActivityConsumedBy,
+                    set(zip(unattributable.SectorProducedBy,
+                            unattributable.SectorConsumedBy,
                             unattributable.Location)),
                     unattributable.full_name,
                     other.full_name
@@ -1002,9 +999,14 @@ class _FlowBy(pd.DataFrame):
                                               * x.FlowAmount_other
                                               / x.denominator))
             )
-            fill_col = self.config.get('fill_columns')
-            if fill_col is not None:
-                fb[fill_col] = fb[f'{fill_col}_other']
+        # if the fbs method yamls specifies that a column from in the
+        # primary data source should be replaced with data from the
+        # attribution source, fill here
+        fill_col = self.config.get('fill_columns')
+        if fill_col is not None:
+            log.info(f'Replacing {fill_col} values in primary data source '
+                     f'with those from attribution source.')
+            fb[fill_col] = fb[f'{fill_col}_other']
 
         # drop rows where 'FlowAmount_other' is 0 because the primary
         # activities are not attributed to those sectors. The values are 0
