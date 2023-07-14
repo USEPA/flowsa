@@ -1,10 +1,9 @@
 from typing import Literal
-import numpy as np
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import aggregator
-from flowsa.flowsa_log import vlog
-from . import (common, dataclean, settings)
+from flowsa.flowsa_log import vlog, log
+from . import (common, settings)
 
 naics_crosswalk = pd.read_csv(
     settings.datapath / 'NAICS_2012_Crosswalk.csv', dtype='object'
@@ -68,7 +67,7 @@ def industry_spec_key(
                                pd.DataFrame({'source_naics': non_naics,
                                              'target_naics': non_naics})])
 
-    # drop source_naics that are more aggregated than target_naics, reorder
+    # drop nans
     naics_key = (naics_key[['source_naics', 'target_naics']]
                  .dropna()
                  .drop_duplicates()
@@ -77,6 +76,88 @@ def industry_spec_key(
                  )
 
     return naics_key
+
+
+def map_target_sectors_to_less_aggregated_sectors(
+    industry_spec: dict,
+    year: Literal[2002, 2007, 2012, 2017] = 2012
+) -> pd.DataFrame:
+    """
+    Map target NAICS to all possible other sector lengths
+    flat hierarchy
+    """
+
+    naics = naics_crosswalk.assign(
+        target_naics=naics_crosswalk[industry_spec['default']])
+    for level, industries in industry_spec.items():
+        if level not in ['default', 'non_naics']:
+            naics['target_naics'] = naics['target_naics'].mask(
+                naics.drop(columns='target_naics').isin(industries).any(axis='columns'),
+                naics[level]
+            )
+
+    # todo: add user-specified non-naics
+    # if 'non_naics' in industry_spec:
+    #     non_naics = industry_spec['non_naics']
+    #     if isinstance(non_naics, str):
+    #         non_naics = [non_naics]
+    #     naics_key = pd.concat([naics_key,
+    #                            pd.DataFrame({'source_naics': non_naics,
+    #                                          'target_naics': non_naics})])
+
+    # drop source_naics that are more aggregated than target_naics, reorder
+    for n in (2, 7):
+        naics[f'NAICS_{n}'] = np.where(
+            naics[f'NAICS_{n}'].str.len() > naics['target_naics'].str.len(),
+            np.nan,
+            naics[f'NAICS_{n}'])
+
+    # rename columns to align with previous code
+    naics = naics.rename(columns={'NAICS_2': '_naics_2',
+                                  'NAICS_3': '_naics_3',
+                                  'NAICS_4': '_naics_4',
+                                  'NAICS_5': '_naics_5',
+                                  'NAICS_6': '_naics_6',
+                                  'NAICS_7': '_naics_7'}
+                         )
+
+    return naics.drop_duplicates().reset_index(drop=True)
+
+
+def map_source_sectors_to_less_aggregated_sectors(
+    year: Literal[2002, 2007, 2012, 2017] = 2012
+) -> pd.DataFrame:
+    """
+    Map source NAICS to all possible other sector lengths
+    parent-childhierarchy
+    """
+    naics = []
+    for n in naics_crosswalk.columns.values.tolist():
+        naics_sub = naics_crosswalk.assign(source_naics=naics_crosswalk[n])
+        naics.append(naics_sub)
+
+    # concat data into single dataframe
+    naics_key = pd.concat(naics, sort=False)
+    naics_key = naics_key.dropna(subset=['source_naics'])
+
+    # drop source_naics that are more aggregated than target_naics, reorder
+    for n in range(2, 8):
+        naics_key[f'NAICS_{n}'] = np.where(
+            naics_key[f'NAICS_{n}'].str.len() > naics_key[
+                'source_naics'].str.len(),
+            np.nan,
+            naics_key[f'NAICS_{n}'])
+
+    # rename columns to align with previous code
+    naics_key = naics_key.rename(columns={'NAICS_2': 'n2',
+                                          'NAICS_3': 'n3',
+                                          'NAICS_4': 'n4',
+                                          'NAICS_5': 'n5',
+                                          'NAICS_6': 'n6',
+                                          'NAICS_7': 'n7'}
+                                 )
+
+    return naics_key.drop_duplicates()
 
 
 def year_crosswalk(
@@ -122,7 +203,7 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         # create df where sectors do not exist in master crosswalk
         non_sectors = df_load[~df_load[c].isin(crosswalk_list)]
         # drop rows where c is empty
-        non_sectors = non_sectors[non_sectors[c] != '']
+        non_sectors = non_sectors[~non_sectors[c].isna()]
         # subset to just the sector column
         if len(non_sectors) != 0:
             sectors = non_sectors[[c]].rename(columns={c: 'NonSectors'})
@@ -137,7 +218,7 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         vlog.debug('There are sectors that are not NAICS 2012 Codes')
         vlog.debug(non_sectors)
     else:
-        vlog.debug('All sectors are NAICS 2012 Codes')
+        log.info('Sectors do not require conversion')
 
     return non_sectors
 
@@ -180,20 +261,25 @@ def melt_naics_crosswalk():
 
     return cw_replacement_2
 
-def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
+
+def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
     """
     Replace any non sectors with sectors.
     :param df_load: df with sector columns or sector-like activities
     :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
     :return: df, with non-sectors replaced with sectors
     """
-    # drop NoneType
-    df = dataclean.replace_NoneType_with_empty_cells(df_load).reset_index(drop=True)
+    # todo: update this function to work better with recursive method
 
-    # load the mastercroswalk and subset by sectorsourcename,
+    # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('sector_timeseries')
-    cw = cw_load[sectorsourcename].drop_duplicates().tolist()
+    if targetsectorsourcename == sectorsourcename:
+        cw_load = common.load_crosswalk('sector_timeseries')[[
+        targetsectorsourcename]]
+    else:
+        cw_load = common.load_crosswalk('sector_timeseries')[[
+            targetsectorsourcename, sectorsourcename]]
+    cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
     cw_melt = melt_naics_crosswalk()
@@ -201,20 +287,22 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
     cw_melt = cw_melt.drop(columns='naics_count')
 
     # determine which headers are in the df
-    if 'SectorConsumedBy' in df:
+    column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
+    if 'SectorConsumedBy' in df_load:
         column_headers = ['SectorProducedBy', 'SectorConsumedBy']
-    else:
-        column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
 
     # check if there are any sectors that are not in the naics 2012 crosswalk
-    non_naics = check_if_sectors_are_naics(df, cw, column_headers)
+    non_naics = check_if_sectors_are_naics(df_load, cw, column_headers)
 
     # loop through the df headers and determine if value is
     # not in crosswalk list
+    df = df_load.copy()
     if len(non_naics) != 0:
-        vlog.debug('Checking if sectors represent a different '
-                   f'NAICS year, if so, replace with {sectorsourcename}')
+        log.info('Checking if sectors represent a different '
+                 f'NAICS year, if so, replace with {targetsectorsourcename}')
         for c in column_headers:
+            if df[c].isna().all():
+                continue
             # merge df with the melted sector crosswalk
             df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
             # if there is a value in the sectorsourcename column,
@@ -222,51 +310,40 @@ def replace_naics_w_naics_from_another_year(df_load, sectorsourcename):
             # column c is in the non_naics list
             df[c] = np.where(
                 (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
-                df[sectorsourcename], df[c])
+                df[targetsectorsourcename], df[c])
             # multiply the FlowAmount col by allocation_ratio
-            df.loc[df[c] == df[sectorsourcename],
+            df.loc[df[c] == df[targetsectorsourcename],
                    'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
             # drop columns
             df = df.drop(
-                columns=[sectorsourcename, 'NAICS', 'allocation_ratio'])
-        vlog.debug(f'Replaced NAICS with {sectorsourcename}')
+                columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
+        log.info(f'Replaced NAICS with {targetsectorsourcename}')
 
         # check if there are any sectors that are not in
-        # the naics 2012 crosswalk
-        vlog.debug('Check again for non NAICS 2012 Codes')
+        # the target sector crosswalk and if so, drop those sectors
+        log.info('Checking for unconverted NAICS - determine if rows should '
+                 'be dropped.')
         nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
         if len(nonsectors) != 0:
             vlog.debug('Dropping non-NAICS from dataframe')
             for c in column_headers:
+                if df[c].isna().all():
+                    continue
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
         # aggregate data
-        possible_column_headers = \
-            ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-             'TemporalCorrelation', 'GeographicalCorrelation',
-             'TechnologicalCorrelation', 'DataCollection', 'Description')
-        # list of column headers to group aggregation by
-        groupby_cols = [e for e in df.columns.values.tolist()
-                        if e not in possible_column_headers]
-        df = aggregator(df, groupby_cols)
-
-    df = dataclean.replace_strings_with_NoneType(df)
-    # drop rows where both SectorConsumedBy and SectorProducedBy NoneType
-    if 'SectorConsumedBy' in df:
-        df_drop = df[(df['SectorConsumedBy'].isnull()) &
-                     (df['SectorProducedBy'].isnull())]
-        if len(df_drop) != 0:
-            activities_dropped = pd.unique(
-                df_drop[['ActivityConsumedBy',
-                         'ActivityProducedBy']].values.ravel('K'))
-            activities_dropped = list(filter(
-                lambda x: x is not None, activities_dropped))
-            vlog.debug('Dropping rows where the Activity columns '
-                       f'contain {", ".join(activities_dropped)}')
-        df = df[~((df['SectorConsumedBy'].isnull()) &
-                  (df['SectorProducedBy'].isnull()))].reset_index(drop=True)
-    else:
-        df = df[~((df['ActivityConsumedBy'].isnull()) &
-                  (df['ActivityProducedBy'].isnull()))].reset_index(drop=True)
+        if hasattr(df, 'aggregate_flowby'):
+            df = df.aggregate_flowby()
+        else:
+            # todo: drop except statement once all dataframes are converted
+            #  to classes
+            possible_column_headers = \
+                ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
+                 'TemporalCorrelation', 'GeographicalCorrelation',
+                 'TechnologicalCorrelation', 'DataCollection', 'Description')
+            # list of column headers to group aggregation by
+            groupby_cols = [e for e in df.columns.values.tolist()
+                            if e not in possible_column_headers]
+            df = aggregator(df, groupby_cols)
 
     return df

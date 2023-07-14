@@ -7,42 +7,39 @@ year: 2012
 geoscale: state
 
 sources_to_cache:
-  # todo: need to attribute census regions to states
+  # Attribute national (instead of census regions) to states since regional
+  # data is only "all buildings" and not broken out by floors
   EIA_CBECS_Land: &_eia_cbecs_land # commercial land use
     fedefl_mapping: EIA_CBECS_Land
-    year: 2012
+    geoscale: national
     selection_fields:
       Class: Land
-      Location: !include:Location_common.yaml:_state_location
+      Location: '00000'
     clean_fba: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
+    clean_fba_w_sec: !clean_function:flowbyclean attribute_national_to_states
+    clean_source: Employment_state_2012
     activity_sets:
       cbecs_land: # all activities in eia cbecs land crosswalk
         selection_fields:
-         PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
-        attribution_method: proportional
-        attribution_source:
-          Employment_state_2012:
-            data_format: FBS
-            year: 2012
-  # todo: need to attribute national mecs data to states
-  "EIA_MECS_Land": &_eia_mecs_land  # manufacturing land use
+          PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
+        attribution_method: direct
+  EIA_MECS_Land: &_eia_mecs_land  # manufacturing land use
     fedefl_mapping: EIA_MECS_Land
     year: 2014
+    geoscale: national
     selection_fields:
       Class: Land
-      Location: !include:Location_common.yaml:_state_location
       FlowName: "Approximate Enclosed Floorspace of All Buildings Onsite"
       Year: {2014: 2012} # replace year to align with method year
+    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
     clean_fba: !script_function:EIA_MECS mecs_land_fba_cleanup
+    clean_fba_w_sec: !clean_function:flowbyclean attribute_national_to_states
+    clean_source: Employment_state_2014
     activity_sets:
       mecs_land: # all activities in eia mecs land crosswalk
         selection_fields:
-         PrimaryActivity: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
-        attribution_method: proportional
-        attribution_source:
-          Employment_national_2014:
-            data_format: FBS
-            year: 2014
+          PrimaryActivity: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
+        attribution_method: direct
 
 source_names:
   EIA_CBECS_Land:
@@ -102,7 +99,7 @@ source_names:
                   Class: Land
                   FlowName:
                     - "FARM OPERATIONS"
-                estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
                 selection_fields_after_data_suppression_estimation:
                   PrimaryActivity: [ "112111", "112112", "11212", "1122",
                                      "11231", "11232", "11233", "11234",
@@ -121,7 +118,7 @@ source_names:
             selection_fields:
               Class: "Land"
               FlowName: "FARM OPERATIONS"
-            estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
       forest:
         selection_fields:
          PrimaryActivity:

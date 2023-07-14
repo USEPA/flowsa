@@ -9,7 +9,7 @@ target_naics_year: 2012
 geoscale: national
 
 source_names:
-  "EPA_WFR":
+  EPA_WFR:
     selection_fields:
       Class: Other
     # the below function adds in treated waste and uses REI data to proportionally attribute ABP to ACB
@@ -42,21 +42,24 @@ source_names:
             - "Restaurants/Food Services"
             - "Retail"
         attribution_method: proportional
-        attribution_source:
-          Employment_national_2018:
-            data_format: FBS
-            year: 2018
+        # do not want to attribute the waste management pathways using
+#        employment data (SectorConsumedBy), only attribute the waste
+#        generation activities (SectorProducedBy)
+        attribute_on: [SectorProducedBy]
+        attribution_source: Employment_national_2018
       establishments:
         selection_fields:
           PrimaryActivity:
             - "Wholesale"
         attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [SectorProducedBy]
         attribution_source:
-          "BLS_QCEW":
+          BLS_QCEW:
             selection_fields:
               Class: "Other"
               Location: !include:Location_common.yaml:_national_location
-            estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
             selection_fields_after_data_suppression_estimation:
               FlowName: {
                 'Number of establishments, Federal Government': 'Number of establishments',
@@ -69,10 +72,12 @@ source_names:
           PrimaryActivity:
             - "Manufacturing/Processing"
         attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [SectorProducedBy]
         attribution_source:
-          "Census_ASM":
+          Census_ASM:
             selection_fields:
-              Class: "Money"
+              Class: Money
       treated_waste_direct:
         primary_action_type: Consumed
         selection_fields:
@@ -100,8 +105,9 @@ source_names:
             - 'Services to buildings and dwellings'
             - 'Museums, historical sites, zoos, and parks'
         attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [SectorProducedBy]
         attribution_source:
           Employment_national_2018:
-            data_format: FBS
             year: 2018
             primary_action_type: Produced

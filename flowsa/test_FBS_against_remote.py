@@ -16,17 +16,16 @@ from flowsa.test_single_FBS import compare_single_FBS_against_remote
 def test_generate_fbs():
     """Generate all FBS from methods in repo."""
     for m in seeAvailableFlowByModels("FBS", print_method=False):
-        if m not in ['BEA_summary_target',
-                     'Electricity_gen_emissions_national_2016',
-                     'Employment_common',
-                     'GHG_national_m1',
-                     'USEEIO_summary_target',
-                     'Water_national_2010_m1', # todo: add water tests after modify to recursive method
-                     'Water_national_2010_m2',
-                     'Water_national_2015_m2',
-                     'Water_national_2015_m3',
-                     'Water_state_2015_m1'
-                     ]:
+        if m not in [
+            'Electricity_gen_emissions_national_2016',
+            'GHG_national_m1',
+            'GHGRP_2019',  # remove after deleting method
+            'marine_shipping_adjustment',  # delete
+            'SEEA_2016_v1',  # delete
+            'SEEA_2017_kg_v1',  # delete
+            'SEEA_2017_v1',  # delete
+            'SEEA_2017_v2'  # delete
+        ]:
             print("--------------------------------\n"
                   f"Method: {m}\n"
                   "--------------------------------")

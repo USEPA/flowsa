@@ -18,7 +18,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import process_adjustmentpath
-from flowsa.naics import replace_naics_w_naics_from_another_year
+from flowsa.naics import convert_naics_year
 import stewicombo
 import stewi
 from stewicombo.globals import addChemicalMatches, compile_metadata,\
@@ -300,12 +300,16 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
     :param config: dictionary, FBS method data source configuration
     :return: FlowBySector
     """
-    config['sector-like_activities'] = True
     config['fedefl_mapping'] = ([x for x in config.get('inventory_dict').keys()
                                  if x != 'RCRAInfo'])
     config['drop_unmapped_rows'] = True
     if 'year' not in config:
         config['year'] = df_load['Year'][0]
+
+    # find activity schema
+    activity_schema = config['activity_schema'] if isinstance(
+        config['activity_schema'], str) else config.get(
+        'activity_schema', {}).get(config['year'])
 
     fbs = FlowByActivity(
             df_load
@@ -314,10 +318,10 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
             .rename(columns={"NAICS": "ActivityProducedBy",
                              'Source': 'SourceName'})
             .assign(Class='Chemicals')
-            .assign(ActivityConsumedBy='')
-            .pipe(replace_naics_w_naics_from_another_year,
-                  f"NAICS_{config['target_naics_year']}_Code")
-            # ^^ Consider upating this old function
+            .assign(ActivityConsumedBy=np.nan)
+            .pipe(convert_naics_year,
+                  f"NAICS_{config['target_naics_year']}_Code",
+                  activity_schema)
             .assign(FlowType=lambda x: np.where(
                 x['SourceName']=='RCRAInfo',
                     'WASTE_FLOW', 'ELEMENTARY_FLOW'))

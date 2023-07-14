@@ -18,12 +18,10 @@ sources_to_cache:
     activity_sets:
       cbecs_land: # all activities in eia cbecs land crosswalk
         selection_fields:
-         PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
+          PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
         attribution_method: proportional
-        attribution_source:
-          Employment_national_2012:
-            data_format: FBS
-  "EIA_MECS_Land": &_eia_mecs_land  # manufacturing land use
+        attribution_source: Employment_national_2012
+  EIA_MECS_Land: &_eia_mecs_land  # manufacturing land use
     fedefl_mapping: EIA_MECS_Land
     year: 2014
     selection_fields:
@@ -35,12 +33,9 @@ sources_to_cache:
     activity_sets:
       mecs_land: # all activities in eia mecs land crosswalk
         selection_fields:
-         PrimaryActivity: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
+          PrimaryActivity: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
         attribution_method: proportional
-        attribution_source:
-          Employment_national_2014:
-            data_format: FBS
-            year: 2014
+        attribution_source: Employment_national_2014
 
 source_names:
   EIA_CBECS_Land:
@@ -55,16 +50,14 @@ source_names:
     activity_sets:
       general_mining: # all blm pls activities other than hardrock
         selection_fields:
-         PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv general_mining
+          PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv general_mining
         attribution_method: direct
       hardrock_mining:
         selection_fields:
-         PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
+          PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         attribution_method: proportional
-        attribution_source:
-          Employment_national_2012:
-            data_format: FBS
-  "USDA_ERS_MLU":
+        attribution_source: Employment_national_2012
+  USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
     selection_fields:
       Class: Land
@@ -77,9 +70,9 @@ source_names:
           - 'Cropland idled'
         attribution_method: proportional
         attribution_source:
-          "USDA_CoA_Cropland":
+          USDA_CoA_Cropland:
             selection_fields:
-              Class: "Land"
+              Class: Land
               FlowName:
                 - "AREA HARVESTED"
                 - "AREA"
@@ -99,7 +92,7 @@ source_names:
                   Class: Land
                   FlowName:
                     - "FARM OPERATIONS"
-                estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+                estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
                 selection_fields_after_data_suppression_estimation:
                   PrimaryActivity: [ "112111", "112112", "11212", "1122",
                                      "11231", "11232", "11233", "11234",
@@ -113,11 +106,11 @@ source_names:
           - 'Grassland pasture and range'
         attribution_method: proportional
         attribution_source:
-          "USDA_CoA_Cropland_NAICS":
+          USDA_CoA_Cropland_NAICS:
             selection_fields:
-              Class: "Land"
+              Class: Land
               FlowName: "FARM OPERATIONS"
-            estimate_suppressed: !script_function:temp_data_source_functions estimate_suppressed_sectors_equal_attribution
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
       forest:
         selection_fields:
          PrimaryActivity:

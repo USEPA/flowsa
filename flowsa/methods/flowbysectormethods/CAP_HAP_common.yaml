@@ -39,8 +39,8 @@ sources_to_cache:
       Location: '00000'
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
     clean_fba: !script_function:EIA_MECS clean_mecs_energy_fba
-    clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
-    attribution_source: Employment_state_2018 ## Update to MECS year
+    clean_fba_after_attribution: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
+    clean_source: Employment_state_2018 ## Update to MECS year
 
 _attribution_sources:
   BEA: &bea

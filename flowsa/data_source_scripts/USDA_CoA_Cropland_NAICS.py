@@ -11,10 +11,8 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.location import US_FIPS, abbrev_us_state
-from flowsa.common import WITHDRAWN_KEYWORD, \
-    fba_wsec_default_grouping_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, \
-    equally_allocate_suppressed_parent_to_child_naics
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def CoA_Cropland_NAICS_URL_helper(*, build_url, config, **_):

@@ -9,7 +9,7 @@ Generation of BEA Gross Output data and industry transcation data as FBA,
 Source csv files for BEA data are documented
 in scripts/write_BEA_Use_from_useeior.py
 """
-from functools import reduce
+
 import pandas as pd
 from flowsa.location import US_FIPS
 from flowsa.common import fbs_activity_fields
@@ -26,7 +26,7 @@ def bea_gdp_parse(*, year, **_):
         specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath / "BEA_GDP_GrossOutput_IO.csv")
+    df_raw = pd.read_csv(f"{externaldatapath}/BEA_GDP_GrossOutput_IO.csv")
 
     df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
 
@@ -61,8 +61,8 @@ def bea_use_detail_br_parse(*, year, **_):
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    csv_load = (externaldatapath / f'BEA_{str(year)}'
-                f'_Detail_Use_PRO_BeforeRedef.csv')
+    csv_load = (f"{externaldatapath}/BEA_{str(year)}"
+                f"_Detail_Use_PRO_BeforeRedef.csv")
     df_raw = pd.read_csv(csv_load)
 
     df = bea_detail_parse(df_raw, year)
@@ -79,8 +79,8 @@ def bea_make_detail_br_parse(*, year, **_):
         flowbyactivity specifications
     """
     # Read directly into a pandas df
-    csv_load = (externaldatapath / f'BEA_{str(year)}'
-                f'_Detail_Make_BeforeRedef.csv')
+    csv_load = (f"{externaldatapath}/BEA_{str(year)}"
+                f"_Detail_Make_BeforeRedef.csv")
     df_raw = pd.read_csv(csv_load)
 
     df = bea_detail_parse(df_raw, year)
@@ -122,9 +122,8 @@ def bea_make_ar_parse(*, year, **_):
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    # df = pd.concat(dataframe_list, sort=False)
-    df_load = pd.read_csv(externaldatapath + "BEA_" + year +
-                          "_Make_AfterRedef.csv", dtype="str")
+    df_load = pd.read_csv(f"{externaldatapath}/BEA"
+                          f"_{year}_Make_AfterRedef.csv", dtype="str")
     # strip whitespace
     df = df_load.apply(lambda x: x.str.strip())
     # drop rows of data

@@ -40,7 +40,7 @@ def epa_wfr_call(*, resp, **_):
                  'eight', 'K-12 Schools',  'Food Banks',
                  'Intermediate Amount Managed',
                  'Total Managed by Each Pathway'],
-                axis=1, inplace=False)
+                axis=1)
         else:
             df = df_l[0].set_axis(
                 ['Management Pathway', 'Manufacturing/Processing',
@@ -48,7 +48,7 @@ def epa_wfr_call(*, resp, **_):
                  'seven', 'K-12 Schools',  'Food Banks',
                  'Intermediate Amount Managed',
                  'Total Managed by Each Pathway'],
-                axis=1, inplace=False)
+                axis=1)
         df = drop_rows(df)
         df_list.append(df)
     for d in df_list:
@@ -265,7 +265,7 @@ def foodwaste_use(fba: FlowByActivity) -> FlowByActivity:
     outputs = outputs.drop(columns='ActivityConsumedBy')
     outputs2 = outputs.aggregate_flowby()
 
-    # load fw treatment dictoinary
+    # load fw treatment dictionary
     fw_tmt = return_REI_fraction_foodwaste_treated_commodities()
     replace_keys = {'Animal meal, meat, fats, oils, and tallow': 'Bio-based Materials/Biochemical Processing',
                     'Anaerobic Digestion': 'Codigestion/Anaerobic Digestion',
