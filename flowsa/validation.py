@@ -700,7 +700,6 @@ def compare_geographic_totals(
             nat = nat[(nat[fba_activity_fields[0]].isin(activity_names)) |
                       (nat[fba_activity_fields[1]].isin(activity_names)
                        )].reset_index(drop=True)
-            nat = replace_strings_with_NoneType(nat)
             # drop the geoscale in df_subset and sum
             sub = df_subset.assign(Location=US_FIPS)
             # depending on the datasource, might need to rename some
