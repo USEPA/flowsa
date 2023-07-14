@@ -13,6 +13,7 @@ from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
     collapse_fbs_sectors
 from flowsa.flowsa_log import log, vlog
 from flowsa.common import sector_level_key, fba_activity_fields
+from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.location import US_FIPS
 from flowsa.schema import dq_fields
 
