@@ -588,79 +588,79 @@ def return_activity_from_scale(df, provided_from_scale):
 
     return df_existing
 
-
-def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
-    """
-    Subset a df by geoscale or agg to create data specified in method yaml
-    :param df: df, FBA format
-    :param activity_from_scale: str, identified geoscale by which to subset or
-                                aggregate from ('national', 'state', 'county')
-    :param activity_to_scale: str, identified geoscale by which to subset or
-                              aggregate to ('national', 'state', 'county')
-    :return: df, FBA, subset or aggregated to a single geoscale for all rows
-    """
-
-    # detect grouping cols by columns
-    if 'Context' in df.columns:
-        groupbycols = fba_mapped_default_grouping_fields
-        cols_to_keep = flow_by_activity_mapped_fields
-    else:
-        groupbycols = fba_default_grouping_fields
-        cols_to_keep = flow_by_activity_fields
-
-    # method of subset dependent on LocationSystem
-    if df['LocationSystem'].str.contains('FIPS').all():
-        df = df[df['LocationSystem'].str.contains(
-            'FIPS')].reset_index(drop=True)
-        # determine 'activity_from_scale' for use in df
-        # geoscale subset, by activity
-        modified_from_scale = \
-            return_activity_from_scale(df, activity_from_scale)
-        # add 'activity_from_scale' column to df
-        df2 = pd.merge(df, modified_from_scale)
-
-        # list of unique 'from' geoscales
-        unique_geoscales = modified_from_scale[
-            'activity_from_scale'].drop_duplicates().values.tolist()
-        if len(unique_geoscales) > 1:
-            log.info('Dataframe has a mix of geographic levels: %s',
-                     ', '.join(unique_geoscales))
-
-        # to scale
-        if fips_number_key[activity_from_scale] > \
-                fips_number_key[activity_to_scale]:
-            to_scale = activity_to_scale
-        else:
-            to_scale = activity_from_scale
-
-        df_subset_list = []
-        # subset df based on activity 'from' scale
-        for i in unique_geoscales:
-            df3 = df2[df2['activity_from_scale'] == i]
-            # if desired geoscale doesn't exist, aggregate existing data
-            # if df is less aggregated than allocation df, aggregate
-            # fba activity to allocation geoscale
-            if fips_number_key[i] > fips_number_key[to_scale]:
-                log.info("Aggregating subset from %s to %s", i, to_scale)
-                df_sub = agg_by_geoscale(df3, i, to_scale, groupbycols)
-            # else filter relevant rows
-            else:
-                log.info("Subsetting %s data", i)
-                df_sub = filter_by_geoscale(df3, i)
-            df_subset_list.append(df_sub)
-        df_subset = pd.concat(df_subset_list, ignore_index=True)
-
-        # drop unused columns
-        df_subset = clean_df(df_subset, cols_to_keep,
-                             fba_fill_na_dict, drop_description=False)
-
-        return df_subset
-
-    # right now, the only other location system is for Statistics Canada data
-    else:
-        df = df[~df['LocationSystem'].str.contains('FIPS')].reset_index(drop=True)
-
-        return df
+# todo: delete
+# def subset_df_by_geoscale(df, activity_from_scale, activity_to_scale):
+#     """
+#     Subset a df by geoscale or agg to create data specified in method yaml
+#     :param df: df, FBA format
+#     :param activity_from_scale: str, identified geoscale by which to subset or
+#                                 aggregate from ('national', 'state', 'county')
+#     :param activity_to_scale: str, identified geoscale by which to subset or
+#                               aggregate to ('national', 'state', 'county')
+#     :return: df, FBA, subset or aggregated to a single geoscale for all rows
+#     """
+#
+#     # detect grouping cols by columns
+#     if 'Context' in df.columns:
+#         groupbycols = fba_mapped_default_grouping_fields
+#         cols_to_keep = flow_by_activity_mapped_fields
+#     else:
+#         groupbycols = fba_default_grouping_fields
+#         cols_to_keep = flow_by_activity_fields
+#
+#     # method of subset dependent on LocationSystem
+#     if df['LocationSystem'].str.contains('FIPS').all():
+#         df = df[df['LocationSystem'].str.contains(
+#             'FIPS')].reset_index(drop=True)
+#         # determine 'activity_from_scale' for use in df
+#         # geoscale subset, by activity
+#         modified_from_scale = \
+#             return_activity_from_scale(df, activity_from_scale)
+#         # add 'activity_from_scale' column to df
+#         df2 = pd.merge(df, modified_from_scale)
+#
+#         # list of unique 'from' geoscales
+#         unique_geoscales = modified_from_scale[
+#             'activity_from_scale'].drop_duplicates().values.tolist()
+#         if len(unique_geoscales) > 1:
+#             log.info('Dataframe has a mix of geographic levels: %s',
+#                      ', '.join(unique_geoscales))
+#
+#         # to scale
+#         if fips_number_key[activity_from_scale] > \
+#                 fips_number_key[activity_to_scale]:
+#             to_scale = activity_to_scale
+#         else:
+#             to_scale = activity_from_scale
+#
+#         df_subset_list = []
+#         # subset df based on activity 'from' scale
+#         for i in unique_geoscales:
+#             df3 = df2[df2['activity_from_scale'] == i]
+#             # if desired geoscale doesn't exist, aggregate existing data
+#             # if df is less aggregated than allocation df, aggregate
+#             # fba activity to allocation geoscale
+#             if fips_number_key[i] > fips_number_key[to_scale]:
+#                 log.info("Aggregating subset from %s to %s", i, to_scale)
+#                 df_sub = agg_by_geoscale(df3, i, to_scale, groupbycols)
+#             # else filter relevant rows
+#             else:
+#                 log.info("Subsetting %s data", i)
+#                 df_sub = filter_by_geoscale(df3, i)
+#             df_subset_list.append(df_sub)
+#         df_subset = pd.concat(df_subset_list, ignore_index=True)
+#
+#         # drop unused columns
+#         df_subset = clean_df(df_subset, cols_to_keep,
+#                              fba_fill_na_dict, drop_description=False)
+#
+#         return df_subset
+#
+#     # right now, the only other location system is for Statistics Canada data
+#     else:
+#         df = df[~df['LocationSystem'].str.contains('FIPS')].reset_index(drop=True)
+#
+#         return df
 
 
 def unique_activity_names(fba_df):
@@ -1074,58 +1074,58 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
 #
 #     return df
 
-
-def subset_and_merge_df_by_sector_lengths(
-        df, length1, length2, **_):
-
-    sector_merge = 'NAICS_' + str(length1)
-    sector_add = 'NAICS_' + str(length2)
-
-    # subset the df by naics length
-    cw_load = load_crosswalk("sector_length")
-    cw = cw_load[[sector_merge, sector_add]].drop_duplicates().reset_index(
-        drop=True)
-
-    # df where either sector column is length or both columns are
-    df = df.reset_index(drop=True)
-    df1 = subset_df_by_sector_lengths(df, [length1], **_)
-    # second dataframe where length is length2
-    df2 = subset_df_by_sector_lengths(df, [length2], **_)
-
-    # merge the crosswalk to create new columns where sector length equals
-    # "length1"
-    df2 = df2.merge(cw, how='left', left_on=['SectorProducedBy'],
-                    right_on=[sector_add]).rename(
-        columns={sector_merge: 'SPB_tmp'}).drop(columns=sector_add)
-    df2 = df2.merge(cw, how='left',
-                    left_on=['SectorConsumedBy'], right_on=[sector_add]
-                    ).rename(
-        columns={sector_merge: 'SCB_tmp'}).drop(columns=sector_add)
-    df2 = replace_NoneType_with_empty_cells(df2)
-    # if maintaining the values that do not match the sector length
-    # requirement, and if a column value is blank, replace with existing value
-    if _.get('keep_paired_sectors_not_in_subset_list'):
-        df2["SPB_tmp"] = np.where(df2["SPB_tmp"] == '',
-                                  df2["SectorProducedBy"], df2["SPB_tmp"])
-        df2["SCB_tmp"] = np.where(df2["SCB_tmp"] == '',
-                                  df2["SectorConsumedBy"], df2["SCB_tmp"])
-
-    # merge the dfs
-    merge_cols = list(df1.select_dtypes(include=['object', 'int']).columns)
-    # also drop activity and description cols
-    merge_cols = [c for c in merge_cols
-                  if c not in ['SectorConsumedBy', 'SectorProducedBy',
-                               'Description']]
-
-    dfm = df1.merge(df2[merge_cols + ['SPB_tmp', 'SCB_tmp']],
-                    how='outer',
-                    left_on=merge_cols + ['SectorProducedBy',
-                                          'SectorConsumedBy'],
-                    right_on=merge_cols + ['SPB_tmp', 'SCB_tmp'],
-                    indicator=True)
-    dfm = replace_NoneType_with_empty_cells(dfm)
-
-    return dfm
+# todo: delete
+# def subset_and_merge_df_by_sector_lengths(
+#         df, length1, length2, **_):
+#
+#     sector_merge = 'NAICS_' + str(length1)
+#     sector_add = 'NAICS_' + str(length2)
+#
+#     # subset the df by naics length
+#     cw_load = load_crosswalk("sector_length")
+#     cw = cw_load[[sector_merge, sector_add]].drop_duplicates().reset_index(
+#         drop=True)
+#
+#     # df where either sector column is length or both columns are
+#     df = df.reset_index(drop=True)
+#     df1 = subset_df_by_sector_lengths(df, [length1], **_)
+#     # second dataframe where length is length2
+#     df2 = subset_df_by_sector_lengths(df, [length2], **_)
+#
+#     # merge the crosswalk to create new columns where sector length equals
+#     # "length1"
+#     df2 = df2.merge(cw, how='left', left_on=['SectorProducedBy'],
+#                     right_on=[sector_add]).rename(
+#         columns={sector_merge: 'SPB_tmp'}).drop(columns=sector_add)
+#     df2 = df2.merge(cw, how='left',
+#                     left_on=['SectorConsumedBy'], right_on=[sector_add]
+#                     ).rename(
+#         columns={sector_merge: 'SCB_tmp'}).drop(columns=sector_add)
+#     df2 = replace_NoneType_with_empty_cells(df2)
+#     # if maintaining the values that do not match the sector length
+#     # requirement, and if a column value is blank, replace with existing value
+#     if _.get('keep_paired_sectors_not_in_subset_list'):
+#         df2["SPB_tmp"] = np.where(df2["SPB_tmp"] == '',
+#                                   df2["SectorProducedBy"], df2["SPB_tmp"])
+#         df2["SCB_tmp"] = np.where(df2["SCB_tmp"] == '',
+#                                   df2["SectorConsumedBy"], df2["SCB_tmp"])
+#
+#     # merge the dfs
+#     merge_cols = list(df1.select_dtypes(include=['object', 'int']).columns)
+#     # also drop activity and description cols
+#     merge_cols = [c for c in merge_cols
+#                   if c not in ['SectorConsumedBy', 'SectorProducedBy',
+#                                'Description']]
+#
+#     dfm = df1.merge(df2[merge_cols + ['SPB_tmp', 'SCB_tmp']],
+#                     how='outer',
+#                     left_on=merge_cols + ['SectorProducedBy',
+#                                           'SectorConsumedBy'],
+#                     right_on=merge_cols + ['SPB_tmp', 'SCB_tmp'],
+#                     indicator=True)
+#     dfm = replace_NoneType_with_empty_cells(dfm)
+#
+#     return dfm
 
 
 def assign_columns_of_sector_levels(df_load):
