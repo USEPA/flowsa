@@ -181,25 +181,24 @@ def estimate_suppressed_sectors_equal_attribution(
     # todo: update function to work for any number of sector lengths
     # todo: update to loop through both sector columns, see equally_attribute()
 
+    log.info('Estimating suppressed data by equally attributing parent to '
+             'child sectors.')
     naics_key = map_source_sectors_to_less_aggregated_sectors()
     # forward fill
     naics_key = naics_key.T.ffill().T
 
     col = return_primary_activity_column(fba)
 
-    # todo: don't drop these grouped sectors, instead, incorporate into fxn
-    fba = fba[~fba[col].isin(
-        ['1125 & 1129', '11193 & 11194 & 11199'])].reset_index(drop=True)
-
-    indexed = (
+    # todo: All hyphenated sectors are currently dropped, modify code so
+    #  they are not
+    fba_m = (
         fba
         .merge(naics_key, how='left', left_on=col,
                right_on='source_naics')
-        .drop(columns='source_naics')
         .assign(location=fba.Location,
                 category=fba.FlowName)
-        .replace({'FlowAmount': {0: np.nan},
-                  # col: {'1125 & 1129': '112X' #,
+        .replace({'FlowAmount': {0: np.nan} #,
+                  # col: {'1125 & 1129': '112X',
                   #       '11193 & 11194 & 11199': '1119X',
                   #       '31-33': '3X',
                   #       '44-45': '4X',
@@ -210,10 +209,12 @@ def estimate_suppressed_sectors_equal_attribution(
                   # 'n4': {'1125': '112X', '1129': '112X'},
                   # 'n5': {'11193': '1119X', '11194': '1119X', '11199': '1119X'}
                   })
-        .set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'location',
-                    'category'],
-                   verify_integrity=True)
+        .dropna(subset='source_naics')
+        .drop(columns='source_naics')
     )
+
+    indexed = fba_m.set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'n7',
+                               'location', 'category'], verify_integrity=True)
 
     def fill_suppressed(
         flows: pd.Series,
