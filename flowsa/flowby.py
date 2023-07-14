@@ -1145,8 +1145,8 @@ class _FlowBy(pd.DataFrame):
             rate = 'Unit_other'
             other = 'Unit'
         if rate is not None:
-            fb['Denominator'] = fb[rate].str.split("/",1).str[1]
-            fb[rate] = fb[rate].str.split("/",1).str[0]
+            fb['Denominator'] = fb[rate].str.split("/").str[1]
+            fb[rate] = fb[rate].str.split("/").str[0]
             if fb[other].equals(fb['Denominator']) is False:
                 log.warning('Check units being multiplied')
             else:
