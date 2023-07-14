@@ -10,14 +10,10 @@ import numpy as np
 import flowsa
 from flowsa.flowby import FlowBySector
 from flowsa.flowbyfunctions import aggregator, create_geoscale_list,\
-    subset_df_by_geoscale, sector_aggregation, collapse_fbs_sectors,\
-    subset_df_by_sector_lengths
+    collapse_fbs_sectors
 from flowsa.flowsa_log import log, vlog
-from flowsa.dataclean import replace_strings_with_NoneType, \
-    replace_NoneType_with_empty_cells
-from flowsa.common import sector_level_key, \
-    fba_activity_fields, check_activities_sector_like
-from flowsa.location import US_FIPS, fips_number_key
+from flowsa.common import sector_level_key, fba_activity_fields
+from flowsa.location import US_FIPS
 from flowsa.schema import dq_fields
 
 
@@ -27,8 +23,6 @@ def check_if_data_exists_at_geoscale(df_load, geoscale):
     :param df_load: df with activity columns
     :param geoscale: national, state, or county
     """
-
-    df_load = replace_NoneType_with_empty_cells(df_load)
 
     # filter by geoscale depends on Location System
     fips_list = create_geoscale_list(df_load, geoscale)
@@ -107,12 +101,8 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
             geoscale=np.where(vars()[df_name+'2']['Location'] == '00000',
                               'national', vars()[df_name+'2']['geoscale']))
         # ensure all nan/nones filled/match
-        vars()[df_name + '2'] = \
-            replace_strings_with_NoneType(vars()[df_name+'2'])
         df_list.append(vars()[df_name+'2'])
     # merge the two dataframes
-    for df in df_list:
-        replace_NoneType_with_empty_cells(df)
     df = df_list[0].merge(df_list[1], how='outer')
 
     # determine if any new data is negative
@@ -150,9 +140,9 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     else:
         # subset df and aggregate, also print out the total
         # aggregate diff at the geoscale
-        dfagg3 = replace_strings_with_NoneType(dfagg).drop(
-            columns=['ActivityProducedBy', 'ActivityConsumedBy',
-                     'FlowAmount_Difference', 'Percent_Difference'])
+        dfagg3 = dfagg.drop(columns=[
+            'ActivityProducedBy', 'ActivityConsumedBy',
+            'FlowAmount_Difference', 'Percent_Difference'])
         dfagg4 = dfagg3.groupby(flowcols + ['Unit', 'geoscale'],
             dropna=False, as_index=False).agg(
             {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
@@ -219,8 +209,6 @@ def compare_activity_to_sector_flowamounts(fba_load, fbs_load,
             col_subset_2 = col_subset_2 + attr.get('allocation_merge_columns')
         fbs = fbs_load[fbs_load.columns.intersection(
             col_subset_2)].reset_index(drop=True)
-
-        fbs = replace_NoneType_with_empty_cells(fbs)
 
         # determine which
         for i in ['Produced', 'Consumed']:
@@ -465,7 +453,6 @@ def compare_summation_at_sector_lengths_between_two_dfs(df1, df2):
 
     df_list = []
     for df in [df1, df2]:
-        df = replace_NoneType_with_empty_cells(df)
         df = assign_columns_of_sector_levels(df)
         # sum flowamounts by sector length
         dfsum = df.groupby(agg_cols).agg({'FlowAmount': 'sum'}).reset_index()
