@@ -584,105 +584,105 @@ def convert_units_for_graphics(df):
 #
 #     return nodes, flows
 
-
-def generateSankeyDiagram(methodnames,
-                          target_sector_level=None,
-                          target_subset_sector_level=None,
-                          use_sectordefinition=False,
-                          sectors_to_include=None,
-                          fbsconfigpath=None,
-                          plot_title=None,
-                          orientation='horizonal',
-                          domain_dict=None,
-                          plot_dimension=None,
-                          value_label_format='line_break',
-                          subplot_titles=None,
-                          filename='flowsaSankey'):
-    """
-    Sankey diagram developed to map flows between sector produced by (source)
-    and sector consumed by (target). Sankey developed for subplot of 2
-    diagrams.
-    :param methodnames:
-    :param target_sector_level:
-    :param target_subset_sector_level:
-    :param replace_SPB_with_sectordefinition:
-    :param replace_SCB_with_sectordefinition:
-    :param sectors_to_include:
-    :param fbsconfigpath:
-    :param plot_title:
-    :param orientation:
-    :param domain_dict: dict, manually set x and y coordinates of each subplot
-    :param plot_dimension: list, [width, height]
-    :param value_label_format: string, either 'line_break' or 'brackets'
-    :param subplot_titles: list, subplot titles
-    :return:
-    """
-    if orientation == 'vertical':
-        rows = len(methodnames)
-        cols = 1
-    else:
-        rows = 1
-        cols = len(methodnames)
-
-    fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
-                        subplot_titles=subplot_titles)
-
-    for i, m in enumerate(methodnames):
-        # return dfs of nodes and flows for Sankey
-        nodes, flows = generateSankeyData(
-            m, target_sector_level, target_subset_sector_level,
-            use_sectordefinition, sectors_to_include,
-            fbsconfigpath, value_label_format=value_label_format)
-
-        # define domain
-        if domain_dict is None:
-            if orientation == 'vertical':
-                domain = {'x': [0, 1],
-                          'y': [0 + (i / len(methodnames)) + 0.04,
-                                ((i + 1) / len(methodnames)) - 0.04]}
-            else:
-                domain = {'x': [0 + (i / len(methodnames)) + 0.02,
-                                ((i + 1) / len(methodnames)) - 0.02],
-                          'y': [0, 1]}
-        else:
-            domain = {'x': domain_dict[i]['x'],
-                      'y': domain_dict[i]['y']}
-
-        fig.add_trace(go.Sankey(
-            arrangement="snap",
-            domain=domain,
-            valueformat=".1f",
-            valuesuffix=flows['Unit'][0],
-            # Define nodes
-            node=dict(
-                pad=15,
-                thickness=15,
-                line=dict(color="black", width=0.5),
-                label=nodes['Label'].values.tolist(),
-                color=nodes['Color'].values.tolist(),
-            ),
-            # Add links
-            link=dict(source=flows['source'].values.tolist(),
-                      target=flows['target'].values.tolist(),
-                      value=flows['value'].values.tolist(),
-            ),
-        ))
-
-    fig.update_layout(
-        title_text=plot_title, font_size=10, margin_b=150)
-
-    if plot_dimension is None:
-        if orientation == 'vertical':
-            width = 1400
-            height = 1600
-        else:
-            width = 1100
-            height = 900
-    else:
-        width = plot_dimension[0]
-        height = plot_dimension[1]
-
-    fig.show()
-    log.info(f'Saving file to {plotoutputpath / filename}.svg')
-    fig.write_image(plotoutputpath / f"{filename}.svg",
-                    width=width, height=height)
+# todo: comment back in once reformatted for recursive method
+# def generateSankeyDiagram(methodnames,
+#                           target_sector_level=None,
+#                           target_subset_sector_level=None,
+#                           use_sectordefinition=False,
+#                           sectors_to_include=None,
+#                           fbsconfigpath=None,
+#                           plot_title=None,
+#                           orientation='horizonal',
+#                           domain_dict=None,
+#                           plot_dimension=None,
+#                           value_label_format='line_break',
+#                           subplot_titles=None,
+#                           filename='flowsaSankey'):
+#     """
+#     Sankey diagram developed to map flows between sector produced by (source)
+#     and sector consumed by (target). Sankey developed for subplot of 2
+#     diagrams.
+#     :param methodnames:
+#     :param target_sector_level:
+#     :param target_subset_sector_level:
+#     :param replace_SPB_with_sectordefinition:
+#     :param replace_SCB_with_sectordefinition:
+#     :param sectors_to_include:
+#     :param fbsconfigpath:
+#     :param plot_title:
+#     :param orientation:
+#     :param domain_dict: dict, manually set x and y coordinates of each subplot
+#     :param plot_dimension: list, [width, height]
+#     :param value_label_format: string, either 'line_break' or 'brackets'
+#     :param subplot_titles: list, subplot titles
+#     :return:
+#     """
+#     if orientation == 'vertical':
+#         rows = len(methodnames)
+#         cols = 1
+#     else:
+#         rows = 1
+#         cols = len(methodnames)
+#
+#     fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
+#                         subplot_titles=subplot_titles)
+#
+#     for i, m in enumerate(methodnames):
+#         # return dfs of nodes and flows for Sankey
+#         nodes, flows = generateSankeyData(
+#             m, target_sector_level, target_subset_sector_level,
+#             use_sectordefinition, sectors_to_include,
+#             fbsconfigpath, value_label_format=value_label_format)
+#
+#         # define domain
+#         if domain_dict is None:
+#             if orientation == 'vertical':
+#                 domain = {'x': [0, 1],
+#                           'y': [0 + (i / len(methodnames)) + 0.04,
+#                                 ((i + 1) / len(methodnames)) - 0.04]}
+#             else:
+#                 domain = {'x': [0 + (i / len(methodnames)) + 0.02,
+#                                 ((i + 1) / len(methodnames)) - 0.02],
+#                           'y': [0, 1]}
+#         else:
+#             domain = {'x': domain_dict[i]['x'],
+#                       'y': domain_dict[i]['y']}
+#
+#         fig.add_trace(go.Sankey(
+#             arrangement="snap",
+#             domain=domain,
+#             valueformat=".1f",
+#             valuesuffix=flows['Unit'][0],
+#             # Define nodes
+#             node=dict(
+#                 pad=15,
+#                 thickness=15,
+#                 line=dict(color="black", width=0.5),
+#                 label=nodes['Label'].values.tolist(),
+#                 color=nodes['Color'].values.tolist(),
+#             ),
+#             # Add links
+#             link=dict(source=flows['source'].values.tolist(),
+#                       target=flows['target'].values.tolist(),
+#                       value=flows['value'].values.tolist(),
+#             ),
+#         ))
+#
+#     fig.update_layout(
+#         title_text=plot_title, font_size=10, margin_b=150)
+#
+#     if plot_dimension is None:
+#         if orientation == 'vertical':
+#             width = 1400
+#             height = 1600
+#         else:
+#             width = 1100
+#             height = 900
+#     else:
+#         width = plot_dimension[0]
+#         height = plot_dimension[1]
+#
+#     fig.show()
+#     log.info(f'Saving file to {plotoutputpath / filename}.svg')
+#     fig.write_image(plotoutputpath / f"{filename}.svg",
+#                     width=width, height=height)
