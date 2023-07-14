@@ -750,7 +750,9 @@ class _FlowBy(pd.DataFrame):
             # specified in the config file
             self = (
                 attributed_fb
-                .drop(columns=['group_id', 'group_total', 'group_count', 'FlowAmount_ds', 'factor'], errors='ignore')
+                .drop(columns=['group_id', 'group_total', 'group_count',
+                               'FlowAmount_ds', 'factor', 'Suppressed',
+                               'descendants'], errors='ignore')
                 .drop(columns=step_config.get('drop_columns', []))
             )
             # reset datatype to FBS because otherwise when we loop through
