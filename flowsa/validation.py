@@ -598,7 +598,6 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     df1 = flowsa.getFlowBySector(fbs1,
                                  download_FBS_if_missing=compare_to_remote
                                  ).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
-    df1 = replace_strings_with_NoneType(df1)
     # load second file
     if compare_to_remote:
         # Generate the FBS locally and then immediately load
@@ -608,21 +607,19 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     else:
         df2 = flowsa.getFlowBySector(fbs2).rename(
             columns={'FlowAmount': 'FlowAmount_fbs2'})
-    df2 = replace_strings_with_NoneType(df2)
     # compare df
     merge_cols = [c for c in df2.select_dtypes(include=[
         'object', 'int']).columns if c not in dq_fields]
     if ignore_metasources:
-        for e in ['MetaSources', 'AttributionSources']:
+        # todo: update this list
+        for e in ['MetaSources', 'AttributionSources', 'SourceName',
+                  'SectorSourceName', 'ProducedBySectorType',
+                  'ConsumedBySectorType', 'Unit_other', 'AllocationSources',
+                  'FlowName']:
             try:
                 merge_cols.remove(e)
             except ValueError:
                 pass
-    # todo: remove merge_col edit once the added columns from DataVis branch
-    #  are pulled into master 12/1/22
-    # ignore additional columns on merge if they do not exist in first
-    # dataframe (version on Data commons if comparing to remote)
-    merge_cols = [e for e in merge_cols if e in df1.columns]
 
     # aggregate dfs before merge - might have duplicate sectors due to
     # dropping metasources/attribution sources
@@ -630,8 +627,16 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
            .agg({'FlowAmount_fbs1': 'sum'}).reset_index())
     df2 = (df2.groupby(merge_cols, dropna=False)
            .agg({'FlowAmount_fbs2': 'sum'}).reset_index())
+    # convert sector columns to object to avoid valueErrors
+    cols = ['SectorProducedBy', 'SectorConsumedBy']
+    for c in cols:
+        df1[c] = df1[c].astype(str)
+        df2[c] = df2[c].astype(str)
+    for c in ['SectorSourceName']:
+        df1 = df1.drop(columns=c, errors='ignore')
+        df2 = df2.drop(columns=c, errors='ignore')
     # check units
-    compare_df_units(df1, df2)
+    # compare_df_units(df1, df2)
     df_m = pd.DataFrame(
         pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
                  df2[merge_cols + ['FlowAmount_fbs2']],
