@@ -16,21 +16,11 @@ from flowsa.test_single_FBS import compare_single_FBS_against_remote
 def test_generate_fbs():
     """Generate all FBS from methods in repo."""
     for m in seeAvailableFlowByModels("FBS", print_method=False):
-        if m not in [
-            'Electricity_gen_emissions_national_2016',
-            'GHG_national_m1',
-            'GHGRP_2019',  # remove after deleting method
-            'marine_shipping_adjustment',  # delete
-            'SEEA_2016_v1',  # delete
-            'SEEA_2017_kg_v1',  # delete
-            'SEEA_2017_v1',  # delete
-            'SEEA_2017_v2'  # delete
-        ]:
-            print("--------------------------------\n"
-                  f"Method: {m}\n"
-                  "--------------------------------")
-            FlowBySector.genereateFlowBySector(
-                method=m, download_sources_ok=True)
+        print("--------------------------------\n"
+              f"Method: {m}\n"
+              "--------------------------------")
+        FlowBySector.genereateFlowBySector(
+            method=m, download_sources_ok=True)
 
 
 @pytest.mark.skip(reason="Perform targeted test for compare_FBS on PR")
