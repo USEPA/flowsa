@@ -1101,17 +1101,30 @@ class _FlowBy(pd.DataFrame):
         fb_geoscale, other_geoscale, fb, other = self.harmonize_geoscale(
             other)
 
+        if self.config['attribute_on'] is not None:
+            left_merge = self.config['attribute_on']
+            right_merge = self.config['attribute_on']
+        else:
+            left_merge = ['PrimarySector', 'temp_location'
+                                  if 'temp_location' in fb
+                                  else 'Location']
+            right_merge = ['PrimarySector', 'Location']
+
         # multiply using each dfs primary sector col
         merged = (fb
                   .merge(other,
                          how='left',
-                         left_on=['PrimarySector', 'temp_location'
-                                  if 'temp_location' in fb
-                                  else 'Location'],
-                         right_on=['PrimarySector', 'Location'],
+                         left_on=left_merge,
+                         right_on=right_merge,
                          suffixes=[None, '_other'])
                   .fillna({'FlowAmount_other': 0})
                   )
+
+        fill_col = self.config.get('fill_columns')
+        if fill_col is not None:
+            log.info(f'Replacing {fill_col} values in primary data source '
+                     f'with those from attribution source.')
+            merged[fill_col] = merged[f'{fill_col}_other']
 
         fb = (merged
               .assign(FlowAmount=lambda x: (x.FlowAmount

@@ -8,10 +8,10 @@ geoscale: state
 source_names:
   CNHW_CA_2014:
     clean_fbs: !clean_function:flowbyclean calculate_flow_per_employee
-    clean_source:
-      Employment_state_2014:
-        geoscale: state
+    clean_source: Employment_state_2014
     attribution_method: multiplication
+    attribute_on: ['SectorProducedBy']
+    fill_columns: Location
     attribution_source:
       Employment_state_2014:
         geoscale: state
