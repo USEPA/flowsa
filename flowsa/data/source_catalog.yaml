@@ -117,6 +117,8 @@ CNHW_CA:
   data_format: FBS
 CNHW_national:
   data_format: FBS
+CNHW_state:
+  data_format: FBS
 EIA_AEO:
   data_format: FBA
   class:
