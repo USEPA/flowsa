@@ -26,8 +26,10 @@ def return_primary_activity_column(fba: FlowByActivity) -> \
 def load_prepare_clean_source(
         self: 'FB',
         download_sources_ok: bool = True
-) -> 'FB':
-
+    ) -> 'FB':
+    """
+    Add doc string
+    """
     try:
         (name, config), = self.config['clean_source'].items()
     except AttributeError:
@@ -49,7 +51,7 @@ def weighted_average(
         fba: 'FlowByActivity',
         download_sources_ok: bool = True,
         **kwargs
-) -> 'FlowByActivity':
+    ) -> 'FlowByActivity':
     """
     This method determines weighted average
     """
@@ -118,7 +120,7 @@ def substitute_nonexistent_values(
         fb: 'FB',
         download_sources_ok: bool = True,
         **kwargs
-) -> 'FB':
+    ) -> 'FB':
     """
     Fill missing values with data from another geoscale
     """
@@ -331,7 +333,7 @@ def calculate_flow_per_employee(
         fbs: 'FlowBySector',
         download_sources_ok: bool = True,
         **_
-) -> 'FlowBySector':
+    ) -> 'FlowBySector':
     """
     Calculates FlowAmount per employee per year based on dataset name passed
     in "clean_parameter"
@@ -341,6 +343,9 @@ def calculate_flow_per_employee(
                                     download_sources_ok=download_sources_ok)
     cols = ['Location', 'Year', 'SectorProducedBy']
     fbs = (fbs
+           .sector_aggregation()
+           .aggregate_flowby()
+           # ^^ handles updated industry specs
            .merge(bls
                   .rename(columns={'FlowAmount': 'Employees'})
                   .groupby(cols).agg({'Employees': 'sum'})
