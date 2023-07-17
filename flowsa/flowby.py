@@ -1101,7 +1101,7 @@ class _FlowBy(pd.DataFrame):
         fb_geoscale, other_geoscale, fb, other = self.harmonize_geoscale(
             other)
 
-        if self.config['attribute_on'] is not None:
+        if self.config.get('attribute_on') is not None:
             left_merge = self.config['attribute_on']
             right_merge = self.config['attribute_on']
         else:
