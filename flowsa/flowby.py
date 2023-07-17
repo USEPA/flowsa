@@ -632,7 +632,7 @@ class _FlowBy(pd.DataFrame):
             if len(grouped) == 0:
                 log.warning(f'No data remaining in {self.full_name}.')
                 return self
-            if self.config['data_format'] == 'FBA':
+            if self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
                 fb: 'FlowByActivity' = (
                     grouped
                     .map_to_sectors(external_config_path=external_config_path)
@@ -641,7 +641,7 @@ class _FlowBy(pd.DataFrame):
                                      method=self.config)
                     .rename(columns={'SourceName': 'MetaSources'})
                 )
-            elif self.config['data_format'] in ['FBS', 'FBS_outside_flowsa']:
+            elif self.config['data_format'] in ['FBS']:
                 fb = grouped.copy()
 
             # subset the fb configuration so it only includes the
