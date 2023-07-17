@@ -12,17 +12,9 @@ USGS_MYB_Phosphate:
     Status: Error in source data links
     Type: HTTPError
 
-Blackhurst_IO:
-    Active: True
-    Status: Error in HTTP request during testing only
-    Type: HTTPError
-
 BTS_Airlines:
     Active: True
     Status: Private data
     Type: FileNotFoundError
 
-# Flow By Sector
-CNHW_state_2014:
-    Active: True
-    Status: Memory Error # Skip during GH-action testing
+
