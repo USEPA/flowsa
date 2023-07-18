@@ -1752,7 +1752,7 @@ class FlowByActivity(_FlowBy):
 
                 # load master crosswalk
                 cw = common.load_crosswalk('sector_timeseries')
-                sectors = (cw[[activity_schema]]
+                sectors = (cw[[f"NAICS_{self.config['target_naics_year']}_Code"]]
                            .drop_duplicates()
                            .dropna()
                            )
@@ -1772,7 +1772,7 @@ class FlowByActivity(_FlowBy):
                 # often has non-traditional NAICS6, but the parent NAICS5 do
                 # map correctly to sectors
                 existing_sectors = existing_sectors[existing_sectors[
-                    'Sector'].isin(sectors[activity_schema].values)]
+                    'Sector'].isin(sectors[f"NAICS_{self.config['target_naics_year']}_Code"].values)]
 
                 # create list of sectors that exist in original df, which,
                 # if created when expanding sector list cannot be added
@@ -1786,7 +1786,7 @@ class FlowByActivity(_FlowBy):
                             lambda x: x[0:dig]) == i]
                     if len(n) == 1:
                         expanded_n = sectors[
-                            sectors[activity_schema].apply(
+                            sectors[f"NAICS_{self.config['target_naics_year']}_Code"].apply(
                                 lambda x: x[0:dig] == i)]
                         expanded_n = expanded_n.assign(Sector=i)
                         naics_df = pd.concat([naics_df, expanded_n])
@@ -1795,9 +1795,9 @@ class FlowByActivity(_FlowBy):
                     existing_sectors
                     .merge(naics_df, how='left')
                     .assign(Sector=lambda x: np.where(
-                        x[activity_schema].isna(), x['Sector'],
-                        x[activity_schema]))
-                    .drop(columns=[activity_schema])
+                        x[f"NAICS_{self.config['target_naics_year']}_Code"].isna(), x['Sector'],
+                        x[f"NAICS_{self.config['target_naics_year']}_Code"]))
+                    .drop(columns=[f"NAICS_{self.config['target_naics_year']}_Code"])
                 )
 
                 target_naics = list(naics
