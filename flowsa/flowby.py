@@ -1741,7 +1741,7 @@ class FlowByActivity(_FlowBy):
             if activity_schema != f"NAICS_{self.config['target_naics_year']}_Code":
                 log.info(f"Converting {activity_schema} to NAICS"
                          f"_{self.config['target_naics_year']}_Code")
-                self = self.naics.convert_naics_year(
+                self = naics.convert_naics_year(
                     self,
                     f"NAICS_{self.config['target_naics_year']}_Code",
                     activity_schema)
