@@ -596,6 +596,18 @@ class _FlowBy(pd.DataFrame):
         )
         # ^^^ Need to convert back to correct dtypes after aggregating;
         #     otherwise, columns of NaN will become float dtype.
+
+        # reset the group total after aggregating
+        if 'group_total' in self.columns:
+            aggregated = aggregated.assign(group_total=aggregated[
+                'FlowAmount'])
+
+        # check flowamounts equal after aggregating
+        if self['FlowAmount'].sum() != aggregated['FlowAmount'].sum():
+            log.warning('There is an error in aggregating dataframe, as new '
+                        'flow totals do not match original dataframe '
+                        'flowtotals')
+
         return aggregated
 
     def attribute_flows_to_sectors(
