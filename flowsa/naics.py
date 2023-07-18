@@ -332,18 +332,9 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
                 # drop rows where column value is in the nonnaics list
                 df = df[~df[c].isin(nonsectors)]
         # aggregate data
-        if hasattr(df, 'aggregate_flowby'):
-            df = df.aggregate_flowby()
-        else:
-            # todo: drop except statement once all dataframes are converted
-            #  to classes
-            possible_column_headers = \
-                ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-                 'TemporalCorrelation', 'GeographicalCorrelation',
-                 'TechnologicalCorrelation', 'DataCollection', 'Description')
-            # list of column headers to group aggregation by
-            groupby_cols = [e for e in df.columns.values.tolist()
-                            if e not in possible_column_headers]
-            df = aggregator(df, groupby_cols)
+        df = df.aggregate_flowby()
 
-    return df
+    return (df
+            .reset_index(drop=True).reset_index()
+            .rename(columns={'index': 'group_id'})
+            )
