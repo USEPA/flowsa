@@ -553,6 +553,13 @@ class _FlowBy(pd.DataFrame):
             all columns of 'float' data type will be used, except 'FlowAmount'.
         :return: FlowBy, with aggregated columns
         """
+        # if units are rates or ratios, do not aggregate
+        if self['Unit'].str.contains('/').any():
+            log.info(f"At least one row is a rate or ratio with units "
+                     f"{self['Unit'].unique().tolist()}, returning df "
+                     f"without aggregating")
+            return self
+
         if columns_to_group_by is None:
             columns_to_group_by = self.groupby_cols
         if columns_to_average is None:
