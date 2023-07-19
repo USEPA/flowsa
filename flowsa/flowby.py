@@ -780,7 +780,7 @@ class _FlowBy(pd.DataFrame):
             # reset datatype to FBS because otherwise when we loop through
             # to the next attribution method, the FBA will be re-cleaned and
             # have additional sector columns appended
-            self.config['data_format'] = 'FBS'
+            self.config.update({'data_format': 'FBS'})
 
         return self
 
