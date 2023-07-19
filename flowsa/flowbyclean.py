@@ -147,15 +147,20 @@ def substitute_nonexistent_values(
               .merge(other,
                      on=list(other.select_dtypes(
                          include=['object', 'int']).columns),
-                     how='outer',
+                     how='left',
                      suffixes=(None, '_y'))
               )
     # fill in missing data
     new_col_data = [col for col in merged if col.endswith('_y')]
     for c in new_col_data:
         original_col = c.replace('_y', '')
-        merged[original_col] = merged[original_col].fillna(
-            merged[c])
+        if merged[original_col].dtype != 'string':
+            merged[original_col] = np.where(merged[original_col] == 0,
+                                            merged[c],
+                                            merged[original_col])
+        else:
+            merged[original_col] = merged[original_col].fillna(
+                merged[c])
 
     # reset grop id and group total, drop columns
     merged = (merged
