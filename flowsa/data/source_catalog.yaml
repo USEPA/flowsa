@@ -142,13 +142,13 @@ EIA_MECS_Energy:
     - Other
     - Money
   activity_schema: NAICS_2017_Code
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "parent-incompleteChild"
 EIA_MECS_Land:
   data_format: FBA
   class:
   - Land
   activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "parent-incompleteChild"
 EIA_MER:
   data_format: FBA
   class:
