@@ -29,8 +29,9 @@ attribution_sources:
           - Table 2.2 # applies to Class Other
           - Table 3.2 # applies to Class Energy
       estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
-      clean_fba: !script_function:EIA_MECS clean_mecs_energy_fba
-      clean_fba_w_sec: !script_function:EIA_MECS clean_mapped_mecs_energy_fba
+    # todo: delete below code now that mecs reassigned to "parent-incompleteChild"
+#      clean_fba: !script_function:EIA_MECS define_parentincompletechild_descendants
+#      clean_fba_w_sec: !script_function:EIA_MECS drop_parentincompletechild_descendants
       attribution_method: proportional
       # attribution_source: # Include in main method
       #   BEA_Use_Detail_PRO_BeforeRedef:
