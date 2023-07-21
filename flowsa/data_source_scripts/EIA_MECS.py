@@ -11,7 +11,6 @@ import io
 
 import pandas as pd
 import numpy as np
-import flowsa
 from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowsa_log import log
@@ -463,10 +462,11 @@ def clean_mapped_mecs_energy_fba_to_state(
         fba: FlowByActivity, **_
     ) -> FlowByActivity:
     """
-    clean_fba_w_sec fxn that replicates clean_mapped_mecs_energy_fba but
+    clean_fba_w_sec fxn that replicates drop_parentincompletechild_descendants but
     also updates regions to states for state models.
     """
-    fba = clean_mapped_mecs_energy_fba(fba)
+    # todo: delete commented out code because incorporated into mapping fxn
+    # fba = drop_parentincompletechild_descendants(fba)
     fba = update_regions_to_states(fba)
     return fba
 
@@ -530,9 +530,7 @@ def mecs_land_fba_cleanup(fba, **_):
     :param fba: df, EIA MECS Land FBA format
     :return: df, EA MECS Land FBA
     """
-    fba2 = clean_mecs_energy_fba(fba)
-
     # calculate the land area in addition to building footprint
-    fba3 = calculate_total_facility_land_area(fba2)
+    fba = calculate_total_facility_land_area(fba)
 
-    return fba3
+    return fba
