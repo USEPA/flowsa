@@ -248,9 +248,6 @@ def cbecs_land_fba_cleanup(fba, **_):
     # drop activities of 'all buildings' to avoid double counting
     fba2 = fba1[
         fba1['ActivityConsumedBy'] != 'All buildings'].reset_index(drop=True)
-    vlog.info('Drop the principle building activity "All buildings" '
-              'to avoid double counting')
-    calculate_flowamount_diff_between_dfs(fba1, fba2)
 
     return fba2
 
@@ -309,10 +306,9 @@ def calculate_floorspace_based_on_number_of_floors(fba_load):
               'Calculates result in reduced FlowAmount for all '
               'categories.')
     calculate_flowamount_diff_between_dfs(fba2, fba3)
-    # rename the FlowAmounts and sum so total floorspace, rather than have
+    # rename the Flowable and sum so total floorspace, rather than have
     # multiple rows based on floors
-    fba3 = fba3.assign(FlowName=fba3['Flowable'].apply(
-        lambda x: ','.join(x.split(',')[:-1])))
+    fba3 = fba3.assign(Flowable='Land use')
     # modify the description
     fba3 = fba3.assign(Description='Building Footprint')
     fba4 = fba3.aggregate_flowby()
