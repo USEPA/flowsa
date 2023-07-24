@@ -59,6 +59,7 @@ source_names:
         attribution_source: Employment_national_2012
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
+    geoscale: state
     selection_fields:
       Class: Land
       Location: !include:Location_common.yaml:_state_location

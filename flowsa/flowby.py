@@ -1740,6 +1740,10 @@ class FlowByActivity(_FlowBy):
         :param external_config_path: str, an external path to search for a
             crosswalk.
         """
+        from flowsa.flowbyclean import \
+            define_parentincompletechild_descendants, \
+            drop_parentincompletechild_descendants
+
         naics_key = naics.industry_spec_key(self.config['industry_spec'])
 
         activity_schema = self.config['activity_schema'] if isinstance(
@@ -1849,13 +1853,18 @@ class FlowByActivity(_FlowBy):
                                        'Activity'],
                               errors='ignore')
                     )
-            else:
+            else:  # either "flat" or "parent-inComplete"
                 # if sector-like activities are aggregated, then map all
                 # sectors to target sector level
                 log.info('Converting NAICS codes to desired industry/sector '
                          'aggregation structure.')
                 fba_w_naics = self.copy()
                 for direction in ['ProducedBy', 'ConsumedBy']:
+                    if self.config.get('sector_hierarchy') == 'parent-incompleteChild':
+                        # add descendants column
+                        fba_w_naics = \
+                            define_parentincompletechild_descendants(
+                                fba_w_naics, activity_col=f'Activity{direction}')
                     fba_w_naics = (
                         fba_w_naics
                         .merge(naics_key,
@@ -1865,6 +1874,10 @@ class FlowByActivity(_FlowBy):
                         .rename(columns={'target_naics': f'Sector{direction}'})
                         .drop(columns='source_naics')
                     )
+                    if self.config.get('sector_hierarchy') == 'parent-incompleteChild':
+                        # add descendants column
+                        fba_w_naics = drop_parentincompletechild_descendants(
+                            fba_w_naics, sector_col=f'Sector{direction}')
         else:
             log.info('Getting crosswalk between activities in %s and '
                      'NAICS codes.', self.full_name)
