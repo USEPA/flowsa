@@ -605,20 +605,18 @@ class _FlowBy(pd.DataFrame):
         #     otherwise, columns of NaN will become float dtype.
 
         # reset the group total after aggregating
-        # todo: see if this code is the problem
-        # if 'group_total' in self.columns:
-        #     aggregated = aggregated.assign(group_total=aggregated[
-        #         'FlowAmount'])
+        if 'group_total' in self.columns:
+            aggregated = aggregated.assign(group_total=aggregated[
+                'FlowAmount'])
 
         # check flowamounts equal after aggregating
-        # todo: see if this code is the problem
-        # self_flow = self['FlowAmount'].sum()
-        # agg_flow = aggregated['FlowAmount'].sum()
-        # percent_diff = int(((agg_flow - self_flow) * 100) / self_flow)
-        # if percent_diff > 0:
-        #     log.warning(f'There is an error in aggregating dataframe, as new '
-        #                 'flow totals do not match original dataframe '
-        #                 'flowtotals, there is a {percent_diff}% difference.')
+        self_flow = self['FlowAmount'].sum()
+        agg_flow = aggregated['FlowAmount'].sum()
+        percent_diff = int(((agg_flow - self_flow) * 100) / self_flow)
+        if percent_diff > 0:
+            log.warning(f'There is an error in aggregating dataframe, as new '
+                        'flow totals do not match original dataframe '
+                        'flowtotals, there is a {percent_diff}% difference.')
 
         return aggregated
 
