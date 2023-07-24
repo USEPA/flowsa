@@ -292,14 +292,11 @@ def attribute_national_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
     log.info('Attributing national data to states')
 
     # Attribute data source based on attribution source
-    # todo: generalize so works for FBA or FBS
-    hlp = getFlowBySector(
-        methodname=fba.config.get('clean_source'),
-        download_FBS_if_missing=True)
+    hlp = load_prepare_clean_source(fba)
 
     # To match the sector resolution of source data, generate employment
     # dataset for all NAICS resolution by aggregating
-    hlp = flowbyfunctions.sector_aggregation(hlp)
+    hlp = hlp.aggregate_flowby()
 
     # For each region, generate ratios across states for a given sector
     hlp['Allocation'] = hlp['FlowAmount']/hlp.groupby(
