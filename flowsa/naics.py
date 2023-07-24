@@ -333,7 +333,9 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
                 df = df[~df[c].isin(nonsectors)]
         # aggregate data
         if hasattr(df, 'aggregate_flowby'):
-            df = df.aggregate_flowby()
+            df = (df.aggregate_flowby()
+                    .reset_index(drop=True).reset_index()
+                    .rename(columns={'index': 'group_id'}))
         else:
             # todo: drop else statement once all dataframes are converted
             #  to classes
