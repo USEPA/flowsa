@@ -60,9 +60,7 @@ source_names:
         selection_fields:
          PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         attribution_method: proportional
-        attribution_source:
-          Employment_state_2012:
-            data_format: FBS
+        attribution_source: Employment_state_2012
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
     selection_fields:
@@ -127,23 +125,26 @@ source_names:
           - 'Land in rural parks and wildlife areas'
         attribution_method: direct
       rural_transportation:
+        # first attribute to NAICS_6 because of clean_fba_w_sec multipliers
+        industry_spec:
+          default: NAICS_6
         selection_fields:
          PrimaryActivity:
           - 'Land in rural transportation facilities'
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_rural_transportation_areas
-        geoscale: national
         attribution_method: direct
       urban:
+        # first attribute to NAICS_6 because of clean_fba_w_sec multipliers
+        industry_spec:
+          default: NAICS_6
         selection_fields:
          PrimaryActivity:
           - 'Land in urban areas'
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_urban_areas
-        geoscale: national
         attribution_method: direct
       other:
         selection_fields:
          PrimaryActivity:
           - 'Other land'
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_other_land
-        geoscale: national
         attribution_method: direct
