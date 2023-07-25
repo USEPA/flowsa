@@ -723,7 +723,7 @@ class _FlowBy(pd.DataFrame):
 
             elif attribution_method == 'inheritance':
                 log.info(f'Directly attributing {self.full_name} to sectors, child '
-                         'sectors inherent parent values.')
+                         'sectors inherit parent values.')
                 attributed_fb = fb.copy()
 
             else:
@@ -1792,7 +1792,6 @@ class FlowByActivity(_FlowBy):
                     .drop_duplicates()
                     .reset_index(drop=True)
                     )
-                existing_sectors['Activity'] = existing_sectors['Sector']
 
                 # drop all sectors that are not sectors because BLS QCEW
                 # often has non-traditional NAICS6, but the parent NAICS5 do
@@ -1800,40 +1799,21 @@ class FlowByActivity(_FlowBy):
                 existing_sectors = existing_sectors[existing_sectors[
                     'Sector'].isin(sectors[f"NAICS_{self.config['target_naics_year']}_Code"].values)]
 
-                # create list of sectors that exist in original df, which,
-                # if created when expanding sector list cannot be added
-                # todo: note, both naics6 and naics7 get mapped to naics6 -
-                #  which could result in double counting...
-                naics_df = pd.DataFrame([])
+                # drop parent sectors
+                existing_sectors_df = pd.DataFrame([])
                 for i in existing_sectors['Sector']:
-                    dig = len(str(i))
                     n = existing_sectors[
                         existing_sectors['Sector'].apply(
-                            lambda x: x[0:dig]) == i]
+                            lambda x: x[0:len(str(i))] == i)]
                     if len(n) == 1:
-                        expanded_n = sectors[
-                            sectors[f"NAICS_{self.config['target_naics_year']}_Code"].apply(
-                                lambda x: x[0:dig] == i)]
-                        expanded_n = expanded_n.assign(Sector=i)
-                        naics_df = pd.concat([naics_df, expanded_n])
-
-                activity_to_source_naics_crosswalk = (
-                    existing_sectors
-                    .merge(naics_df, how='left')
-                    .assign(Sector=lambda x: np.where(
-                        x[f"NAICS_{self.config['target_naics_year']}_Code"].isna(), x['Sector'],
-                        x[f"NAICS_{self.config['target_naics_year']}_Code"]))
-                    .drop(columns=[f"NAICS_{self.config['target_naics_year']}_Code"])
-                )
-
-                target_naics = list(naics
-                                    .industry_spec_key(self.config['industry_spec'])
-                                    .target_naics
-                                    .drop_duplicates())
+                        existing_sectors_df = pd.concat(
+                            [existing_sectors_df, n])
+                existing_sectors_list = existing_sectors_df[
+                    'Sector'].values.tolist()
 
                 activity_to_target_naics_crosswalk = (
-                    activity_to_source_naics_crosswalk
-                    .query('Sector in @target_naics')
+                    naics_key
+                    .query('source_naics in @existing_sectors_list')
                 )
 
                 fba_w_naics = self
@@ -1843,12 +1823,12 @@ class FlowByActivity(_FlowBy):
                         .merge(activity_to_target_naics_crosswalk,
                                how='left',
                                left_on=f'Activity{direction}',
-                               right_on='Activity')
-                        .rename(columns={'Sector': f'Sector{direction}',
+                               right_on='source_naics')
+                        .rename(columns={'target_naics': f'Sector{direction}',
                                          'SectorType': f'{direction}SectorType'})
                         .drop(columns=['ActivitySourceName',
                                        'SectorSourceName',
-                                       'Activity'],
+                                       'source_naics'],
                               errors='ignore')
                     )
             else:  # either "flat" or "parent-inComplete"
