@@ -2007,7 +2007,7 @@ class FlowByActivity(_FlowBy):
         # warn if any activities are not mapped to sectors
         not_mapped = fba_w_naics[fba_w_naics[['SectorProducedBy',
                                               'SectorConsumedBy']].isna().all(1)]
-        if len(not_mapped) > 0:
+        if (len(not_mapped) > 0) & ("NAICS" not in activity_schema):
             not_mapped = (not_mapped
                           [['ActivityProducedBy', 'ActivityConsumedBy']]
                           .drop_duplicates())
