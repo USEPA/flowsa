@@ -33,7 +33,7 @@ def compare_single_FBS_against_remote(m, outdir=diffpath,
               inplace=True)
     if len(df) > 0:
         print(f"Saving differences in {m} to csv")
-        df.to_csv(f"{outdir}{m}_diff.csv", index=False)
+        df.to_csv(f"{outdir}/{m}_diff.csv", index=False)
     else:
         print(f"***No differences found in {m}***")
 
