@@ -2016,8 +2016,9 @@ class FlowByActivity(_FlowBy):
                         set(zip(not_mapped.ActivityProducedBy,
                                 not_mapped.ActivityConsumedBy))
                         )
-            fba_w_naics = fba_w_naics.dropna(subset=[
-                'SectorProducedBy', 'SectorConsumedBy'], how='all')
+        # drop rows of data that are not mapped to sectors
+        fba_w_naics = fba_w_naics.dropna(subset=[
+            'SectorProducedBy', 'SectorConsumedBy'], how='all')
 
         return (
             fba_w_naics
