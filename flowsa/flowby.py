@@ -213,7 +213,8 @@ class _FlowBy(pd.DataFrame):
     @property
     def groupby_cols(self) -> List[str]:
         return [x for x in self
-                if self[x].dtype in ['int', 'object'] and x != 'Description']
+                if self[x].dtype in ['int', 'object'] and x not in
+                ['Description', 'group_id']]
 
     @classmethod
     def _getFlowBy(
