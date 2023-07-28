@@ -680,12 +680,7 @@ class _FlowBy(pd.DataFrame):
 
             fb.config = {**parent_config, **step_config}
 
-            attribution_method = step_config.get('attribution_method', None)
-            if attribution_method is None:
-                log.warning('Attribution method is missing, assuming equal '
-                            'attribution')
-                attribution_method = 'direct'
-
+            attribution_method = step_config.get('attribution_method', 'direct')
             if 'attribution_source' in step_config:
                 if isinstance(step_config['attribution_source'], str):
                      attribution_name = step_config['attribution_source']
@@ -694,8 +689,6 @@ class _FlowBy(pd.DataFrame):
                         attribution_name = k
 
             if attribution_method in ['direct', 'inheritance']:
-                log.info(f"Directly attributing {self.full_name} to "
-                         f"target sectors.")
                 fb = fb.assign(AttributionSources='Direct')
             else:
                 fb = fb.assign(AttributionSources=attribution_name)
@@ -731,7 +724,7 @@ class _FlowBy(pd.DataFrame):
                 attributed_fb = fb.copy()
 
             else:
-                if attribution_method is None:
+                if step_config.get('attribution_method') is None:
                     log.warning('No attribution method specified for %s. '
                                 'Using equal attribution as default.',
                                 fb.full_name)
@@ -745,6 +738,8 @@ class _FlowBy(pd.DataFrame):
                              'aggregation level', fb.full_name)
                     attributed_fb = fb.copy()
                 else:
+                    log.info(f"Equally attributing {self.full_name} to "
+                             f"target sectors.")
                     attributed_fb = fb.equally_attribute()
 
             # depending on att method, check that new df values equal
