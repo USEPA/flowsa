@@ -1,45 +1,33 @@
-BEA_GDP:
-  data_format: FBA
-  class:
-    - Money
-  activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-completeChild"
 BEA_GDP_GrossOutput:
   data_format: FBA
   class:
     - Money
   activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 BEA_Make_AR:
   data_format: FBA
   class:
     - Money
   activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 BEA_Make_Detail_BeforeRedef:
   data_format: FBA
   class:
     - Money
   activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 BEA_Marine_Bunker_Fuel:
   data_format: FBA
   class:
     - Energy
   activity_schema: None
   sector_hierarchy: "flat"
-BEA_Use:
-  data_format: FBA
-  class:
-    - Money
-  activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-completeChild"
 BEA_Use_Detail_PRO_BeforeRedef:
   data_format: FBA
   class:
     - Money
   activity_schema: BEA_2012_Detail_Code
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 Blackhurst_IO:
   data_format: FBA
   class:
