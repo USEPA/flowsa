@@ -77,7 +77,6 @@ def assign_naics(df):
 
     # coa equivalent to vegetable and melon farming: 1112
     df.loc[df['Activity'] == 'VEGETABLE TOTALS', 'Sector'] = '1112'  # this category includes melons
-    df.loc[df['Activity'] == 'TARO', 'Sector'] = '111219'
 
     # coa aggregates to fruit and tree nut farming: 1113
     # in 2017, pineapples included in "orchards" category.
