@@ -583,7 +583,7 @@ def check_for_negative_flowamounts(df):
 def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
                         compare_to_remote=False):
     """
-    Compare a parquet on Data Commons to a parquet stored locally
+    Compare results for two methods
     :param fbs1: str, name of method 1
     :param fbs2: str, name of method 2
     :param ignore_metasources: bool, True to compare fbs without
@@ -596,18 +596,23 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
 
     # load first file
     df1 = flowsa.getFlowBySector(fbs1,
-                                 download_FBS_if_missing=compare_to_remote
-                                 ).rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
+                                 download_FBS_if_missing=compare_to_remote)
     # load second file
     if compare_to_remote:
         # Generate the FBS locally and then immediately load
-        df2 = (FlowBySector.generateFlowBySector(
-                method=fbs2, download_sources_ok=True)
-               .rename(columns={'FlowAmount': 'FlowAmount_fbs2'}))
+        df2 = FlowBySector.generateFlowBySector(
+            method=fbs2, download_sources_ok=True)
     else:
-        df2 = flowsa.getFlowBySector(fbs2).rename(
-            columns={'FlowAmount': 'FlowAmount_fbs2'})
-    # compare df
+        df2 = flowsa.getFlowBySector(fbs2)
+    df_m = compare_FBS(df1, df2)
+
+    return df_m
+
+
+def compare_FBS(df1, df2, ignore_metasources=False):
+    "Assess differences between two FBS dataframes."
+    df1 = df1.rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
+    df2 = df2.rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
     merge_cols = [c for c in df2.select_dtypes(include=[
         'object', 'int']).columns if c not in dq_fields]
     if ignore_metasources:
@@ -655,7 +660,6 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
         df_m = df_m.sort_values(['Location', 'SectorProducedBy',
                                  'SectorConsumedBy', 'Flowable',
                                  'Context', ]).reset_index(drop=True)
-
     return df_m
 
 
