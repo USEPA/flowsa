@@ -723,21 +723,21 @@ class _FlowBy(pd.DataFrame):
                          'sectors inherit parent values.')
                 attributed_fb = fb.copy()
 
-            else:
-                if step_config.get('attribution_method') is None:
-                    log.warning('No attribution method specified for %s. '
-                                'Using equal attribution as default.',
-                                fb.full_name)
-                elif attribution_method != 'direct':
-                    log.error('Attribution method for %s not recognized: %s',
-                              fb.full_name, attribution_method)
-                    raise ValueError('Attribution method not recognized')
+            elif attribution_method != 'direct':
+                log.error('Attribution method for %s not recognized: %s',
+                          fb.full_name, attribution_method)
+                raise ValueError('Attribution method not recognized')
 
+            else:
                 if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
                     log.info('No attribution needed for %s at the given industry '
                              'aggregation level', fb.full_name)
                     attributed_fb = fb.copy()
                 else:
+                    if step_config.get('attribution_method') is None:
+                        log.warning('No attribution method specified for %s. '
+                                    'Using equal attribution as default.',
+                                    fb.full_name)
                     log.info(f"Equally attributing {self.full_name} to "
                              f"target sectors.")
                     attributed_fb = fb.equally_attribute()
