@@ -184,6 +184,7 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
                     .pipe(addChemicalMatches)
                     .pipe(stewicombo.overlaphandler.remove_NEI_overlaps,
                           SCC=True)
+                    .drop(columns=['_CompartmentPrimary'], errors='ignore')
                     )
 
     # merge in NAICS data
