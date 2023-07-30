@@ -8,7 +8,7 @@ on:
         method:
             description: "FBS"
             required: true
-            default: "CAP_HAP_national_2017"
+            default: "CAP_HAP_national_2017_m1"
 
 jobs:
   build:

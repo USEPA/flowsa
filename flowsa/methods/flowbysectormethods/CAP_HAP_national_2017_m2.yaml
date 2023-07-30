@@ -19,7 +19,7 @@ sources_to_cache:
 
 source_names:
   EPA_NEI_Nonpoint:
-    !include:CAP_HAP_national_2017.yaml:source_names:EPA_NEI_Nonpoint
+    !include:CAP_HAP_national_2017_m1.yaml:source_names:EPA_NEI_Nonpoint
     apply_urban_rural: True
     year: *year
 

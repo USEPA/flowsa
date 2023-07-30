@@ -18,9 +18,6 @@ sources_to_cache:
           - Table 2.2
           - Table 3.2
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
-    # todo: delete below code now that mecs reassigned to "parent-incompleteChild"
-#    clean_fba: !script_function:EIA_MECS define_parentincompletechild_descendants
-#    clean_fba_w_sec: !script_function:EIA_MECS drop_parentincompletechild_descendants
     attribution_method: proportional
     # attribution_source:
     #   Employment_national_2018:  # Use target MECS year
@@ -39,8 +36,6 @@ sources_to_cache:
     exclusion_fields:
       Location: '00000'
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
-    # todo: delete below code now that mecs reassigned to "parent-incompleteChild"
-#    clean_fba: !script_function:EIA_MECS define_parentincompletechild_descendants
     clean_fba_after_attribution: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
     clean_source: Employment_state_2018 ## Update to MECS year
 
