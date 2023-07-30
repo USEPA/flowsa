@@ -604,7 +604,7 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
             method=fbs2, download_sources_ok=True)
     else:
         df2 = flowsa.getFlowBySector(fbs2)
-    df_m = compare_FBS(df1, df2)
+    df_m = compare_FBS(df1, df2, ignore_metasources=ignore_metasources)
 
     return df_m
 
