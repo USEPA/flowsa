@@ -23,6 +23,7 @@ from flowsa.literature_values import \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
 from flowsa.validation import compare_df_units
 from flowsa.flowby import FlowByActivity
+from flowsa.naics import industry_spec_key
 
 
 def mlu_call(*, resp, **_):
@@ -119,9 +120,17 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
 
     # load the federal highway administration fees dictionary
     fha_dict = get_transportation_sectors_based_on_FHA_fees()
-    df_fha = pd.DataFrame.from_dict(
-        fha_dict, orient='index').rename(
-        columns={'NAICS_2012_Code': sector_col})
+    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index')
+    # set new group_id column
+    df_fha = df_fha.assign(group_id=range(4, len(df_fha) + 4))
+    # map to target sectors
+    naics_key = industry_spec_key(fba.config['industry_spec'])
+    df_fha = (df_fha
+              .merge(naics_key, how='left', left_on='NAICS_2012_Code',
+                     right_on='source_naics')
+              .drop(columns=['NAICS_2012_Code', 'source_naics'])
+              .rename(columns={'target_naics': sector_col})
+              )
 
     # calculate total residential area from the American Housing Survey
     residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
@@ -133,6 +142,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     df_openspace = fba[fba[sector_col] == '712190']
     df_openspace = df_openspace.assign(
         FlowAmount=df_openspace['FlowAmount'] * openspace_multiplier)
+    # reset gorup_id
+    df_openspace['group_id'] = 1
 
     # sum all uses of urban area that are NOT transportation
     # first concat dfs for residential, openspace, commercial,
@@ -160,6 +171,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     df_airport = df_transport[df_transport[sector_col] == '488119']
     df_airport = df_airport.assign(
         FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
+    # reset gorup_id
+    df_airport['group_id'] = 2
 
     # make an assumption about the percent of urban transport
     # area used by railroads
@@ -167,6 +180,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     df_railroad = df_transport[df_transport[sector_col] == '482112']
     df_railroad = df_railroad.assign(
         FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
+    # reset gorup_id
+    df_railroad['group_id'] = 3
 
     # further allocate the remaining urban transportation area using
     # Federal Highway Administration fees
@@ -180,7 +195,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     df_highway = df_transport.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(
         FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
-    df_highway.drop(columns=['AirRail'], inplace=True)
+    df_highway.drop(columns=['AirRail', 'group_id'], inplace=True)
 
     # add fed highway administration fees
     df_highway2 = df_highway.merge(df_fha, how='left')
@@ -194,13 +209,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
         [df_residential, df_openspace, df_airport, df_railroad, df_highway2],
         ignore_index=True, sort=False).reset_index(drop=True)
 
-    # aggregate because multiple rows to household data due to residential
-    # land area and highway fee shares
-    allocated_urban_areas_df_2 = allocated_urban_areas_df.aggregate_flowby()
-    allocated_urban_areas_df_2 = allocated_urban_areas_df_2.assign(
-        group_id=allocated_urban_areas_df_2.index.astype(str))
-
-    return allocated_urban_areas_df_2
+    return allocated_urban_areas_df
 
 
 def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
@@ -230,8 +239,17 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
 
     # load the federal highway administration fees dictionary
     fha_dict = get_transportation_sectors_based_on_FHA_fees()
-    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index').rename(
-        columns={'NAICS_2012_Code': sector_col})
+    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index')
+    # set new group_id column
+    df_fha = df_fha.assign(group_id=range(2, len(df_fha) + 2))
+    # map to target sectors
+    naics_key = industry_spec_key(fba.config['industry_spec'])
+    df_fha = (df_fha
+              .merge(naics_key, how='left', left_on='NAICS_2012_Code',
+                     right_on='source_naics')
+              .drop(columns=['NAICS_2012_Code', 'source_naics'])
+              .rename(columns={'target_naics': sector_col})
+              )
 
     # make an assumption about the percent of rural transport
     # area used by airports
@@ -246,6 +264,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     df_railroad = fba[fba[sector_col] == '482112']
     df_railroad = df_railroad.assign(
         FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
+    # reset gorup_id
+    df_railroad['group_id'] = 1
 
     # further allocate the remaining urban transportation area
     # using Federal Highway Administration fees
@@ -261,7 +281,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     df_highway = fba.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(
         FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
-    df_highway.drop(columns=['AirRail'], inplace=True)
+    df_highway.drop(columns=['AirRail', 'group_id'], inplace=True)
 
     # add fed highway administration fees
     df_highway2 = df_highway.merge(df_fha, how='left')
