@@ -6,7 +6,6 @@ Common functions to clean and harmonize dataframes
 """
 
 import numpy as np
-from flowsa.settings import log
 from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
 
 
@@ -131,7 +130,7 @@ def standardize_units(df):
     # class = money, unit = USD
     if df['Unit'].str.contains('Canadian Dollar').any():
         exchange_rate = float(get_Canadian_to_USD_exchange_rate(
-            str(df['Year'].unique()[0])))
+            df['Year'].unique()[0]))
         df.loc[:, 'FlowAmount'] = np.where(df['Unit'] == 'Canadian Dollar',
                                            df['FlowAmount'] / exchange_rate,
                                            df['FlowAmount'])
@@ -231,91 +230,3 @@ def standardize_units(df):
 
     return df
 
-
-def harmonize_FBS_columns(df):
-    """
-    For FBS use in USEEIOR, harmonize the values in the columns
-    - LocationSystem: drop the year, so just 'FIPS'
-    - MeasureofSpread: tmp set to NoneType as values currently misleading
-    - Spread: tmp set to 0 as values currently misleading
-    - DistributionType: tmp set to NoneType as values currently misleading
-    - MetaSources: Combine strings for rows where
-            class/context/flowtype/flowable/etc. are equal
-    :param df: FBS dataframe with mixed values/strings in columns
-    :return: FBS df with harmonized values/strings in columns
-    """
-
-    # harmonize LocationSystem column
-    log.info('Drop year in LocationSystem')
-    if df['LocationSystem'].str.contains('FIPS').all():
-        df = df.assign(LocationSystem='FIPS')
-    # harmonize MeasureofSpread
-    log.info('Reset MeasureofSpread to NoneType')
-    df = df.assign(MeasureofSpread=None)
-    # reset spread, as current values are misleading
-    log.info('Reset Spread to 0')
-    df = df.assign(Spread=0)
-    # harmonize Distributiontype
-    log.info('Reset DistributionType to NoneType')
-    df = df.assign(DistributionType=None)
-
-    # harmonize metasources
-    log.info('Harmonize MetaSources')
-    df = replace_NoneType_with_empty_cells(df)
-
-    # subset all string cols of the df and drop duplicates
-    string_cols = list(df.select_dtypes(include=['object']).columns)
-    df_sub = df[string_cols].drop_duplicates().reset_index(drop=True)
-    # sort df
-    df_sub = df_sub.sort_values(['MetaSources', 'SectorProducedBy',
-                                 'SectorConsumedBy']).reset_index(drop=True)
-
-    # new group cols
-    group_no_meta = [e for e in string_cols if e not in 'MetaSources']
-
-    # combine/sum columns that share the same data other than Metasources,
-    # combining MetaSources string in process
-    df_sub = df_sub.groupby(
-        group_no_meta)['MetaSources'].apply(', '.join).reset_index()
-    # drop the MetaSources col in original df and replace with the
-    # MetaSources col in df_sub
-    df = df.drop(columns='MetaSources')
-    harmonized_df = df.merge(df_sub, how='left')
-    harmonized_df = replace_strings_with_NoneType(harmonized_df)
-
-    return harmonized_df
-
-
-def reset_fbs_dq_scores(df):
-    """
-    Set all Data Quality Scores to None
-    :param df: FBS dataframe with mixed values/strings in columns
-    :return: FBS df with the DQ scores set to null
-    """
-
-    # reset spread, as current values are misleading
-    log.info('Reset Spread to None')
-    df = df.assign(Spread=None)
-    # reset min, as current values are misleading
-    log.info('Reset Min to None')
-    df = df.assign(Min=None)
-    # reset min, as current values are misleading
-    log.info('Reset Max to None')
-    df = df.assign(Max=None)
-    # reset DR, as current values are misleading
-    log.info('Reset DataReliability to None')
-    df = df.assign(DataReliability=None)
-    # reset TC, as current values are misleading
-    log.info('Reset TemporalCorrelation to None')
-    df = df.assign(TemporalCorrelation=None)
-    # reset GC, as current values are misleading
-    log.info('Reset GeographicalCorrelation to None')
-    df = df.assign(GeographicalCorrelation=None)
-    # reset TC, as current values are misleading
-    log.info('Reset TechnologicalCorrelation to None')
-    df = df.assign(TechnologicalCorrelation=None)
-    # reset DC, as current values are misleading
-    log.info('Reset DataCollection to None')
-    df = df.assign(DataCollection=None)
-
-    return df

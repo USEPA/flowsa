@@ -20,13 +20,12 @@ def parse_statior(*, source, year, config, **_):
     """parse_response_fxn for stateio make and use tables"""
     # Prepare meta for downloading stateior datasets
     name = config.get('datatype')
-    fname = f"{name}_{year}"
+    fname = f"{name}_{year}_{config.get('version')}"
     meta = set_fb_meta(fname, "")
     meta.tool = 'stateio'
     meta.ext = 'rds'
     stateio_paths = Paths()
-    stateio_paths.local_path = os.path.realpath(stateio_paths.local_path +
-                                                "/stateio")
+    stateio_paths.local_path = stateio_paths.local_path / "stateio"
     # Download and load the latest version from remote
     download_from_remote(meta, stateio_paths)
     states = load_preprocessed_output(meta, stateio_paths)
@@ -60,7 +59,6 @@ def parse_statior(*, source, year, config, **_):
         fba = fba.drop(columns=['ActivityConsumedBy'])
 
     # Assign location
-    fba['County'] = ''
     fba = apply_county_FIPS(fba)
     fba = assign_fips_location_system(fba, '2015')
     fba = fba.drop(columns=['County'])

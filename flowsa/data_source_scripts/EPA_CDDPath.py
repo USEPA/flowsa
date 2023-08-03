@@ -14,7 +14,8 @@ from tabula.io import read_pdf
 import re
 import os
 from flowsa.location import US_FIPS
-from flowsa.settings import externaldatapath, log
+from flowsa.flowsa_log import log
+from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.dataclean import standardize_units
 from flowsa.schema import flow_by_activity_mapped_fields
@@ -40,7 +41,7 @@ def call_cddpath_model(*, resp, year, config, **_):
         except KeyError:
             log.error('CDDPath filepath not provided in FBA method')
             raise
-        source_data = externaldatapath + file
+        source_data = externaldatapath / file
         if os.path.isfile(source_data):
             log.info(f"Reading from local file {file}")
         else:
@@ -120,7 +121,7 @@ def combine_cdd_path(*, resp, year, config, **_):
     if df_csv is None:
         # if not available, default to 2014 ratios
         file = config['generation_by_source'].get('2014')
-        df_csv = pd.read_csv(externaldatapath + file, header=0,
+        df_csv = pd.read_csv(externaldatapath / file, header=0,
                              names=['FlowName', 'ActivityProducedBy',
                                     'FlowAmount'])
     df_csv['pct'] = (df_csv['FlowAmount']/
@@ -176,15 +177,10 @@ def assign_wood_to_engineering(fba, **_):
     :param fba: df, FBA of CDDPath
     :return: df, CDDPath FBA with wood reassigned
     """
-
     # Update wood to a new activity for improved mapping
     fba.loc[((fba.FlowName == 'Wood') &
            (fba.ActivityProducedBy == 'Other')),
            'ActivityProducedBy'] = 'Other - Wood'
-
-    # if no mapping performed, still update units
-    if 'short tons' in fba['Unit'].values:
-        fba = standardize_units(fba)
 
     return fba
 
@@ -249,5 +245,4 @@ if __name__ == "__main__":
     flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2018)
     fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
 
-    # flowsa.flowbysector.main(method='CDD_concrete_national_2014')
     # fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')

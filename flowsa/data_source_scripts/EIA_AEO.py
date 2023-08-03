@@ -170,7 +170,7 @@ def eia_aeo_parse(*, df_list, year, **_):
 
 def get_series_ids():
     # load crosswalk of series IDs
-    filepath = externaldatapath + 'AEOseriesIDs.csv'
+    filepath = externaldatapath / 'AEOseriesIDs.csv'
     return pd.read_csv(filepath)
 
 

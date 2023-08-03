@@ -28,7 +28,7 @@ def get_US_urban_green_space_and_public_parks_ratio():
     """
 
     # load Larson's saved SI data
-    df = pd.read_csv(datapath + "Larson_UrbanPublicParks_SI.csv")
+    df = pd.read_csv(datapath / "Larson_UrbanPublicParks_SI.csv")
 
     # calculate a weighted value for ratio of urban land
     # that belongs to parks based on city populations
@@ -55,29 +55,29 @@ def get_Canadian_to_USD_exchange_rate(year):
     :param year: str, year of exchange rate to return
     :return: number, value of exchange rate for year
     """
-    er = ({'2000': '1.4855',
-           '2001': '1.5487',
-           '2002': '1.5704',
-           '2003': '1.4008',
-           '2004': '1.3017',
-           '2005': '1.2115',
-           '2006': '1.134',
-           '2007': '1.0734',
-           '2008': '1.066',
-           '2009': '1.1412',
-           '2010': '1.0298',
-           '2011': '0.9887',
-           '2012': '0.9995',
-           '2013': '1.03',
-           '2014': '1.1043',
-           '2015': '1.2791',
-           '2016': '1.3243',
-           '2017': '1.2984',
-           '2018': '1.2957',
-           '2019': '1.3269'
+    er = ({2000: 1.4855,
+           2001: 1.5487,
+           2002: 1.5704,
+           2003: 1.4008,
+           2004: 1.3017,
+           2005: 1.2115,
+           2006: 1.134,
+           2007: 1.0734,
+           2008: 1.066,
+           2009: 1.1412,
+           2010: 1.0298,
+           2011: 0.9887,
+           2012: 0.9995,
+           2013: 1.03,
+           2014: 1.1043,
+           2015: 1.2791,
+           2016: 1.3243,
+           2017: 1.2984,
+           2018: 1.2957,
+           2019: 1.3269
            })
 
-    exchange_rate = er.get(year)
+    exchange_rate = er.get(year, np.nan)
     return exchange_rate
 
 

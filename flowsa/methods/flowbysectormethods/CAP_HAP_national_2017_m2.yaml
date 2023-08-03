@@ -1,0 +1,41 @@
+# This method replicates m1 but incorporates more detailed secondary contexts
+# e.g. urban/rural and stack height for flows
+
+industry_spec:
+  default: NAICS_6
+target_naics_year: 2012
+geoscale: national
+
+_emission_year: &year 2017
+
+sources_to_cache:
+  EIA_MECS_Energy:
+    !include:CAP_HAP_common.yaml:sources_to_cache:EIA_MECS_Energy
+    year: 2018
+    attribution_source:
+      Employment_national_2018:
+        data_format: FBS
+        year: 2018
+
+source_names:
+  EPA_NEI_Nonpoint:
+    !include:CAP_HAP_national_2017_m1.yaml:source_names:EPA_NEI_Nonpoint
+    apply_urban_rural: True
+    year: *year
+
+  EPA_NEI_Nonroad:
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad
+    apply_urban_rural: True
+    year: *year
+
+  EPA_NEI_Onroad:
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad
+    apply_urban_rural: True
+    year: *year
+
+  stewiFBS:
+    !include:CAP_HAP_common.yaml:source_names:stewiFBS
+    inventory_dict:
+      NEI: *year
+      TRI: *year
+    local_inventory_name: NEI_TRI_air_seccntx_2017

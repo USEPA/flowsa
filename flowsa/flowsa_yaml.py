@@ -16,6 +16,7 @@ class FlowsaLoader(yaml.SafeLoader):
         self.add_multi_constructor('!include:', self.include)
         self.add_multi_constructor('!from_index:', self.from_index)
         self.add_multi_constructor('!script_function:', self.script_function)
+        self.add_multi_constructor('!clean_function:', self.clean_function)
         self.add_constructor('!external_config', self.external_config)
         self.external_paths_to_search = []
         self.external_path_to_pass = None
@@ -27,7 +28,8 @@ class FlowsaLoader(yaml.SafeLoader):
         for folder in [
             *loader.external_paths_to_search,
             flowsa.settings.sourceconfigpath,
-            flowsa.settings.flowbysectormethodpath
+            flowsa.settings.flowbysectormethodpath,
+            flowsa.settings.datapath
         ]:
             if path.exists(path.join(folder, file)):
                 file = path.join(folder, file)
@@ -118,10 +120,30 @@ class FlowsaLoader(yaml.SafeLoader):
         return getattr(module, loader.construct_scalar(node))
 
 
+    @staticmethod
+    def clean_function(
+        loader: 'FlowsaLoader',
+        module_name: str,
+        node: yaml.ScalarNode
+    ) -> Callable:
+        if not isinstance(node, yaml.ScalarNode):
+            raise TypeError('Can only tag scalar node with !clean_function:')
+
+        # For security, this constructor does NOT search external config paths.
+        # If someone who understands security concerns better than I do feels
+        # it is safe to change this behavior, then go ahead.
+        module = importlib.import_module(f'flowsa.{module_name}')
+        return getattr(module, loader.construct_scalar(node))
+
+
 def load(stream: IO, external_path: str = None) -> dict:
     loader = FlowsaLoader(stream)
     if external_path:
         loader.external_paths_to_search.append(external_path)
+        loader.external_paths_to_search.append(
+            f'{external_path}flowbysectormethods/')
+        loader.external_paths_to_search.append(
+            path.dirname(external_path))
         loader.external_path_to_pass = external_path
     try:
         return loader.get_single_data()

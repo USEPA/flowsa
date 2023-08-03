@@ -1,0 +1,668 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Notes,Table
+EPA_GHGI,Iron and Steel Production & Metallurgical Coke Production,NAICS_2012_Code,3311,,331110,EPA_GHGI_T_2_1
+EPA_GHGI,Cement Production,NAICS_2012_Code,32731,,327310,EPA_GHGI_T_2_1
+EPA_GHGI,Lime Production,NAICS_2012_Code,3274,,327400,EPA_GHGI_T_2_1
+EPA_GHGI,Ammonia Production,NAICS_2012_Code,32531,,325310,EPA_GHGI_T_2_1
+EPA_GHGI,Incineration of Waste,NAICS_2012_Code,562,,562000,EPA_GHGI_T_2_1
+EPA_GHGI,Aluminum Production,NAICS_2012_Code,331313,,331313,"EPA_GHGI_T_2_1, EPA_GHGI_T_4_80"
+EPA_GHGI,Soda Ash Production,NAICS_2012_Code,32519,,325190,EPA_GHGI_T_2_1
+EPA_GHGI,Ferroalloy Production,NAICS_2012_Code,3311,,331110,EPA_GHGI_T_2_1
+EPA_GHGI,Titanium Dioxide Production,NAICS_2012_Code,32519,,325190,EPA_GHGI_T_2_1
+EPA_GHGI,Zinc Production,NAICS_2012_Code,33142,,331420,EPA_GHGI_T_2_1
+EPA_GHGI,Phosphoric Acid Production,NAICS_2012_Code,32531,,325310,EPA_GHGI_T_2_1
+EPA_GHGI,Glass Production,NAICS_2012_Code,3272,,327200,EPA_GHGI_T_2_1
+EPA_GHGI,Carbide Production and Consumption,NAICS_2012_Code,32518,,325180,EPA_GHGI_T_2_1
+EPA_GHGI,Coal Mining,NAICS_2012_Code,2121,,212100,EPA_GHGI_T_2_1
+EPA_GHGI,Wastewater Treatment,NAICS_2012_Code,2213,,221300,EPA_GHGI_T_2_1
+EPA_GHGI,Rice Cultivation,NAICS_2012_Code,11116,,1111B0,EPA_GHGI_T_2_1
+EPA_GHGI,Abandoned Oil and Gas Wells,NAICS_2012_Code,211,,211000,EPA_GHGI_T_2_1
+EPA_GHGI,Abandoned Underground Coal Mines,NAICS_2012_Code,2121,,212100,EPA_GHGI_T_2_1
+EPA_GHGI,Anaerobic Digestion at Biogas Facilities,NAICS_2012_Code,562,,new in GHGI since 2018,EPA_GHGI_T_2_1
+EPA_GHGI,Composting,NAICS_2012_Code,562,,562000,EPA_GHGI_T_2_1
+EPA_GHGI,Nitric Acid Production,NAICS_2012_Code,32531,,325310,EPA_GHGI_T_2_1
+EPA_GHGI,Adipic Acid Production,NAICS_2012_Code,32519,,325190,EPA_GHGI_T_2_1
+EPA_GHGI,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",NAICS_2012_Code,32519,,325190,EPA_GHGI_T_2_1
+EPA_GHGI,Electronics Industry,NAICS_2012_Code,334413,,,EPA_GHGI_T_2_1
+EPA_GHGI,Landfills,NAICS_2012_Code,ACC,,,EPA_GHGI_T_2_1
+EPA_GHGI,Electrical Transmission and Distribution,NAICS_2012_Code,2211,,221100,EPA_GHGI_T_2_1
+EPA_GHGI,Liming,NAICS_2012_Code,111,,,EPA_GHGI_T_2_1
+EPA_GHGI,Liming,NAICS_2012_Code,112,,,EPA_GHGI_T_2_1
+EPA_GHGI,Urea Fertilization,NAICS_2012_Code,111,,,EPA_GHGI_T_2_1
+EPA_GHGI,Urea Fertilization,NAICS_2012_Code,112,,,EPA_GHGI_T_2_1
+EPA_GHGI,Urea Consumption for Non-Agricultural Purposes,NAICS_2012_Code,31,,,EPA_GHGI_T_2_1
+EPA_GHGI,Urea Consumption for Non-Agricultural Purposes,NAICS_2012_Code,32,,,EPA_GHGI_T_2_1
+EPA_GHGI,Urea Consumption for Non-Agricultural Purposes,NAICS_2012_Code,33,,,EPA_GHGI_T_2_1
+EPA_GHGI,Other Process Uses of Carbonates,NAICS_2012_Code,31,,,EPA_GHGI_T_2_1
+EPA_GHGI,Other Process Uses of Carbonates,NAICS_2012_Code,32,,,EPA_GHGI_T_2_1
+EPA_GHGI,Other Process Uses of Carbonates,NAICS_2012_Code,33,,,EPA_GHGI_T_2_1
+EPA_GHGI,Lead Production,NAICS_2012_Code,3314,,,EPA_GHGI_T_2_1
+EPA_GHGI,N2O from Product Uses,NAICS_2012_Code,621,,,EPA_GHGI_T_2_1
+EPA_GHGI,N2O from Product Uses,NAICS_2012_Code,622,,,EPA_GHGI_T_2_1
+EPA_GHGI,N2O from Product Uses,NAICS_2012_Code,623,,,EPA_GHGI_T_2_1
+EPA_GHGI,Distribution,NAICS_2012_Code,221210,,221200,"EPA_GHGI_T_3_63, EPA_GHGI_T_3_65, EPA_GHGI_T_3_67"
+EPA_GHGI,Exploration,NAICS_2012_Code,211111,,211000,"EPA_GHGI_T_3_38, EPA_GHGI_T_3_40, EPA_GHGI_T_3_42, EPA_GHGI_T_3_63, EPA_GHGI_T_3_65, EPA_GHGI_T_3_67"
+EPA_GHGI,Processing,NAICS_2012_Code,211111,,211000,"EPA_GHGI_T_3_63, EPA_GHGI_T_3_65, EPA_GHGI_T_3_67"
+EPA_GHGI,Production,NAICS_2012_Code,211111,,211000,"EPA_GHGI_T_3_38, EPA_GHGI_T_3_40, EPA_GHGI_T_3_42, EPA_GHGI_T_3_63, EPA_GHGI_T_3_65, EPA_GHGI_T_3_67"
+EPA_GHGI,Transmission and Storage,NAICS_2012_Code,486210,,486000,"EPA_GHGI_T_3_63, EPA_GHGI_T_3_65, EPA_GHGI_T_3_67"
+EPA_GHGI,Crude Oil Transportation,NAICS_2012_Code,486110,,not mapped,"EPA_GHGI_T_3_38, EPA_GHGI_T_3_40, EPA_GHGI_T_3_42"
+EPA_GHGI,Refining,NAICS_2012_Code,324110,,324110,"EPA_GHGI_T_3_38, EPA_GHGI_T_3_40, EPA_GHGI_T_3_42"
+EPA_GHGI,Chickpeas,NAICS_2012_Code,11113,,1111B0,EPA_GHGI_T_5_29
+EPA_GHGI,Cotton,NAICS_2012_Code,11192,,111900,EPA_GHGI_T_5_29
+EPA_GHGI,Maize,NAICS_2012_Code,11115,,1111B0,EPA_GHGI_T_5_29
+EPA_GHGI,Rice,NAICS_2012_Code,11116,,1111B0,EPA_GHGI_T_5_29
+EPA_GHGI,Soybeans,NAICS_2012_Code,11111,,1111A0,EPA_GHGI_T_5_29
+EPA_GHGI,Wheat,NAICS_2012_Code,11114,,1111B0,EPA_GHGI_T_5_29
+EPA_GHGI,American Bison,NAICS_2012_Code,11299,,112A00,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Beef Cattle,NAICS_2012_Code,11211,,1121A0,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Dairy Cattle,NAICS_2012_Code,11212,,112120,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Goats,NAICS_2012_Code,11242,,112A00,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Horses,NAICS_2012_Code,11292,,112A00,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Mules and Asses,NAICS_2012_Code,11292,,112A00,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Sheep,NAICS_2012_Code,11241,,112A00,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Swine,NAICS_2012_Code,1122,,112A00,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Poultry,NAICS_2012_Code,1123,,112300,"EPA_GHGI_T_5_3, EPA_GHGI_T_5_7"
+EPA_GHGI,Organic Amendment Cropland,NAICS_2012_Code,111,,111,EPA_GHGI_T_5_18
+EPA_GHGI,Residue N Cropland,NAICS_2012_Code,111,,111,EPA_GHGI_T_5_18
+EPA_GHGI,Synthetic Fertilizer Cropland,NAICS_2012_Code,111,,111,EPA_GHGI_T_5_18
+EPA_GHGI,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1111,,"111, excl. 1114",EPA_GHGI_T_5_18
+EPA_GHGI,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1112,,,EPA_GHGI_T_5_18
+EPA_GHGI,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1113,,,EPA_GHGI_T_5_18
+EPA_GHGI,Mineralization and Asymbiotic Fixation Cropland,NAICS_2012_Code,1119,,,EPA_GHGI_T_5_18
+EPA_GHGI,Drained Organic Soils Cropland,NAICS_2012_Code,1111,,"111, excl. 1114",EPA_GHGI_T_5_18
+EPA_GHGI,Drained Organic Soils Cropland,NAICS_2012_Code,1112,,,EPA_GHGI_T_5_18
+EPA_GHGI,Drained Organic Soils Cropland,NAICS_2012_Code,1113,,,EPA_GHGI_T_5_18
+EPA_GHGI,Drained Organic Soils Cropland,NAICS_2012_Code,1119,,,EPA_GHGI_T_5_18
+EPA_GHGI,All activities Grassland,NAICS_2012_Code,112,,112,"EPA_GHGI_T_5_18, EPA_GHGI_T_5_19"
+EPA_GHGI,Volatilization & Atm. Deposition Cropland,NAICS_2012_Code,111,,111,EPA_GHGI_T_5_19
+EPA_GHGI,Surface Leaching & Run-Off Cropland,NAICS_2012_Code,111,,111,EPA_GHGI_T_5_19
+EPA_GHGI,Passenger Cars,NAICS_2012_Code,F01000,,F01000,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Motorcycles,NAICS_2012_Code,F01000,,F01000,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Rail,NAICS_2012_Code,482,,482000,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Recreational Boats,NAICS_2012_Code,F01000,,F01000,EOA_GHGI_T_3_13
+EPA_GHGI,Military Aircraft,NAICS_2012_Code,928110,,S00500,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Pipelines,NAICS_2012_Code,486,,486000,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Light-Duty Trucks,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Medium- and Heavy-Duty Trucks,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Ships and Boats,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,General Aviation Aircraft,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Buses,NAICS_2012_Code,485,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Buses,NAICS_2012_Code,4871,,,"EPA_GHGI_T_3_13, EPA_GHGI_T_3_14"
+EPA_GHGI,Construction/Mining Equipment Non-Road,NAICS_2012_Code,211,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Construction/Mining Equipment Non-Road,NAICS_2012_Code,212,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Construction/Mining Equipment Non-Road,NAICS_2012_Code,213111,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Agricultural Equipment Non-Road,NAICS_2012_Code,111,,"111, 112, 113, 114","EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Agricultural Equipment Non-Road,NAICS_2012_Code,112,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Agricultural Equipment Non-Road,NAICS_2012_Code,113,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Agricultural Equipment Non-Road,NAICS_2012_Code,114,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,485,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,487,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,488,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,492,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,5321,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,5324,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,6219,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,7139,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,8111,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Other Non-Road,NAICS_2012_Code,8113,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,All activities Alternative Fuel On-Road,NAICS_2012_Code,485,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,All activities Alternative Fuel On-Road,NAICS_2012_Code,486,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,All activities Alternative Fuel On-Road,NAICS_2012_Code,487,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,All activities Alternative Fuel On-Road,NAICS_2012_Code,488,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,All activities Alternative Fuel On-Road,NAICS_2012_Code,492,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,11,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,21,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,22,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,23,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,31,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,32,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,33,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,42,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,44,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,45,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,48,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,49,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,51,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,52,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,53,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,54,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,55,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,56,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,61,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,62,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,71,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,72,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,81,,,BTS_Airlines
+EPA_GHGI,Commercial Aircraft,NAICS_2012_Code,92,,,BTS_Airlines
+EPA_GHGI,Total (All Fuels) Residential,NAICS_2012_Code,F01000,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,2213,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,42,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,44,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,45,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,493,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,51,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,52,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,53,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,54,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,55,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,56,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,61,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,62,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,71,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,72,,,EPA_GHGI_T_A_X
+EPA_GHGI,Commercial Coal Commercial,NAICS_2012_Code,81,,,EPA_GHGI_T_A_X
+EPA_GHGI,Industrial Other Coal Industrial,NAICS_2012_Code,11,,,EPA_GHGI_T_A_X
+EPA_GHGI,Industrial Other Coal Industrial,NAICS_2012_Code,21,,,EPA_GHGI_T_A_X
+EPA_GHGI,Industrial Other Coal Industrial,NAICS_2012_Code,2212,,,EPA_GHGI_T_A_X
+EPA_GHGI,Industrial Other Coal Industrial,NAICS_2012_Code,23,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,2213,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,42,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,44,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,45,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,493,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,51,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,52,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,53,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,54,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,55,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,56,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,61,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,62,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,71,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,72,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Commercial,NAICS_2012_Code,81,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Industrial,NAICS_2012_Code,11,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Industrial,NAICS_2012_Code,21,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Industrial,NAICS_2012_Code,2212,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Industrial,NAICS_2012_Code,23,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,2213,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,42,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,44,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,45,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,493,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,51,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,52,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,53,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,54,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,55,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,56,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,61,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,62,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,71,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,72,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Commercial,NAICS_2012_Code,81,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,11,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,21,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,2212,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,23,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,31,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,32,,,EPA_GHGI_T_A_X
+EPA_GHGI,Total Petroleum Industrial,NAICS_2012_Code,33,,,EPA_GHGI_T_A_X
+EPA_GHGI,Industrial Other Coal Industrial - Manufacturing,NAICS_2012_Code,31,,,EPA_GHGI_T_A_X
+EPA_GHGI,Industrial Other Coal Industrial - Manufacturing,NAICS_2012_Code,32,,,EPA_GHGI_T_A_X
+EPA_GHGI,Industrial Other Coal Industrial - Manufacturing,NAICS_2012_Code,33,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,31,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,32,,,EPA_GHGI_T_A_X
+EPA_GHGI,Natural Gas Industrial - Manufacturing,NAICS_2012_Code,33,,,EPA_GHGI_T_A_X
+EPA_GHGI,Fuel Oil Residential,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Residential,NAICS_2012_Code,F01000,,F01000,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Natural Gas Residential,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Wood Residential,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Electric Power,NAICS_2012_Code,2211,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Natural gas Electric Power,NAICS_2012_Code,2211,,,EPA_GHGI_T_3_8
+EPA_GHGI,Natural Gas Electric Power,NAICS_2012_Code,2211,,,EPA_GHGI_T_3_9
+EPA_GHGI,Fuel Oil Electric Power,NAICS_2012_Code,2211,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Wood Electric Power,NAICS_2012_Code,2211,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,2213,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,493,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Commercial,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,2212,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Fuel Oil Industrial,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Industrial,NAICS_2012_Code,11,,"11, 21, 2212, 23, 31, 32, 33","EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Industrial,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Industrial,NAICS_2012_Code,2212,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Industrial,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Industrial - Manufacturing,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Industrial - Manufacturing,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Coal Industrial - Manufacturing,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Natural gas Industrial - Manufacturing,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Natural gas Industrial - Manufacturing,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Natural gas Industrial - Manufacturing,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_8, EPA_GHGI_T_3_9"
+EPA_GHGI,Electric Power,NAICS_2012_Code,2211,,,EPA_GHGI_T_3_7
+EPA_GHGI,Acrylonitrile,NAICS_2012_Code,325199,,,EPA_GHGI_T_4_46
+EPA_GHGI,Carbon Black,NAICS_2012_Code,325180,,,EPA_GHGI_T_4_46
+EPA_GHGI,Ethylene,NAICS_2012_Code,324110,,,EPA_GHGI_T_4_46
+EPA_GHGI,Ethylene Dichloride,NAICS_2012_Code,325120,,,EPA_GHGI_T_4_46
+EPA_GHGI,Ethylene Oxide,NAICS_2012_Code,325199,,,EPA_GHGI_T_4_46
+EPA_GHGI,Methanol,NAICS_2012_Code,325199,,,EPA_GHGI_T_4_46
+EPA_GHGI,Industry Industrial Coking Coal,NAICS_2012_Code,212210,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Industrial Other Coal,NAICS_2012_Code,212210,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Distillate Fuel Oil,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry LPG,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry LPG,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry LPG,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry LPG,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry LPG,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry LPG,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry LPG,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Pentanes Plus,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Petroleum Coke,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Still Gas,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Still Gas,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Still Gas,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Still Gas,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Still Gas,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Still Gas,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Still Gas,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Natural Gas to Chemical Plants,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Natural Gas to Chemical Plants,NAICS_2012_Code,32,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Natural Gas to Chemical Plants,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,31,,"31, 32, 33",EPA_GHGI_T_3_22
+EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Asphalt & Road Oil,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Lubricants,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Lubricants,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Lubricants,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Lubricants,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Lubricants,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Lubricants,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Lubricants,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Miscellaneous Products,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Naphtha (<401 F),NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Other Oil (>401 F),NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Special Naphtha,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Waxes,NAICS_2012_Code,31,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Waxes,NAICS_2012_Code,324110,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Waxes,NAICS_2012_Code,324199,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Waxes,NAICS_2012_Code,325,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Waxes,NAICS_2012_Code,326,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Waxes,NAICS_2012_Code,327,,,EPA_GHGI_T_3_22
+EPA_GHGI,Industry Waxes,NAICS_2012_Code,33,,,EPA_GHGI_T_3_22
+EPA_GHGI,Transportation Lubricants,NAICS_2012_Code,48,,,EPA_GHGI_T_3_22
+EPA_GHGI,Transportation Lubricants,NAICS_2012_Code,491,,,EPA_GHGI_T_3_22
+EPA_GHGI,Transportation Lubricants,NAICS_2012_Code,492,,,EPA_GHGI_T_3_22
+EPA_GHGI,Transportation Lubricants,NAICS_2012_Code,92,,,EPA_GHGI_T_3_22
+EPA_GHGI,Transportation Lubricants,NAICS_2012_Code,F01000,,,EPA_GHGI_T_3_22
+EPA_GHGI,HCFC-22 Production,NAICS_2012_Code,325120,,325120,EPA_GHGI_T_4_50
+EPA_GHGI,Electronics Production,NAICS_2012_Code,334413,,334413,EPA_GHGI_T_4_94
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,11,,"All sectors, excluding transport",EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,21,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,22,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,23,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,31,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,32,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,33,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,42,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,44,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,45,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,49,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,51,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,52,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,53,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,54,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,55,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,56,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,61,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,62,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,71,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,72,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,81,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,92,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning,NAICS_2012_Code,F01000,,,EPA_GHGI_T_4_101
+EPA_GHGI,Refrigeration/Air Conditioning - Households,NAICS_2012_Code,F01000,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,11,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,21,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,22,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,23,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,31,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,32,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,33,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,42,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,44,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,45,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,48,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,49,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,51,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,52,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,53,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,54,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,55,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,56,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,61,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,62,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,71,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,72,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,81,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,92,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Polystyrene,NAICS_2012_Code,F01000,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,11,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,21,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,22,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,23,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,31,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,32,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,33,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,42,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,44,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,45,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,48,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,49,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,51,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,52,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,53,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,54,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,55,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,56,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,61,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,62,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,71,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,72,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,81,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,92,,,EPA_GHGI_T_4_101
+EPA_GHGI,Foams - Urethane,NAICS_2012_Code,F01000,,,EPA_GHGI_T_4_101
+EPA_GHGI,School and Tour Buses,NAICS_2012_Code,485,,485000,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,11,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,21,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,22,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,23,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,31,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,32,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,33,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,42,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,44,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,45,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,48,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,49,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,51,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,52,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,53,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,54,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,55,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,56,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,61,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,62,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,71,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,72,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,81,,,EPA_GHGI_T_A_103
+EPA_GHGI,Heavy-Duty Vehicles,NAICS_2012_Code,92,,,EPA_GHGI_T_A_103
+EPA_GHGI,Magnesium Production and Processing,NAICS_2012_Code,331410,,"331410, 331490, 331520",EPA_GHGI_T_4_84
+EPA_GHGI,Magnesium Production and Processing,NAICS_2012_Code,33149,,,EPA_GHGI_T_4_84
+EPA_GHGI,Magnesium Production and Processing,NAICS_2012_Code,33152,,,EPA_GHGI_T_4_84
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,11,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,21,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,22,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,23,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,31,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,32,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,33,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,42,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,44,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,45,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,48,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,49,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,51,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,52,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,53,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,54,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,55,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,56,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,61,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,62,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,71,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,72,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,81,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine Shipping,NAICS_2012_Code,92,,,BEA_Bunker_Fuel
+EPA_GHGI,Marine,NAICS_2012_Code,11,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,21,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,22,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,23,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,31,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,32,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,33,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,42,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,44,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,45,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,48,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,49,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,51,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,52,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,53,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,54,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,55,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,56,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,61,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,62,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,71,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,72,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,81,,,GHGI2020_3_104
+EPA_GHGI,Marine,NAICS_2012_Code,92,,,GHGI2020_3_104
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Distillate Fuel Oil Transportation,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,F01000,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,11,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,21,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,22,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,23,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,31,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,32,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,33,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,42,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,44,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,45,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,48,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,49,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,51,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,52,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,53,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,54,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,55,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,56,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,61,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,62,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,71,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,72,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,81,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Motor Gasoline Transportation,NAICS_2012_Code,92,,,"EPA_GHGI_T_3_14, EPA_GHGI_T_3_15"
+EPA_GHGI,Aviation,NAICS_2012_Code,11,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,21,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,22,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,23,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,31,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,32,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,33,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,42,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,44,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,45,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,48,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,49,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,51,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,52,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,53,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,54,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,55,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,56,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,61,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,62,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,71,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,72,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,81,,,EPA_GHGI_T_A_103
+EPA_GHGI,Aviation,NAICS_2012_Code,92,,,EPA_GHGI_T_A_103
