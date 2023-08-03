@@ -18,4 +18,5 @@ years:
 - 2018
 - 2019
 - 2020
+version: 0.2.1
 # datatype: 'State_Summary_Make' # Update for each dataset

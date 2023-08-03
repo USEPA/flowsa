@@ -1,0 +1,97 @@
+## GHG emissions by state from EPA disaggregated inventories
+
+!include:USEEIO_summary_target.yaml
+year: &ghg_year 2014
+geoscale: state
+
+_allocation_types:
+  _use_allocation: &use_table_allocation
+    year: *ghg_year
+    geoscale: state
+    activity_to_sector_mapping: BEA_2012_Summary
+    # selection_fields:
+    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
+    attribution_method: proportional
+    attribution_source:
+      Employment_state_2014:
+        data_format: FBS
+        geoscale: state
+        year: *ghg_year
+
+sources_to_cache:
+  EIA_MECS_Energy:
+    !include:GHG_state_common.yaml:sources_to_cache:EIA_MECS_Energy
+    year: 2014
+    clean_source: Employment_state_2014
+
+source_names:
+  EPA_StateGHGI: # U.S. GHG emissions by state
+    !include:GHG_state_common.yaml:source_names:EPA_StateGHGI
+    year: *ghg_year
+    activity_sets:
+      !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets
+
+    ## List these activity sets separately to access the correct use table year
+      use_table_coal: # commercial coal combustion
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_coal
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
+
+      use_table_pet: # commercial petroleum combustion; mobile ag equipment
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_pet
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+
+      use_table_gas: # commercial gas combustion
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_gas
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'22': ''}  # Electricity and natural gas
+
+      use_table_chem: # other process use of carbonates
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_chem
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'325': ''}  # Use of chemicals
+
+      transport_petroleum: # C02 from petroleum highway
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_petroleum
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+
+      transport_nonroad: # CH4, N2O from petroleum non-highway
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_nonroad
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+
+      transport_machinery: # CO2 (ag only), CH4, N2O from petroleum non-highway (ag & constrution)
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_machinery
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'333': ''}  # Machinery
+
+      ods_substitutes: # CO2e from ODS substitutes
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:ods_substitutes
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'333': ''}  # Poor proxy for A/C equipment

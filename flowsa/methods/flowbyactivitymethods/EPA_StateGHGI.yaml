@@ -4,7 +4,7 @@ source_url: 'https://www.epa.gov/ghgemissions/state-ghg-emissions-and-removals'
 bib_id: ''
 format: zip  # .zip file with .xlsx file
 url:
-  base_url: 'https://www.epa.gov/system/files/other-files/2023-04/AllStateData%2BReadMe_042623_2.zip'
+  base_url: 'https://www.epa.gov/system/files/other-files/2023-05/AllStateData-ReadMe_042623.zip'
 call_response_fxn: !script_function:EPA_StateGHGI epa_state_ghgi_call
 parse_response_fxn: !script_function:EPA_StateGHGI epa_state_ghgi_parse
 file: 'AllStateGHGData_042623.xlsx'
