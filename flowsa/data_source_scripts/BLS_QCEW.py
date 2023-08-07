@@ -315,6 +315,8 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
         unsuppressed = unsuppressed.groupby(
             level=groupcols).apply(
             fill_suppressed, level, 'ActivityProducedBy')
+    # ensure correct dtype
+    unsuppressed = unsuppressed.astype(indexed.dtypes.to_dict())
 
     aggregated = (
         unsuppressed
