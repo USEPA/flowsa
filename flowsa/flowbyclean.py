@@ -150,8 +150,9 @@ def substitute_nonexistent_values(
               .merge(other,
                      on=list(other.select_dtypes(
                          include=['object', 'int']).columns),
-                     how='left',
+                     how='outer',
                      suffixes=(None, '_y'))
+              .fillna({'FlowAmount': 0})
               )
     # fill in missing data
     new_col_data = [col for col in merged if col.endswith('_y')]
@@ -165,7 +166,7 @@ def substitute_nonexistent_values(
             merged[original_col] = merged[original_col].fillna(
                 merged[c])
 
-    # reset grop id and group total, drop columns
+    # reset group id and group total, drop columns
     merged = (merged
               .drop(merged.filter(regex='_y').columns, axis=1)
               .drop(columns=['group_id'])
