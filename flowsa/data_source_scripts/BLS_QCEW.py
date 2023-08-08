@@ -224,20 +224,32 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     else:
         log.critical('At a subnational scale, this will take a long time.')
 
-    fba = (fba
-           .assign(Unattributed=fba.FlowAmount.copy(),
-                   Attributed=0)
-           .assign(descendants='')
-           )
+    fba2 = (fba
+            .assign(Unattributed=fba.FlowAmount.copy(),
+                    Attributed=0)
+            .assign(descendants='')
+            .replace({'ActivityProducedBy': {'31-33': '3X',
+                                             '44-45': '4X',
+                                             '48-49': '4Y'}})
+            )
 
     for level in [5, 4, 3, 2]:
-        descendants = (
-            fba
+        descendants = pd.DataFrame(
+            fba2
             .drop(columns='descendants')
             .query(f'ActivityProducedBy.str.len() > {level}')
             .assign(
                 parent=lambda x: x.ActivityProducedBy.str.slice(stop=level)
             )
+            # replace parent values if parent is a range
+            .replace({'parent': {'31': '3X',
+                                 '32': '3X',
+                                 '33': '3X',
+                                 '44': '4X',
+                                 '45': '4X',
+                                 '48': '4Y',
+                                 '49': '4Y'
+                                 }})
             .groupby(['FlowName', 'Location', 'parent'])
             .agg({'Unattributed': 'sum', 'ActivityProducedBy': ' '.join})
             .reset_index()
@@ -246,8 +258,8 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
                              'parent': 'ActivityProducedBy'})
         )
 
-        fba = (
-            fba
+        fba2 = (
+            fba2
             .merge(descendants,
                    how='left',
                    on=['FlowName', 'Location', 'ActivityProducedBy'],
@@ -264,21 +276,18 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
             )
             .drop(columns=['descendant_flows', 'descendants_y'])
         )
-    fba = fba.drop(columns=['descendants'])
+    fba2 = fba2.drop(columns=['descendants'])
 
     indexed = (
-        fba
-        .assign(n2=fba.ActivityProducedBy.str.slice(stop=2),
-                n3=fba.ActivityProducedBy.str.slice(stop=3),
-                n4=fba.ActivityProducedBy.str.slice(stop=4),
-                n5=fba.ActivityProducedBy.str.slice(stop=5),
-                n6=fba.ActivityProducedBy.str.slice(stop=6),
-                location=fba.Location,
-                category=fba.FlowName)
+        fba2
+        .assign(n2=fba2.ActivityProducedBy.str.slice(stop=2),
+                n3=fba2.ActivityProducedBy.str.slice(stop=3),
+                n4=fba2.ActivityProducedBy.str.slice(stop=4),
+                n5=fba2.ActivityProducedBy.str.slice(stop=5),
+                n6=fba2.ActivityProducedBy.str.slice(stop=6),
+                location=fba2.Location,
+                category=fba2.FlowName)
         .replace({'FlowAmount': {0: np.nan},
-                  'ActivityProducedBy': {'31-33': '3X',
-                                         '44-45': '4X',
-                                         '48-49': '4Y'},
                   'n2': {'31': '3X', '32': '3X', '33': '3X',
                          '44': '4X', '45': '4X',
                          '48': '4Y', '49': '4Y'}})
