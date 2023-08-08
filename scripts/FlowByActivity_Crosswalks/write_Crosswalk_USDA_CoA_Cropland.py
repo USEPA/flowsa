@@ -28,15 +28,16 @@ def assign_naics(df):
     # assign sector source name
     df['SectorSourceName'] = 'NAICS_2012_Code'
 
-    # coa equivalent to agriculture, forestry, fishing, and hunting
-    df.loc[df['Activity'] == 'AG LAND', 'Sector'] = '11'
-
     # coa equivalent to crop production: 111
     df.loc[df['Activity'] == 'AG LAND, CROPLAND, HARVESTED',
            'Sector'] = '111'
 
     # coa equivalent to Animal Production and Aquaculture: 112
+    # use below for IRRIGATED
     df.loc[df['Activity'] == 'AG LAND, (EXCL HARVESTED CROPLAND)',
+           'Sector'] = '112'
+    # use below for NON IRRIGATED
+    df.loc[df['Activity'] == 'AG LAND, PASTURELAND, (EXCL CROPLAND & WOODLAND)',
            'Sector'] = '112'
 
     # coa equivalent to soybean farming: 11111
@@ -104,10 +105,6 @@ def assign_naics(df):
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
                  'Sector']), ignore_index=True, sort=True)
     df = df.append(pd.DataFrame(
-        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
-        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame(
         [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
                  'Sector']), ignore_index=True, sort=True)
@@ -130,6 +127,10 @@ def assign_naics(df):
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
                  'Sector']), ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
+    df = df.append(pd.DataFrame(
+        [['USDA_CoA_Cropland', 'BERRY TOTALS', 'NAICS_2012_Code', '111333']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector']), ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '111339'
 
     # coa aggregates to greenhouse nursery and floriculture production: 1114
@@ -194,5 +195,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)
