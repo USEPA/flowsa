@@ -330,11 +330,10 @@ def estimate_suppressed_sectors_equal_attribution(
         unsuppressed = unsuppressed.groupby(
             level=groupcols).apply(
             fill_suppressed, level, col)
-    # ensure correct dtype
-    unsuppressed = unsuppressed.astype(indexed.dtypes.to_dict())
 
     aggregated = (
         unsuppressed
+        .reset_index(drop=True)
         .fillna({'FlowAmount': 0})
         .drop(columns=['Unattributed', 'Attributed'])
         # .replace({col: {'3X': '31-33',
