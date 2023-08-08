@@ -62,9 +62,11 @@ source_names:
     geoscale: state
     selection_fields:
       Class: Land
-      Location: !include:Location_common.yaml:_state_location
     activity_sets:
       cropland_crops:
+        industry_spec:
+          default: NAICS_6
+          NAICS_7: ['111150', '111199']
         selection_fields:
          PrimaryActivity:
           - 'Cropland used for crops'
@@ -80,25 +82,26 @@ source_names:
                 - "AREA IN PRODUCTION"
                 - 'AREA BEARING & NON-BEARING'
                 - 'AREA GROWN'
-              Location: !include:Location_common.yaml:_state_location
             exclusion_fields:
               conditional: {FlowName: 'AREA IN PRODUCTION',
                             ActivityConsumedBy: 'VEGETABLE TOTALS'}
-              ActivityConsumedBy: ['AG LAND', 'AG LAND, CROPLAND, HARVESTED']
-            attribution_method: proportional
-            attribution_source:
-              USDA_CoA_Cropland_NAICS:
-                year: 2017
+              ActivityConsumedBy: ['AG LAND, CROPLAND, HARVESTED']
+            activity_sets:
+              cropland_attribution-cropland:
+                exclusion_fields:
+                  ActivityConsumedBy: 'ORCHARDS'
+                attribution_method: proportional
+                attribution_source:
+                  USDA_CoA_Cropland_NAICS:
+                    selection_fields:
+                      Class: Land
+                      FlowName:
+                        - "AG LAND, CROPLAND, HARVESTED"
+                    estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+              cropland_attribution-orchards:
                 selection_fields:
-                  Class: Land
-                  FlowName:
-                    - "FARM OPERATIONS"
-                estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
-                selection_fields_after_data_suppression_estimation:
-                  PrimaryActivity: [ "112111", "112112", "11212", "1122",
-                                     "11231", "11232", "11233", "11234",
-                                     "11239", "11241", "11242", "11291",
-                                     "11292", "11293", "11299" ]
+                  PrimaryActivity: ORCHARDS
+                attribution_method: direct
       pastureland:
         selection_fields:
          PrimaryActivity:
